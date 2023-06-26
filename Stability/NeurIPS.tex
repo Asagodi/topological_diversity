@@ -114,10 +114,7 @@
 \begin{document}
 
 %keywords: 
-%- exploding gradient problem
-%- gradient descent
-%- bifurcation analysis
-%- 
+%neural computation, robustness, bifurcation analysis, exploding gradient problem, continuous attractors, persistence of invariant manifolds 
     
 %TLDR
 
@@ -273,7 +270,8 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark 
 On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence.
 Importantly, the ``slow'' flow on the perturbed system is not bounded.
 
-In practice, the sufficient conditions for RNNs implementing continuous attractors to have this graceful breakdown is for the continuous attractor manifold to be of finite dimension throughout, connected, and bounded.
+In practice, the sufficient conditions for RNNs implementing continuous attractors to have this graceful breakdown is for the continuous attractor manifold to be of finite dimension throughout, connected, and bounded. 
+However, in systems with an invariant manifold with dimension at least three, it is possible that a slow manifold with chaotic dynamics is created through a perturbation. This would have as consequence that the perturbed system acquires positive Lyapunov exponents (corresponding to the chaotic orbit), which then can still lead to exploding gradients.
 
 \subsection{Implications on Machine Learning}\label{sec:imp:ML}
 Extending the memory time constant of RNNs have long been an important area of research with much focus on random weights~\cite{Legenstein2007,Goldman2009,Toyoizumi2011,Kerg2019,Chen2018,Henaff2016,Rusch2021,arjovskyUnitaryEvolutionRecurrent2016}.
@@ -295,6 +293,7 @@ On the other case, we can find examples where the theorem does not hold, and the
 
 While exploding gradients would prevent gradient descent to correct for deviations from the optima,
 for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
+
 
 \subsection{Implications on Neuroscience}\label{sec:imp:neuroscience}
 Continuous attractors are biologically plausible, theoretically elegant, consistent with neural recordings, and avoids the asymptotic exploding and vanishing gradient problem~\cite{Park2023a}.
