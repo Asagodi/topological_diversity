@@ -41,7 +41,7 @@ def create_flipflop_trials(N_batch, input_length, t_stim, t_delay):
         outputs[i, pulses[-1]:,channel] = (-1)**sign
     mask = np.ones((N_batch, input_length, 2))
     mask[np.isnan(outputs)] = 0
-    return inputs, outputs, mask, 9
+    return inputs, outputs, mask, 0
 
 def exponentiated_quadratic(xa, xb):
     """Exponentiated quadratic  with σ=1"""
