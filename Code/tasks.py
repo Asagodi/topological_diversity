@@ -3,11 +3,39 @@ from __future__ import division
 import numpy as np
 from abc import ABCMeta, abstractmethod
 
+import scipy
 from scipy.stats import truncexpon
 from itertools import chain, combinations, permutations
 
 # abstract class python 2 & 3 compatible
 ABC = ABCMeta('ABC', (object,), {})
+
+
+
+def exponentiated_quadratic(xa, xb):
+    """Exponentiated quadratic  with σ=1"""
+    # L2 distance (Squared Euclidian)
+    sq_norm = -0.5 * scipy.spatial.distance.cdist(xa, xb, 'sqeuclidean')
+    return np.exp(sq_norm)
+
+
+def create_angularintegration_trials(N_batch, T, dt):
+    """
+    Creates N_batch trials of the angular integration task.
+    Inputs are left and right angular velocity and 
+    target output is sine and cosine of integrated angular velocity.
+    Returns inputs, outputs, mask, 0
+    -------
+    """
+    input_length = int(T/dt)
+    X = np.expand_dims(np.linspace(-10, 10, input_length), 1)
+    sigma = exponentiated_quadratic(X, X)  
+    inputs = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=N_batch)
+    outputs_1d =  np.cumsum(inputs, axis=1)*dt
+    outputs = np.stack((np.cos(2*np.pi*outputs_1d), np.sin(2*np.pi*outputs_1d)), axis=-1)
+    mask = np.ones((N_batch, input_length, 2))
+    trial_params = 0
+    return inputs, outputs, mask, trial_params
 
 
 def create_copy_memory_trials_onehot(N_batch, N_symbols, input_length, delay):
@@ -18,7 +46,8 @@ def create_copy_memory_trials_onehot(N_batch, N_symbols, input_length, delay):
     
     Returns:
     -inputs
-    -outputs"""
+    -outputs
+    """
     
     N_in = N_symbols+2
     N_out = N_symbols
