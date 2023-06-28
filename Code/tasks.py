@@ -11,7 +11,10 @@ from itertools import chain, combinations, permutations
 ABC = ABCMeta('ABC', (object,), {})
 
 
-def create_flipflop_trials(N_batch, input_length, t_stim, t_delay):
+def create_eyeblink_trials(N_batch, input_length, t_stim, t_delay):
+    0
+
+def create_flipflop_trials(N_batch, input_length, t_stim, t_delay, input_amp=1., target_amp=0.5,):
     """
     Creates N_batch trials of the flip-flop task.
     During each trial, the network receives a number of short pulses of duration t_stim.
@@ -26,19 +29,18 @@ def create_flipflop_trials(N_batch, input_length, t_stim, t_delay):
         pulses = [0]    
         while pulses[-1] + t_stim + t_delay < input_length:
             inter_pulse_period = np.random.randint(5, 25) + t_stim + 1 
-            if inter_pulse_period + pulses[-1] >= input_length:
+            if inter_pulse_period + pulses[-1] > input_length:
                 break
 
             channel = np.random.randint(2)
             sign = np.random.randint(2)
-            inputs[i, pulses[-1], channel] = (-1)**sign
+            inputs[i, pulses[-1], channel] = (-1)**sign*input_amp
 
-            outputs[i, pulses[-1]:inter_pulse_period+pulses[-1],channel] = (-1)**sign
+            outputs[i, pulses[-1]:inter_pulse_period+pulses[-1],channel] = (-1)**sign*target_amp
             outputs[i, pulses[-1]:t_stim+t_delay+pulses[-1],:] = np.nan
             pulses.append(inter_pulse_period+pulses[-1])
-        N_pulses = len(pulses)
 
-        outputs[i, pulses[-1]:,channel] = (-1)**sign
+        outputs[i, pulses[-1]:,channel] = (-1)**sign*target_amp
     mask = np.ones((N_batch, input_length, 2))
     mask[np.isnan(outputs)] = 0
     return inputs, outputs, mask, 0
