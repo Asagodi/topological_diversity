@@ -11,8 +11,40 @@ from itertools import chain, combinations, permutations
 ABC = ABCMeta('ABC', (object,), {})
 
 
-def create_eyeblink_trials(N_batch, input_length, t_stim, t_delay):
-    0
+def create_eyeblink_trials(N_batch, input_length, t_stim=1, t_delay=10, t_target=1, min_us_time=5, max_us_time=50):
+    """
+    Creates N_batch trials of the eyeblick conditioning task.
+    
+    Parameters
+    ----------
+    N_batch : int
+        Number of trials
+    input_length : int
+        Number of time steps for each trial
+    t_stim : int
+        Length of US
+    t_delay : int
+        Length of delay
+    t_target: int
+        Length of target output
+    Returns inputs, outputs, mask, 0
+    -------
+    The US timings are taken from U(min_us_time,max_us_time)
+    
+    
+    """
+    assert input_length > max_us_time+t_delay+t_stim, "input_length needs to be bigger than max_us_time+t_delay+t_stim!"
+    
+    inputs = np.zeros((N_batch, input_length, 1))
+    outputs = np.zeros((N_batch, input_length, 1))
+    
+    cs_timings = np.random.randint(min_us_time,max_us_time, N_batch)
+    for i in range(N_batch):
+        inputs[i,cs_timings[i]:cs_timings[i]+t_stim,0] = 1
+        outputs[i,cs_timings[i]+t_delay+t_stim:cs_timings[i]+t_stim+t_delay+t_target,0] = 1
+    
+    mask = np.ones((N_batch, input_length, 1))
+    return inputs, outputs, mask, 0
 
 def create_flipflop_trials(N_batch, input_length, t_stim, t_delay, input_amp=1., target_amp=0.5,):
     """
