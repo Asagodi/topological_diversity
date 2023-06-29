@@ -46,7 +46,7 @@ def create_eyeblink_trials(N_batch, input_length, t_stim=1, t_delay=10, t_target
     mask = np.ones((N_batch, input_length, 1))
     return inputs, outputs, mask, 0
 
-def create_flipflop_trials(N_batch, input_length, t_stim, t_delay, input_amp=1., target_amp=0.5,):
+def create_flipflop_trials(N_batch, input_length, t_stim, t_delay, input_amp=1., target_amp=0.5):
     """
     Creates N_batch trials of the flip-flop task.
     During each trial, the network receives a number of short pulses of duration t_stim.
