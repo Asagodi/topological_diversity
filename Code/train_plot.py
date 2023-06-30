@@ -14,7 +14,7 @@ import time
 from datetime import datetime
 from fractions import Fraction
 
-from tasks import PerceptualDiscrimination, PoissonClicks, DynamicPoissonClicks
+from tasks import PerceptualDiscrimination, PoissonClicks, DynamicPoissonClicks, create_eyeblink_trials, create_flipflop_trials, create_angularintegration_trials
 from utils import *
 
 current_dir = os.path.dirname(os.path.realpath('__file__'))
@@ -112,7 +112,7 @@ parser.add_argument(
     type=str,
     default=None,
     help="Stimulus durations list used to make curriculum or dataset. If None, random stimulus durations are used (from a uniform distribution for PD and from a truncated exponential for PC). If a list specified randomly chosen durations from list.")
-task_keys = ['perceptual_discrimination', 'poisson_clicks', 'dynamic_poisson_clicks', 'motion_pulse', 'copy_memory']
+task_keys = ['perceptual_discrimination', 'poisson_clicks', 'dynamic_poisson_clicks', 'motion_pulse', 'copy_memory', 'eyeblink', 'flipflop', 'angularintegration']
 parser.add_argument(
     "--task",
     type=str,
@@ -233,8 +233,9 @@ parser.add_argument(
     default=10,
     help="Number of timesteps to before output cue.")
     
-    
-    
+
+
+
     
 #train params
 parser.add_argument(
@@ -319,6 +320,10 @@ parser.add_argument(
     help="Variance of normal distribution with which to recplace dead units.")
 
 #early stopping params
+parser.add_argument(
+    "--early_stopping", type=bool,
+    default=False,
+    help="Stop before max_epochs through early_stopping_criterion?")
 parser.add_argument(
     "--early_stopping_criterion_epochs", type=int,
     default=200,
@@ -445,6 +450,12 @@ parser.add_argument(
     type=int,
     default=1,
     help="Number of bounded line attractors for initialization with loadmodel==blas.")
+
+parser.add_argument(
+    "--gain",
+    type=float,
+    default=1,
+    help="gain for gain initialization. Chaos for high gain")
 
 #perfect params
 parser.add_argument(
@@ -575,7 +586,7 @@ if training_kwargs['load_model']!="":
     elif training_kwargs['load_model'][1]=='2' or training_kwargs['load_model'][1]=='3':
         training_kwargs['hidden_offset'] = 100
     if training_kwargs['load_model'][0]=='v': #if in form v{i}, e.g. v1, v2 ,v3
-        rnn_model = perfect_initialization(int(training_kwargs['load_model'][1]),random_winout=training_kwargs['random_winout'], eps=training_kwargs['perfect_inout_variance'])#.double()
+        rnn_model = perfect_initialization(int(training_kwargs['load_model'][1]), random_winout=training_kwargs['random_winout'], eps=training_kwargs['perfect_inout_variance'])#.double()
         torch.save(rnn_model.state_dict(), training_kwargs['exp_path'] + '/starting_weights.pth')
     elif training_kwargs['load_model']=='blas':
         training_kwargs['N_rec'] = 2*training_kwargs['N_blas']
@@ -587,10 +598,15 @@ if training_kwargs['load_model']!="":
         rnn_model = identity_initialization(training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'], hidden_initial_activations=training_kwargs['hidden_initial_activations'])
         
     elif training_kwargs['load_model']=='qpta':
-        rnn_model = qpta_initialization(training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'], hidden_initial_activations=training_kwargs['hidden_initial_activations'])
+        training_kwargs['N_rec'] = 2*training_kwargs['N_blas']
+        rnn_model = qpta_initialization(training_kwargs['N_in'], training_kwargs['N_blas'], training_kwargs['N_out'], hidden_initial_activations=training_kwargs['hidden_initial_activations'])
         
     elif training_kwargs['load_model']=='ortho':
         rnn_model = ortho_initialization(training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'], hidden_initial_activations=training_kwargs['hidden_initial_activations'])
+        
+            
+    elif training_kwargs['load_model']=='gain':
+        rnn_model = gain_initialization(training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'], gain=training_kwargs['gain'],  hidden_initial_activations=training_kwargs['hidden_initial_activations'])
 
                 
     else:
