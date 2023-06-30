@@ -26,7 +26,7 @@ from matplotlib import cm
 import matplotlib.colors as colors
 import matplotlib.markers as markers
 
-from tasks import PerceptualDiscrimination, PoissonClicks, DynamicPoissonClicks, create_copy_memory_trials_onehot
+from tasks import PerceptualDiscrimination, PoissonClicks, DynamicPoissonClicks, create_copy_memory_trials_onehot, create_eyeblink_trials, create_flipflop_trials, create_angularintegration_trials
 from network_initialization import *
 from analysis_functions import *
 from rnn_models import *
@@ -81,6 +81,7 @@ def make_train_test_sets(training_kwargs):
     -test set
     -train and test generator functions
     """
+    print(training_kwargs['task'])
     train_size = int(training_kwargs['total_data_size']*training_kwargs['train_proportion'])
     test_size = training_kwargs['total_data_size']-train_size
     if training_kwargs['task'] == 'copy_memory':
@@ -89,6 +90,21 @@ def make_train_test_sets(training_kwargs):
         delay = training_kwargs['delay']
         train_set = create_copy_memory_trials_onehot(train_size, N_symbols, input_length, delay)
         test_set = create_copy_memory_trials_onehot(test_size, N_symbols, input_length, delay)
+        return train_set, test_set, 0, 0
+    elif training_kwargs['task'] == 'eyeblink':
+        train_set = create_eyeblink_trials(train_size, training_kwargs['input_length'], t_stim=training_kwargs['fixed_stim_duration'], t_delay=training_kwargs['delay'], t_target=training_kwargs['target_duration'])
+        test_set = create_eyeblink_trials(test_size, training_kwargs['input_length'], t_stim=training_kwargs['fixed_stim_duration'], t_delay=training_kwargs['delay'], t_target=training_kwargs['target_duration'])
+        return train_set, test_set, 0, 0
+    elif training_kwargs['task'] == 'flipflop':
+        train_set = create_flipflop_trials(train_size, training_kwargs['input_length'], t_stim=training_kwargs['fixed_stim_duration'], t_delay=training_kwargs['delay'], input_amp=1., target_amp=0.5)
+        test_set = create_flipflop_trials(test_size, training_kwargs['input_length'], t_stim=training_kwargs['fixed_stim_duration'], t_delay=training_kwargs['delay'], input_amp=1., target_amp=0.5)
+        return train_set, test_set, 0, 0
+    elif training_kwargs['task'] == 'angularintegration':
+        T = training_kwargs['input_length']
+        dt = 1
+        train_set = create_angularintegration_trials(train_size, T, dt)
+        test_set = create_angularintegration_trials(test_size, T, dt)
+        print(train_set[0].shape)
         return train_set, test_set, 0, 0
     else:
         task = get_task(task_name=training_kwargs['task'])
@@ -236,12 +252,14 @@ def test_model(model, loss_fn, test_x, test_y, test_output_mask, training_kwargs
     elif training_kwargs['model_type'] in ['lstm', 'gru']:
         x = torch.tensor(test_x,  dtype=torch.float)
         yhat = model(x)
-    if training_kwargs['count_out'] == "1D_uncued":
+        
+    if training_kwargs['count_out'] == "1D_uncued" or training_kwargs['task'] == "eyeblink":
         for t_id in range(test_x.shape[1]):
-            loss += loss_fn.forward(yhat[:,t_id,0], test_y[:,t_id])
+            loss += loss_fn.forward(yhat[:,t_id,0], test_y[:,t_id,0])
         loss/= test_x.shape[1]
     else:
-        loss += loss_fn.forward(yhat, test_y)
+        # print(yhat.shape, test_y.shape)
+        loss += loss_fn.forward(yhat.view(-1,training_kwargs['N_out']), test_y.view(-1,training_kwargs['N_out']))
         # for t_id in range(test_x.shape[1]):
         #     # loss += loss_fn.forward(yhat[:,t_id,:], torch.tensor(test_y, dtype=torch.float, device=training_kwargs['device'])[:,t_id,:])
         #     loss += loss_fn.forward(yhat[:,t_id,0], test_y[:,t_id,0])
@@ -254,7 +272,7 @@ def test_model(model, loss_fn, test_x, test_y, test_output_mask, training_kwargs
         accuracy = pd_accuracy_function(test_y, yhat_np, test_output_mask)
     elif training_kwargs["task"] == "poisson_clicks":
         accuracy, response_correctness, N_clicks, highest_click_count_index, chosen, excludeequals = get_accuracy_poissonclicks_w(test_x, yhat_np, test_output_mask)
-    elif training_kwargs["task"] == "copy_memory":
+    elif training_kwargs["task"] in ["copy_memory", "eyeblink", "angularintegration"]:
         accuracy = 0
     return loss, accuracy
     
@@ -294,9 +312,11 @@ def train_model(model, data_lists, training_kwargs, coherence=None, ):
     data_loader = DataLoader(dataset, batch_size=training_kwargs['dataloader_batch_size'], shuffle=True)
         
     #initialize lists and dictionaries to store learning progress
+
     with torch.no_grad():
         yhat, _ = model(torch.Tensor(train_x))
-        epoch_losses = [loss_fn(yhat[...,0], torch.Tensor(train_y))]
+        print(yhat.shape, train_y.shape)
+        epoch_losses = [loss_fn(yhat[...,0], torch.Tensor(train_y[...,0]))]
     epoch_val_losses = []
     accuracies = []
     grads = []
@@ -340,7 +360,7 @@ def train_model(model, data_lists, training_kwargs, coherence=None, ):
                     yhat, hidden = model(x)
 
                 else:
-                    hidden = model.offset_tensor+training_kwargs['hidden_offset']+torch.normal(0, training_kwargs['hidden_initial_variance'], (model.n_layers, x.shape[0], model.hidden_dim)).to(training_kwargs['device']) 
+                    hidden = model.hidden_offset+torch.normal(0, training_kwargs['hidden_initial_variance'], (model.n_layers, x.shape[0], model.hidden_dim)).to(training_kwargs['device']) 
                     hidden_states, hidden_last = model.rnn(x, hidden)
                     yhat = model.fc(hidden_states)
                 # yhat =  model.out_act(yhat) #this should be only used for loss functions that use outputs which are already put through the sigmoid
@@ -447,7 +467,7 @@ def train_model(model, data_lists, training_kwargs, coherence=None, ):
         min_loss = min([epoch_val_loss, min_loss])
             
         #similar for accuracy_trigger_times with training_kwargs['accuracy_stopping_criterion_epochs']
-        if trigger_times >= training_kwargs['early_stopping_criterion_epochs']:
+        if trigger_times >= training_kwargs['early_stopping_criterion_epochs'] and training_kwargs['early_stopping']:
             trigger_times = 0
             learning_info['early_stopping'] = "Early stopping"
             # if training_kwargs['verbosity']:
