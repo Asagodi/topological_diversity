@@ -90,15 +90,109 @@ class RNN_interactivation(nn.Module):
 
 class LSTM(nn.Module):
     "All the weights and biases are initialized from U(-a,a) with a = sqrt(1/hidden_size)"
-    def __init__(self, input_size, output_size, hidden_dim):
+    def __init__(self, input_size, output_size, hidden_dim, forget_gate=True):
         super(LSTM, self).__init__()
-        self.lstm = nn.LSTM(input_size, hidden_dim)
+        if forget_gate:
+            self.lstm = CustomLSTM(input_size, hidden_dim)
+        else:
+            self.lstm = LSTM_noforget(input_size, hidden_dim)
         self.linear = nn.Linear(hidden_dim, output_size)
 
     def forward(self, x):
         out, hidden = self.lstm(x)
         x = self.linear(out)
-        return x
+        return x, hidden
+    
+    
+class CustomLSTM(nn.Module):
+    def __init__(self, input_sz, hidden_sz):
+        super().__init__()
+        self.input_sz = input_sz
+        self.hidden_size = hidden_sz
+        self.W = nn.Parameter(torch.Tensor(input_sz, hidden_sz * 4))
+        self.U = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz * 4))
+        self.bias = nn.Parameter(torch.Tensor(hidden_sz * 4))
+        self.init_weights()
+                
+    def init_weights(self):
+        stdv = 1.0 / np.sqrt(self.hidden_size)
+        for weight in self.parameters():
+            weight.data.uniform_(-stdv, stdv)
+         
+    def forward(self, x, 
+                init_states=None):
+        """Assumes x is of shape (batch, sequence, feature)"""
+        bs, seq_sz, _ = x.size()
+        hidden_seq = []
+        if init_states is None:
+            h_t, c_t = (torch.zeros(bs, self.hidden_size).to(x.device), 
+                        torch.zeros(bs, self.hidden_size).to(x.device))
+        else:
+            h_t, c_t = init_states
+         
+        HS = self.hidden_size
+        for t in range(seq_sz):
+            x_t = x[:, t, :]
+            # batch the computations into a single matrix multiplication
+            gates = x_t @ self.W + h_t @ self.U + self.bias
+            i_t, f_t, g_t, o_t = (
+                torch.sigmoid(gates[:, :HS]), # input
+                torch.sigmoid(gates[:, HS:HS*2]), # forget
+                torch.tanh(gates[:, HS*2:HS*3]),
+                torch.sigmoid(gates[:, HS*3:]), # output
+            )
+            c_t = f_t * c_t + i_t * g_t
+            h_t = o_t * torch.tanh(c_t)
+            hidden_seq.append(h_t.unsqueeze(0))
+        hidden_seq = torch.cat(hidden_seq, dim=0)
+        # reshape from shape (sequence, batch, feature) to (batch, sequence, feature)
+        hidden_seq = hidden_seq.transpose(0, 1).contiguous()
+        return hidden_seq, (h_t, c_t)
+    
+    
+class LSTM_noforget(nn.Module):
+    def __init__(self, input_sz, hidden_sz):
+        super().__init__()
+        self.input_sz = input_sz
+        self.hidden_size = hidden_sz
+        self.W = nn.Parameter(torch.Tensor(input_sz, hidden_sz * 3))
+        self.U = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz * 3))
+        self.bias = nn.Parameter(torch.Tensor(hidden_sz * 3))
+        self.init_weights()
+                
+    def init_weights(self):
+        stdv = 1.0 / np.sqrt(self.hidden_size)
+        for weight in self.parameters():
+            weight.data.uniform_(-stdv, stdv)
+         
+    def forward(self, x, 
+                init_states=None):
+        """Assumes x is of shape (batch, sequence, feature)"""
+        bs, seq_sz, _ = x.size()
+        hidden_seq = []
+        if init_states is None:
+            h_t, c_t = (torch.zeros(bs, self.hidden_size).to(x.device), 
+                        torch.zeros(bs, self.hidden_size).to(x.device))
+        else:
+            h_t, c_t = init_states
+         
+        HS = self.hidden_size
+        for t in range(seq_sz):
+            x_t = x[:, t, :]
+            # batch the computations into a single matrix multiplication
+            gates = x_t @ self.W + h_t @ self.U + self.bias
+            i_t, g_t, o_t = (
+                torch.sigmoid(gates[:, :HS]), # input
+                torch.tanh(gates[:, HS:HS*2]),
+                torch.sigmoid(gates[:, HS*2:]), # output
+            )
+            c_t = i_t * g_t
+            h_t = o_t * torch.tanh(c_t)
+            hidden_seq.append(h_t.unsqueeze(0))
+        hidden_seq = torch.cat(hidden_seq, dim=0)
+        # reshape from shape (sequence, batch, feature) to (batch, sequence, feature)
+        hidden_seq = hidden_seq.transpose(0, 1).contiguous()
+        return hidden_seq, (h_t, c_t)
     
     
 class GRU(nn.Module):
