@@ -11,7 +11,7 @@ from itertools import chain, combinations, permutations
 ABC = ABCMeta('ABC', (object,), {})
 
 
-def create_eyeblink_trials(N_batch, input_length, t_stim=1, t_delay=10, t_target=1, min_us_time=5, max_us_time=50):
+def create_eyeblink_trials(N_batch, input_length, t_stim=1, t_delay=10, t_target=1, min_us_time=5, max_us_time=20):
     """
     Creates N_batch trials of the eyeblick conditioning task.
     
@@ -100,7 +100,7 @@ def create_angularintegration_trials(N_batch, T, dt):
     outputs = np.stack((np.cos(2*np.pi*outputs_1d), np.sin(2*np.pi*outputs_1d)), axis=-1)
     mask = np.ones((N_batch, input_length, 2))
     trial_params = 0
-    return inputs, outputs, mask, trial_params
+    return inputs.reshape((N_batch, input_length, 1)), outputs, mask, trial_params
 
 
 def create_copy_memory_trials_onehot(N_batch, N_symbols, input_length, delay):
@@ -111,8 +111,7 @@ def create_copy_memory_trials_onehot(N_batch, N_symbols, input_length, delay):
     
     Returns:
     -inputs
-    -outputs
-    """
+    -outputs"""
     
     N_in = N_symbols+2
     N_out = N_symbols
@@ -136,7 +135,7 @@ def create_copy_memory_trials_onehot(N_batch, N_symbols, input_length, delay):
 
 def create_copy_memory_trials_onehot_all(N_symbols, input_length, delay):
     """    
-        Creates all possible trials of the copy memory task with N_symbols and an input sequence length of input_length.
+    Creates all possible trials of the copy memory task with N_symbols and an input sequence length of input_length.
     
     N_symbols: number of symbols (K)
     input_length: number of random symbols 
