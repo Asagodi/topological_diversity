@@ -29,7 +29,7 @@ class RNNModel(nn.Module):
                          nonlinearity=transform_function, dropout=dropout_prob)   
 
         #hidden unit offset (activity initialization at t=0)
-        self.hidden_offset = nn.Parameter(hidden_initial_variance*torch.randn((hidden_dim)), requires_grad=True)
+        self.hidden_offset = nn.Parameter(self.hidden_initial_variance*torch.randn((hidden_dim)), requires_grad=True)
         
         # output
         self.fc = nn.Linear(hidden_dim, output_size)         
@@ -50,7 +50,7 @@ class RNNModel(nn.Module):
         elif self.hidden_initial_activations == 'offset':
             hidden = self.hidden_offset.repeat(self.n_layers,batch_size,1).reshape((self.n_layers, batch_size, self.hidden_dim))
         elif self.hidden_initial_activations == 'random':
-            hidden = torch.normal(mean=self.hidden_offset, std=torch.Tensor(hidden_initial_variance*torch.randn((hidden_dim))), size=(self.n_layers, batch_size, self.hidden_dim)).to(self.device)
+            hidden = torch.normal(mean=0, std=self.hidden_initial_variance, size=(self.n_layers, batch_size, self.hidden_dim)).to(self.device)
         out, hidden = self.rnn(x, hidden)
         out = self.out_act(self.fc(out))
         
