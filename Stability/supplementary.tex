@@ -198,8 +198,8 @@ Needs to be initialized at $\tfrac{\beta}{2}(1,1)$ for correct decoding, i.e., o
 
 
 \subsection{Stabilty of the fixed points}
-
-The Jacobian 
+We perform the stability analysis for the part of the state space where $Wx>0$.
+There, the Jacobian is
 \begin{equation}
 J = -
 \begin{pmatrix}
@@ -463,10 +463,27 @@ then always
 %The only nontrivial cases are 
 
 
+
+\subsection{Fast-slow form}
+
+We transform the state space so that the line attractor aligns with the $y$-axis.
+So, we apply the affine transformation $R_\theta(x-\frac{1}{2})$ with the rotation matrix $R_\theta = \begin{bmatrix}\cos\theta &-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}= \begin{bmatrix}1 &1\\-1&1\end{bmatrix}$ where we have set $\theta=-\frac{\pi}{4}$.
+So we perform the transformation $x\rightarrow x'= R_\theta(x-\frac{1}{2})$ and so we have $x=R^{-1}_\theta x'+\frac{1}{2}$ with $R^{-1}_\theta = R_{-\theta}$.
+Then we get that 
+\begin{align}
+\dot x' = \operatorname{ReLU}\left(W(R^{-1}_\theta x'+\frac{1}{2})+1\right)-R^{-1}_\theta x'-\frac{1}{2}.
+\end{align}
+For a perturbation $W=\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}$ we get 
+\begin{align}
+\dot x' &= \operatorname{ReLU}\left(\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}\left(\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'+\frac{1}{2}\right)+1\right)-\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'-\frac{1}{2}\\
+&=\begin{bmatrix}\epsilon-1 &-\epsilon-1\\-1&1\end{bmatrix}x' + \frac{1}{2}\begin{bmatrix}\epsilon-1 \\-1\end{bmatrix}+\begin{bmatrix}1 \\1\end{bmatrix}-\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'-\frac{1}{2}\begin{bmatrix}1 \\1\end{bmatrix}\\
+&=\begin{bmatrix}\epsilon-2 &-\epsilon\\-2&0\end{bmatrix}x' + \frac{1}{2}\begin{bmatrix}\epsilon \\0\end{bmatrix}
+\end{align}
+
 \section{Heading direction network}
 
 \begin{equation}
-\tau \dot h_j = h_j + \frac{1}{N} \sum_k (W^{\sym_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
+\tau \dot h_j = h_j + \frac{1}{N} \sum_k (W^{sym}_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
 \end{equation}
 
 
