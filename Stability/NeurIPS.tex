@@ -274,8 +274,8 @@ In practice, the sufficient conditions for RNNs implementing continuous attracto
 However, in systems with an invariant manifold with dimension at least three, it is possible that a slow manifold with chaotic dynamics is created through a perturbation. This would have as consequence that the perturbed system acquires positive Lyapunov exponents (corresponding to the chaotic orbit), which then can still lead to exploding gradients.
 
 \subsection{Implications on Machine Learning}\label{sec:imp:ML}
-Extending the memory time constant of RNNs have long been an important area of research with much focus on random weights~\cite{Legenstein2007,Goldman2009,Toyoizumi2011,Kerg2019,Chen2018,Henaff2016,Rusch2021,arjovskyUnitaryEvolutionRecurrent2016}.
-Various initializations for the recurrent weights have been proposed to help learning: initialization with the identity matrix \citep{le2015}, with a random orthogonal matrix \citep{saxeExactSolutionsNonlinear2014,Henaff2016}, with a unitary matrix \citep{arjovskyUnitaryEvolutionRecurrent2016} and with a block diagonal weight matrix that creates a quasi-periodic system with limit cycles \citep{Sokol2019a}.
+Extending the memory time constant of RNNs have long been an important area of research with much focus on random weights~\cite{Legenstein2007,Goldman2009,Toyoizumi2011,Kerg2019,Chen2018,Henaff2016,Rusch2021,arjovsky2016}.
+Various initializations for the recurrent weights have been proposed to help learning: initialization with the identity matrix \citep{le2015}, with a random orthogonal matrix \citep{saxe2014,Henaff2016}, with a unitary matrix \citep{arjovsky2016} and with a block diagonal weight matrix that creates a quasi-periodic system with limit cycles \citep{Sokol2019a}.
 However, despite the capacity to maintain representation of continuous quantities for arbitrary duration of time, continuous attractor mechanism has not been pursued in machine learning research because of its brittleness.
 The stochasticity in gradients inherited from the training data, regularization strategy, and multi-task learning objectives act as a perturbation on the recurrent dynamics, and continuous attractors break down even if it could be learned.
 Remedies emerged in machine learning to hard-code continuous-valued memory structures within the RNNs---e.g., the cell state in vanilla LSTM.
@@ -299,8 +299,8 @@ for gracefully degrading ones, one can apply restorative forces via gradient des
 Continuous attractors are biologically plausible, theoretically elegant, consistent with neural recordings, and avoids the asymptotic exploding and vanishing gradient problem~\cite{Park2023a}.
 As a conceptual tool in computational and theoretical neuroscience, continuous attractors are widely used when working memory of continuous values is needed~\cite{Dayan2001,Burak2009,Khona2022}.
 When used to accumulate stimulus, continuous attractors are also called neural integrators that are hypothesized to be the underlying computation for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
-Neural representation of continuous values have been observed as persistent activity in the prefrontal cortex of primates, ellipsoid body of the fly, and hypothalamus~\cite{Romo1999,noorman2022,Nair2023}.
-A typical computational implementation of a continuous attractor are bump attractor network models which require a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} and finite sized networks with threshold linear units \cite{noorman2022,Spalla2021}, see also Sec.~\ref{sec:hd}.
+Neural representation of continuous values have been observed as persistent activity in the prefrontal cortex of primates, ellipsoid body of the fly, and hypothalamus~\cite{Romo1999,Noorman2022,Nair2023}.
+A typical computational implementation of a continuous attractor are bump attractor network models which require a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} and finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:hd}.
 
 However, the so-called ``fine-tuning problem'' describing the theoretical and practical brittleness of continuous attractors was recognized in~\citep{seung1998}.
 Since biological neural systems have constantly fluctuating synaptic weights~\cite{shimizu2021}, this has been a big puzzle in the field.
@@ -586,21 +586,21 @@ This system has as fixed points the ring with radius one centered around zero, i
 
 
 \subsubsection{Finite-sized head direction network model}\label{sec:hd}
-Continuous attractor models of the head direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a circular or ring-like structure \citep{zhang1996, noorman2022, ajabi2023}. 
+Continuous attractor models of the head direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a circular or ring-like structure \citep{zhang1996, Noorman2022, ajabi2023}. 
 Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle easily be disrupted.
-We will the implications of the Persistence theorem in the case of the implementation of a continuous ring attractor presented in \citep{noorman2022}.
+We will the implications of the Persistence theorem in the case of the implementation of a continuous ring attractor presented in \citep{Noorman2022}.
 As this continuous ring attractor is bounded its invariant manifold persists and, hence, no divergent orbits are created under small perturbations to this system.
 This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians.
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition, this network will generate a stable bump of activity, one corresponding to each head direction. This continuum of fixed points for a one dimensional manifold homeomorphic to the circle. 
 
 \begin{figure}[H]
      \centering
-  \includegraphics[width=\textwidth]{figures/noorman_perturbations}
-       \caption{Perturbations to the ring attractor introduced in \citep{noorman2022}. (Left)  Examples of a local perturbation to the vector field through the addition of a bump to the vector field along the ring attractor.
+  \includegraphics[width=\textwidth]{figures/Noorman_perturbations}
+       \caption{Perturbations to the ring attractor introduced in \citep{Noorman2022}. (Left)  Examples of a local perturbation to the vector field through the addition of a bump to the vector field along the ring attractor.
        (Leftmost) An example of a bump perturbation which cuts out a piece of the ring attractor, the stable fixed points of the system are shown in black. A heteroclinic orbit is created on the bounday of the hole with a slow flow.
        (Left, middle) An example of a bump perturbation that deforms the ring attractor, but maintains its topology.
        (Right) Examples of a global perturbation to the vector field through the addition of a small term to the connectivity matrix. }
-         \label{fig:noorman_ring_activity_pert}
+         \label{fig:Noorman_ring_activity_pert}
 \end{figure}
 
 
@@ -626,7 +626,7 @@ It is well-known that activation functions play a critical role in propagating t
 The activation function can have many forms.
 The ones that are $C^r$ for $r\geq 1$ are the ones to which the Persistence Theorem applies. 
 The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistence invariant manifold.
-For situations where smoothness of the persistent invariant manifold is of importance, smoother activation functions might be preferrable, such as the Exponential Linear Unit (ELU)\citep{clevert2016} or the Continuously Differentiable Exponential Linear Units (CELU) \citep{barron2017}.
+For situations where smoothness of the persistent invariant manifold is of importance, smoother activation functions might be preferrable, such as the Exponential Linear Unit (ELU)\citep{clevert2015} or the Continuously Differentiable Exponential Linear Units (CELU) \citep{barron2017}.
 
 
 
@@ -672,8 +672,8 @@ For situations where smoothness of the persistent invariant manifold is of impor
 \small
 
 \newpage
-\bibliographystyle{plain}
-\bibliography{cit,CITCOD,CITCom,catniplab}
+\bibliographystyle{abbrvnat}
+\bibliography{cit,catniplab}
 
 \newpage
 \section{Supplementary Material}
@@ -682,7 +682,7 @@ RNNs are also capable of learning complex patterns and relationships in the data
 BPTT allows the network to adjust the weights of the connections between neurons based on the error signal that is propagated backwards through time. 
 %This makes them suitable models for 
 
-However, training RNNs by using back-propagation through time to compute error-derivatives can be difficult.  Early attempts suffered from vanishing and exploding gradients \citep{kolenGradientFlowRecurrent2009} and this meant that they had great difficulty learning long-term dependencies. 
+However, training RNNs by using back-propagation through time to compute error-derivatives can be difficult.  Early attempts suffered from vanishing and exploding gradients \citep{kolen2001} and this meant that they had great difficulty learning long-term dependencies. 
 Many different methods have been proposed for overcoming this difficulty.
 
 %
@@ -734,7 +734,7 @@ Many different methods have been proposed for overcoming this difficulty.
 %Continuous attractors can be used in a mechanism that integrates in combination with input pushing the activity along the attractor. Such integrators are hypothesized to be the underlying computation for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996}. %observed in flies?
 %Since there is a continuum of stable equilibria where the neural activity does not change over time, the observed autonomous dynamics of the system is similar to a point attractor system, i.e., it generally decays to a fixed state and maintains constant activity over time.
 %A key signature of a continuous attractor is persistent neural activity that can be maintained at any arbitrary level during any memory or delay period~\cite{romoNeuronalCorrelatesParametric1999,brodyBasicMechanismsGraded2003}.
-%In neuroscience, a commonly used implementation of a continuous attractor are bump attractor network models~\cite{Renart2003,noorman2022}.
+%In neuroscience, a commonly used implementation of a continuous attractor are bump attractor network models~\cite{Renart2003,Noorman2022}.
 %
 %
 %Continuous attractor dynamics often suffer from the \emph{fine-tuning problem}---small change in the parameters can drastically reduce the effectiveness~\citep{seung1998}. 
@@ -812,7 +812,7 @@ Many different methods have been proposed for overcoming this difficulty.
 %
 %Unfortunately, continuous attractors are not structurally stable -- small changes in the dynamical system can destroy continuous attractors, and as a consequence, the corresponding Lyapunov exponent(s) move away from zero.
 %For example, in machine learning, vanilla RNNs are sometimes initialized at the continuous attractor regime with all zeros  which avoids the asymptotic EVGP initially, but very quickly loses the continuous attractor after one gradient step.
-%This is a well known problem in neuroscience, often referred to as the ``fine tuning problem'' of the continuous attractor~\cite{seung1996,Renart2003,noorman2022}.
+%This is a well known problem in neuroscience, often referred to as the ``fine tuning problem'' of the continuous attractor~\cite{seung1996,Renart2003,Noorman2022}.
 %
 %
 %
