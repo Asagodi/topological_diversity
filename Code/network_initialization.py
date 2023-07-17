@@ -11,7 +11,7 @@ import scipy
 import utils
 import rnn_models
 
-def make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, hidden_offset=None, transform_function='relu', output_activation='identity', hidden_initial_activations='offset'):
+def make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, hidden_offset=None, nonlinearity ='relu', output_activation='identity', hidden_initial_activations='offset'):
     """
     Input, recurrent and output weight and recurrent and output biases need to be given
     returns rnn
@@ -20,7 +20,7 @@ def make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, hidden_offse
     N_out = W_out.shape[0]
     N_rec = W_hh.shape[0]
 
-    rnn_model = rnn_models.RNNModel(N_in, N_out, N_rec, transform_function=transform_function, output_activation=output_activation, hidden_initial_activations=hidden_initial_activations)
+    rnn_model = rnn_models.RNNModel(N_in, N_out, N_rec, nonlinearity=nonlinearity , output_activation=output_activation, hidden_initial_activations=hidden_initial_activations)
 
     with torch.no_grad():
         rnn_model.rnn.all_weights[0][0][:] = torch.tensor(W_in, dtype=torch.float)
@@ -102,7 +102,7 @@ def perfect_initialization(version, output_dim=1, random_winout=False, ouput_bia
     elif random_winout=="small_winout":
         W_in += np.random.normal(0, eps/4., (2,2))
 
-    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, hidden_offset, transform_function='relu', output_activation='identity', hidden_initial_activations="offset")
+    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, hidden_offset, nonlinearity='relu', output_activation='identity', hidden_initial_activations="offset")
     return rnn_model
 
 
@@ -130,7 +130,7 @@ def identity_initialization(N_in, N_rec, N_out, weight_init_variance=0.001, hidd
     return rnn_model
 
 
-def bla_initialization(N_in, N_blas, N_out, a, weight_init_variance=0.001, hidden_initial_activations='offset', transform_function='relu'):
+def bla_initialization(N_in, N_blas, N_out, a, weight_init_variance=0.001, hidden_initial_activations='offset', nonlinearity='relu'):
     """
     Pairwise Bounded Line Attractor (BLA) initialization for the recurrent weights of the network
     i.e., [[0,-1],[-1,0]] and a bias a*[1,1] 
@@ -157,10 +157,10 @@ def bla_initialization(N_in, N_blas, N_out, a, weight_init_variance=0.001, hidde
     # W_out = np.random.normal(0, 1/np.sqrt(N_in*N_rec), (N_out, N_rec))
     # b_out = np.random.normal(0, 1/np.sqrt(N_out), (N_out))
     
-    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, transform_function=transform_function, output_activation='identity', hidden_initial_activations=hidden_initial_activations)
+    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, nonlinearity=nonlinearity , output_activation='identity', hidden_initial_activations=hidden_initial_activations)
     return rnn_model
 
-def ubla_initialization(N_in, N_blas, N_out, a, weight_init_variance=0.001, hidden_initial_activations='offset', transform_function='relu'):
+def ubla_initialization(N_in, N_blas, N_out, a, weight_init_variance=0.001, hidden_initial_activations='offset', nonlinearity='relu'):
     """
     Pairwise Bounded Line Attractor (BLA) initialization for the recurrent weights of the network
     i.e., [[0,-1],[-1,0]] and a bias a*[1,1] 
@@ -184,11 +184,11 @@ def ubla_initialization(N_in, N_blas, N_out, a, weight_init_variance=0.001, hidd
     W_out = np.random.normal(0, weight_init_variance, (N_out, N_rec))
     b_out = np.random.normal(0, weight_init_variance, (N_out))
 
-    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, transform_function=transform_function, output_activation='identity', hidden_initial_activations=hidden_initial_activations)
+    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, nonlinearity=nonlinearity, output_activation='identity', hidden_initial_activations=hidden_initial_activations)
     return rnn_model
 
 
-def qpta_initialization(N_in, N_blas, N_out, weight_init_variance=0.001, hidden_initial_activations='offset', transform_function='tanh'):
+def qpta_initialization(N_in, N_blas, N_out, weight_init_variance=0.001, hidden_initial_activations='offset', nonlinearity='tanh'):
     """
     pairwise QPTAs for the recurrent weights of the network
     i.e., [[0,-1],[-1,0]] and a bias a*[1,1] 
@@ -218,13 +218,13 @@ def qpta_initialization(N_in, N_blas, N_out, weight_init_variance=0.001, hidden_
     W_out = np.random.normal(0, weight_init_variance, (N_out, N_rec))
     b_out = np.random.normal(0, weight_init_variance, (N_out))
     
-    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, transform_function=transform_function, output_activation='identity', hidden_initial_activations=hidden_initial_activations)
+    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, nonlinearity=nonlinearity, output_activation='identity', hidden_initial_activations=hidden_initial_activations)
     return rnn_model
 
 
 
 
-def ortho_initialization(N_in, N_rec, N_out, weight_init_variance=0.001, hidden_initial_activations='offset', transform_function='tanh'):
+def ortho_initialization(N_in, N_rec, N_out, weight_init_variance=0.001, hidden_initial_activations='offset', nonlinearity='tanh'):
     """
     random orthogonal initial weights
     
@@ -239,11 +239,11 @@ def ortho_initialization(N_in, N_rec, N_out, weight_init_variance=0.001, hidden_
     W_out = np.random.normal(0, weight_init_variance, (N_out, N_rec))
     b_out = np.random.normal(0, weight_init_variance, (N_out))
 
-    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, transform_function=transform_function, output_activation='identity', hidden_initial_activations=hidden_initial_activations)
+    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, nonlinearity=nonlinearity, output_activation='identity', hidden_initial_activations=hidden_initial_activations)
     return rnn_model
 
 
-def gain_initialization(N_in, N_rec, N_out, gain=1, weight_init_variance=0.001, hidden_initial_activations='offset', transform_function='tanh'):
+def gain_initialization(N_in, N_rec, N_out, gain=1, weight_init_variance=0.001, hidden_initial_activations='offset', nonlinearity='tanh'):
     """
     random initial from N(0,g^2/N_rec)
     
@@ -255,5 +255,5 @@ def gain_initialization(N_in, N_rec, N_out, gain=1, weight_init_variance=0.001, 
     W_out = np.random.normal(0, weight_init_variance, (N_out, N_rec))
     b_out = np.random.normal(0, weight_init_variance, (N_out))
 
-    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, transform_function=transform_function, output_activation='identity', hidden_initial_activations=hidden_initial_activations)
+    rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, nonlinearity=nonlinearity, output_activation='identity', hidden_initial_activations=hidden_initial_activations)
     return rnn_model

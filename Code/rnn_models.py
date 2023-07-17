@@ -12,21 +12,18 @@ import numpy as np
 
 
 class RNNModel(nn.Module):
-    def __init__(self, input_size, output_size, hidden_dim, n_layers=1, transform_function='relu',
-                 dropout_prob=0., hidden_initial_activations='random', hidden_initial_variance=0.001,
+    def __init__(self, input_size, output_size, hidden_dim, nonlinearity='relu',
+                 hidden_initial_activations='random', hidden_initial_variance=0.001,
                  output_activation='identity', device='cpu', constrain_spectrum=False):
         super(RNNModel, self).__init__()
         self.input_size = input_size
         self.output_size= output_size
         self.hidden_dim = hidden_dim
-        self.n_layers = n_layers
         self.hidden_initial_activations = hidden_initial_activations
         self.hidden_initial_variance = hidden_initial_variance
-
         
         # RNN Layer
-        self.rnn = nn.RNN(input_size, hidden_dim, n_layers, batch_first=True,
-                         nonlinearity=transform_function, dropout=dropout_prob)   
+        self.rnn = nn.RNN(input_size, hidden_dim, batch_first=True, nonlinearity=nonlinearity)   
 
         #hidden unit offset (activity initialization at t=0)
         self.hidden_offset = nn.Parameter(self.hidden_initial_variance*torch.randn((hidden_dim)), requires_grad=True)
