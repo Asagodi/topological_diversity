@@ -97,7 +97,7 @@
     %\thanks{Use footnote for providing further information about author (webpage, alternative address).} \\
     \\
     Champalimaud Centre for the Unknown\\
-    Chmampalimaud Foundation, Lisbon, Portugal\\
+    Champalimaud Foundation, Lisbon, Portugal\\
     \texttt{\{abel.sagodi,piotr.sokol,memming.park\}@research.fchampalimaud.org} \\
 }
 
@@ -142,7 +142,7 @@ To store information over a long period of time, as many difficult tasks demand,
 When the information of interest is continuous-valued, a natural solution is to use continuous attractors.
 Continuous attractors are prevalent in theoretical neuroscience as tools to model neural representation and computation ranging from internal representations of head directions and eye positions to perceptual decision-making and working memory~\cite{Khona2022}.
 Continuous attractors are also at the core of long short-term memory (LSTM)~\cite{Greff2017} units and the neural Turning machine (NTM)~\cite{Graves2014} to provide digital computer memory like properties not natural to recurrent networks. % with many applications such as meta-learning~\cite{Santoro2016}.
-In fact, the critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroys the continuous attractor structures implemented in RNNs~\cite{seung1996,Renart2003}.
+In fact, the critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroys the continuous attractor structures implemented in RNNs~\cite{seung1996,Renart2003}, even if with biologically plausible asymmetric connections are used to construct them \citep{darshan2022}.
 However, not all RNN implementations of continuous attractors behave similarly in their brittleness.
 
 We found that in the space of RNNs, some have neighbourhoods with highly undesirable exploding gradients. We will describe some continuous attractors which have such neighbourhoods.
@@ -560,13 +560,13 @@ This system has as fixed points the ring with radius one centered around zero, i
 
 \begin{figure}[H]
      \centering
-  \includegraphics[width=\textwidth]{figures/ring_perturbations_stream}
-       \caption{Perturbations to a simple implementation of a ring attractor all leave the invariant manifold intact. (Left)  Examples of a local perturbation to the vector field through the addition of a bump to the vector field along the ring attractor.
+  \includegraphics[width=.8\textwidth]{figures/ring_perturbations_stream}
+       \caption{Perturbations to a simple implementation of a ring attractor all leave the invariant manifold intact. % (Left)  Examples of a local perturbation to the vector field through the addition of a bump to the vector field along the ring attractor.
               (Leftmost) An example of a bump perturbation that results in the ring breaking up and becoming diffeomorphic to a line. %slow flow in hole?
               (Left, middle) An example of a bump perturbation that maintains the ring structure, but deforms it locally.
               %
-       (Right) Examples of a global perturbation to the vector field through the addition of a small term to the connectivity matrix. 
-       (Right, middle) A global perturbation that results in a system with four fixed points along the persistent invariant manifold. The two saddle nodes (yellow dots) are connected to the stable fixed points (green dots) through connecting orbits.
+      % (Right) Examples of a global perturbation to the vector field through the addition of a small term to the connectivity matrix. 
+       (Right, middle) A global perturbation that results in a system with four fixed points along the persistent invariant manifold. %The two saddle nodes (yellow dots) are connected to the stable fixed points (green dots) through connecting orbits.
        (Rightmost)   A global perturbation that results in a limit cycle.}
          \label{fig:ring_activity_pert}
 \end{figure}
@@ -612,7 +612,7 @@ This theory implies backpropagating gradient does not explode for systems near c
 This insight also suggests that there can exist homeostatic mechanisms for certain implementations of continuous attractors that maintain the structure of the attractor sufficiently for the neural computation it is used in, which we demonstrate in simple networks.
 
 %activation functions
-It is well-known that activation functions play a critical role in propagating these gradients effectively through the network  \citep{jagtap2022, ramachandran2017, hayou2019}.
+It is well-known that activation functions play a critical role in propagating these gradients effectively through the network  \citep{jagtap2023, ramachandran2017, hayou2019}.
 The activation function can have many forms.
 The ones that are $C^r$ for $r\geq 1$ are the ones to which the Persistence Theorem applies. 
 The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistence invariant manifold.
