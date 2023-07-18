@@ -291,7 +291,7 @@ Although there are several standard benchmark tasks for temporal dependence lear
 due to the discrete nature of the relevant stimulus space, the solutions do not necessarily require a continuously-valued memory.
 We designed a simple integration task where one of the optimal solutions is the continuous attractor.
 
-We extend the Poisson clicks task which has been used for studying perceptual decision making~\cite{bruntonRatsHumansCan2013}.
+We extend the Poisson clicks task which has been used for studying perceptual decision making~\cite{brunton2013}.
 Neural integrators are considered to be crucial for the task for accumulating evidence over time and maintaining a continuous representation of the accumulated evidence.
 For our experiments, we used discrete time representations over $T$ time bins and the real-valued\footnote{Approximated as single precision IEEE 754 floating point.} stimulus encoded as difference of two non-negative values:
 \begin{align}
@@ -433,7 +433,7 @@ In all other cases, including all perturbations of BLA, leads to vanishing gradi
   \centering
   \includegraphics[width=\textwidth]{threeIntegrators.pdf}
   \caption{
-  Comparing three continuous attractor solutions to the clink integration task.
+  Comparing three continuous attractor solutions to the click integration task.
   (A) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
   (B) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps.
   (C) Interleaved weight perturbations showing gradual recovery for BLA and iRNN.
