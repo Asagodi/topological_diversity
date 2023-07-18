@@ -13,6 +13,13 @@
 \usepackage{bm}
 \usepackage{tikz}
 \usepackage{tikz-cd} 
+\usepackage{pifont}
+
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.mps,.eps,.ps}
+\graphicspath{{../figures/}}
 
 \newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
 \newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
@@ -392,7 +399,7 @@ This gives condition 1. %necessary condition (#1)
 
 
 
-Finally, we investigate the condition that specifies that there are fixed points with partial support.
+Finally, we investigate the condition that specify that there are fixed points with partial support.
 %condition for no fixed points for which $x_i=0$ for i=1 or i=2 (necessary condiiton #2)
 If $x_1=0$ then $(\epsilon_{22}-1)x_2+1=0$ and $z_1<0$. 
 From the equality, we get that $x_{2}=\frac{1}{1-\epsilon_{22}}$.
@@ -414,19 +421,19 @@ Similiarly to have a fixed point $x^*$ such that $x_2^*=0$, we must have that
 Equation \ref{eq:condition2.1} and \ref{eq:condition2.2} together form condition 2.
 
 %2 fixed points
-If condition 1 is violated, but condition 2 is satisfied, there are two fixed points on the boundary of the admissible quadrant.
+If condition 1 is violated, but condition 2 is satisfied with strict inequality, there are two fixed points on the boundary of the admissible quadrant.
 
 
 %what about the subconditions:
 If condition 1 is violated, and only one of the subconditions of condition 2 is satisfied, there is a single fixed point on one of the axes.
 
 
-%1 fixed point
+
 If condition 2 is violated, there is a single fixed point with full support.
 %what about the subconditions?
 
 %3 fixed points
-If condition 2 is violated, there are three fixed points.
+If both conditions are satisfied, there are three fixed points.
 %what about the subconditions?
 
 We now look at the possibility of the line attractor being preserved. 
@@ -435,8 +442,27 @@ It is not possible to have a line attractor with a fixed point off it for as the
 \end{proof}
 
 
+\begin{table}
+\caption{Summary of bifurcations.}\label{tab:bifs}
+\centering
+\bgroup
+\def\arraystretch{1.52}
+\begin{tabular}{|c||c|c|c|c|}
+\hline
+& 1FP (full) 		& 1FP (partial) & 3FPs & 2FPs  \\\hline \hline
+C1 & \cmark	 	& \xmark 	 & \cmark & \xmark \\\hline 
+C2 & \xmark 		& subconditions 	 & \cmark & \cmark \\\hline 
+\end{tabular}
+\egroup
+\end{table}
 
-
+\begin{figure}[thbp]
+  \centering
+  \includegraphics[width=\textwidth]{bla_parameter_space.pdf}
+  \caption{
+  }
+  \label{fig:blaparameterspace}
+\end{figure}
 
 
 \subsection{Structure of the parameter space}
@@ -465,15 +491,6 @@ then always
 %
 %The only nontrivial cases are 
 
-\begin{figure}[tbhp]
-  \centering
-  \includegraphics[width=\textwidth]{figures/bla_parameter_space}
-  \caption{BLA parameter space.
-}
-  \label{fig:bla_parameter_space}
-\end{figure}
-
-
 
 
 \subsection{Fast-slow form}
@@ -492,13 +509,6 @@ For a perturbation $W=\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}$ we get
 &=\begin{bmatrix}\epsilon-2 &-\epsilon\\-2&0\end{bmatrix}x' + \frac{1}{2}\begin{bmatrix}\epsilon \\0\end{bmatrix}
 \end{align}
 
-
-Construct the fast-slow ODE as
-\begin{align}
-\dot y &= \epsilon y(y-1)(y+1) \\
-\dot z &= -2z
-\end{align}
-
 \section{Heading direction network}
 
 \begin{equation}
@@ -509,6 +519,6 @@ Construct the fast-slow ODE as
 \small
 
 \bibliographystyle{plain}
-\bibliography{cit.bib, CITCOD.bib, CITCom.bib}
+\bibliography{../cit.bib}
 
 \end{document}
