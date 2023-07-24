@@ -8,6 +8,7 @@ import os, sys
 import glob
 current_dir = os.path.dirname(os.path.realpath('__file__'))
 import time 
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -57,7 +58,7 @@ def get_scheduler(model, optimizer, scheduler_name, scheduler_step_size, schedul
 
     
 
-def train(model, optimizer='sgd', loss_function='mse', device='cpu', scheduler_name=None, rec_step=1,
+def train(model, task, n_epochs, batch_size=32, optimizer='sgd', loss_function='mse', device='cpu', scheduler_name=None, rec_step=1,
           learning_rate=0.001, weight_decay=0., momentum=0., adam_betas=(0.9, 0.999), verbose=False):
     """
     
@@ -66,6 +67,9 @@ def train(model, optimizer='sgd', loss_function='mse', device='cpu', scheduler_n
     ----------
     model : TYPE
         DESCRIPTION.
+    task : 
+    n_epochs : 
+    batch_size :
     optimizer : TYPE, optional
         DESCRIPTION. The default is 'sgd'.
     rec_step : int, optional
@@ -91,14 +95,21 @@ def train(model, optimizer='sgd', loss_function='mse', device='cpu', scheduler_n
     scheduler = get_scheduler(model, optimizer, scheduler_name)
     current_lr = learning_rate
 
+    n_rec_epochs = n_epochs // rec_step
+    losses = np.zeros((n_epochs), dtype=np.float32)
+    gradient_norm_sqs = np.zeros((n_epochs), dtype=np.float32)
+    epochs = np.zeros((n_epochs))
+    rec_epochs = np.zeros((n_rec_epochs))
+
     time0 = time.time()
     if verbose:
-       print("Training...")
+        print("Training...")
        
     for i in range(n_epochs):
         # Save weights (before update)
         if i % rec_step == 0:
             k = i // rec_step
+            
         
     if verbose:
         print("\nDone. Training took %.1f sec." % (time.time() - time0))
