@@ -4,10 +4,10 @@ Created on Wed Jun 28 08:30:17 2023
 
 @author: abel_
 """
-
 import os, sys
 import glob
 current_dir = os.path.dirname(os.path.realpath('__file__'))
+import time 
 
 import torch
 import torch.nn as nn
@@ -25,6 +25,8 @@ def get_optimizer(model, optimizer, learning_rate, weight_decay, momentum, adam_
         optimizer = optim.RMSprop(model.parameters(), lr=learning_rate, weight_decay=weight_decay, momentum=momentum)
     elif optimizer == "adam":
         optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay, betas=adam_betas)
+    else:
+        raise Exception("Optimizer not known.")
     return optimizer
 
     
@@ -38,6 +40,9 @@ def get_loss_function(model, loss_function, device):
         loss_fn = nn.BCELoss().to(device)
     elif loss_function == "bcewll":
         loss_fn = nn.BCEWithLogitsLoss().to(device)
+    else:
+        raise Exception("Loss function not known.")
+    
     return loss_fn
 
 def get_scheduler(model, optimizer, scheduler_name, scheduler_step_size, scheduler_gamma, max_epochs):
@@ -52,7 +57,7 @@ def get_scheduler(model, optimizer, scheduler_name, scheduler_step_size, schedul
 
     
 
-def train(model, optimizer='sgd', loss_function='mse', device='cpu', scheduler_name=None,
+def train(model, optimizer='sgd', loss_function='mse', device='cpu', scheduler_name=None, rec_step=1,
           learning_rate=0.001, weight_decay=0., momentum=0., adam_betas=(0.9, 0.999), verbose=False):
     """
     
@@ -63,6 +68,8 @@ def train(model, optimizer='sgd', loss_function='mse', device='cpu', scheduler_n
         DESCRIPTION.
     optimizer : TYPE, optional
         DESCRIPTION. The default is 'sgd'.
+    rec_step : int, optional
+        record weights every 'rec_step' steps. Default is 1.
     learning_rate : TYPE, optional
         DESCRIPTION. The default is 0.001.
     weight_decay : TYPE, optional
@@ -85,6 +92,13 @@ def train(model, optimizer='sgd', loss_function='mse', device='cpu', scheduler_n
     current_lr = learning_rate
 
     time0 = time.time()
+    if verbose:
+       print("Training...")
+       
+    for i in range(n_epochs):
+        # Save weights (before update)
+        if i % rec_step == 0:
+            k = i // rec_step
         
     if verbose:
         print("\nDone. Training took %.1f sec." % (time.time() - time0))
