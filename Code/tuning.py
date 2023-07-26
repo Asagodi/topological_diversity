@@ -83,6 +83,7 @@ def train(config):
     n_epochs = 10000
     batch_size = config['batch_size']
     clip_gradient = config['clip_gradient']
+    N_rec = config['N_rec']
     
     device='cpu'
     N_in, N_rec, N_out = 1, 200, 2
@@ -95,12 +96,14 @@ def train(config):
     #           train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True,
     #           wrec_init=wrec_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=True)
     
-    net = RNN(dims=(N_in, N_rec, N_out), noise_std=0, dt=1, g=.5, nonlinearity='tanh', readout_nonlinearity='id',
+    net = RNN(dims=(N_in, N_rec, N_out), noise_std=0, dt=1, g=config['g'], nonlinearity='tanh', readout_nonlinearity='id',
               train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True, ML_RNN=False)
     net.to(device=device)
     h_init=None
     
-    task =  angularintegration_task(T=10, dt=.1)
+    # task =  angularintegration_task(T=10, dt=.1)
+    task =  eyeblink_task(input_length=100, t_delay=50)
+
     
     # Optimizer
     optimizer = torch.optim.Adam(net.parameters(), lr=config['lr'])
@@ -199,36 +202,18 @@ def train(config):
 
 def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2):
     config = {
-        # "l1": tune.choice([2**i for i in range(9)]),
+        "N_rec": tune.choice([2**i for i in range(9)]),
         "clip_gradient": tune.choice([1, 10, 100, None]),
-        "lr": tune.loguniform(1e-5, 1e-1),
+        "lr": tune.loguniform(1e-10, 1e-7),
         "batch_size": tune.choice([8, 16, 32, 64]),
+        "g": tune.choice([0., 0.25, 0.5, 1.]),
     }
-    # scheduler = ASHAScheduler(
-    #     max_t=max_num_epochs,
-    #     grace_period=1,
-    #     reduction_factor=2)
-    
-    # tuner = tune.Tuner(
-    #         tune.with_resources(
-    #             tune.with_parameters(train),
-    #             resources={"cpu": 2, "gpu": gpus_per_trial}
-    #         ),
-    #         tune_config=tune.TuneConfig(
-    #             metric="loss",
-    #             mode="min",
-    #             scheduler=scheduler,
-    #             num_samples=num_samples,
-    #         ),
-    #         param_space=config,
-    #     )
-    # result = tuner.fit()
     
     asha_scheduler = ASHAScheduler(
     time_attr='training_iteration',
     metric='loss',
     mode='min',
-    max_t=100,
+    max_t=max_num_epochs,
     grace_period=10,
     reduction_factor=3,
     brackets=1,
@@ -269,4 +254,4 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2):
 
 if __name__ == "__main__":
     # You can change the number of GPUs per trial here:
-    main(num_samples=10, max_num_epochs=10, gpus_per_trial=0)
+    main(num_samples=10, max_num_epochs=1000, gpus_per_trial=1)
