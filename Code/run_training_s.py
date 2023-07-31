@@ -119,10 +119,14 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, trials=1):
     keys, values = zip(*param_grid.items())
     all_param_combs = [dict(zip(keys, p)) for p in product(*values)]
     
-    columns = [i for i in range(training_kwargs['n_epochs'])]
-    columns.extend(['final_loss'])
+    # columns = [i for i in range(training_kwargs['n_epochs'])]
+    # columns.extend(['final_loss'])
+    # columns.extend(keys)
+    # columns.extend(['trial'])
+    
+    columns = ['losses', 'final_loss', 'trial', 'weights_last']
     columns.extend(keys)
-    columns.extend(['trial'])
+
     
     L = []
     for param_comb in all_param_combs:
@@ -134,22 +138,28 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, trials=1):
                                                                                                                         trial=None,
                                                                                                                         save=False,
                                                                                                                         training_kwargs=training_kwargs)
-            dat = losses.tolist()
+            dat = [losses]
             dat.append(losses[-1])
-            dat.extend(param_comb.values())
             dat.append(trial)
+            dat.append(weights_last)
+            dat.extend(param_comb.values())
             L.append(dat)
             
     df = pd.DataFrame(L, columns = columns)
+    param_keys = list(param_grid.keys())
+    all_keys = param_keys
+    all_keys.extend(['final_loss', 'trial'])
+    df_final = df[all_keys]
     df.to_csv(parent_dir+'//experiments//'+experiment_folder+'/grid_search.csv')
     
-    minimum_final_loss = df.iloc[df['final_loss'].idxmax()]
-    return df, minimum_final_loss
+    min_final_loss = df.iloc[df['final_loss'].idxmin()]
+    min_final_meanloss = df_final.groupby(param_keys).mean().idxmin()
+    return df, df_final, min_final_loss, min_final_meanloss
     
 if __name__ == "__main__":
     # parameter_file_name = '\\params_ortho_28-07-23.yml'
 
-    parameter_file_name = '\\params_ang_lowg_search.yml'
+    parameter_file_name = '\\params_ang_highg_search.yml'
     # run_single_training(parameter_file_name)
     
     # run_experiment('\\parameter_files\\'+parameter_file_name, main_exp_name='angularintegration', model_name='ortho', trials=10)
@@ -162,4 +172,4 @@ if __name__ == "__main__":
                   'scheduler_step_size':[150,300],
                   'scheduler_gamma':[0.3, 0.7],
                   'clip_gradient': [None, 10]}
-    df, minimum_final_loss = grid_search(parameter_file_name, param_grid=param_grid, experiment_folder='ang_lowg_search', trials=5)
+    df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid, experiment_folder='ang_highg_search', trials=5)

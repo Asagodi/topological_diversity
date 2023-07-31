@@ -66,7 +66,7 @@ def eyeblink_task(input_length, t_delay, t_stim=1, t_target=1, min_us_time=5, ma
 #########################################
 def angularintegration_task(T, dt, length_scale=1):
     """
-    Creates N_batch trials of the angular integration task.
+    Creates N_batch trials of the angular integration task with Guassian Process angular velocity inputs.
     Inputs are left and right angular velocity and 
     target output is sine and cosine of integrated angular velocity.
     Returns inputs, outputs, mask, 0
@@ -86,3 +86,131 @@ def angularintegration_task(T, dt, length_scale=1):
         return inputs.reshape((batch_size, input_length, 1)), outputs, mask
     
     return task
+
+
+def angularintegration_delta_task(T, dt, p=.1, amplitude=1):
+    """
+    Creates N_batch trials of the angular integration task with dela pulses.
+    Inputs are left and right angular velocity and 
+    target output is sine and cosine of integrated angular velocity.
+    Returns inputs, outputs, mask, 0
+    -------
+    """
+    input_length = int(T/dt)
+    
+    def task(batch_size):
+        
+        inputs = amplitude*np.random.choice([-1,0,1], p=[p, 1-2*p, p], size=(batch_size,input_length))
+        outputs_1d =  np.cumsum(inputs, axis=1)*dt
+        outputs = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
+        mask = np.ones((batch_size, input_length, 2))
+
+        return inputs.reshape((batch_size, input_length, 1)), outputs, mask
+    
+    return task
+
+
+
+def flipflop(dims, dt,
+    t_max=50,
+    fixation_duration=1,
+    stimulus_duration=1,
+    decision_delay_duration=5,
+    stim_delay_duration_min=5,
+    stim_delay_duration_max=25,
+    input_amp=1.,
+    target_amp=0.5,
+    fixate=False,
+    choices=None,
+    return_ts=False,
+    test=False,
+    ):
+    """ 
+    Flipflop task
+    """
+    dim_in, _, dim_out = dims
+    
+    if choices is None:
+        choices = np.arange(dim_in)
+    n_choices = len(choices)
+
+    # Checks
+    assert dim_out == dim_in, "Output and input dimensions must agree:    dim_out != dim_in."
+    assert np.max(choices) <= (dim_in - 1), "The max choice must agree with input dimension!"
+
+    # Task times
+    fixation_duration_discrete = int(fixation_duration / dt)
+    stimulus_duration_discrete = int(stimulus_duration / dt)
+    decision_delay_duration_discrete = int(decision_delay_duration / dt)
+    mean_stim_delay = 0.5 * (stim_delay_duration_min + stim_delay_duration_max)
+    n_t_max = int(t_max / dt)
+    
+    def task(batch_size):
+        # Input and target sequences
+        input_batch = np.zeros((batch_size, n_t_max, dim_in), dtype=np.float32)
+        target_batch = np.zeros((batch_size, n_t_max, dim_out), dtype=np.float32)
+        mask_batch = np.zeros((batch_size, n_t_max, dim_out), dtype=np.float32)
+
+        for b_idx in range(batch_size):
+            input_samp = np.zeros((n_t_max, dim_in))
+            target_samp = np.zeros((n_t_max, dim_out))
+            mask_samp = np.zeros((n_t_max, dim_out))
+
+            idx_t = fixation_duration_discrete
+            if fixate:
+                # Mask
+                mask_samp[:idx_t] = 1
+            
+            i_interval = 0
+            test_intervals = np.array([16.55, 9.35, 14.80, 11.73, 12.17,  6.50, 13.06, 19.08, 13.19])
+            test_choices = np.array([0, 0, 0, 1, 0, 1, 1, 0, 1])
+            test_signs = np.array([-1, 1, 1, 1, -1, -1, -1, -1, 1])
+            while True:
+                # New interval between pulses
+                if test and b_idx == 0 and i_interval < len(test_choices):
+                    interval = test_intervals[i_interval]
+                else:
+                    interval = np.random.uniform(stim_delay_duration_min, stim_delay_duration_max)
+                # Add the decision delay
+                interval += decision_delay_duration
+                # New index
+                n_t_interval = int(interval / dt)
+                idx_tp1 = idx_t + n_t_interval
+
+                # Choose input. 
+                if test and b_idx == 0 and i_interval < len(test_choices):
+                    choice = test_choices[i_interval]
+                    sign = test_signs[i_interval]
+                else:
+                    choice = np.random.choice(choices)
+                    sign = np.random.choice([1, -1])
+                
+                # Input
+                input_samp[idx_t : idx_t + stimulus_duration_discrete, choice] = sign
+                # Target
+                target_samp[idx_t + decision_delay_duration_discrete : idx_tp1, choice] = sign
+                # Mask
+                mask_samp[idx_t + decision_delay_duration_discrete : idx_tp1] = 1
+                # Update
+                idx_t = idx_tp1
+                i_interval += 1
+                # Break
+                if idx_t > n_t_max: break
+                    
+            # Join
+            input_batch[b_idx] = input_samp
+            target_batch[b_idx] = target_samp
+            mask_batch[b_idx] = mask_samp
+
+        # Scale by input and target amplitude
+        input_batch *= input_amp
+        target_batch *= target_amp
+
+        return input_batch, target_batch, mask_batch
+    
+    if return_ts:
+        # Array of times
+        ts = np.arange(0, t_max, dt)
+        return task, ts
+    else:
+        return task

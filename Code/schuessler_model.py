@@ -263,7 +263,96 @@ class RNN(nn.Module):
             return output, trajectories
 
     
+class LSTM_noforget(nn.Module):
+    def __init__(self, dims, readout_nonlinearity='id'):
+        super(LSTM_noforget, self).__init__()
+        self.dims = dims
+        input_size, hidden_size, output_size = dims
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        self.W = nn.Parameter(torch.Tensor(input_size, hidden_size * 3))
+        self.U = nn.Parameter(torch.Tensor(hidden_size, hidden_size * 3))
+        self.bias = nn.Parameter(torch.Tensor(hidden_size * 3))
+        self.init_weights()
+        
+        self.readout_nonlinearity = readout_nonlinearity
+        
+        self.wo = nn.Parameter(torch.Tensor(hidden_size, output_size))
+        # Initialize parameters
+        with torch.no_grad():
+            k = np.sqrt(1/hidden_size)
+            torch.nn.init.uniform_(self.W, a=-k, b=k)
+            torch.nn.init.uniform_(self.U, a=-k, b=k)
+            torch.nn.init.uniform_(self.wo, a=-k, b=k)
+            # self.U.uniform_(a=-k, b=k)
+            # self.wo.uniform_(a=-k, b=k)
+        
+        # Readout nonlinearity
+        if readout_nonlinearity == 'tanh':
+            self.readout_nonlinearity = torch.tanh
+        elif readout_nonlinearity == 'logistic':
+            # Note that the range is [0, 1]. otherwise, 'logistic' is a scaled and shifted tanh
+            self.readout_nonlinearity = lambda x: 1. / (1. + torch.exp(-x))
+        elif readout_nonlinearity == 'id':
+            self.readout_nonlinearity = lambda x: x
+        elif type(readout_nonlinearity) == str:
+            raise NotImplementedError("readout_nonlinearity not yet implemented.")
+        else:
+            self.readout_nonlinearity = readout_nonlinearity
+                
+    def init_weights(self):
+        stdv = 1.0 / np.sqrt(self.hidden_size)
+        for weight in self.parameters():
+            weight.data.uniform_(-stdv, stdv)
+         
+    def forward(self, x, init_states=None):
+        """Assumes x is of shape (batch, sequence, feature)"""
+        bs, seq_sz, _ = x.size()
+        hidden_seq = []
+        out_seq = []
+        if init_states is None:
+            h_t, c_t = (torch.zeros(bs, self.hidden_size).to(x.device), 
+                        torch.zeros(bs, self.hidden_size).to(x.device))
+        else:
+            h_t, c_t = init_states
+         
+        HS = self.hidden_size
+        for t in range(seq_sz):
+            x_t = x[:, t, :]
+            # batch the computations into a single matrix multiplication
+            gates = x_t @ self.W + h_t @ self.U + self.bias
+            i_t, g_t, o_t = (
+                torch.sigmoid(gates[:, :HS]), # input
+                torch.tanh(gates[:, HS:HS*2]),
+                torch.sigmoid(gates[:, HS*2:]), # output
+            )
+            c_t = i_t * g_t
+            h_t = o_t * torch.tanh(c_t)
+            hidden_seq.append(h_t.unsqueeze(0))
+            out_t = self.readout_nonlinearity(h_t).matmul(self.wo)
+            out_seq.append(out_t.unsqueeze(0))
+        hidden_seq = torch.cat(hidden_seq, dim=0)
+        out_seq = torch.cat(out_seq, dim=0)
+        # reshape from shape (sequence, batch, feature) to (batch, sequence, feature)
+        hidden_seq = hidden_seq.transpose(0, 1).contiguous()
+        out_seq = out_seq.transpose(0, 1).contiguous()
+
+        return out_seq, hidden_seq, (h_t, c_t, out_t)
+
+
     
+class GRU(nn.Module):
+    "All the weights and biases are initialized from U(-a,a) with a = sqrt(1/hidden_size)"
+    def __init__(self, input_size, output_size, hidden_dim):
+        super(GRU, self).__init__()
+        self.gru = nn.GRU(input_size, hidden_dim)
+        self.linear = nn.Linear(hidden_dim, output_size)
+
+    def forward(self, x):
+        out, hidden = self.gru(x)
+        x = self.linear(out)
+        return x    
 
 
 
@@ -418,6 +507,86 @@ def train(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=
     res = [losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs]
     return res
 
+
+def train_lstm(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False,
+          loss_function='mse', init_states=None,
+          optimizer='sgd', momentum=0, weight_decay=.0, adam_betas=(0.9, 0.999), adam_eps=1e-8, #optimizers 
+          scheduler=None, scheduler_step_size=100, scheduler_gamma=0.3, 
+          verbose=True):
+    
+    # CUDA management
+    if cuda:
+        if not torch.cuda.is_available():
+            print("Warning: CUDA not available on this machine, switching to CPU")
+            device = torch.device('cpu')
+        else:
+            device = torch.device('cuda')
+    else:
+        device = torch.device('cpu')
+    net.to(device=device)
+    
+    # Optimizer
+    optimizer = get_optimizer(net, optimizer, learning_rate, weight_decay, momentum, adam_betas, adam_eps)
+    scheduler = get_scheduler(net, optimizer, scheduler, scheduler_step_size, scheduler_gamma, n_epochs)
+    loss_function = get_loss_function(net, loss_function)
+    
+    losses = np.zeros((n_epochs), dtype=np.float32)
+    gradient_norm_sqs = np.zeros((n_epochs), dtype=np.float32)
+    epochs = np.zeros((n_epochs))
+    
+    time0 = time.time()
+    if verbose:
+        print("Training...")
+    for i in range(n_epochs):
+        
+        # Generate batch
+        _input, _target, _mask = task(batch_size)
+        # Convert training data to pytorch tensors
+        _input = torch.from_numpy(_input)
+        _target = torch.from_numpy(_target)
+        _mask = torch.from_numpy(_mask)
+        # Allocate
+        input = _input.to(device=device).float() 
+        target = _target.to(device=device).float() 
+        # mask = _mask.to(device=device).float() 
+        
+        optimizer.zero_grad()
+        output, _, _ = net(input, init_states=init_states)
+        loss = loss_function(output, target)
+        
+        # Gradient descent
+        loss.backward()
+        if clip_gradient is not None:
+            torch.nn.utils.clip_grad_norm_(net.parameters(), clip_gradient)
+        gradient_norm_sq = sum([(p.grad ** 2).sum() for p in net.parameters() if p.requires_grad])
+        
+        # Update weights
+        optimizer.step()
+        
+        scheduler.step()
+        
+        # These 2 lines important to prevent memory leaks
+        loss.detach_()
+        output.detach_()
+        
+        # Save
+        epochs[i] = i
+        losses[i] = loss.item()
+        gradient_norm_sqs[i] = gradient_norm_sq
+        
+        if verbose:
+            print("epoch %d / %d:  loss=%.6f \n" % (i+1, n_epochs, np.mean(losses[i])))
+            
+    if verbose:
+        print("\nDone. Training took %.1f sec." % (time.time() - time0))
+    
+    # Obtain gradient norm
+    gradient_norms = np.sqrt(gradient_norm_sqs)
+    
+    weights_last =  [net.W, net.U, net.bias, net.wo]
+    
+    res = [losses, gradient_norms, weights_last, epochs]
+    return res
         
 def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
     # Generate batch
