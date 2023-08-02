@@ -64,7 +64,7 @@ def eyeblink_task(input_length, t_delay, t_stim=1, t_target=1, min_us_time=5, ma
 
 
 #########################################
-def angularintegration_task(T, dt, length_scale=1):
+def angularintegration_task(T, dt, length_scale=1, sparsity=1):
     """
     Creates N_batch trials of the angular integration task with Guassian Process angular velocity inputs.
     Inputs are left and right angular velocity and 
@@ -78,8 +78,15 @@ def angularintegration_task(T, dt, length_scale=1):
         
         X = np.expand_dims(np.linspace(-length_scale, length_scale, input_length), 1)
         sigma = exponentiated_quadratic(X, X)  
+        if sparsity =='variable':
+            sparsities = np.random.uniform(0, 2, batch_size)
+            mask_input = np.random.random(size=(batch_size, input_length))<1-sparsities[:,None]
+        elif sparsity:
+            mask_input = np.random.random(size=(batch_size, input_length)) < 1-sparsity
         inputs = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
-        outputs_1d =  np.cumsum(inputs, axis=1)*dt
+        if sparsity:
+            inputs[mask_input] = 0.
+        outputs_1d = np.cumsum(inputs, axis=1)*dt
         outputs = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
         mask = np.ones((batch_size, input_length, 2))
 

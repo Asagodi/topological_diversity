@@ -27,7 +27,7 @@ def mse_loss_masked(output, target, mask):
         output_dim = output.shape[-1]
         loss = (mask * (target - output).pow(2)).sum() / (mask.sum() * output_dim)
     # Take half:
-    loss = 0.5 * loss
+    # loss = 0.5 * loss
     return loss
 
 def get_optimizer(model, optimizer, learning_rate, weight_decay=0, momentum=0, adam_betas=(0.9, 0.999), adam_eps=1e-08):
@@ -357,7 +357,7 @@ class GRU(nn.Module):
 
 
 def train(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False, record_step=1, h_init=None,
-          loss_function='mse_loss_masked',
+          loss_function='mse_loss_masked', final_loss=True, last_mses=None,
           optimizer='sgd', momentum=0, weight_decay=.0, adam_betas=(0.9, 0.999), adam_eps=1e-8, #optimizers 
           scheduler=None, scheduler_step_size=100, scheduler_gamma=0.3, 
           verbose=True):
@@ -452,7 +452,13 @@ def train(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=
         
         optimizer.zero_grad()
         output = net(input, h_init=h_init)
-        loss = loss_function(output, target, mask)
+        if final_loss:
+            if not last_mses:
+                last_mses = output.shape[1]
+            fin_int = np.random.randint(1,last_mses,size=batch_size)
+            loss = loss_function(output[:,-fin_int,:], target[:,-fin_int,:], mask[:,-fin_int,:])
+        else:
+            loss = loss_function(output, target, mask)
         
         # Gradient descent
         loss.backward()
@@ -507,6 +513,25 @@ def train(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=
     res = [losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs]
     return res
 
+def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
+    # Generate batch
+    input, target, mask = task(batch_size)
+    # Convert training data to pytorch tensors
+    input = torch.from_numpy(input).float() 
+    target = torch.from_numpy(target).float() 
+    mask = torch.from_numpy(mask).float() 
+    with torch.no_grad():
+        # Run dynamics
+        if return_dynamics:
+            output, trajectories = net(input, return_dynamics, h_init=h_init)
+        else:
+            output = net(input, h_init=h_init)
+        loss = mse_loss_masked(output, target, mask)
+    res = [input, target, mask, output, loss]
+    if return_dynamics:
+        res.append(trajectories)
+    res = [r.numpy() for r in res]
+    return res
 
 def train_lstm(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False,
           loss_function='mse', init_states=None,
@@ -588,7 +613,9 @@ def train_lstm(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_grad
     res = [losses, gradient_norms, weights_last, epochs]
     return res
         
-def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
+
+
+def run_lstm(net, task, batch_size=32, return_dynamics=False, init_states=None):
     # Generate batch
     input, target, mask = task(batch_size)
     # Convert training data to pytorch tensors
@@ -597,13 +624,11 @@ def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
     mask = torch.from_numpy(mask).float() 
     with torch.no_grad():
         # Run dynamics
-        if return_dynamics:
-            output, trajectories = net(input, return_dynamics, h_init=h_init)
-        else:
-            output = net(input, h_init=h_init)
+        output, hidden_seq, _ = net(input, init_states=init_states)
+
         loss = mse_loss_masked(output, target, mask)
     res = [input, target, mask, output, loss]
     if return_dynamics:
-        res.append(trajectories)
+        res.append(hidden_seq)
     res = [r.numpy() for r in res]
     return res
