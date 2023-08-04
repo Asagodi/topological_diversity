@@ -13,7 +13,7 @@ noise_std: 0
 dt_rnn: .1
 optimizer: 'adam'
 loss_function: 'mse_loss_masked'
-cuda: False
+cuda: True
 scheduler: 'steplr'
 scheduler_step_size: 200
 scheduler_gamma: 0.85
@@ -28,7 +28,7 @@ task: 'angularintegration'
 T: 50
 dt_task: .1
 task_sparsity: 'variable'
-verbose: True
+verbose: False
 adam_momentum: .0
 weight_decay: .0
 adam_betas: 

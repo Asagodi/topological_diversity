@@ -392,11 +392,11 @@ def train(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=
     loss_function = get_loss_function(net, loss_function)
             
     # Save initial weights
-    wi_init = net.wi.detach().numpy().copy()
-    wrec_init = net.wrec.detach().numpy().copy()
-    wo_init = net.wo.detach().numpy().copy()
-    brec_init = net.brec.detach().numpy().copy()
-    h0_init = net.h0.detach().numpy().copy()
+    wi_init = net.wi.cpu().detach().numpy().copy()
+    wrec_init = net.wrec.cpu().detach().numpy().copy()
+    wo_init = net.wo.cpu().detach().numpy().copy()
+    brec_init = net.brec.cpu().detach().numpy().copy()
+    h0_init = net.h0.cpu().detach().numpy().copy()
     weights_init = [wi_init, wrec_init, wo_init, brec_init, h0_init]
     
     # Record
@@ -429,15 +429,15 @@ def train(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=
             k = i // record_step
             rec_epochs[k] = i
             if net.train_wi:
-                wis[k] = net.wi.detach().numpy()
+                wis[k] = net.wi.cpu().detach().numpy()
             if net.train_wrec:
-                wrecs[k] = net.wrec.detach().numpy()
+                wrecs[k] = net.wrec.cpu().detach().numpy()
             if net.train_wo:
-                wos[k] = net.wo.detach().numpy()
+                wos[k] = net.wo.cpu().detach().numpy()
             if net.train_brec:
-                brecs[k] = net.brec.detach().numpy()
+                brecs[k] = net.brec.cpu().detach().numpy()
             if net.train_h0:
-                h0s[k] = net.h0.detach().numpy()
+                h0s[k] = net.h0.cpu().detach().numpy()
         
         # Generate batch
         _input, _target, _mask = task(batch_size)
@@ -490,11 +490,11 @@ def train(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=
     gradient_norms = np.sqrt(gradient_norm_sqs)
     
     # Final weights
-    wi_last = net.wi.detach().numpy().copy()
-    wrec_last = net.wrec.detach().numpy().copy()
-    wo_last = net.wo.detach().numpy().copy()
-    brec_last = net.brec.detach().numpy().copy()
-    h0_last = net.h0.detach().numpy().copy()
+    wi_last = net.wi.cpu().detach().numpy().copy()
+    wrec_last = net.wrec.cpu().detach().numpy().copy()
+    wo_last = net.wo.cpu().detach().numpy().copy()
+    brec_last = net.brec.cpu().detach().numpy().copy()
+    h0_last = net.h0.cpu().detach().numpy().copy()
     weights_last = [wi_last, wrec_last, wo_last, brec_last, h0_last]
     
     # Weights throughout training: 

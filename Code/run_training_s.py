@@ -19,6 +19,7 @@ from scipy.linalg import qr
 import numpy as np
 import pandas as pd
 from itertools import product
+import tqdm
 
 import torch
 import torch.nn as nn
@@ -46,23 +47,23 @@ def get_task(task_name = 'angularintegration', T=10, dt=.1, t_delay=50, sparsity
 
 
 def run_experiment(parameter_file_name, main_exp_name='', sub_exp_name='', model_name='', trials=10, training_kwargs={}):
-    experiment_folder = parent_dir + '\\experiments\\' + main_exp_name +'\\'+ sub_exp_name +'\\'+ model_name
+    experiment_folder = parent_dir + '/experiments/' + main_exp_name +'/'+ sub_exp_name +'/'+ model_name
     print(experiment_folder)
     
     makedirs(experiment_folder) 
     
-    for trial in range(trials):
-        run_single_training(parameter_file_name, exp_name= main_exp_name +'\\'+ sub_exp_name +'\\'+ model_name, trial=trial, training_kwargs=training_kwargs)
+    for trial in tqdm.tqdm(range(trials)):
+        run_single_training(parameter_file_name, exp_name= main_exp_name +'/'+ sub_exp_name +'/'+ model_name, trial=trial, training_kwargs=training_kwargs)
 
 def run_single_training(parameter_file_name, exp_name='', trial=None, save=True, training_kwargs={}):
     
     timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
     
-    parameter_path = parent_dir + '\\experiments\\' + parameter_file_name
+    parameter_path = parent_dir + '/experiments/' + parameter_file_name
     # if not training_kwargs['record_step']:
     #     training_kwargs['record_step'] = training_kwargs['n_epochs'] 
     
-    experiment_folder = parent_dir + '\\experiments\\' + exp_name 
+    experiment_folder = parent_dir + '/experiments/' + exp_name 
     
     if training_kwargs=={}:
         training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
@@ -70,7 +71,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
             shutil.copy(parameter_path, experiment_folder)
     else:
         if save:
-            with open(experiment_folder+'//parameters.yml', 'w') as outfile:
+            with open(experiment_folder+'/parameters.yml', 'w') as outfile:
                 yaml.dump(training_kwargs, outfile, default_flow_style=False)
         
         
@@ -103,7 +104,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
     
     result = train(net, task=task, n_epochs=training_kwargs['n_epochs'],
           batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
-          clip_gradient=training_kwargs['clip_gradient'], cuda=False, h_init=None,
+          clip_gradient=training_kwargs['clip_gradient'], cuda=True, h_init=None,
           loss_function=training_kwargs['loss_function'],
           optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'], adam_betas=training_kwargs['adam_betas'], adam_eps=1e-8, #optimizers 
           scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
@@ -112,7 +113,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
     
     #save result (losses, weights, etc)
     if save:
-        with open(experiment_folder + '\\results_%s.pickle'%timestamp, 'wb') as handle:
+        with open(experiment_folder + '/results_%s.pickle'%timestamp, 'wb') as handle:
             pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
     return result
@@ -120,10 +121,10 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
 def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_path='', sub_exp_name='', trials=1):
     """Perform a grid search for the optimal hyperparameters for training"""
 
-    makedirs(parent_dir +  '\\experiments\\' + experiment_folder)
+    makedirs(parent_dir +  '/experiments/' + experiment_folder)
     assert trials>1
     if not parameter_path:
-        parameter_path = parent_dir +  '\\experiments\\' + experiment_folder +'//'+ parameter_file_name
+        parameter_path = parent_dir +  '/experiments/' + experiment_folder +'/'+ parameter_file_name
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
     
     #create grid of parameters
@@ -165,7 +166,7 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_pa
     all_keys = param_keys
     all_keys.extend(['final_loss', 'trial'])
     df_final = df[all_keys]
-    df.to_csv(parent_dir+'//experiments//'+experiment_folder+'/grid_search_'+sub_exp_name+'.csv', index=False)
+    df.to_csv(parent_dir+'/experiments/'+experiment_folder+'/grid_search_'+sub_exp_name+'.csv', index=False)
     
     min_final_loss = df.iloc[df['final_loss'].idxmin()]
     df_final = df_final.fillna("None")
@@ -173,12 +174,13 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_pa
     return df, df_final, min_final_loss, min_final_meanloss
     
 if __name__ == "__main__":
-    # parameter_file_name = '\\params_ortho_28-07-23.yml'
+    print(current_dir)
+    # parameter_file_name = '/params_ortho_28-07-23.yml'
 
-    parameter_file_name = '\\params_ang_sparse.yml'
-    # run_single_training('\\parameter_files\\'+parameter_file_name)
+    parameter_file_name = 'params_ang_sparse.yml'
+    # run_single_training('/parameter_files/'+parameter_file_name)
     
-    parameter_path = parent_dir + '\\experiments\\' +'\\parameter_files\\'+ parameter_file_name
+    parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
 
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
     
@@ -189,7 +191,7 @@ if __name__ == "__main__":
     g_list = [.5, 1.5, 1., 1.]
     scheduler_step_sizes = [200, 500, 500, 100]
     gammas = [0.85, 0.85, 0.85, .75]
-    for model_i, model_name in enumerate(model_names):
+    for model_i, model_name in tqdm.tqdm(enumerate(model_names)):
     # if True:
         # model_i, model_name = 3, 'qpta'
         training_kwargs['initialization_type'] = initialization_type_list[model_i]
@@ -197,9 +199,9 @@ if __name__ == "__main__":
         training_kwargs['rnn_init_gain'] = g_list[model_i]
         training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
         training_kwargs['scheduler_gamma'] = gammas[model_i]
-        run_experiment('\\parameter_files\\'+parameter_file_name, main_exp_name='angularintegration',
+        run_experiment('/parameter_files/'+parameter_file_name, main_exp_name='angularintegration',
                                                               sub_exp_name='final_posthyp51',
-                                                              model_name=model_name, trials=3, training_kwargs=training_kwargs)
+                                                              model_name=model_name, trials=10, training_kwargs=training_kwargs)
     
     model_names = ['qpta']
     # param_grid = {'learning_rate':[1e-2,1e-3],
@@ -216,6 +218,6 @@ if __name__ == "__main__":
     #     training_kwargs['ml_rnn'] = mlrnn_list[model_i]
     #     training_kwargs['rnn_init_gain'] = g_list[model_i]
     #     df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
-    #                                                                     experiment_folder='angularintegration//final_grid//',
+    #                                                                     experiment_folder='angularintegration/final_grid/',
     #                                                                     sub_exp_name=model_name,
     #                                                                     parameter_path=parameter_path, trials=2)
