@@ -186,9 +186,7 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_pa
 if __name__ == "__main__":
     print(current_dir)
     parameter_file_name = 'params_ang_sparse.yml'
-    
     parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
-
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
     
     network_types = ['lstm_noforget', 'rnn', 'rnn', 'rnn', 'rnn']
@@ -199,15 +197,11 @@ if __name__ == "__main__":
     # mlrnn_list = [False, False, False, False]
     g_list = [0., .5, 1.5, 0., 0.]
     scheduler_step_sizes = [200, 200, 500, 500, 100]
-    gammas = [0.5, 0.85, 0.85, 0.85, .75]
+    gammas = [0.75, 0.85, 0.85, 0.85, .75]
     
-    # trial_lengths = [10, 25, 50]
-    # for T in tqdm.tqdm(trial_lengths):
-    if True:
-        training_kwargs['T'] = 10
-        # for model_i, model_name in tqdm.tqdm(enumerate(model_names)):
-        if True:
-            model_i, model_name = 0, 'lstm'
+    trial_lengths = [10, 25, 50]
+    for T in tqdm.tqdm(trial_lengths):
+        for model_i, model_name in tqdm.tqdm(enumerate(model_names)):
             training_kwargs['network_type'] = network_types[model_i]
             training_kwargs['initialization_type'] = initialization_type_list[model_i]
             training_kwargs['loss_function'] = loss_functions[model_i]
@@ -216,11 +210,10 @@ if __name__ == "__main__":
             training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
             training_kwargs['scheduler_gamma'] = gammas[model_i]
             run_experiment('/parameter_files/'+parameter_file_name, main_exp_name='angularintegration',
-                                                                  # sub_exp_name=f'all_lengths/T{T}',
-                                                                  sub_exp_name='final_posthyp11',
+                                                                   sub_exp_name=f'all_lengths/T{T}',
                                                                   model_name=model_name, trials=1, training_kwargs=training_kwargs)
     
-    model_names = ['qpta']
+    # model_names = ['qpta']
     # param_grid = {'learning_rate':[1e-2,1e-3],
     #               'batch_size': [100],
     #               'optimizer': ['adam'],
