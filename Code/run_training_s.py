@@ -28,6 +28,7 @@ import torch.optim as optim
 from schuessler_model import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget
 from network_initialization import qpta_rec_weights
 from tasks import angularintegration_task, eyeblink_task
+from qpta_initializers import _qpta_tanh_hh
 
 def makedirs(dirname):
     if not os.path.exists(dirname):
@@ -60,8 +61,8 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
     timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
     
     parameter_path = parent_dir + '/experiments/' + parameter_file_name
-    # if not training_kwargs['record_step']:
-    #     training_kwargs['record_step'] = training_kwargs['n_epochs'] 
+    if not training_kwargs['record_step']:
+        training_kwargs['record_step'] = training_kwargs['n_epochs'] 
     
     experiment_folder = parent_dir + '/experiments/' + exp_name 
     
@@ -94,9 +95,10 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
             wrec_init, brec_init = None, None
             
         elif training_kwargs['initialization_type'] == 'qpta':
-            N_blas = int(training_kwargs['N_rec']/2)
-            wrec_init, brec_init = wrec_init, brec_init = qpta_rec_weights(N_in=training_kwargs['N_in'], N_blas=N_blas, N_out=training_kwargs['N_in']);
-    
+            # N_blas = int(training_kwargs['N_rec']/2)
+            # wrec_init, brec_init = qpta_rec_weights(N_in=training_kwargs['N_in'], N_blas=N_blas, N_out=training_kwargs['N_in']);
+            brec_init = np.zeros(training_kwargs['N_rec'])
+            wrec_init = _qpta_tanh_hh()((training_kwargs['N_rec'],training_kwargs['N_rec']))
             
         elif training_kwargs['initialization_type'] == 'ortho':
             H = np.random.randn(training_kwargs['N_rec'], training_kwargs['N_rec'])
@@ -174,7 +176,8 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_pa
     all_keys = param_keys
     all_keys.extend(['final_loss', 'trial'])
     df_final = df[all_keys]
-    df.to_csv(parent_dir+'/experiments/'+experiment_folder+'/grid_search_'+sub_exp_name+'.csv', index=False)
+    with np.printoptions(linewidth=10000):
+        df.to_csv(parent_dir+'/experiments/'+experiment_folder+'/grid_search_'+sub_exp_name+'.csv', index=False)
     
     min_final_loss = df.iloc[df['final_loss'].idxmin()]
     df_final = df_final.fillna("None")
@@ -196,38 +199,43 @@ if __name__ == "__main__":
     mlrnn_list = [True, True, True, True, True]
     # mlrnn_list = [False, False, False, False]
     g_list = [0., .5, 1.5, 0., 0.]
-    scheduler_step_sizes = [200, 200, 500, 500, 100]
-    gammas = [0.75, 0.85, 0.85, 0.85, .75]
-    
-    trial_lengths = [10, 25, 50]
+    scheduler_step_sizes = [100, 300, 100, 100, 300]
+    gammas = [0.75, 0.5, 0.75, 0.75, .5]
+    nrecs = [115, 200, 200, 200, 200]
+    trial_lengths = [12.8, 25.6, 51.2, 102.4, 409.6]
     for T in tqdm.tqdm(trial_lengths):
         for model_i, model_name in tqdm.tqdm(enumerate(model_names)):
             training_kwargs['network_type'] = network_types[model_i]
             training_kwargs['initialization_type'] = initialization_type_list[model_i]
+            training_kwargs['N_rec'] = nrecs[model_i]
             training_kwargs['loss_function'] = loss_functions[model_i]
             training_kwargs['ml_rnn'] = mlrnn_list[model_i]
             training_kwargs['rnn_init_gain'] = g_list[model_i]
             training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
             training_kwargs['scheduler_gamma'] = gammas[model_i]
             run_experiment('/parameter_files/'+parameter_file_name, main_exp_name='angularintegration',
-                                                                   sub_exp_name=f'all_lengths/T{T}',
+                                                                    sub_exp_name=f'test/T{T}',
                                                                   model_name=model_name, trials=1, training_kwargs=training_kwargs)
     
-    # model_names = ['qpta']
+    # model_names = ['ortho']
+    # model_i = 3
     # param_grid = {'learning_rate':[1e-2,1e-3],
-    #               'batch_size': [100],
+    #               'batch_size': [128],
     #               'optimizer': ['adam'],
     #               'scheduler': ['steplr'],
-    #               'n_epochs': [1000],
-    #               'scheduler_step_size':[200,500],
-    #               'scheduler_gamma':[0.5, 0.85],
+    #               'n_epochs': [500],
+    #               'scheduler_step_size':[100,300],
+    #               'scheduler_gamma':[0.5, 0.75],
     #               'clip_gradient': [None]}
     # for model_i, model_name in enumerate(model_names):
     #     print(model_name)
+    #     training_kwargs['network_type'] = network_types[model_i]
+    #     training_kwargs['N_rec'] = nrecs[model_i]
+    #     training_kwargs['loss_function'] = loss_functions[model_i]
     #     training_kwargs['initialization_type'] = initialization_type_list[model_i]
     #     training_kwargs['ml_rnn'] = mlrnn_list[model_i]
     #     training_kwargs['rnn_init_gain'] = g_list[model_i]
     #     df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
-    #                                                                     experiment_folder='angularintegration/final_grid/',
+    #                                                                     experiment_folder='angularintegration/lambda_grid_2/',
     #                                                                     sub_exp_name=model_name,
-    #                                                                     parameter_path=parameter_path, trials=2)
+                                                                        parameter_path=parameter_path, trials=2)

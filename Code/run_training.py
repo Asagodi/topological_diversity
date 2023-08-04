@@ -4,7 +4,6 @@ Created on Sat Jul 15 18:31:06 2023
 
 @author: abel_
 """
-
 import os, sys
 import glob
 current_dir = os.path.dirname(os.path.realpath('__file__'))
@@ -14,6 +13,7 @@ import yaml
 from pathlib import Path
 
 from network_training import *
+from rnn_models import *
 from network_initialization import *
 
 def load_model(load_model_name, N_in, N_rec, N_out, N_blas, hidden_offset=0, hidden_initial_activations='random',
@@ -85,8 +85,9 @@ def load_model(load_model_name, N_in, N_rec, N_out, N_blas, hidden_offset=0, hid
         rnn_model.load_state_dict(torch.load(load_model_name))
     return rnn_model
 
-def initialize_model(load_model_name, nonlinearity, N_in, N_rec, N_out, N_blas, hidden_offset=0., hidden_initial_activations='zero',
-               rnn_init_gain=1., random_winout=False, perfect_inout_variance=0., output_activation='linear', N_inter=5, device='cpu'):
+def initialize_model(load_model_name, nonlinearity, N_in, N_rec, N_out, N_blas, model_type='rnn', hidden_offset=0.,
+                     hidden_initial_variance=0., hidden_initial_activations='zero', rnn_init_gain=1.,
+                     random_winout=False, perfect_inout_variance=0., output_activation='linear', N_inter=5, device='cpu'):
     """
     Initializes RNN randomly (possibly from an initialization method) or loads model from file.
 
@@ -167,10 +168,10 @@ def main():
 
     print(training_kwargs)
 
-    rnn_model = initialize_model(training_kwargs['load_model_name'], training_kwargs['nonlinearity'],
+    model = initialize_model(training_kwargs['load_model_name'], training_kwargs['nonlinearity'],
                                  training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'], training_kwargs['N_blas'])
 
-    # torch.save(rnn_model.state_dict(), exp_path + '/starting_weights.pth')    
+    # torch.save(model.state_dict(), exp_path + '/starting_weights.pth')    
     
     train_x, train_y, train_output_mask, _ = data_lists[0]
     test_x, test_y, test_output_mask, _ = data_lists[1]
