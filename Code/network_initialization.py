@@ -1,14 +1,13 @@
 import os, sys
-import glob
+currentdir = os.path.dirname(os.path.abspath(os.getcwd()))
+sys.path.insert(0, currentdir + "\Code") 
 
 import torch
 import torch.nn as nn
 import numpy as np
 from scipy.linalg import block_diag
 from scipy.linalg import qr
-import scipy
 
-import utils
 import rnn_models
 
 def make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, hidden_offset=None, nonlinearity ='relu', output_activation='identity', hidden_initial_activations='offset'):
@@ -129,6 +128,13 @@ def identity_initialization(N_in, N_rec, N_out, weight_init_variance=0.001, hidd
     rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, transform_function='relu', output_activation='identity', hidden_initial_activations=hidden_initial_activations)
     return rnn_model
 
+def bla_rec_weights(N_in, N_blas, N_out, a):
+    N_rec = 2*N_blas
+    bla_mat = np.array(([[0,-1],[-1,0]]))
+    W_hh = block_diag(*[bla_mat]*N_blas)
+    b_hh = 2*a*np.array([1]*N_rec)
+
+    return W_hh, b_hh
 
 def bla_initialization(N_in, N_blas, N_out, a, weight_init_variance=0.001, hidden_initial_activations='offset', nonlinearity='relu'):
     """
@@ -146,9 +152,7 @@ def bla_initialization(N_in, N_blas, N_out, a, weight_init_variance=0.001, hidde
     returns rnn_model with identity for recurrent weights
     """
     N_rec = 2*N_blas
-    bla_mat = np.array(([[0,-1],[-1,0]]))
-    W_hh = block_diag(*[bla_mat]*N_blas)
-    b_hh = 2*a*np.array([1]*N_rec)
+    W_hh, b_hh = bla_rec_weights(N_in, N_blas, N_out, a)
     
     W_in = np.random.normal(0, weight_init_variance, (N_rec, N_in))
     W_out = np.random.normal(0, weight_init_variance, (N_out, N_rec))
@@ -187,8 +191,21 @@ def ubla_initialization(N_in, N_blas, N_out, a, weight_init_variance=0.001, hidd
     rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, nonlinearity=nonlinearity, output_activation='identity', hidden_initial_activations=hidden_initial_activations)
     return rnn_model
 
+def qpta_rec_weights(N_in, N_blas, N_out):
+    
+    N_rec = 2*N_blas
+    thetas = np.random.uniform(-np.pi, np.pi, N_blas) 
+    alpha = np.random.uniform(1, 2, N_blas) 
+    # make N_blas harmonic oscillators with thetas[i]
+    W_hh = np.zeros((2*N_blas, 2*N_blas))
+    ho_mat = np.array(([[np.cos(thetas),-np.sin(thetas)],[np.sin(thetas),np.cos(thetas)]]))
+    for i in range(0, N_blas):
+        W_hh[2*i:2*i+2, 2*i:2*i+2] = alpha[i]*ho_mat[..., i]
+    b_hh = np.array([1]*N_rec)
+    
+    return W_hh, b_hh
 
-def qpta_initialization(N_in, N_blas, N_out, weight_init_variance=0.001, hidden_initial_activations='offset', nonlinearity='tanh'):
+def qpta_initialization(N_in, N_blas, N_out, weight_init_variance=0.001, hidden_initial_activations='offset', nonlinearity='tanh', return_weights=False):
     """
     pairwise QPTAs for the recurrent weights of the network
     i.e., [[0,-1],[-1,0]] and a bias a*[1,1] 
@@ -204,20 +221,13 @@ def qpta_initialization(N_in, N_blas, N_out, weight_init_variance=0.001, hidden_
     returns rnn_model with identity for recurrent weights
     """
     N_rec = 2*N_blas
-    # thetas = ?
-    thetas = np.random.uniform(0, 2*np.pi, N_blas) 
-    alpha = np.random.uniform(5, 10, N_blas) 
-    # make N_blas harmonic oscillators with thetas[i]
-    W_hh = np.zeros((2*N_blas, 2*N_blas))
-    ho_mat = np.array(([[np.cos(thetas),-np.sin(thetas)],[np.sin(thetas),np.cos(thetas)]]))
-    for i in range(0, N_blas):
-        W_hh[2*i:2*i+2, 2*i:2*i+2] = alpha[i]*ho_mat[..., i]
-    b_hh = np.array([0]*N_rec)
+    
+    W_hh, b_hh = qpta_rec_weights(N_in, N_blas, N_out)
     
     W_in = np.random.normal(0, weight_init_variance, (N_rec, N_in))
     W_out = np.random.normal(0, weight_init_variance, (N_out, N_rec))
     b_out = np.random.normal(0, weight_init_variance, (N_out))
-    
+        
     rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, nonlinearity=nonlinearity, output_activation='identity', hidden_initial_activations=hidden_initial_activations)
     return rnn_model
 

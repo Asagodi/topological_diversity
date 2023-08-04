@@ -116,8 +116,7 @@ class CustomLSTM(nn.Module):
         for weight in self.parameters():
             weight.data.uniform_(-stdv, stdv)
          
-    def forward(self, x, 
-                init_states=None):
+    def forward(self, x, init_states=None):
         """Assumes x is of shape (batch, sequence, feature)"""
         bs, seq_sz, _ = x.size()
         hidden_seq = []
@@ -190,7 +189,8 @@ class LSTM_noforget(nn.Module):
         # reshape from shape (sequence, batch, feature) to (batch, sequence, feature)
         hidden_seq = hidden_seq.transpose(0, 1).contiguous()
         return hidden_seq, (h_t, c_t)
-    
+
+
     
 class GRU(nn.Module):
     "All the weights and biases are initialized from U(-a,a) with a = sqrt(1/hidden_size)"

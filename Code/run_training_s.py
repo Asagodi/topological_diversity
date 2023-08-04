@@ -67,11 +67,12 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
     if training_kwargs=={}:
         training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
         if save:
-            with open(experiment_folder+'parameters.yml', 'w') as outfile:
-                yaml.dump(training_kwargs, outfile, default_flow_style=False)
+            shutil.copy(parameter_path, experiment_folder)
     else:
         if save:
-            shutil.copy(parameter_path, experiment_folder)
+            with open(experiment_folder+'//parameters.yml', 'w') as outfile:
+                yaml.dump(training_kwargs, outfile, default_flow_style=False)
+        
         
         
     
@@ -104,7 +105,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
           batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
           clip_gradient=training_kwargs['clip_gradient'], cuda=False, h_init=None,
           loss_function=training_kwargs['loss_function'],
-          optimizer=training_kwargs['optimizer'], momentum=0, weight_decay=.0, adam_betas=(0.9, 0.999), adam_eps=1e-8, #optimizers 
+          optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'], adam_betas=training_kwargs['adam_betas'], adam_eps=1e-8, #optimizers 
           scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
           verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
     
@@ -182,27 +183,28 @@ if __name__ == "__main__":
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
     
     model_names = ['low', 'high', 'ortho', 'qpta']
-
-
     initialization_type_list =['gain','gain', 'ortho', 'qpta']
-    mlrnn_list = [False, False, False, True]
+    mlrnn_list = [True, True, True, True]
+    # mlrnn_list = [False, False, False, False]
     g_list = [.5, 1.5, 1., 1.]
-    scheduler_step_sizes = [200, 500, 500, 200]
-    gammas = [0.85, 0.85, 0.85, .5]
+    scheduler_step_sizes = [200, 500, 500, 100]
+    gammas = [0.85, 0.85, 0.85, .75]
     for model_i, model_name in enumerate(model_names):
+    # if True:
+        # model_i, model_name = 3, 'qpta'
         training_kwargs['initialization_type'] = initialization_type_list[model_i]
         training_kwargs['ml_rnn'] = mlrnn_list[model_i]
         training_kwargs['rnn_init_gain'] = g_list[model_i]
         training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
         training_kwargs['scheduler_gamma'] = gammas[model_i]
         run_experiment('\\parameter_files\\'+parameter_file_name, main_exp_name='angularintegration',
-                                                              sub_exp_name='final_sgd',
-                                                              model_name=model_name, trials=1, training_kwargs=training_kwargs)
+                                                              sub_exp_name='final_posthyp51',
+                                                              model_name=model_name, trials=3, training_kwargs=training_kwargs)
     
     model_names = ['qpta']
     # param_grid = {'learning_rate':[1e-2,1e-3],
     #               'batch_size': [100],
-    #               'optimizer': ['sgd'],
+    #               'optimizer': ['adam'],
     #               'scheduler': ['steplr'],
     #               'n_epochs': [1000],
     #               'scheduler_step_size':[200,500],
