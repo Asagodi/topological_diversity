@@ -25,7 +25,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from schuessler_model import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN
+from schuessler_model import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget
 from network_initialization import qpta_rec_weights
 from tasks import angularintegration_task, eyeblink_task
 
@@ -75,40 +75,48 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
                 yaml.dump(training_kwargs, outfile, default_flow_style=False)
         
         
-        
+    task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'], sparsity=training_kwargs['task_sparsity'])
+
     
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     
-    if training_kwargs['initialization_type'] == 'gain':
-        wrec_init, brec_init = None, None
-        
-    elif training_kwargs['initialization_type'] == 'qpta':
-        N_blas = int(training_kwargs['N_rec']/2)
-        wrec_init, brec_init = wrec_init, brec_init = qpta_rec_weights(N_in=training_kwargs['N_in'], N_blas=N_blas, N_out=training_kwargs['N_in']);
-
-        
-    elif training_kwargs['initialization_type'] == 'ortho':
-        H = np.random.randn(training_kwargs['N_rec'], training_kwargs['N_rec'])
-        wrec_init, _ = qr(H)
-        brec_init = np.array([0]*training_kwargs['N_rec'])
-
+    if training_kwargs['network_type'] == 'lstm_noforget':
+        net = LSTM_noforget((training_kwargs['N_in'],training_kwargs['N_rec'],training_kwargs['N_out']))
+        result = train_lstm(net, task=task, n_epochs=training_kwargs['n_epochs'],
+              batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
+              clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], init_states=None,
+              loss_function=training_kwargs['loss_function'], final_loss=training_kwargs['final_loss'], last_mses=training_kwargs['last_mses'], 
+              optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'], adam_betas=training_kwargs['adam_betas'], adam_eps=1e-8, #optimizers 
+              scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
+              verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
     else:
-        raise Exception("Recurrent weight initialization not known.")
-        
-    net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'], 
-              nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-              wi_init=None, wrec_init=wrec_init, wo_init=None, brec_init=brec_init, h0_init=None, ML_RNN=training_kwargs['ml_rnn'])
+        if training_kwargs['initialization_type'] == 'gain':
+            wrec_init, brec_init = None, None
+            
+        elif training_kwargs['initialization_type'] == 'qpta':
+            N_blas = int(training_kwargs['N_rec']/2)
+            wrec_init, brec_init = wrec_init, brec_init = qpta_rec_weights(N_in=training_kwargs['N_in'], N_blas=N_blas, N_out=training_kwargs['N_in']);
+    
+            
+        elif training_kwargs['initialization_type'] == 'ortho':
+            H = np.random.randn(training_kwargs['N_rec'], training_kwargs['N_rec'])
+            wrec_init, _ = qr(H)
+            brec_init = np.array([0]*training_kwargs['N_rec'])
+    
+        else:
+            raise Exception("Recurrent weight initialization not known.")
+            
+        net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'], 
+                  nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
+                  wi_init=None, wrec_init=wrec_init, wo_init=None, brec_init=brec_init, h0_init=None, ML_RNN=training_kwargs['ml_rnn'])
 
-    
-    task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'], sparsity=training_kwargs['task_sparsity'])
-    
-    result = train(net, task=task, n_epochs=training_kwargs['n_epochs'],
-          batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
-          clip_gradient=training_kwargs['clip_gradient'], cuda=True, h_init=None,
-          loss_function=training_kwargs['loss_function'],
-          optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'], adam_betas=training_kwargs['adam_betas'], adam_eps=1e-8, #optimizers 
-          scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
-          verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
+        result = train(net, task=task, n_epochs=training_kwargs['n_epochs'],
+              batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
+              clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], h_init=None,
+              loss_function=training_kwargs['loss_function'],
+              optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'], adam_betas=training_kwargs['adam_betas'], adam_eps=1e-8, #optimizers 
+              scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
+              verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
     
     
     #save result (losses, weights, etc)
@@ -172,36 +180,45 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_pa
     df_final = df_final.fillna("None")
     min_final_meanloss = df_final.groupby(param_keys).mean().idxmin()
     return df, df_final, min_final_loss, min_final_meanloss
+
+
     
 if __name__ == "__main__":
     print(current_dir)
-    # parameter_file_name = '/params_ortho_28-07-23.yml'
-
     parameter_file_name = 'params_ang_sparse.yml'
-    # run_single_training('/parameter_files/'+parameter_file_name)
     
     parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
 
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
     
-    model_names = ['low', 'high', 'ortho', 'qpta']
-    initialization_type_list =['gain','gain', 'ortho', 'qpta']
-    mlrnn_list = [True, True, True, True]
+    network_types = ['lstm_noforget', 'rnn', 'rnn', 'rnn', 'rnn']
+    model_names = ['lstm', 'low', 'high', 'ortho', 'qpta']
+    initialization_type_list =['', 'gain','gain', 'ortho', 'qpta']
+    loss_functions = ['mse', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked']
+    mlrnn_list = [True, True, True, True, True]
     # mlrnn_list = [False, False, False, False]
-    g_list = [.5, 1.5, 1., 1.]
-    scheduler_step_sizes = [200, 500, 500, 100]
-    gammas = [0.85, 0.85, 0.85, .75]
-    for model_i, model_name in tqdm.tqdm(enumerate(model_names)):
-    # if True:
-        # model_i, model_name = 3, 'qpta'
-        training_kwargs['initialization_type'] = initialization_type_list[model_i]
-        training_kwargs['ml_rnn'] = mlrnn_list[model_i]
-        training_kwargs['rnn_init_gain'] = g_list[model_i]
-        training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
-        training_kwargs['scheduler_gamma'] = gammas[model_i]
-        run_experiment('/parameter_files/'+parameter_file_name, main_exp_name='angularintegration',
-                                                              sub_exp_name='final_posthyp51',
-                                                              model_name=model_name, trials=10, training_kwargs=training_kwargs)
+    g_list = [0., .5, 1.5, 0., 0.]
+    scheduler_step_sizes = [200, 200, 500, 500, 100]
+    gammas = [0.5, 0.85, 0.85, 0.85, .75]
+    
+    # trial_lengths = [10, 25, 50]
+    # for T in tqdm.tqdm(trial_lengths):
+    if True:
+        training_kwargs['T'] = 10
+        # for model_i, model_name in tqdm.tqdm(enumerate(model_names)):
+        if True:
+            model_i, model_name = 0, 'lstm'
+            training_kwargs['network_type'] = network_types[model_i]
+            training_kwargs['initialization_type'] = initialization_type_list[model_i]
+            training_kwargs['loss_function'] = loss_functions[model_i]
+            training_kwargs['ml_rnn'] = mlrnn_list[model_i]
+            training_kwargs['rnn_init_gain'] = g_list[model_i]
+            training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
+            training_kwargs['scheduler_gamma'] = gammas[model_i]
+            run_experiment('/parameter_files/'+parameter_file_name, main_exp_name='angularintegration',
+                                                                  # sub_exp_name=f'all_lengths/T{T}',
+                                                                  sub_exp_name='final_posthyp11',
+                                                                  model_name=model_name, trials=1, training_kwargs=training_kwargs)
     
     model_names = ['qpta']
     # param_grid = {'learning_rate':[1e-2,1e-3],

@@ -264,29 +264,48 @@ class RNN(nn.Module):
 
     
 class LSTM_noforget(nn.Module):
-    def __init__(self, dims, readout_nonlinearity='id'):
+    def __init__(self, dims, readout_nonlinearity='id', w_init=None, u_init=None, wo_init=None, bias_init=None):
         super(LSTM_noforget, self).__init__()
         self.dims = dims
         input_size, hidden_size, output_size = dims
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.output_size = output_size
+        self.readout_nonlinearity = readout_nonlinearity
+        
         self.W = nn.Parameter(torch.Tensor(input_size, hidden_size * 3))
         self.U = nn.Parameter(torch.Tensor(hidden_size, hidden_size * 3))
         self.bias = nn.Parameter(torch.Tensor(hidden_size * 3))
-        self.init_weights()
-        
-        self.readout_nonlinearity = readout_nonlinearity
-        
         self.wo = nn.Parameter(torch.Tensor(hidden_size, output_size))
+        
         # Initialize parameters
         with torch.no_grad():
             k = np.sqrt(1/hidden_size)
-            torch.nn.init.uniform_(self.W, a=-k, b=k)
-            torch.nn.init.uniform_(self.U, a=-k, b=k)
-            torch.nn.init.uniform_(self.wo, a=-k, b=k)
-            # self.U.uniform_(a=-k, b=k)
-            # self.wo.uniform_(a=-k, b=k)
+            if w_init is None:
+                torch.nn.init.uniform_(self.W, a=-k, b=k)
+            else:
+                if type(w_init) == np.ndarray:
+                    w_init = torch.from_numpy(w_init)
+                self.W.copy_(w_init)
+            if u_init is None:
+                torch.nn.init.uniform_(self.U, a=-k, b=k)
+            else:
+                if type(u_init) == np.ndarray:
+                    u_init = torch.from_numpy(u_init)
+            if bias_init is None:
+                self.bias.normal_(std=1 / hidden_size)
+            else:
+                if type(bias_init) == np.ndarray:
+                    bias_init = torch.from_numpy(bias_init)
+                self.bias.copy_(bias_init)
+            
+            if wo_init is None:
+                self.wo.normal_(std=1 / hidden_size)
+            else:
+                if type(wo_init) == np.ndarray:
+                    wo_init = torch.from_numpy(wo_init)
+                self.wo.copy_(wo_init)
+
         
         # Readout nonlinearity
         if readout_nonlinearity == 'tanh':
@@ -301,10 +320,6 @@ class LSTM_noforget(nn.Module):
         else:
             self.readout_nonlinearity = readout_nonlinearity
                 
-    def init_weights(self):
-        stdv = 1.0 / np.sqrt(self.hidden_size)
-        for weight in self.parameters():
-            weight.data.uniform_(-stdv, stdv)
          
     def forward(self, x, init_states=None):
         """Assumes x is of shape (batch, sequence, feature)"""
@@ -472,8 +487,8 @@ def train(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=
         scheduler.step()
         
         # These 2 lines important to prevent memory leaks
-        loss.detach_()
-        output.detach_()
+        loss.detach()
+        output.detach()
         
         # Save
         epochs[i] = i
@@ -534,10 +549,10 @@ def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
     return res
 
 def train_lstm(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False,
-          loss_function='mse', init_states=None,
+          loss_function='mse', init_states=None, final_loss=True, last_mses=None,
           optimizer='sgd', momentum=0, weight_decay=.0, adam_betas=(0.9, 0.999), adam_eps=1e-8, #optimizers 
           scheduler=None, scheduler_step_size=100, scheduler_gamma=0.3, 
-          verbose=True):
+          verbose=True, record_step=1):
     
     # CUDA management
     if cuda:
@@ -555,14 +570,40 @@ def train_lstm(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_grad
     scheduler = get_scheduler(net, optimizer, scheduler, scheduler_step_size, scheduler_gamma, n_epochs)
     loss_function = get_loss_function(net, loss_function)
     
+    # Save initial weights
+    w_init = net.W.cpu().detach().numpy().copy()
+    u_init = net.U.cpu().detach().numpy().copy()
+    bias_init = net.bias.cpu().detach().numpy().copy()
+    wo_init = net.wo.cpu().detach().numpy().copy()
+    weights_init = [w_init, u_init, bias_init, wo_init]
+    
+    # Record
+    dim_rec = net.hidden_size
+    dim_in = net.input_size
+    dim_out = net.output_size
+    n_rec_epochs = n_epochs // record_step
+    
     losses = np.zeros((n_epochs), dtype=np.float32)
     gradient_norm_sqs = np.zeros((n_epochs), dtype=np.float32)
     epochs = np.zeros((n_epochs))
+    rec_epochs = np.zeros((n_rec_epochs))
+    ws = np.zeros((n_rec_epochs, dim_in, dim_rec*3), dtype=np.float32)
+    us = np.zeros((n_rec_epochs, dim_rec, dim_rec*3), dtype=np.float32)
+    biases = np.zeros((n_rec_epochs, dim_rec*3), dtype=np.float32)
+    wos = np.zeros((n_rec_epochs, dim_rec, dim_out), dtype=np.float32)
     
     time0 = time.time()
     if verbose:
         print("Training...")
     for i in range(n_epochs):
+        # Save weights (before update)
+        if i % record_step == 0:
+            k = i // record_step
+            rec_epochs[k] = i
+            ws[k] = net.W.cpu().detach().numpy()
+            us[k] = net.U.cpu().detach().numpy()
+            biases[k] = net.bias.cpu().detach().numpy()
+            wos[k] = net.wo.cpu().detach().numpy()
         
         # Generate batch
         _input, _target, _mask = task(batch_size)
@@ -577,7 +618,13 @@ def train_lstm(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_grad
         
         optimizer.zero_grad()
         output, _, _ = net(input, init_states=init_states)
-        loss = loss_function(output, target)
+        if final_loss:
+            if not last_mses:
+                last_mses = output.shape[1]
+            fin_int = np.random.randint(1,last_mses,size=batch_size)
+            loss = loss_function(output[:,-fin_int,:], target[:,-fin_int,:])
+        else:
+            loss = loss_function(output, target)
         
         # Gradient descent
         loss.backward()
@@ -591,8 +638,8 @@ def train_lstm(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_grad
         scheduler.step()
         
         # These 2 lines important to prevent memory leaks
-        loss.detach_()
-        output.detach_()
+        loss.detach()
+        output.detach()
         
         # Save
         epochs[i] = i
@@ -608,14 +655,23 @@ def train_lstm(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_grad
     # Obtain gradient norm
     gradient_norms = np.sqrt(gradient_norm_sqs)
     
+    # Weights throughout training: 
+    weights_train = {}
+    weights_train["w"] = ws
+    weights_train["u"] = us
+    weights_train["wo"] = wos
     weights_last =  [net.W, net.U, net.bias, net.wo]
     
-    res = [losses, gradient_norms, weights_last, epochs]
+    # res = [losses, gradient_norms, weights_last, epochs]
+    # return res
+    res = [losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs]
     return res
         
 
 
 def run_lstm(net, task, batch_size=32, return_dynamics=False, init_states=None):
+    loss_fn = nn.MSELoss()
+
     # Generate batch
     input, target, mask = task(batch_size)
     # Convert training data to pytorch tensors
@@ -626,7 +682,7 @@ def run_lstm(net, task, batch_size=32, return_dynamics=False, init_states=None):
         # Run dynamics
         output, hidden_seq, _ = net(input, init_states=init_states)
 
-        loss = mse_loss_masked(output, target, mask)
+        loss = loss_fn(output, target)
     res = [input, target, mask, output, loss]
     if return_dynamics:
         res.append(hidden_seq)
