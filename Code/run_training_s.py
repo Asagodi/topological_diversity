@@ -214,8 +214,8 @@ if __name__ == "__main__":
             training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
             training_kwargs['scheduler_gamma'] = gammas[model_i]
             run_experiment('/parameter_files/'+parameter_file_name, main_exp_name='angularintegration',
-                                                                    sub_exp_name=f'test/T{T}',
-                                                                  model_name=model_name, trials=1, training_kwargs=training_kwargs)
+                                                                    sub_exp_name=f'lambda/T{T}',
+                                                                  model_name=model_name, trials=11, training_kwargs=training_kwargs)
     
     # model_names = ['ortho']
     # model_i = 3
