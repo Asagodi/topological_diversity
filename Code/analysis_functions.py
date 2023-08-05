@@ -36,7 +36,7 @@ import subprocess
 
 
 # from psychrnn.tasks.perceptual_discrimination import PerceptualDiscrimination
-from tasks import PerceptualDiscrimination, PoissonClicks   
+# from tasks import PerceptualDiscrimination, PoissonClicks   
 #analysis
 def pd_accuracy_function(y, yhat, output_mask):
     chosen = np.argmax(np.mean(yhat*output_mask, axis=1), axis = 1)
@@ -293,6 +293,50 @@ def relu_step_input(x, W, b, W_ih, I):
     return res
 
 
+
+def tanh_ode(t,x,W,b,tau, mlrnn=True):
+    
+    if mlrnn:
+        return (-x + np.tanh(np.dot(W,x)+b))/tau
+    else:
+        return (-x + np.dot(W,np.tanh(x))+b)/tau
+
+#Jacobians
+#include versions for x_solved being from a (scipy) ode solver?
+def linear_jacobian(t,W,b,tau,x_solved):
+    return W/tau
+
+
+def tanh_jacobian(t,W,b,tau,x_solved, mlrnn=True):
+    #b is unused, but there for consistency with relu jac
+    
+    if mlrnn:
+        return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(np.dot(W,x_solved[t])+b)**2))/tau
+    else:
+        return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(x_solved[t])**2))/tau
+
+def relu_jacobian(t,W,b,tau,x_solved):
+    return (-np.eye(W.shape[0]) + np.multiply(W, np.where(np.dot(W,x_solved[t])+b>0,1,0)))/tau
+
+
+#To calculate Lyapunov Exponents
+def calculate_lyapunov_spectrum(act_fun,W,b,tau,x_solved,delta_t,from_t_step=0):
+    #Benettin 1980: Lyapunov Characteristic Exponents for smooth dynamical 
+    #Echmann and Ruelle 1985: Ergodic theory of chaos and strange attractors
+    N = W.shape[0]
+    Q_n = np.eye(N)
+    lyap_spec = np.zeros(N)
+    lyaps = []
+    N_t = x_solved.shape[0]
+    for n in range(from_t_step,N_t):
+        M_n = np.eye(N) + act_fun(n,W,b,tau,x_solved)*delta_t
+        Q_n, R_n = np.linalg.qr(np.dot(M_n, Q_n))
+        lyap_spec += np.log(np.abs(np.diag(R_n)))/(N_t*delta_t)
+        lyaps.append(lyap_spec)
+    return lyap_spec, lyaps
+
+
+
 ######sampling dynamics
 def sample_hidden_trajs(model, hidden, maxT):
     """Sample hidden trajectories given initial hidden states (hidden) without input
@@ -324,9 +368,6 @@ def sample_trajs_fxdpnts(model, Nrec, fixed_points, max_grid=0.01, Nsteps=3, max
         hidden_states = sample_hidden_trajs(model, hidden, maxT)
         all_hidden_stack = np.concatenate([all_hidden_stack, hidden_states])
     return all_hidden_stack, grid
-
-
-
 
 #MORSE
 def get_connection_matrix(fixed_point_cubes, RCs, cds_full):
