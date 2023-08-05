@@ -150,13 +150,13 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_pa
     columns.extend(keys)
     
     L = []
-    for param_i, param_comb in enumerate(all_param_combs):
+    for param_i, param_comb in tqdm.tqdm(enumerate(all_param_combs)):
         print(param_comb, "   #", param_i+1, "/", len(all_param_combs))
 
         for key in param_comb:
             training_kwargs[key] = param_comb[key]
         
-        for trial in range(trials):
+        for trial in tqdm.tqdm(range(trials)):
             print("Trial", trial)
 
             losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = run_single_training(parameter_file_name,
@@ -196,13 +196,13 @@ if __name__ == "__main__":
     model_names = ['lstm', 'low', 'high', 'ortho', 'qpta']
     initialization_type_list =['', 'gain','gain', 'ortho', 'qpta']
     loss_functions = ['mse', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked']
-    mlrnn_list = [True, True, True, True, True]
-    # mlrnn_list = [False, False, False, False]
+    learning_rates = [3e-4, 1e-3, 1e-3, 1e-3, 1e-3]
     g_list = [0., .5, 1.5, 0., 0.]
     scheduler_step_sizes = [100, 300, 100, 100, 300]
-    gammas = [0.75, 0.5, 0.75, 0.75, .5]
+    gammas = [0.75, 0.5, 0.75, 0.75, .75]
     nrecs = [115, 200, 200, 200, 200]
-    trial_lengths = [51.2, 102.4, 409.6]
+    
+    trial_lengths = [12.8, 51.2, 102.4, 409.6]
     for T in tqdm.tqdm(trial_lengths):
         training_kwargs['T'] = T
         for model_i, model_name in tqdm.tqdm(enumerate(model_names)):
@@ -210,7 +210,6 @@ if __name__ == "__main__":
             training_kwargs['initialization_type'] = initialization_type_list[model_i]
             training_kwargs['N_rec'] = nrecs[model_i]
             training_kwargs['loss_function'] = loss_functions[model_i]
-            training_kwargs['ml_rnn'] = mlrnn_list[model_i]
             training_kwargs['rnn_init_gain'] = g_list[model_i]
             training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
             training_kwargs['scheduler_gamma'] = gammas[model_i]
@@ -218,9 +217,11 @@ if __name__ == "__main__":
                                                                     sub_exp_name=f'lambda/T{T}',
                                                                   model_name=model_name, trials=11, training_kwargs=training_kwargs)
     
-    # model_names = ['ortho']
+    # model_names = ['qpta']
     # model_i = 3
-    # param_grid = {'learning_rate':[1e-2,1e-3],
+    # param_grid = {'T': [12.8],
+    #               'dt_rnn': [.1],
+    #               'learning_rate':[1e-3],
     #               'batch_size': [128],
     #               'optimizer': ['adam'],
     #               'scheduler': ['steplr'],
@@ -237,6 +238,6 @@ if __name__ == "__main__":
     #     training_kwargs['ml_rnn'] = mlrnn_list[model_i]
     #     training_kwargs['rnn_init_gain'] = g_list[model_i]
     #     df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
-    #                                                                     experiment_folder='angularintegration/lambda_grid_2/',
+    #                                                                     experiment_folder='angularintegration/lambda_grid_dt1/',
     #                                                                     sub_exp_name=model_name,
     #                                                                     parameter_path=parameter_path, trials=2)

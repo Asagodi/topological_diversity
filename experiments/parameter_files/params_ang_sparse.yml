@@ -18,7 +18,7 @@ cuda: True
 scheduler: 'steplr'
 scheduler_step_size: 200
 scheduler_gamma: 0.85
-learning_rate: 0.01
+learning_rate: 0.001
 batch_size: 128 
 n_epochs: 1000
 record_step: 
