@@ -20,7 +20,7 @@ scheduler_step_size: 200
 scheduler_gamma: 0.85
 learning_rate: 0.01
 batch_size: 128 
-n_epochs: 2500
+n_epochs: 1000
 record_step: 
 clip_gradient: 
 final_loss: True
@@ -29,7 +29,7 @@ task: 'angularintegration'
 T: 10
 dt_task: .1
 task_sparsity: 'variable'
-verbose: True
+verbose: False
 adam_momentum: .0
 weight_decay: .0
 adam_betas: 

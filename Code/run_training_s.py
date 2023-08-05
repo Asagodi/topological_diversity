@@ -202,8 +202,9 @@ if __name__ == "__main__":
     scheduler_step_sizes = [100, 300, 100, 100, 300]
     gammas = [0.75, 0.5, 0.75, 0.75, .5]
     nrecs = [115, 200, 200, 200, 200]
-    trial_lengths = [12.8, 25.6, 51.2, 102.4, 409.6]
+    trial_lengths = [51.2, 102.4, 409.6]
     for T in tqdm.tqdm(trial_lengths):
+        training_kwargs['T'] = T
         for model_i, model_name in tqdm.tqdm(enumerate(model_names)):
             training_kwargs['network_type'] = network_types[model_i]
             training_kwargs['initialization_type'] = initialization_type_list[model_i]
@@ -238,4 +239,4 @@ if __name__ == "__main__":
     #     df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
     #                                                                     experiment_folder='angularintegration/lambda_grid_2/',
     #                                                                     sub_exp_name=model_name,
-                                                                        parameter_path=parameter_path, trials=2)
+    #                                                                     parameter_path=parameter_path, trials=2)
