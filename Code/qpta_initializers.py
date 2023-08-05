@@ -1,5 +1,6 @@
 """
-@author: poitr_
+@author: piotr sokol
+piotr.a.sokol@gmail.com
 """
 
 import numpy as np
