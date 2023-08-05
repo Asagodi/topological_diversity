@@ -248,18 +248,6 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2, grace_period=10):
     print("Best trial config: {}".format(best_result.config))
     print("Best trial final validation loss: {}".format(
         best_result.metrics["loss"]))   
-    
-    # best_trained_model = RNN(best_trial.config["lr"])
-    # device = "cpu"
-    # if torch.cuda.is_available():
-    #     device = "cuda:0"
-    #     if gpus_per_trial > 1:
-    #         best_trained_model = nn.DataParallel(best_trained_model)
-    # best_trained_model.to(device)
-
-    # best_checkpoint = best_trial.checkpoint.to_air_checkpoint()
-    # best_checkpoint_data = best_checkpoint.to_dict()
-    # best_trained_model.load_state_dict(best_checkpoint_data["net_state_dict"])
 
 
 if __name__ == "__main__":
