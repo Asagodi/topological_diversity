@@ -22,6 +22,8 @@ from ray.tune.schedulers import ASHAScheduler
 from schuessler_model import RNN
 from tasks import *
 from network_initialization import *
+from qpta_initializers import _qpta_tanh_hh
+
 
 def loss_mse(output, target, mask):
     """
@@ -61,9 +63,6 @@ def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
         res.append(trajectories)
     res = [r.numpy() for r in res]
     return res
-
-def train_ray(config):
-    train(net, task, n_epochs=1000, batch_size=32, learning_rate=config['lr'])
     
 
 def train(config):
@@ -79,35 +78,50 @@ def train(config):
     :return: res
     """
     # CUDA management
-    
-    n_epochs = 10000
-    batch_size = config['batch_size']
-    clip_gradient = config['clip_gradient']
-    N_rec = config['N_rec']
-    
     device='cpu'
-    N_in, N_rec, N_out = 1, 200, 2
-    N_blas = int(N_rec/2)
     
-    a=100
-    h0_init = np.ones(N_rec)
-    wrec_init, brec_init = bla_weights(N_in, N_blas, N_out, a)
-    # net = RNN(dims=(N_in, N_rec, N_out), noise_std=0, dt=1, nonlinearity='relu', readout_nonlinearity='id',
-    #           train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True,
-    #           wrec_init=wrec_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=True)
+    n_epochs = 1000
+    batch_size = config['batch_size']
+    clip_gradient = None #config['clip_gradient']
+    N_rec = 200 #config['N_rec']
+
+    scheduler_step_size = config['scheduler_step_size']
+    scheduler_gamma = config['scheduler_gamma'] 
+    task_name = 'angular'
+    config['initialization_type'] = 'qpta'
+    g = 0.5 #config['g']
     
-    net = RNN(dims=(N_in, N_rec, N_out), noise_std=0, dt=1, g=config['g'], nonlinearity='tanh', readout_nonlinearity='id',
-              train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True, ML_RNN=False)
+    if task_name == 'eyeblink':
+        N_in, N_rec, N_out = 1, 200, 1
+        task =  eyeblink_task(input_length=100, t_delay=50)
+
+    elif task_name == 'angular':
+        N_in, N_rec, N_out = 1, 200, 2
+        task =  angularintegration_task(T=10, dt=.1)
+    
+
+    if config['initialization_type'] == 'qpta':
+        h0_init = np.ones(N_rec)
+        brec_init = np.zeros(N_rec)
+        wrec_init = _qpta_tanh_hh()((N_rec,N_rec))
+    elif config['initialization_type'] == 'gain':
+        brec_init, wrec_init, h0_init = None, None, None
+    # wrec_init, brec_init = qpta_rec_weights(N_in, N_blas, N_out)
+    # a=100
+    # wrec_init, brec_init = bla_rec_weights(N_in, N_blas, N_out, a)
+
+    
+    net = RNN(dims=(N_in, N_rec, N_out), noise_std=0, dt=1, g=g,
+              nonlinearity='tanh', readout_nonlinearity='id',
+              train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True,
+              wrec_init=wrec_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=True)
+    
     net.to(device=device)
     h_init=None
     
-    # task =  angularintegration_task(T=10, dt=.1)
-    task =  eyeblink_task(input_length=100, t_delay=50)
-
-    
     # Optimizer
     optimizer = torch.optim.Adam(net.parameters(), lr=config['lr'])
-
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=scheduler_step_size, gamma=scheduler_gamma)
         
     checkpoint = session.get_checkpoint()
     if checkpoint:
@@ -148,6 +162,8 @@ def train(config):
         
         # Update weights
         optimizer.step()
+        
+        scheduler.step()
         
         # These 2 lines important to prevent memory leaks
         loss.detach_()
@@ -200,13 +216,15 @@ def train(config):
 
 
 
-def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2):
+def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2, grace_period=10):
     config = {
-        "N_rec": tune.choice([2**i for i in range(9)]),
-        "clip_gradient": tune.choice([1, 10, 100, None]),
-        "lr": tune.loguniform(1e-10, 1e-7),
-        "batch_size": tune.choice([8, 16, 32, 64]),
-        "g": tune.choice([0., 0.25, 0.5, 1.]),
+        # "N_rec": tune.choice([2**i for i in range(9)]),
+        "clip_gradient": tune.choice([.1, 1, 10, 100, None]),
+        "lr": tune.choice([1e-4, 1e-3, 1e-2, 1e-1]),
+        "batch_size": tune.choice([128]),
+        # "g": tune.choice([0., 0.25, 0.5, 1.]),
+        "scheduler_step_size": tune.choice([50, 100, 200]),
+        "scheduler_gamma": tune.choice([.5, .75]),
     }
     
     asha_scheduler = ASHAScheduler(
@@ -214,27 +232,23 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2):
     metric='loss',
     mode='min',
     max_t=max_num_epochs,
-    grace_period=10,
+    grace_period=grace_period,
     reduction_factor=3,
-    brackets=1,
-    )
+    brackets=1)
+    
     tuner = tune.Tuner(
         train,
         tune_config=tune.TuneConfig(scheduler=asha_scheduler),
-        param_space=config,
-    )
+        param_space=config)
+    
     results = tuner.fit()
 
     best_result = results.get_best_result("loss", "min")
 
-    # print(f"Best trial config: {best_trial.config}")
-    # print(f"Best trial final validation loss: {best_trial.last_result['loss']}")
-    # print(f"Best trial final validation accuracy: {best_trial.last_result['accuracy']}")
-
     print("Best trial config: {}".format(best_result.config))
     print("Best trial final validation loss: {}".format(
-        best_result.metrics["loss"]))
-
+        best_result.metrics["loss"]))   
+    
     # best_trained_model = RNN(best_trial.config["lr"])
     # device = "cpu"
     # if torch.cuda.is_available():
@@ -245,13 +259,8 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2):
 
     # best_checkpoint = best_trial.checkpoint.to_air_checkpoint()
     # best_checkpoint_data = best_checkpoint.to_dict()
-
     # best_trained_model.load_state_dict(best_checkpoint_data["net_state_dict"])
-
-    # test_loss = test_accuracy(best_trained_model, device)[
-    # print("Best trial test set accuracy: {}".format(test_]acc))
 
 
 if __name__ == "__main__":
-    # You can change the number of GPUs per trial here:
-    main(num_samples=10, max_num_epochs=1000, gpus_per_trial=1)
+    main(num_samples=200, max_num_epochs=500, gpus_per_trial=1, grace_period=50)
