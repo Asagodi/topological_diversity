@@ -184,7 +184,38 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_pa
     min_final_meanloss = df_final.groupby(param_keys).mean().idxmin()
     return df, df_final, min_final_loss, min_final_meanloss
 
+def size_experiment(main_exp_name, sub_exp_name):
+    
+    
+    network_types = ['lstm_noforget', 'rnn', 'rnn', 'rnn', 'rnn']
+    model_names = ['lstm', 'low', 'high', 'ortho', 'qpta']
+    initialization_type_list =['', 'gain','gain', 'ortho', 'qpta']
+    loss_functions = ['mse', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked']
+    g_list = [0., .5, 1.5, 0., 0.]
+    scheduler_step_sizes = [100, 300, 100, 100, 300]
+    gammas = [0.75, 0.5, 0.75, 0.75, .75]
+    
+    nrecs_lists = [[2, 6, 6, 6, 6],
+                   [8, 16, 16, 16, 16],
+                   [32, 58, 58, 58, 58], 
+                   [115, 200, 200, 200, 200],
+                   [128, 224, 224, 224, 224]]
+    
+    training_kwargs['T'] = 25.6
+    for nrecs_list in tqdm.tqdm(nrecs_lists):
 
+        for model_i, model_name in tqdm.tqdm(enumerate(model_names)):
+            training_kwargs['learning_rate'] = learning_rates[model_i]
+            training_kwargs['network_type'] = network_types[model_i]
+            training_kwargs['initialization_type'] = initialization_type_list[model_i]
+            training_kwargs['N_rec'] = nrecs[model_i]
+            training_kwargs['loss_function'] = loss_functions[model_i]
+            training_kwargs['rnn_init_gain'] = g_list[model_i]
+            training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
+            training_kwargs['scheduler_gamma'] = gammas[model_i]
+            run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
+                                                                    sub_exp_name=sub_exp_name+f'/N_L{nrecs_list[0]}',
+                                                                  model_name=model_name, trials=11, training_kwargs=training_kwargs)
     
 if __name__ == "__main__":
     print(current_dir)
@@ -196,26 +227,20 @@ if __name__ == "__main__":
     model_names = ['lstm', 'low', 'high', 'ortho', 'qpta']
     initialization_type_list =['', 'gain','gain', 'ortho', 'qpta']
     loss_functions = ['mse', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked']
-    learning_rates = [3e-4, 1e-3, 1e-3, 1e-3, 1e-3]
     g_list = [0., .5, 1.5, 0., 0.]
     scheduler_step_sizes = [100, 300, 100, 100, 300]
     gammas = [0.75, 0.5, 0.75, 0.75, .75]
     nrecs = [115, 200, 200, 200, 200]
     
-    trial_lengths = [12.8, 51.2, 102.4, 409.6]
-    for T in tqdm.tqdm(trial_lengths):
-        training_kwargs['T'] = T
-        for model_i, model_name in tqdm.tqdm(enumerate(model_names)):
-            training_kwargs['network_type'] = network_types[model_i]
-            training_kwargs['initialization_type'] = initialization_type_list[model_i]
-            training_kwargs['N_rec'] = nrecs[model_i]
-            training_kwargs['loss_function'] = loss_functions[model_i]
-            training_kwargs['rnn_init_gain'] = g_list[model_i]
-            training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
-            training_kwargs['scheduler_gamma'] = gammas[model_i]
-            run_experiment('/parameter_files/'+parameter_file_name, main_exp_name='angularintegration',
-                                                                    sub_exp_name=f'lambda/T{T}',
-                                                                  model_name=model_name, trials=11, training_kwargs=training_kwargs)
+    # trial_lengths = [12.8, 51.2, 102.4, 409.6]
+    
+    nrecs_lists = [[2, 6, 6, 6, 6],
+                   [8, 16, 16, 16, 16],
+                   [32, 58, 58, 58, 58], 
+                   [115, 200, 200, 200, 200],
+                   [128, 224, 224, 224, 224]]
+    
+    size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
     
     # model_names = ['qpta']
     # model_i = 3
