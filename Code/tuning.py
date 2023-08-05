@@ -82,22 +82,22 @@ def train(config):
     
     n_epochs = 1000
     batch_size = config['batch_size']
-    clip_gradient = None #config['clip_gradient']
+    clip_gradient = config['clip_gradient']
     N_rec = 200 #config['N_rec']
 
     scheduler_step_size = config['scheduler_step_size']
     scheduler_gamma = config['scheduler_gamma'] 
     task_name = 'angular'
-    config['initialization_type'] = 'qpta'
-    g = 0.5 #config['g']
+    task_T = config['T']
+    g = config['g']
     
     if task_name == 'eyeblink':
-        N_in, N_rec, N_out = 1, 200, 1
-        task =  eyeblink_task(input_length=100, t_delay=50)
+        N_in, N_out = 1, 1
+        task =  eyeblink_task(input_length=task_T, t_delay=50)
 
     elif task_name == 'angular':
-        N_in, N_rec, N_out = 1, 200, 2
-        task =  angularintegration_task(T=10, dt=.1)
+        N_in, N_out = 1, 2
+        task =  angularintegration_task(T=task_T, dt=.1, length_scale=1, sparsity='variable')
     
 
     if config['initialization_type'] == 'qpta':
@@ -111,7 +111,7 @@ def train(config):
     # wrec_init, brec_init = bla_rec_weights(N_in, N_blas, N_out, a)
 
     
-    net = RNN(dims=(N_in, N_rec, N_out), noise_std=0, dt=1, g=g,
+    net = RNN(dims=(N_in, N_rec, N_out), noise_std=0, dt=.1, g=g,
               nonlinearity='tanh', readout_nonlinearity='id',
               train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True,
               wrec_init=wrec_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=True)
@@ -199,30 +199,18 @@ def train(config):
     # res = [losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs]
     # return res
 
-        
-
-
-# tuner = tune.Tuner(
-#     train,
-#     tune_config=tune.TuneConfig(
-#         scheduler=ASHAScheduler(),
-#         metric="loss",
-#         mode="min",
-#         num_samples=10,
-#     ),
-#     param_space={"param": tune.uniform(0, 1)},
-# )
-# results = tuner.fit()
-
 
 
 def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2, grace_period=10):
     config = {
+        "T": 50, 
+        "initialization_type": 'qpta',
         # "N_rec": tune.choice([2**i for i in range(9)]),
         "clip_gradient": tune.choice([.1, 1, 10, 100, None]),
         "lr": tune.choice([1e-4, 1e-3, 1e-2, 1e-1]),
         "batch_size": tune.choice([128]),
-        # "g": tune.choice([0., 0.25, 0.5, 1.]),
+        "g": .5,
+        # "g": tune.choice([0., 0.25, 0.5, 1., 1.5]),
         "scheduler_step_size": tune.choice([50, 100, 200]),
         "scheduler_gamma": tune.choice([.5, .75]),
     }
