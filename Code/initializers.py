@@ -8,8 +8,9 @@ from typing import Callable
 
 Tensor = torch.Tensor
 
-# current_dir = os.path.dirname(os.path.realpath('__file__'))
-# parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+import os
+current_dir = os.path.dirname(os.path.realpath('__file__'))
+parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 
 def scale_rot2d(alpha: float, theta: float) -> np.ndarray:
     """2D rotation matrix."""
@@ -24,7 +25,7 @@ def _qpta_tanh_hh(alpha_LB: float = 1 + 1e-3,
     assert alpha_LB >= _LB
     assert alpha_UB <= _UB
 
-    with np.load(str(Path('__file__').parent.joinpath('bifcurve_tanh.npz')),
+    with np.load(str(Path(current_dir).parent.joinpath('bifcurve_tanh.npz')),
                  allow_pickle=True) as f:
         alphas = f["alphas"].squeeze()
         thetas = f["thetas"].squeeze()
