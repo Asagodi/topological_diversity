@@ -69,7 +69,7 @@ def angularintegration_task(T, dt, length_scale=1, sparsity=1):
     Creates N_batch trials of the angular integration task with Guassian Process angular velocity inputs.
     Inputs are left and right angular velocity and 
     target output is sine and cosine of integrated angular velocity.
-    Returns inputs, outputs, mask, 0
+    Returns inputs, outputs, mask
     -------
     """
     input_length = int(T/dt)
@@ -100,7 +100,7 @@ def angularintegration_delta_task(T, dt, p=.1, amplitude=1):
     Creates N_batch trials of the angular integration task with dela pulses.
     Inputs are left and right angular velocity and 
     target output is sine and cosine of integrated angular velocity.
-    Returns inputs, outputs, mask, 0
+    Returns inputs, outputs, mask
     -------
     """
     input_length = int(T/dt)
@@ -116,7 +116,30 @@ def angularintegration_delta_task(T, dt, p=.1, amplitude=1):
     
     return task
 
+def simplestep_integration_task(T, dt, amplitude=1, pulse_time=1, delay=1):
+    """
+    Creates a trial with a positive and negative step with length step_length and amplitude
+    Inputs are left and right angular velocity and 
+    target output is sine and cosine of integrated angular velocity.
+    Returns inputs, outputs
+    -------
+    """
+    input_length = int(T/dt)
+    pulse_length = int(pulse_time/dt)
+    delay_length = int(delay/dt)
 
+    def task(batch_size):
+        
+        inputs = np.zeros((batch_size,input_length,1))
+        inputs[:,delay_length:delay_length+pulse_length,:] = amplitude
+        inputs[:,2*delay_length+pulse_length:2*delay_length+2*pulse_length,:] = -amplitude
+        outputs_1d =  np.cumsum(inputs, axis=1)*dt
+        outputs = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
+        mask = np.ones((batch_size, input_length, 2))
+
+        return inputs, outputs.reshape((batch_size, input_length, 2)), mask
+
+    return task
 
 def flipflop(dims, dt,
     t_max=50,
