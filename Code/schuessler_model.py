@@ -76,11 +76,11 @@ def get_scheduler(model, optimizer, scheduler_name, scheduler_step_size, schedul
     return scheduler    
 
 class RNN(nn.Module):
-    def __init__(self, dims, noise_std, dt=0.5, 
-                 nonlinearity='tanh', readout_nonlinearity=None,
+    def __init__(self, dims, noise_std=0., dt=0.5, 
+                 nonlinearity='tanh', readout_nonlinearity='id',
                  g=None, wi_init=None, wrec_init=None, wo_init=None, brec_init=None, h0_init=None,
                  train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True, 
-                 ML_RNN=False):
+                 ML_RNN=True):
         """
         :param dims: list = [input_size, hidden_size, output_size]
         :param noise_std: float
@@ -535,6 +535,7 @@ def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
     input = torch.from_numpy(input).float() 
     target = torch.from_numpy(target).float() 
     mask = torch.from_numpy(mask).float() 
+
     with torch.no_grad():
         # Run dynamics
         if return_dynamics:
