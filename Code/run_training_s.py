@@ -234,7 +234,7 @@ def size_experiment(main_exp_name, sub_exp_name):
     g_list = [0., .5, 1.5, 0., 0.]
     scheduler_step_sizes = [100, 300, 100, 100, 300]
     gammas = [0.75, 0.5, 0.75, 0.75, .75]
-    learning_rates = [1e-3, 1e-3, 1e-3, 1e-3, 1e-3]
+    learning_rates = [1e-3, 1e-3, 1e-3, 1e-3, 1e-4]
     
     nrecs_lists = [[2, 6, 6, 6, 6],
                    [8, 16, 16, 16, 16],
@@ -299,23 +299,23 @@ if __name__ == "__main__":
     #                                                       model_name=model_name, trials=1, training_kwargs=training_kwargs)
     
     
-    # size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
+    size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
     
-    param_grid = {'T': [12.8],
-                  'dt_rnn': [.1],
-                  'initialization_type': ['gain'],
-                  'g': [.5],
-                  'learning_rate':[1e-2, 1e-3, 1e-4],
-                  'batch_size': [128],
-                  'optimizer': ['adam'],
-                  'scheduler': ['steplr'],
-                  'n_epochs': [1000],
-                  'scheduler_step_size':[1000],
-                  'adam_beta1': [.8, .9, .95],
-                  'adam_beta2': [.99, .999, .9999],
-                  'scheduler_gamma':[1.],
-                  'clip_gradient': [None]}
-    df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
-                                                                    experiment_folder='angularintegration/adam2/',
-                                                                    sub_exp_name='low',
-                                                                    parameter_path=parameter_path, trials=2)
+    # param_grid = {'T': [12.8],
+    #               'dt_rnn': [.1],
+    #               'initialization_type': ['gain'],
+    #               'g': [.5],
+    #               'learning_rate':[1e-2, 1e-3, 1e-4],
+    #               'batch_size': [128],
+    #               'optimizer': ['adam'],
+    #               'scheduler': ['steplr'],
+    #               'n_epochs': [1000],
+    #               'scheduler_step_size':[1000],
+    #               'adam_beta1': [.8, .9, .95],
+    #               'adam_beta2': [.99, .999, .9999],
+    #               'scheduler_gamma':[1.],
+    #               'clip_gradient': [None]}
+    # df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
+    #                                                                 experiment_folder='angularintegration/adam2/',
+    #                                                                 sub_exp_name='low',
+    #                                                                 parameter_path=parameter_path, trials=2)
