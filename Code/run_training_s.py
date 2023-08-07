@@ -75,9 +75,8 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
             with open(experiment_folder+'/parameters.yml', 'w') as outfile:
                 yaml.dump(training_kwargs, outfile, default_flow_style=False)
         
-        
-    task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'], sparsity=training_kwargs['task_sparsity'])
 
+    task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'], sparsity=training_kwargs['task_sparsity'])
     
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     
@@ -87,7 +86,8 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
               batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
               clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], init_states=None,
               loss_function=training_kwargs['loss_function'], final_loss=training_kwargs['final_loss'], last_mses=training_kwargs['last_mses'], 
-              optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'], adam_betas=training_kwargs['adam_betas'], adam_eps=1e-8, #optimizers 
+              optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'],
+              adam_betas=(training_kwargs['adam_beta1'],training_kwargs['adam_beta2']), adam_eps=1e-8, #optimizers 
               scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
               verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
     else:
@@ -116,7 +116,8 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
               batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
               clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], h_init=None,
               loss_function=training_kwargs['loss_function'],
-              optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'], adam_betas=training_kwargs['adam_betas'], adam_eps=1e-8, #optimizers 
+              optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'],
+              adam_betas=(training_kwargs['adam_beta1'],training_kwargs['adam_beta2']), adam_eps=1e-8, #optimizers 
               scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
               verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
     
@@ -132,10 +133,13 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_pa
     """Perform a grid search for the optimal hyperparameters for training"""
 
     makedirs(parent_dir +  '/experiments/' + experiment_folder)
-    assert trials>1
+    assert trials>=1
     if not parameter_path:
         parameter_path = parent_dir +  '/experiments/' + experiment_folder +'/'+ parameter_file_name
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
+    
+    with open(parent_dir +  '/experiments/' + experiment_folder+'/parameters.yml', 'w') as outfile:
+        yaml.dump(training_kwargs, outfile, default_flow_style=False)
     
     #create grid of parameters
     keys, values = zip(*param_grid.items())
@@ -176,16 +180,52 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_pa
     all_keys = param_keys
     all_keys.extend(['final_loss', 'trial'])
     df_final = df[all_keys]
-    with np.printoptions(linewidth=10000):
-        df.to_csv(parent_dir+'/experiments/'+experiment_folder+'/grid_search_'+sub_exp_name+'.csv', index=False)
+    
+    save_path = parent_dir+'/experiments/'+experiment_folder+'/grid_search_'+sub_exp_name
+    # with np.printoptions(linewidth=10000):
+    #     df.to_csv(save_path+'.csv', index=False)
+        
+    df.to_pickle(save_path+'.pickle')
     
     min_final_loss = df.iloc[df['final_loss'].idxmin()]
     df_final = df_final.fillna("None")
     min_final_meanloss = df_final.groupby(param_keys).mean().idxmin()
     return df, df_final, min_final_loss, min_final_meanloss
 
-def size_experiment(main_exp_name, sub_exp_name):
+def grid_search_all_models(experiment_folder, model_names, param_grid):
+    for model_i, model_name in enumerate(model_names):
+        training_kwargs['network_type'] = network_types[model_i]
+        training_kwargs['N_rec'] = nrecs[model_i]
+        training_kwargs['loss_function'] = loss_functions[model_i]
+        training_kwargs['initialization_type'] = initialization_type_list[model_i]
+        training_kwargs['rnn_init_gain'] = g_list[model_i]
+        df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
+                                                                        experiment_folder=experiment_folder,
+                                                                        sub_exp_name=model_name,
+                                                                        parameter_path=parameter_path, trials=2)
+
+
+def trial_length_experiment(main_exp_name, sub_exp_name):
     
+    scheduler_step_sizes = [100, 300, 100, 100, 300]
+    gammas = [0.75, 0.5, 0.75, 0.75, .5]
+    nrecs = [115, 200, 200, 200, 200]
+    trial_lengths = [12.8, 51.2, 102.4, 409.6]
+    for T in tqdm.tqdm(trial_lengths):
+        training_kwargs['T'] = T
+        for model_i, model_name in tqdm.tqdm(enumerate(model_names)):
+            training_kwargs['network_type'] = network_types[model_i]
+            training_kwargs['initialization_type'] = initialization_type_list[model_i]
+            training_kwargs['N_rec'] = nrecs[model_i]
+            training_kwargs['loss_function'] = loss_functions[model_i]
+            training_kwargs['rnn_init_gain'] = g_list[model_i]
+            training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
+            training_kwargs['scheduler_gamma'] = gammas[model_i]
+            run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
+                                                                    sub_exp_name=sub_exp_name+f'/T{T}',
+                                                                  model_name=model_name, trials=11, training_kwargs=training_kwargs)
+
+def size_experiment(main_exp_name, sub_exp_name):
     
     network_types = ['lstm_noforget', 'rnn', 'rnn', 'rnn', 'rnn']
     model_names = ['lstm', 'low', 'high', 'ortho', 'qpta']
@@ -194,6 +234,7 @@ def size_experiment(main_exp_name, sub_exp_name):
     g_list = [0., .5, 1.5, 0., 0.]
     scheduler_step_sizes = [100, 300, 100, 100, 300]
     gammas = [0.75, 0.5, 0.75, 0.75, .75]
+    learning_rates = [1e-3, 1e-3, 1e-3, 1e-3, 1e-3]
     
     nrecs_lists = [[2, 6, 6, 6, 6],
                    [8, 16, 16, 16, 16],
@@ -217,6 +258,9 @@ def size_experiment(main_exp_name, sub_exp_name):
                                                                     sub_exp_name=sub_exp_name+f'/N_L{nrecs_list[0]}',
                                                                   model_name=model_name, trials=11, training_kwargs=training_kwargs)
     
+    
+
+    
 if __name__ == "__main__":
     print(current_dir)
     parameter_file_name = 'params_ang_sparse.yml'
@@ -232,37 +276,46 @@ if __name__ == "__main__":
     gammas = [0.75, 0.5, 0.75, 0.75, .75]
     nrecs = [115, 200, 200, 200, 200]
     
-    # trial_lengths = [12.8, 51.2, 102.4, 409.6]
     
-    nrecs_lists = [[2, 6, 6, 6, 6],
-                   [8, 16, 16, 16, 16],
-                   [32, 58, 58, 58, 58], 
-                   [115, 200, 200, 200, 200],
-                   [128, 224, 224, 224, 224]]
+    main_exp_name = 'angularintegration'
+    sub_exp_name  = 'dt'
+    model_i, model_name = 2, 'low'
+    training_kwargs['clip_gradient'] = .01
+    training_kwargs['verbose'] = True
+    training_kwargs['learning_rate'] = 1e-3
+    training_kwargs['T'] = 12.8 #25.6
+    training_kwargs['dt_rnn'] = .1
+    training_kwargs['adam_beta1'] = 0.8
+    training_kwargs['adam_beta2'] = 0.9
+    training_kwargs['network_type'] = network_types[model_i]
+    training_kwargs['initialization_type'] = initialization_type_list[model_i]
+    training_kwargs['N_rec'] = 200
+    training_kwargs['loss_function'] = loss_functions[model_i]
+    training_kwargs['rnn_init_gain'] = g_list[model_i]
+    training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
+    training_kwargs['scheduler_gamma'] = gammas[model_i]
+    # run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
+    #                                                         sub_exp_name=sub_exp_name,
+    #                                                       model_name=model_name, trials=1, training_kwargs=training_kwargs)
     
-    size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
     
-    # model_names = ['qpta']
-    # model_i = 3
-    # param_grid = {'T': [12.8],
-    #               'dt_rnn': [.1],
-    #               'learning_rate':[1e-3],
-    #               'batch_size': [128],
-    #               'optimizer': ['adam'],
-    #               'scheduler': ['steplr'],
-    #               'n_epochs': [500],
-    #               'scheduler_step_size':[100,300],
-    #               'scheduler_gamma':[0.5, 0.75],
-    #               'clip_gradient': [None]}
-    # for model_i, model_name in enumerate(model_names):
-    #     print(model_name)
-    #     training_kwargs['network_type'] = network_types[model_i]
-    #     training_kwargs['N_rec'] = nrecs[model_i]
-    #     training_kwargs['loss_function'] = loss_functions[model_i]
-    #     training_kwargs['initialization_type'] = initialization_type_list[model_i]
-    #     training_kwargs['ml_rnn'] = mlrnn_list[model_i]
-    #     training_kwargs['rnn_init_gain'] = g_list[model_i]
-    #     df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
-    #                                                                     experiment_folder='angularintegration/lambda_grid_dt1/',
-    #                                                                     sub_exp_name=model_name,
-    #                                                                     parameter_path=parameter_path, trials=2)
+    # size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
+    
+    param_grid = {'T': [12.8],
+                  'dt_rnn': [.1],
+                  'initialization_type': ['gain'],
+                  'g': [.5],
+                  'learning_rate':[1e-2, 1e-3, 1e-4],
+                  'batch_size': [128],
+                  'optimizer': ['adam'],
+                  'scheduler': ['steplr'],
+                  'n_epochs': [1000],
+                  'scheduler_step_size':[1000],
+                  'adam_beta1': [.8, .9, .95],
+                  'adam_beta2': [.99, .999, .9999],
+                  'scheduler_gamma':[1.],
+                  'clip_gradient': [None]}
+    df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
+                                                                    experiment_folder='angularintegration/adam2/',
+                                                                    sub_exp_name='low',
+                                                                    parameter_path=parameter_path, trials=2)
