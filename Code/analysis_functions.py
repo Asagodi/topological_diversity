@@ -308,7 +308,6 @@ def linear_jacobian(t,W,b,tau,x_solved):
 
 
 def tanh_jacobian(t,W,b,tau,x_solved, mlrnn=True):
-    #b is unused, but there for consistency with relu jac
     
     if mlrnn:
         return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(np.dot(W,x_solved[t])+b)**2))/tau
