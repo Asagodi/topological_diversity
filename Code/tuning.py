@@ -12,6 +12,7 @@ sys.path.insert(0, currentdir + "\Code")
 import torch
 import torch.nn as nn
 import numpy as np
+from scipy.linalg import qr
 from warnings import warn
 import time
 
@@ -83,7 +84,7 @@ def train(config):
     n_epochs = 1000
     batch_size = config['batch_size']
     clip_gradient = config['clip_gradient']
-    N_rec = 200 #config['N_rec']
+    N_rec = config['N_rec']
 
     scheduler_step_size = config['scheduler_step_size']
     scheduler_gamma = config['scheduler_gamma'] 
@@ -101,27 +102,33 @@ def train(config):
     
 
     if config['initialization_type'] == 'qpta':
-        h0_init = np.ones(N_rec)
         brec_init = np.zeros(N_rec)
         wrec_init = _qpta_tanh_hh()((N_rec,N_rec))
+        
+    elif config['initialization_type'] == 'ortho':
+        H = np.random.randn(N_rec, N_rec)
+        wrec_init, _ = qr(H)
+        brec_init = np.array([0]*N_rec)
+        
     elif config['initialization_type'] == 'gain':
-        brec_init, wrec_init, h0_init = None, None, None
+        brec_init, wrec_init = None, None
     # wrec_init, brec_init = qpta_rec_weights(N_in, N_blas, N_out)
     # a=100
     # wrec_init, brec_init = bla_rec_weights(N_in, N_blas, N_out, a)
 
     
-    net = RNN(dims=(N_in, N_rec, N_out), noise_std=0, dt=.1, g=g,
+    net = RNN(dims=(N_in, N_rec, N_out), noise_std=0, dt=1, g=g,
               nonlinearity='tanh', readout_nonlinearity='id',
               train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True,
-              wrec_init=wrec_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=True)
+              wrec_init=wrec_init, brec_init=brec_init, h0_init=None, ML_RNN=True)
     
     net.to(device=device)
     h_init=None
     
     # Optimizer
-    optimizer = torch.optim.Adam(net.parameters(), lr=config['lr'])
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=scheduler_step_size, gamma=scheduler_gamma)
+    optimizer = torch.optim.Adam(net.parameters(), lr=config['lr'], betas=(config["beta1"], config["beta2"]), eps=config["eps"])
+    if config["scheduler_step_size"] != 0:
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=scheduler_step_size, gamma=scheduler_gamma)
         
     checkpoint = session.get_checkpoint()
     if checkpoint:
@@ -163,7 +170,8 @@ def train(config):
         # Update weights
         optimizer.step()
         
-        scheduler.step()
+        if config["scheduler_step_size"] != 0:
+            scheduler.step()
         
         # These 2 lines important to prevent memory leaks
         loss.detach_()
@@ -203,16 +211,19 @@ def train(config):
 
 def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2, grace_period=10):
     config = {
-        "T": 50, 
-        "initialization_type": 'qpta',
-        # "N_rec": tune.choice([2**i for i in range(9)]),
-        "clip_gradient": tune.choice([.1, 1, 10, 100, None]),
+        "T": 10, 
+        "initialization_type": 'ortho',
+        "g": .5,
+        "N_rec": 200, #tune.choice([2**i for i in range(9)]),
+        "clip_gradient": None, #tune.choice([.1, 1, 10, 100, None]),
         "lr": tune.choice([1e-4, 1e-3, 1e-2, 1e-1]),
         "batch_size": tune.choice([128]),
-        "g": .5,
+        "beta1":  tune.choice([.7, 0.9, .99]),
+        "beta2":  tune.choice([.99, .999, .9999]),
+        "eps": 1e-08,
         # "g": tune.choice([0., 0.25, 0.5, 1., 1.5]),
-        "scheduler_step_size": tune.choice([50, 100, 200]),
-        "scheduler_gamma": tune.choice([.5, .75]),
+        "scheduler_step_size": 0, #tune.choice([50, 100, 200]),
+        "scheduler_gamma": 1., #tune.choice([.5, .75]),
     }
     
     asha_scheduler = ASHAScheduler(
