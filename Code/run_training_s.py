@@ -249,7 +249,7 @@ def size_experiment(main_exp_name, sub_exp_name):
             training_kwargs['learning_rate'] = learning_rates[model_i]
             training_kwargs['network_type'] = network_types[model_i]
             training_kwargs['initialization_type'] = initialization_type_list[model_i]
-            training_kwargs['N_rec'] = nrecs[model_i]
+            training_kwargs['N_rec'] = nrecs_list[model_i]
             training_kwargs['loss_function'] = loss_functions[model_i]
             training_kwargs['rnn_init_gain'] = g_list[model_i]
             training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
@@ -276,43 +276,45 @@ if __name__ == "__main__":
     gammas = [0.75, 0.5, 0.75, 0.75, .75]
     nrecs = [115, 200, 200, 200, 200]
     
+    size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
     
-    main_exp_name = 'angularintegration'
-    sub_exp_name  = 'dt'
-    model_i, model_name = 2, 'low'
-    training_kwargs['clip_gradient'] = .01
-    training_kwargs['verbose'] = True
-    training_kwargs['learning_rate'] = 1e-3
-    training_kwargs['T'] = 12.8 #25.6
-    training_kwargs['dt_rnn'] = .1
-    training_kwargs['adam_beta1'] = 0.8
-    training_kwargs['adam_beta2'] = 0.9
-    training_kwargs['network_type'] = network_types[model_i]
-    training_kwargs['initialization_type'] = initialization_type_list[model_i]
-    training_kwargs['N_rec'] = 200
-    training_kwargs['loss_function'] = loss_functions[model_i]
-    training_kwargs['rnn_init_gain'] = g_list[model_i]
-    training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
-    training_kwargs['scheduler_gamma'] = gammas[model_i]
+    # main_exp_name = 'angularintegration'
+    # sub_exp_name  = 'longmore'
+    # model_i, model_name = 2, 'qpta'
+    # training_kwargs['clip_gradient'] = 
+    # training_kwargs['verbose'] = True
+    # training_kwargs['learning_rate'] = 1e-3
+    # training_kwargs['n_epochs'] = 3000
+    # training_kwargs['T'] = 102.4 #25.6
+    # training_kwargs['dt_rnn'] = .1
+    # training_kwargs['adam_beta1'] = 0.8
+    # training_kwargs['adam_beta2'] = 0.9
+    # training_kwargs['network_type'] = network_types[model_i]
+    # training_kwargs['initialization_type'] = initialization_type_list[model_i]
+    # training_kwargs['N_rec'] = 200
+    # training_kwargs['loss_function'] = loss_functions[model_i]
+    # training_kwargs['rnn_init_gain'] = g_list[model_i]
+    # training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
+    # training_kwargs['scheduler_gamma'] = gammas[model_i]
     # run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
     #                                                         sub_exp_name=sub_exp_name,
     #                                                       model_name=model_name, trials=1, training_kwargs=training_kwargs)
     
     
-    size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
+
     
     # param_grid = {'T': [12.8],
     #               'dt_rnn': [.1],
     #               'initialization_type': ['gain'],
     #               'g': [.5],
-    #               'learning_rate':[1e-2, 1e-3, 1e-4],
+    #               'learning_rate':[1e-3, 1e-4],
     #               'batch_size': [128],
     #               'optimizer': ['adam'],
     #               'scheduler': ['steplr'],
     #               'n_epochs': [1000],
     #               'scheduler_step_size':[1000],
-    #               'adam_beta1': [.8, .9, .95],
-    #               'adam_beta2': [.99, .999, .9999],
+    #               'adam_beta1': [.7, .8, .9, .95],
+    #               'adam_beta2': [.9, .99, .999, .9999],
     #               'scheduler_gamma':[1.],
     #               'clip_gradient': [None]}
     # df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
