@@ -368,6 +368,21 @@ def sample_trajs_fxdpnts(model, Nrec, fixed_points, max_grid=0.01, Nsteps=3, max
         all_hidden_stack = np.concatenate([all_hidden_stack, hidden_states])
     return all_hidden_stack, grid
 
+
+
+###analysis of dynamics
+
+
+def participation_ratio(cov_mat_eigenvalues):
+    # https://ganguli-gang.stanford.edu/pdf/17.theory.measurement.pdf
+    # The eigenvalues of this matrix, µ1 ≥ µ2 ≥, . . . , ≥ µM, reflect neural population variance in each eigen-direction in firing rate space. 
+    # PR = (\sum_i µi)^2/(\sum_i µi^2),
+    # 1<PR<M
+    # for a wide variety of uneven spectra, the PR corresponds to the number of dimensions required to explain about 80% of the total population variance 
+    pr = np.sum(cov_mat_eigenvalues)**2/np.sum(cov_mat_eigenvalues**2)
+    return pr
+
+
 #MORSE
 def get_connection_matrix(fixed_point_cubes, RCs, cds_full):
     #if there is a non-zero entry at [j,i] then there is a path from i to j
