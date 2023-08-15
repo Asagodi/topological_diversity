@@ -25,7 +25,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from schuessler_model import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget
+from schuessler_model import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget, LSTM
 from network_initialization import qpta_rec_weights
 from tasks import angularintegration_task, eyeblink_task
 from qpta_initializers import _qpta_tanh_hh
@@ -81,7 +81,21 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     
     if training_kwargs['network_type'] == 'lstm_noforget':
-        net = LSTM_noforget((training_kwargs['N_in'],training_kwargs['N_rec'],training_kwargs['N_out']))
+        net = LSTM_noforget((training_kwargs['N_in'],training_kwargs['N_rec'],training_kwargs['N_out']),
+                            readout_nonlinearity=training_kwargs['readout_nonlinearity'], dropout=training_kwargs['drouput'])
+        
+        result = train_lstm(net, task=task, n_epochs=training_kwargs['n_epochs'],
+              batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
+              clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], init_states=None,
+              loss_function=training_kwargs['loss_function'], final_loss=training_kwargs['final_loss'], last_mses=training_kwargs['last_mses'], 
+              optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'],
+              adam_betas=(training_kwargs['adam_beta1'],training_kwargs['adam_beta2']), adam_eps=1e-8, #optimizers 
+              scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
+              verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
+        
+    elif training_kwargs['network_type'] == 'lstm':
+        net = LSTM((training_kwargs['N_in'],training_kwargs['N_rec'],training_kwargs['N_out']), readout_nonlinearity=training_kwargs['readout_nonlinearity'])
+        
         result = train_lstm(net, task=task, n_epochs=training_kwargs['n_epochs'],
               batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
               clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], init_states=None,
@@ -108,7 +122,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         else:
             raise Exception("Recurrent weight initialization not known.")
             
-        net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'], 
+        net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'], g_in=training_kwargs['g_in'],
                   nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
                   wi_init=None, wrec_init=wrec_init, wo_init=None, brec_init=brec_init, h0_init=None, ML_RNN=training_kwargs['ml_rnn'])
 
@@ -255,7 +269,7 @@ def size_experiment(main_exp_name, sub_exp_name):
             training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
             training_kwargs['scheduler_gamma'] = gammas[model_i]
             run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
-                                                                    sub_exp_name=sub_exp_name+f'/N_L{nrecs_list[0]}',
+                                                                    sub_exp_name=sub_exp_name+f'/{nrecs_list[0]}',
                                                                   model_name=model_name, trials=11, training_kwargs=training_kwargs)
     
     
@@ -267,38 +281,43 @@ if __name__ == "__main__":
     parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
     
-    network_types = ['lstm_noforget', 'rnn', 'rnn', 'rnn', 'rnn']
+    network_types = ['lstm', 'rnn', 'rnn', 'rnn', 'rnn']
     model_names = ['lstm', 'low', 'high', 'ortho', 'qpta']
     initialization_type_list =['', 'gain','gain', 'ortho', 'qpta']
     loss_functions = ['mse', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked']
-    g_list = [0., .5, 1.5, 0., 0.]
+    g_list = [0., .5, 1.3, 0., 0.]
     scheduler_step_sizes = [100, 300, 100, 100, 300]
     gammas = [0.75, 0.5, 0.75, 0.75, .75]
     nrecs = [115, 200, 200, 200, 200]
     
-    size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
+    # size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
     
-    # main_exp_name = 'angularintegration'
-    # sub_exp_name  = 'longmore'
-    # model_i, model_name = 2, 'qpta'
+    main_exp_name = 'angularintegration'
+    sub_exp_name  = 'long'
+    model_i, model_name = 2, 'high'
+    model_i, model_name = 4, 'qpta'
+    # model_i, model_name = 0, 'lstm'
+
     # training_kwargs['clip_gradient'] = 
-    # training_kwargs['verbose'] = True
-    # training_kwargs['learning_rate'] = 1e-3
-    # training_kwargs['n_epochs'] = 3000
-    # training_kwargs['T'] = 102.4 #25.6
-    # training_kwargs['dt_rnn'] = .1
-    # training_kwargs['adam_beta1'] = 0.8
-    # training_kwargs['adam_beta2'] = 0.9
-    # training_kwargs['network_type'] = network_types[model_i]
-    # training_kwargs['initialization_type'] = initialization_type_list[model_i]
-    # training_kwargs['N_rec'] = 200
-    # training_kwargs['loss_function'] = loss_functions[model_i]
-    # training_kwargs['rnn_init_gain'] = g_list[model_i]
-    # training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
-    # training_kwargs['scheduler_gamma'] = gammas[model_i]
-    # run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
-    #                                                         sub_exp_name=sub_exp_name,
-    #                                                       model_name=model_name, trials=1, training_kwargs=training_kwargs)
+    training_kwargs['drouput'] = 1.
+    training_kwargs['g_in'] = .1
+    training_kwargs['verbose'] = True
+    training_kwargs['learning_rate'] = 1e-3
+    training_kwargs['n_epochs'] = 1000
+    training_kwargs['T'] =  25.6 #12.8 #
+    training_kwargs['dt_rnn'] = .1
+    training_kwargs['adam_beta1'] = 0.7
+    training_kwargs['adam_beta2'] = 0.7
+    training_kwargs['network_type'] = network_types[model_i]
+    training_kwargs['initialization_type'] = initialization_type_list[model_i]
+    training_kwargs['N_rec'] = 200
+    training_kwargs['loss_function'] = loss_functions[model_i]
+    training_kwargs['rnn_init_gain'] = g_list[model_i]
+    training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
+    training_kwargs['scheduler_gamma'] = gammas[model_i]
+    run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
+                                                            sub_exp_name=sub_exp_name,
+                                                          model_name=model_name, trials=1, training_kwargs=training_kwargs)
     
     
 

@@ -9,8 +9,6 @@ import numpy as np
 from warnings import warn
 import time
 
-
-
 def mse_loss_masked(output, target, mask):
     """
     Mean squared error loss
@@ -75,10 +73,12 @@ def get_scheduler(model, optimizer, scheduler_name, scheduler_step_size, schedul
         raise Exception("Scheduler not known.")
     return scheduler    
 
+
+
 class RNN(nn.Module):
     def __init__(self, dims, noise_std=0., dt=0.5, 
                  nonlinearity='tanh', readout_nonlinearity='id',
-                 g=None, wi_init=None, wrec_init=None, wo_init=None, brec_init=None, h0_init=None,
+                 g=None, g_in=1, wi_init=None, wrec_init=None, wo_init=None, brec_init=None, h0_init=None,
                  train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True, 
                  ML_RNN=True):
         """
@@ -174,7 +174,7 @@ class RNN(nn.Module):
         # Initialize parameters
         with torch.no_grad():
             if wi_init is None:
-                self.wi.normal_()
+                self.wi.normal_(std=g_in /np.sqrt(hidden_size))
             else:
                 if type(wi_init) == np.ndarray:
                     wi_init = torch.from_numpy(wi_init)
@@ -186,7 +186,7 @@ class RNN(nn.Module):
                     wrec_init = torch.from_numpy(wrec_init)
                 self.wrec.copy_(wrec_init)
             if wo_init is None:
-                self.wo.normal_(std=1 / hidden_size)
+                self.wo.normal_(std=1 / np.sqrt(hidden_size))
             else:
                 if type(wo_init) == np.ndarray:
                     wo_init = torch.from_numpy(wo_init)
@@ -264,7 +264,7 @@ class RNN(nn.Module):
 
     
 class LSTM_noforget(nn.Module):
-    def __init__(self, dims, readout_nonlinearity='id', w_init=None, u_init=None, wo_init=None, bias_init=None):
+    def __init__(self, dims, readout_nonlinearity='id', w_init=None, u_init=None, wo_init=None, bias_init=None, dropout=0.):
         super(LSTM_noforget, self).__init__()
         self.dims = dims
         input_size, hidden_size, output_size = dims
@@ -278,22 +278,26 @@ class LSTM_noforget(nn.Module):
         self.bias = nn.Parameter(torch.Tensor(hidden_size * 3))
         self.wo = nn.Parameter(torch.Tensor(hidden_size, output_size))
         
+        self.drop = nn.Dropout(p=dropout)
+        
         # Initialize parameters
         with torch.no_grad():
             k = np.sqrt(1/hidden_size)
             if w_init is None:
                 torch.nn.init.uniform_(self.W, a=-k, b=k)
+                # torch.nn.init.normal_(self.W, std=1/hidden_size)
             else:
                 if type(w_init) == np.ndarray:
                     w_init = torch.from_numpy(w_init)
                 self.W.copy_(w_init)
             if u_init is None:
-                torch.nn.init.uniform_(self.U, a=-k, b=k)
+               torch.nn.init.uniform_(self.U, a=-k, b=k)
             else:
                 if type(u_init) == np.ndarray:
                     u_init = torch.from_numpy(u_init)
             if bias_init is None:
                 self.bias.normal_(std=1 / hidden_size)
+                torch.nn.init.uniform_(self.bias, a=-k, b=k)
             else:
                 if type(bias_init) == np.ndarray:
                     bias_init = torch.from_numpy(bias_init)
@@ -323,17 +327,17 @@ class LSTM_noforget(nn.Module):
          
     def forward(self, x, init_states=None):
         """Assumes x is of shape (batch, sequence, feature)"""
-        bs, seq_sz, _ = x.size()
+        batch_size, sequence_length, _ = x.size()
         hidden_seq = []
         out_seq = []
         if init_states is None:
-            h_t, c_t = (torch.zeros(bs, self.hidden_size).to(x.device), 
-                        torch.zeros(bs, self.hidden_size).to(x.device))
+            h_t, c_t = (torch.zeros(batch_size, self.hidden_size).to(x.device), 
+                        torch.zeros(batch_size, self.hidden_size).to(x.device))
         else:
             h_t, c_t = init_states
          
         HS = self.hidden_size
-        for t in range(seq_sz):
+        for t in range(sequence_length):
             x_t = x[:, t, :]
             # batch the computations into a single matrix multiplication
             gates = x_t @ self.W + h_t @ self.U + self.bias
@@ -344,25 +348,80 @@ class LSTM_noforget(nn.Module):
             )
             c_t = i_t * g_t
             h_t = o_t * torch.tanh(c_t)
+            
             hidden_seq.append(h_t.unsqueeze(0))
-            out_t = self.readout_nonlinearity(h_t).matmul(self.wo)
-            out_seq.append(out_t.unsqueeze(0))
+            # out_t = self.readout_nonlinearity(h_t.matmul(self.wo))
+            # out_seq.append(o_t.unsqueeze(0))
+            
         hidden_seq = torch.cat(hidden_seq, dim=0)
-        out_seq = torch.cat(out_seq, dim=0)
+        hidden_seq = self.drop(hidden_seq)
+        out_seq = self.readout_nonlinearity(hidden_seq.matmul(self.wo))
         # reshape from shape (sequence, batch, feature) to (batch, sequence, feature)
         hidden_seq = hidden_seq.transpose(0, 1).contiguous()
         out_seq = out_seq.transpose(0, 1).contiguous()
 
-        return out_seq, hidden_seq, (h_t, c_t, out_t)
+        return out_seq, hidden_seq, (h_t, c_t, 0)
+    
+    
+class LSTM_noforget2(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(LSTM, self).__init__()
+        self.hidden_size = hidden_size
+        
+        self.input_gate = nn.Linear(input_size + hidden_size, hidden_size)
+        self.output_gate = nn.Linear(input_size + hidden_size, hidden_size)
+        self.cell_gate = nn.Linear(input_size + hidden_size, hidden_size)
+        self.output_layer = nn.Linear(hidden_size, output_size)
+        
+    def forward(self, x, hidden):
+        bs, sequence_length, _ = x.size()
+        h_t = torch.zeros(1, self.hidden_size)
+        hidden_seq = []
+        for t in range(sequence_length):
+            combined = torch.cat((x[:,t,:], h_t), dim=1)
+            
+            i_t = torch.sigmoid(self.input_gate(combined))
+            g_t = torch.tanh(self.cell_gate(combined))
+            o_t = torch.sigmoid(self.output_gate(combined))
+            c_t = i_t * g_t
+            h_t = o_t * torch.tanh(c_t)
+            
+            output = self.output_layer(h_t)
+            hidden_seq.append(h_t.unsqueeze(0))
+        
+        return output, hidden
 
+class LSTM(nn.Module):
+    def __init__(self, dims, readout_nonlinearity='id', dropout=0.):
+        super(LSTM, self).__init__()
+        self.dims = dims
+        input_size, hidden_size, output_size = dims
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        self.readout_nonlinearity = readout_nonlinearity
+
+        self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, batch_first=True)
+        self.linear = nn.Linear(hidden_size, output_size)
+        self.drop = nn.Dropout(p=dropout)
+        
+    def forward(self, x):
+        x, _ = self.lstm(x)
+        x = self.dropout(x)
+        x = self.linear(x)
+
+        return x
+    
 
     
 class GRU(nn.Module):
     "All the weights and biases are initialized from U(-a,a) with a = sqrt(1/hidden_size)"
-    def __init__(self, input_size, output_size, hidden_dim):
+    def __init__(self, dims):
         super(GRU, self).__init__()
-        self.gru = nn.GRU(input_size, hidden_dim)
-        self.linear = nn.Linear(hidden_dim, output_size)
+        self.dims = dims
+        input_size, hidden_size, output_size = dims
+        self.gru = nn.GRU(input_size, hidden_size)
+        self.linear = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
         out, hidden = self.gru(x)
