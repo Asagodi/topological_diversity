@@ -146,7 +146,10 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
 def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_path='', sub_exp_name='', trials=1):
     """Perform a grid search for the optimal hyperparameters for training"""
 
-    makedirs(parent_dir +  '/experiments/' + experiment_folder)
+    experiment_path = parent_dir +  '/experiments/' + experiment_folder
+    makedirs(experiment_path)
+    makedirs(experiment_path + '/' + sub_exp_name)
+
     assert trials>=1
     if not parameter_path:
         parameter_path = parent_dir +  '/experiments/' + experiment_folder +'/'+ parameter_file_name
@@ -167,27 +170,36 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_pa
     columns = ['losses', 'final_loss', 'trial', 'weights_last']
     columns.extend(keys)
     
+    #find params that are varied
+    varied_params = [key for key in param_grid.keys() if len(param_grid[key])>1]
+    
     L = []
     for param_i, param_comb in tqdm.tqdm(enumerate(all_param_combs)):
         print(param_comb, "   #", param_i+1, "/", len(all_param_combs))
 
+        exp_name = ''
+        for i in range(len(varied_params)):
+            exp_name += '_' + varied_params[i] + str(param_comb[varied_params[i]]) 
         for key in param_comb:
             training_kwargs[key] = param_comb[key]
         
         for trial in tqdm.tqdm(range(trials)):
             print("Trial", trial)
-
-            losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = run_single_training(parameter_file_name,
-                                                                                                                        exp_name='',
-                                                                                                                        trial=None,
-                                                                                                                        save=False,
-                                                                                                                        training_kwargs=training_kwargs)
+            result = run_single_training(parameter_file_name,
+                                        exp_name='',
+                                        trial=trial,
+                                        save=False,
+                                        training_kwargs=training_kwargs)
+            losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = result
             dat = [losses]
             dat.append(losses[-1])
             dat.append(trial)
             dat.append(weights_last)
             dat.extend(param_comb.values())
             L.append(dat)
+            result.append(training_kwargs)
+            with open(experiment_path+"/"+sub_exp_name+"/" + 'results%s.pickle'%exp_name+'_'+str(trial), 'wb') as handle:
+                pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
     df = pd.DataFrame(L, columns = columns)
     param_keys = list(param_grid.keys())
@@ -294,7 +306,7 @@ if __name__ == "__main__":
     
     main_exp_name = 'angularintegration'
     sub_exp_name  = 'long'
-    model_i, model_name = 2, 'high'
+    # model_i, model_name = 2, 'high'
     model_i, model_name = 4, 'qpta'
     # model_i, model_name = 0, 'lstm'
 
@@ -304,7 +316,7 @@ if __name__ == "__main__":
     training_kwargs['verbose'] = True
     training_kwargs['learning_rate'] = 1e-3
     training_kwargs['n_epochs'] = 1000
-    training_kwargs['T'] =  25.6 #12.8 #
+    training_kwargs['T'] =  12.8 #
     training_kwargs['dt_rnn'] = .1
     training_kwargs['adam_beta1'] = 0.7
     training_kwargs['adam_beta2'] = 0.7
@@ -315,28 +327,29 @@ if __name__ == "__main__":
     training_kwargs['rnn_init_gain'] = g_list[model_i]
     training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
     training_kwargs['scheduler_gamma'] = gammas[model_i]
-    run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
-                                                            sub_exp_name=sub_exp_name,
-                                                          model_name=model_name, trials=1, training_kwargs=training_kwargs)
+    # run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
+    #                                                         sub_exp_name=sub_exp_name,
+    #                                                       model_name=model_name, trials=1, training_kwargs=training_kwargs)
     
     
 
     
-    # param_grid = {'T': [12.8],
-    #               'dt_rnn': [.1],
-    #               'initialization_type': ['gain'],
-    #               'g': [.5],
-    #               'learning_rate':[1e-3, 1e-4],
-    #               'batch_size': [128],
-    #               'optimizer': ['adam'],
-    #               'scheduler': ['steplr'],
-    #               'n_epochs': [1000],
-    #               'scheduler_step_size':[1000],
-    #               'adam_beta1': [.7, .8, .9, .95],
-    #               'adam_beta2': [.9, .99, .999, .9999],
-    #               'scheduler_gamma':[1.],
-    #               'clip_gradient': [None]}
-    # df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
-    #                                                                 experiment_folder='angularintegration/adam2/',
-    #                                                                 sub_exp_name='low',
-    #                                                                 parameter_path=parameter_path, trials=2)
+    param_grid = {'initialization_type': ['qpta'],
+                  'g': [.5],
+                'T': [25.6],
+                  'dt_rnn': [.1],
+                  'g_in': [1e-3, 1e-2, .1],
+                  'learning_rate':[1e-3],
+                  'batch_size': [128],
+                  'optimizer': ['adam'],
+                  'n_epochs': [1000],
+                  'scheduler_step_size':[1000],
+                  'adam_beta1': [.8], #[.7, .8, .9, .95],
+                  'adam_beta2': [0.99], # [.9, .99, .999, .9999],
+                  'scheduler_gamma':[1.],
+                  'scheduler': ['steplr'],
+                  'clip_gradient': [None]}
+    df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
+                                                                    experiment_folder='angularintegration/gin256',
+                                                                    sub_exp_name='qpta',
+                                                                    parameter_path=parameter_path, trials=3)
