@@ -25,7 +25,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from schuessler_model import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget, LSTM
+from models import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget, LSTM_noforget2, LSTM
 from network_initialization import qpta_rec_weights
 from tasks import angularintegration_task, eyeblink_task
 from qpta_initializers import _qpta_tanh_hh
@@ -34,13 +34,13 @@ def makedirs(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
-def get_task(task_name = 'angularintegration', T=10, dt=.1, t_delay=50, sparsity=1):
+def get_task(task_name = 'angularintegration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None):
     
     if task_name == 'eyeblink':
         task =  eyeblink_task(input_length=T, t_delay=t_delay)
 
     elif task_name == 'angularintegration':
-        task =  angularintegration_task(T=T, dt=dt, sparsity=sparsity)
+        task =  angularintegration_task(T=T, dt=dt, sparsity=sparsity, last_mses=last_mses)
     else:
         raise Exception("Task not known.")
         
@@ -76,7 +76,13 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
                 yaml.dump(training_kwargs, outfile, default_flow_style=False)
         
 
-    task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'], sparsity=training_kwargs['task_sparsity'])
+    if training_kwargs['task']==None:
+        task = None
+    else:
+        task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'],
+                        sparsity=training_kwargs['task_sparsity'], last_mses=training_kwargs['last_mses'])
+    if training_kwargs['dataset_filename']!='':
+        data = np.load(parent_dir+"/experiments/datasets/"+training_kwargs['dataset_filename'])
     
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     
@@ -126,7 +132,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
                   nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
                   wi_init=None, wrec_init=wrec_init, wo_init=None, brec_init=brec_init, h0_init=None, ML_RNN=training_kwargs['ml_rnn'])
 
-        result = train(net, task=task, n_epochs=training_kwargs['n_epochs'],
+        result = train(net, task=task, data=data, n_epochs=training_kwargs['n_epochs'],
               batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
               clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], h_init=None,
               loss_function=training_kwargs['loss_function'],
@@ -293,13 +299,13 @@ if __name__ == "__main__":
     parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
     
-    network_types = ['lstm', 'rnn', 'rnn', 'rnn', 'rnn']
+    network_types = ['lstm_noforget', 'rnn', 'rnn', 'rnn', 'rnn']
     model_names = ['lstm', 'low', 'high', 'ortho', 'qpta']
     initialization_type_list =['', 'gain','gain', 'ortho', 'qpta']
     loss_functions = ['mse', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked']
     g_list = [0., .5, 1.3, 0., 0.]
     scheduler_step_sizes = [100, 300, 100, 100, 300]
-    gammas = [0.75, 0.5, 0.75, 0.75, .75]
+    gammas = [1., 0.5, 0.75, 0.75, .75]
     nrecs = [115, 200, 200, 200, 200]
     
     # size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
@@ -311,25 +317,28 @@ if __name__ == "__main__":
     # model_i, model_name = 0, 'lstm'
 
     # training_kwargs['clip_gradient'] = 
-    training_kwargs['drouput'] = 1.
+    training_kwargs['task'] = None
+    training_kwargs['dataset_filename'] = 'dataset_T256_BS512.npz'
+    
+    training_kwargs['drouput'] = .0
     training_kwargs['g_in'] = .1
     training_kwargs['verbose'] = True
     training_kwargs['learning_rate'] = 1e-3
     training_kwargs['n_epochs'] = 1000
-    training_kwargs['T'] =  12.8 #
+    training_kwargs['T'] = 25.6 #
     training_kwargs['dt_rnn'] = .1
     training_kwargs['adam_beta1'] = 0.7
-    training_kwargs['adam_beta2'] = 0.7
+    training_kwargs['adam_beta2'] = 0.9
     training_kwargs['network_type'] = network_types[model_i]
     training_kwargs['initialization_type'] = initialization_type_list[model_i]
-    training_kwargs['N_rec'] = 200
+    # training_kwargs['N_rec'] = 200
     training_kwargs['loss_function'] = loss_functions[model_i]
     training_kwargs['rnn_init_gain'] = g_list[model_i]
     training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
     training_kwargs['scheduler_gamma'] = gammas[model_i]
-    # run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
-    #                                                         sub_exp_name=sub_exp_name,
-    #                                                       model_name=model_name, trials=1, training_kwargs=training_kwargs)
+    run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
+                                                            sub_exp_name=sub_exp_name,
+                                                          model_name=model_name, trials=1, training_kwargs=training_kwargs)
     
     
 
@@ -338,8 +347,8 @@ if __name__ == "__main__":
                   'g': [.5],
                 'T': [25.6],
                   'dt_rnn': [.1],
-                  'g_in': [1e-3, 1e-2, .1],
-                  'learning_rate':[1e-3],
+                  'g_in': [1e-3, 1e-2],
+                  'learning_rate':[1e-2],
                   'batch_size': [128],
                   'optimizer': ['adam'],
                   'n_epochs': [1000],
@@ -349,7 +358,7 @@ if __name__ == "__main__":
                   'scheduler_gamma':[1.],
                   'scheduler': ['steplr'],
                   'clip_gradient': [None]}
-    df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
-                                                                    experiment_folder='angularintegration/gin256',
-                                                                    sub_exp_name='qpta',
-                                                                    parameter_path=parameter_path, trials=3)
+    # df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
+    #                                                                 experiment_folder='angularintegration/gin256_lr1e-2',
+    #                                                                 sub_exp_name='qpta',
+    #                                                                 parameter_path=parameter_path, trials=3)
