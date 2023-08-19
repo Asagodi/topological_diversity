@@ -11,8 +11,6 @@ import scipy
 from scipy.stats import truncexpon
 
 
-
-
 def exponentiated_quadratic(xa, xb):
     """Exponentiated quadratic  with σ=1"""
     # L2 distance (Squared Euclidian)
