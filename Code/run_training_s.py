@@ -78,11 +78,13 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
 
     if training_kwargs['task']==None:
         task = None
+        data = np.load(parent_dir+"/experiments/datasets/"+training_kwargs['dataset_filename'])
     else:
+        data = None
         task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'],
                         sparsity=training_kwargs['task_sparsity'], last_mses=training_kwargs['last_mses'])
-    if training_kwargs['dataset_filename']!='':
-        data = np.load(parent_dir+"/experiments/datasets/"+training_kwargs['dataset_filename'])
+    # if training_kwargs['dataset_filename']!='':
+
     
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     
@@ -95,7 +97,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
               clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], init_states=None,
               loss_function=training_kwargs['loss_function'], final_loss=training_kwargs['final_loss'], last_mses=training_kwargs['last_mses'], 
               optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'],
-              adam_betas=(training_kwargs['adam_beta1'],training_kwargs['adam_beta2']), adam_eps=1e-8, #optimizers 
+              adam_betas=(training_kwargs['adam_beta1'],training_kwargs['adam_beta2']), adam_eps=1e-8,  #optimizers 
               scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
               verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
         
@@ -135,7 +137,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         result = train(net, task=task, data=data, n_epochs=training_kwargs['n_epochs'],
               batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
               clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], h_init=None,
-              loss_function=training_kwargs['loss_function'],
+              loss_function=training_kwargs['loss_function'], act_norm_lambda=training_kwargs['act_norm_lambda'],
               optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'],
               adam_betas=(training_kwargs['adam_beta1'],training_kwargs['adam_beta2']), adam_eps=1e-8, #optimizers 
               scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
@@ -144,6 +146,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
     
     #save result (losses, weights, etc)
     if save:
+        result.append(training_kwargs)
         with open(experiment_folder + '/results_%s.pickle'%timestamp, 'wb') as handle:
             pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
@@ -303,44 +306,49 @@ if __name__ == "__main__":
     model_names = ['lstm', 'low', 'high', 'ortho', 'qpta']
     initialization_type_list =['', 'gain','gain', 'ortho', 'qpta']
     loss_functions = ['mse', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked']
-    g_list = [0., .5, 1.3, 0., 0.]
+    g_list = [0., .5, 1.5, 0., 0.]
     scheduler_step_sizes = [100, 300, 100, 100, 300]
-    gammas = [1., 0.5, 0.75, 0.75, .75]
+    gammas = [1., 0.5, 0.75, 0.75, 1.]
     nrecs = [115, 200, 200, 200, 200]
     
     # size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
     
     main_exp_name = 'angularintegration'
-    sub_exp_name  = 'long'
-    # model_i, model_name = 2, 'high'
-    model_i, model_name = 4, 'qpta'
+    sub_exp_name  = 'act_norm'
+
+    model_i, model_name = 2, 'high'
+    # model_i, model_name = 3, 'ortho'
+    # model_i, model_name = 4, 'qpta'
     # model_i, model_name = 0, 'lstm'
 
     # training_kwargs['clip_gradient'] = 
-    training_kwargs['task'] = None
-    training_kwargs['dataset_filename'] = 'dataset_T256_BS512.npz'
-    
+    training_kwargs['task'] = 'angularintegration'
+    # training_kwargs['nonlinearity'] = 'relu'
+    training_kwargs['act_norm_lambda'] = 1e-5
+
+    # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
+    training_kwargs['batch_size'] = 128
+    training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
-    training_kwargs['g_in'] = .1
+    training_kwargs['g_in'] = 14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
     training_kwargs['learning_rate'] = 1e-3
     training_kwargs['n_epochs'] = 1000
-    training_kwargs['T'] = 25.6 #
+    training_kwargs['T'] = 12.8 #
     training_kwargs['dt_rnn'] = .1
-    training_kwargs['adam_beta1'] = 0.7
-    training_kwargs['adam_beta2'] = 0.9
+    training_kwargs['adam_beta1'] = 0.9
+    training_kwargs['adam_beta2'] = 0.999
     training_kwargs['network_type'] = network_types[model_i]
     training_kwargs['initialization_type'] = initialization_type_list[model_i]
     # training_kwargs['N_rec'] = 200
     training_kwargs['loss_function'] = loss_functions[model_i]
-    training_kwargs['rnn_init_gain'] = g_list[model_i]
+    training_kwargs['rnn_init_gain'] = g_list[model_i]        ##########
     training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
     training_kwargs['scheduler_gamma'] = gammas[model_i]
+
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
-                                                          model_name=model_name, trials=1, training_kwargs=training_kwargs)
-    
-    
+                                                          model_name=model_name, trials=11, training_kwargs=training_kwargs)
 
     
     param_grid = {'initialization_type': ['qpta'],
