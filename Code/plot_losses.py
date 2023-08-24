@@ -507,17 +507,6 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
                 traj = traj_pca[:,-1024:,:]
                 ax.plot(traj_pca[trial_i,:,0], traj_pca[trial_i,:,1], '.', c=cmap(norm[trial_i]))
 
-    # for hi in range(10):
-    #     input = np.zeros((1,128,1))
-    #     input[:,0,:] = hi
-    #     input = torch.from_numpy(input).float() 
-    #     h_init = np.zeros((1,training_kwargs['N_rec'])) 
-    #     # h_init = (hi*np.ones((1,training_kwargs['N_rec']))-5)
-
-    #     with torch.no_grad():
-    #         output, trajectories = net(input, return_dynamics=True, h_init=h_init)
-    #     # print(trajectories.shape)
-    #     ax.plot(trajectories[0,...,hidden_i].numpy())
     ax.set_axis_off()
     makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7])
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7]+f'/trajpca_{which}_{timepart}_{after_t}to{before_t}.pdf', bbox_inches="tight")
