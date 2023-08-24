@@ -436,8 +436,8 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/trajpca_{which}_{after_t}to{before_t}.png', bbox_inches="tight")
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/trajpca_{which}_{after_t}to{before_t}.pdf', bbox_inches="tight")
     else:
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/trajpca_{which}.png', bbox_inches="tight")
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/trajpca_{which}.pdf', bbox_inches="tight")
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/trajpca_{which}_{timepart}.png', bbox_inches="tight")
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/trajpca_{which}_{timepart}.pdf', bbox_inches="tight")
 
     
 def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidden_i=0,
