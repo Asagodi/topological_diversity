@@ -26,6 +26,7 @@ from matplotlib import rc
 import matplotlib.patches as mpatches
 import matplotlib.colors as mplcolors
 import matplotlib.cm as cmx
+import matplotlib as mpl
 
 from models import RNN, run_net, LSTM_noforget, run_lstm
 from tasks import angularintegration_task, angularintegration_delta_task, simplestep_integration_task, poisson_clicks_task
@@ -110,7 +111,7 @@ def plot_losses_and_trajectories(plot_losses_or_trajectories='losses', main_exp_
         
         if plot_losses_or_trajectories == 'trajectories':
             try:
-                losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs_ = result
+                losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = result
             except:
                 losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs_ = result
 
@@ -246,7 +247,7 @@ def plot_all(model_names, main_exp_name='angularintegration'):
     plt.show()
     
     
-def plot_bestmodel_traj(model_names, main_exp_name='angularintegration', sparsity=1):
+def plot_bestmodel_traj(model_names, main_exp_name='angularintegration', sparsity=1, i=0):
     params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ model_names[0] + '/param*.yml')[0]
     training_kwargs = yaml.safe_load(Path(params_path).read_text())
     
@@ -254,8 +255,13 @@ def plot_bestmodel_traj(model_names, main_exp_name='angularintegration', sparsit
     trial_colors = ['gray', 'lightcoral', 'moccasin', 'lime', 'deepskyblue']
     labels=['LSTM', r'$g=.5$', r'$g=1.5$', 'Orthogonal', 'QPTA']
     network_types = ['lstm_noforget', 'rnn', 'rnn', 'rnn', 'rnn']
-    training_kwargs['network_type']
     plt.style.use('seaborn-dark-palette')
+    
+    if len(model_names)==1:
+        mean_colors=[mean_colors[i]]
+        trial_colors=[trial_colors[i]]
+        labels=[labels[i]]
+        network_types = [network_types[i]]
 
     # task = angularintegration_task(T=training_kwargs['T'], dt=training_kwargs['dt_task'])
     task = angularintegration_task(T=training_kwargs['T'], dt=training_kwargs['dt_task'], sparsity=sparsity)
@@ -284,7 +290,7 @@ def plot_bestmodel_traj(model_names, main_exp_name='angularintegration', sparsit
             np.random.seed(123)
             input, target, mask, output, loss = run_lstm(net, task, batch_size=32, return_dynamics=False, init_states=None)
             
-        elif training_kwargs['network_type'] =='rnn':
+        else:
             losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = result
             wi_init, wrec_init, wo_init, brec_init, h0_init = weights_last
             dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
@@ -303,7 +309,7 @@ def plot_bestmodel_traj(model_names, main_exp_name='angularintegration', sparsit
     ax2.plot(target[0,:,0], 'b')
     ax2.plot(target[0,:,1], 'r')
     plt.xlabel("Time")
-    ax2.set_ylabel("Head direction")
+    ax2.set_ylabel("Head direction (sin, cos)")
     ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
           fancybox=True, shadow=True, ncol=6)
     plt.savefig(parent_dir+'/experiments/'+main_exp_name+f'/trajectories{sparsity}.pdf', bbox_inches="tight")
@@ -412,14 +418,21 @@ def plot_allLEs_model(main_exp_name, model_name, which='last', T=10, from_t_step
     #     plt.close()
     return ax
 
-def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_i=0,
-                         plotpca=True, timepart='all', num_of_inputs=51, after_t=0, before_t=None, plot_output=False):
-
+def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_i=0, input_length=10,
+                         plotpca=True, timepart='all', num_of_inputs=51, plot_from_to=(0,None), pca_from_to=(0,None),
+                         plot_output=False, input_range=(-3,3)):
+    pca_before_t, pca_after_t = pca_from_to
+    before_t, after_t = plot_from_to
+    
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
     
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
     norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
     cmap = cmx.get_cmap("coolwarm")
+    
+    cmap2 = plt.get_cmap('hsv')
+    norm2 = mpl.colors.Normalize(-np.pi, np.pi)
+    
     # fig, axes = plt.subplots(3, 3, figsize=(9, 9), sharex=True, sharey=True)
     fig, axes = plt.subplots(3, 3, figsize=(9, 9), sharex=False, sharey=False)
     axes = axes.flatten()
@@ -428,28 +441,36 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
         fig2, axes2 = plt.subplots(3, 3, figsize=(9, 10), sharex=False, sharey=False)
         axes2 = axes2.flatten()
 
-
-
     for exp_i, exp in enumerate(exp_list[:9]):
-        trajectories, start, target, output = plot_trajs_model(main_exp_name, model_name, exp, T=T, which=which, hidden_i=hidden_i,
-                         plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, after_t=after_t, before_t=before_t)
+        trajectories, start, target, output = plot_trajs_model(main_exp_name, model_name, exp, T=T, which=which, hidden_i=hidden_i, input_length=input_length,
+                         plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to, input_range=input_range)
 
         for trial_i in range(trajectories.shape[0]):
             axes[exp_i].plot(trajectories[trial_i,:,0], trajectories[trial_i,:,1], '-', c=cmap(norm[trial_i]))
             if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
                 axes[exp_i].scatter(trajectories[trial_i,-1,0], trajectories[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
         
+
+
         axes[exp_i].set_axis_off()
         axes[exp_i].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
         
         if plot_output:
+            x = np.linspace(0, 2*np.pi, 1000)
+            axes2[exp_i].plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
             for trial_i in range(output.shape[0]):
-                if trial_i<output.shape[0]-1:
-                    axes2[exp_i].plot([target[trial_i,-1,0], target[trial_i+1,-1,0]], [target[trial_i,-1,1], target[trial_i+1,-1,1]], '--', c=cmap(norm[trial_i]), alpha=.5)
+                # if trial_i<output.shape[0]-1:
+                #     axes2[exp_i].plot([target[trial_i,-1,0], target[trial_i+1,-1,0]], [target[trial_i,-1,1], target[trial_i+1,-1,1]], '--', c=cmap(norm[trial_i]), alpha=.5)
                 # axes2[exp_i].scatter(target[trial_i,-1,0], target[trial_i,-1,1], color=cmap(norm[trial_i]), alpha=.1)
-                axes2[exp_i].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
+                axes2[exp_i].plot(output[trial_i,:,0], output[trial_i,:,1], '-', c=cmap(norm[trial_i]))
                 if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
                     axes2[exp_i].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
+            
+            for t in range(output.shape[1]):
+                axes2[exp_i].plot([target[trial_i,t,0], output[trial_i,t,0]],
+                                 [target[trial_i,t,1], output[trial_i,t,1]], '-', 
+                                 color=cmap2(norm2(np.arctan2(target[trial_i,t,1], target[trial_i,t,0]))))
+                # ax.scatter(xval, yval, c=xval, s=300, cmap=colormap, norm=norm, linewidths=0)
 
             axes2[exp_i].set_axis_off()
 
@@ -469,8 +490,10 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
 
     
 
-def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidden_i=0,
-                     plotpca=True, timepart='all',  num_of_inputs=51, after_t=0, before_t=None, input_range=(-3,3)):
+def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidden_i=0, input_length=10,
+                     plotpca=True, timepart='all',  num_of_inputs=51, plot_from_to=(0,None), pca_from_to=(0,None), input_range=(-3,3)):
+    pca_after_t, pca_before_t = pca_from_to
+    after_t, before_t = plot_from_to
     # print(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')
     params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')[0]
     training_kwargs = yaml.safe_load(Path(params_path).read_text())
@@ -507,7 +530,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     # stim = np.zeros((num_of_inputs,T))
     stim = np.linspace(min_input, max_input, num=num_of_inputs, endpoint=True)
     # stim = np.linspace(0, 5, num=num_of_inputs, endpoint=True)
-    input[:,:10,0] = np.repeat(stim,10).reshape((num_of_inputs,10))
+    input[:,:input_length,0] = np.repeat(stim,input_length).reshape((num_of_inputs,input_length))
     # input[:,:10,:] = np.repeat(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True),10).reshape((num_of_inputs,10,training_kwargs['N_in']))
     input = torch.from_numpy(input).float() 
     
@@ -519,12 +542,20 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
         output, trajectories = net(input, return_dynamics=True, h_init=h_init)
     
     if not plotpca:
+        start=trajectories[0,0,:]
         for trial_i in range(trajectories.shape[0]):
-            ax.plot(trajectories[trial_i,...,hidden_i].numpy(), c=cmap(norm[trial_i]))
+            # ax.plot(trajectories[trial_i,...,hidden_i].numpy(), c=cmap(norm[trial_i]))
+            if timepart=='all' or not timepart:
+                traj = trajectories[:,:,:]
+                ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
+            else:
+                traj = trajectories[:,after_t:before_t,:]
+                ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
     else:
+        # pca_label = 'pca'
         pca = PCA(n_components=2)   
 
-        trajectories_tofit = trajectories[:,after_t:before_t,:].numpy().reshape((-1,training_kwargs['N_rec']))
+        trajectories_tofit = trajectories[:,pca_after_t:pca_before_t,:].numpy().reshape((-1,training_kwargs['N_rec']))
         pca.fit(trajectories_tofit)
         # traj_pca = pca.fit_transform(X).reshape((num_of_inputs,-1,2))
         traj_pca = pca.transform(trajectories.numpy().reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,2))
@@ -534,13 +565,9 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
             if timepart=='all' or not timepart:
                 traj = traj_pca[:,:,:]
                 ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
-            elif timepart=='beginning':
-                traj = traj_pca[:,:128,:]
+            else:
+                traj = traj_pca[:,after_t:before_t,:]
                 ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
-            elif timepart=='end':
-                traj = traj_pca[:,-1024:,:]
-                ax.plot(traj_pca[trial_i,:,0], traj_pca[trial_i,:,1], '.', c=cmap(norm[trial_i]))
-        
         
 
     ax.set_axis_off()
@@ -548,9 +575,6 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7]+f'/trajpca_{which}_{timepart}_{after_t}to{before_t}.pdf', bbox_inches="tight")
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7]+f'/trajpca_{which}_{timepart}_{after_t}to{before_t}.png', bbox_inches="tight")
     plt.close()
-    
-    
-
 
 
     return traj, start, target, output
@@ -676,28 +700,42 @@ if __name__ == "__main__":
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
 
+    main_exp_name='angularintegration/hidden_long/25.6'
     main_exp_name='angularintegration/hidden'
+    # main_exp_name='angularintegration/all_mse/'
+
     # main_exp_name='poisson_clicks/relu_mse'
-    model_name = 'ortho'
+    model_name = 'high'
 
-    T = 2048    
-    num_of_inputs = 31
-    plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which='post', plotpca=True, timepart='all', num_of_inputs=num_of_inputs)
-    plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which='post', plotpca=True, timepart='beginning', num_of_inputs=num_of_inputs)
-    plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which='post', plotpca=True, timepart='end', num_of_inputs=num_of_inputs)
+    T = 126
+    num_of_inputs = 1
+    input_range = (-.5,.5)
+    input_length = T
+    # input_range = (-.1,.1)
+    which='post'
+    plot_from_to = (0,T)
+    pca_from_to = (0,T)
+    # for timepart in ['all', 'beginning', 'end']:
+    #     plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which, plotpca=True, timepart=timepart, num_of_inputs=num_of_inputs, input_range=input_range)
 
-    plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which='post',
-                          plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=0, before_t=128)
-    
-    plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which='post',
-                          plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=1024, before_t=None)
-    
-    plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which='post',
-                          plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=T-128, before_t=None)
-    
-    plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which='post',
-                          plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=128, before_t=T, plot_output=True)
 
+    # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
+    #                       plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=0, before_t=128, input_range=input_range)
+    
+    # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
+    #                       plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=1024, before_t=None, input_range=input_range)
+    
+    # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
+    #                       plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=T-128, before_t=None, input_range=input_range)
+    
+    # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
+    #                       plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=128, before_t=T, plot_output=True, input_range=input_range)
+
+
+    # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
+    #                       plotpca=False, num_of_inputs=num_of_inputs, timepart='end',
+    #                       plot_output=True, input_range=input_range,
+    #                        input_length=input_length, plot_from_to=plot_from_to)
 
     # for hidden_i in range(20):
     #     plot_all_trajs_model(main_exp_name, model_name='high', T=4096, which='post', hidden_i=hidden_i)
@@ -713,10 +751,10 @@ if __name__ == "__main__":
     # main_exp_name='angularintegration/lambda_T2/12.8'
     # plot_participatioratio(main_exp_name, model_name, task, first_or_last='last')
 
-    main_exp_name='poisson_clicks/relu_mse'
-    model_name = "high"
+    # main_exp_name='poisson_clicks/relu_mse'
+    # model_name = "high"
     # task = poisson_clicks_task(T=20, dt=.1)
-    # plot_losses_and_trajectories(plot_losses_or_trajectories='trajectories', main_exp_name=main_exp_name, model_name=model_name, task=task)
+    plot_losses_and_trajectories(plot_losses_or_trajectories='trajectories', main_exp_name=main_exp_name, model_name=model_name)
     # plot_losses_and_trajectories(plot_losses_or_trajectories='losses', main_exp_name=main_exp_name, model_name=model_name)
     # plot_losses_experiment(plot_losses_or_trajectories='losses',
     #                              main_exp_name='angularintegration', model_name=model_name, training_label='weight_decay')
@@ -724,10 +762,11 @@ if __name__ == "__main__":
 # plot_losses_and_trajectories(plot_losses_or_trajectories='losses', main_exp_name='angularintegration', model_name='high_gain')
     
     # model_names=['lstm', 'low','high', 'ortho', 'qpta']
+    i, model_names = 3, ['ortho']
 
     # plot_all(model_names=model_names,                   main_exp_name='angularintegration/lambda_T2/12.8')
-    # for sparsity in [0.01, 0.1, 1.]:
-        # plot_bestmodel_traj(model_names=model_names,    main_exp_name='angularintegration/lambda_T2/12.8', sparsity=sparsity)
+    for sparsity in [0.01, 0.1, 1.]:
+        plot_bestmodel_traj(model_names=model_names, main_exp_name=main_exp_name, sparsity=sparsity, i=i)
     
     # experiment_folder = 'lambda_grid_2'
     # for model_name in model_names:
