@@ -391,7 +391,7 @@ The behaviors of UBLA and BLA in the absence of stimulus are shown in Fig.~\ref{
 \bout = -\frac{\beta}{\alpha}.
 \end{equation}
 
-While the line attractor is unbounded from above, it only extends to the center from below.  The  step size along line attractor $\alpha$ determines the maximum number of clicks as the difference between the two channels; the capacity is $\beta/\alpha$ number of clicks.
+While the line attractor is unbounded from above, it only extends to the center from below.  The step size along line attractor $\alpha$ determines the maximum number of clicks as the difference between the two channels; the capacity is $\beta/\alpha$ number of clicks.
 
 \paragraph{Bounded line attractor}\label{sec:bla}
 We formulate this implementation of a bounded integrator with a parameter that determines step size along line attractor $\alpha$. Analogously as for UBLA, these parameters determine the capacity of the network.
@@ -473,7 +473,7 @@ iRNN and UBLA both have larger learning noise than BLA, consistent with the abse
 Finally, we investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics.
 To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated.
 Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. %normally loss is very low, zero for the perfect integrators
-Fig.~\ref{fig:maintenance}E shows that UBLA and iRNN quickly diverges under gradient descent than the BLA.
+Fig.~\ref{fig:maintenance}E shows that both UBLA and iRNN diverge more quickly under gradient descent than the BLA.
 %$This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
 
 
