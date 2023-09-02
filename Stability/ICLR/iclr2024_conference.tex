@@ -95,7 +95,7 @@ Attractor networks are essential theoretical components in recurrent networks fo
 However, the continuous attractors that are essential for continuous-valued memory suffer from structural instability---infinitesimal changes in parameter can destroy the continuous attractor.
 Moreover, the perturbed system can exhibit divergent behavior with associated exploding gradients.
 This poses a question about the utility of continuous attractors for systems that learn using gradient signals.
-%This poses a problem in biological neural networks, as they are constantly subjected to perturbations caused by noise. Certain systems (e.g. systems with an unbounded attractor) can be perturbed in such a way, that not only do they bifurcate, but start exhibitung divergent behavior, which is especially problematic for systems that are learning (for example under gradient descent).
+%This poses a problem in biological neural networks, as they are constantly subjected to perturbations caused by noise. Certain systems (e.g. systems with an unbounded attractor) can be perturbed in such a way, that not only do they bifurcate, but start exhibiting divergent behavior, which is especially problematic for systems that are learning (for example under gradient descent).
 To address this issue, we use Fenichel's persistence theorem from dynamical systems theory to show that bounded attractors are stable in the sense that all perturbations maintain the stability.
 This ensures that if there is a restorative learning signal, there will be no exploding gradients for any length of time for backpropagation.
 In contrast, unbounded attractors may devolve into divergent systems under certain perturbations, leading to exploding gradients.
@@ -121,7 +121,7 @@ To store information over a long period of time, as many difficult tasks demand,
 When the information of interest is continuous-valued, a natural solution is to use continuous attractors.
 Continuous attractors are prevalent in theoretical neuroscience as tools to model neural representation and computation ranging from internal representations of head directions and eye positions to perceptual decision-making and working memory~\cite{Khona2022}.
 Continuous attractors are also at the core of long short-term memory (LSTM)~\cite{Greff2017} units and the neural Turning machine (NTM)~\cite{Graves2014} to provide digital computer memory like properties not natural to recurrent networks. % with many applications such as meta-learning~\cite{Santoro2016}.
-In fact, the critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroys the continuous attractor structures implemented in RNNs~\cite{seung1996,Renart2003}, even if with biologically plausible asymmetric connections are used to construct them \citep{darshan2022}.
+In fact, the critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroys the continuous attractor structures implemented in RNNs~\cite{seung1996,Renart2003}, even if biologically plausible asymmetric connections are used to construct them \citep{darshan2022}.
 However, not all RNN implementations of continuous attractors behave similarly in their brittleness.
 
 We found that in the space of RNNs, some have neighbourhoods with highly undesirable exploding gradients. We will describe some continuous attractors which have such neighbourhoods.
@@ -269,7 +269,7 @@ Continuous attractors are biologically plausible, theoretically elegant, consist
 As a conceptual tool in computational and theoretical neuroscience, continuous attractors are widely used when working memory of continuous values is needed~\cite{Dayan2001,Burak2009,Khona2022}.
 When used to accumulate stimulus, continuous attractors are also called neural integrators that are hypothesized to be the underlying computation for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
 Neural representation of continuous values have been observed as persistent activity in the prefrontal cortex of primates, ellipsoid body of the fly, and hypothalamus~\cite{Romo1999,Noorman2022,Nair2023}.
-A typical computational implementation of a continuous attractor are bump attractor network models which require a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} and finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:hd}.
+A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} and finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:hd}.
 
 However, the so-called ``fine-tuning problem'' describing the theoretical and practical brittleness of continuous attractors was recognized in~\citep{seung1998}.
 Since biological neural systems have constantly fluctuating synaptic weights~\cite{shimizu2021}, this has been a big puzzle in the field.
