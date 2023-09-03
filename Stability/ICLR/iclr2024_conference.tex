@@ -131,7 +131,7 @@ Consider an RNN (without input or output for now) expressed in continuous time a
 \end{align}
 where $\vx \in \reals^d$ is the hidden state of the network, $\vb > 0$ is the bias, and $[\cdot]_{+} = \max(0,\cdot)$ is the threshold nonlinearity per unit.
 In discrete time, this corresponds to a ReLU RNN (see Sec.~\ref{sec:rnn:integration}).
-The non-trivial activity of this network is limited to the (non-negative) first quadrant, outside of which the hidden state decays to the origin.
+The non-trivial activity of this network is limited to the (non-negative) first quadrant.
 
 When $d=2$, we can build two kinds of continuous attractors.
 First, through positive feedback, $\vW = [0, 1; 1, 0]$ and no bias $\vb = \mathbf{0}$, we can create a continuous attractor, i.e., $\dot{\vx} = 0$ on the $x_1 = x_2 \geq 0$ half-line, and surrounding attractive flow (Fig.~\ref{fig:ublabla}A left).
