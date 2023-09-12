@@ -304,7 +304,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             if net.train_h0:
                 h0s[k] = net.h0.cpu().detach().numpy()
                 
-        if perturb_weights:
+        if perturb_weights and i>0:
             with torch.no_grad():
                 net.wrec += torch.normal(0., weight_sigma, net.wrec.shape)
         
@@ -439,7 +439,7 @@ def run_noisy_training(experiment_folder, exp_name='', trial=None, training_kwar
                                               sigma=training_kwargs['task_noise_sigma'])
     
     dims = (2,2,1)
-    ouput_bias_value = 25
+    ouput_bias_value = training_kwargs['ouput_bias_value']
     a = 1
     if training_kwargs['version']=='irnn': # V1: plane attractor
         wi_init = np.array([[1,0],[0,1]], dtype=float)
@@ -487,32 +487,35 @@ def run_noisy_training(experiment_folder, exp_name='', trial=None, training_kwar
     
 if __name__ == "__main__":
     print(current_dir)
-
-
     
     training_kwargs = {}
     training_kwargs['version']='bla'
     training_kwargs['version']='irnn'
     training_kwargs['version']='ubla'
     
-    exp_name = 'noisy_input'
-    exp_name = 'perturbed_weights_bbnol/'+training_kwargs['version']
-    experiment_folder = parent_dir + '/experiments/' + exp_name 
-
-
     training_kwargs['perturb_weights'] = True
-    training_kwargs['weight_sigma'] = 5e-8
+    training_kwargs['weight_sigma'] = 1e-6
     training_kwargs['task_noise_sigma'] = 0.
     # training_kwargs['task_noise_sigma'] = 1e-6
     
+    exp_name = 'noisy_input'
+    exp_name = f'noisy/perturbed_weights/T1000/wsigma{training_kwargs["weight_sigma"]}/'+training_kwargs['version']
+    # exp_name = 'noisy/perturbed_weights/T1000/'+training_kwargs['version']
+
+    experiment_folder = parent_dir + '/experiments/' + exp_name 
+
+    training_kwargs['ouput_bias_value'] = 10
+
+
+    
     training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['readout_nonlinearity'] = 'id'
-    training_kwargs['T'] = 500 # 2000
+    training_kwargs['T'] = 10000 # 2000
     training_kwargs['n_epochs'] = 30
-    training_kwargs['batch_size'] = 1000
-    training_kwargs['input_length'] = 10
+    training_kwargs['batch_size'] = 128
+    training_kwargs['input_length'] = 5
     
-    training_kwargs['learning_rate'] = 0#5e-8
+    training_kwargs['learning_rate'] = 0#1e-9
 
     for i in range(10):
         run_noisy_training(experiment_folder, exp_name=exp_name, trial=None, training_kwargs=training_kwargs)
