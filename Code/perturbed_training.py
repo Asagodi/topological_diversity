@@ -19,7 +19,7 @@ from scipy.linalg import qr, block_diag
 import numpy as np
 import pandas as pd
 from itertools import product
-import tqdm
+from tqdm import tqdm
 
 import torch
 import torch.nn as nn
@@ -424,11 +424,10 @@ def run_perturbed_training(experiment_folder, exp_name='', trial=None, training_
     
     
 def run_noisy_training(experiment_folder, exp_name='', trial=None, training_kwargs={}):
-    
-    timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
+    # timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
     
     experiment_folder = parent_dir + '/experiments/' + exp_name 
-    print(experiment_folder)
+    # print(experiment_folder)
     makedirs(experiment_folder) 
     
     with open(experiment_folder+'/parameters.yml', 'w') as outfile:
@@ -480,7 +479,7 @@ def run_noisy_training(experiment_folder, exp_name='', trial=None, training_kwar
               verbose=True)
 
     result.append(training_kwargs)
-    with open(experiment_folder + '/results_%s.pickle'%timestamp, 'wb') as handle:
+    with open(experiment_folder + '/results_%s.pickle'%trial, 'wb') as handle:
         pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
     return result
@@ -489,36 +488,44 @@ if __name__ == "__main__":
     print(current_dir)
     
     training_kwargs = {}
-    training_kwargs['version']='bla'
-    training_kwargs['version']='irnn'
-    training_kwargs['version']='ubla'
+    
+    models = ['irnn', 'ubla', 'bla']
+    weight_sigmas = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9]
+    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 0]
     
     training_kwargs['perturb_weights'] = True
-    training_kwargs['weight_sigma'] = 1e-6
-    training_kwargs['task_noise_sigma'] = 0.
-    # training_kwargs['task_noise_sigma'] = 1e-6
-    
-    exp_name = 'noisy_input'
-    exp_name = f'noisy/perturbed_weights/T1000/wsigma{training_kwargs["weight_sigma"]}/'+training_kwargs['version']
-    # exp_name = 'noisy/perturbed_weights/T1000/'+training_kwargs['version']
-
-    experiment_folder = parent_dir + '/experiments/' + exp_name 
-
-    training_kwargs['ouput_bias_value'] = 10
-
-
+    training_kwargs['task_noise_sigma'] = 0
     
     training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['readout_nonlinearity'] = 'id'
-    training_kwargs['T'] = 10000 # 2000
+    training_kwargs['T'] = 100 # 2000
     training_kwargs['n_epochs'] = 30
     training_kwargs['batch_size'] = 128
     training_kwargs['input_length'] = 5
+    training_kwargs['ouput_bias_value'] = 10
     
-    training_kwargs['learning_rate'] = 0#1e-9
+    #with loss landscape:BLA under irnn
+    training_kwargs['input_length'] = 50
+    training_kwargs['ouput_bias_value'] = 25
+    
+    main_exp_folder = parent_dir + f"/experiments/noisy/perturbed_weights/T{training_kwargs['T']}"
+    makedirs(main_exp_folder) 
+    with open(main_exp_folder + '/training_kwargs.pickle', 'wb') as handle:
+        pickle.dump(training_kwargs, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    for model in tqdm(models):
+        training_kwargs['version'] = model
+        for weight_sigma in tqdm(weight_sigmas):
+            training_kwargs['weight_sigma'] = weight_sigma
+            for learning_rate in tqdm(learning_rates):
+                training_kwargs['learning_rate'] = learning_rate
+    
+                exp_name = f"/wsigma{training_kwargs['weight_sigma']}_lr{training_kwargs['learning_rate']}/"+training_kwargs['version']
+            
+                experiment_folder = parent_dir + '/experiments/' + exp_name 
 
-    for i in range(10):
-        run_noisy_training(experiment_folder, exp_name=exp_name, trial=None, training_kwargs=training_kwargs)
+                for i in range(10):
+                    run_noisy_training(experiment_folder, exp_name=exp_name, trial=i, training_kwargs=training_kwargs)
     
     
     
