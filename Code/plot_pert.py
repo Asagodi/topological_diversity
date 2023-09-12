@@ -79,9 +79,71 @@ def plot_losses(main_exp_names):
     plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/losses_wawlearning_T10000.pdf', bbox_inches="tight")
 
 
+def plot_losses_grid(main_exp_folder):
+    with open(main_exp_folder + '/exp_info.pickle', 'rb') as handle:
+        exp_info = pickle.load(handle)
+        
+    rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+    rc('text', usetex=True)
+    
+    sns.set_context("notebook", font_scale=1.25, rc={"lines.linewidth": 1}) 
+    labels = ['iRNN', 'UBLA', 'BLA']
+    colors = ['k', 'red', 'b']
+    model_names = ['irnn', 'ubla', 'bla']
+    markers = ['-', '--']
+    
+    fig, axes = plt.subplots(len(exp_info['weight_sigmas']), len(exp_info['learning_rates']),
+                             figsize=(20, 5), sharex=True, sharey=False, constrained_layout=True)
+    for ws_i, weight_sigma in enumerate(exp_info['weight_sigmas']):
+        axes[ws_i][0].set_ylabel(weight_sigma)
+        for lr_i, learning_rate in enumerate(exp_info['learning_rates']):
+            axes[0][lr_i].set_title(learning_rate)
+            
+            ax = axes[ws_i][lr_i]
+            # ax.set_axis_off()
+            ax.tick_params(rotation=90)
+
+            exp_name = f"/wsigma{weight_sigma}_lr{learning_rate}/"
+            
+            for model_i, model_name in enumerate(model_names):
+                print(main_exp_folder + exp_name +'/'+ model_name)
+                exp_list = glob.glob(main_exp_folder + exp_name +'/'+ model_name + "/result*")
+                all_losses = np.zeros((len(exp_list), exp_info['n_epochs']))
+        
+                for exp_i, exp in enumerate(exp_list):
+                    with open(exp, 'rb') as handle:
+                        result = pickle.load(handle)
+                    
+                    losses = result[0]
+                    all_losses[exp_i, :len(losses)] = losses
+                    
+                    ax.plot(losses, alpha=0.2, color=colors[model_i])
+            
+                mean = np.mean(all_losses, axis=0)
+                ax.plot(range(mean.shape[0]), mean, label=labels[model_i], color=colors[model_i])
+        
+                ax.set_yscale('log')
+                # ax.set_xticks([])
+                # ax.set_yticks([])
+                # ax.set_ylim(1e-6, 1e3)
+
+    # fig.supxlabel('Year')
+    fig.supylabel('$\sigma_W$', fontsize=25)
+    fig.suptitle('learning rate', fontsize=25)
+    colorlines = [Line2D([0], [0], color=color, linewidth=3, linestyle='-') for color in colors]
+    axes[1][-1].legend(colorlines, labels, loc='lower left', bbox_to_anchor=(1, 0.5))
+    markerlines = [Line2D([0], [0], color='k', linewidth=3, linestyle=marker) for marker in markers]
+    # axes[4][-1].legend(markerlines, ['with learning', 'no learning'], loc='upper left', bbox_to_anchor=(1, 0.5))
+    
+    plt.tight_layout()
+    plt.savefig(main_exp_folder+f'/losses_grid_T{100}.pdf', bbox_inches="tight")
+
 if __name__ == "__main__":
     print(current_dir)
     
-    main_exp_names = ['noisy/perturbed_weights/T10000','noisy/perturbed_weights/T10000_nol']
-
-    plot_losses(main_exp_names=main_exp_names)
+    # main_exp_names = ['noisy/perturbed_weights/T10000','noisy/perturbed_weights/T10000_nol']
+    # plot_losses(main_exp_names=main_exp_names)
+    
+    main_exp_folder = parent_dir + f"/experiments/noisy/perturbed_weights/grid/T{100}"
+    plot_losses_grid(main_exp_folder)
+    
