@@ -493,6 +493,7 @@ if __name__ == "__main__":
     weight_sigmas = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9]
     learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 0]
     
+    training_kwargs['verbose'] = False
     training_kwargs['perturb_weights'] = True
     training_kwargs['task_noise_sigma'] = 0
     
@@ -508,10 +509,16 @@ if __name__ == "__main__":
     training_kwargs['input_length'] = 50
     training_kwargs['ouput_bias_value'] = 25
     
-    main_exp_folder = parent_dir + f"/experiments/noisy/perturbed_weights/T{training_kwargs['T']}"
+    main_exp_folder = parent_dir + f"/experiments/noisy/perturbed_weights/grid/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
     makedirs(main_exp_folder) 
-    with open(main_exp_folder + '/training_kwargs.pickle', 'wb') as handle:
-        pickle.dump(training_kwargs, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    exp_info = training_kwargs
+    exp_info['models'] = models
+    exp_info['weight_sigmas'] = weight_sigmas
+    exp_info['learning_rates'] = learning_rates
+
+    with open(main_exp_folder + '/exp_info.pickle', 'wb') as handle:
+        pickle.dump(exp_info, handle, protocol=pickle.HIGHEST_PROTOCOL)
     
     for model in tqdm(models):
         training_kwargs['version'] = model
@@ -522,7 +529,7 @@ if __name__ == "__main__":
     
                 exp_name = f"/wsigma{training_kwargs['weight_sigma']}_lr{training_kwargs['learning_rate']}/"+training_kwargs['version']
             
-                experiment_folder = parent_dir + '/experiments/' + exp_name 
+                experiment_folder = parent_dir + '/experiments/' + main_exp_folder + exp_name 
 
                 for i in range(10):
                     run_noisy_training(experiment_folder, exp_name=exp_name, trial=i, training_kwargs=training_kwargs)
