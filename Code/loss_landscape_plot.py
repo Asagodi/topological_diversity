@@ -15,6 +15,7 @@ import pickle
 from pathlib import Path
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -121,7 +122,11 @@ def loss_landscape(T, input_length, batch_size=128, ouput_bias=1, noise_in='weig
                 noise_std=theta
                 
             if noise_in=='input':
-                bernouilli_noisy_integration_task(T=T,input_length=input_length, sigma=theta)
+                task = bernouilli_noisy_integration_task(T=T,input_length=input_length, sigma=theta)
+                _input, _target, _mask = task(batch_size)
+                input = torch.from_numpy(_input).to(device=device).float() 
+                target = torch.from_numpy(_target).to(device=device).float() 
+                mask =  torch.from_numpy(_mask).to(device=device).float() 
             
             net = RNN(dims=(2,2,1), noise_std=noise_std, dt=1,
                       nonlinearity='relu', readout_nonlinearity='id',
@@ -129,7 +134,6 @@ def loss_landscape(T, input_length, batch_size=128, ouput_bias=1, noise_in='weig
                       h0_init=h0_init, ML_RNN=True)
 
             output = net(input)
-            
             loss = mse_loss_masked(output, target, mask).item()
             loss_theta[theta_i,model_name_j] = loss
             
@@ -143,7 +147,6 @@ def loss_landscape(T, input_length, batch_size=128, ouput_bias=1, noise_in='weig
     ax.set_prop_cycle(color=['k', 'crimson', 'b'])
     
     ax.plot(thetas, loss_theta, '.-', label=['iRNN', 'UBLA', 'BLA'] )
-    # plt.xscale('symlog')
     ax.set_yscale('log')
     ax.set_xlabel(r'$\Delta\theta$')
     ax.set_ylabel('loss')
@@ -153,11 +156,128 @@ def loss_landscape(T, input_length, batch_size=128, ouput_bias=1, noise_in='weig
             
     return loss_theta
 
+
+def loss_landscape_fixednoise(Ts, input_length, thetas, batch_size=128, ouput_bias=1, noise_in='weights'):
+    """
+    
+
+    Parameters
+    ----------
+    T : TYPE
+        DESCRIPTION.
+    input_length : TYPE
+        DESCRIPTION.
+    batch_size :  int, optional
+    ouput_bias_value : int, optional
+        output bias for the LAs. The default is 1.
+    noise_in : str, optional
+        noise_in determines the type of noise. The default is 'weights', which corresponds to one source of D-type noise.
+        Other sources are 
+        - 'internal', which corresponds to another source of D-type noise.
+        - 'input', which corresponds to one source of S-type noise.
+
+    Returns
+    -------
+    losses : TYPE
+        DESCRIPTION.
+
+    """
+    np.random.seed(10)
+    
+    
+    losses = np.zeros((Ts.shape[0], 3))
+    
+    noise_std = 0
+    sigma = 0
+    model_names = ['irnn', 'ubla', 'bla']
+    for model_name_j, model_name in enumerate(model_names):
+        wi_init, wrec_init, brec_init, wo_init, bwo_init, h0_init = get_params_perfectintegrator(model_name, ouput_bias=ouput_bias)
+        theta = thetas[model_name_j]
+        
+        for j in range(2):
+            for T_i, T in enumerate(Ts):
+                wrec_init_p = wrec_init.copy()
+                if noise_in=='weights':
+                    wrec_init_p[0,0] += (-1)**j*theta
+                
+                if noise_in=='internal':
+                    noise_std=theta
+                    
+                if noise_in=='input':
+                    sigma=theta
+                task = bernouilli_noisy_integration_task(T=T,input_length=input_length, sigma=sigma)
+                _input, _target, _mask = task(batch_size)
+                input = torch.from_numpy(_input).to(device=device).float() 
+                target = torch.from_numpy(_target).to(device=device).float() 
+                mask =  torch.from_numpy(_mask).to(device=device).float() 
+                
+                net = RNN(dims=(2,2,1), noise_std=noise_std, dt=1,
+                          nonlinearity='relu', readout_nonlinearity='id',
+                          wi_init=wi_init, wrec_init=wrec_init_p, wo_init=wo_init, brec_init=brec_init, bwo_init=bwo_init,
+                          h0_init=h0_init, ML_RNN=True)
+    
+                output = net(input)
+                loss = mse_loss_masked(output, target, mask).item()
+                losses[T_i,model_name_j] += loss/2.
+            
+            
+    return losses
+
+def plot_loss_landscape(losses, ouput_bias, noise_in):
+    rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+    rc('text', usetex=True)
+    sns.set_context("notebook", font_scale=1.25, rc={"lines.linewidth": 1})
+    
+    fig = plt.figure(figsize=(6,4))
+    ax = plt.subplot(111)
+    ax.set_prop_cycle(color=['k', 'crimson', 'b'])
+    
+    labels=['iRNN', 'UBLA', 'BLA']
+    markers = ['o-', '^-', 's-']
+    markersizes = [5,5,6]
+    alphas = [.5, .5, .5]
+    # ax.plot(Ts*thetas[0], losses, '.-', label=labels)
+    for i in range(3):
+        ax.plot(Ts*thetas[0], losses[:,i], markers[i], label=labels[i], markersize=markersizes[i], alpha=alphas[i], zorder=-i)
+    
+    ax.set_yscale('log')
+    ax.set_xlabel(r'$|\Delta\theta|$')
+    ax.set_ylabel('loss')
+    ax.legend(title='Network')
+    ax.grid()
+    plt.savefig(parent_dir+f"/Stability/figures/matched_loss_landscape_bias{ouput_bias}_{noise_in}.pdf", bbox_inches="tight")
+
+
+def calculate_losses(thetas, Ts, input_length, batch_size=128, ouput_bias=1, noise_in='weights'):
+    
+    mean_losses = np.zeros((len(thetas), 3))
+    for theta_i, theta in tqdm(enumerate(thetas)):
+        losses = loss_landscape_fixednoise(Ts=Ts, input_length=input_length, thetas=[theta]*3,
+                                           batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in)
+    
+        mean_losses[theta_i, :] =  np.mean(losses, axis=0)
+    
+    return mean_losses
+    
+    
+
 if __name__ == "__main__":
     print(current_dir)
     
-    loss_theta = loss_landscape(T=20, input_length=10, batch_size=1024,
-                                ouput_bias=20, noise_in='internal')
+    Ts = np.arange(10, 100, 2)
+    thetas = [2.1e-04, 5e-05, 1e-04]
+    ouput_bias=20
+    noise_in = 'weights'
+    input_length = 10
+    batch_size = 1024
+    # losses = loss_landscape_fixednoise(Ts=Ts, input_length=input_length, batch_size=batch_size,
+    #                            thetas=thetas,
+    #                            ouput_bias=ouput_bias, noise_in=noise_in)
     
-    mean_loss = np.mean(loss_theta, axis=0)
-    print(mean_loss)
+    # loss_theta = loss_landscape(T=200, input_length=10, batch_size=1024,
+    #                             ouput_bias=20, noise_in='input')
+    
+    thetas = np.logspace(-3, -7, 5)
+    mean_losses = calculate_losses(thetas, Ts, input_length, batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in)
+
+            
