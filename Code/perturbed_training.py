@@ -222,8 +222,7 @@ class RNN(nn.Module):
 
 def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False, record_step=1, h_init=None,
           loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
-          optimizer='sgd', momentum=0, weight_decay=.0, adam_betas=(0.9, 0.999), adam_eps=1e-8, #optimizers 
-          scheduler=None, scheduler_step_size=100, scheduler_gamma=0.3, 
+          optimizer='sgd', momentum=0, weight_decay=.0, 
           perturb_weights=False, weight_sigma=1e-6,
           verbose=True):
     """
@@ -252,7 +251,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
     net.to(device=device)
     
     # Optimizer
-    optimizer = optim.SGD(net.parameters(), lr=learning_rate)
+    optimizer = optim.SGD(net.parameters(), lr=learning_rate, weight_decay=weight_decay, momentum=momentum)
     loss_function = nn.MSELoss()
                 
     # Save initial weights
@@ -274,16 +273,13 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
     gradient_norm_sqs = np.zeros((n_epochs), dtype=np.float32)
     epochs = np.zeros((n_epochs))
     rec_epochs = np.zeros((n_rec_epochs))
-    if net.train_wi:
-        wis = np.zeros((n_rec_epochs, dim_in, dim_rec), dtype=np.float32)
-    if net.train_wrec:
-        wrecs = np.zeros((n_rec_epochs, dim_rec, dim_rec), dtype=np.float32)
-    if net.train_wo:
-        wos = np.zeros((n_rec_epochs, dim_rec, dim_out), dtype=np.float32)
-    if net.train_brec:
-        brecs = np.zeros((n_rec_epochs, dim_rec), dtype=np.float32)
-    if net.train_h0:
-        h0s = np.zeros((n_rec_epochs, dim_rec), dtype=np.float32)
+    wis = np.zeros((n_rec_epochs, dim_in, dim_rec), dtype=np.float32)
+    wrecs = np.zeros((n_rec_epochs, dim_rec, dim_rec), dtype=np.float32)
+    wos = np.zeros((n_rec_epochs, dim_rec, dim_out), dtype=np.float32)
+    brecs = np.zeros((n_rec_epochs, dim_rec), dtype=np.float32)
+    h0s = np.zeros((n_rec_epochs, dim_rec), dtype=np.float32)
+    
+    wrecs_pp = np.zeros((n_rec_epochs, dim_rec, dim_rec), dtype=np.float32)
 
     time0 = time.time()
     if verbose:
@@ -293,20 +289,18 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         if i % record_step == 0:
             k = i // record_step
             rec_epochs[k] = i
-            if net.train_wi:
-                wis[k] = net.wi.cpu().detach().numpy()
-            if net.train_wrec:
-                wrecs[k] = net.wrec.cpu().detach().numpy()
-            if net.train_wo:
-                wos[k] = net.wo.cpu().detach().numpy()
-            if net.train_brec:
-                brecs[k] = net.brec.cpu().detach().numpy()
-            if net.train_h0:
-                h0s[k] = net.h0.cpu().detach().numpy()
+            wis[k] = net.wi.cpu().detach().numpy()
+            wrecs[k] = net.wrec.cpu().detach().numpy()
+            wos[k] = net.wo.cpu().detach().numpy()
+            brecs[k] = net.brec.cpu().detach().numpy()
+            h0s[k] = net.h0.cpu().detach().numpy()
                 
         if perturb_weights and i>0:
             with torch.no_grad():
                 net.wrec += torch.normal(0., weight_sigma, net.wrec.shape)
+                
+        if i % record_step == 0:
+            wrecs_pp[k] = net.wrec.cpu().detach().numpy()
         
         if not data:
             # Generate batch
@@ -374,16 +368,12 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
     
     # Weights throughout training: 
     weights_train = {}
-    if net.train_wi:
-        weights_train["wi"] = wis
-    if net.train_wrec:
-        weights_train["wrec"] = wrecs
-    if net.train_wo:
-        weights_train["wo"] = wos
-    if net.train_brec:
-        weights_train["brec"] = brecs
-    if net.train_h0:
-        weights_train["h0"] = h0s
+    weights_train["wi"] = wis
+    weights_train["wrec"] = wrecs
+    weights_train["wo"] = wos
+    weights_train["brec"] = brecs
+    weights_train["h0"] = h0s
+    weights_train["wrec_pp"] = wrecs_pp
     
     res = [losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs]
     return res
@@ -423,12 +413,10 @@ def run_perturbed_training(experiment_folder, exp_name='', trial=None, training_
 
     
     
-def run_noisy_training(experiment_folder, exp_name='', trial=None, training_kwargs={}):
+def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
     # timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
     
-    experiment_folder = parent_dir + '/experiments/' + exp_name 
-    # print(experiment_folder)
-    makedirs(experiment_folder) 
+
     
     with open(experiment_folder+'/parameters.yml', 'w') as outfile:
         yaml.dump(training_kwargs, outfile, default_flow_style=False)
@@ -464,7 +452,7 @@ def run_noisy_training(experiment_folder, exp_name='', trial=None, training_kwar
         bwo_init = np.array([.0])
         h0_init = ouput_bias_value/2*np.array([1,1])
         
-    net = RNN(dims=dims, noise_std=0, dt=1,
+    net = RNN(dims=dims, noise_std=training_kwargs['internal_noise_std'], dt=training_kwargs['dt'],
               nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
               wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, bwo_init=bwo_init,
               h0_init=h0_init, ML_RNN=True)
@@ -473,66 +461,121 @@ def run_noisy_training(experiment_folder, exp_name='', trial=None, training_kwar
     result = train(net, task=task, n_epochs=training_kwargs['n_epochs'], batch_size=training_kwargs['batch_size'],
               learning_rate=training_kwargs['learning_rate'], clip_gradient=None, cuda=False, record_step=1, h_init=h0_init,
               loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
-              optimizer='sgd', momentum=0, weight_decay=.0, adam_betas=(0.9, 0.999), adam_eps=1e-8, #optimizers 
-              scheduler=None, scheduler_step_size=100, scheduler_gamma=0.3, 
+              optimizer='sgd', momentum=0, weight_decay=training_kwargs['weight_decay'],
               perturb_weights=training_kwargs['perturb_weights'], weight_sigma=training_kwargs['weight_sigma'],
               verbose=True)
 
     result.append(training_kwargs)
+
     with open(experiment_folder + '/results_%s.pickle'%trial, 'wb') as handle:
         pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
     return result
     
 if __name__ == "__main__":
-    print(current_dir)
+    # print(current_dir)
     
     training_kwargs = {}
     
     models = ['irnn', 'ubla', 'bla']
-    weight_sigmas = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9]
-    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 0]
+    sigmas = [1e-5, 1e-6, 1e-7, 1e-8, 1e-9]
+    sigmas = [1e-2, 1e-3, 1e-4, 1e-5]
+
+    learning_rates = [1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 0]
+    learning_rates = [1e-2, 1e-3, 1e-4, 1e-5]
+
     
     training_kwargs['verbose'] = False
-    training_kwargs['perturb_weights'] = True
-    training_kwargs['task_noise_sigma'] = 0
+    training_kwargs['perturb_weights'] = False
+    training_kwargs['task_noise_sigma'] = 0.
+    training_kwargs['internal_noise_std'] = 0.
+    training_kwargs['weight_sigma'] = 0.
+    training_kwargs['weight_decay'] = 0.
+
     
     training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['readout_nonlinearity'] = 'id'
-    training_kwargs['T'] = 100 # 2000
+    training_kwargs['T'] = 1000 # 2000
+    training_kwargs['dt'] = 1 # 2000
     training_kwargs['n_epochs'] = 30
-    training_kwargs['batch_size'] = 128
-    training_kwargs['input_length'] = 5
-    training_kwargs['ouput_bias_value'] = 10
+    training_kwargs['batch_size'] = 1024
+    training_kwargs['input_length'] = 10
+    training_kwargs['ouput_bias_value'] = 20
     
     #with loss landscape:BLA under irnn
-    training_kwargs['input_length'] = 50
-    training_kwargs['ouput_bias_value'] = 25
+    # training_kwargs['input_length'] = 50
+    # training_kwargs['ouput_bias_value'] = 25
     
     main_exp_folder = parent_dir + f"/experiments/noisy/perturbed_weights/grid/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
+    main_exp_folder = parent_dir + f"/experiments/noisy/internal_noise/grid/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
+    main_exp_folder = parent_dir + f"/experiments/noisy/weight_decay/grid/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
+
     makedirs(main_exp_folder) 
     
     exp_info = training_kwargs
     exp_info['models'] = models
-    exp_info['weight_sigmas'] = weight_sigmas
+    exp_info['weight_sigmas'] = sigmas
     exp_info['learning_rates'] = learning_rates
 
     with open(main_exp_folder + '/exp_info.pickle', 'wb') as handle:
-        pickle.dump(exp_info, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(exp_info, handle, protocol=pickle.HIGHEST_PROTOCOL) 
     
-    for model in tqdm(models):
-        training_kwargs['version'] = model
-        for weight_sigma in tqdm(weight_sigmas):
-            training_kwargs['weight_sigma'] = weight_sigma
-            for learning_rate in tqdm(learning_rates):
-                training_kwargs['learning_rate'] = learning_rate
-    
-                exp_name = f"/wsigma{training_kwargs['weight_sigma']}_lr{training_kwargs['learning_rate']}/"+training_kwargs['version']
+    # for model in tqdm(models):
+    #     training_kwargs['version'] = model
+    #     for sigma in tqdm(sigmas):
+    #         # training_kwargs['weight_sigma'] = sigma
+    #         # training_kwargs['internal_noise_std'] =  sigma
+    #         training_kwargs['weight_decay'] = sigma
             
-                experiment_folder = parent_dir + '/experiments/' + main_exp_folder + exp_name 
+    #         for learning_rate in tqdm(learning_rates):
+    #             training_kwargs['learning_rate'] = learning_rate
+    
+    #             exp_name = f"/wsigma{sigma}_lr{learning_rate}/"+training_kwargs['version']
+            
+    #             experiment_folder = main_exp_folder + exp_name 
+    #             print("DDD", experiment_folder)
+    #             makedirs(experiment_folder) 
+    #             for i in range(10):
+    #                 run_noisy_training(experiment_folder, exp_name=exp_name, trial=i, training_kwargs=training_kwargs)
+    
+    noise_in_list = ['weights', 'input', 'internal',  'weight_decay']
 
+    all_alpha_stars = {}
+    learning_rate = 1e-6
+    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 0]
+    # learning_rates = [0]
+
+    factor = .01
+    with open(parent_dir+f'/experiments/noisy/matching_singe_T{1000}_threshold{1e-5}_bias{10}_w.pickle', 'rb') as handle:
+        all_alpha_stars = pickle.load(handle)
+    for n_i, noise_in in enumerate(noise_in_list):
+        main_exp_folder = parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
+        makedirs(main_exp_folder) 
+        
+        training_kwargs['weight_sigma'] = 0.
+        training_kwargs['task_noise_sigma'] = 0.
+        training_kwargs['internal_noise_std'] = 0.
+        training_kwargs['weight_decay'] = 0.
+        training_kwargs['perturb_weights'] = False
+
+        with open(main_exp_folder + '/exp_info.pickle', 'wb') as handle:
+            pickle.dump(exp_info, handle, protocol=pickle.HIGHEST_PROTOCOL) 
+        
+        training_kwargs['learning_rate'] = learning_rate
+        for model_i, model in tqdm(enumerate(models)):
+            training_kwargs['version'] = model
+            for learning_rate in learning_rates:
+                experiment_folder = main_exp_folder+f"/lr{learning_rate}/"+model
+                if noise_in == 'weights':
+                    training_kwargs['perturb_weights'] = True
+                    training_kwargs['weight_sigma'] = all_alpha_stars[noise_in][model_i]*factor
+                elif noise_in == 'input':
+                    training_kwargs['task_noise_sigma'] = all_alpha_stars[noise_in][model_i]*factor
+                elif noise_in == 'internal':
+                    training_kwargs['internal_noise_std'] = all_alpha_stars[noise_in][model_i]*factor
+                else:
+                    training_kwargs['weight_decay'] =  all_alpha_stars[noise_in][model_i]*factor
+                makedirs(experiment_folder) 
+    
                 for i in range(10):
-                    run_noisy_training(experiment_folder, exp_name=exp_name, trial=i, training_kwargs=training_kwargs)
-    
-    
-    
+                    run_noisy_training(experiment_folder, trial=i, training_kwargs=training_kwargs)
