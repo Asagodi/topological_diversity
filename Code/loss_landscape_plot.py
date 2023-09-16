@@ -25,6 +25,8 @@ import matplotlib.colors as mplcolors
 import matplotlib.cm as cmx
 import matplotlib as mpl
 
+from intersect import intersection
+
 from models import mse_loss_masked
 from perturbed_training import RNN
 from tasks import bernouilli_integration_task, bernouilli_noisy_integration_task
@@ -198,12 +200,14 @@ def loss_landscape_fixednoise(Ts, input_length, thetas, batch_size=128, ouput_bi
         theta = thetas[model_name_j]
         
         for T_i, T in enumerate(Ts):
-            for j in range(2):
+            for j in range(200):
                 if j==1 and noise_in!='weights':
                     break
                 wrec_init_p = wrec_init.copy()
                 if noise_in=='weights':
-                    wrec_init_p[0,0] += (-1)**j*theta
+                    # wrec_init_p[0,0] += (-1)**j*theta
+                    wrec_init_p += np.random.normal(0,theta, (2,2))
+
                 
                 if noise_in=='internal':
                     noise_std=theta
@@ -229,7 +233,7 @@ def loss_landscape_fixednoise(Ts, input_length, thetas, batch_size=128, ouput_bi
                 losses[T_i,model_name_j] += loss
             
     if noise_in=='weights':
-        losses /= 2.
+        losses /= 200.
     return losses
 
 def plot_loss_landscape(losses, ouput_bias, noise_in):
@@ -272,21 +276,28 @@ def plot_losses(mean_losses, threshold, ouput_bias, noise_in):
     
     fig = plt.figure(figsize=(6,4))
     ax = plt.subplot(111)
-    ax.set_prop_cycle(color=['k', 'crimson', 'b'])
-    
+    colors=['k', 'crimson', 'b']
     ax.axhline(y=threshold, linestyle='--')
     
+    alpha_stars = np.zeros((3))
     for i in range(3):
-        ax.plot(thetas, mean_losses[:,i], markers[i], label=labels[i], markersize=markersizes[i], alpha=alphas[i], zorder=-i)
-    
+        ax.plot(thetas, mean_losses[:,i], markers[i], color=colors[i], label=labels[i], markersize=markersizes[i], alpha=alphas[i], zorder=-i)
+        x, y = intersection(thetas, mean_losses[:,i], thetas, [threshold]*len(thetas))
+        ax.plot(x, y, 'x', color=colors[i])
+        alpha_stars[i] = x
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlabel(r'$|\alpha|$')
     ax.set_ylabel('loss')
     ax.legend(title='Network')
     ax.grid()
-    plt.savefig(parent_dir+f"/experiments/noisy/matching_T{Ts[-1]}_threshold{threshold}_bias{ouput_bias}_{noise_in}.pdf", bbox_inches="tight")
+    if Ts.shape[0]==1:
+        plt.savefig(parent_dir+f"/experiments/noisy/matching_singleT{Ts[0]}_threshold{threshold}_bias{ouput_bias}_{noise_in}.pdf", bbox_inches="tight")
+    else:
+        plt.savefig(parent_dir+f"/experiments/noisy/matching_T{Ts[0]}to{Ts[-1]}_threshold{threshold}_bias{ouput_bias}_{noise_in}.pdf", bbox_inches="tight")
+
     plt.show()
+    return alpha_stars
 
 if __name__ == "__main__":
     print(current_dir)
@@ -298,8 +309,8 @@ if __name__ == "__main__":
     
     # Ts = np.arange(10, 100, 2)
     Ts = np.array([1000])
-    ouput_bias = 20
-    input_length = 10
+    ouput_bias = 10
+    input_length = 5
     batch_size = 1024
     
     # thetas = [2.1e-04, 5e-05, 1e-04]
@@ -310,13 +321,19 @@ if __name__ == "__main__":
     # loss_theta = loss_landscape(T=200, input_length=10, batch_size=1024,
     #                             ouput_bias=20, noise_in='input')
     
-    thetas = np.logspace(-1, -9, 10)
+    thetas = np.logspace(-1, -9, 17)
     threshold = 1e-5
+    # noise_in_list = ['weights']
     noise_in_list = ['weights', 'input', 'internal',  'weight_decay']
 
-    for noise_in in noise_in_list:
+    # all_alpha_stars = np.zeros((4,3))
+    all_alpha_stars =  {} #{'weights': np.array([1.11539299e-07, 2.31959886e-08, 4.74380070e-08])}
+    for n_i, noise_in in enumerate(noise_in_list):
 
         mean_losses = calculate_losses(thetas, Ts, input_length, batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in)
 
-        plot_losses(mean_losses, threshold, ouput_bias, noise_in)
-    
+        alpha_stars = plot_losses(mean_losses, threshold, ouput_bias, noise_in)
+        # all_alpha_stars[n_i, :] = alpha_stars
+        all_alpha_stars[noise_in] = alpha_stars
+        
+    np.savetxt(parent_dir+f'/experiments/noisy/matching_singe_T{Ts[0]}_threshold{threshold}_bias{ouput_bias}_w.csv', all_alpha_stars, delimiter=",")
