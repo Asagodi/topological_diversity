@@ -34,7 +34,7 @@ from analysis_functions import find_analytic_fixed_points, find_stabilities
 
 
 
-def plot_losses(main_exp_names):
+def plot_losses(main_exp_names, ax=None):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
     rc('text', usetex=True)
     
@@ -43,7 +43,9 @@ def plot_losses(main_exp_names):
     colors = ['k', 'red', 'b']
     model_names = ['irnn', 'ubla', 'bla']
     markers = ['-', '--']
-    fig, ax = plt.subplots(1, 1, figsize=(7.5, 5))
+    
+    if ax==None:
+        fig, ax = plt.subplots(1, 1, figsize=(7.5, 5))
     # ax2 = ax1.twinx()
     # axes = [ax1, ax2]
     # params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')[0]
@@ -79,7 +81,7 @@ def plot_losses(main_exp_names):
     # ax2.set_ylim(1e-6, 1e3)
     # ax2.set_axis_off()
     ax.set_yscale('log')
-    ax.set_ylim(1e-6, 1e3)
+    # ax.set_ylim(1e-6, 1e3)
 
     lines = [Line2D([0], [0], color='k', linewidth=3, linestyle=marker) for marker in markers]
     labels = ['with learning', 'no learning']
@@ -88,10 +90,11 @@ def plot_losses(main_exp_names):
     # ax1.legend(loc='lower left', bbox_to_anchor=(1, 0.5))
     
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/losses_wawlearning_T10000.pdf', bbox_inches="tight")
-    fig.savefig(main_exp_name+'/losses.pdf', bbox_inches="tight")
+    # fig.savefig(main_exp_name+'/losses.pdf', bbox_inches="tight")
 
     # plt.show()
-    return fig
+    # return fig
+    return mean
 
 def plot_losses_grid(main_exp_folder):
     with open(main_exp_folder + '/exp_info.pickle', 'rb') as handle:
@@ -106,6 +109,7 @@ def plot_losses_grid(main_exp_folder):
     colors = ['k', 'red', 'b']
     model_names = ['irnn', 'ubla', 'bla']
     markers = ['-', '--']
+    
     
     nsigmas = len(exp_info['weight_sigmas'])
     nlrs = len(exp_info['learning_rates'])
@@ -212,20 +216,42 @@ if __name__ == "__main__":
     training_kwargs['T'] = 1000
     training_kwargs['input_length'] = 10
     models = ['irnn', 'ubla', 'bla']
-    noise_in_list = ['weights', 'input', 'internal',  'weight_decay']
-    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7]
+    noise_in_list = ['weights', 'input', 'internal']
+    learning_rates = [1e-5, 1e-6, 1e-7,1e-8, 1e-9, 1e-10, 0]
+    factors = [1, .1, .01]
+    n_lrs = len(learning_rates)
+    n_fs = len(factors)
 
     for n_i, noise_in in enumerate(noise_in_list):
-            for learning_rate in learning_rates:
+        fig, axes = plt.subplots(n_fs, n_lrs, figsize=(4*n_fs, n_lrs), sharex=True)
+        fig.supylabel('log($\sigma_W$)', fontsize=35)
+        fig.suptitle(noise_in + "\n" + 'learning rate', fontsize=35)
+        for f_i,factor  in enumerate(factors):
+            
+            for lr_i,learning_rate in enumerate(learning_rates):
+                ax=axes[f_i,lr_i]
+                axes[0][lr_i].set_title(learning_rate)
+                axes[f_i][0].set_ylabel(np.log10(factor*1e-5), fontsize=25)
 
                 main_exp_names = []
 
-                main_exp_names.append(parent_dir + f"/experiments/noisy/alpha_star2/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}/lr{learning_rate}")
+                main_exp_names.append(parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}/lr{learning_rate}")
 
-                fig = plot_losses(main_exp_names)
-                
-                fig.savefig(parent_dir + f"/experiments/noisy/alpha_star2/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_lr{learning_rate}.pdf", bbox_inches="tight")
+                mean = plot_losses(main_exp_names, ax=ax)
+                ax.tick_params(rotation=90, labelsize=5)
+                # ax.set_axis_off()
+                # ax.set_yticks([np.min(mean), np.max(mean)])
+                # ax.set_yticks(np.arange(mean.min(), mean.max(), 1))
 
-    
+                # fig.savefig(parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_lr{learning_rate}.pdf", bbox_inches="tight")
+                # fig.savefig(parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_lr{learning_rate}.png", bbox_inches="tight")
+
+        fig.tight_layout()
+
+        fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_nax.pdf", bbox_inches="tight")
+        # fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}.pdf", bbox_inches="tight")
+
+        plt.show()
+        plt.close()
     # sub_exp_folder = parent_dir + f"/experiments/noisy/perturbed_weights/grid/T{100}/input{5}/wsigma1e-06_lr1e-06/bla"
     # plot_fixedpoints_training(sub_exp_folder)

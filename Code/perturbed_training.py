@@ -223,7 +223,7 @@ class RNN(nn.Module):
 def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False, record_step=1, h_init=None,
           loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
           optimizer='sgd', momentum=0, weight_decay=.0, 
-          perturb_weights=False, weight_sigma=1e-6,
+          perturb_weights=False, weight_sigma=1e-6, noise_step=1,
           verbose=True):
     """
     Train a network
@@ -295,7 +295,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             brecs[k] = net.brec.cpu().detach().numpy()
             h0s[k] = net.h0.cpu().detach().numpy()
                 
-        if perturb_weights and i>0:
+        if perturb_weights and (i==1 or (i+1) % noise_step == 0):
             with torch.no_grad():
                 net.wrec += torch.normal(0., weight_sigma, net.wrec.shape)
                 
@@ -462,7 +462,7 @@ def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
               learning_rate=training_kwargs['learning_rate'], clip_gradient=None, cuda=False, record_step=1, h_init=h0_init,
               loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
               optimizer='sgd', momentum=0, weight_decay=training_kwargs['weight_decay'],
-              perturb_weights=training_kwargs['perturb_weights'], weight_sigma=training_kwargs['weight_sigma'],
+              perturb_weights=training_kwargs['perturb_weights'], weight_sigma=training_kwargs['weight_sigma'], noise_step=training_kwargs['noise_step'],
               verbose=True)
 
     result.append(training_kwargs)
@@ -497,7 +497,9 @@ if __name__ == "__main__":
     training_kwargs['readout_nonlinearity'] = 'id'
     training_kwargs['T'] = 1000 # 2000
     training_kwargs['dt'] = 1 # 2000
-    training_kwargs['n_epochs'] = 30
+    training_kwargs['noise_step'] = 5
+    training_kwargs['n_epochs'] = 30*training_kwargs['noise_step']
+    
     training_kwargs['batch_size'] = 1024
     training_kwargs['input_length'] = 10
     training_kwargs['ouput_bias_value'] = 20
@@ -538,18 +540,18 @@ if __name__ == "__main__":
     #             for i in range(10):
     #                 run_noisy_training(experiment_folder, exp_name=exp_name, trial=i, training_kwargs=training_kwargs)
     
-    noise_in_list = ['weights', 'input', 'internal',  'weight_decay']
+    noise_in_list = ['weights', 'input', 'internal']
 
     all_alpha_stars = {}
-    learning_rate = 1e-6
-    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 0]
-    # learning_rates = [0]
+    learning_rates = [1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
 
-    factor = .01
+    factor = 10
     with open(parent_dir+f'/experiments/noisy/matching_singe_T{1000}_threshold{1e-5}_bias{10}_w.pickle', 'rb') as handle:
         all_alpha_stars = pickle.load(handle)
     for n_i, noise_in in enumerate(noise_in_list):
+        main_exp_folder = parent_dir + f"/experiments/noisy/grad_step{training_kwargs['noise_step']}/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
         main_exp_folder = parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
+
         makedirs(main_exp_folder) 
         
         training_kwargs['weight_sigma'] = 0.
@@ -561,10 +563,11 @@ if __name__ == "__main__":
         with open(main_exp_folder + '/exp_info.pickle', 'wb') as handle:
             pickle.dump(exp_info, handle, protocol=pickle.HIGHEST_PROTOCOL) 
         
-        training_kwargs['learning_rate'] = learning_rate
+        
         for model_i, model in tqdm(enumerate(models)):
             training_kwargs['version'] = model
             for learning_rate in learning_rates:
+                training_kwargs['learning_rate'] = learning_rate
                 experiment_folder = main_exp_folder+f"/lr{learning_rate}/"+model
                 if noise_in == 'weights':
                     training_kwargs['perturb_weights'] = True
