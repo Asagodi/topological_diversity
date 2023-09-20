@@ -543,42 +543,45 @@ if __name__ == "__main__":
     noise_in_list = ['weights', 'input', 'internal']
 
     all_alpha_stars = {}
-    learning_rates = [1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
+    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
 
-    factor = 10
-    with open(parent_dir+f'/experiments/noisy/matching_singe_T{1000}_threshold{1e-5}_bias{10}_w.pickle', 'rb') as handle:
+    factors = [10, 1, .1, .01]
+    # with open(parent_dir+f'/experiments/noisy/matching_singe_T{1000}_threshold{1e-5}_bias{10}_w.pickle', 'rb') as handle:
+    with open(parent_dir+f'/experiments/noisy/matching_singe_T{100}_threshold{1e-5}_input{10}.pickle', 'rb') as handle:
         all_alpha_stars = pickle.load(handle)
-    for n_i, noise_in in enumerate(noise_in_list):
-        main_exp_folder = parent_dir + f"/experiments/noisy/grad_step{training_kwargs['noise_step']}/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
-        main_exp_folder = parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
-
-        makedirs(main_exp_folder) 
+    for factor in factors:
         
-        training_kwargs['weight_sigma'] = 0.
-        training_kwargs['task_noise_sigma'] = 0.
-        training_kwargs['internal_noise_std'] = 0.
-        training_kwargs['weight_decay'] = 0.
-        training_kwargs['perturb_weights'] = False
-
-        with open(main_exp_folder + '/exp_info.pickle', 'wb') as handle:
-            pickle.dump(exp_info, handle, protocol=pickle.HIGHEST_PROTOCOL) 
-        
-        
-        for model_i, model in tqdm(enumerate(models)):
-            training_kwargs['version'] = model
-            for learning_rate in learning_rates:
-                training_kwargs['learning_rate'] = learning_rate
-                experiment_folder = main_exp_folder+f"/lr{learning_rate}/"+model
-                if noise_in == 'weights':
-                    training_kwargs['perturb_weights'] = True
-                    training_kwargs['weight_sigma'] = all_alpha_stars[noise_in][model_i]*factor
-                elif noise_in == 'input':
-                    training_kwargs['task_noise_sigma'] = all_alpha_stars[noise_in][model_i]*factor
-                elif noise_in == 'internal':
-                    training_kwargs['internal_noise_std'] = all_alpha_stars[noise_in][model_i]*factor
-                else:
-                    training_kwargs['weight_decay'] =  all_alpha_stars[noise_in][model_i]*factor
-                makedirs(experiment_folder) 
+        for n_i, noise_in in enumerate(noise_in_list):
+            main_exp_folder = parent_dir + f"/experiments/noisy/grad_step{training_kwargs['noise_step']}/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
+            main_exp_folder = parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
     
-                for i in range(10):
-                    run_noisy_training(experiment_folder, trial=i, training_kwargs=training_kwargs)
+            makedirs(main_exp_folder) 
+            
+            training_kwargs['weight_sigma'] = 0.
+            training_kwargs['task_noise_sigma'] = 0.
+            training_kwargs['internal_noise_std'] = 0.
+            training_kwargs['weight_decay'] = 0.
+            training_kwargs['perturb_weights'] = False
+    
+            with open(main_exp_folder + '/exp_info.pickle', 'wb') as handle:
+                pickle.dump(exp_info, handle, protocol=pickle.HIGHEST_PROTOCOL) 
+            
+            
+            for model_i, model in tqdm(enumerate(models)):
+                training_kwargs['version'] = model
+                for learning_rate in learning_rates:
+                    training_kwargs['learning_rate'] = learning_rate
+                    experiment_folder = main_exp_folder+f"/lr{learning_rate}/"+model
+                    if noise_in == 'weights':
+                        training_kwargs['perturb_weights'] = True
+                        training_kwargs['weight_sigma'] = all_alpha_stars[noise_in][model_i]*factor
+                    elif noise_in == 'input':
+                        training_kwargs['task_noise_sigma'] = all_alpha_stars[noise_in][model_i]*factor
+                    elif noise_in == 'internal':
+                        training_kwargs['internal_noise_std'] = all_alpha_stars[noise_in][model_i]*factor
+                    else:
+                        training_kwargs['weight_decay'] =  all_alpha_stars[noise_in][model_i]*factor
+                    makedirs(experiment_folder) 
+        
+                    for i in range(10):
+                        run_noisy_training(experiment_folder, trial=i, training_kwargs=training_kwargs)
