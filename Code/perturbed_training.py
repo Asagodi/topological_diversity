@@ -495,7 +495,7 @@ if __name__ == "__main__":
     
     training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['readout_nonlinearity'] = 'id'
-    training_kwargs['T'] = 1000 # 2000
+    training_kwargs['T'] = 100 # 2000
     training_kwargs['dt'] = 1 # 2000
     training_kwargs['noise_step'] = 1
     training_kwargs['n_epochs'] = 30*training_kwargs['noise_step']
