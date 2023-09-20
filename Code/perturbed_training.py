@@ -495,7 +495,7 @@ if __name__ == "__main__":
     
     training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['readout_nonlinearity'] = 'id'
-    training_kwargs['T'] = 100 # 2000
+    training_kwargs['T'] = 1000 # 2000
     training_kwargs['dt'] = 1 # 2000
     training_kwargs['noise_step'] = 1
     training_kwargs['n_epochs'] = 30*training_kwargs['noise_step']
@@ -547,12 +547,12 @@ if __name__ == "__main__":
 
     factors = [10, 1, .1, .01]
     # with open(parent_dir+f'/experiments/noisy/matching_singe_T{1000}_threshold{1e-5}_bias{10}_w.pickle', 'rb') as handle:
-    with open(parent_dir+f'/experiments/noisy/matching_single_T{100}_threshold{1e-5}_input{10}.pickle', 'rb') as handle:
+    with open(parent_dir+f"/experiments/noisy/matching_single_T{training_kwargs['T']}_threshold{1e-5}_input{10}.pickle", 'rb') as handle:
         all_alpha_stars = pickle.load(handle)
     for factor in factors:
         
         for n_i, noise_in in enumerate(noise_in_list):
-            main_exp_folder = parent_dir + f"/experiments/noisy/grad_step{training_kwargs['noise_step']}/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
+            main_exp_folder = parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{training_kwargs['noise_step']}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}"
             main_exp_folder = parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}"
     
             makedirs(main_exp_folder) 
