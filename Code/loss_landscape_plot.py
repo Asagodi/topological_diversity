@@ -308,9 +308,9 @@ if __name__ == "__main__":
     alphas = [.5, .5, .5]
     
     # Ts = np.arange(10, 100, 2)
-    Ts = np.array([1000])
-    ouput_bias = 10
-    input_length = 5
+    Ts = np.array([100])
+    ouput_bias = 20
+    input_length = 10
     batch_size = 1024
     
     # thetas = [2.1e-04, 5e-05, 1e-04]
@@ -324,7 +324,7 @@ if __name__ == "__main__":
     thetas = np.logspace(-1, -9, 17)
     threshold = 1e-5
     # noise_in_list = ['weights']
-    noise_in_list = ['weights', 'input', 'internal',  'weight_decay']
+    noise_in_list = ['weights', 'input', 'internal']
 
     # all_alpha_stars = np.zeros((4,3))
     all_alpha_stars =  {} #{'weights': np.array([1.11539299e-07, 2.31959886e-08, 4.74380070e-08])}
@@ -336,4 +336,6 @@ if __name__ == "__main__":
         # all_alpha_stars[n_i, :] = alpha_stars
         all_alpha_stars[noise_in] = alpha_stars
         
-    np.savetxt(parent_dir+f'/experiments/noisy/matching_singe_T{Ts[0]}_threshold{threshold}_bias{ouput_bias}_w.csv', all_alpha_stars, delimiter=",")
+    # np.savetxt(parent_dir+f'/experiments/noisy/matching_singe_T{Ts[0]}_threshold{threshold}_input{input_length}_w.csv', all_alpha_stars, delimiter=",")
+    with open(parent_dir+f'/experiments/noisy/matching_singe_T{Ts[0]}_threshold{threshold}_input{input_length}_w.pickle', 'wb') as handle:
+        pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
