@@ -34,7 +34,7 @@ from analysis_functions import find_analytic_fixed_points, find_stabilities
 
 
 
-def plot_losses(main_exp_names, ax=None):
+def plot_losses(main_exp_names, ax=None, sharey=False):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
     rc('text', usetex=True)
     
@@ -63,7 +63,7 @@ def plot_losses(main_exp_names, ax=None):
             # print(exp_list)
 
             for exp_i, exp in enumerate(exp_list):
-                print(exp)
+                # print(exp)
                 with open(exp, 'rb') as handle:
                     result = pickle.load(handle)
                 
@@ -71,34 +71,50 @@ def plot_losses(main_exp_names, ax=None):
                 all_losses[exp_i, :len(losses)] = losses
                 
                 lines.append(ax.plot(losses, markers[0], alpha=0.2, color=colors[model_i]))
+                
+                first_nan_index = np.where(np.isnan(losses))[0]
+                if sharey:
+                    if np.any(first_nan_index):
+                        ax.plot(first_nan_index[0], [1e8], 'x', color=colors[model_i])
+                else:
+                    ax.plot(first_nan_index, losses[first_nan_index-1]*1e4, 'x', color=colors[model_i])
         
             mean = np.mean(all_losses, axis=0)
             ax.plot(range(mean.shape[0]), mean, markers[0], label=labels[model_i], color=colors[model_i])
-        
+            
+            
+            # if model_i==1:
+                # print(all_losses[:,-1])
     # ax1.set_yscale('log')
     # ax2.set_yscale('log')
     # ax1.set_ylim(1e-6, 1e3)
     # ax2.set_ylim(1e-6, 1e3)
     ax.tick_params(rotation=90, labelsize=15)
+    ax.xaxis.grid(False, which='major')
+    ax.axhline(1.6, linestyle='--', color='k') 
+    ax.axhline(1e-5, linestyle='--', color='k') 
+    ax.axhline(1e5, linestyle='--', color='k') 
 
     ax.set_yscale('log')
 
-
-    try:
-        if np.ceil(np.log10(np.max(all_losses)))-np.floor(np.log10(np.min(all_losses)))<3:
-            min_y = np.power(10,np.floor(np.log10(np.min(all_losses))))
-            max_y = np.power(10, np.ceil(np.log10(np.max(all_losses))))
-        else:
-            min_y = np.max([1e-12,np.power(10,np.floor(np.log10(np.min(all_losses))))])
-            max_y = np.power(10, 4+np.ceil(np.log10(np.max(all_losses))))
-    except:
+    if not sharey:
+        try:
+            if np.ceil(np.log10(np.max(all_losses)))-np.floor(np.log10(np.min(all_losses)))<3:
+                min_y = np.power(10,np.floor(np.log10(np.min(all_losses))))
+                max_y = np.power(10, np.ceil(np.log10(np.max(all_losses))))
+            else:
+                min_y = np.max([1e-12,np.power(10,np.floor(np.log10(np.min(all_losses))))])
+                max_y = np.power(10, 4+np.ceil(np.log10(np.max(all_losses))))
+        except:
+            min_y = 1e-12
+            max_y = 1e8
+    else:
         min_y = 1e-12
         max_y = 1e8
-    # min_y = 1e-12
-    # max_y = 1e8
     ax.set_ylim([min_y, max_y])
     ax.set_yticks([min_y, max_y], [int(np.log10(min_y)), int(np.log10(max_y))])
-    ax.set_yticks([min_y, max_y], [int(np.log10(min_y)), int(np.log10(max_y))])
+    ax.set_yticks([min_y,1.6, max_y], [int(np.log10(min_y)),np.round(np.log10(1.6),1), int(np.log10(max_y))])
+    ax.set_yticks([min_y, 1e-5, 1.6, 1e5, max_y], [int(np.log10(min_y)),-5,np.round(np.log10(1.6),1),5,int(np.log10(max_y))])
 
 
     lines = [Line2D([0], [0], color='k', linewidth=3, linestyle=marker) for marker in markers]
@@ -112,7 +128,55 @@ def plot_losses(main_exp_names, ax=None):
 
     # plt.show()
     # return fig
-    return mean
+    return all_losses
+
+
+def plot_losses_box(main_exp_names, ax=None):
+    rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+    rc('text', usetex=True)
+    
+    sns.set_context("notebook", font_scale=1.25, rc={"lines.linewidth": 1}) 
+    labels = ['iRNN', 'UBLA', 'BLA']
+    colors = ['k', 'red', 'b']
+    model_names = ['irnn', 'ubla', 'bla']
+    if ax==None:
+        fig, ax = plt.subplots(1, 1, figsize=(7.5, 5))
+    
+    for men_i, main_exp_name in enumerate(main_exp_names):
+
+        for model_i, model_name in enumerate(model_names):
+
+            exp_list = glob.glob(main_exp_name +'/'+ model_name + "/result*")
+
+            all_losses = np.zeros((len(exp_list), 30))
+
+            for exp_i, exp in enumerate(exp_list):
+                # print(exp)
+                with open(exp, 'rb') as handle:
+                    result = pickle.load(handle)
+                
+                losses = result[0]
+                all_losses[exp_i, :len(losses)] = losses
+            bp = ax.boxplot(all_losses[:,-10:].flatten(), positions=[1+.5*model_i], patch_artist=True)  
+            for element in ['boxes', 'whiskers', 'fliers', 'means', 'medians', 'caps']:
+                plt.setp(bp[element], color=colors[model_i])
+            for patch in bp['boxes']:
+                patch.set(facecolor='white')       
+        
+    ax.tick_params(rotation=90, labelsize=15)
+    ax.set_yscale('log')
+    min_y = 1e-10
+    max_y = 1e4
+    ax.set_ylim([min_y, max_y])
+
+    ax.set_yticks([min_y, max_y], [int(np.log10(min_y)), int(np.log10(max_y))])
+    ax.set_yticks([min_y, 1e-5, 1.6,max_y], [int(np.log10(min_y)),-5,np.round(np.log10(1.6),1),int(np.log10(max_y))])
+
+    ax.set_xticks([1,1.5,2], labels[:3])
+    # ax.set_ylabel("log(MSE)", family='Computer Modern');
+
+    ax.axhline(1.6, linestyle='--', color='k') 
+    ax.axhline(1e-5, linestyle='--', color='k') 
 
 def plot_losses_grid(main_exp_folder):
     with open(main_exp_folder + '/exp_info.pickle', 'rb') as handle:
@@ -157,9 +221,6 @@ def plot_losses_grid(main_exp_folder):
                     ax.plot(losses, alpha=0.2, color=colors[model_i])
                     
                     first_nan_index = np.where(np.isnan(losses))[0]
-                    ax.plot(first_nan_index, losses[first_nan_index-1]*100, 'x', color=colors[model_i])
-                    
-                    first_nan_index = np.where(np.isinf(losses))[0]
                     ax.plot(first_nan_index, losses[first_nan_index-1]*100, 'x', color=colors[model_i])
                     
                     # if ws_i==2 and lr_i==1:
@@ -240,8 +301,9 @@ if __name__ == "__main__":
     n_lrs = len(learning_rates)
     n_fs = len(factors)
 
+    sharey = True
     for n_i, noise_in in enumerate(noise_in_list):
-        fig, axes = plt.subplots(n_fs, n_lrs, figsize=(4*n_fs, n_lrs), sharex=True)
+        fig, axes = plt.subplots(n_fs, n_lrs, figsize=(4*n_fs, n_lrs), sharex=True, sharey=sharey)
         fig.supylabel('log($\sigma_W$)', fontsize=35)
         fig.suptitle(noise_in, fontsize=35)
         fig.text(x=0.5, y=0.88, s= 'log(learning rate)', fontsize=12, ha="center", transform=fig.transFigure)
@@ -253,15 +315,17 @@ if __name__ == "__main__":
                 if learning_rate == 0:
                     lr_title = 'no learning'
                 else:
-                    lr_title = np.int(np.log10(learning_rate))
+                    lr_title = int(np.log10(learning_rate))
                 axes[0][lr_i].set_title(lr_title)
-                axes[f_i][0].set_ylabel(np.int(np.log10(factor*1e-5)), fontsize=25)
+                axes[f_i][0].set_ylabel(int(np.log10(factor*1e-5)), fontsize=25)
 
                 main_exp_names = []
 
                 main_exp_names.append(parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}/lr{learning_rate}")
 
-                mean = plot_losses(main_exp_names, ax=ax)
+                # all_losses = plot_losses(main_exp_names, ax=ax, sharey=sharey)
+
+                plot_losses_box(main_exp_names, ax=ax)
                 # ax.set_axis_off()
                 # ax.set_yticks([np.min(mean), np.max(mean)])
                 # ax.set_yticks(np.arange(mean.min(), mean.max(), 1))
@@ -274,7 +338,8 @@ if __name__ == "__main__":
         # fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_nax.pdf", bbox_inches="tight")
         # fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_samescale.pdf", bbox_inches="tight")
 
-        fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}.pdf", bbox_inches="tight")
+        # fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}.pdf", bbox_inches="tight")
+        fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_box_samescale.pdf", bbox_inches="tight")
 
         plt.show()
         plt.close()
