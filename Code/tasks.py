@@ -146,6 +146,54 @@ def simplestep_integration_task(T, dt, amplitude=1, pulse_time=1, delay=1):
 
     return task
 
+def bernouilli_integration_task(T, input_length):
+    """
+    Creates a trial with a positive and negative step with length step_length and amplitude
+    Inputs are left and right angular velocity and 
+    target output is sine and cosine of integrated angular velocity.
+    Returns inputs, outputs
+    -------
+    """
+
+    def task(batch_size):
+        
+        inputs = np.zeros((batch_size,T,2))
+        inputs[:,:input_length,:] = np.random.binomial(1, p=.2, size=(batch_size,input_length,2))
+        outputs = np.cumsum(inputs[:,:,1], axis=1) - np.cumsum(inputs[:,:,0], axis=1)
+        mask = np.zeros((batch_size, T, 1))
+        mask[:,-1,:] = 1
+
+
+        return inputs, outputs.reshape((batch_size,T,1)), mask
+
+    return task
+
+def bernouilli_noisy_integration_task(T, input_length, sigma):
+    """
+    Creates a trial with a positive and negative step with length step_length and amplitude
+    Inputs are left and right angular velocity and 
+    target output is sine and cosine of integrated angular velocity.
+    Returns inputs, outputs
+    -------
+    """
+
+    def task(batch_size):
+        
+        inputs = np.zeros((batch_size,T,2))
+        inputs[:,:input_length,:] = np.random.binomial(1, p=.2, size=(batch_size,input_length,2))
+        outputs = np.cumsum(inputs[:,:,1], axis=1) - np.cumsum(inputs[:,:,0], axis=1)
+        inputs[:,:input_length,:] += np.random.uniform(-sigma, sigma, size=(batch_size,input_length,2))
+
+        # inputs[:,:input_length,:] += np.random.normal(0., sigma, size=(batch_size,input_length,2))
+        # mask = np.ones((batch_size, T, 1))
+        mask = np.zeros((batch_size, T, 1))
+        mask[:,-1,:] = 1
+
+        return inputs, outputs.reshape((batch_size,T,1)), mask
+
+    return task
+
+
 def flipflop(dims, dt,
     t_max=50,
     fixation_duration=1,
@@ -249,3 +297,80 @@ def flipflop(dims, dt,
         return task, ts
     else:
         return task
+    
+def poisson_clicks_task(T, dt, set_stim_duration=None,
+                        cue_output_durations = [10,5,10,5,10], 
+                        ratios=[-39,-37/3,-31/9,-26/14,26/14,31/9,37/3,39],  sum_of_rates=40,
+                        exp_trunc_params={'b':1,'scale':200,'loc':1000}, 
+                        clicks_capped=True, equal_clicks='addone_random'
+                        ):
+    
+    
+    input_length = int(T/dt)
+    
+    stim_cue_delay, stim_cue_duration, output_cue_delay, output_cue_duration, output_duration = cue_output_durations
+    delay_to_stim = stim_cue_delay + stim_cue_duration + 1
+    
+    def task(batch_size):
+
+        input =  np.zeros([batch_size, input_length, 4])
+        stimulus =  np.zeros([batch_size, input_length, 2])
+        target = np.zeros([batch_size, input_length, 2])
+        mask = np.ones([batch_size, input_length, 2])
+
+        
+        
+        stim_durations = []
+        if not set_stim_duration:
+            stim_durations = truncexpon.rvs(b=exp_trunc_params['b'],
+                                                 scale=exp_trunc_params['scale'],
+                                                 loc=exp_trunc_params['loc'],
+                                                 size=batch_size)*dt
+
+            stim_durations = [int(x) for x in stim_durations]
+            
+            #cap to T
+            stim_durations = [x if (delay_to_stim+x+output_cue_delay+output_cue_duration+output_duration<input_length) else input_length-(output_cue_delay+output_cue_duration+output_duration+2) for x in stim_durations ]
+
+        else: 
+            stim_durations = [set_stim_duration]*batch_size
+        
+        for batch_i in range(batch_size): 
+            stim_duration = stim_durations[batch_i]
+            # print(stim_duration)
+            # delay_to_cue = max(1,int(np.random.random() * self.T *.1 *self.dt)) #duration is tenth of the trial
+            
+            ratio = np.random.choice(ratios)
+            rates = [sum_of_rates/(1+1/abs(ratio))]
+            rates.insert(int(np.sign(ratio)), sum_of_rates - rates[0])
+            rates = np.array(rates)
+            stimulus[batch_i, delay_to_stim:delay_to_stim+stim_duration, :] = np.random.poisson(lam=rates/dt/1000, size=(stim_duration,2))
+
+            if clicks_capped == True:
+                stimulus[batch_i,...] = np.where(stimulus[batch_i,...]<2, stimulus[batch_i,...], 1)
+    
+            N_clicks = np.sum(stimulus[batch_i,...], axis=0)
+            #determine N_1<N_2
+            if N_clicks[0] == N_clicks[1]:
+                highest_click_count_index = np.random.choice([0,1]) #if N_1=N_2 choose reward randomly
+                if equal_clicks == 'addone_random':
+                    elapsed_time = delay_to_stim+stim_duration+1 
+                    stimulus[batch_i, elapsed_time, highest_click_count_index] = 1.
+                    N_clicks[highest_click_count_index] += 1
+                    
+            else:
+                highest_click_count_index = np.argmax(N_clicks)
+    
+
+            output_cue = stim_cue_delay + stim_cue_duration + stim_duration + output_cue_delay
+            input[batch_i, :, 3][output_cue-output_cue_duration:output_cue] = 1.
+            target[batch_i, output_cue:output_cue+output_duration, highest_click_count_index] = 1.
+            # target[batch_i, output_cue:output_cue+output_duration, 1-highest_click_count_index] = 0.
+            
+        input[:, :, :2] = stimulus
+        input[:, stim_cue_delay:stim_cue_delay+stim_cue_duration, 2] = 1.
+        
+        return input, target, mask
+    
+    return task
+    
