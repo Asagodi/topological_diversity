@@ -553,7 +553,7 @@ if __name__ == "__main__":
         
         for n_i, noise_in in enumerate(noise_in_list):
             main_exp_folder = parent_dir + f"/experiments/noisy/grad_step{training_kwargs['noise_step']}/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
-            main_exp_folder = parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
+            main_exp_folder = parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}"
     
             makedirs(main_exp_folder) 
             
