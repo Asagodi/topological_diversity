@@ -79,9 +79,27 @@ def plot_losses(main_exp_names, ax=None):
     # ax2.set_yscale('log')
     # ax1.set_ylim(1e-6, 1e3)
     # ax2.set_ylim(1e-6, 1e3)
-    # ax2.set_axis_off()
+    ax.tick_params(rotation=90, labelsize=15)
+
     ax.set_yscale('log')
-    # ax.set_ylim(1e-6, 1e3)
+
+
+    try:
+        if np.ceil(np.log10(np.max(all_losses)))-np.floor(np.log10(np.min(all_losses)))<3:
+            min_y = np.power(10,np.floor(np.log10(np.min(all_losses))))
+            max_y = np.power(10, np.ceil(np.log10(np.max(all_losses))))
+        else:
+            min_y = np.max([1e-12,np.power(10,np.floor(np.log10(np.min(all_losses))))])
+            max_y = np.power(10, 4+np.ceil(np.log10(np.max(all_losses))))
+    except:
+        min_y = 1e-12
+        max_y = 1e8
+    # min_y = 1e-12
+    # max_y = 1e8
+    ax.set_ylim([min_y, max_y])
+    ax.set_yticks([min_y, max_y], [int(np.log10(min_y)), int(np.log10(max_y))])
+    ax.set_yticks([min_y, max_y], [int(np.log10(min_y)), int(np.log10(max_y))])
+
 
     lines = [Line2D([0], [0], color='k', linewidth=3, linestyle=marker) for marker in markers]
     labels = ['with learning', 'no learning']
@@ -225,20 +243,25 @@ if __name__ == "__main__":
     for n_i, noise_in in enumerate(noise_in_list):
         fig, axes = plt.subplots(n_fs, n_lrs, figsize=(4*n_fs, n_lrs), sharex=True)
         fig.supylabel('log($\sigma_W$)', fontsize=35)
-        fig.suptitle(noise_in + "\n" + 'learning rate', fontsize=35)
+        fig.suptitle(noise_in, fontsize=35)
+        fig.text(x=0.5, y=0.88, s= 'log(learning rate)', fontsize=12, ha="center", transform=fig.transFigure)
+
         for f_i,factor  in enumerate(factors):
             
             for lr_i,learning_rate in enumerate(learning_rates):
                 ax=axes[f_i,lr_i]
-                axes[0][lr_i].set_title(learning_rate)
-                axes[f_i][0].set_ylabel(np.log10(factor*1e-5), fontsize=25)
+                if learning_rate == 0:
+                    lr_title = 'no learning'
+                else:
+                    lr_title = np.int(np.log10(learning_rate))
+                axes[0][lr_i].set_title(lr_title)
+                axes[f_i][0].set_ylabel(np.int(np.log10(factor*1e-5)), fontsize=25)
 
                 main_exp_names = []
 
                 main_exp_names.append(parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}/lr{learning_rate}")
 
                 mean = plot_losses(main_exp_names, ax=ax)
-                ax.tick_params(rotation=90, labelsize=5)
                 # ax.set_axis_off()
                 # ax.set_yticks([np.min(mean), np.max(mean)])
                 # ax.set_yticks(np.arange(mean.min(), mean.max(), 1))
@@ -248,8 +271,10 @@ if __name__ == "__main__":
 
         fig.tight_layout()
 
-        fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_nax.pdf", bbox_inches="tight")
-        # fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}.pdf", bbox_inches="tight")
+        # fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_nax.pdf", bbox_inches="tight")
+        # fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_samescale.pdf", bbox_inches="tight")
+
+        fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}.pdf", bbox_inches="tight")
 
         plt.show()
         plt.close()
