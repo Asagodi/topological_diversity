@@ -163,7 +163,7 @@ def loss_landscape(T, input_length, batch_size=128, ouput_bias=1, noise_in='weig
     return loss_theta
 
 
-def loss_landscape_fixednoise(Ts, input_length, thetas, batch_size=128, ouput_bias=1, noise_in='weights'):
+def loss_landscape_fixednoise(Ts, input_length, thetas, batch_size=128, ouput_bias=1, noise_in='weights', weight_samples=200):
     """
     
 
@@ -200,7 +200,7 @@ def loss_landscape_fixednoise(Ts, input_length, thetas, batch_size=128, ouput_bi
         theta = thetas[model_name_j]
         
         for T_i, T in enumerate(Ts):
-            for j in range(200):
+            for j in range(weight_samples):
                 if j==1 and noise_in!='weights':
                     break
                 wrec_init_p = wrec_init.copy()
@@ -233,7 +233,7 @@ def loss_landscape_fixednoise(Ts, input_length, thetas, batch_size=128, ouput_bi
                 losses[T_i,model_name_j] += loss
             
     if noise_in=='weights':
-        losses /= 200.
+        losses /= weight_samples
     return losses
 
 def plot_loss_landscape(losses, ouput_bias, noise_in):
@@ -308,7 +308,7 @@ if __name__ == "__main__":
     alphas = [.5, .5, .5]
     
     # Ts = np.arange(10, 100, 2)
-    Ts = np.array([100])
+    Ts = np.array([500])
     ouput_bias = 20
     input_length = 10
     batch_size = 1024
@@ -337,5 +337,5 @@ if __name__ == "__main__":
         all_alpha_stars[noise_in] = alpha_stars
         
     # np.savetxt(parent_dir+f'/experiments/noisy/matching_singe_T{Ts[0]}_threshold{threshold}_input{input_length}_w.csv', all_alpha_stars, delimiter=",")
-    with open(parent_dir+f'/experiments/noisy/matching_singe_T{Ts[0]}_threshold{threshold}_input{input_length}_w.pickle', 'wb') as handle:
+    with open(parent_dir+f'/experiments/noisy/matching_single_T{Ts[0]}_threshold{threshold}_input{input_length}.pickle', 'wb') as handle:
         pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
