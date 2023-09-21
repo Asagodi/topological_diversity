@@ -481,9 +481,6 @@ if __name__ == "__main__":
     sigmas = [1e-5, 1e-6, 1e-7, 1e-8, 1e-9]
     sigmas = [1e-2, 1e-3, 1e-4, 1e-5]
 
-    learning_rates = [1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 0]
-    learning_rates = [1e-2, 1e-3, 1e-4, 1e-5]
-
     
     training_kwargs['verbose'] = False
     training_kwargs['perturb_weights'] = False
@@ -517,43 +514,26 @@ if __name__ == "__main__":
     exp_info = training_kwargs
     exp_info['models'] = models
     exp_info['weight_sigmas'] = sigmas
+    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
     exp_info['learning_rates'] = learning_rates
 
     with open(main_exp_folder + '/exp_info.pickle', 'wb') as handle:
         pickle.dump(exp_info, handle, protocol=pickle.HIGHEST_PROTOCOL) 
-    
-    # for model in tqdm(models):
-    #     training_kwargs['version'] = model
-    #     for sigma in tqdm(sigmas):
-    #         # training_kwargs['weight_sigma'] = sigma
-    #         # training_kwargs['internal_noise_std'] =  sigma
-    #         training_kwargs['weight_decay'] = sigma
-            
-    #         for learning_rate in tqdm(learning_rates):
-    #             training_kwargs['learning_rate'] = learning_rate
-    
-    #             exp_name = f"/wsigma{sigma}_lr{learning_rate}/"+training_kwargs['version']
-            
-    #             experiment_folder = main_exp_folder + exp_name 
-    #             print("DDD", experiment_folder)
-    #             makedirs(experiment_folder) 
-    #             for i in range(10):
-    #                 run_noisy_training(experiment_folder, exp_name=exp_name, trial=i, training_kwargs=training_kwargs)
+
     
     noise_in_list = ['weights', 'input', 'internal']
 
     all_alpha_stars = {}
-    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
-
+    # learning_rates = [1e-4]
     factors = [10, 1, .1, .01]
+    factors = [10]
     # with open(parent_dir+f'/experiments/noisy/matching_singe_T{1000}_threshold{1e-5}_bias{10}_w.pickle', 'rb') as handle:
-    with open(parent_dir+f"/experiments/noisy/matching_single_T{training_kwargs['T']}_threshold{1e-5}_input{10}.pickle", 'rb') as handle:
+    with open(parent_dir+f"/experiments/noisy/matching_single_T{training_kwargs['T']}_threshold{1e-5}_bias{10}.pickle", 'rb') as handle:
         all_alpha_stars = pickle.load(handle)
     for factor in factors:
         
         for n_i, noise_in in enumerate(noise_in_list):
             main_exp_folder = parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{training_kwargs['noise_step']}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}"
-            main_exp_folder = parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}"
     
             makedirs(main_exp_folder) 
             
