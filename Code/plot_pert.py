@@ -34,7 +34,7 @@ from analysis_functions import find_analytic_fixed_points, find_stabilities
 
 
 
-def plot_losses(main_exp_names, ax=None, sharey=False):
+def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, y_lim=None):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
     rc('text', usetex=True)
     
@@ -97,7 +97,10 @@ def plot_losses(main_exp_names, ax=None, sharey=False):
 
     ax.set_yscale('log')
 
-    if not sharey:
+    if sharey:
+        min_y = y_lim[0]
+        max_y = y_lim[1]
+    else:
         try:
             if np.ceil(np.log10(np.max(all_losses)))-np.floor(np.log10(np.min(all_losses)))<3:
                 min_y = np.power(10,np.floor(np.log10(np.min(all_losses))))
@@ -108,13 +111,11 @@ def plot_losses(main_exp_names, ax=None, sharey=False):
         except:
             min_y = 1e-12
             max_y = 1e8
-    else:
-        min_y = 1e-12
-        max_y = 1e8
+
     ax.set_ylim([min_y, max_y])
     ax.set_yticks([min_y, max_y], [int(np.log10(min_y)), int(np.log10(max_y))])
-    ax.set_yticks([min_y,1.6, max_y], [int(np.log10(min_y)),np.round(np.log10(1.6),1), int(np.log10(max_y))])
-    ax.set_yticks([min_y, 1e-5, 1.6, 1e5, max_y], [int(np.log10(min_y)),-5,np.round(np.log10(1.6),1),5,int(np.log10(max_y))])
+    ax.set_yticks([min_y,1.6, max_y], [int(np.log10(min_y)),np.round(np.log10(1.6),1), np.round(np.log10(max_y),1)])
+    # ax.set_yticks([min_y, sigma, 1.6, 1e5, max_y], [int(np.log10(min_y)),int(np.log10(sigma)),np.round(np.log10(1.6),1),5,int(np.log10(max_y))])
 
 
     lines = [Line2D([0], [0], color='k', linewidth=3, linestyle=marker) for marker in markers]
@@ -131,7 +132,7 @@ def plot_losses(main_exp_names, ax=None, sharey=False):
     return all_losses
 
 
-def plot_losses_box(main_exp_names, ax=None):
+def plot_losses_box(main_exp_names, sigma=None, ax=None, y_lim=[1e-10,1e4]):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
     rc('text', usetex=True)
     
@@ -165,9 +166,10 @@ def plot_losses_box(main_exp_names, ax=None):
         
     ax.tick_params(rotation=90, labelsize=15)
     ax.set_yscale('log')
-    min_y = 1e-10
-    max_y = 1e4
+    min_y = y_lim[0]
+    max_y = y_lim[1]
     ax.set_ylim([min_y, max_y])
+    ax.set_xlim([.75,2.25])
 
     ax.set_yticks([min_y, max_y], [int(np.log10(min_y)), int(np.log10(max_y))])
     ax.set_yticks([min_y, 1e-5, 1.6,max_y], [int(np.log10(min_y)),-5,np.round(np.log10(1.6),1),int(np.log10(max_y))])
@@ -283,65 +285,84 @@ def plot_fixedpoints_training(sub_exp_folder, trial=0):
 
 
 if __name__ == "__main__":
-    print(current_dir)
-    
-    # main_exp_names = ['noisy/perturbed_weights/T10000','noisy/perturbed_weights/T10000_nol']
-    # plot_losses(main_exp_names=main_exp_names)
-    
-    main_exp_folder = parent_dir + f"/experiments/noisy/weight_decay/grid/T{1000}/input{10}"
-    # plot_losses_grid(main_exp_folder)
-
     training_kwargs = {}
-    training_kwargs['T'] = 1000
+    training_kwargs['T'] = 100
     training_kwargs['input_length'] = 10
+    gradstep = 1
     models = ['irnn', 'ubla', 'bla']
     noise_in_list = ['weights', 'input', 'internal']
-    learning_rates = [1e-5, 1e-6, 1e-7,1e-8, 1e-9, 1e-10, 0]
-    factors = [1, .1, .01]
+    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
+    learning_rates = [0]
+
+    factors = [10, 1, .1, .01]
     n_lrs = len(learning_rates)
     n_fs = len(factors)
-
-    sharey = True
+    plot_box = True
     for n_i, noise_in in enumerate(noise_in_list):
-        fig, axes = plt.subplots(n_fs, n_lrs, figsize=(4*n_fs, n_lrs), sharex=True, sharey=sharey)
-        fig.supylabel('log($\sigma_W$)', fontsize=35)
+        fig, axes = plt.subplots(n_lrs, n_fs, figsize=(2*n_fs, 4*n_lrs), sharex=True, sharey=True)
+        fig.supylabel('log(MSE)', fontsize=35)
         fig.suptitle(noise_in, fontsize=35)
-        fig.text(x=0.5, y=0.88, s= 'log(learning rate)', fontsize=12, ha="center", transform=fig.transFigure)
+        fig.text(x=0.5, y=.8, s= 'log($\sigma_W$)', fontsize=12, ha="center", transform=fig.transFigure)
 
         for f_i,factor  in enumerate(factors):
-            
-            for lr_i,learning_rate in enumerate(learning_rates):
-                ax=axes[f_i,lr_i]
-                if learning_rate == 0:
-                    lr_title = 'no learning'
-                else:
-                    lr_title = int(np.log10(learning_rate))
-                axes[0][lr_i].set_title(lr_title)
-                axes[f_i][0].set_ylabel(int(np.log10(factor*1e-5)), fontsize=25)
+            ax=axes[f_i]
+            axes[f_i].set_title(int(np.log10(factor*1e-5)), fontsize=25)
+            main_exp_names = []
+            main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr0")
+            if plot_box:
+                plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax, y_lim=[1e-10,1.6])
+            else:
+                plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=True, y_lim=[1e-10,1.6])
 
-                main_exp_names = []
-
-                main_exp_names.append(parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/{noise_in}/T{training_kwargs['T']}/input{training_kwargs['input_length']}/lr{learning_rate}")
-
-                # all_losses = plot_losses(main_exp_names, ax=ax, sharey=sharey)
-
-                plot_losses_box(main_exp_names, ax=ax)
-                # ax.set_axis_off()
-                # ax.set_yticks([np.min(mean), np.max(mean)])
-                # ax.set_yticks(np.arange(mean.min(), mean.max(), 1))
-
-                # fig.savefig(parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_lr{learning_rate}.pdf", bbox_inches="tight")
-                # fig.savefig(parent_dir + f"/experiments/noisy/alpha_star_factor{factor}/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_lr{learning_rate}.png", bbox_inches="tight")
 
         fig.tight_layout()
+        if plot_box:
+            fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
+        else:
+            fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
 
-        # fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_nax.pdf", bbox_inches="tight")
-        # fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_samescale.pdf", bbox_inches="tight")
 
-        # fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}.pdf", bbox_inches="tight")
-        fig.savefig(parent_dir + f"/experiments/noisy/losses_{noise_in}_T{training_kwargs['T']}_input{training_kwargs['input_length']}_box_samescale.pdf", bbox_inches="tight")
+    # plot_box = True
+    # sharey = True
+    # for n_i, noise_in in enumerate(noise_in_list):
+    #     fig, axes = plt.subplots(n_fs, n_lrs, figsize=(4*n_fs, 2*n_lrs), sharex=True, sharey=sharey)
+    #     fig.supylabel('log($\sigma_W$)', fontsize=35)
+    #     fig.suptitle(noise_in, fontsize=35)
+    #     fig.text(x=0.1, y=.95, s= 'log(learning rate)', fontsize=12, ha="center", transform=fig.transFigure)
 
-        plt.show()
-        plt.close()
-    # sub_exp_folder = parent_dir + f"/experiments/noisy/perturbed_weights/grid/T{100}/input{5}/wsigma1e-06_lr1e-06/bla"
-    # plot_fixedpoints_training(sub_exp_folder)
+    #     for f_i,factor  in enumerate(factors):
+            
+    #         for lr_i,learning_rate in enumerate(learning_rates):
+    #             ax=axes[f_i,lr_i]
+    #             if learning_rate == 0:
+    #                 lr_title = 'no learning'
+    #             else:
+    #                 lr_title = int(np.log10(learning_rate))
+    #             axes[0][lr_i].set_title(lr_title)
+    #             axes[f_i][0].set_ylabel(int(np.log10(factor*1e-5)), fontsize=25)
+
+    #             main_exp_names = []
+
+    #             main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr{learning_rate}")
+    #             if not plot_box:
+    #                 all_losses = plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=sharey)
+    #             else:
+    #                 plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax)
+
+
+    #     fig.tight_layout()
+
+    #     if not plot_box:
+    #         if sharey:
+    #             fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_samescale.pdf", bbox_inches="tight")
+    #         else:
+    #             fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
+
+    #     else:
+    #         if sharey:
+    #             fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_box_samescale.pdf", bbox_inches="tight")
+    #         else:
+    #             fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
+
+    #     plt.show()
+    #     plt.close()
