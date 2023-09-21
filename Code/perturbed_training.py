@@ -474,13 +474,10 @@ def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
     
 if __name__ == "__main__":
     # print(current_dir)
-    
     training_kwargs = {}
     
     models = ['irnn', 'ubla', 'bla']
-    sigmas = [1e-5, 1e-6, 1e-7, 1e-8, 1e-9]
-    sigmas = [1e-2, 1e-3, 1e-4, 1e-5]
-
+    sigmas = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9]
     
     training_kwargs['verbose'] = False
     training_kwargs['perturb_weights'] = False
@@ -505,30 +502,14 @@ if __name__ == "__main__":
     # training_kwargs['input_length'] = 50
     # training_kwargs['ouput_bias_value'] = 25
     
-    main_exp_folder = parent_dir + f"/experiments/noisy/perturbed_weights/grid/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
-    main_exp_folder = parent_dir + f"/experiments/noisy/internal_noise/grid/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
-    main_exp_folder = parent_dir + f"/experiments/noisy/weight_decay/grid/T{training_kwargs['T']}/input{training_kwargs['input_length']}"
-
-    makedirs(main_exp_folder) 
-    
-    exp_info = training_kwargs
-    exp_info['models'] = models
-    exp_info['weight_sigmas'] = sigmas
     learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
-    exp_info['learning_rates'] = learning_rates
-
-    with open(main_exp_folder + '/exp_info.pickle', 'wb') as handle:
-        pickle.dump(exp_info, handle, protocol=pickle.HIGHEST_PROTOCOL) 
-
     
     noise_in_list = ['weights', 'input', 'internal']
 
     all_alpha_stars = {}
-    # learning_rates = [1e-4]
     factors = [10, 1, .1, .01]
-    factors = [10]
-    # with open(parent_dir+f'/experiments/noisy/matching_singe_T{1000}_threshold{1e-5}_bias{10}_w.pickle', 'rb') as handle:
-    with open(parent_dir+f"/experiments/noisy/matching_single_T{training_kwargs['T']}_threshold{1e-5}_input{20}.pickle", 'rb') as handle:
+
+    with open(parent_dir+f"/experiments/noisy/matching_single_T{training_kwargs['T']}_threshold{1e-5}_input{training_kwargs['input_length']}.pickle", 'rb') as handle:
         all_alpha_stars = pickle.load(handle)
     for factor in factors:
         
