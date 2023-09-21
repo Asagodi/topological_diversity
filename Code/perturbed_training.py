@@ -528,7 +528,7 @@ if __name__ == "__main__":
     factors = [10, 1, .1, .01]
     factors = [10]
     # with open(parent_dir+f'/experiments/noisy/matching_singe_T{1000}_threshold{1e-5}_bias{10}_w.pickle', 'rb') as handle:
-    with open(parent_dir+f"/experiments/noisy/matching_single_T{training_kwargs['T']}_threshold{1e-5}_bias{10}.pickle", 'rb') as handle:
+    with open(parent_dir+f"/experiments/noisy/matching_single_T{training_kwargs['T']}_threshold{1e-5}_input{20}.pickle", 'rb') as handle:
         all_alpha_stars = pickle.load(handle)
     for factor in factors:
         
