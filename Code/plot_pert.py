@@ -58,6 +58,72 @@ def sci_notation(num, decimal_digits=1, precision=None, exponent=None):
 
     return r"${0:.{2}f}\cdot10^{{{1:d}}}$".format(coeff, exponent, precision)
 
+
+def plot_losses_pair(main_exp_name_lists):
+    rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+    rc('text', usetex=True)
+
+    sns.set_context("notebook", font_scale=1.25, rc={"lines.linewidth": 1}) 
+    labels = ['iRNN', 'UBLA', 'BLA']
+    colors = ['k', 'red', 'b']
+    model_names = ['irnn', 'ubla', 'bla']
+    markers = ['-', '--']
+    fig, ax = plt.subplots(1, 1, figsize=(7.5, 5))
+
+    for men_i, main_exp_name_list in enumerate(main_exp_name_lists):
+        for model_i, model_name in enumerate(model_names):
+            main_exp_name = main_exp_name_list[model_i]
+            exp_list = glob.glob(main_exp_name + "/result*")
+            # exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
+            all_losses = np.zeros((len(exp_list), 30))
+            print(exp_list)
+            for exp_i, exp in enumerate(exp_list):
+                with open(exp, 'rb') as handle:
+                    result = pickle.load(handle)
+
+                losses = result[0]
+                all_losses[exp_i, :len(losses)] = losses[:30]
+
+                ax.plot(losses[:30], markers[men_i], alpha=0.2, color=colors[model_i])
+
+            mean = np.mean(all_losses, axis=0)
+            ax.plot(range(mean.shape[0]), mean, markers[men_i], label=labels[model_i], color=colors[model_i])
+
+    ax.set_yscale('log')
+    # plt.savefig(parent_dir+'/experiments/'+main_exp_name + '/losses.pdf')
+    plt.show()
+
+    return all_losses
+
+# main_exp_name_lists = [['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr1e-07/irnn',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr1e-09/ubla',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr1e-08/bla'],
+#   ['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr0/irnn',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr0/ubla',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr0/bla']]
+
+# main_exp_name_lists = [['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr1e-05/irnn',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr1e-07/ubla',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr1e-06/bla'],
+#   ['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr0/irnn',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr0/ubla',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr0/bla']]
+
+
+# main_exp_name_lists = [['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr1e-07/irnn',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr1e-08/ubla',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr1e-07/bla'],
+#   ['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr0/irnn',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr0/ubla',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr0/bla']]
+
+# main_exp_name_lists = [['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr1e-06/irnn',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr1e-07/ubla',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr1e-06/bla'],
+#   ['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr0/irnn',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr0/ubla',
+#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr0/bla']]
+
 def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, ylim=None, gradstep=1):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
     rc('text', usetex=True)
@@ -462,13 +528,13 @@ def plot_loss_zoom(noise_in_list, training_kwargs):
         
 if __name__ == "__main__":
     training_kwargs = {}
-    training_kwargs['T'] = 1000
+    training_kwargs['T'] = 100
     training_kwargs['input_length'] = 10
     gradstep = 1
     models = ['irnn', 'ubla', 'bla']
     noise_in_list = ['weights', 'input', 'internal']
     # learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
-    learning_rates = [1e-6, 1e-7, 1e-8, 0]
+    learning_rates = [1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 0]
     # learning_rates = [1e-5]
 
     factors = [10, 1, .1, .01]
