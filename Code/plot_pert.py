@@ -20,6 +20,7 @@ import pandas as pd
 from numpy.linalg import svd 
 from sklearn.decomposition import PCA
 
+from math import floor, log10
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import rc
@@ -40,6 +41,23 @@ def makedirs(dirname):
 def ReLU(x):
     return np.where(x<0,0,x)
 
+def sci_notation(num, decimal_digits=1, precision=None, exponent=None):
+    """
+    Returns a string representation of the scientific
+    notation of the given number formatted for use with
+    LaTeX or Mathtext, with specified number of significant
+    decimal digits and precision (number of decimal digits
+    to show). The exponent to be used can also be specified
+    explicitly.
+    """
+    if exponent is None:
+        exponent = int(floor(log10(abs(num))))
+    coeff = round(num / float(10**exponent), decimal_digits)
+    if precision is None:
+        precision = decimal_digits
+
+    return r"${0:.{2}f}\cdot10^{{{1:d}}}$".format(coeff, exponent, precision)
+
 def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, ylim=None, gradstep=1):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
     rc('text', usetex=True)
@@ -52,8 +70,9 @@ def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, ylim=None, gr
     
     if ax==None:
         fig, ax = plt.subplots(1, 1, figsize=(7.5, 5))
-    # ax2 = ax1.twinx()
-    # axes = [ax1, ax2]
+    if sharey:
+        min_y = ylim[0]
+        max_y = ylim[1]
     
     lines = []
     for men_i, main_exp_name in enumerate(main_exp_names):
@@ -74,9 +93,13 @@ def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, ylim=None, gr
                 lines.append(ax.plot(losses, markers[0], alpha=0.2, color=colors[model_i]))
                 
                 first_nan_index = np.where(np.isnan(losses))[0]
+                first_max_index = np.where(losses>max_y)[0]
+
                 if sharey:
                     if np.any(first_nan_index):
-                        ax.plot(first_nan_index[0], [1e8], 'x', color=colors[model_i])
+                        ax.plot(first_nan_index[0], [max_y], 'x', color=colors[model_i])
+                    if np.any(first_max_index):
+                        ax.plot(first_max_index[0], [max_y], 'x', color=colors[model_i])
                 else:
                     ax.plot(first_nan_index, losses[first_nan_index-1]*1e4, 'x', color=colors[model_i])
         
@@ -93,7 +116,7 @@ def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, ylim=None, gr
     ax.tick_params(rotation=90, labelsize=15)
     ax.xaxis.grid(False, which='major')
     ax.axhline(1.6, linestyle='--', color='k') 
-    ax.axhline(1e-5, linestyle='--', color='k') 
+    ax.axhline(sigma, linestyle='--', color='k') 
     ax.axhline(1e5, linestyle='--', color='k') 
 
     ax.set_yscale('log')
@@ -111,7 +134,7 @@ def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, ylim=None, gr
                 max_y = np.power(10, 4+np.ceil(np.log10(np.max(all_losses))))
         except:
             min_y = 1e-12
-            max_y = 1e8
+            max_y = 1e5
 
     ax.set_xticks([0, 30*gradstep], [0, 30])
     ax.set_ylim([min_y, max_y])
@@ -176,7 +199,7 @@ def plot_losses_box(main_exp_names, sigma=None, ax=None, ylim=[1e-10,1e4]):
     # ax.set_ylabel("log(MSE)", family='Computer Modern');
 
     ax.axhline(1.6, linestyle='--', color='k') 
-    ax.axhline(1e-5, linestyle='--', color='k') 
+    ax.axhline(sigma, linestyle='--', color='k') 
 
 def plot_losses_grid(main_exp_folder):
     with open(main_exp_folder + '/exp_info.pickle', 'rb') as handle:
@@ -345,6 +368,33 @@ def plot_vector_field(W, b, fig=None, ax=None):
     # plt.yticks(rotation=90, family='serif')
 
 
+def plot_loss_zoom(noise_in_list, training_kwargs):
+    plot_box = True
+    for n_i, noise_in in enumerate(noise_in_list):
+        fig, axes = plt.subplots(n_lrs, n_fs, figsize=(2*n_fs, 4*n_lrs), sharex=True, sharey=True)
+        fig.supylabel('log(MSE)', fontsize=35)
+        fig.suptitle(noise_in, fontsize=35)
+        fig.text(x=0.5, y=.8, s= 'log($\sigma_W$)', fontsize=12, ha="center", transform=fig.transFigure)
+
+        for f_i,factor  in enumerate(factors):
+            ax=axes[f_i]
+            axes[f_i].set_title(int(np.log10(factor*1e-5)), fontsize=25)
+            main_exp_names = []
+            main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr0")
+            if plot_box:
+                plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax, ylim=[1e-10,1.6])
+            else:
+                plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=True, ylim=[1e-10,1.6])
+
+
+        fig.tight_layout()
+        if plot_box:
+            fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
+        else:
+            fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
+
+
+
 # if __name__ == "__main__":
     
 #     factor = 1
@@ -412,61 +462,38 @@ def plot_vector_field(W, b, fig=None, ax=None):
         
 if __name__ == "__main__":
     training_kwargs = {}
-    training_kwargs['T'] = 500
+    training_kwargs['T'] = 1000
     training_kwargs['input_length'] = 10
-    gradstep = 5
+    gradstep = 1
     models = ['irnn', 'ubla', 'bla']
     noise_in_list = ['weights', 'input', 'internal']
-    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
+    # learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
+    learning_rates = [1e-6, 1e-7, 1e-8, 0]
     # learning_rates = [1e-5]
 
     factors = [10, 1, .1, .01]
     n_lrs = len(learning_rates)
     n_fs = len(factors)
-    # plot_box = True
-    # for n_i, noise_in in enumerate(noise_in_list):
-    #     fig, axes = plt.subplots(n_lrs, n_fs, figsize=(2*n_fs, 4*n_lrs), sharex=True, sharey=True)
-    #     fig.supylabel('log(MSE)', fontsize=35)
-    #     fig.suptitle(noise_in, fontsize=35)
-    #     fig.text(x=0.5, y=.8, s= 'log($\sigma_W$)', fontsize=12, ha="center", transform=fig.transFigure)
-
-    #     for f_i,factor  in enumerate(factors):
-    #         ax=axes[f_i]
-    #         axes[f_i].set_title(int(np.log10(factor*1e-5)), fontsize=25)
-    #         main_exp_names = []
-    #         main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr0")
-    #         if plot_box:
-    #             plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax, ylim=[1e-10,1.6])
-    #         else:
-    #             plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=True, ylim=[1e-10,1.6])
-
-
-    #     fig.tight_layout()
-    #     if plot_box:
-    #         fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
-    #     else:
-    #         fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
-
 
     plot_box = False
-    sharey = True
-    ylim = [1e-12, 1e8]
+    sharey = 'row'
+    ylim = [1e-12, 1e5]
     for n_i, noise_in in enumerate(noise_in_list):
-        fig, axes = plt.subplots(n_fs, n_lrs, figsize=(4*n_fs, 2*n_lrs), sharex=True, sharey=sharey)
-        fig.supylabel('log($\sigma_W$)', fontsize=35)
+        fig, axes = plt.subplots(n_fs, n_lrs, figsize=(2*n_fs, 2*n_lrs), sharex=True, sharey=sharey)
+        fig.supylabel('$\sigma$', fontsize=35)
         fig.suptitle(noise_in, fontsize=35)
-        fig.text(x=0.1, y=.95, s= 'log(learning rate)', fontsize=12, ha="center", transform=fig.transFigure)
+        # fig.text(x=0.1, y=.95, s= 'log($\lambda$)', fontsize=20, ha="center", transform=fig.transFigure)
 
         for f_i,factor  in enumerate(factors):
-            
+            ylim[0] = 1e-8*factor**2
             for lr_i,learning_rate in enumerate(learning_rates):
                 ax=axes[f_i,lr_i]
                 if learning_rate == 0:
                     lr_title = 'no learning'
                 else:
-                    lr_title = int(np.log10(learning_rate))
+                    lr_title = r"$10^{%02d}$" % int(np.log10(learning_rate)) #(1,1,2,exponent=int(np.log10(learning_rate)))
                 axes[0][lr_i].set_title(lr_title)
-                axes[f_i][0].set_ylabel(int(np.log10(factor*1e-5)), fontsize=25)
+                axes[f_i][0].set_ylabel(r"$10^{%02d}$" % int(np.log10(factor*1e-5)), fontsize=25)
 
                 main_exp_names = []
 
