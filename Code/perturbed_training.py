@@ -26,7 +26,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 from models import mse_loss_masked
-from tasks import bernouilli_noisy_integration_task, bernouilli_integration_task
+from tasks import bernouilli_noisy_integration_task, bernouilli_integration_task, contbernouilli_noisy_integration_task
 
 def makedirs(dirname):
     if not os.path.exists(dirname):
@@ -421,9 +421,15 @@ def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
     with open(experiment_folder+'/parameters.yml', 'w') as outfile:
         yaml.dump(training_kwargs, outfile, default_flow_style=False)
     
-    task =  bernouilli_noisy_integration_task(T=training_kwargs['T'],
-                                              input_length=training_kwargs['input_length'],
-                                              sigma=training_kwargs['task_noise_sigma'])
+    if training_kwargs['cont']:
+        task = contbernouilli_noisy_integration_task(T=training_kwargs['T'],
+                                                  input_length=training_kwargs['input_length'],
+                                                  sigma=training_kwargs['task_noise_sigma'])
+    else:
+        task = bernouilli_noisy_integration_task(T=training_kwargs['T'],
+                                                  input_length=training_kwargs['input_length'],
+                                                  sigma=training_kwargs['task_noise_sigma'])
+
     
     dims = (2,2,1)
     ouput_bias_value = training_kwargs['ouput_bias_value']
@@ -480,6 +486,7 @@ if __name__ == "__main__":
     sigmas = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9]
     
     training_kwargs['verbose'] = False
+    training_kwargs['cont'] = True
     training_kwargs['perturb_weights'] = False
     training_kwargs['task_noise_sigma'] = 0.
     training_kwargs['internal_noise_std'] = 0.
@@ -489,7 +496,7 @@ if __name__ == "__main__":
     
     training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['readout_nonlinearity'] = 'id'
-    training_kwargs['T'] = 1000 # 2000
+    training_kwargs['T'] = 100 # 2000
     training_kwargs['dt'] = 1 # 2000
     training_kwargs['noise_step'] = 1
     training_kwargs['n_epochs'] = 30*training_kwargs['noise_step']

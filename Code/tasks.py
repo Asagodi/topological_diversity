@@ -184,8 +184,30 @@ def bernouilli_noisy_integration_task(T, input_length, sigma):
         outputs = np.cumsum(inputs[:,:,1], axis=1) - np.cumsum(inputs[:,:,0], axis=1)
         inputs[:,:input_length,:] += np.random.uniform(-sigma, sigma, size=(batch_size,input_length,2))
 
-        # inputs[:,:input_length,:] += np.random.normal(0., sigma, size=(batch_size,input_length,2))
-        # mask = np.ones((batch_size, T, 1))
+        mask = np.zeros((batch_size, T, 1))
+        mask[:,-1,:] = 1
+
+        return inputs, outputs.reshape((batch_size,T,1)), mask
+
+    return task
+
+def contbernouilli_noisy_integration_task(T, input_length, sigma):
+    """
+    Creates a trial with a positive and negative step with length step_length and amplitude
+    Inputs are left and right angular velocity and 
+    target output is sine and cosine of integrated angular velocity.
+    Returns inputs, outputs
+    -------
+    """
+
+    def task(batch_size):
+        
+        inputs = np.zeros((batch_size,T,2))
+        inputs[:,:input_length,:] = np.random.binomial(1, p=.2, size=(batch_size,input_length,2))
+        inputs[:,:input_length,:] *= np.random.uniform(0., 1., size=(batch_size,input_length,2))
+        outputs = np.cumsum(inputs[:,:,1], axis=1) - np.cumsum(inputs[:,:,0], axis=1)
+        inputs[:,:input_length,:] += np.random.uniform(-sigma, sigma, size=(batch_size,input_length,2))
+
         mask = np.zeros((batch_size, T, 1))
         mask[:,-1,:] = 1
 
