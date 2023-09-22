@@ -2,7 +2,7 @@
 """
 Created on Wed Jul 26 15:50:25 2023
 
-@author: abel_
+@author: 
 """
 
 import numpy as np
@@ -99,7 +99,7 @@ def noorman_ode_pert(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N,center,rotati
     noor = noorman_ode(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N)
     return noor + vector_bump
 
-def noorman_ode_Npert(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N,Nbumps):
+def noorman_ode_Npert(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N,Nbumps,bumps):
     """
     create ODE for Noorman ring attractor with Nbumps local bump perturbations
     for each bump: center,rotation_mat,amplitude,b are random
@@ -290,12 +290,6 @@ def bump_perturbation_2d(x, center, theta, amplitude, b=1):
     return vector_bump
 
 
-#random local perturbation to vector field
-#with random location (for ring network this should be constrained around the ring)
-#with random orientation
-#with random bump size
-#maximal extent?
-
 def get_rotation_matrix(theta):
     return np.array([[np.cos(theta), np.sin(theta)],[-np.sin(theta), np.cos(theta)]])
 
@@ -322,14 +316,6 @@ def ring_ode_xy_globalpert_speed(x, W):
     hypot = np.sqrt(x1**2+x2**2)
     theta = np.arctan2(x2, x1)
     return np.linalg.norm([hypot*(1-hypot)*np.cos(theta)+W[0,0]*x1+W[0,1]*x2, hypot*(1-hypot)*np.sin(theta)+W[1,0]*x1+W[1,1]*x2])
-
-def ring_ode_xy_jacobian(x, W):
-    x1, x2 = x
-    hypot = np.sqrt(x1**2+x2**2)
-    theta = np.arctan2(x2, x1)
-    J = W
-    J += 0 #todo
-    return J
 
 def cartesian_to_spherical(x, y):
     r = np.sqrt(x**2 + y**2)  # radial distance
