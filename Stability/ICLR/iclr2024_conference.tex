@@ -13,6 +13,7 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{float}
+\usepackage{pifont}
 \usepackage{bm}
 \usepackage{tikz}
 \usepackage{tikz-cd}
@@ -22,6 +23,8 @@
 \usepackage{booktabs}       % professional-quality tables
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
+\usepackage{xr-hyper}
+
 \DeclareGraphicsExtensions{.pdf,.png,.jpg,.mps,.eps,.ps}
 \graphicspath{{../figures/}}
 
@@ -52,6 +55,8 @@
 \DeclareMathOperator{\relu}{ReLU}
 
 \newcommand{\probP}{\text{I\kern-0.15em P}}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{prop}{Proposition}
@@ -92,8 +97,8 @@
 
 \begin{abstract}
 Attractor networks are essential theoretical components in recurrent networks for memory, learning, and computation.
-However, the continuous attractors that are essential for continuous-valued memory suffer from structural instability---infinitesimal changes in parameter can destroy the continuous attractor.
-Moreover, the perturbed system can exhibit divergent behavior with associated exploding gradients.
+However, the continuous attractors that are essential for continuous-valued memory suffer from structural instability---infinitesimal changes in the parameters can destroy the continuous attractor.
+Moreover, the perturbed system's dynamics can exhibit divergent behavior with associated exploding gradients.
 This poses a question about the utility of continuous attractors for systems that learn using gradient signals.
 %This poses a problem in biological neural networks, as they are constantly subjected to perturbations caused by noise. Certain systems (e.g. systems with an unbounded attractor) can be perturbed in such a way, that not only do they bifurcate, but start exhibiting divergent behavior, which is especially problematic for systems that are learning (for example under gradient descent).
 To address this issue, we use Fenichel's persistence theorem from dynamical systems theory to show that bounded attractors are stable in the sense that all perturbations maintain the stability.
@@ -105,7 +110,6 @@ Finally, we verify in a simple continuous attractor that all perturbations prese
 
 
 %\section{Submission of papers to NeurIPS 2023}
-%
 %Please read the instructions below carefully and follow them faithfully. \textbf{Important:} This year the checklist will be submitted separately from the main paper in OpenReview, please review it well ahead of the submission deadline: \url{https://neurips.cc/public/guides/PaperChecklist}.
 
 
@@ -158,12 +162,6 @@ It implies only vanishing gradients for this system and \textbf{exploding gradie
     Phase portraits for unbounded and bounded linear attractors~\eqref{eq:TLN}.
     Under perturbation of parameters, each of them can bifurcate to one of the two potential systems without the continuous line attractor.
     Note that the parameters for the UBLA are near a diverging system associated with exploding gradient behavior.
-% Behavior and bifurcations of the unbounded and bounded line attractors.  Some example orbits are shown with blue lines for each system while the log of the speed in state space is indicated with a grayscale gradient.
-%   (Left) Example orbits  for a ReLU RNN implementation of an unbounded line attractor (black line, see Sec. ~\ref{sec:ubla}). This system can bifurcate in two types of dynamics. (Upper arrow) The first type of perturbation leads to a divergent systems with orbits going to positive infinity for all starting positions (except a single orbits that end up at the origin).
-%    (Lower arrow) The second type of perturbation leads covergent dynamics with all orbits converging at the origin.
-%  (Right from red line) Example orbits (blue lines) for a ReLU RNN implementation of an bounded line attractor (black line, see Sec ~\ref{sec:bla}). This system can bifurcate into two systems with non-zero probability.
-%  (Upper arrow) The first type of perturbation leads to a system with a single fixed point (pink).
-%  (Lower arrow) The second type of perturbation leads to a system with three fixed points.
 }
   \label{fig:ublabla}
 \end{figure}
@@ -171,7 +169,7 @@ It implies only vanishing gradients for this system and \textbf{exploding gradie
 Avoiding exploding gradients is of paramount importance in the context of long-range temporal learning (Sec.~\ref{sec:imp:ML}).
 Learning generally induces stochasticity in parameters, while spontaneous synaptic fluctuations are present in biological neuronal networks (Sec.~\ref{sec:imp:neuroscience}).
 Given these observations, we predict that BLA would be a more stable motif for computation than UBLA in the presence of noise and continuous learning.
-Since BLA, but not UBLAs, avoids exploding gradients, if the desired computation requires a line attractor of finite range, BLA would be both easier to maintain and learn.
+Since BLAs, but not UBLAs, avoid exploding gradients, if the desired computation requires a line attractor of finite range, BLA would be both easier to maintain and learn.
 Is this only true for ReLU parameterized RNNs, or does it generalize?
 
 In this paper, we lay out a new theory of general continuous-valued memory in the context of learning to answer the following questions:
@@ -201,11 +199,11 @@ To describe an arbitrary bifurcation of interest, we introduce a sufficiently sm
     \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}
 \end{align}
 where $\epsilon = 0$ gives the condition for the continuous attractor $\dot{\vy} = \mathbf{0}$.
-We denote the corresponding manifold of $l$ dimensions $\manifold_0 = \{(\vy,\vz) \mid \vh(\vy,\vz,0) = 0\}$.
+We denote the corresponding manifold of $l$ dimensions $M_0 = \{(\vy,\vz) \mid \vh(\vy,\vz,0) = 0\}$.
 
 We need the flow normal to the manifold to be hyperbolic, that is \emph{normally hyperbolic}, meaning that the Jacobians $\nabla_\vz \vh$ evaluated on any point on the $\manifold_0$ has $d-l$ eigenvalues with non-zero real parts, and $\nabla_\vy \vg$ has $l$ eigenvalues with zero real parts.
 More specifically, for continuous attractors, the real part of the eigenvalues of $\nabla_\vz \vh$ will be negative, representing sufficiently strong attractive flow toward the manifold.
-Equivalently, for the ODE, $\dot{\vx} = \vf(\vx)$, the variational system is of constant rank, and has exactly $l$ eigenvalues with negative real parts and $(n-l)$ eigenvalues with zero real parts everywhere along the continuous attractor.
+Equivalently, for the ODE, $\dot{\vx} = \vf(\vx)$, the variational system is of constant rank, and has exactly $(d-l)$ eigenvalues with negative real parts and $l$ eigenvalues with zero real parts everywhere along the continuous attractor.
 
 \begin{figure}[bthp]
   \centering
@@ -238,6 +236,8 @@ These conditions are met (up to numerical precision) for the BLA example in Fig.
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points, and overall still attractive.
 On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence.
 Importantly, the ``slow'' flow on the perturbed system is not bounded.
+
+% the compact case is that you have that the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
 
 In practice, the sufficient conditions for RNNs implementing continuous attractors to have this graceful breakdown is for the continuous attractor manifold to be of finite dimension throughout, connected, and bounded. 
 However, in systems with an invariant manifold with dimension at least three, it is possible that a slow manifold with chaotic dynamics is created through a perturbation. This would have as consequence that the perturbed system acquires positive Lyapunov exponents (corresponding to the chaotic orbit), which then can still lead to exploding gradients.
@@ -286,7 +286,11 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 %In theory, the topology of the manifold can be arbitrary, ideally matching the desired structure of the target variables.
 
 \section{Experiments}
+
+
+
 \subsection{Continuous-valued click integration task}\label{sec:task:continuous-clicks}
+In order to demonstrate the stability of bounded attractors, we tested the theory in an integration task.
 Although there are several standard benchmark tasks for temporal dependence learning with memory components,
 due to the discrete nature of the relevant stimulus space, the solutions do not necessarily require a continuously-valued memory.
 We designed a simple integration task where one of the optimal solutions is the continuous attractor.
@@ -296,18 +300,18 @@ Neural integrators are considered to be crucial for the task for accumulating ev
 For our experiments, we used discrete time representations over $T$ time bins and the real-valued\footnote{Approximated as single precision IEEE 754 floating point.} stimulus encoded as difference of two non-negative values:
 \begin{align}
     I_{t,i} &= m_{t,i} \cdot u_{t,i} 
-            & \qquad \text{(continuous clicks)}
+             \qquad & t=1,\dots, T, \ i=1,2 &&\text{(continuous clicks)}	\label{eq:input}
     \\
     O^\ast_{t} &= \sum_{s=0}^{t} \left(
         I_{s,1} - I_{s,2}
         \right)
-            & \qquad \text{(desired output)}
+            \qquad  & t=1,\dots, T &&  \text{(desired output)} 			\label{eq:output}
 \end{align}
 where $m_{t,i}$ are independent Bernoulli random variables with probability $0.2$ and $u_{t,i}$ are independent random variables with uniform distribution on the unit interval.
 We used mean squared error (MSE) of the 1-dimensional output over time as the loss function over all time bins.
 We used $T=500$ time bins per trial unless specified otherwise.
-The gradients were computed in batch mode with $1000$ randomly generated trials.
-The main challenges of this task are (1) addition and subtraction and (2) maintain the accumulated clicks for extended period of time.
+The gradients were computed in batch mode with $1024$ randomly generated trials.
+The main challenges of this task are (1) addition and subtraction and (2) maintain the accumulated clicks for an extended period of time.
 
 %The inputs for the clicks task are incoming clicks in two channels ($K=2$) and are given as follows.
 %The non-zero inputs follow a Poisson distribution with given rates.
@@ -316,7 +320,7 @@ The main challenges of this task are (1) addition and subtraction and (2) mainta
 
 %A noisy version of the task also includes noise added to a part of the input, without alternation to the target output, i.e., the noise added to the system should be ignored by the system.
 
-\subsection{RNN solutions to the integration task}\label{sec:rnn:integration}
+\subsubsection{RNN solutions to the integration task}\label{sec:rnn:integration}
 We use vanilla RNN implementations with the standard parameterization:
 %An RNN \citep{elmanFindingStructureTime1990} consists of a $N \times N$ transition matrix $W$, an $L \times N$ decoder matrix $\wout$ (where $L$ is the output dimension), a $N \times K$ encoder matrix $\win$ (where $K$ is the input dimension), and a bias $b$ for the hidden state and $\bout$ for the output.
 % If either the output or input is categorical, $M$ (respectively $N$) is the number of classes, and we use a one-hot representation. 
@@ -335,10 +339,12 @@ Assuming an Euler integration with unit time step, the discrete-time RNN of \eqr
     \dot{\vx} &= -\vx + \sigma(\win \vI + \vW \vx + \vb) \label{eq:RNN:continuous}
 \end{align}
 
-For tractable analysis, we consider $2$ dimensional systems with ReLU activation.
-We study three different RNN implementations of an integrator, the Identity RNN (iRNN), UBLA and BLA.
+For tractable analysis, we consider $2$ dimensional systems with ReLU activation. %We include another continuous attractor, the identity RNN, which is also a popular initialization for RNN training \citep{le2015}.
+We study the three different ReLU RNN implementations of an integrator in a 2 dimensional system, the Identity RNN (iRNN), UBLA and BLA.
 On the original clicks task the UBLA and BLA networks count the click differences directly, while iRNN counts the clicks separately and then subtracts these representations through the output mapping.
 The behaviors of UBLA and BLA in the absence of stimulus are shown in Fig.~\ref{fig:ublabla}, while the behavior of the iRNN is trivial since there is no flow. These networks are defined as follows.
+
+
 
 \paragraph{Identity RNN}
 \label{sec:ubpa,sec:iRNN}
@@ -368,6 +374,7 @@ The behaviors of UBLA and BLA in the absence of stimulus are shown in Fig.~\ref{
 %The system has the whole state space as its invariant manifold.
 
 \paragraph{Unbounded line attractor}
+We formulate this implementation of a bounded integrator with a parameter that determines step size along line attractor $\alpha$. Together with the parametere for the output bias $\beta$ the parameters determine the capacity of the network. While the line attractor is unbounded from above, it only extends to the center from below.  The step size along line attractor $\alpha$ determines the maximum number of clicks as the difference between the two channels; the capacity is $\beta/\alpha$ number of clicks.
 \label{sec:ubla}
 \begin{equation}\label{eq:ubla}
 \win = \alpha
@@ -391,10 +398,10 @@ The behaviors of UBLA and BLA in the absence of stimulus are shown in Fig.~\ref{
 \bout = -\frac{\beta}{\alpha}.
 \end{equation}
 
-While the line attractor is unbounded from above, it only extends to the center from below.  The step size along line attractor $\alpha$ determines the maximum number of clicks as the difference between the two channels; the capacity is $\beta/\alpha$ number of clicks.
+
 
 \paragraph{Bounded line attractor}\label{sec:bla}
-We formulate this implementation of a bounded integrator with a parameter that determines step size along line attractor $\alpha$. Analogously as for UBLA, these parameters determine the capacity of the network.
+Similarly as for UBLA, the BLA has a parameter that determines step size along line attractor $\alpha$. Analogously as for UBLA, these parameters determine the capacity of the network.
 The inputs push the input along the line attractor in two opposite directions, see below. UBLA and BLA need to be initialized at $\beta(1,1)$ and $\tfrac{\beta}{2}(1,1)$, respectively, for correct decoding, i.e., output projection.
 
 \begin{equation}\label{eq:bla}
@@ -419,7 +426,7 @@ The inputs push the input along the line attractor in two opposite directions, s
 \bout = 0.
 \end{equation}
 
-\subsection{Asymmetric loss landscape due to exploding gradients}
+\subsubsection{Asymmetric loss landscape due to exploding gradients}
 To illustrate the effect of bifurcations from continuous attractor solution, we take a 1-dimensional slice of the loss surface.
 Specifically, we take the self-recurrent connection and systematically vary:
 \begin{align}
@@ -429,7 +436,7 @@ The result is shown in Fig.~\ref{fig:maintenance}A.
 For UBLA and iRNN, positive perturbations shows exponentially increasing loss due to the bifurcation to an exploding gradient dynamical system.
 In all other cases, including all perturbations of BLA, leads to vanishing gradient, hence the loss is bounded.
 
-\begin{figure}[thbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{threeIntegrators.pdf}
   \caption{
@@ -444,69 +451,86 @@ In all other cases, including all perturbations of BLA, leads to vanishing gradi
 \end{figure}
 
 
-\subsection{Bifurcation probability and random perturbations}
+\subsubsection{Bifurcation probability and random perturbations}
 We consider all parametrized perturbations of the form $ \vW \leftarrow \vW + \vV$ for a random matrix $\vV\in \mathbb{R}^{2\times 2}$.
 The BLA can bifurcate in the following systems, characterized by their invariant sets: a system with single stable fixed point, a system with three fixed points (one unstable and two stable) and  a system with two fixed points (one stable and the other a half-stable node) and a system with a (rotated) line attractor. 
-Only the first two bifurcations (Fig. ~\ref{fig:ublabla}) can happen with nonzero chance for arbitrary the type of perturbations we consider.
+Only the first two bifurcations (Fig. ~\ref{fig:ublabla}) can happen with nonzero chance for the type of random perturbations we consider.
 The perturbations that leave the line attractor intact or to a system with two fixed points have measure zero in parameter space.
 The types of perturbation with measure zero are codimension 2 bifurcations.
-The perturbation that results in one fixed point happen with probability $\frac{3}{4}$, while perturbations lead to a system with three fixed points with probability $\frac{1}{4}$.
+The perturbation that results in one fixed point happen with probability $\frac{3}{4}$, while perturbations lead to a system with three fixed points with probability $\frac{1}{4}$, see Supp. \ref{sec:supp:bla}.
 
 
 
 
-\subsection{Maintaining a neural integrator}\label{sec:exp:maintaining}
+\subsubsection{Maintaining a neural integrator}\label{sec:exp:maintaining}
 To investigate the differential effect of gradient descent on the three neural integrator models, we performed three learning experiments using the continuous-valued click integration task.
+The input and output are defined as in Eqs. \ref{eq:input} and \ref{eq:output} with $I_{t,i}=0$ for $t=11,\dots,T$.
+%T=100,500,1000
+We investigate the effects of three types of noise on the learning or readjustment of the parameters during gradient descent starting from the perfect solutions to the task.
 
-In the first experiment, Gaussian random noise is injected to all parameters inducing a constant diffusion of the parameters.
-This emulates the biological synaptic variability.
-Fig.~\ref{fig:maintenance}B shows that for BLA, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
-Note that the magnitude of perturbation were identical for all networks, but iRNN is more robust in terms of MSE.
-The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
-BLA with learning has superior misadjustment to UBLA and BLA without learning.
+
+In the first experiment, Gaussian random noise is injected to all parameters inducing a constant diffusion of the parameters, which emulates the biological synaptic variability.
+This type of noise is directly applied to the weights as $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\sigma)$.
+%Fig.~\ref{fig:maintenance}B shows that for BLA, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
+%Note that the magnitude of perturbation were identical for all networks, but iRNN is more robust in terms of MSE.
+%The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
+%BLA with learning has superior misadjustment to UBLA and BLA without learning.
+
+%We inject this noise into the system either after each learning epoch 
+%(Fig. \ref{fig:maintenance}B)
+% or in pulses only at epochs
+%  1,11 and 21 (Fig. \ref{fig:maintenance}C).
+
+
 
 To dissociate the effect of misadjustment from gradient descent and external perturbation, we interleaved a larger perturbation with 10 gradient steps.
 Fig.~\ref{fig:maintenance}C shows consistent learning in the average MSE for BLA and iRNN, but not in UBLA.
 The individual runs indicate larger variability induced by learning over time, which we quantify in Fig.~\ref{fig:maintenance}D.
 iRNN and UBLA both have larger learning noise than BLA, consistent with the absence of exploding gradient configuration around the optimum.
 
-Finally, we investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics.
-To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated.
-Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. %normally loss is very low, zero for the perfect integrators
-Fig.~\ref{fig:maintenance}E shows that both UBLA and iRNN diverge more quickly under gradient descent than the BLA.
+
+
+We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
+The second type of noise is injected into the input $x_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$.
+To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output $O_t^*$ (Eq. \ref{eq:output}).
+%Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. %normally loss is very low, zero for the perfect integrators
+%Fig.~\ref{fig:maintenance}E shows that both UBLA and iRNN diverge more quickly under gradient descent than the BLA.
 %$This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
 
+The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$ for $t=1,\dots, T$ and $i=1,2$.
 
-%noisy learning experiments
-%We investigate the effects of noise to the inputs on the loss and the effect of such noise on the learning/adjustment of the parameters during gradient descent starting from the perfect solutions to the task.
-%We inject a pulse of 10 steps of inputs sampled from the uniform distribution and take a gradient step in the direction of the accumulated gradient.
 
-The parameters that were used for the effects of input- and parameter-type noise are summarized in Table \ref{tab:params}.
-The bias parameters of the UBLA and BLA networks were set to $\beta=100$, while $\alpha=1$. 
-The hidden state at the beginning of a trial is a learnable parameter. 
-The optimal learning rates for the input-type noise experiments were chosed from a set of three values ($\{10^{-8},10^{-9},10^{-10}\}$) based on best performance of the task of 20 runs.
 
-A sequence of inputs is generated of maximum length $T_I$ generated as described above. 
-For the experiments with D-type noise, we generate noise in the input for a sequence length of 10 time steps and distribution width sampled from the uniform distribution $(-\sigma,\sigma)$ with $\sigma=10^{-6}$.
-For the experiments with S-type noise, we perturb the weights with a matrix with entries sampled from $\mathcal{N}(0, \sigma)$.
-We inject this noise into the system either after each learning epoch (Fig. \ref{fig:maintenance}B) or in pulses only at epochs 1,11 and 21 (Fig. \ref{fig:maintenance}C).
-The first experiment should demonstrate the effects of the restorative force of learning.
+The noise level $\sigma$ was chosen individually for the three networks as follows. 
+We calculated the loss on a batch of inputs for various noise levels.
+We then chose the corresponding noise level per integrator that corresponded to the average loss. For the noise in the weights the average was taken over 200 weight perturbations.
 
-\begin{table}
-\caption{Summary of parameters for experiments.}\label{tab:params}
-\centering
-\bgroup
-\def\arraystretch{1.52}
-\begin{tabular}{|c||c|c|}
-\hline
-Parameter     &  Input noise & Paramter noise \\\hline \hline
-Trial length (time steps)	 &    200   & 500			\\\hline 
-Input sequence length ($T_I$) &		100 & 50   \\\hline
-Learning rate\footnote{The optimal value of $10^{-10}$ was used for the parameter noise for UBLA and BLA for the interleaved perturbation experiment. } &	 		$10^{-4}$   &  $10^{-9}$\\\hline 
-Perturbation	parameter ($\sigma$) &		$10^{-6}$   & $10^{-5}$\\\hline 
-\end{tabular}
-\egroup
-\end{table}
+%The parameters that were used for the effects of input- and parameter-type noise are summarized in Table \ref{tab:params}.
+%The bias parameters of the UBLA and BLA networks were set to $\beta=100$, while $\alpha=1$. 
+%The hidden state at the beginning of a trial is a learnable parameter. 
+%The optimal learning rates for the input-type noise experiments were chosed from a set of three values ($\{10^{-8},10^{-9},10^{-10}\}$) based on best performance of the task of 20 runs.
+%
+%A sequence of inputs is generated of maximum length $T_I$ generated as described above. 
+%For the experiments with D-type noise, we generate noise in the input for a sequence length of 10 time steps and distribution width sampled from the uniform distribution $(-\sigma,\sigma)$ with $\sigma=10^{-6}$.
+%For the experiments with noise in the weights, we perturb the weights with a matrix with entries sampled from $\mathcal{N}(0, \sigma)$.
+%We inject this noise into the system either after each learning epoch (Fig. \ref{fig:maintenance}B) or in pulses only at epochs 1,11 and 21 (Fig. \ref{fig:maintenance}C).
+%The first experiment should demonstrate the effects of the restorative force of learning.
+
+%\begin{table}
+%\caption{Summary of parameters for experiments.}\label{tab:params}
+%\centering
+%\bgroup
+%\def\arraystretch{1.52}
+%\begin{tabular}{|c||c|c|}
+%\hline
+%Parameter     &  Input noise & Parameter noise \\\hline \hline
+%Trial length (time steps)	 &    200   & 500			\\\hline 
+%Input sequence length ($T_I$) &		100 & 50   \\\hline
+%Learning rate\footnote{The optimal value of $10^{-10}$ was used for the parameter noise for UBLA and BLA for the interleaved perturbation experiment. } &	 		$10^{-4}$   &  $10^{-9}$\\\hline 
+%Perturbation	parameter ($\sigma$) &		$10^{-6}$   & $10^{-5}$\\\hline 
+%\end{tabular}
+%\egroup
+%\end{table}
 
 
 
@@ -519,69 +543,36 @@ Perturbation	parameter ($\sigma$) &		$10^{-6}$   & $10^{-5}$\\\hline
 
 
 
-%\subsubsection{Ring attractor}
-
-%Compact
-%No boundary: in- and outflowing
-%But not $C^1$!
-
-
-%discrete attractors as a trivial application?
-%Discrete attractors can be seen as an approximation to continuous attractor models in the context of head direction representation \citep{zhang1996}. The discrete nature of the representation makes it more robust to small fluctuations or disturbances in neural activity.
-%However, these system have fading memory: the system eventually forgets the past, since any difference between any two neural activations eventually tends zero as they both evolve to a global resting state.
-
-We will first of all look at a simple (non-biological) system that has a ring attractor to demonstrate the consequences of the Persistence Theorem.
-The system we will analyse is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
-This system has as fixed points the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$.
-
-
-
-
-\begin{figure}[H]
-     \centering
-  \includegraphics[width=.8\textwidth]{ring_perturbations_stream}
-       \caption{Perturbations to a simple implementation of a ring attractor all leave the invariant manifold intact. % (Left)  Examples of a local perturbation to the vector field through the addition of a bump to the vector field along the ring attractor.
-              (Leftmost) An example of a bump perturbation that results in the ring breaking up and becoming diffeomorphic to a line. %slow flow in hole?
-              (Left, middle) An example of a bump perturbation that maintains the ring structure, but deforms it locally.
-              %
-      % (Right) Examples of a global perturbation to the vector field through the addition of a small term to the connectivity matrix. 
-       (Right, middle) A global perturbation that results in a system with four fixed points along the persistent invariant manifold. %The two saddle nodes (yellow dots) are connected to the stable fixed points (green dots) through connecting orbits.
-       (Rightmost)   A global perturbation that results in a limit cycle.}
-         \label{fig:ring_activity_pert}
-\end{figure}
-
-%All perturbations maintain the invariant manifold.
-
 
 
 \subsubsection{Finite-sized head direction network model}\label{sec:hd}
+Compact, boundaryless invariant manifolds are both forward and backward invariant, i.e. they are invariant \citep{wiggins1994}.
+
 Continuous attractor models of the head direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a circular or ring-like structure \citep{zhang1996, Noorman2022, ajabi2023}. 
-Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle easily be disrupted.
+Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 We will the implications of the Persistence theorem in the case of the implementation of a continuous ring attractor presented in \citep{Noorman2022}.
 As this continuous ring attractor is bounded its invariant manifold persists and, hence, no divergent orbits are created under small perturbations to this system.
 This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians.
-For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition, this network will generate a stable bump of activity, one corresponding to each head direction. This continuum of fixed points form a one dimensional manifold homeomorphic to the circle. 
+For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
 
 \begin{figure}[H]
      \centering
-  \includegraphics[width=\textwidth]{Noorman_perturbations}
-       \caption{Perturbations to the ring attractor introduced in \citep{Noorman2022}. (Left)  Examples of a local perturbation to the vector field through the addition of a bump to the vector field along the ring attractor.
-       (Leftmost) An example of a bump perturbation which cuts out a piece of the ring attractor, the stable fixed points of the system are shown in black. A heteroclinic orbit is created on the bounday of the hole with a slow flow.
-       (Left, middle) An example of a bump perturbation that deforms the ring attractor, but maintains its topology.
-       (Right) Examples of a global perturbation to the vector field through the addition of a small term to the connectivity matrix. }
+  \includegraphics[width=.7\textwidth]{N6_ring_perturbations}
+       \caption{Perturbations to the ring attractor introduced in \cite{Noorman2022}.
+       }
          \label{fig:Noorman_ring_activity_pert}
 \end{figure}
 
 
-We evaluate the effect of perturbations on a network of size $N = 6$ with the optimal value $J_E^*=2.4$ through local and parametrized perturbations, similarly as for the toy ring attractor model.
+We evaluate the effect of perturbations on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ through local and parametrized perturbations. %, similarly as for the toy ring attractor model.
 The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations. Hereby, we will focus on two kinds of perturbations, local and parametric. 
 %Definition of a bump perturbation
-We define a local perturbation (i.e., a change to the ODE with compact support) through the bump function $\Psi(x) = \exp\left(\frac{1}{\|x\|^2-1}\right)$ for $\|x\|<1$ and zero outisde, by multiplying it with a uniform, unidirectional vector field. 
+%We define a local perturbation (i.e., a change to the ODE with compact support) through the bump function $\Psi(x) = \exp\left(\frac{1}{\|x\|^2-1}\right)$ for $\|x\|<1$ and zero outisde, by multiplying it with a uniform, unidirectional vector field. All such perturbations leave at least a part of the continuous attractor intact and preserve the invariant manifold, i.e. the parts where the fixed points disappear a slow flow appears.
+
 %Definition of a global perturbationThe parametrized perturbations are characterized as the addition of random matrix to the connection matrix. 
-We further investigate the effect of parameteric perturbations of the form if a term $\vW x$ to the original ODE with the entries of $\vW$ sampled from a normal distribution with mean zero and variance $\frac{1}{100}$. 
-All such perturbations leave at least a part of the continuous attractor intact and preserve the invariant manifold, i.e. the parts where the fixed points disappear a slow flow appears.
+We further investigate the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\frac{1}{100})$.
 
-
+%
 
 
 
@@ -600,15 +591,6 @@ For situations where smoothness of the persistent invariant manifold is of impor
 
 
 
-%\subsection{Footnotes}
-%Footnotes should be used sparingly.  If you do require a footnote, indicate
-%footnotes with a number\footnote{Sample of the first footnote.} in the
-%text. Place the footnotes at the bottom of the page on which they appear.
-%Precede the footnote with a horizontal rule of 2~inches (12~picas).
-%
-%
-%Note that footnotes are properly typeset \emph{after} punctuation
-%marks.\footnote{As in this example.}
 
 %\begin{ack}
 %Use unnumbered first level headings for the acknowledgments. All acknowledgments go at the end of the paper before the list of references. Moreover, you are required to declare
@@ -618,12 +600,6 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %
 %Do {\bf not} include this section in the anonymized submission, only in the final paper. You can use the \texttt{ack} environment provided in the style file to autmoatically hide this section in the anonymized submission.
 %\end{ack}
-
-
-
-%\section{Supplementary Material}
-%
-%Authors may wish to optionally include extra information (complete proofs, additional experiments and plots) in the appendix. All such materials should be part of the supplemental material (submitted separately) and should NOT be included in the main submission.
 
 
 %\section*{References}
@@ -643,11 +619,15 @@ For situations where smoothness of the persistent invariant manifold is of impor
 \newpage
 \bibliographystyle{abbrvnat}
 \bibliography{../cit,../catniplab}
+%
+
+
+
 
 \newpage
 \section{Supplementary Material}
 
-RNNs are also capable of learning complex patterns and relationships in the data, which makes them in particular useful as models for neural computations. This is achieved through the use of non-linear activation functions and the training of the network using backpropagation through time (BPTT).
+RNNs are capable of learning complex patterns and relationships in the data, which makes them in particular useful as models for neural computations. This is achieved through the use of non-linear activation functions and the training of the network using backpropagation through time (BPTT).
 BPTT allows the network to adjust the weights of the connections between neurons based on the error signal that is propagated backwards through time. 
 %This makes them suitable models for 
 
@@ -655,16 +635,446 @@ However, training RNNs using back-propagation through time to compute error-deri
 Many different methods have been proposed for overcoming this difficulty.
 
 
-\subsection{Loss}
+%\subsection{Loss}
 
 
-\subsection{Perturbations}
-\begin{equation}
-W  \rightarrow W + 
+
+\subsection{Bifurcation analysis of the line attractors}
+
+\subsubsection{Unbounded line attractor}
+\label{sec:ubla}
+
+The parameters:
+\begin{equation}\label{eq:bla}
+\win = \alpha
 \begin{pmatrix}
-\epsilon_{11} & \epsilon_{12}\\
-\epsilon_{21} & \epsilon_{22}
+-1  &  1 \\
+1  &  -1
+\end{pmatrix}, \
+W = 
+\begin{pmatrix}
+0  &  1 \\
+1  &  0
+\end{pmatrix}, \
+\wout = \frac{1}{2\alpha}
+\begin{pmatrix}
+1  &  1 
+\end{pmatrix}, \
+\bout = -\frac{\beta}{\alpha}.
+\end{equation}
+
+The bias to the recurrent units is zero.
+
+
+\paragraph{Stabilty of the fixed point with full support}
+We investigate how perturbations to the bounded line affect the Lyapunov spectrum.
+We calculate the eigenspectrum of the Jacobian:
+\begin{align*}
+\det [W' -(1+\lambda)\mathbb{I}] &= (\epsilon_{11}-1-\lambda)(\epsilon_{22}-1-\lambda)-(\epsilon_{12}+1)(\epsilon_{21}+1)\\
+&=\lambda^2 - (2+\epsilon_{11}+\epsilon_{22})\lambda -\epsilon_{11}-\epsilon_{22}+\epsilon_{11}\epsilon_{22} -\epsilon_{12} - \epsilon_{21} - \epsilon_{12}\epsilon_{21}
+\end{align*}
+
+Let 
+$u=- (2+\epsilon_{11}+\epsilon_{22})$
+and 
+$v=-\epsilon_{11}-\epsilon_{22}+\epsilon_{11}\epsilon_{22} -\epsilon_{12} - \epsilon_{21} - \epsilon_{12}\epsilon_{21}$
+
+There are only two types of invariant set for the perturbations of the line attractor. Both have as invariant set a fixed point at the origin. What distinguishes them is that one type of perturbations leads to this fixed point being stable while the other one makes it unstable.
+
+
+
+\subsubsection{Bounded line attractor}\label{sec:supp:bla}
+%Another implementation of a perfect integrator: one which is bounded.
+
+\paragraph{Input}
+Parameter that determines step size along line attractor $\alpha$.
+The size determines the maximum number of clicks as the difference between the two channels. 
+
+This pushes the input along the line ``attractor" in two opposite directions, %what is the correct word for this type of invariant set?
+see below.
+
+The parameters:
+\begin{equation}\label{eq:bla}
+\win = \alpha
+\begin{pmatrix}
+-1  &  1 \\
+1  &  -1
+\end{pmatrix}, \
+W = 
+\begin{pmatrix}
+0  &  -1 \\
+-1  &  0
+\end{pmatrix}, \
+\wout = \frac{1}{2\alpha}
+\begin{pmatrix}
+1  &  -1 
+\end{pmatrix}, \
+b = \beta
+\begin{pmatrix}
+1 \\  1 
+\end{pmatrix}, \
+\bout = 0.
+\end{equation}
+
+Needs to be initialized at $\tfrac{\beta}{2}(1,1)$ for correct decoding, i.e., output projection
+
+
+
+\paragraph{Stabilty of the fixed points}
+We perform the stability analysis for the part of the state space where $Wx>0$.
+There, the Jacobian is
+\begin{equation}
+J = -
+\begin{pmatrix}
+1  &  1 \\
+1  &  1
 \end{pmatrix}
 \end{equation}
+
+We apply the perturbation
+\begin{equation}
+W' = 
+\begin{pmatrix}
+0  &  -1 \\
+-1  &  0
+\end{pmatrix}
++ \epsilon
+\end{equation}
+with 
+\begin{equation}
+\epsilon = 
+\begin{pmatrix}
+\epsilon_{11}  &  \epsilon_{12} \\
+\epsilon_{21}  &  \epsilon_{22}
+\end{pmatrix}
+\end{equation}
+
+The eigenvalues are computed as
+\begin{align*}
+\det [W' -(1+\lambda)\mathbb{I}] &= (\epsilon_{11}-1-\lambda)(\epsilon_{22}-1-\lambda)-(\epsilon_{12}-1)(\epsilon_{21}-1)\\
+&=\lambda^2 + (2-\epsilon_{11}-\epsilon_{22})\lambda -\epsilon_{11}-\epsilon_{22}+\epsilon_{11}\epsilon_{22} +\epsilon_{12} + \epsilon_{21} - \epsilon_{12}\epsilon_{21}
+\end{align*}
+
+Let 
+$u=2-\epsilon_{11}-\epsilon_{22}$
+and 
+$v=-\epsilon_{11}-\epsilon_{22}+\epsilon_{11}\epsilon_{22} + \epsilon_{12} + \epsilon_{21} - \epsilon_{12}\epsilon_{21}$
+
+\begin{equation}
+\lambda = \frac{-u \pm \sqrt{u^2-4v}}{2}
+\end{equation}
+
+
+
+Case 1: $\operatorname{Re}(\sqrt{u^2-4v})<-u$, then 
+$\lambda_{1,2}<0$
+
+
+Case 2:  $\operatorname{Re}(\sqrt{u^2-4v})>-u$, then 
+$\lambda_{1}<0$ and $\lambda_{2}>0$
+
+
+Case 3: $v=0$, then 
+$\lambda=\tfrac{1}{2}(-u\pm u)$, i.e.,
+$\lambda_1=0$ and  $\lambda_2=-u$
+
+\begin{align}
+\epsilon_{11} &= -\epsilon_{22}+\epsilon_{11}\epsilon_{22} + \epsilon_{12} + \epsilon_{21} - \epsilon_{12}\epsilon_{21}
+\end{align}
+
+
+
+We give some examples of the different types of perturbations to the bounded line attractor.
+The first type is when the invariant set is composed of a single fixed point, for example for the perturbation:
+\begin{equation}
+\epsilon = \frac{1}{10}
+\begin{pmatrix}
+-2  &  1 \\
+ 1   &  -2
+\end{pmatrix}
+\end{equation}
+%See Figure \ref{fig:bounded_lineattractor_allpert}, left upper.
+
+
+
+The second type is when the invariant set is composed of three fixed points:
+\begin{equation}
+\epsilon = \frac{1}{10}
+\begin{pmatrix}
+1  &  -2 \\
+ -2  &  1
+\end{pmatrix}
+\end{equation}
+
+The third type is when the invariant set is composed of two fixed points, both with partial support.
+\begin{equation}
+b' =  \frac{1}{10}
+\begin{pmatrix}
+1 & -1
+\end{pmatrix}
+\end{equation}
+
+The fourth and final type is when the line attractor is maintained but rotated:
+\begin{equation}
+\epsilon =  \frac{1}{20}
+\begin{pmatrix}
+1 & 10\\
+10 & 1
+\end{pmatrix}
+\end{equation}
+
+\begin{theorem}
+All perturbations of the bounded line attractor are of the types as listed above.
+\end{theorem}
+
+
+
+\begin{proof}
+We enumerate all possibilities for the dynamics of a ReLU activation network with two units.
+First of all, note that there can be no limit cycle or chaotic orbits.
+
+Now, we look at the different possible systems with fixed points.
+There can be at most three fixed points \citep[Corollary 5.3]{morrisonDiversityEmergentDynamics2022}.
+There has to be at least one fixed point, because the bias is non-zero.
+
+%1 fixed point
+General form (example):
+\begin{equation}
+\epsilon = \frac{1}{10}
+\begin{pmatrix}
+-2  &  1 \\
+ 1   &  -2
+\end{pmatrix}
+\end{equation}
+
+One fixed point with full support:
+
+In this case we can assume $W$ to be full rank.
+
+\begin{align*}
+\dot x = 
+\relu\left[
+\begin{pmatrix}
+\epsilon_{11}  &  \epsilon_{12} \\
+\epsilon_{21}  &  \epsilon_{22}
+\end{pmatrix}
+\begin{pmatrix}
+x_1\\x_2
+\end{pmatrix}
++
+\begin{pmatrix}
+1\\1
+\end{pmatrix}
+\right]
+-
+\begin{pmatrix}
+x_1\\x_2
+\end{pmatrix}
+&=0
+\end{align*}
+
+
+Note that $x>0$ iff $z_1\coloneqq \epsilon_{11}x_1 + (\epsilon_{12}-1)x_2-1>0$. Similarly for $x_2>0$.
+
+So for a fixed point with full support, we have 
+\begin{equation}
+\begin{pmatrix}
+x_1\\x_2
+\end{pmatrix}
+=A^{-1}
+\begin{pmatrix}
+-1\\-1
+\end{pmatrix}
+\end{equation}
+with 
+\[A\coloneqq\begin{pmatrix}
+\epsilon_{11}-1  &  \epsilon_{12}-1 \\
+\epsilon_{21}-1  &  \epsilon_{22}-1
+\end{pmatrix}.\]
+
+
+Note that it is not possible that $x_1=0=x_2$.
+
+Now define
+\[
+B\coloneqq A^{-1} = \frac{1}{\det A}
+\begin{pmatrix}
+\epsilon_{22}-1  &  1-\epsilon_{12} \\
+1-\epsilon_{21}  &  \epsilon_{11}-1
+\end{pmatrix}
+\]
+with \[\det A = \epsilon_{11}\epsilon_{22}-\epsilon_{11}-\epsilon_{22}-\epsilon_{12}\epsilon_{21}+\epsilon_{12}+\epsilon_{21}.\]
+
+Hence, we have that $x_1,x_2>0$ if $B_{11}+B_{12}>0$, $B_{21}+B_{22}>0$ and $\det A >0$ 
+and $B_{11}+B_{12}<0$, $B_{21}+B_{22}<0$ and $\det A <0$.
+
+This can be satisfied in two ways, 
+If $\det A >0$, this is satisfied if $\epsilon_{22}>\epsilon_{12}$ and $\epsilon_{11}>\epsilon_{21}$,
+while if $\det A >0$, this is satisfied if $\epsilon_{22}<\epsilon_{12}$ and $\epsilon_{11}<\epsilon_{21}$.
+This gives condition 1. %necessary condition (#1)
+
+
+
+Finally, we investigate the condition that specify that there are fixed points with partial support.
+%condition for no fixed points for which $x_i=0$ for i=1 or i=2 (necessary condiiton #2)
+If $x_1=0$ then $(\epsilon_{22}-1)x_2+1=0$ and $z_1<0$. 
+From the equality, we get that $x_{2}=\frac{1}{1-\epsilon_{22}}$.
+From the inequality, we get  $(\epsilon_{12}-1)x_2+1\geq 0$, i.e. $\frac{1}{1-\epsilon_{12}}\geq x_2$.
+Hence, 
+\begin{equation*}
+\frac{1}{1-\epsilon_{12}}\geq\frac{1}{1-\epsilon_{22}}
+\end{equation*}
+and thus
+\begin{equation}\label{eq:condition2.1}
+\epsilon_{22} \leq \epsilon_{12}.
+\end{equation}
+
+Similiarly to have a fixed point $x^*$ such that $x_2^*=0$, we must have that 
+\begin{equation}\label{eq:condition2.2}
+\epsilon_{11} \leq \epsilon_{21}.
+\end{equation}
+
+Equation \ref{eq:condition2.1} and \ref{eq:condition2.2} together form condition 2.
+
+%2 fixed points
+If condition 1 is violated, but condition 2 is satisfied with exactly oner strict inequality, there are two fixed points on the boundary of the admissible quadrant.
+
+
+%what about the subconditions:
+If condition 1 is violated, and only one of the subconditions of condition 2 is satisfied, there is a single fixed point on one of the axes.
+
+
+
+If condition 2 is violated, there is a single fixed point with full support.
+%what about the subconditions?
+
+%3 fixed points
+If both conditions are satisfied, there are three fixed points.
+%what about the subconditions?
+
+We now look at the possibility of the line attractor being preserved. 
+This is the case if $v=0$.
+It is not possible to have a line attractor with a fixed point off it for as there cannot be disjoint fixed points that are linearly dependent \citep[Lemma 5.2]{morrison2016a}.
+\end{proof}
+
+
+\begin{table}
+\caption{Summary of bifurcations.}\label{tab:bifs}
+\centering
+\bgroup
+\def\arraystretch{1.52}
+\begin{tabular}{|c||c|c|c|c|c|}
+\hline
+& 1FP (full) 		& 1FP (partial) & 3FPs & 2FPs & LA  \\\hline \hline
+C1 & \cmark	 	& \xmark 	 & \cmark & \xmark & \xmark \\\hline 
+C2 & \xmark 		& only Eq\ref{eq:condition2.1} or \ref{eq:condition2.2}  	 & \cmark & \cmark& \xmark \\\hline 
+\end{tabular}
+\egroup
+\end{table}
+
+\begin{figure}[thbp]
+  \centering
+  \includegraphics[width=\textwidth]{bla_parameter_space.pdf}
+  \caption{
+  }
+  \label{fig:blaparameterspace}
+\end{figure}
+
+
+\subsection{Structure of the parameter space}
+
+We check what proportion of the bifurcation parameter space is constituted with bifurcations of the type that result in three fixed points.
+
+The conditions are 
+\begin{align*}
+0 &< \epsilon_{11}\epsilon_{22}-\epsilon_{11}-\epsilon_{22}-\epsilon_{12}\epsilon_{21}-\epsilon_{12}-\epsilon_{21},\\
+\epsilon_{22} &\leq \epsilon_{12},\\
+\epsilon_{11} &\leq \epsilon_{21}.
+\end{align*}
+
+
+We show that if 
+\begin{align*}
+\epsilon_{22} &\leq \epsilon_{12},\\
+\epsilon_{11} &\leq \epsilon_{21}.
+\end{align*}
+then always 
+\begin{align*}
+0 &< \epsilon_{11}\epsilon_{22}-\epsilon_{11}-\epsilon_{22}-\epsilon_{12}\epsilon_{21}-\epsilon_{12}-\epsilon_{21}.
+\end{align*}
+
+
+%
+%The only nontrivial cases are 
+
+
+
+\subsection{Fast-slow form}
+
+We transform the state space so that the line attractor aligns with the $y$-axis.
+So, we apply the affine transformation $R_\theta(x-\frac{1}{2})$ with the rotation matrix $R_\theta = \begin{bmatrix}\cos\theta &-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}= \frac{1}{\sqrt{2}}\begin{bmatrix}1 &1\\-1&1\end{bmatrix}$ where we have set $\theta=-\frac{\pi}{4}$.
+So we perform the transformation $x\rightarrow x'= R_\theta(x-\frac{1}{2})$ and so we have $x=R^{-1}_\theta x'+\frac{1}{2}$ with $R^{-1}_\theta = R_{-\theta}$.
+Then we get that 
+\begin{align}
+R_{\theta}^{-1}\dot x' = \operatorname{ReLU}\left(W(R^{-1}_\theta x'+\frac{1}{2})+1\right)-R^{-1}_\theta x'-\frac{1}{2}.
+\end{align}
+For a perturbed connection matrix $W=\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}$ we get 
+\begin{align}
+R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}\left(\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'+\frac{1}{2}\right)+1\right)-\frac{1}{\sqrt{2}}\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'-\frac{1}{2}\\
+\dot x' &=\begin{bmatrix}-1 &1\\1&1\end{bmatrix}\left(\frac{1}{2}\begin{bmatrix}\epsilon-1 &-\epsilon-1\\-1&1\end{bmatrix}x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon-1 \\-1\end{bmatrix}+\begin{bmatrix}1 \\1\end{bmatrix}-\frac{1}{2}\begin{bmatrix}1 \\1\end{bmatrix}\right)-x'\\
+\dot x' &=\left(\begin{bmatrix}-2 &0\\0&0\end{bmatrix}+\frac{\epsilon}{2}\begin{bmatrix}1 &-1\\-1&1\end{bmatrix}\right)x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon \\-\epsilon\end{bmatrix}
+\end{align}
+
+\subsection{Heading direction network}
+
+\begin{equation}
+\tau \dot h_j = -h_j + \frac{1}{N} \sum_k (W^{sym}_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
+\end{equation}
+
+The fixed points of the system 
+
+
+
+\subsection{Persistence in non-differentiable vector fields}
+The applicability of the Persistence Theorem to non-differentiable vector fields would depend on the specific characteristics of the system and the nature of the non-differentiability.
+%
+
+
+%\subsubsection{Ring attractor}
+
+%Compact
+%No boundary: in- and outflowing
+%But not $C^1$!
+
+
+%discrete attractors as a trivial application?
+%Discrete attractors can be seen as an approximation to continuous attractor models in the context of head direction representation \citep{zhang1996}. The discrete nature of the representation makes it more robust to small fluctuations or disturbances in neural activity.
+%However, these system have fading memory: the system eventually forgets the past, since any difference between any two neural activations eventually tends zero as they both evolve to a global resting state.
+
+%We will first of all look at a simple (non-biological) system that has a ring attractor to demonstrate the consequences of the Persistence Theorem.
+%The system we will analyse is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
+%This system has as fixed points the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$.
+
+
+
+
+\begin{figure}[H]
+     \centering
+%  \includegraphics[width=.8\textwidth]{ring_perturbations_stream}
+    \includegraphics[width=.8\textwidth]{ring_perturbations_stream_2by2}
+       \caption{Perturbations to a simple implementation of a ring attractor all leave the invariant manifold intact. % (Left)  Examples of a local perturbation to the vector field through the addition of a bump to the vector field along the ring attractor.
+              (Leftmost) An example of a bump perturbation that results in the ring breaking up and becoming diffeomorphic to a line. %slow flow in hole?
+              (Left, middle) An example of a bump perturbation that maintains the ring structure, but deforms it locally.
+              %
+      % (Right) Examples of a global perturbation to the vector field through the addition of a small term to the connectivity matrix. 
+       (Right, middle) A global perturbation that results in a system with four fixed points along the persistent invariant manifold. %The two saddle nodes (yellow dots) are connected to the stable fixed points (green dots) through connecting orbits.
+       (Rightmost)   A global perturbation that results in a limit cycle.}
+         \label{fig:ring_activity_pert}
+\end{figure}
+
+All perturbations maintain the invariant manifold.
+
+
+%\include{iclr2024_supplementary.tex}
 
 \end{document}
