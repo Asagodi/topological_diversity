@@ -2,7 +2,7 @@
 """
 Created on Mon Sep 11 10:45:29 2023
 
-@author: abel_
+@author: 
 """
 import glob
 import os, sys
@@ -29,7 +29,7 @@ from intersect import intersection
 
 from models import mse_loss_masked
 from perturbed_training import RNN
-from tasks import bernouilli_integration_task, bernouilli_noisy_integration_task
+from tasks import bernouilli_integration_task, bernouilli_noisy_integration_task, contbernouilli_noisy_integration_task
 
 
 device = 'cpu'
@@ -70,7 +70,7 @@ def get_params_perfectintegrator(version, ouput_bias=1):
         
     return wi_init, wrec_init, brec_init, wo_init, bwo_init, h0_init
 
-def loss_landscape(T, input_length, batch_size=128, ouput_bias=1, noise_in='weights'):
+def loss_landscape(T, input_length, batch_size=128, ouput_bias=1, noise_in='weights', cont=False):
     """
     
 
@@ -101,7 +101,10 @@ def loss_landscape(T, input_length, batch_size=128, ouput_bias=1, noise_in='weig
     thetas = np.concatenate([-thetas[::-1],[0], thetas])
     loss_theta = np.zeros((thetas.shape[0], 3))
     
-    task =  bernouilli_integration_task(T=T,input_length=input_length)
+    if cont:
+        task = contbernouilli_noisy_integration_task(T=T,input_length=input_length, sigma=0)
+    else:
+        task = bernouilli_integration_task(T=T,input_length=input_length)
     
     _input, _target, _mask = task(batch_size)
     _input = torch.from_numpy(_input)
@@ -128,7 +131,10 @@ def loss_landscape(T, input_length, batch_size=128, ouput_bias=1, noise_in='weig
                 noise_std=theta
                 
             if noise_in=='input':
-                task = bernouilli_noisy_integration_task(T=T,input_length=input_length, sigma=theta)
+                if cont:
+                    task = contbernouilli_noisy_integration_task(T=T,input_length=input_length, sigma=theta)
+                else:
+                    task = bernouilli_noisy_integration_task(T=T,input_length=input_length, sigma=theta)
                 _input, _target, _mask = task(batch_size)
                 input = torch.from_numpy(_input).to(device=device).float() 
                 target = torch.from_numpy(_target).to(device=device).float() 
@@ -158,12 +164,12 @@ def loss_landscape(T, input_length, batch_size=128, ouput_bias=1, noise_in='weig
     ax.set_ylabel('loss')
     ax.legend(title='Network')
     ax.grid()
-    plt.savefig(parent_dir+f"/Stability/figures/loss_landscape_bias{ouput_bias}_{noise_in}.pdf", bbox_inches="tight")
+    plt.savefig(parent_dir+f"/Stability/figures/loss_landscape_i{input_length}_b{ouput_bias}_{noise_in}.pdf", bbox_inches="tight")
             
     return loss_theta
 
 
-def loss_landscape_fixednoise(Ts, input_length, thetas, batch_size=128, ouput_bias=1, noise_in='weights', weight_samples=200):
+def loss_landscape_fixednoise(Ts, input_length, thetas, batch_size=128, ouput_bias=1, noise_in='weights', weight_samples=200, cont=False):
     """
     
 
@@ -207,7 +213,7 @@ def loss_landscape_fixednoise(Ts, input_length, thetas, batch_size=128, ouput_bi
                 if noise_in=='weights':
                     # wrec_init_p[0,0] += (-1)**j*theta
                     wrec_init_p += np.random.normal(0,theta, (2,2))
-
+                    
                 
                 if noise_in=='internal':
                     noise_std=theta
@@ -217,7 +223,10 @@ def loss_landscape_fixednoise(Ts, input_length, thetas, batch_size=128, ouput_bi
                     
                 if noise_in=='weight_decay':
                     wrec_init_p -= theta*wrec_init_p
-                task = bernouilli_noisy_integration_task(T=T,input_length=input_length, sigma=sigma)
+                if cont:
+                    task = contbernouilli_noisy_integration_task(T=T,input_length=input_length, sigma=theta)
+                else:
+                    task = bernouilli_noisy_integration_task(T=T,input_length=input_length, sigma=theta)
                 _input, _target, _mask = task(batch_size)
                 input = torch.from_numpy(_input).to(device=device).float() 
                 target = torch.from_numpy(_target).to(device=device).float() 
@@ -261,12 +270,12 @@ def plot_loss_landscape(losses, ouput_bias, noise_in):
     plt.savefig(parent_dir+f"/Stability/figures/matched_loss_landscape_bias{ouput_bias}_{noise_in}.pdf", bbox_inches="tight")
     plt.show()
 
-def calculate_losses(thetas, Ts, input_length, batch_size=128, ouput_bias=1, noise_in='weights'):
+def calculate_losses(thetas, Ts, input_length, batch_size=128, ouput_bias=1, noise_in='weights', cont=False):
     
     mean_losses = np.zeros((len(thetas), 3))
     for theta_i, theta in tqdm(enumerate(thetas)):
         losses = loss_landscape_fixednoise(Ts=Ts, input_length=input_length, thetas=[theta]*3,
-                                           batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in)
+                                           batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in, cont=cont)
     
         mean_losses[theta_i, :] =  np.mean(losses, axis=0)
     
@@ -307,35 +316,26 @@ if __name__ == "__main__":
     markersizes = [5,5,6]
     alphas = [.5, .5, .5]
     
-    # Ts = np.arange(10, 100, 2)
     Ts = np.array([500])
-    ouput_bias = 20
     input_length = 10
+    ouput_bias = 20
     batch_size = 1024
     
-    # thetas = [2.1e-04, 5e-05, 1e-04]
-    # losses = loss_landscape_fixednoise(Ts=Ts, input_length=input_length, batch_size=batch_size,
-    #                            thetas=thetas,
-    #                            ouput_bias=ouput_bias, noise_in=noise_in)
-    
-    # loss_theta = loss_landscape(T=200, input_length=10, batch_size=1024,
-    #                             ouput_bias=20, noise_in='input')
+    #with loss landscape:BLA under irnn
+    # input_length = 50
+    # ouput_bias = 25
     
     thetas = np.logspace(-1, -9, 17)
     threshold = 1e-5
-    # noise_in_list = ['weights']
     noise_in_list = ['weights', 'input', 'internal']
 
-    # all_alpha_stars = np.zeros((4,3))
-    all_alpha_stars =  {} #{'weights': np.array([1.11539299e-07, 2.31959886e-08, 4.74380070e-08])}
+    all_alpha_stars =  {} 
     for n_i, noise_in in enumerate(noise_in_list):
 
-        mean_losses = calculate_losses(thetas, Ts, input_length, batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in)
+        mean_losses = calculate_losses(thetas, Ts, input_length, batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in, cont=True)
 
         alpha_stars = plot_losses(mean_losses, threshold, ouput_bias, noise_in)
-        # all_alpha_stars[n_i, :] = alpha_stars
         all_alpha_stars[noise_in] = alpha_stars
         
-    # np.savetxt(parent_dir+f'/experiments/noisy/matching_singe_T{Ts[0]}_threshold{threshold}_input{input_length}_w.csv', all_alpha_stars, delimiter=",")
-    with open(parent_dir+f'/experiments/noisy/matching_single_T{Ts[0]}_threshold{threshold}_input{input_length}.pickle', 'wb') as handle:
+    with open(parent_dir+f'/experiments/cnoisy/matching_single_T{Ts[0]}_threshold{threshold}_input{input_length}.pickle', 'wb') as handle:
         pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)

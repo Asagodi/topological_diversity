@@ -13,6 +13,7 @@ from scipy.integrate import odeint, DOP853, solve_ivp
 from matplotlib.ticker import MaxNLocator
 
 import sklearn
+import sklearn.decomposition
 from scipy.stats import special_ortho_group
 from scipy.optimize import minimize
 from itertools import chain, combinations, permutations
@@ -185,7 +186,7 @@ def bump_perturbation(x, center, rotation_mat, amplitude, b=1):
     N = x.shape[0]
     vector_bump = np.zeros(N)
     vector_bump[0] = 1.
-    rotation_mat = special_ortho_group.rvs(N)
+    # rotation_mat = special_ortho_group.rvs(N)
     vector_bump = np.dot(vector_bump, rotation_mat)
     vector_bump = np.multiply(vector_bump, bump_function(x, center=center, amplitude=amplitude, b=b))
     
@@ -195,6 +196,41 @@ def bump_perturbation(x, center, rotation_mat, amplitude, b=1):
 
 def v_in(t):
     return 0
+
+
+
+#Ring, bumps and corners
+def get_corners(N, m):
+    #works for even N
+    corners = []
+    corner_0 = np.array([m]*N)
+    corner_0[int(N/2):] *= -1
+    corner_0[int(N/2)-int(N/4):int(N/2)] = 0
+    corner_0[N-int(N/4):] = 0
+    for support_j in range(N):
+        corners.append(np.roll(corner_0, support_j))
+    corners = np.array(corners)
+    return corners
+
+def get_bumps_along_oneside_ring(N, m, corners, step_size=0.1):
+    x = np.arange(0, m+step_size, step_size)
+    n_xs = x.shape[0]
+    bumps = np.zeros((N, n_xs))
+    for i, x_i in enumerate(x):
+        for j in range(N):
+            bumps[j,i] = np.interp(x_i, [0,m], [corners[0][j],corners[1][j]])
+    return bumps
+
+def get_all_bumps(N, bumps):
+    all_bumps = []
+    for bump_i in range(bumps.shape[1]):
+        for support_j in range(N):
+            all_bumps.append(np.roll(bumps[:,bump_i], support_j))
+    all_bumps = np.array(all_bumps)
+    return all_bumps
+
+
+
 
 # 2D Ring attractor
 

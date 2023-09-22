@@ -28,13 +28,19 @@ import matplotlib.colors as mplcolors
 import matplotlib.cm as cmx
 import matplotlib as mpl
 from matplotlib.lines import Line2D
+from matplotlib.ticker import MaxNLocator
 import pylab as pl
 
 from analysis_functions import find_analytic_fixed_points, find_stabilities
 
+def makedirs(dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+        
+def ReLU(x):
+    return np.where(x<0,0,x)
 
-
-def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, y_lim=None):
+def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, ylim=None, gradstep=1):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
     rc('text', usetex=True)
     
@@ -55,7 +61,7 @@ def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, y_lim=None):
             exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
             exp_list = glob.glob(main_exp_name +'/'+ model_name + "/result*")
 
-            all_losses = np.zeros((len(exp_list), 30))
+            all_losses = np.zeros((len(exp_list), gradstep*30))
 
             for exp_i, exp in enumerate(exp_list):
                 with open(exp, 'rb') as handle:
@@ -93,8 +99,8 @@ def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, y_lim=None):
     ax.set_yscale('log')
 
     if sharey:
-        min_y = y_lim[0]
-        max_y = y_lim[1]
+        min_y = ylim[0]
+        max_y = ylim[1]
     else:
         try:
             if np.ceil(np.log10(np.max(all_losses)))-np.floor(np.log10(np.min(all_losses)))<3:
@@ -107,27 +113,24 @@ def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, y_lim=None):
             min_y = 1e-12
             max_y = 1e8
 
+    ax.set_xticks([0, 30*gradstep], [0, 30])
     ax.set_ylim([min_y, max_y])
     ax.set_yticks([min_y, max_y], [int(np.log10(min_y)), int(np.log10(max_y))])
     ax.set_yticks([min_y,1.6, max_y], [int(np.log10(min_y)),np.round(np.log10(1.6),1), np.round(np.log10(max_y),1)])
-    # ax.set_yticks([min_y, sigma, 1.6, 1e5, max_y], [int(np.log10(min_y)),int(np.log10(sigma)),np.round(np.log10(1.6),1),5,int(np.log10(max_y))])
-
+    ax.set_yticks([min_y, sigma, 1.6, 1e5, max_y], [int(np.log10(min_y)),int(np.log10(sigma)),np.round(np.log10(1.6),1),5,int(np.log10(max_y))])
 
     lines = [Line2D([0], [0], color='k', linewidth=3, linestyle=marker) for marker in markers]
     labels = ['with learning', 'no learning']
     # ax2.legend(lines, labels, loc='upper left', bbox_to_anchor=(1, 0.5))
-
     # ax1.legend(loc='lower left', bbox_to_anchor=(1, 0.5))
     
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/losses_wawlearning_T10000.pdf', bbox_inches="tight")
     # fig.savefig(main_exp_name+'/losses.pdf', bbox_inches="tight")
 
-    # plt.show()
-    # return fig
     return all_losses
 
 
-def plot_losses_box(main_exp_names, sigma=None, ax=None, y_lim=[1e-10,1e4]):
+def plot_losses_box(main_exp_names, sigma=None, ax=None, ylim=[1e-10,1e4]):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
     rc('text', usetex=True)
     
@@ -161,8 +164,8 @@ def plot_losses_box(main_exp_names, sigma=None, ax=None, y_lim=[1e-10,1e4]):
         
     ax.tick_params(rotation=90, labelsize=15)
     ax.set_yscale('log')
-    min_y = y_lim[0]
-    max_y = y_lim[1]
+    min_y = ylim[0]
+    max_y = ylim[1]
     ax.set_ylim([min_y, max_y])
     ax.set_xlim([.75,2.25])
 
@@ -301,7 +304,7 @@ def track_changes_during_learning(main_exp_name, model_name = 'irnn'):
         with open(exp, 'rb') as handle:
             result = pickle.load(handle)
             losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
-            weights_last
+            
             wi_last, wrec_last, wo_last, brec_last, h0_las = weights_last
             for t in range(1,len(rec_epochs)):
                 # for i in range(len(weights_init)):
@@ -311,109 +314,182 @@ def track_changes_during_learning(main_exp_name, model_name = 'irnn'):
     return dists, w00s, w00pps, all_losses
 
 
-if __name__ == "__main__":
+def plot_vector_field(W, b, fig=None, ax=None):
     
-    factor = 1
-    noise_in = 'weights'
-    input_length = 10
-    learning_rate = 1e-5
-    T = 1000
-    gradstep = 1
-    main_exp_name = parent_dir + f"/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
-    models = ['irnn', 'ubla', 'bla']
-    colors = ['k', 'red', 'b']
+    if fig==None:
+        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
 
-    fig, ax = plt.subplots(2, 1, figsize=(10, 5))
-    exp_i = 6
-    for model_i, model_name in enumerate(models):
-        dists, w00s, w00pps, all_losses = track_changes_during_learning(main_exp_name, model_name=model_name)
-        
-        ax[0].plot(w00s[:,exp_i], 'x', color=colors[model_i])
-        # ax.plot(w00pps[:,0], 'o', color=colors[model_i])
-        
-        ax[1].plot(all_losses[:,exp_i], '-', color=colors[model_i])
+    cmap = 'jet'
+    w = 1.9
+    v = -.3
+    Y, X = np.mgrid[v:w:100j, v:w:100j]
+    U = ReLU(W[0,0]*X + W[0,1]*Y + b[0]) - X
+    V = ReLU(W[1,0]*X + W[1,1]*Y + b[1]) - Y
+    speed = np.log(np.sqrt(U**2 + V**2))
+    # U *= 1e5
+    # V *= 1e5
+    # ax.quiver(X,Y,U,V)
+    strm = ax.streamplot(X, Y, U, V, density=.45, broken_streamlines=False, color='b') 
+    contourf_ = ax.contourf(X, Y, speed, levels=range(-6,3), cmap=cmap)
+    ax.set(xlim=(v, w), ylim=(v, w))
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    
+    cb_ax = fig.add_axes([0.925,.124,.02,.754])
+    fig.colorbar(contourf_, cax=cb_ax)
+    cb_ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    cb_ax.set_ylabel("log(speed)")
+    
+    # cbar  = fig.colorbar(contourf_, cax=axs)
+    # plt.ylabel("log(speed)", family='serif')
+    # plt.yticks(rotation=90, family='serif')
 
 
-        
 # if __name__ == "__main__":
-#     training_kwargs = {}
-#     training_kwargs['T'] = 100
-#     training_kwargs['input_length'] = 10
+    
+#     factor = 1
+#     noise_in = 'weights'
+#     input_length = 10
+#     learning_rate = 1e-5
+#     T = 1000
 #     gradstep = 1
+#     main_exp_name = parent_dir + f"/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
+#     weight_figs_path = main_exp_name + "/weight_figs"
+#     vfs_figs_path = main_exp_name + "/vf_figs"
+#     makedirs(weight_figs_path)
+#     makedirs(vfs_figs_path)
+
 #     models = ['irnn', 'ubla', 'bla']
-#     noise_in_list = ['weights', 'input', 'internal']
-#     learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
-#     learning_rates = [1e-5]
+#     colors = ['k', 'red', 'b']
 
-#     factors = [10, 1, .1, .01]
-#     n_lrs = len(learning_rates)
-#     n_fs = len(factors)
-#     # plot_box = True
-#     # for n_i, noise_in in enumerate(noise_in_list):
-#     #     fig, axes = plt.subplots(n_lrs, n_fs, figsize=(2*n_fs, 4*n_lrs), sharex=True, sharey=True)
-#     #     fig.supylabel('log(MSE)', fontsize=35)
-#     #     fig.suptitle(noise_in, fontsize=35)
-#     #     fig.text(x=0.5, y=.8, s= 'log($\sigma_W$)', fontsize=12, ha="center", transform=fig.transFigure)
+#     # fig, ax = plt.subplots(3, 1, figsize=(5, 10), sharex=True)
+#     n_epochs = 6
+#     fig, axes = plt.subplots(1, n_epochs, figsize=(2*n_epochs+1, 2), sharex=True, sharey=True)
 
-#     #     for f_i,factor  in enumerate(factors):
-#     #         ax=axes[f_i]
-#     #         axes[f_i].set_title(int(np.log10(factor*1e-5)), fontsize=25)
-#     #         main_exp_names = []
-#     #         main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr0")
-#     #         if plot_box:
-#     #             plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax, y_lim=[1e-10,1.6])
-#     #         else:
-#     #             plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=True, y_lim=[1e-10,1.6])
+#     model_i = 0
+#     model_name = models[model_i]
+#     exp_list = glob.glob(main_exp_name +'/'+ model_name + "/result*");
+
+#     dists = np.zeros((len(exp_list)))
+#     # for exp_i, exp in enumerate(exp_list):
+#     exp_i = 0
+#     exp = exp_list[exp_i]
+    # with open(exp, 'rb') as handle:
+    #     result = pickle.load(handle)
+    #     losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
+        
+    #     wi_last, wrec_last, wo_last, brec_last, h0_las = weights_last
+        
+    #     for t in range(0,n_epochs):
+    #         ax = axes[t]
+    #         ax.set_xlabel(t)
+    #         W = weights_train["wrec"][t]
+    #         b = weights_train["brec"][t]
+    #         wo = weights_train["wo"][t]
+    #         print(wo)
+    #         ax.arrow(0, 0, wo[0][0], wo[1][0], width=.1, head_width=0.05, head_length=0.1, fc='k', ec='k', zorder=100)
+
+    #         plot_vector_field(W, b, fig=fig, ax=ax)
+    #         # if np.isnan(W[0,0]):
+    #         #     ax.text(x=1./n_epochs*t, y=.5, s= 'nan', fontsize=12, ha="center", transform=fig.transFigure)
+    # ax.text(x=.05, y=-.1, s= 'Epoch', fontsize=20, ha="center", transform=fig.transFigure)
+    # fig.savefig(vfs_figs_path + f"/stream_{model_name}_{exp_i}.pdf", bbox_inches="tight")
+
+    # for model_i, model_name in enumerate(models):
+    #     dists, w00s, w00pps, all_losses = track_changes_during_learning(main_exp_name, model_name=model_name)
+        
+    #     ax[0].plot(w00s[:,exp_i], 'x', color=colors[model_i])
+    #     ax[0].set_ylabel("Perturbation")
+    #     ax[1].plot(w00pps[:,exp_i], 'o', color=colors[model_i])
+    #     ax[1].set_ylabel("Grad Step")
+    #     ax[2].plot(all_losses[:,exp_i], '-', color=colors[model_i])
+    #     ax[2].set_ylabel("Loss")
+    # ax[2].set_xlabel("Epoch")
+
+    # fig.savefig(weight_figs_path + f"/weight_changes_{exp_i}.pdf", bbox_inches="tight")
 
 
-#     #     fig.tight_layout()
-#     #     if plot_box:
-#     #         fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
-#     #     else:
-#     #         fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
+        
+if __name__ == "__main__":
+    training_kwargs = {}
+    training_kwargs['T'] = 500
+    training_kwargs['input_length'] = 10
+    gradstep = 5
+    models = ['irnn', 'ubla', 'bla']
+    noise_in_list = ['weights', 'input', 'internal']
+    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
+    # learning_rates = [1e-5]
+
+    factors = [10, 1, .1, .01]
+    n_lrs = len(learning_rates)
+    n_fs = len(factors)
+    # plot_box = True
+    # for n_i, noise_in in enumerate(noise_in_list):
+    #     fig, axes = plt.subplots(n_lrs, n_fs, figsize=(2*n_fs, 4*n_lrs), sharex=True, sharey=True)
+    #     fig.supylabel('log(MSE)', fontsize=35)
+    #     fig.suptitle(noise_in, fontsize=35)
+    #     fig.text(x=0.5, y=.8, s= 'log($\sigma_W$)', fontsize=12, ha="center", transform=fig.transFigure)
+
+    #     for f_i,factor  in enumerate(factors):
+    #         ax=axes[f_i]
+    #         axes[f_i].set_title(int(np.log10(factor*1e-5)), fontsize=25)
+    #         main_exp_names = []
+    #         main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr0")
+    #         if plot_box:
+    #             plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax, ylim=[1e-10,1.6])
+    #         else:
+    #             plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=True, ylim=[1e-10,1.6])
 
 
-#     plot_box = False
-#     sharey = True
-#     for n_i, noise_in in enumerate(noise_in_list):
-#         fig, axes = plt.subplots(n_fs, n_lrs, figsize=(4*n_fs, 2*n_lrs), sharex=True, sharey=sharey)
-#         fig.supylabel('log($\sigma_W$)', fontsize=35)
-#         fig.suptitle(noise_in, fontsize=35)
-#         fig.text(x=0.1, y=.95, s= 'log(learning rate)', fontsize=12, ha="center", transform=fig.transFigure)
+    #     fig.tight_layout()
+    #     if plot_box:
+    #         fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
+    #     else:
+    #         fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
 
-#         for f_i,factor  in enumerate(factors):
+
+    plot_box = False
+    sharey = True
+    ylim = [1e-12, 1e8]
+    for n_i, noise_in in enumerate(noise_in_list):
+        fig, axes = plt.subplots(n_fs, n_lrs, figsize=(4*n_fs, 2*n_lrs), sharex=True, sharey=sharey)
+        fig.supylabel('log($\sigma_W$)', fontsize=35)
+        fig.suptitle(noise_in, fontsize=35)
+        fig.text(x=0.1, y=.95, s= 'log(learning rate)', fontsize=12, ha="center", transform=fig.transFigure)
+
+        for f_i,factor  in enumerate(factors):
             
-#             for lr_i,learning_rate in enumerate(learning_rates):
-#                 ax=axes[f_i,lr_i]
-#                 if learning_rate == 0:
-#                     lr_title = 'no learning'
-#                 else:
-#                     lr_title = int(np.log10(learning_rate))
-#                 axes[0][lr_i].set_title(lr_title)
-#                 axes[f_i][0].set_ylabel(int(np.log10(factor*1e-5)), fontsize=25)
+            for lr_i,learning_rate in enumerate(learning_rates):
+                ax=axes[f_i,lr_i]
+                if learning_rate == 0:
+                    lr_title = 'no learning'
+                else:
+                    lr_title = int(np.log10(learning_rate))
+                axes[0][lr_i].set_title(lr_title)
+                axes[f_i][0].set_ylabel(int(np.log10(factor*1e-5)), fontsize=25)
 
-#                 main_exp_names = []
+                main_exp_names = []
 
-#                 main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr{learning_rate}")
-#                 if not plot_box:
-#                     all_losses = plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=sharey)
-#                 else:
-#                     plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax)
+                main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr{learning_rate}")
+                if not plot_box:
+                    all_losses = plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=sharey, ylim=ylim, gradstep=gradstep)
+                else:
+                    plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax)
 
 
-#         fig.tight_layout()
+        fig.tight_layout()
 
-#         if not plot_box:
-#             if sharey:
-#                 fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_samescale.pdf", bbox_inches="tight")
-#             else:
-#                 fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
+        if not plot_box:
+            if sharey:
+                fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_samescale.pdf", bbox_inches="tight")
+            else:
+                fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
 
-#         else:
-#             if sharey:
-#                 fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_box_samescale.pdf", bbox_inches="tight")
-#             else:
-#                 fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
+        else:
+            if sharey:
+                fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_box_samescale.pdf", bbox_inches="tight")
+            else:
+                fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
 
-#         plt.show()
-#         plt.close()
+        plt.show()
+        plt.close()
