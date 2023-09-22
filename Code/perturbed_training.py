@@ -2,7 +2,7 @@
 """
 Created on Mon Sep  4 20:06:13 2023
 
-@author: abel_
+@author: 
 """
 
 import os, sys
@@ -497,20 +497,19 @@ if __name__ == "__main__":
     training_kwargs['batch_size'] = 1024
     training_kwargs['input_length'] = 10
     training_kwargs['ouput_bias_value'] = 20
-    
-    #with loss landscape:BLA under irnn
-    # training_kwargs['input_length'] = 50
-    # training_kwargs['ouput_bias_value'] = 25
+    exp_info = training_kwargs
     
     learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
-    
     noise_in_list = ['weights', 'input', 'internal']
-
-    all_alpha_stars = {}
+    
     factors = [10, 1, .1, .01]
 
+    exp_info['learning_rates'] = learning_rates
+    exp_info['noise_in_list'] = noise_in_list
     with open(parent_dir+f"/experiments/noisy/matching_single_T{training_kwargs['T']}_threshold{1e-5}_input{training_kwargs['input_length']}.pickle", 'rb') as handle:
         all_alpha_stars = pickle.load(handle)
+        exp_info['all_alpha_stars'] = all_alpha_stars
+
     for factor in factors:
         
         for n_i, noise_in in enumerate(noise_in_list):
