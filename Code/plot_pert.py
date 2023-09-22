@@ -2,7 +2,7 @@
 """
 Created on Mon Sep  4 22:21:29 2023
 
-@author: abel_
+@author: 
 """
 
 import glob
@@ -48,26 +48,21 @@ def plot_losses(main_exp_names, sigma=None, ax=None, sharey=False, y_lim=None):
         fig, ax = plt.subplots(1, 1, figsize=(7.5, 5))
     # ax2 = ax1.twinx()
     # axes = [ax1, ax2]
-    # params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')[0]
-    # training_kwargs = yaml.safe_load(Path(params_path).read_text())
     
     lines = []
     for men_i, main_exp_name in enumerate(main_exp_names):
-        # ax = axes[men_i]
         for model_i, model_name in enumerate(model_names):
-            # print(main_exp_name)
             exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
             exp_list = glob.glob(main_exp_name +'/'+ model_name + "/result*")
 
             all_losses = np.zeros((len(exp_list), 30))
-            # print(exp_list)
 
             for exp_i, exp in enumerate(exp_list):
-                # print(exp)
                 with open(exp, 'rb') as handle:
                     result = pickle.load(handle)
                 
                 losses = result[0]
+                
                 all_losses[exp_i, :len(losses)] = losses
                 
                 lines.append(ax.plot(losses, markers[0], alpha=0.2, color=colors[model_i]))
@@ -283,86 +278,142 @@ def plot_fixedpoints_training(sub_exp_folder, trial=0):
             ax.text(fxdpnt[0], fxdpnt[1], str(i), color="black", fontsize=12)
 
 
+def track_changes_during_learning(main_exp_name, model_name = 'irnn'):
+    exp_list = glob.glob(main_exp_name +'/'+ model_name + "/result*");
+   
+    
+    #first vs last
+    dists = np.zeros((len(exp_list)))
+    for exp_i, exp in enumerate(exp_list):
+        with open(exp, 'rb') as handle:
+            result = pickle.load(handle)
+            losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
+            weights_last
+            wi_last, wrec_last, wo_last, brec_last, h0_las = weights_last
+            for i in range(len(weights_init)):
+                dists[exp_i] += np.sum(weights_last[i] - weights_init[i])
+                
+    #evolution during training
+    w00s = np.zeros((len(rec_epochs)-1, len(exp_list)))
+    w00pps = np.zeros((len(rec_epochs)-1, len(exp_list)))
+    all_losses = np.zeros((len(rec_epochs), len(exp_list)))
+    for exp_i, exp in enumerate(exp_list):
+        with open(exp, 'rb') as handle:
+            result = pickle.load(handle)
+            losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
+            weights_last
+            wi_last, wrec_last, wo_last, brec_last, h0_las = weights_last
+            for t in range(1,len(rec_epochs)):
+                # for i in range(len(weights_init)):
+                w00s[t-1,exp_i] = weights_train["wrec"][t][0,0] - weights_train["wrec_pp"][t][0,0]
+                w00pps[t-1,exp_i] = weights_train["wrec_pp"][t][0,0]-weights_train["wrec"][t-1][0,0]
+            all_losses[:,exp_i] = losses
+    return dists, w00s, w00pps, all_losses
+
 
 if __name__ == "__main__":
-    training_kwargs = {}
-    training_kwargs['T'] = 100
-    training_kwargs['input_length'] = 10
+    
+    factor = 1
+    noise_in = 'weights'
+    input_length = 10
+    learning_rate = 1e-5
+    T = 1000
     gradstep = 1
+    main_exp_name = parent_dir + f"/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
     models = ['irnn', 'ubla', 'bla']
-    noise_in_list = ['weights', 'input', 'internal']
-    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
-    learning_rates = [0]
+    colors = ['k', 'red', 'b']
 
-    factors = [10, 1, .1, .01]
-    n_lrs = len(learning_rates)
-    n_fs = len(factors)
-    plot_box = True
-    for n_i, noise_in in enumerate(noise_in_list):
-        fig, axes = plt.subplots(n_lrs, n_fs, figsize=(2*n_fs, 4*n_lrs), sharex=True, sharey=True)
-        fig.supylabel('log(MSE)', fontsize=35)
-        fig.suptitle(noise_in, fontsize=35)
-        fig.text(x=0.5, y=.8, s= 'log($\sigma_W$)', fontsize=12, ha="center", transform=fig.transFigure)
-
-        for f_i,factor  in enumerate(factors):
-            ax=axes[f_i]
-            axes[f_i].set_title(int(np.log10(factor*1e-5)), fontsize=25)
-            main_exp_names = []
-            main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr0")
-            if plot_box:
-                plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax, y_lim=[1e-10,1.6])
-            else:
-                plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=True, y_lim=[1e-10,1.6])
+    fig, ax = plt.subplots(2, 1, figsize=(10, 5))
+    exp_i = 6
+    for model_i, model_name in enumerate(models):
+        dists, w00s, w00pps, all_losses = track_changes_during_learning(main_exp_name, model_name=model_name)
+        
+        ax[0].plot(w00s[:,exp_i], 'x', color=colors[model_i])
+        # ax.plot(w00pps[:,0], 'o', color=colors[model_i])
+        
+        ax[1].plot(all_losses[:,exp_i], '-', color=colors[model_i])
 
 
-        fig.tight_layout()
-        if plot_box:
-            fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
-        else:
-            fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
+        
+# if __name__ == "__main__":
+#     training_kwargs = {}
+#     training_kwargs['T'] = 100
+#     training_kwargs['input_length'] = 10
+#     gradstep = 1
+#     models = ['irnn', 'ubla', 'bla']
+#     noise_in_list = ['weights', 'input', 'internal']
+#     learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
+#     learning_rates = [1e-5]
+
+#     factors = [10, 1, .1, .01]
+#     n_lrs = len(learning_rates)
+#     n_fs = len(factors)
+#     # plot_box = True
+#     # for n_i, noise_in in enumerate(noise_in_list):
+#     #     fig, axes = plt.subplots(n_lrs, n_fs, figsize=(2*n_fs, 4*n_lrs), sharex=True, sharey=True)
+#     #     fig.supylabel('log(MSE)', fontsize=35)
+#     #     fig.suptitle(noise_in, fontsize=35)
+#     #     fig.text(x=0.5, y=.8, s= 'log($\sigma_W$)', fontsize=12, ha="center", transform=fig.transFigure)
+
+#     #     for f_i,factor  in enumerate(factors):
+#     #         ax=axes[f_i]
+#     #         axes[f_i].set_title(int(np.log10(factor*1e-5)), fontsize=25)
+#     #         main_exp_names = []
+#     #         main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr0")
+#     #         if plot_box:
+#     #             plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax, y_lim=[1e-10,1.6])
+#     #         else:
+#     #             plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=True, y_lim=[1e-10,1.6])
 
 
-    # plot_box = True
-    # sharey = True
-    # for n_i, noise_in in enumerate(noise_in_list):
-    #     fig, axes = plt.subplots(n_fs, n_lrs, figsize=(4*n_fs, 2*n_lrs), sharex=True, sharey=sharey)
-    #     fig.supylabel('log($\sigma_W$)', fontsize=35)
-    #     fig.suptitle(noise_in, fontsize=35)
-    #     fig.text(x=0.1, y=.95, s= 'log(learning rate)', fontsize=12, ha="center", transform=fig.transFigure)
+#     #     fig.tight_layout()
+#     #     if plot_box:
+#     #         fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
+#     #     else:
+#     #         fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
 
-    #     for f_i,factor  in enumerate(factors):
+
+#     plot_box = False
+#     sharey = True
+#     for n_i, noise_in in enumerate(noise_in_list):
+#         fig, axes = plt.subplots(n_fs, n_lrs, figsize=(4*n_fs, 2*n_lrs), sharex=True, sharey=sharey)
+#         fig.supylabel('log($\sigma_W$)', fontsize=35)
+#         fig.suptitle(noise_in, fontsize=35)
+#         fig.text(x=0.1, y=.95, s= 'log(learning rate)', fontsize=12, ha="center", transform=fig.transFigure)
+
+#         for f_i,factor  in enumerate(factors):
             
-    #         for lr_i,learning_rate in enumerate(learning_rates):
-    #             ax=axes[f_i,lr_i]
-    #             if learning_rate == 0:
-    #                 lr_title = 'no learning'
-    #             else:
-    #                 lr_title = int(np.log10(learning_rate))
-    #             axes[0][lr_i].set_title(lr_title)
-    #             axes[f_i][0].set_ylabel(int(np.log10(factor*1e-5)), fontsize=25)
+#             for lr_i,learning_rate in enumerate(learning_rates):
+#                 ax=axes[f_i,lr_i]
+#                 if learning_rate == 0:
+#                     lr_title = 'no learning'
+#                 else:
+#                     lr_title = int(np.log10(learning_rate))
+#                 axes[0][lr_i].set_title(lr_title)
+#                 axes[f_i][0].set_ylabel(int(np.log10(factor*1e-5)), fontsize=25)
 
-    #             main_exp_names = []
+#                 main_exp_names = []
 
-    #             main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr{learning_rate}")
-    #             if not plot_box:
-    #                 all_losses = plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=sharey)
-    #             else:
-    #                 plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax)
+#                 main_exp_names.append(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}/lr{learning_rate}")
+#                 if not plot_box:
+#                     all_losses = plot_losses(main_exp_names, sigma=factor*1e-5, ax=ax, sharey=sharey)
+#                 else:
+#                     plot_losses_box(main_exp_names, sigma=factor*1e-5, ax=ax)
 
 
-    #     fig.tight_layout()
+#         fig.tight_layout()
 
-    #     if not plot_box:
-    #         if sharey:
-    #             fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_samescale.pdf", bbox_inches="tight")
-    #         else:
-    #             fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
+#         if not plot_box:
+#             if sharey:
+#                 fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_samescale.pdf", bbox_inches="tight")
+#             else:
+#                 fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
 
-    #     else:
-    #         if sharey:
-    #             fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_box_samescale.pdf", bbox_inches="tight")
-    #         else:
-    #             fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
+#         else:
+#             if sharey:
+#                 fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_box_samescale.pdf", bbox_inches="tight")
+#             else:
+#                 fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/losses_{noise_in}_T{training_kwargs['T']}_box.pdf", bbox_inches="tight")
 
-    #     plt.show()
-    #     plt.close()
+#         plt.show()
+#         plt.close()
