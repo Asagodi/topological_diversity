@@ -493,18 +493,17 @@ iRNN and UBLA both have larger learning noise than BLA, consistent with the abse
 We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
 The second type of noise is injected into the input $x_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$.
 To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output $O_t^*$ (Eq. \ref{eq:output}).
-%Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. %normally loss is very low, zero for the perfect integrators
+%Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. 
 %Fig.~\ref{fig:maintenance}E shows that both UBLA and iRNN diverge more quickly under gradient descent than the BLA.
 %$This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
 
 The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$ for $t=1,\dots, T$ and $i=1,2$.
 
 
-
 The noise level $\sigma$ was chosen individually for the three networks as follows. 
 We calculated the loss on a batch of inputs for various noise levels.
-We then chose the corresponding noise level per integrator that corresponded to the average loss. For the noise in the weights the average was taken over 200 weight perturbations.
-See 
+We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Sec. \ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
+This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
 
 %The parameters that were used for the effects of input- and parameter-type noise are summarized in Table \ref{tab:params}.
 %The bias parameters of the UBLA and BLA networks were set to $\beta=100$, while $\alpha=1$. 
@@ -539,41 +538,36 @@ See
 
 
 
-\subsection{Perturbation of continuous attractors}
+\subsection{Perturbation of a continuous attractor: Finite-sized head direction network model}\label{sec:hd}
 %We will now investigate the effects that perturbations might have on the gradients in some continuous attractor network models used in computational neuroscience.
 
-
-
-
-
-\subsubsection{Finite-sized head direction network model}\label{sec:hd}
-Compact, boundaryless invariant manifolds are both forward and backward invariant, i.e. they are invariant \citep{wiggins1994}.
+%\subsubsection{Finite-sized head direction network model}
 
 Continuous attractor models of the head direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a circular or ring-like structure \citep{zhang1996, Noorman2022, ajabi2023}. 
 Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
-We will the implications of the Persistence theorem in the case of the implementation of a continuous ring attractor presented in \citep{Noorman2022}.
-As this continuous ring attractor is bounded its invariant manifold persists and, hence, no divergent orbits are created under small perturbations to this system.
+We will demonstrate the implications of the Persistence theorem in the case of the implementation of a continuous ring attractor presented in \citep{Noorman2022}.
+As this continuous ring attractor is bounded its invariant manifold persists and, hence, no divergent orbits are created under small perturbations to this system. 
+Furthermore, because the ring attractor is boundaryless it is both forward and backward invariant, i.e. hence it is invariant and trajectories never leave the persistent invariant manifold\citep{wiggins1994}.
 This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians.
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
 
 \begin{figure}[H]
      \centering
   \includegraphics[width=.7\textwidth]{N6_ring_perturbations}
-       \caption{Perturbations to the ring attractor introduced in \cite{Noorman2022}.
+       \caption{Perturbations to the ring attractor introduced in \cite{Noorman2022}. The ring attractor can be perturbed in any system with an even number of fixed points (stable and saddle points are paired) up to $2N$. 
        }
          \label{fig:Noorman_ring_activity_pert}
 \end{figure}
 
 
-We evaluate the effect of perturbations on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ through local and parametrized perturbations. %, similarly as for the toy ring attractor model.
-The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations. Hereby, we will focus on two kinds of perturbations, local and parametric. 
+We evaluate the  the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ through. 
+We found that the ring can be perturbed into systems with between 2 and 12 fixed points (Fig. \ref{fig:Noorman_ring_activity_pert}).
+The probability of the different perturbations were calculated numerically.
+%The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 %Definition of a bump perturbation
 %We define a local perturbation (i.e., a change to the ODE with compact support) through the bump function $\Psi(x) = \exp\left(\frac{1}{\|x\|^2-1}\right)$ for $\|x\|<1$ and zero outisde, by multiplying it with a uniform, unidirectional vector field. All such perturbations leave at least a part of the continuous attractor intact and preserve the invariant manifold, i.e. the parts where the fixed points disappear a slow flow appears.
 
 %Definition of a global perturbationThe parametrized perturbations are characterized as the addition of random matrix to the connection matrix. 
-We further investigate the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\frac{1}{100})$.
-
-%
 
 
 
@@ -964,8 +958,9 @@ It is not possible to have a line attractor with a fixed point off it for as the
 \end{proof}
 
 
+\subsection{Structure of the parameter space}
 \begin{table}
-\caption{Summary of bifurcations.}\label{tab:bifs}
+\caption{Summary of the conditions for the different bifurcations.}\label{tab:bifs}
 \centering
 \bgroup
 \def\arraystretch{1.52}
@@ -987,8 +982,7 @@ C2 & \xmark 		& only Eq\ref{eq:condition2.1} or \ref{eq:condition2.2}  	 & \cmar
 \end{figure}
 
 
-\subsection{Structure of the parameter space}
-
+\subsubsection{Probability of bifurcation types}
 We check what proportion of the bifurcation parameter space is constituted with bifurcations of the type that result in three fixed points.
 
 The conditions are 
@@ -1010,12 +1004,11 @@ then always
 \end{align*}
 
 
-%
-%The only nontrivial cases are 
+This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $\epsilon$-ball around the BLA neural integrator with $\epsilon<1$.
 
 
 
-\section{Noise level matching}
+\section{Noise level matching}\label{sec:supp:matching}
 %Rationale: what is a universal measure of noise level
 %that is applicable to any dyn sys and makes comparisons of performance (under gradient descent) meaningful?
 
