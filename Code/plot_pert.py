@@ -70,42 +70,46 @@ def plot_losses_pair(main_exp_name_lists, plot_legend=False):
     markers = ['-', '--']
     fig, ax = plt.subplots(1, 1, figsize=(7.5, 5))
     ax2 = ax.twinx()
-    axes = [ax, ax2]
+
     lines = []
     label_i=-1
+    all_losses = np.zeros((2, 3, 10, 30))
     for men_i, main_exp_name_list in enumerate(main_exp_name_lists):
         for model_i, model_name in enumerate(model_names):
             label_i+=1
             main_exp_name = main_exp_name_list[model_i]
+
             exp_list = glob.glob(main_exp_name + "/result*")
-            all_losses = np.zeros((len(exp_list), 30))
-            # print(exp_list)
+            all_losses_men = np.zeros((len(exp_list), 30))
+
             for exp_i, exp in enumerate(exp_list):
                 with open(exp, 'rb') as handle:
                     result = pickle.load(handle)
 
                 losses = result[0]
-                all_losses[exp_i, :len(losses)] = losses[:30]
+                all_losses_men[exp_i, :len(losses)] = losses[:30]
 
                 lines.append(ax.plot(losses[:30], markers[men_i], alpha=0.2, color=colors[model_i]))
 
-            mean = np.mean(all_losses, axis=0)
+            mean = np.mean(all_losses_men, axis=0)
             ax.plot(range(mean.shape[0]), mean, markers[men_i], label=labels[label_i], color=colors[model_i])
+
+            all_losses[men_i,model_i,:,:] = all_losses_men
 
     ax.set_xlabel("Epoch", fontsize=15)
     ax.set_ylabel("MSE", fontsize=15)
     ax.set_yscale('log')
     ax2.set_yscale('log')
     min_y = np.power(10,np.floor(np.log10(np.min(all_losses))))
-    max_y = np.power(10,np.floor(np.log10(np.max(all_losses))))
-    ax.set_ylim(min_y, max_y)
-    ax2.set_ylim(min_y, max_y)
-    # ax2.set_axis_off()
+    max_y = np.power(10,np.ceil(np.log10(np.max(all_losses))))
+    ax.set_ylim([min_y, max_y])
+    ax2.set_ylim([min_y, max_y])
     ax2.set_yticks([])
     if plot_legend:
+        labels = ['learning', 'no learning']
+
         lines = [Line2D([0], [0], color='k', linewidth=3, linestyle=marker) for marker in markers]
         ax.legend(loc='lower left', bbox_to_anchor=(1, 0.5))
-    # labels = ['with learning', 'no learning']
 
     ax2.legend(lines, labels, loc='upper left', bbox_to_anchor=(1, 0.5))
 
@@ -113,29 +117,7 @@ def plot_losses_pair(main_exp_name_lists, plot_legend=False):
 
     return fig
     
-#T100, GS5
-# main_exp_name_lists = [['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr1e-05/irnn',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr1e-07/ubla',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr1e-06/bla'],
-#   ['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr0/irnn',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr0/ubla',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep5/alpha_star_factor1/weights/input10/lr0/bla']]
 
-#500, GS1
-# main_exp_name_lists = [['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr1e-07/irnn',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr1e-08/ubla',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr1e-07/bla'],
-#   ['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr0/irnn',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr0/ubla',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T500/gradstep1/alpha_star_factor1/weights/input10/lr0/bla']]
-
-#100, GS1
-# main_exp_name_lists = [['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr1e-06/irnn',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr1e-07/ubla',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr1e-06/bla'],
-#   ['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr0/irnn',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr0/ubla',
-#   'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T100/gradstep1/alpha_star_factor1/weights/input10/lr0/bla']]
 
 def plot_losses(main_exp_name, sigma=None, ax=None, sharey=False, ylim=None, gradstep=1):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
@@ -584,13 +566,43 @@ if __name__ == "__main__":
 
     # plot_losses_grid(noise_in_list, T, gradstep, sharey='row', ylim=[1e-12, 1e5], plot_box=False)
     
-    main_exp_name_lists = [['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr1e-07/irnn',
-      'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr1e-09/ubla',
-      'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr1e-08/bla'],
-      ['C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr0/irnn',
-      'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr0/ubla',
-      'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr0/bla']]
+    parent_dir
+    gradstep = 1
+    T = 1000
+
+    if T==1000  and gradstep==1:    #1000, GS1
+        main_exp_name_lists = [[parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-07/irnn',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-09/ubla',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-08/bla'],
+          [parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/irnn',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/ubla',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/bla']]
+    
+    #100, GS1
+    if T==100  and gradstep==1:
+        main_exp_name_lists = [[parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-06/irnn',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-07/ubla',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-06/bla'],
+          [parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/irnn',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/ubla',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/bla']]
+    
+    if T==100  and gradstep==5: #100, GS5
+        main_exp_name_lists = [[parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-05/irnn',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-07/ubla',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-06/bla'],
+          [parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/irnn',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/ubla',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/bla']]
+
+    if T==500  and gradstep==1: #500, GS1
+        main_exp_name_lists = [[parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-07/irnn',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-08/ubla',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-07/bla'],
+          [parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/irnn',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/ubla',
+          parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/bla']]
     
     fig = plot_losses_pair(main_exp_name_lists, plot_legend=True)
     
-    fig.savefig(parent_dir + "/experiments/noisy/T1000/gradstep1/optimal_lrs.pdf", bbox_inches="tight")
+    fig.savefig(parent_dir + f"/experiments/noisy/T{T}/gradstep{gradstep}/optimal_lrs.pdf", bbox_inches="tight")
