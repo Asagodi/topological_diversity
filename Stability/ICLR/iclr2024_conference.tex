@@ -467,7 +467,7 @@ To investigate the differential effect of gradient descent on the three neural i
 The input and output are defined as in Eqs. \ref{eq:input} and \ref{eq:output} with $I_{t,i}=0$ for $t=11,\dots,T$.
 %T=100,500,1000
 We investigate the effects of three types of noise on the learning or readjustment of the parameters during gradient descent starting from the perfect solutions to the task.
-
+%MSE at last time step
 
 In the first experiment, Gaussian random noise is injected to all parameters inducing a constant diffusion of the parameters, which emulates the biological synaptic variability.
 This type of noise is directly applied to the weights as $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\sigma)$.
@@ -504,6 +504,7 @@ The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t
 The noise level $\sigma$ was chosen individually for the three networks as follows. 
 We calculated the loss on a batch of inputs for various noise levels.
 We then chose the corresponding noise level per integrator that corresponded to the average loss. For the noise in the weights the average was taken over 200 weight perturbations.
+See 
 
 %The parameters that were used for the effects of input- and parameter-type noise are summarized in Table \ref{tab:params}.
 %The bias parameters of the UBLA and BLA networks were set to $\beta=100$, while $\alpha=1$. 
@@ -625,8 +626,9 @@ For situations where smoothness of the persistent invariant manifold is of impor
 
 
 \newpage
-\section{Supplementary Material}
-%
+\section*{Supplementary Material}
+\setcounter{section}{0}
+
 %RNNs are capable of learning complex patterns and relationships in the data, which makes them in particular useful as models for neural computations. This is achieved through the use of non-linear activation functions and the training of the network using backpropagation through time (BPTT).
 %BPTT allows the network to adjust the weights of the connections between neurons based on the error signal that is propagated backwards through time. 
 %%This makes them suitable models for 
@@ -635,13 +637,17 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %Many different methods have been proposed for overcoming this difficulty.
 
 
-\subsection{Bifurcation analysis of the line attractors}
+\section{Persistence in non-differentiable vector fields}
+The applicability of the Persistence Theorem to non-differentiable vector fields would depend on the specific characteristics of the system and the nature of the non-differentiability.
+%
 
-\subsubsection{Discrepancies between discrete and continuous RNNs}
+\section{Bifurcation analysis of the line attractors}
+
+\subsection{Discrepancies between discrete and continuous RNNs}
 \label{sec:discrepancies}
 In the discrete time version of vanilla RNN \eqref{eq:RNN:discrete}, there can exist 2-period orbits, which are absent in the \eqref{eq:RNN:continuous} version.
 
-\subsubsection{Unbounded line attractor}
+\subsection{Unbounded line attractor}
 \label{sec:ubla}
 
 The parameters:
@@ -683,7 +689,7 @@ There are only two types of invariant set for the perturbations of the line attr
 
 
 
-\subsubsection{Bounded line attractor}\label{sec:supp:bla}
+\subsection{Bounded line attractor}\label{sec:supp:bla}
 %Another implementation of a perfect integrator: one which is bounded.
 
 \paragraph{Input}
@@ -1009,53 +1015,32 @@ then always
 
 
 
-\subsection{Fast-slow form}
+\section{Noise level matching}
+%Rationale: what is a universal measure of noise level
+%that is applicable to any dyn sys and makes comparisons of performance (under gradient descent) meaningful?
 
-We transform the state space so that the line attractor aligns with the $y$-axis.
-So, we apply the affine transformation $R_\theta(x-\frac{1}{2})$ with the rotation matrix $R_\theta = \begin{bmatrix}\cos\theta &-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}= \frac{1}{\sqrt{2}}\begin{bmatrix}1 &1\\-1&1\end{bmatrix}$ where we have set $\theta=-\frac{\pi}{4}$.
-So we perform the transformation $x\rightarrow x'= R_\theta(x-\frac{1}{2})$ and so we have $x=R^{-1}_\theta x'+\frac{1}{2}$ with $R^{-1}_\theta = R_{-\theta}$.
-Then we get that 
-\begin{align}
-R_{\theta}^{-1}\dot x' = \operatorname{ReLU}\left(W(R^{-1}_\theta x'+\frac{1}{2})+1\right)-R^{-1}_\theta x'-\frac{1}{2}.
-\end{align}
-For a perturbed connection matrix $W=\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}$ we get 
-\begin{align}
-R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}\left(\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'+\frac{1}{2}\right)+1\right)-\frac{1}{\sqrt{2}}\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'-\frac{1}{2}\\
-\dot x' &=\begin{bmatrix}-1 &1\\1&1\end{bmatrix}\left(\frac{1}{2}\begin{bmatrix}\epsilon-1 &-\epsilon-1\\-1&1\end{bmatrix}x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon-1 \\-1\end{bmatrix}+\begin{bmatrix}1 \\1\end{bmatrix}-\frac{1}{2}\begin{bmatrix}1 \\1\end{bmatrix}\right)-x'\\
-\dot x' &=\left(\begin{bmatrix}-2 &0\\0&0\end{bmatrix}+\frac{\epsilon}{2}\begin{bmatrix}1 &-1\\-1&1\end{bmatrix}\right)x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon \\-\epsilon\end{bmatrix}
-\end{align}
-
-\subsection{Heading direction network}
-
-\begin{equation}
-\tau \dot h_j = -h_j + \frac{1}{N} \sum_k (W^{sym}_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
-\end{equation}
-
-The fixed points of the system 
+\begin{figure}[H]
+     \centering
+    \includegraphics[width=.8\textwidth]{matching_noise_3types_cont}
+       \caption{}
+         \label{fig:matching_noise_3types_cont}
+\end{figure}
 
 
-
-\subsection{Persistence in non-differentiable vector fields}
-The applicability of the Persistence Theorem to non-differentiable vector fields would depend on the specific characteristics of the system and the nature of the non-differentiability.
-%
-
-
-%\subsubsection{Ring attractor}
+\section{Ring attractor}
 
 %Compact
 %No boundary: in- and outflowing
 %But not $C^1$!
-
-
+%
+%
 %discrete attractors as a trivial application?
 %Discrete attractors can be seen as an approximation to continuous attractor models in the context of head direction representation \citep{zhang1996}. The discrete nature of the representation makes it more robust to small fluctuations or disturbances in neural activity.
 %However, these system have fading memory: the system eventually forgets the past, since any difference between any two neural activations eventually tends zero as they both evolve to a global resting state.
 
-%We will first of all look at a simple (non-biological) system that has a ring attractor to demonstrate the consequences of the Persistence Theorem.
-%The system we will analyse is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
-%This system has as fixed points the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$.
-
-
+We will first of all look at a simple (non-biological) system that has a ring attractor to demonstrate the consequences of the Persistence Theorem.
+The system we will analyse is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
+This system has as fixed points the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$.
 
 
 \begin{figure}[H]
@@ -1073,6 +1058,45 @@ The applicability of the Persistence Theorem to non-differentiable vector fields
 \end{figure}
 
 All perturbations maintain the invariant manifold.
+
+\subsection{Fast-slow form}
+
+We transform the state space so that the line attractor aligns with the $y$-axis.
+So, we apply the affine transformation $R_\theta(x-\frac{1}{2})$ with the rotation matrix $R_\theta = \begin{bmatrix}\cos\theta &-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}= \frac{1}{\sqrt{2}}\begin{bmatrix}1 &1\\-1&1\end{bmatrix}$ where we have set $\theta=-\frac{\pi}{4}$.
+So we perform the transformation $x\rightarrow x'= R_\theta(x-\frac{1}{2})$ and so we have $x=R^{-1}_\theta x'+\frac{1}{2}$ with $R^{-1}_\theta = R_{-\theta}$.
+Then we get that 
+\begin{align}
+R_{\theta}^{-1}\dot x' = \operatorname{ReLU}\left(W(R^{-1}_\theta x'+\frac{1}{2})+1\right)-R^{-1}_\theta x'-\frac{1}{2}.
+\end{align}
+For a perturbed connection matrix $W=\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}$ we get 
+\begin{align}
+R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}\left(\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'+\frac{1}{2}\right)+1\right)-\frac{1}{\sqrt{2}}\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'-\frac{1}{2}\\
+\dot x' &=\begin{bmatrix}-1 &1\\1&1\end{bmatrix}\left(\frac{1}{2}\begin{bmatrix}\epsilon-1 &-\epsilon-1\\-1&1\end{bmatrix}x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon-1 \\-1\end{bmatrix}+\begin{bmatrix}1 \\1\end{bmatrix}-\frac{1}{2}\begin{bmatrix}1 \\1\end{bmatrix}\right)-x'\\
+\dot x' &=\left(\begin{bmatrix}-2 &0\\0&0\end{bmatrix}+\frac{\epsilon}{2}\begin{bmatrix}1 &-1\\-1&1\end{bmatrix}\right)x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon \\-\epsilon\end{bmatrix}
+\end{align}
+
+
+
+
+
+
+
+
+
+
+\section{Heading direction network}
+
+\begin{equation}
+\tau \dot h_j = -h_j + \frac{1}{N} \sum_k (W^{sym}_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
+\end{equation}
+
+The fixed points of the system 
+
+
+
+
+
+
 
 
 %\include{iclr2024_supplementary.tex}
