@@ -223,7 +223,7 @@ class RNN(nn.Module):
 def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False, record_step=1, h_init=None,
           loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
           optimizer='sgd', momentum=0, weight_decay=.0, 
-          perturb_weights=False, weight_sigma=1e-6, noise_step=1,
+          perturb_weights=False, weight_sigma=1e-6, noise_step=1, fix_seed=None, trial=0,
           verbose=True):
     """
     Train a network
@@ -239,6 +239,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
     """
     assert (task is not None) or (data is not None), "Choose a task or a dataset!"
  
+    if fix_seed:
+        torch.manual_seed(trial)
     # CUDA management
     if cuda:
         if not torch.cuda.is_available():
@@ -398,20 +400,7 @@ def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
         res.append(trajectories)
     res = [r.numpy() for r in res]
     return res
-        
-        
-def run_perturbed_training(experiment_folder, exp_name='', trial=None, training_kwargs={}):
-    
-    timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
-    
-    with open(experiment_folder+'/parameters.yml', 'w') as outfile:
-        yaml.dump(training_kwargs, outfile, default_flow_style=False)
-    
-    task =  bernouilli_integration_task(T=training_kwargs['T'],input_length=training_kwargs['input_length'])
-    
 
-
-    
     
 def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
     # timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -467,7 +456,7 @@ def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
     result = train(net, task=task, n_epochs=training_kwargs['n_epochs'], batch_size=training_kwargs['batch_size'],
               learning_rate=training_kwargs['learning_rate'], clip_gradient=None, cuda=False, record_step=1, h_init=h0_init,
               loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
-              optimizer='sgd', momentum=0, weight_decay=training_kwargs['weight_decay'],
+              optimizer='sgd', momentum=0, weight_decay=training_kwargs['weight_decay'], fix_seed=training_kwargs['fix_seed'], trial=trial,
               perturb_weights=training_kwargs['perturb_weights'], weight_sigma=training_kwargs['weight_sigma'], noise_step=training_kwargs['noise_step'],
               verbose=True)
 
@@ -480,26 +469,27 @@ def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
     
 if __name__ == "__main__":
     # print(current_dir)
+    
     training_kwargs = {}
     
     models = ['irnn', 'ubla', 'bla']
     sigmas = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9]
     
     training_kwargs['verbose'] = False
+    training_kwargs['fix_seed'] = True
     training_kwargs['cont'] = True
     training_kwargs['perturb_weights'] = False
     training_kwargs['task_noise_sigma'] = 0.
     training_kwargs['internal_noise_std'] = 0.
     training_kwargs['weight_sigma'] = 0.
     training_kwargs['weight_decay'] = 0.
-
     
+    training_kwargs['dt'] = 1 
     training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['readout_nonlinearity'] = 'id'
-    training_kwargs['T'] = 100 # 2000
-    training_kwargs['dt'] = 1 # 2000
+    training_kwargs['T'] = 100 
     training_kwargs['noise_step'] = 1
-    training_kwargs['n_epochs'] = 30*training_kwargs['noise_step']
+    training_kwargs['n_epochs'] = 30
     
     training_kwargs['batch_size'] = 1024
     training_kwargs['input_length'] = 10
@@ -508,19 +498,18 @@ if __name__ == "__main__":
     
     learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
     noise_in_list = ['weights', 'input', 'internal']
-    
-    factors = [10, 1, .1, .01]
+    factors = [1000, 100, 10, 1, .1, .01]
 
     exp_info['learning_rates'] = learning_rates
     exp_info['noise_in_list'] = noise_in_list
-    with open(parent_dir+f"/experiments/noisy/matching_single_T{training_kwargs['T']}_threshold{1e-5}_input{training_kwargs['input_length']}.pickle", 'rb') as handle:
+    with open(parent_dir+f"/experiments/cnoisy/matching_single_T{training_kwargs['T']}_threshold{1e-5}_input{training_kwargs['input_length']}.pickle", 'rb') as handle:
         all_alpha_stars = pickle.load(handle)
         exp_info['all_alpha_stars'] = all_alpha_stars
 
     for factor in factors:
         
         for n_i, noise_in in enumerate(noise_in_list):
-            main_exp_folder = parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{training_kwargs['noise_step']}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}"
+            main_exp_folder = parent_dir + f"/experiments/cnoisy_rs/T{training_kwargs['T']}/gradstep{training_kwargs['noise_step']}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}"
     
             makedirs(main_exp_folder) 
             
@@ -531,8 +520,7 @@ if __name__ == "__main__":
             training_kwargs['perturb_weights'] = False
     
             with open(main_exp_folder + '/exp_info.pickle', 'wb') as handle:
-                pickle.dump(exp_info, handle, protocol=pickle.HIGHEST_PROTOCOL) 
-            
+                pickle.dump(exp_info, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
             for model_i, model in tqdm(enumerate(models)):
                 training_kwargs['version'] = model
