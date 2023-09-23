@@ -59,7 +59,7 @@ def sci_notation(num, decimal_digits=1, precision=None, exponent=None):
     return r"${0:.{2}f}\cdot10^{{{1:d}}}$".format(coeff, exponent, precision)
 
 
-def plot_losses_pair(main_exp_name_lists):
+def plot_losses_pair(main_exp_name_lists, plot_legend=False):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
     rc('text', usetex=True)
 
@@ -102,10 +102,10 @@ def plot_losses_pair(main_exp_name_lists):
     ax2.set_ylim(min_y, max_y)
     # ax2.set_axis_off()
     ax2.set_yticks([])
-    lines = [Line2D([0], [0], color='k', linewidth=3, linestyle=marker) for marker in markers]
-    ax.legend(loc='lower left', bbox_to_anchor=(1, 0.5))
-
-    labels = ['with learning', 'no learning']
+    if plot_legend:
+        lines = [Line2D([0], [0], color='k', linewidth=3, linestyle=marker) for marker in markers]
+        ax.legend(loc='lower left', bbox_to_anchor=(1, 0.5))
+    # labels = ['with learning', 'no learning']
 
     ax2.legend(lines, labels, loc='upper left', bbox_to_anchor=(1, 0.5))
 
@@ -591,6 +591,6 @@ if __name__ == "__main__":
       'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr0/ubla',
       'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/noisy/T1000/gradstep1/alpha_star_factor1/weights/input10/lr0/bla']]
     
-    fig = plot_losses_pair(main_exp_name_lists)
+    fig = plot_losses_pair(main_exp_name_lists, plot_legend=True)
     
     fig.savefig(parent_dir + "/experiments/noisy/T1000/gradstep1/optimal_lrs.pdf", bbox_inches="tight")
