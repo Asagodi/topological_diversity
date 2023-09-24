@@ -551,7 +551,7 @@ Furthermore, because the ring attractor is boundaryless it is both forward and b
 This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians.
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
 
-\begin{figure}[H]
+\begin{figure}[tbhp]
      \centering
   \includegraphics[width=.7\textwidth]{N6_ring_perturbations}
        \caption{Perturbations to the ring attractor introduced in \cite{Noorman2022}. The ring attractor can be perturbed in any system with an even number of fixed points (stable and saddle points are paired) up to $2N$. 
@@ -1014,11 +1014,21 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
 
 \begin{figure}[H]
      \centering
-    \includegraphics[width=.8\textwidth]{matching_noise_3types_cont}
+    \includegraphics[width=\textwidth]{matching_noise_3types_cont}
        \caption{}
          \label{fig:matching_noise_3types_cont}
 \end{figure}
 
+
+\section{Changes to the neural integrator during learning}\label{sec:supp:learning}
+%Message: This is what happens to the different neural integrators during learning 
+
+\begin{figure}[H]
+     \centering
+    \includegraphics[width=\textwidth]{vfs_T100_F1000_weights}
+       \caption{}
+         \label{fig:vfs_T100_F1000_weights}
+\end{figure}
 
 \section{Ring attractor}
 
