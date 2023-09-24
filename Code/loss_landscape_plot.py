@@ -319,31 +319,27 @@ if __name__ == "__main__":
     alphas = [.5, .5, .5]
     
     cont = True
-    Ts = np.array([100])
+    Ts = np.array([500])
     input_length = 10
     ouput_bias = 20
     batch_size = 1024
     
-    thetas = np.logspace(4, -9, 17)
     logspaces = [np.logspace(-1, -9, 17), np.logspace(4, -9, 17), np.logspace(4, -9, 17)]
-    threshold = 1e-5
     thresholds = [1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6]
     noise_in_list = ['weights', 'input', 'internal']
-    noise_in_list = ['input', 'internal']
-
 
     all_alpha_stars =  {} 
     for n_i, noise_in in enumerate(noise_in_list):
-        logspaces[n_i]
+        thetas = logspaces[n_i]
         mean_losses = calculate_losses(thetas, Ts, input_length, batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in, cont=cont)
 
         alpha_stars = plot_losses(mean_losses, thetas, thresholds, input_length, noise_in)
         all_alpha_stars[noise_in] = alpha_stars
     
-    # if cont:   
-    #     with open(parent_dir+f'/experiments/cnoisy_thrs/matching_single_T{Ts[0]}_input{input_length}.pickle', 'wb') as handle:
-    #         pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    if cont:   
+        with open(parent_dir+f'/experiments/cnoisy_thrs/matching_single_T{Ts[0]}_input{input_length}.pickle', 'wb') as handle:
+            pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
-    # else:
-    #     with open(parent_dir+f'/experiments/noisy_thrs/matching_single_T{Ts[0]}_input{input_length}.pickle', 'wb') as handle:
-    #         pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    else:
+        with open(parent_dir+f'/experiments/noisy_thrs/matching_single_T{Ts[0]}_input{input_length}.pickle', 'wb') as handle:
+            pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
