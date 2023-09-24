@@ -19,6 +19,8 @@ import numpy as np
 import pandas as pd
 from numpy.linalg import svd 
 from sklearn.decomposition import PCA
+from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
+from sklearn import preprocessing
 
 from math import floor, log10
 import seaborn as sns
@@ -173,7 +175,55 @@ def plot_losses_pairbox(main_exp_name_lists):
     ax.set_ylim([min_y, max_y])
     return fig
 
-def plot_losses(main_exp_name, sigma=None, ax=None, sharey=False, ylim=None, gradstep=1):
+def get_info(main_exp_name):
+    
+    info = {'losses':np.zeros((3, 10, 30)),
+            'gradients':np.zeros((3, 10, 30)),
+            'wrec_init':np.zeros((3, 4)),
+            'brec_init':np.zeros((3, 2)),
+            'wrecs':np.zeros((3, 10, 4, 30)),
+            'wrecs_pp':np.zeros((3, 10, 4, 30)),
+            'brecs':np.zeros((3, 10, 2, 30)),
+            'dot_grad':np.zeros((3, 10, 29))
+            }
+    for model_i, model_name in enumerate(['irnn', 'ubla', 'bla']):
+        exp_list = glob.glob(main_exp_name +'/'+ model_name + "/result*")
+    
+        for exp_i, exp in enumerate(exp_list):
+            with open(exp, 'rb') as handle:
+                result = pickle.load(handle)
+            
+            losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
+            info['losses'][model_i,exp_i,:] = losses
+            info['gradients'][model_i,exp_i,:] = gradient_norms
+            info['wrecs'][model_i,exp_i,:] = np.array(weights_train["wrec"])
+            info['wrecs_pp'][model_i,exp_i,:] = np.array(weights_train["wrec_pp"])
+            info['brecs'][model_i,exp_i,:] = np.array(weights_train["brec"])
+            
+            gradients = calculate_gradients(info['wrecs'], info['wrecs_pp'], info['brecs'])
+            X_normalized = preprocessing.normalize(gradients, norm='l2')
+
+            dot_grad = linear_kernel(X_normalized, [weights_train["wrec_init"]]*29)
+            info['dot_grad'][model_i,exp_i,:] = dot_grad
+        wi_init, wrec_init, wo_init, brec_init, h0_init = weights_init
+        info['wrec_init'][model_i,:] = np.array(weights_train["wrec_init"])
+        info['brec_init'][model_i,:] = np.array(weights_train["brec_init"])
+
+        
+    return info
+
+def calculate_gradients(wrecs, wrecs_pp, brecs):
+    """Calculate gradient based on W matrix and bias b update"""
+
+    gradients = np.zeros((30-1))
+    for t in range(1,len(30)):
+         delta_W = wrecs[t] - wrecs_pp[t-1]
+         delta_b = brecs[t] - brecs[t-1]
+         gradients[t-1,:] = np.concatenate([delta_W.flatten(),delta_b])
+
+    return gradients    
+
+def plot_losses(main_exp_name, sigma=None, ax=None, sharey=False, ylim=None, gradstep=1, marker='-', gradient=False):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
     rc('text', usetex=True)
     
@@ -181,7 +231,6 @@ def plot_losses(main_exp_name, sigma=None, ax=None, sharey=False, ylim=None, gra
     labels = ['iRNN', 'UBLA', 'BLA']
     colors = ['k', 'red', 'b']
     model_names = ['irnn', 'ubla', 'bla']
-    markers = ['-', '--']
     
     if ax==None:
         fig, ax = plt.subplots(1, 1, figsize=(7.5, 5))
@@ -190,23 +239,31 @@ def plot_losses(main_exp_name, sigma=None, ax=None, sharey=False, ylim=None, gra
         max_y = ylim[1]
     
     lines = []
+    all_losses = np.zeros((3, 10, gradstep*30))
     for model_i, model_name in enumerate(model_names):
         exp_list = glob.glob(main_exp_name +'/'+ model_name + "/result*")
 
-        all_losses = np.zeros((len(exp_list), gradstep*30))
+        all_losses_mi = np.zeros((len(exp_list), gradstep*30))
 
         for exp_i, exp in enumerate(exp_list):
             with open(exp, 'rb') as handle:
                 result = pickle.load(handle)
             
             losses = result[0]
-            
-            all_losses[exp_i, :len(losses)] = losses
-            
-            lines.append(ax.plot(losses, markers[0], alpha=0.2, color=colors[model_i]))
+            gradient_norms = result[2]
+            if gradient:
+                all_losses_mi[exp_i, :len(losses)] = gradient_norms
+                lines.append(ax.plot(gradient_norms, marker, alpha=0.2, color=colors[model_i]))
+
+            else:
+                all_losses_mi[exp_i, :len(losses)] = losses
+                lines.append(ax.plot(losses, marker, alpha=0.2, color=colors[model_i]))
+
             
             first_nan_index = np.where(np.isnan(losses))[0]
-            first_max_index = np.where(losses>max_y)[0]
+            if sharey:
+
+                first_max_index = np.where(losses>max_y)[0]
 
             if sharey:
                 if np.any(first_nan_index):
@@ -216,9 +273,9 @@ def plot_losses(main_exp_name, sigma=None, ax=None, sharey=False, ylim=None, gra
             else:
                 ax.plot(first_nan_index, losses[first_nan_index-1]*1e4, 'x', color=colors[model_i])
     
-        mean = np.mean(all_losses, axis=0)
-        ax.plot(range(mean.shape[0]), mean, markers[0], label=labels[model_i], color=colors[model_i])
-
+        mean = np.mean(all_losses_mi, axis=0)
+        ax.plot(range(mean.shape[0]), mean, marker, label=labels[model_i], color=colors[model_i])
+        all_losses[model_i, :, :] = all_losses_mi
     ax.tick_params(rotation=90, labelsize=15)
     ax.xaxis.grid(False, which='major')
     ax.axhline(1.6, linestyle='--', color='k') 
@@ -243,10 +300,10 @@ def plot_losses(main_exp_name, sigma=None, ax=None, sharey=False, ylim=None, gra
             max_y = 1e5
 
     ax.set_xticks([0, 30*gradstep], [0, 30])
-    ax.set_ylim([min_y, max_y])
-    ax.set_yticks([min_y, max_y], [int(np.log10(min_y)), int(np.log10(max_y))])
-    ax.set_yticks([min_y,1.6, max_y], [int(np.log10(min_y)),np.round(np.log10(1.6),1), np.round(np.log10(max_y),1)])
-    ax.set_yticks([min_y, sigma, 1.6, 1e5, max_y], [int(np.log10(min_y)),int(np.log10(sigma)),np.round(np.log10(1.6),1),5,int(np.log10(max_y))])
+    # ax.set_ylim([min_y, max_y])
+    # ax.set_yticks([min_y, max_y], [int(np.log10(min_y)), int(np.log10(max_y))])
+    # ax.set_yticks([min_y,1.6, max_y], [int(np.log10(min_y)),np.round(np.log10(1.6),1), np.round(np.log10(max_y),1)])
+    # ax.set_yticks([min_y, sigma, 1.6, 1e5, max_y], [int(np.log10(min_y)),int(np.log10(sigma)),np.round(np.log10(1.6),1),5,int(np.log10(max_y))])
 
     return all_losses 
 
@@ -416,7 +473,7 @@ def track_changes_during_learning(main_exp_name, model_name = 'irnn'):
     #evolution during training
     w00s = np.zeros((len(rec_epochs)-1, len(exp_list)))
     w00pps = np.zeros((len(rec_epochs)-1, len(exp_list)))
-    w_orig_pert_diff_norm = np.zeros((len(rec_epochs)-1, len(exp_list)))
+    w_orig_pert_diff_norm = np.zeros((len(rec_epochs), len(exp_list)))
     all_losses = np.zeros((len(rec_epochs), len(exp_list)))
     for exp_i, exp in enumerate(exp_list):
         with open(exp, 'rb') as handle:
@@ -426,9 +483,10 @@ def track_changes_during_learning(main_exp_name, model_name = 'irnn'):
             wi_last, wrec_last, wo_last, brec_last, h0_las = weights_last
             for t in range(1,len(rec_epochs)):
                 # for i in range(len(weights_init)):
-                w00s[t-1,exp_i] = weights_train["wrec"][t][0,0] - weights_train["wrec_pp"][t][0,0]
-                w00pps[t-1,exp_i] = weights_train["wrec_pp"][t][0,0]-weights_train["wrec"][t-1][0,0]
-                w_orig_pert_diff_norm[t-1,exp_i] = np.linalg.norm(wrec_init-weights_train["wrec"][t-1])
+                w00s[t-1,exp_i] = weights_train["wrec"][t][0,0] - weights_train["wrec_pp"][t-1][0,0]
+                w00pps[t-1,exp_i] = weights_train["wrec_pp"][t][0,0]-weights_train["wrec"][t][0,0]
+            for t in range(0,len(rec_epochs)):
+                w_orig_pert_diff_norm[t,exp_i] = np.linalg.norm(wrec_init-weights_train["wrec"][t])
             all_losses[:,exp_i] = losses
     return dists, w00s, w00pps, all_losses, w_orig_pert_diff_norm
 
@@ -439,7 +497,7 @@ def plot_vector_field(W, b, fig=None, ax=None):
         fig, ax = plt.subplots(1, 1, figsize=(5, 5))
 
     cmap = 'jet'
-    w = 1.9
+    w = 21
     v = -.3
     Y, X = np.mgrid[v:w:100j, v:w:100j]
     U = ReLU(W[0,0]*X + W[0,1]*Y + b[0]) - X
@@ -495,7 +553,8 @@ def plot_vfs(main_exp_name, n_epochs=6, model_i=0, noise_in='weights', exp_i=0):
     makedirs(vfs_figs_path)
     
     fig, axes = plt.subplots(1, n_epochs-1, figsize=(2*(n_epochs-1)+1, 2), sharex=True, sharey=True)
-    
+    fp_colors = ['r', 'g']
+
     model_name = models[model_i]
     exp_list = glob.glob(main_exp_name +'/'+ model_name + "/result*");
     # for exp_i, exp in enumerate(exp_list):
@@ -511,13 +570,21 @@ def plot_vfs(main_exp_name, n_epochs=6, model_i=0, noise_in='weights', exp_i=0):
             ax = axes[t-1]
             ax.set_xlabel(t)
             W = weights_train["wrec"][t]
-            # print(model_i, t, W)
-            print(model_i, t, np.linalg.norm(wrec_init-W))
             b = weights_train["brec"][t]
             wo = weights_train["wo"][t]
+            print(model_i, t, W, b)
+            # print(model_i, t, np.linalg.norm(wrec_init-W))
+            
             ax.arrow(0, 0, wo[0][0], wo[1][0], width=.1, head_width=0.05, head_length=0.1, fc='k', ec='k', zorder=100)
 
             plot_vector_field(W, b, fig=fig, ax=ax)
+            
+            W_in = np.array([[0,0],[0,0]])
+            I = np.array([0,0])
+            fixed_point_list, stabilist, unstabledimensions = find_analytic_fixed_points(W, b, W_in, I)
+            for fp_i, fxdpnt in enumerate(fixed_point_list):
+                ax.plot(fxdpnt[0], fxdpnt[1], 'o', color=fp_colors[stabilist[fp_i]], markersize=10)
+                
             # if np.isnan(W[0,0]):
             #     ax.text(x=1./n_epochs*t, y=.5, s= 'nan', fontsize=12, ha="center", transform=fig.transFigure)
     ax.text(x=.05, y=-.1, s= 'gradient steps', fontsize=20, ha="center", transform=fig.transFigure)
@@ -552,28 +619,78 @@ def plot_weight_changes(main_exp_name, T, exp_i=0):
     plt.show()
     
     
-def plot_weight_diffnorm(main_exp_name, T, ax=None):
-    
+def plot_weight_diffnorm(main_exp_name, marker='-', ax=None):
+    colors = ['k', 'red', 'b']
     weight_figs_path = main_exp_name + "/weight_figs"
     makedirs(weight_figs_path)
     
     if ax==None:
         fig, ax = plt.subplots(1, 1, figsize=(5, 10), sharex=True)
+    all_w_orig_pert_diff_norms = np.zeros((3,10,30))
     for model_i, model_name in enumerate(models):
         dists, w00s, w00pps, all_losses, w_orig_pert_diff_norm = track_changes_during_learning(main_exp_name, model_name=model_name)
         for exp_i in range(10):
-            
-            ax.plot(w_orig_pert_diff_norm[:,exp_i], '-', color=colors[model_i], alpha=.1)
-        ax.plot(np.mean(w_orig_pert_diff_norm, axis=1), '-', color=colors[model_i])
+            ax.plot(w_orig_pert_diff_norm[:,exp_i], marker, color=colors[model_i], alpha=.1)
+            all_w_orig_pert_diff_norms[model_i, exp_i, :] = w_orig_pert_diff_norm[:,exp_i]
 
+        ax.plot(np.mean(w_orig_pert_diff_norm, axis=1), marker, color=colors[model_i])
     # ax.set_ylabel("W diff norm")
-    ax.set_yscale("log")
+    # ax.set_yscale("log")
     if ax==None:
         fig.savefig(weight_figs_path + f"/weight_changes_{exp_i}.pdf", bbox_inches="tight")
         plt.show()
+        
+    return all_w_orig_pert_diff_norms
     
     
-def plot_losses_grid(noise_in_list, T, gradstep, thresholds, noisy='noisy', sharey=False, ylim=None, plot_box=False):
+def plot_losses_grid(noise_in_list, T, gradstep, factors, noisy='noisy', sharey=False, ylim=None, plot_box=False, gradient=False):
+    if gradient:
+        gr_str = 'grad'
+    else:
+        gr_str = ''
+    n_lrs = len(learning_rates)
+    n_fs = len(factors)
+    for n_i, noise_in in enumerate(noise_in_list):
+        fig, axes = plt.subplots(n_fs, n_lrs, figsize=(2*n_fs, 2*n_lrs), sharex=True, sharey=sharey)
+        fig.supylabel('$\sigma$', fontsize=35)
+        fig.suptitle(noise_in, fontsize=35)
+
+        for f_i,factor  in enumerate(factors):
+            ylim[0] = 1e-8*factor**2
+            for lr_i,learning_rate in enumerate(learning_rates):
+                ax=axes[f_i,lr_i]
+                if learning_rate == 0:
+                    lr_title = 'no learning'
+                else:
+                    lr_title = r"$10^{%02d}$" % int(np.log10(learning_rate)) 
+                axes[0][lr_i].set_title(lr_title)
+                axes[f_i][0].set_ylabel(r"$10^{%02d}$" % int(np.log10(factor*1e-5)), fontsize=25)
+
+                main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
+                if not plot_box:
+                    plot_losses(main_exp_name, sigma=factor*1e-5, ax=ax, sharey=sharey, ylim=ylim, gradstep=gradstep, gradient=gradient)
+                else:
+                    plot_losses_box(main_exp_name, sigma=factor*1e-5, ax=ax)
+
+
+        fig.tight_layout()
+
+        if not plot_box:
+            if sharey:
+                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}_samescale_{gr_str}.pdf", bbox_inches="tight")
+            else:
+                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}_{gr_str}.pdf", bbox_inches="tight")
+
+        else:
+            if sharey:
+                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}_box_samescale.pdf", bbox_inches="tight")
+            else:
+                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}_box.pdf", bbox_inches="tight")
+
+        plt.show()
+        plt.close()
+
+def plot_losses_grid_thrs(noise_in_list, T, gradstep, thresholds, noisy='noisy', sharey=False, ylim=None, plot_box=False):
     
     n_lrs = len(learning_rates)
     n_fs = len(thresholds)
@@ -606,58 +723,117 @@ def plot_losses_grid(noise_in_list, T, gradstep, thresholds, noisy='noisy', shar
 
         if not plot_box:
             if sharey:
-                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}_samescale.pdf", bbox_inches="tight")
+                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}_gradstep{gradstep}_samescale.pdf", bbox_inches="tight")
             else:
-                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}.pdf", bbox_inches="tight")
+                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}_gradstep{gradstep}.pdf", bbox_inches="tight")
 
         else:
             if sharey:
-                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}_box_samescale.pdf", bbox_inches="tight")
+                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}_gradstep{gradstep}_box_samescale.pdf", bbox_inches="tight")
             else:
-                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}_box.pdf", bbox_inches="tight")
+                fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/losses_{noise_in}_T{T}_gradstep{gradstep}_box.pdf", bbox_inches="tight")
 
         plt.show()
         plt.close()
+        
+        
+        
+def plot_weight_diffnorm_losses():
+    noisy='noisy'
+    T=100
+    lr=1e-5
+    factor = 1000
+    gradstep = 1
+    fig, axes = plt.subplots(2, 1, figsize=(10, 5))
+    ax=axes[0]
+    main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/weights/input{input_length}/lr{lr}"
+    plot_weight_diffnorm(main_exp_name, ax=ax)
 
-# if __name__ == "__main__":
-#     factor = 1000
-#     noise_in = 'weights'
-#     input_length = 10
-#     learning_rate = 0
-#     T = 100
-#     gradstep = 1
-#     main_exp_name = parent_dir + f"/experiments/cnoisy/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
+    main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/weights/input{input_length}/lr{0}"
+    plot_weight_diffnorm(main_exp_name, ax=ax, marker='--')
+    ax.set_title("$\sigma=10^{%02d}, \lambda=10^{%02d}$" %(int(np.log10(factor*1e-5)), int(np.log10(lr))))
+    ax.set_ylim([0, 1e-1])
+    ax.set_ylabel("$||W_{init}-W_{epoch}||$");
+
+    ax=axes[1]
+    plot_losses(main_exp_name)
+    #plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weight_diffnorm_{noise_in}_T{T}_F{factor}_lr{lr}.pdf", bbox_inches="tight")
+        
+        
+def weight_distance_MSE_scatter_plot():
+    
+    exp_i = 0
+    noisy='noisy'
+    T=100
+    lr=1e-7
+    factor = 100
+    gradstep = 1
+    sigma=int(np.log10(factor*1e-5))
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/weights/input{input_length}/lr{0}"
+    pall_w_orig_pert_diff_norms = plot_weight_diffnorm(main_exp_name, ax=ax, marker='--')
+    ax.set_title("$\sigma=10^{%02d}, \lambda=10^{%02d}$" %(sigma, int(np.log10(lr))))
+    all_losses = plot_losses(main_exp_name, sigma=sigma, ax=ax,marker='--')
+
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    ax.set_ylim([1e-4, 1])
+    ax.set_yscale('log')
+    ax.set_xlabel("$||W_{init}-W_{epoch}||$");
+    ax.set_ylabel("MSE");
+    ax.set_title("$\sigma=10^{%02d}, \lambda=10^{%02d}$" %(sigma, int(np.log10(lr))))
+    
+    for model_i in range(3):
+        ax.plot(pall_w_orig_pert_diff_norms[model_i,exp_i,:],all_losses[model_i,exp_i,:], color=colors[model_i], alpha=.5)
+    plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_{noise_in}_T{T}_F{factor}_lr{lr}_{exp_i}.pdf", bbox_inches="tight")
+
+if __name__ == "__main__":
+    noisy = 'cnoisy_rs'
+
+    factor = 1000
+    noise_in = 'weights'
+    input_length = 10
+    learning_rate = 0
+    T = 100
+    gradstep = 1
+    main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
 
 #     models = ['irnn', 'ubla', 'bla']
 #     colors = ['k', 'red', 'b']
 
 #     exp_i = 5
-#     # for i in range(3):
-#     #     plot_vfs(main_exp_name, n_epochs=15, model_i=i, noise_in='weights', exp_i=exp_i)
+#     for i in range(3):
+#         plot_vfs(main_exp_name, n_epochs=15, model_i=i, noise_in='weights', exp_i=exp_i)
 
-#     # plot_weight_changes(main_exp_name, T, exp_i=exp_i)
-#     # plot_weight_diffnorm(main_exp_name, T, ax=None)
+    # plot_weight_changes(main_exp_name, T, exp_i=exp_i)
+    # plot_weight_diffnorm(main_exp_name, T, ax=None)
 
-#     learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
-#     factors = [1000, 100, 10, 1, .1, .01]
+    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
+    factors = [1000, 100, 10, 1, .1, .01]
 
-#     n_lrs = len(learning_rates)
-#     n_fs = len(factors)
-# # for n_i, noise_in in enumerate(noise_in_list):
-#     fig, axes = plt.subplots(n_fs, n_lrs, figsize=(2*n_fs, 2*n_lrs), sharex=True, sharey=True)
-#     # fig.supylabel('$\sigma$', fontsize=35)
-#     # fig.suptitle(noise_in, fontsize=35)
-#     for f_i,factor  in enumerate(factors):
-#         for lr_i,learning_rate in enumerate(learning_rates):
-#             ax=axes[f_i,lr_i]    
-#             main_exp_name = parent_dir + f"/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
-
-#             plot_weight_diffnorm(main_exp_name, T, ax=ax)
-#     fig.savefig(parent_dir + f"/experiments/cnoisy/T{T}/gradstep{gradstep}/weight_diffnorm_{noise_in}_T{T}.pdf", bbox_inches="tight")
+    n_lrs = len(learning_rates)
+    n_fs = len(factors)
+# for n_i, noise_in in enumerate(noise_in_list):
+    # fig, axes = plt.subplots(n_fs, n_lrs, figsize=(2*n_fs, 2*n_lrs), sharex=True, sharey=True)
+    # fig.supylabel('$\sigma$', fontsize=35)
+    # fig.suptitle(noise_in, fontsize=35)
+    # for f_i,factor  in enumerate(factors):
+    #     for lr_i,learning_rate in enumerate(learning_rates):
+    #         ax=axes[f_i,lr_i]
+    #         if learning_rate == 0:
+    #             lr_title = 'no learning'
+    #         else:
+    #             lr_title = r"$10^{%02d}$" % int(np.log10(learning_rate)) 
+    #         axes[0][lr_i].set_title(lr_title) 
+    #         main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
+    #         plot_weight_diffnorm(main_exp_name, ax=ax)
+    #         ax.set_ylim([1e-7*factor, 1e-3*factor])
+    #     axes[f_i,0].set_ylabel("$||W_init-W(epoch)||$")
+    # fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weight_diffnorm_{noise_in}_T{T}.pdf", bbox_inches="tight")
+    
     
     
 if __name__ == "__main__":
-    noisy = 'noisy'
+    noisy = 'cnoisy_rs'
     T = 100
     input_length = 10
     gradstep = 1
@@ -669,9 +845,9 @@ if __name__ == "__main__":
 
     factors = [1000, 100, 10, 1, .1, .01]
 
-    plot_losses_grid(noise_in_list, T, gradstep, noisy=noisy, sharey='row', ylim=[1e-12, 1e5], plot_box=False)
-    gradstep = 5
-    T = 100
+    plot_losses_grid(noise_in_list, T, gradstep, factors, noisy=noisy, sharey=False, ylim=[1e-12, 1e5], plot_box=False, gradient=True)
+    gradstep = 1
+    T = 1000
 
     if T==1000  and gradstep==1:    #1000, GS1
         main_exp_name_lists = [[parent_dir+f'/experiments/noisy/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-07/irnn',
