@@ -334,7 +334,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             # Gradient descent
             loss.backward()
             # print([p for p in net.parameters() if p.requires_grad])
-            # gradient_norm_sq = sum([(p.grad ** 2).sum() for p in net.parameters() if p.requires_grad])
+            gradient_norm_sq = sum([(p.grad ** 2).sum() for p in net.parameters() if p.requires_grad])
             
             # Update weights
             optimizer.step()
@@ -348,7 +348,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         # Save
         epochs[i] = i
         losses[i] = loss.item()
-        # gradient_norm_sqs[i] = gradient_norm_sq
+        gradient_norm_sqs[i] = gradient_norm_sq
         
         if verbose:
             print("epoch %d / %d:  loss=%.6f, run.loss=%.6f \n" % (i+1, n_epochs, np.log(losses[i]), np.mean(losses[:i])))
