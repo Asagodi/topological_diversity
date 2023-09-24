@@ -457,7 +457,7 @@ def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
               loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
               optimizer='sgd', momentum=0, weight_decay=training_kwargs['weight_decay'], fix_seed=training_kwargs['fix_seed'], trial=trial,
               perturb_weights=training_kwargs['perturb_weights'], weight_sigma=training_kwargs['weight_sigma'], noise_step=training_kwargs['noise_step'],
-              verbose=True)
+              verbose=training_kwargs['verbose'])
 
     result.append(training_kwargs)
 
@@ -497,18 +497,19 @@ if __name__ == "__main__":
     
     learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
     noise_in_list = ['weights', 'input', 'internal']
-    factors = [1000, 100, 10, 1, .1, .01]
+    # factors = [1000, 100, 10, 1, .1, .01]
+    thresholds = [1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6]
 
     exp_info['learning_rates'] = learning_rates
     exp_info['noise_in_list'] = noise_in_list
-    with open(parent_dir+f"/experiments/cnoisy/matching_single_T{training_kwargs['T']}_threshold{1e-5}_input{training_kwargs['input_length']}.pickle", 'rb') as handle:
+    with open(parent_dir+f"/experiments/cnoisy_thrs/matching_single_T{training_kwargs['T']}_input{training_kwargs['input_length']}.pickle", 'rb') as handle:
         all_alpha_stars = pickle.load(handle)
         exp_info['all_alpha_stars'] = all_alpha_stars
 
-    for factor in factors:
+    for threshold in tqdm(thresholds):
         
         for n_i, noise_in in enumerate(noise_in_list):
-            main_exp_folder = parent_dir + f"/experiments/cnoisy_rs/T{training_kwargs['T']}/gradstep{training_kwargs['noise_step']}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}"
+            main_exp_folder = parent_dir + f"/experiments/cnoisy_thrs/T{training_kwargs['T']}/gradstep{training_kwargs['noise_step']}/threshold{threshold}/{noise_in}/input{training_kwargs['input_length']}"
     
             makedirs(main_exp_folder) 
             
@@ -528,13 +529,13 @@ if __name__ == "__main__":
                     experiment_folder = main_exp_folder+f"/lr{learning_rate}/"+model
                     if noise_in == 'weights':
                         training_kwargs['perturb_weights'] = True
-                        training_kwargs['weight_sigma'] = all_alpha_stars[noise_in][model_i]*factor
+                        training_kwargs['weight_sigma'] = all_alpha_stars[noise_in][model_i][thresholds]
                     elif noise_in == 'input':
-                        training_kwargs['task_noise_sigma'] = all_alpha_stars[noise_in][model_i]*factor
+                        training_kwargs['task_noise_sigma'] = all_alpha_stars[noise_in][model_i][thresholds]
                     elif noise_in == 'internal':
-                        training_kwargs['internal_noise_std'] = all_alpha_stars[noise_in][model_i]*factor
+                        training_kwargs['internal_noise_std'] = all_alpha_stars[noise_in][model_i][thresholds]
                     else:
-                        training_kwargs['weight_decay'] =  all_alpha_stars[noise_in][model_i]*factor
+                        training_kwargs['weight_decay'] =  all_alpha_stars[noise_in][model_i][thresholds]
                     makedirs(experiment_folder) 
         
                     for i in range(10):
