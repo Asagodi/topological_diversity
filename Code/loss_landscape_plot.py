@@ -281,19 +281,21 @@ def calculate_losses(thetas, Ts, input_length, batch_size=128, ouput_bias=1, noi
     
     return mean_losses
     
-def plot_losses(mean_losses, threshold, ouput_bias, noise_in):
-    
+def plot_losses(mean_losses, thetas, thresholds, input_length, noise_in):
+    "Plots matching curves and calculates corresponding alphas for the thresholds"
     fig = plt.figure(figsize=(6,4))
     ax = plt.subplot(111)
     colors=['k', 'crimson', 'b']
-    ax.axhline(y=threshold, linestyle='--')
-    
-    alpha_stars = np.zeros((3))
+    models = ['irnn', 'ubla', 'bla']
+    alpha_stars = {}
     for i in range(3):
+        alpha_stars[models[i]] = {}
         ax.plot(thetas, mean_losses[:,i], markers[i], color=colors[i], label=labels[i], markersize=markersizes[i], alpha=alphas[i], zorder=-i)
-        x, y = intersection(thetas, mean_losses[:,i], thetas, [threshold]*len(thetas))
-        ax.plot(x, y, 'x', color=colors[i])
-        alpha_stars[i] = x
+        for threshold in thresholds:
+            x, y = intersection(thetas, mean_losses[:,i], thetas, [threshold]*len(thetas))
+            alpha_stars[models[i]][threshold] = x    
+            ax.plot(x, y, 'x', color=colors[i])
+            ax.axhline(y=threshold, linestyle='--')
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlabel(r'$|\alpha|$')
@@ -301,9 +303,9 @@ def plot_losses(mean_losses, threshold, ouput_bias, noise_in):
     ax.legend(title='Network')
     ax.grid()
     if Ts.shape[0]==1:
-        plt.savefig(parent_dir+f"/experiments/noisy/matching_singleT{Ts[0]}_threshold{threshold}_bias{ouput_bias}_{noise_in}.pdf", bbox_inches="tight")
+        plt.savefig(parent_dir+f"/experiments/noisy/matching_singleT{Ts[0]}_thresholds_input{input_length}_{noise_in}.pdf", bbox_inches="tight")
     else:
-        plt.savefig(parent_dir+f"/experiments/noisy/matching_T{Ts[0]}to{Ts[-1]}_threshold{threshold}_bias{ouput_bias}_{noise_in}.pdf", bbox_inches="tight")
+        plt.savefig(parent_dir+f"/experiments/noisy/matching_T{Ts[0]}to{Ts[-1]}_thresholds_input{input_length}_{noise_in}.pdf", bbox_inches="tight")
 
     plt.show()
     return alpha_stars
@@ -316,26 +318,32 @@ if __name__ == "__main__":
     markersizes = [5,5,6]
     alphas = [.5, .5, .5]
     
-    Ts = np.array([500])
+    cont = True
+    Ts = np.array([100])
     input_length = 10
     ouput_bias = 20
     batch_size = 1024
     
-    #with loss landscape:BLA under irnn
-    # input_length = 50
-    # ouput_bias = 25
-    
-    thetas = np.logspace(-1, -9, 17)
+    thetas = np.logspace(4, -9, 17)
+    logspaces = [np.logspace(-1, -9, 17), np.logspace(4, -9, 17), np.logspace(4, -9, 17)]
     threshold = 1e-5
+    thresholds = [1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6]
     noise_in_list = ['weights', 'input', 'internal']
+    noise_in_list = ['input', 'internal']
+
 
     all_alpha_stars =  {} 
     for n_i, noise_in in enumerate(noise_in_list):
+        logspaces[n_i]
+        mean_losses = calculate_losses(thetas, Ts, input_length, batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in, cont=cont)
 
-        mean_losses = calculate_losses(thetas, Ts, input_length, batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in, cont=True)
-
-        alpha_stars = plot_losses(mean_losses, threshold, ouput_bias, noise_in)
+        alpha_stars = plot_losses(mean_losses, thetas, thresholds, input_length, noise_in)
         all_alpha_stars[noise_in] = alpha_stars
-        
-    with open(parent_dir+f'/experiments/cnoisy/matching_single_T{Ts[0]}_threshold{threshold}_input{input_length}.pickle', 'wb') as handle:
-        pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    # if cont:   
+    #     with open(parent_dir+f'/experiments/cnoisy_thrs/matching_single_T{Ts[0]}_input{input_length}.pickle', 'wb') as handle:
+    #         pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+    # else:
+    #     with open(parent_dir+f'/experiments/noisy_thrs/matching_single_T{Ts[0]}_input{input_length}.pickle', 'wb') as handle:
+    #         pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
