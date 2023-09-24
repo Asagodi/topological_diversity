@@ -529,13 +529,13 @@ if __name__ == "__main__":
                     experiment_folder = main_exp_folder+f"/lr{learning_rate}/"+model
                     if noise_in == 'weights':
                         training_kwargs['perturb_weights'] = True
-                        training_kwargs['weight_sigma'] = all_alpha_stars[noise_in][model][threshold]
+                        training_kwargs['weight_sigma'] = all_alpha_stars[noise_in][model][threshold][0]
                     elif noise_in == 'input':
-                        training_kwargs['task_noise_sigma'] = all_alpha_stars[noise_in][model][threshold]
+                        training_kwargs['task_noise_sigma'] = all_alpha_stars[noise_in][model][threshold][0]
                     elif noise_in == 'internal':
-                        training_kwargs['internal_noise_std'] = all_alpha_stars[noise_in][model][threshold]
+                        training_kwargs['internal_noise_std'] = all_alpha_stars[noise_in][model][threshold][0]
                     else:
-                        training_kwargs['weight_decay'] =  all_alpha_stars[noise_in][model][threshold]
+                        training_kwargs['weight_decay'] =  all_alpha_stars[noise_in][model][threshold][0]
                     makedirs(experiment_folder) 
         
                     for i in range(10):
