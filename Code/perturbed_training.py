@@ -296,7 +296,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             brecs[k] = net.brec.cpu().detach().numpy()
             h0s[k] = net.h0.cpu().detach().numpy()
                 
-        if perturb_weights and (i==1 or (i+1) % noise_step == 0):
+        if perturb_weights and (i==1 or (i-1) % noise_step == 0):
             with torch.no_grad():
                 net.wrec += torch.normal(0., weight_sigma, net.wrec.shape)
                 
