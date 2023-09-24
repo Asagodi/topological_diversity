@@ -481,7 +481,7 @@ This type of noise is directly applied to the weights as $ \vW \leftarrow \vW + 
 % or in pulses only at epochs
 %  1,11 and 21 (Fig. \ref{fig:maintenance}C).
 
-
+The invariant manifold of the BLA is persistent throughout learning in many cases, see \ref{sec:supp:learning} and \ref{fig:vfs_T100_F1000_weights}.
 
 To dissociate the effect of misadjustment from gradient descent and external perturbation, we interleaved a larger perturbation with 10 gradient steps.
 Fig.~\ref{fig:maintenance}C shows consistent learning in the average MSE for BLA and iRNN, but not in UBLA.
@@ -493,12 +493,11 @@ iRNN and UBLA both have larger learning noise than BLA, consistent with the abse
 We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
 The second type of noise is injected into the input $x_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$.
 To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output $O_t^*$ (Eq. \ref{eq:output}).
+The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$ for $t=1,\dots, T$ and $i=1,2$. 
+%\ref{fig:}
 %Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. 
 %Fig.~\ref{fig:maintenance}E shows that both UBLA and iRNN diverge more quickly under gradient descent than the BLA.
 %$This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
-
-The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$ for $t=1,\dots, T$ and $i=1,2$.
-
 
 The noise level $\sigma$ was chosen individually for the three networks as follows. 
 We calculated the loss on a batch of inputs for various noise levels.
@@ -1093,9 +1092,15 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 \tau \dot h_j = -h_j + \frac{1}{N} \sum_k (W^{sym}_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
 \end{equation}
 
-The fixed points of the system 
-
-
+In the absence of an input ($v_{in}=0$) fixed points of the system can be found analytically by considering all submatrices $W^{sym}_\sigma$ for all subsets $\{\sigma\subset [n]\}$ with$[n]=\{1,\dots, N\}$.
+A fixed point $x^*$ needs to satisfy
+\begin{equation}
+x^*= -(W^{sym}_\sigma)^{-1}c_{ff}
+\end{equation}
+and 
+\begin{equation}
+x^*_i<0 \text{for  } i\in\sigma.
+\end{equation}•
 
 
 
