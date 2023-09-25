@@ -190,7 +190,7 @@ def get_info(main_exp_name):
             }
     for model_i, model_name in enumerate(['irnn', 'ubla', 'bla']):
         exp_list = glob.glob(main_exp_name +'/'+ model_name + "/result*")
-    
+        print(main_exp_name +'/'+ model_name + "/result")
         for exp_i, exp in enumerate(exp_list):
             with open(exp, 'rb') as handle:
                 result = pickle.load(handle)
@@ -198,10 +198,11 @@ def get_info(main_exp_name):
             losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
             info['losses'][model_i,exp_i,:] = losses
             info['gradients'][model_i,exp_i,:] = gradient_norms
+            
             info['wrecs'][model_i,exp_i,:] = np.array(weights_train["wrec"])
             info['wrecs_pp'][model_i,exp_i,:] = np.array(weights_train["wrec_pp"])
             info['brecs'][model_i,exp_i,:] = np.array(weights_train["brec"])
-            
+
             gradients = calculate_gradients(weights_train['wrec'], weights_train['wrec_pp'], weights_train['brec'], rec_epochs)
             gradients_mask = np.where(~np.isnan(gradients))
             # print(gradients.shape, gradients[~np.isnan(gradients).any(axis=1), :].shape)
@@ -815,6 +816,7 @@ def weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i, lr, factor, cut
             for model_i in range(3):
                 ax.plot(info['w_orig_pert_diff_norms'][model_i,exp_i,:],
                         info['losses'][model_i,exp_i,:], color=colors[model_i], alpha=.5)
+                
         plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_{noise_in}_T{T}_F{factor}_lr{lr}.pdf", bbox_inches="tight")
 
     else:
@@ -876,29 +878,76 @@ def fig3(main_exp_name, learning_rates, factor):
     for mi in range(3):
         ax.plot(np.array(lr_labels)-.5+mi/4., mean_losses[mi,:], color=colors[mi])
 
-    fig.savefig(main_exp_name+f"lr_mse_f{factor}.pdf")
+    fig.savefig(main_exp_name+f"lr_mse_f{factor}.pdf", bbox_inches="tight")
 
-    
+def plot_gradient_distributions(gradstep, noise_in, T, learning_rates, factors, maxbin=100, start=True, mses=10):
+    colors = ['k', 'r', 'b']
 
+    fig, axes = plt.subplots(len(factors), len(learning_rates), figsize=(5, 5), sharey=True, sharex=True)
+
+    for f_i, factor in enumerate(factors):
+        # xaxmax = 0
+        for lr_i,lr in enumerate(learning_rates):
+            ax = axes[f_i, lr_i]
+            ax.tick_params(rotation=90, labelsize=15)
+            if lr == 0:
+                lr_title = '0'
+            else:
+                lr_title = r"$10^{%02d}$" % int(np.log10(lr)) 
+            axes[0][lr_i].set_title(lr_title)
+            axes[f_i][0].set_ylabel(r"$10^{%02d}$" % int(np.log10(factor*1e-5)), fontsize=15)
+            exp_name = parent_dir + f"/experiments/cnoisy_thrs/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input10/lr{lr}"
+            info = get_info(exp_name)
+            # xaxmax = np.max([xaxmax, np.nanmax(info['gradients'][:,:,:][info['gradients'][:,:,:]!=np.inf])])
+            for mi in range(3):
+                if start:
+                    grads = np.clip(info['gradients'][mi,:,:mses].flatten(), 0, maxbin)
+                    weights = np.ones_like(grads)/float(len(grads))
+                    ax.hist(grads, bins=np.linspace(0,maxbin,11), alpha=.5, color=colors[mi],weights=weights)
+                else:
+                    grads =np.clip(info['gradients'][mi,:,-mses:].flatten(), 0, maxbin)
+                    weights = np.ones_like(grads)/float(len(grads))
+                    ax.hist(grads, bins=np.linspace(0,maxbin,11), alpha=.5, color=colors[mi],weights=weights)
+
+                # ax.hist(info['gradients'][mi,:,:].flatten(), bins=np.linspace(0,100,11), alpha=.5, color=colors[mi])
+            # ax.set_xlim([0,xaxmax])
+
+    # ax.set_yscale('log')
+    # ax.set_xlabel('learning rate')
+    # ax.set_ylabel('MSE (log-scale)')
+    if start:
+        plt.savefig(parent_dir + f"/experiments/cnoisy_thrs/T{T}/gradstep{gradstep}/grad_distribs_firstmses{mses}.pdf", bbox_inches="tight")
+    else:
+        plt.savefig(parent_dir + f"/experiments/cnoisy_thrs/T{T}/gradstep{gradstep}/grad_distribs_lastmses{mses}.pdf", bbox_inches="tight")
+    plt.show()
+                
 if __name__ == "__main__":
-    noisy = 'cnoisy_rs'
-
-    factor = 1
-    noise_in = 'weights'
-    input_length = 10
-    learning_rate = 1e-6
-    T = 100
-    gradstep = 1
-    exp_i = 0
+    noisy = 'cnoisy_thrs'
     learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
- 
-    main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}"
-    fig3(main_exp_name, learning_rates, factor)
-    
-    main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
+    factors = [10000, 1000, 100, 10, 1, .1]
 
-    info = get_info(main_exp_name)
-    cutoff=1/np.sqrt(6)
+    noise_in = 'weights'
+    T = 100
+    gradstep = 30
+    plot_gradient_distributions(gradstep=gradstep, noise_in=noise_in, T=T,
+                                learning_rates=learning_rates, factors=factors,
+                                start=True, mses=5)
+    plot_gradient_distributions(gradstep=gradstep, noise_in=noise_in, T=T,
+                                learning_rates=learning_rates, factors=factors,
+                                start=False, mses=10)
+    input_length = 10
+    # exp_i = None
+    # learning_rate = 1e-4
+    # main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}"
+
+    
+    # main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}"
+    # fig3(main_exp_name, learning_rates, factor)
+    
+    # main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
+
+    # info = get_info(main_exp_name)
+    # cutoff=1/np.sqrt(6)
     # weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i=exp_i, lr=learning_rate, factor=factor, cutoff=cutoff)
     # 
     # exp_i = 0
