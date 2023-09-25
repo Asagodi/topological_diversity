@@ -67,7 +67,7 @@ def plot_losses_pair(main_exp_name_lists, plot_legend=False):
 
     sns.set_context("paper", font_scale=1.5, rc={"lines.linewidth": 1}) 
     labels = ['iRNN', 'UBLA', 'BLA', None, None, None]
-    colors = ['k', 'red', 'b']
+    colors = ['k', 'red', 'b'] #colors = ['k', 'magenta', 'b']
     model_names = ['irnn', 'ubla', 'bla']
     markers = ['-', '--']
     fig, ax = plt.subplots(1, 1, figsize=(7.5, 5))
@@ -179,12 +179,14 @@ def get_info(main_exp_name):
     
     info = {'losses':np.zeros((3, 10, 30)),
             'gradients':np.zeros((3, 10, 30)),
-            'wrec_init':np.zeros((3, 4)),
+            'wrec_init':np.zeros((3, 2, 2)),
             'brec_init':np.zeros((3, 2)),
-            'wrecs':np.zeros((3, 10, 4, 30)),
-            'wrecs_pp':np.zeros((3, 10, 4, 30)),
-            'brecs':np.zeros((3, 10, 2, 30)),
-            'dot_grad':np.zeros((3, 10, 29))
+            'wrecs':np.zeros((3, 10, 30, 2, 2)),
+            'wrecs_pp':np.zeros((3, 10, 30, 2, 2)),
+            'brecs':np.zeros((3, 10, 30, 2)),
+            'dot_grad':np.zeros((3, 10, 29)),
+            'w_orig_grad_diff_norms':np.zeros((3, 10, 30)),
+            'w_orig_pert_diff_norms':np.zeros((3, 10, 30))
             }
     for model_i, model_name in enumerate(['irnn', 'ubla', 'bla']):
         exp_list = glob.glob(main_exp_name +'/'+ model_name + "/result*")
@@ -200,25 +202,56 @@ def get_info(main_exp_name):
             info['wrecs_pp'][model_i,exp_i,:] = np.array(weights_train["wrec_pp"])
             info['brecs'][model_i,exp_i,:] = np.array(weights_train["brec"])
             
-            gradients = calculate_gradients(info['wrecs'], info['wrecs_pp'], info['brecs'])
-            X_normalized = preprocessing.normalize(gradients, norm='l2')
+            gradients = calculate_gradients(weights_train['wrec'], weights_train['wrec_pp'], weights_train['brec'], rec_epochs)
+            gradients_mask = np.where(~np.isnan(gradients))
+            # print(gradients.shape, gradients[~np.isnan(gradients).any(axis=1), :].shape)
 
-            dot_grad = linear_kernel(X_normalized, [weights_train["wrec_init"]]*29)
+            # gradients[~np.isnan(gradients).any(axis=1), :]
+            try:
+                X_normalized = preprocessing.normalize(gradients, norm='l2')
+            except:
+                X_normalized = np.empty(gradients.shape)
+                X_normalized[:] = np.nan
+            wi_init, wrec_init, wo_init, brec_init, h0_init = weights_init
+
+            #calculate vector pointing to the initial weight (the original solution)
+            w_vecs = wrec_init-weights_train["wrec_pp"][1:]
+            b_vecs = brec_init-weights_train["brec"][1:]
+            param_vecs = np.concatenate((w_vecs.reshape((29,4)), b_vecs),axis=1)
+            try:
+                Y_normalized = preprocessing.normalize(param_vecs, norm='l2')
+            except:
+                Y_normalized = np.empty(param_vecs.shape)
+                Y_normalized[:] = np.nan
+
+            dot_grad = np.zeros((29))
+            for t in range(29):
+                try:
+                    dot_grad[t] = linear_kernel(X_normalized[t,:].reshape(1, -1), Y_normalized[t,:].reshape(1, -1))
+                except:
+                    dot_grad[t] = np.NAN
             info['dot_grad'][model_i,exp_i,:] = dot_grad
-        wi_init, wrec_init, wo_init, brec_init, h0_init = weights_init
-        info['wrec_init'][model_i,:] = np.array(weights_train["wrec_init"])
-        info['brec_init'][model_i,:] = np.array(weights_train["brec_init"])
-
+            
+            for t in range(len(rec_epochs)):
+                info['w_orig_grad_diff_norms'][model_i,exp_i,t] = np.linalg.norm(wrec_init-weights_train["wrec"][t])        
+                
+            for t in range(len(rec_epochs)):
+                info['w_orig_pert_diff_norms'][model_i,exp_i,t] = np.linalg.norm(wrec_init-weights_train["wrec_pp"][t])   
+                
+        info['wrec_init'][model_i,:] = wrec_init
+        info['brec_init'][model_i,:] = brec_init
         
+
     return info
 
-def calculate_gradients(wrecs, wrecs_pp, brecs):
+def calculate_gradients(wrecs, wrecs_pp, brecs, rec_epochs):
     """Calculate gradient based on W matrix and bias b update"""
 
-    gradients = np.zeros((30-1))
-    for t in range(1,len(30)):
+    gradients = np.zeros((len(rec_epochs)-1, 6))
+    for t in range(1,len(rec_epochs)):
          delta_W = wrecs[t] - wrecs_pp[t-1]
          delta_b = brecs[t] - brecs[t-1]
+
          gradients[t-1,:] = np.concatenate([delta_W.flatten(),delta_b])
 
     return gradients    
@@ -491,35 +524,7 @@ def track_changes_during_learning(main_exp_name, model_name = 'irnn'):
     return dists, w00s, w00pps, all_losses, w_orig_pert_diff_norm
 
 
-def plot_vector_field(W, b, fig=None, ax=None):
-    
-    if fig==None:
-        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
 
-    cmap = 'jet'
-    w = 21
-    v = -.3
-    Y, X = np.mgrid[v:w:100j, v:w:100j]
-    U = ReLU(W[0,0]*X + W[0,1]*Y + b[0]) - X
-    V = ReLU(W[1,0]*X + W[1,1]*Y + b[1]) - Y
-    speed = np.log(np.sqrt(U**2 + V**2))
-    # U *= 1e5
-    # V *= 1e5
-    # ax.quiver(X,Y,U,V)
-    strm = ax.streamplot(X, Y, U, V, density=.45, broken_streamlines=False, color='b') 
-    contourf_ = ax.contourf(X, Y, speed, levels=range(-6,3), cmap=cmap)
-    ax.set(xlim=(v, w), ylim=(v, w))
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-    
-    cb_ax = fig.add_axes([0.925,.124,.02,.754])
-    fig.colorbar(contourf_, cax=cb_ax)
-    cb_ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-    cb_ax.set_ylabel("log(speed)")
-    
-    # cbar  = fig.colorbar(contourf_, cax=axs)
-    # plt.ylabel("log(speed)", family='serif')
-    # plt.yticks(rotation=90, family='serif')
 
 
 def plot_loss_zoom(noise_in_list, training_kwargs):
@@ -547,6 +552,38 @@ def plot_loss_zoom(noise_in_list, training_kwargs):
         else:
             fig.savefig(parent_dir + f"/experiments/noisy/T{training_kwargs['T']}/gradstep{gradstep}/nolearning_losses_{noise_in}_T{training_kwargs['T']}.pdf", bbox_inches="tight")
 
+
+def plot_vector_field(W, b, fig=None, ax=None):
+    
+    if fig==None:
+        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+
+    cmap = 'jet'
+    w = 21
+    v = -3
+    Y, X = np.mgrid[v:w:100j, v:w:100j]
+    U = ReLU(W[0,0]*X + W[0,1]*Y + b[0]) - X
+    V = ReLU(W[1,0]*X + W[1,1]*Y + b[1]) - Y
+    speed = np.log(np.sqrt(U**2 + V**2))
+    # U *= 1e5
+    # V *= 1e5
+    # ax.quiver(X,Y,U,V)
+    strm = ax.streamplot(X, Y, U, V, density=.45, broken_streamlines=False, color='b') 
+    contourf_ = ax.contourf(X, Y, speed, levels=range(-6,6), cmap=cmap)
+    ax.set(xlim=(v, w), ylim=(v, w))
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    
+    cb_ax = fig.add_axes([0.925,.124,.02,.754])
+    fig.colorbar(contourf_, cax=cb_ax)
+    cb_ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    cb_ax.set_ylabel("log(speed)")
+    
+    # cbar  = fig.colorbar(contourf_, cax=axs)
+    # plt.ylabel("log(speed)", family='serif')
+    # plt.yticks(rotation=90, family='serif')
+    
+    
 def plot_vfs(main_exp_name, n_epochs=6, model_i=0, noise_in='weights', exp_i=0):
     
     vfs_figs_path = main_exp_name + "/vf_figs"
@@ -760,58 +797,132 @@ def plot_weight_diffnorm_losses():
     #plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weight_diffnorm_{noise_in}_T{T}_F{factor}_lr{lr}.pdf", bbox_inches="tight")
         
         
-def weight_distance_MSE_scatter_plot():
+def weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i, lr, factor, cutoff):
     
-    exp_i = 0
-    noisy='noisy'
-    T=100
-    lr=1e-7
-    factor = 100
-    gradstep = 1
-    sigma=int(np.log10(factor*1e-5))
+    colors = ['k', 'r', 'b']
+    
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/weights/input{input_length}/lr{0}"
-    pall_w_orig_pert_diff_norms = plot_weight_diffnorm(main_exp_name, ax=ax, marker='--')
-    ax.set_title("$\sigma=10^{%02d}, \lambda=10^{%02d}$" %(sigma, int(np.log10(lr))))
-    all_losses = plot_losses(main_exp_name, sigma=sigma, ax=ax,marker='--')
+    ax.set_ylim([1e-8, 1e-4])
+    ax.set_xlim([0, 1e-4])
 
-    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    ax.set_ylim([1e-4, 1])
     ax.set_yscale('log')
     ax.set_xlabel("$||W_{init}-W_{epoch}||$");
     ax.set_ylabel("MSE");
-    ax.set_title("$\sigma=10^{%02d}, \lambda=10^{%02d}$" %(sigma, int(np.log10(lr))))
+    ax.set_title("$\sigma=10^{%02d}, \lambda=10^{%02d}$" %(int(np.log10(factor*1e-5)), int(np.log10(lr))))
+
+    if exp_i==None:
+        for exp_i in range(10):
+            for model_i in range(3):
+                ax.plot(info['w_orig_pert_diff_norms'][model_i,exp_i,:],
+                        info['losses'][model_i,exp_i,:], color=colors[model_i], alpha=.5)
+        plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_{noise_in}_T{T}_F{factor}_lr{lr}.pdf", bbox_inches="tight")
+
+    else:
+        for model_i in range(3):
+            ax.plot(info['w_orig_grad_diff_norms'][model_i,exp_i,:],
+                    info['losses'][model_i,exp_i,:], color=colors[model_i], alpha=.5)
+            
+            # wogdn = np.empty((30*2))
+            # wogdn[0::2] = info['w_orig_grad_diff_norms'][model_i,exp_i,:]
+            # wogdn[1::2] = info['w_orig_pert_diff_norms'][model_i,exp_i,:]
+            # msedouble = np.empty((30*2))
+            # msedouble[0::2] = info['losses'][model_i,exp_i,:]
+            # msedouble[1::2] = info['losses'][model_i,exp_i,:]
+            # ax.plot(wogdn, msedouble, color=colors[model_i])
+            towards_solution = np.where(info['dot_grad'][model_i,exp_i,:]>=cutoff)
+            ax.scatter(info['w_orig_grad_diff_norms'][model_i,exp_i,1:][towards_solution],
+                    info['losses'][model_i,exp_i,1:][towards_solution], color=colors[model_i], s=info['dot_grad'][model_i,exp_i,:][towards_solution], marker='o')
+            
+            awayfrom_solution = np.where(info['dot_grad'][model_i,exp_i,:]<cutoff)
+            ax.scatter(info['w_orig_grad_diff_norms'][model_i,exp_i,1:][awayfrom_solution],
+                    info['losses'][model_i,exp_i,1:][awayfrom_solution], color=colors[model_i], marker='x')
+        
+        plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_{noise_in}_T{T}_F{factor}_lr{lr}_{exp_i}.pdf", bbox_inches="tight")
+
+def fig3(main_exp_name, learning_rates, factor):    
+    colors = ['k', 'r', 'b']
+
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    # ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlabel('learning rate')
+    ax.set_ylabel('MSE (log-scale)')
+    mean_losses = np.zeros((3,len(learning_rates)))
+    lr_labels = []
+    for lr_i,lr in enumerate(learning_rates):
+        exp_name = main_exp_name + f"/lr{lr}"
+        if lr!=0:
+            lr_log = np.log10(lr)
+        else:
+            lr_log=-11
+        lr_labels.append(lr_log)
+        print(exp_name)
+        info = get_info(exp_name)
+        m=np.mean(info['losses'][...,-10:], axis=(1,-1))
+        mean_losses[:, lr_i]=m
+
+        for mi in range(3):
+            violin_parts = ax.violinplot( info['losses'][mi,-10:].reshape((-1,1)),[lr_log-.5+mi/4.],
+                          points=60, widths=0.3, quantiles=[0.05, 0.1, 0.8, 0.9],
+                         showmeans=True, showextrema=False, showmedians=True, bw_method=0.2)
+            violin_parts['cmedians'].set_colors(colors[mi])
+            violin_parts['cquantiles'].set_colors(colors[mi])
+            # violin_parts['cmaxes'].set_colors(colors[mi])
+
+            for pc in violin_parts['bodies']:
+                pc.set_facecolor(colors[mi])
+                pc.set_edgecolor(colors[mi])
+            
+    for mi in range(3):
+        ax.plot(np.array(lr_labels)-.5+mi/4., mean_losses[mi,:], color=colors[mi])
+
+    fig.savefig(main_exp_name+f"lr_mse_f{factor}.pdf")
+
     
-    for model_i in range(3):
-        ax.plot(pall_w_orig_pert_diff_norms[model_i,exp_i,:],all_losses[model_i,exp_i,:], color=colors[model_i], alpha=.5)
-    plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_{noise_in}_T{T}_F{factor}_lr{lr}_{exp_i}.pdf", bbox_inches="tight")
 
 if __name__ == "__main__":
     noisy = 'cnoisy_rs'
 
-    factor = 1000
+    factor = 1
     noise_in = 'weights'
     input_length = 10
-    learning_rate = 0
+    learning_rate = 1e-6
     T = 100
     gradstep = 1
+    exp_i = 0
+    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
+ 
+    main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}"
+    fig3(main_exp_name, learning_rates, factor)
+    
     main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
 
-#     models = ['irnn', 'ubla', 'bla']
-#     colors = ['k', 'red', 'b']
+    info = get_info(main_exp_name)
+    cutoff=1/np.sqrt(6)
+    # weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i=exp_i, lr=learning_rate, factor=factor, cutoff=cutoff)
+    # 
+    # exp_i = 0
+    # noisy='noisy'
+    # T=100
+    # lr=1e-7
+    # factor = 100
+    # gradstep = 1
+    # sigma=int(np.log10(factor*1e-5))
+    # fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/weights/input{input_length}/lr{learning_rate}"
 
-#     exp_i = 5
-#     for i in range(3):
-#         plot_vfs(main_exp_name, n_epochs=15, model_i=i, noise_in='weights', exp_i=exp_i)
+    # exp_i = 0
+    # for i in range(3):
+    #     plot_vfs(main_exp_name, n_epochs=15, model_i=i, noise_in='weights', exp_i=exp_i)
 
-    # plot_weight_changes(main_exp_name, T, exp_i=exp_i)
-    # plot_weight_diffnorm(main_exp_name, T, ax=None)
+    # # plot_weight_changes(main_exp_name, T, exp_i=exp_i)
+    # # plot_weight_diffnorm(main_exp_name, T, ax=None)
 
-    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
-    factors = [1000, 100, 10, 1, .1, .01]
+    # learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
+    # factors = [1000, 100, 10, 1, .1, .01]
 
-    n_lrs = len(learning_rates)
-    n_fs = len(factors)
+    # n_lrs = len(learning_rates)
+    # n_fs = len(factors)
 # for n_i, noise_in in enumerate(noise_in_list):
     # fig, axes = plt.subplots(n_fs, n_lrs, figsize=(2*n_fs, 2*n_lrs), sharex=True, sharey=True)
     # fig.supylabel('$\sigma$', fontsize=35)
@@ -830,6 +941,8 @@ if __name__ == "__main__":
     #     axes[f_i,0].set_ylabel("$||W_init-W(epoch)||$")
     # fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weight_diffnorm_{noise_in}_T{T}.pdf", bbox_inches="tight")
     
+
+    
     
     
 if __name__ == "__main__":
@@ -845,7 +958,7 @@ if __name__ == "__main__":
 
     factors = [1000, 100, 10, 1, .1, .01]
 
-    plot_losses_grid(noise_in_list, T, gradstep, factors, noisy=noisy, sharey=False, ylim=[1e-12, 1e5], plot_box=False, gradient=True)
+    # plot_losses_grid(noise_in_list, T, gradstep, factors, noisy=noisy, sharey=False, ylim=[1e-12, 1e5], plot_box=False, gradient=True)
     gradstep = 1
     T = 1000
 
