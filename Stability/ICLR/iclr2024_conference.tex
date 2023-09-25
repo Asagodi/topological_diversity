@@ -534,8 +534,14 @@ This way of matching noise level to induce the same average loss should be a uni
 
 
 
+%$Observations
+iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:threeIntegrators2} and Fig \ref{fig:vfs_T100_F1000_weights}).
+UBLA can stays close to the initial solution for small enough learning rate.
+%BLA is slowly running away? maybe learning rate too large?
 
-
+%gradientdistribution 
+Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates.
+The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution.
 
 \subsection{Perturbation of a continuous attractor: Finite-sized head direction network model}\label{sec:hd}
 %We will now investigate the effects that perturbations might have on the gradients in some continuous attractor network models used in computational neuroscience.
@@ -552,15 +558,19 @@ For sufficiently strong local excitation (given by the parameter $J_E$) and broa
 
 \begin{figure}[tbhp]
      \centering
-  \includegraphics[width=.7\textwidth]{N6_ring_perturbations}
-       \caption{Perturbations to the ring attractor introduced in \cite{Noorman2022}. The ring attractor can be perturbed in any system with an even number of fixed points (stable and saddle points are paired) up to $2N$. 
+  \includegraphics[width=\textwidth]{both_rings}
+       \caption{Characterization of bifurcations of two ring attractors. 
+       (A)       Perturbations to the ring attractor introduced in \cite{Noorman2022}. The ring attractor can be perturbed in any system with an even number of fixed points (stable and saddle points are paired) up to $2N$. 
+       (B) Perturbations to a simple implementation of a ring attractor all leave the invariant manifold intact.
        }
-         \label{fig:Noorman_ring_activity_pert}
+         \label{fig:both_rings}
 \end{figure}
-
+We will first of all look at a simple (non-biological) system that has a ring attractor to demonstrate the consequences of the Persistence Theorem.
+The system we will analyse is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
+This system has as fixed points the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$. All perturbations maintain the invariant manifold (Fig. \ref{fig:both_rings}B).
 
 We evaluate the  the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ through. 
-We found that the ring can be perturbed into systems with between 2 and 12 fixed points (Fig. \ref{fig:Noorman_ring_activity_pert}).
+We found that the ring can be perturbed into systems with between 2 and 12 fixed points (Fig. \ref{fig:both_rings}A).
 The probability of the different perturbations were calculated numerically.
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 %Definition of a bump perturbation
@@ -1014,7 +1024,7 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
 \begin{figure}[H]
      \centering
     \includegraphics[width=\textwidth]{matching_noise_3types_cont}
-       \caption{}
+       \caption{For various values the loss was calculated for the three types of noise. The matched noise levels were chosen based on these curves.}
          \label{fig:matching_noise_3types_cont}
 \end{figure}
 
@@ -1029,37 +1039,37 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
          \label{fig:vfs_T100_F1000_weights}
 \end{figure}
 
-\section{Ring attractor}
-
-%Compact
-%No boundary: in- and outflowing
-%But not $C^1$!
+%\section{Ring attractor}
+%
+%%Compact
+%%No boundary: in- and outflowing
+%%But not $C^1$!
+%%
+%%
+%%discrete attractors as a trivial application?
+%%Discrete attractors can be seen as an approximation to continuous attractor models in the context of head direction representation \citep{zhang1996}. The discrete nature of the representation makes it more robust to small fluctuations or disturbances in neural activity.
+%%However, these system have fading memory: the system eventually forgets the past, since any difference between any two neural activations eventually tends zero as they both evolve to a global resting state.
+%
+%We will first of all look at a simple (non-biological) system that has a ring attractor to demonstrate the consequences of the Persistence Theorem.
+%The system we will analyse is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
+%This system has as fixed points the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$.
 %
 %
-%discrete attractors as a trivial application?
-%Discrete attractors can be seen as an approximation to continuous attractor models in the context of head direction representation \citep{zhang1996}. The discrete nature of the representation makes it more robust to small fluctuations or disturbances in neural activity.
-%However, these system have fading memory: the system eventually forgets the past, since any difference between any two neural activations eventually tends zero as they both evolve to a global resting state.
+%\begin{figure}[H]
+%     \centering
+%%  \includegraphics[width=.8\textwidth]{ring_perturbations_stream}
+%    \includegraphics[width=.8\textwidth]{ring_perturbations_stream_2by2}
+%       \caption{Perturbations to a simple implementation of a ring attractor all leave the invariant manifold intact. % (Left)  Examples of a local perturbation to the vector field through the addition of a bump to the vector field along the ring attractor.
+%              (Leftmost) An example of a bump perturbation that results in the ring breaking up and becoming diffeomorphic to a line. %slow flow in hole?
+%              (Left, middle) An example of a bump perturbation that maintains the ring structure, but deforms it locally.
+%              %
+%      % (Right) Examples of a global perturbation to the vector field through the addition of a small term to the connectivity matrix. 
+%       (Right, middle) A global perturbation that results in a system with four fixed points along the persistent invariant manifold. %The two saddle nodes (yellow dots) are connected to the stable fixed points (green dots) through connecting orbits.
+%       (Rightmost)   A global perturbation that results in a limit cycle.}
+%         \label{fig:ring_activity_pert}
+%\end{figure}
 
-We will first of all look at a simple (non-biological) system that has a ring attractor to demonstrate the consequences of the Persistence Theorem.
-The system we will analyse is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
-This system has as fixed points the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$.
-
-
-\begin{figure}[H]
-     \centering
-%  \includegraphics[width=.8\textwidth]{ring_perturbations_stream}
-    \includegraphics[width=.8\textwidth]{ring_perturbations_stream_2by2}
-       \caption{Perturbations to a simple implementation of a ring attractor all leave the invariant manifold intact. % (Left)  Examples of a local perturbation to the vector field through the addition of a bump to the vector field along the ring attractor.
-              (Leftmost) An example of a bump perturbation that results in the ring breaking up and becoming diffeomorphic to a line. %slow flow in hole?
-              (Left, middle) An example of a bump perturbation that maintains the ring structure, but deforms it locally.
-              %
-      % (Right) Examples of a global perturbation to the vector field through the addition of a small term to the connectivity matrix. 
-       (Right, middle) A global perturbation that results in a system with four fixed points along the persistent invariant manifold. %The two saddle nodes (yellow dots) are connected to the stable fixed points (green dots) through connecting orbits.
-       (Rightmost)   A global perturbation that results in a limit cycle.}
-         \label{fig:ring_activity_pert}
-\end{figure}
-
-All perturbations maintain the invariant manifold.
+%All perturbations maintain the invariant manifold.
 
 \subsection{Fast-slow form}
 
@@ -1100,7 +1110,7 @@ x^*= -(W^{sym}_\sigma)^{-1}c_{ff}
 and 
 \begin{equation}
 x^*_i<0 \text{for  } i\in\sigma.
-\end{equation}•
+\end{equation}
 
 
 
