@@ -535,13 +535,24 @@ This way of matching noise level to induce the same average loss should be a uni
 
 
 %$Observations
-iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:threeIntegrators2} and Fig \ref{fig:vfs_T100_F1000_weights}).
-UBLA can stays close to the initial solution for small enough learning rate.
-%BLA is slowly running away? maybe learning rate too large?
+% figure for the learning rate dip
+
 
 %gradientdistribution 
 Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates.
 The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution.
+
+%example
+%standard: mses over epochs
+Fig.~\ref{fig:maintenance}B shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
+%Note that the magnitude of perturbation were identical for all networks, but iRNN is more robust in terms of MSE.
+%The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
+%BLA with learning has superior misadjustment to UBLA and BLA without learning.
+
+%scatter
+iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:maintenance2} and Fig \ref{fig:vfs}).
+UBLA can stays close to the initial solution for small enough learning rate.
+%BLA is slowly running away? maybe learning rate too large?
 
 \subsection{Perturbation of a continuous attractor: Finite-sized head direction network model}\label{sec:hd}
 %We will now investigate the effects that perturbations might have on the gradients in some continuous attractor network models used in computational neuroscience.
@@ -1034,9 +1045,9 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
 
 \begin{figure}[H]
      \centering
-    \includegraphics[width=\textwidth]{vfs_T100_F1000_weights}
-       \caption{}
-         \label{fig:vfs_T100_F1000_weights}
+    \includegraphics[width=\textwidth]{vfs_f100_gs30_optlrs}
+       \caption{The dynamics of the recurrent part of the integrators across learning.}
+         \label{fig:vfs}
 \end{figure}
 
 %\section{Ring attractor}
