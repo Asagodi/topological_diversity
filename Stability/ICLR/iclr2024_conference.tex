@@ -438,14 +438,15 @@ In all other cases, including all perturbations of BLA, leads to vanishing gradi
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{threeIntegrators.pdf}
+  \includegraphics[width=\textwidth]{maintenance2.pdf}
   \caption{
   Comparing three continuous attractor solutions to the click integration task.
-  (A) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
-  (B) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps.
-  (C) Interleaved weight perturbations showing gradual recovery for BLA and iRNN.
-  (D) High variability across time of UBLA and iRNN due to exploding gradients.
-  (E) Noise injected to objective induces gradient descent to drive solutions to diverge away.
+  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps.
+  (B) Changes to the recurrent parameters (matrix and bias). iRNN converges to a different solution.
+ (C) Optimal learning rates for the three neural integrators. 
+    (D) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
+  (E) Distribution of gradients shows bimodal distribution for UBLA. %Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates.
+    (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
   }
   \label{fig:maintenance}
 \end{figure}
@@ -544,13 +545,13 @@ The fact that the iRNN has a smaller range of gradients explains exploding gradi
 
 %example
 %standard: mses over epochs
-Fig.~\ref{fig:maintenance}B shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
+Fig.~\ref{fig:maintenance}A and F shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
 %Note that the magnitude of perturbation were identical for all networks, but iRNN is more robust in terms of MSE.
-%The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
+The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution. We further show that iRNN converges to a different solution as it settles in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator.
 %BLA with learning has superior misadjustment to UBLA and BLA without learning.
 
 %scatter
-iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:maintenance2} and Fig \ref{fig:vfs}).
+iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:maintenance} and Fig \ref{fig:vfs}).
 UBLA can stays close to the initial solution for small enough learning rate.
 %BLA is slowly running away? maybe learning rate too large?
 
