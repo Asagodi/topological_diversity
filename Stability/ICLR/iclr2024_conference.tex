@@ -482,7 +482,7 @@ This type of noise is directly applied to the weights as $ \vW \leftarrow \vW + 
 % or in pulses only at epochs
 %  1,11 and 21 (Fig. \ref{fig:maintenance}C).
 
-The invariant manifold of the BLA is persistent throughout learning in many cases, see \ref{sec:supp:learning} and \ref{fig:vfs_T100_F1000_weights}.
+The invariant manifold of the BLA is persistent throughout learning in many cases, see Fig. \ref{sec:supp:learning} and \ref{fig:vfs1}.
 
 To dissociate the effect of misadjustment from gradient descent and external perturbation, we interleaved a larger perturbation with 10 gradient steps.
 Fig.~\ref{fig:maintenance}C shows consistent learning in the average MSE for BLA and iRNN, but not in UBLA.
@@ -1052,6 +1052,25 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
     (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
   }
   \label{fig:maintenance}
+\end{figure}
+
+\section{}
+
+\begin{figure}[H]
+     \centering
+    \includegraphics[width=\textwidth]{wdn_mse_trajectories_F1}
+       \caption{Trajectories of learning. The LAs follow a trajectory that is orthogonal to the initial parameters, but that yet decreases the MSE.}
+         \label{fig:wdn_mse_trajectories_F1}
+\end{figure}
+
+\section{}
+
+\begin{figure}[H]
+     \centering
+    \includegraphics[width=\textwidth]{interal_input_contours}
+       \caption{Because of relative scale of perturnation, iRNN is further away from the initial parameters with internal and input noise.
+        Depending on the level of the noise it performs better or worse than the LAs.}
+         \label{fig:interal_input_contours}
 \end{figure}
 
 
