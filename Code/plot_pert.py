@@ -21,6 +21,8 @@ from numpy.linalg import svd
 from sklearn.decomposition import PCA
 from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 from sklearn import preprocessing
+from scipy.optimize import minimize
+from itertools import chain, combinations, permutations
 
 from math import floor, log10
 import seaborn as sns
@@ -34,7 +36,7 @@ from matplotlib.lines import Line2D
 from matplotlib.ticker import MaxNLocator
 import pylab as pl
 
-from analysis_functions import find_analytic_fixed_points, find_stabilities
+# from analysis_functions import find_analytic_fixed_points, find_stabilities
 
 def makedirs(dirname):
     if not os.path.exists(dirname):
@@ -42,6 +44,132 @@ def makedirs(dirname):
         
 def ReLU(x):
     return np.where(x<0,0,x)
+
+
+
+####FIXED POINT
+def find_stabilities(fixed_points, W_hh, tol = 10**-4):
+    """
+    Argument: fixed point
+    tol: is used as to what level of tolarance to use to determine support for fixed point
+    Returns: stabilist which includes the stabilities of the fixed points 
+    Note: What to do if support is [] (empty)?
+        -Add note: zero support to stabilist?
+    """
+    stabilist = []
+    unstabledimensions = []
+    for x in fixed_points:
+        #calculate stability of fixed points
+        support = np.where(x>tol)[0]
+        if len(support) == 0:
+            eigenvalues = np.diagonal(W_hh) - 1 
+        if len(support) == 1:
+            eigenvalues = W_hh[support,support]-1 # display(Math(r"$x_*$=" + str(np.round(x,2)) +"   Eigenvalues:" + str(np.round(W_hh[support,support][0][0]-1,2))))
+
+        elif len(support) > 1:
+            r = np.array(support)
+            eigenvalues = np.linalg.eigvals(W_hh[r[:,None], r]-np.eye(len(support)))
+            # print(r"$x_*$=", x, "Eigenvalues:", eigenvalues)
+        try:
+            if np.any(np.real(eigenvalues)>0.):
+                stabilist.append(0)                # print("Unstable")
+            else:
+                stabilist.append(1)    # print("Stable")
+        except:
+            stabilist.append(-1)
+        unstabledimensions.append(np.where(np.real(eigenvalues)<0)[0])
+    return stabilist, unstabledimensions
+
+
+
+
+def find_fixed_points_grid(fun, Nrec, max_grid=3, step=1, tol = 10**-4,  maxiter = 10000,
+                      method='Nelder-Mead', verbose=False):
+    options = {"disp": verbose, "maxiter": maxiter}
+    
+    #create grid to start search
+    Ngrid = int(max_grid/step)
+    x0grid = np.mgrid[tuple(slice(0, max_grid, step) for _ in range(Nrec))].reshape((int((Ngrid)**Nrec), Nrec))
+
+    # constraint = {LinearConstraint([1], [-tol], [tol])} #use contraint to find real fixed point, not just minimum
+    bounds = [(0., np.Inf)]
+    results = []
+    for x0 in x0grid:
+        opt = minimize(
+            lambda x: np.linalg.norm(fun(x) - x),
+            x0=x0,
+            method=method,
+            constraints=None, 
+            bounds=bounds,
+            tol=tol,
+            callback=None,
+            options=options)
+        if opt.success:
+            results.append(opt.x)
+
+    results = np.array(results)
+    return results
+
+
+def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+
+def find_analytic_fixed_points(W_hh, b, W_ih, I, tol=10**-4):
+    """
+    Takes as argument all the parameters of the recurrent part of the model (W_hh, b) with a possible input I that connects into the RNN throught the weight matrix W_ih
+    """
+    fixed_point_list = []
+    stabilist = []
+    unstabledimensions = []
+    Nrec = W_hh.shape[0]
+    
+    subsets = powerset(range(Nrec))
+    for support in subsets:
+
+        if support == ():
+            continue
+        r = np.array(support)
+        
+        #invert equation
+        fixed_point = np.zeros(Nrec)
+        fpnt_nonzero = -np.dot(np.linalg.inv(W_hh[r[:,None], r]-np.eye(len(support))), b[r] + np.dot(W_ih[r,:], I))
+        fixed_point[r] = fpnt_nonzero
+        
+        #check whether it is a fixed point: zero derivative
+        # if fnpt_i > 0 for all i=1, ..., Nrec
+        if np.all(fixed_point >= 0) and np.all(np.abs(fixed_point-relu_step_input(fixed_point, W_hh, b, W_ih, I))<tol):
+            fixed_point_list.append(fixed_point)
+        
+            #check stability
+            eigenvalues = np.linalg.eigvals(W_hh[r[:,None], r]-np.eye(len(support)))
+            if np.any(eigenvalues>0.):
+                # print("Unstable")
+                stabilist.append(0)
+            else:
+                # print("Stable")
+                stabilist.append(1)
+            unstabledimensions.append(np.where(np.real(eigenvalues)>0)[0].shape[0])
+    return fixed_point_list, stabilist, unstabledimensions
+
+
+
+def lu_step(x, W, b):
+    return x*W+b
+
+def relu_step(x, W, b):
+    res = np.array(np.dot(W,x)+b)
+    res[res < 0] = 0
+    return res
+ 
+def relu_step_input(x, W, b, W_ih, I):
+    res = np.array(np.dot(W,x) + b + np.dot(W_ih, I))
+    res[res < 0] = 0
+    return res
+
+
 
 def sci_notation(num, decimal_digits=1, precision=None, exponent=None):
     """
@@ -529,8 +657,9 @@ def track_changes_during_learning(main_exp_name, model_name = 'irnn'):
 
 
 
-def plot_loss_zoom(noise_in_list, training_kwargs):
+def plot_loss_zoom(noise_in_list, factors, n_lrs, training_kwargs):
     plot_box = True
+    n_fs = len(factors)
     for n_i, noise_in in enumerate(noise_in_list):
         fig, axes = plt.subplots(n_lrs, n_fs, figsize=(2*n_fs, 4*n_lrs), sharex=True, sharey=True)
         fig.supylabel('log(MSE)', fontsize=35)
@@ -561,7 +690,7 @@ def plot_vector_field(W, b, fig=None, ax=None):
         fig, ax = plt.subplots(1, 1, figsize=(5, 5))
 
     cmap = 'plasma'
-    w = 21
+    w = 25
     v = -3
     Y, X = np.mgrid[v:w:100j, v:w:100j]
     U = ReLU(W[0,0]*X + W[0,1]*Y + b[0]) - X
@@ -639,7 +768,8 @@ def plot_weight_changes(main_exp_name, T, exp_i=0):
     
     weight_figs_path = main_exp_name + "/weight_figs"
     makedirs(weight_figs_path)
-    
+    models = ['irnn', 'ubla', 'bla']
+    colors = ['k', 'r', 'b']
     fig, ax = plt.subplots(4, 1, figsize=(5, 10), sharex=True)
     # for exp_i, exp in enumerate(exp_list):
     for model_i, model_name in enumerate(models):
@@ -662,6 +792,7 @@ def plot_weight_changes(main_exp_name, T, exp_i=0):
     
     
 def plot_weight_diffnorm(main_exp_name, marker='-', ax=None):
+    models = ['irnn', 'ubla', 'bla']
     colors = ['k', 'red', 'b']
     weight_figs_path = main_exp_name + "/weight_figs"
     makedirs(weight_figs_path)
@@ -685,7 +816,7 @@ def plot_weight_diffnorm(main_exp_name, marker='-', ax=None):
     return all_w_orig_pert_diff_norms
     
     
-def plot_losses_grid(noise_in_list, T, gradstep, factors, noisy='noisy', sharey=False, ylim=None, plot_box=False, gradient=False):
+def plot_losses_grid(noise_in_list, T, gradstep, factors, learning_rates, noisy='noisy', sharey=False, ylim=None, plot_box=False, gradient=False):
     if gradient:
         gr_str = 'grad'
     else:
@@ -805,21 +936,22 @@ def weight_distance_MSE_scatter_plot_i(w_orig_pert_diff_norms, losses, ax):
     ax.plot(w_orig_pert_diff_norms, losses, alpha=.5)
     
 def weight_distance_MSE_scatter_plots(main_exp_names, exp_i, cutoff, factor,
-                                      xlim=[0, 1e-4],ylim=[1e-8, 1e-4]):
+                                      set_xlim=None,set_ylim=None):
     colors = ['k', 'r', 'b']
     
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    ax.set_ylim(ylim)
-    ax.set_xlim(xlim)
-
     ax.set_yscale('log')
     ax.set_xlabel("$||W_{init}-W_{epoch}||$");
     ax.set_ylabel("MSE");
     ax.set_title("$\sigma=10^{%02d}$" %int(np.log10(factor*1e-5)))
-    
+    ylim = [1e0,1e1]
+    xlim = [0,1e-7]
     for model_i, exp_name in enumerate(main_exp_names):
         # print(exp_name, i, exp_i)
         info = get_info(exp_name).copy()
+        ylim[0] = np.min([ylim[0], np.nanmin(info['losses'][model_i,exp_i,:])]).copy()
+        ylim[1] = np.min([ylim[1], np.nanmax(info['losses'][model_i,exp_i,:])]).copy()
+        xlim[1] = np.max([xlim[1], np.nanmax(info['w_orig_grad_diff_norms'][model_i,exp_i,:])]).copy()
         # print(i, info['w_orig_pert_diff_norms'][i,exp_i,0])
         # print(i, info['losses'][i,exp_i,0])
         ax.plot(info['w_orig_grad_diff_norms'][model_i,exp_i,:].copy(),
@@ -836,18 +968,27 @@ def weight_distance_MSE_scatter_plots(main_exp_names, exp_i, cutoff, factor,
         awayfrom_solution = np.where(info['dot_grad'][model_i,exp_i,:]<cutoff)
         ax.scatter(info['w_orig_grad_diff_norms'][model_i,exp_i,:][awayfrom_solution],
                 info['losses'][model_i,exp_i,:][awayfrom_solution], color=colors[model_i], marker='x')
+        print(xlim)
+        
+    if not xlim:
+        ax.set_xlim(set_xlim)    
+    else:
+        ax.set_xlim([xlim[0]-xlim[1]*.1, xlim[1]*1.2])
+
+    if not ylim:
+        ax.set_ylim(set_ylim)
+    else:    
+        ax.set_ylim([ylim[0]*.9, ylim[1]*1.2])
 
     plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_{noise_in}_T{T}_optlr.pdf", bbox_inches="tight")
-
+    return xlim, ylim
         
 def weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i, lr, factor, cutoff,
-                                     xlim=[0, 1e-4],ylim=[1e-8, 1e-4]):
+                                      set_xlim=None,set_ylim=None):
     
     colors = ['k', 'r', 'b']
     
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    ax.set_ylim(ylim)
-    ax.set_xlim(xlim)
 
     ax.set_yscale('log')
     ax.set_xlabel("$||W_{init}-W_{epoch}||$");
@@ -858,18 +999,23 @@ def weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i, lr, factor, cut
     else:
         ax.set_title("$\sigma=10^{%02d}, \lambda=10^{%02d}$" %(int(np.log10(factor*1e-5)), int(np.log10(lr))))
 
+    ylim = [1e0,1e1]
+    xlim = [0,1e-7]
     if exp_i==None:
         for exp_i in range(10):
             for model_i in range(3):
-
-
                 ax.plot(info['w_orig_pert_diff_norms'][model_i,exp_i,:],
                         info['losses'][model_i,exp_i,:], color=colors[model_i], alpha=.5)
                 
         plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_{noise_in}_T{T}_F{factor}_lr{lr}.pdf", bbox_inches="tight")
 
     else:
+        ylim[0] = np.min([ylim[0], np.nanmin(info['losses'][:,exp_i,:])])
+        ylim[1] = np.min([ylim[1], np.nanmax(info['losses'][:,exp_i,:])])
+        xlim[1] = np.max([xlim[1], np.nanmax(info['w_orig_grad_diff_norms'][:,exp_i,:])])
+
         for model_i in range(3):
+
             # print(model_i, info['w_orig_pert_diff_norms'][model_i,exp_i,0])
             # print(model_i, info['losses'][model_i,exp_i,0])
             ax.plot(info['w_orig_grad_diff_norms'][model_i,exp_i,:].copy(),
@@ -889,8 +1035,19 @@ def weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i, lr, factor, cut
             awayfrom_solution = np.where(info['dot_grad'][model_i,exp_i,:]<cutoff)
             ax.scatter(info['w_orig_grad_diff_norms'][model_i,exp_i,1:][awayfrom_solution],
                     info['losses'][model_i,exp_i,1:][awayfrom_solution], color=colors[model_i], marker='x')
+            if not set_xlim:
+                ax.set_xlim(set_xlim)    
+            else:
+                ax.set_xlim([xlim[0]-xlim[1]*.1, xlim[1]*1.2])
         
+            if not set_ylim:
+                ax.set_ylim(set_ylim)
+            else:    
+                ax.set_ylim([ylim[0]*.9, ylim[1]*1.2])
         plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_{noise_in}_T{T}_F{factor}_lr{lr}_{exp_i}.pdf", bbox_inches="tight")
+    return [xlim[0]-xlim[1]*.1, xlim[1]*1.2], [ylim[0]*.9, ylim[1]*1.2]
+
+
 
 def fig3(main_exp_name, learning_rates, factor):    
     colors = ['k', 'r', 'b']
@@ -928,7 +1085,7 @@ def fig3(main_exp_name, learning_rates, factor):
             
     for mi in range(3):
         ax.plot(np.array(lr_labels)-.5+mi/4., mean_losses[mi,:], color=colors[mi])
-
+    # ax.set_ylim([7e-2,1.1e-1])
     fig.savefig(main_exp_name+f"lr_mse_f{factor}.pdf", bbox_inches="tight")
 
 def plot_gradient_distributions(gradstep, noise_in, T, learning_rates, factors, maxbin=100, start=True, mses=10):
@@ -942,6 +1099,10 @@ def plot_gradient_distributions(gradstep, noise_in, T, learning_rates, factors, 
         # xaxmax = 0
         for lr_i,lr in enumerate(learning_rates):
             ax = axes[f_i, lr_i]
+            ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+            ax.set_xticks([1e-1,maxbin],[1e-1,maxbin])
+            ax.set_ylim([0,1])
+
             ax.set_xscale('log')
             ax.tick_params(rotation=90, labelsize=10)
             if lr == 0:
@@ -993,63 +1154,80 @@ if __name__ == "__main__":
     noisy = 'cnoisy_thrs'
     learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
     factors = [10000, 1000, 100, 10, 1, .1]
-    learning_rates = [1e-5,1e-6,1e-7, 0]
+    # learning_rates = [1e-5,1e-6,1e-7, 0]
+    # learning_rates = [1e-7,1e-8,1e-9, 0]
+
     # factors = [100, 10, 1, .1]
-    factors = [1]
+    factor = 1
+    factors = [factor]
 
     noise_in = 'weights'
-    T = 100
-    gradstep = 30
+    T = 1000
+    gradstep = 1
     input_length = 10
-
-    maxbin = 100
+    
+    ###########GRADIENT DISTRIBUTION
+    # maxbin = 100
     # plot_gradient_distributions(gradstep=gradstep, noise_in=noise_in, T=T,
     #                             learning_rates=learning_rates, factors=factors, maxbin=maxbin,
     #                             start=True, mses=5)
     # plot_gradient_distributions(gradstep=gradstep, noise_in=noise_in, T=T,
     #                             learning_rates=learning_rates, factors=factors, maxbin=maxbin, 
     #                             start=False, mses=10)
-    # learning_rate = 1e-7
-    # main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}"
 
+
+    ###########MSEs vs learning rates
     # main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}"
     # fig3(main_exp_name, learning_rates, factor)
     
+    
+    
+    #Weight norm diff vs MSE
     learning_rate = 0
-    factor = 1
     exp_i  = 0
     main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{learning_rate}"
     print(main_exp_name)
     info = get_info(main_exp_name)
     cutoff=1/np.sqrt(6)
-    # weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i=exp_i, lr=learning_rate, factor=factor, cutoff=cutoff,
-    #                                     xlim=[0, 2e-4],
-    #                                     ylim=[1e-8, 1e-3])
-    main_exp_names=[
-        parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-5}",
-        parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-7}",
-        parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-6}"]
-    # weight_distance_MSE_scatter_plots(main_exp_names, exp_i, cutoff, factor=factor, 
-    #                                     xlim=[0, 2e-4],
-    #                                     ylim=[1e-8, 1e-3])
+    xlim, ylim = weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i=exp_i, lr=learning_rate, factor=factor, cutoff=cutoff)
+                                        # xlim=[0, 2e-4],
+                                        # ylim=[1e-8, 2e-4])
     
-    main_exp_name_lists = [[parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-05/irnn',
-      parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-07/ubla',
-      parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr1e-06/bla'],
-      [parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/irnn',
-      parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/ubla',
-      parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor1/weights/input10/lr0/bla']]
+    if T==100:
+        main_exp_names=[
+            parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-5}",
+            parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-7}",
+            parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-6}"]
     
-    fig = plot_losses_pair(main_exp_name_lists, plot_legend=True)
-    fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/optimal_lrs_factor{factor}.pdf", bbox_inches="tight")
-    
-    
-    fig = plot_losses_pairbox(main_exp_name_lists)
-    fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/optimal_lrs_factor{factor}_box.pdf", bbox_inches="tight")
+    elif T==1000:
+        main_exp_names=[
+            parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-7}",
+            parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-9}",
+            parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-8}"]
+    weight_distance_MSE_scatter_plots(main_exp_names, exp_i, cutoff, factor=factor,
+                                        set_xlim=xlim,
+                                        set_ylim=ylim)
 
+    #VECTOR FIELDS
     # for i in range(3):
     #     main_exp_name = main_exp_names[i]
     #     plot_vfs(main_exp_name, model_i=i, noise_in='weights', exp_i=exp_i)
+
+    #OPTIMAL Learning rate 
+    # main_exp_name_lists = [[parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/weights/input10/lr1e-07/irnn',
+    #   parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/weights/input10/lr1e-09/ubla',
+    #   parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/weights/input10/lr1e-08/bla'],
+    #   [parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/weights/input10/lr0/irnn',
+    #   parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/weights/input10/lr0/ubla',
+      # parent_dir+f'/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/weights/input10/lr0/bla']]
+    
+    # fig = plot_losses_pair(main_exp_name_lists, plot_legend=True)
+    # fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/optimal_lrs_gs{gradstep}_factor{factor}.pdf", bbox_inches="tight")
+    
+    # fig = plot_losses_pairbox(main_exp_name_lists)
+    # fig.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/optimal_lrs_gs{gradstep}_factor{factor}_box.pdf", bbox_inches="tight")
+
+
         
         
     # exp_i = 0
@@ -1107,7 +1285,7 @@ if __name__ == "__main__":
 
 #     factors = [100, 10, 1, .1]
 
-#     # plot_losses_grid(noise_in_list, T, gradstep, factors, noisy=noisy, sharey=True,
+#     # plot_losses_grid(noise_in_list, T, gradstep, factors, learning_rates, noisy=noisy, sharey=True,
 #     #                  ylim=[1e-12, 1e5], plot_box=False, gradient=False)
     
 #     gradstep = 1
