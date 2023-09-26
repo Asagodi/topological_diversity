@@ -438,7 +438,7 @@ In all other cases, including all perturbations of BLA, leads to vanishing gradi
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{maintenance2.pdf}
+  \includegraphics[width=\textwidth]{maintenance_T100.pdf}
   \caption{
   Comparing three continuous attractor solutions to the click integration task.
   (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps.
@@ -551,7 +551,7 @@ The distribution of MSE for the task can be used as proxy for the misadjustment 
 %BLA with learning has superior misadjustment to UBLA and BLA without learning.
 
 %scatter
-iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:maintenance} and Fig \ref{fig:vfs}).
+iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:maintenance} and Fig \ref{fig:vfs1}).
 UBLA can stays close to the initial solution for small enough learning rate.
 %BLA is slowly running away? maybe learning rate too large?
 
@@ -957,30 +957,29 @@ Similiarly to have a fixed point $x^*$ such that $x_2^*=0$, we must have that
 
 Equation \ref{eq:condition2.1} and \ref{eq:condition2.2} together form condition 2.
 
+
+Then, we get the following conditions for the different types of bifurcations:
+\begin{enumerate}
 %2 fixed points
-If condition 1 is violated, but condition 2 is satisfied with exactly oner strict inequality, there are two fixed points on the boundary of the admissible quadrant.
-
-
+\item  If condition 1 is violated, but condition 2 is satisfied with exactly oner strict inequality, there are two fixed points on the boundary of the admissible quadrant.
 %what about the subconditions:
-If condition 1 is violated, and only one of the subconditions of condition 2 is satisfied, there is a single fixed point on one of the axes.
-
-
-
-If condition 2 is violated, there is a single fixed point with full support.
+\item If condition 1 is violated, and only one of the subconditions of condition 2 is satisfied, there is a single fixed point on one of the axes.
+\item If condition 2 is violated, there is a single fixed point with full support.
 %what about the subconditions?
-
 %3 fixed points
-If both conditions are satisfied, there are three fixed points.
+\item If both conditions are satisfied, there are three fixed points.
 %what about the subconditions?
+\end{enumerate}
+
 
 We now look at the possibility of the line attractor being preserved. 
 This is the case if $v=0$.
-It is not possible to have a line attractor with a fixed point off it for as there cannot be disjoint fixed points that are linearly dependent \citep[Lemma 5.2]{morrison2016a}.
+It is not possible to have a line attractor with a fixed point off of it for as there cannot be disjoint fixed points that are linearly dependent \citep[Lemma 5.2]{morrison2016a}.
 \end{proof}
 
 
 \subsection{Structure of the parameter space}
-\begin{table}
+\begin{table}[H]
 \caption{Summary of the conditions for the different bifurcations.}\label{tab:bifs}
 \centering
 \bgroup
@@ -994,10 +993,10 @@ C2 & \xmark 		& only Eq\ref{eq:condition2.1} or \ref{eq:condition2.2}  	 & \cmar
 \egroup
 \end{table}
 
-\begin{figure}[thbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{bla_parameter_space.pdf}
-  \caption{
+  \caption{A slice of the parameter space of the BLA for a fixed $\epsilon_{11}$ and $\epsilon_{12}$. %The different bifurcations can be found 
   }
   \label{fig:blaparameterspace}
 \end{figure}
@@ -1039,6 +1038,24 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
        \caption{For various values the loss was calculated for the three types of noise. The matched noise levels were chosen based on these curves.}
          \label{fig:matching_noise_3types_cont}
 \end{figure}
+
+
+\section{Longer trials}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{maintenance_T1000.pdf}
+  \caption{
+  Comparing three continuous attractor solutions to the click integration task.
+  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps.
+  (B) Changes to the recurrent parameters (matrix and bias). iRNN converges to a different solution.
+ (C) Optimal learning rates for the three neural integrators. 
+    (D) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
+  (E) Distribution of gradients shows bimodal distribution for UBLA. %Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates.
+    (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
+  }
+  \label{fig:maintenance}
+\end{figure}
+
 
 
 \section{Changes to the neural integrators during learning}\label{sec:supp:learning}
@@ -1135,7 +1152,7 @@ x^*= -(W^{sym}_\sigma)^{-1}c_{ff}
 \end{equation}
 and 
 \begin{equation}
-x^*_i<0 \text{for  } i\in\sigma.
+x^*_i<0 \text{   for  	 } i\in\sigma.
 \end{equation}
 
 
