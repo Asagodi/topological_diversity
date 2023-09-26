@@ -1041,14 +1041,28 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
 \end{figure}
 
 
-\section{Changes to the neural integrator during learning}\label{sec:supp:learning}
+\section{Changes to the neural integrators during learning}\label{sec:supp:learning}
 %Message: This is what happens to the different neural integrators during learning 
 
 \begin{figure}[H]
      \centering
+    \includegraphics[width=\textwidth]{vfs_f100_gs1_optlrs}
+       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. 30 gradient steps after a perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
+         \label{fig:vfs1}
+\end{figure}
+
+\begin{figure}[H]
+     \centering
+    \includegraphics[width=\textwidth]{vfs_f100_gs5_optlrs}
+       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. 30 gradient steps after a perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
+         \label{fig:vfs5}
+\end{figure}
+
+\begin{figure}[H]
+     \centering
     \includegraphics[width=\textwidth]{vfs_f100_gs30_optlrs}
-       \caption{The dynamics of the recurrent part of the integrators across learning.}
-         \label{fig:vfs}
+       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. 30 gradient steps after a perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
+         \label{fig:vfs30}
 \end{figure}
 
 %\section{Ring attractor}
