@@ -469,20 +469,21 @@ The input and output are defined as in Eqs. \ref{eq:input} and \ref{eq:output} w
 %T=100,500,1000
 We investigate the effects of three types of noise on the learning or readjustment of the parameters during gradient descent starting from the perfect solutions to the task.
 %MSE at last time step
+For the SGD, the last output of the network after $T$ steps was taken to calculate the loss based on the mean squared error (MSE) over a batch of 1024 trials. A gradient step was then taken with a fixed gradient step size $\lambda$ (the learning rate).
 
 In the first experiment, Gaussian random noise is injected to all parameters inducing a constant diffusion of the parameters, which emulates the biological synaptic variability.
 This type of noise is directly applied to the weights as $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\sigma)$.
-%Fig.~\ref{fig:maintenance}B shows that for BLA, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
+Fig.~\ref{fig:maintenance}A shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
 %Note that the magnitude of perturbation were identical for all networks, but iRNN is more robust in terms of MSE.
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
-%BLA with learning has superior misadjustment to UBLA and BLA without learning.
+BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to without learning. BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
 
 %We inject this noise into the system either after each learning epoch 
 %(Fig. \ref{fig:maintenance}B)
 % or in pulses only at epochs
 %  1,11 and 21 (Fig. \ref{fig:maintenance}C).
 
-The invariant manifold of the BLA is persistent throughout learning in many cases, see Fig. \ref{sec:supp:learning} and \ref{fig:vfs1}.
+The invariant manifold of the BLA is persistent throughout learning in many cases, see Fig. \ref{sec:supp:learning} and \ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Fig. \ref{fig:wdn_mse_trajectories_F1}, Fig. \ref{fig:vfs5} and Fig. \ref{fig:vfs30}).
 
 To dissociate the effect of misadjustment from gradient descent and external perturbation, we interleaved a larger perturbation with 10 gradient steps.
 Fig.~\ref{fig:maintenance}C shows consistent learning in the average MSE for BLA and iRNN, but not in UBLA.
@@ -554,6 +555,9 @@ The distribution of MSE for the task can be used as proxy for the misadjustment 
 iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:maintenance} and Fig \ref{fig:vfs1}).
 UBLA can stays close to the initial solution for small enough learning rate.
 %BLA is slowly running away? maybe learning rate too large?
+
+
+In the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates. 
 
 \subsection{Perturbation of a continuous attractor: Finite-sized head direction network model}\label{sec:hd}
 %We will now investigate the effects that perturbations might have on the gradients in some continuous attractor network models used in computational neuroscience.
@@ -1054,7 +1058,17 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
   \label{fig:maintenance}
 \end{figure}
 
-\section{}
+
+\section{Stability of the neural integrators for different learning rates}
+
+\begin{figure}[H]
+     \centering
+    \includegraphics[width=\textwidth]{all_lrs_vs_mses_f1}
+       \caption{.}
+         \label{fig:all_lrs_vs_mses}
+\end{figure}
+
+\section{Trajectories of the neural integrators in the recurrent network space}
 
 \begin{figure}[H]
      \centering
@@ -1063,7 +1077,7 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
          \label{fig:wdn_mse_trajectories_F1}
 \end{figure}
 
-\section{}
+\section{Influence of the different noise types on the found solutions for the neural integrators}
 
 \begin{figure}[H]
      \centering
