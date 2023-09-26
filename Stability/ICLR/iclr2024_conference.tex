@@ -477,13 +477,13 @@ Fig.~\ref{fig:maintenance}A shows that for all networks, gradient descent (with 
 %Note that the magnitude of perturbation were identical for all networks, but iRNN is more robust in terms of MSE.
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
 BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to without learning. BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
+The invariant manifold of the BLA is persistent throughout learning in many cases, see Fig. \ref{sec:supp:learning} and \ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Fig. \ref{fig:wdn_mse_trajectories_F1}, Fig. \ref{fig:vfs5} and Fig. \ref{fig:vfs30}).
 
 %We inject this noise into the system either after each learning epoch 
 %(Fig. \ref{fig:maintenance}B)
 % or in pulses only at epochs
 %  1,11 and 21 (Fig. \ref{fig:maintenance}C).
 
-The invariant manifold of the BLA is persistent throughout learning in many cases, see Fig. \ref{sec:supp:learning} and \ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Fig. \ref{fig:wdn_mse_trajectories_F1}, Fig. \ref{fig:vfs5} and Fig. \ref{fig:vfs30}).
 
 To dissociate the effect of misadjustment from gradient descent and external perturbation, we interleaved a larger perturbation with 10 gradient steps.
 Fig.~\ref{fig:maintenance}C shows consistent learning in the average MSE for BLA and iRNN, but not in UBLA.
@@ -505,6 +505,7 @@ The noise level $\sigma$ was chosen individually for the three networks as follo
 We calculated the loss on a batch of inputs for various noise levels.
 We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Sec. \ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
 This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
+In the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Fig \ref{fig:all_lrs_vs_mses}. 
 
 %The parameters that were used for the effects of input- and parameter-type noise are summarized in Table \ref{tab:params}.
 %The bias parameters of the UBLA and BLA networks were set to $\beta=100$, while $\alpha=1$. 
@@ -557,7 +558,7 @@ UBLA can stays close to the initial solution for small enough learning rate.
 %BLA is slowly running away? maybe learning rate too large?
 
 
-In the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates. 
+
 
 \subsection{Perturbation of a continuous attractor: Finite-sized head direction network model}\label{sec:hd}
 %We will now investigate the effects that perturbations might have on the gradients in some continuous attractor network models used in computational neuroscience.
