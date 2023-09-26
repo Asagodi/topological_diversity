@@ -97,7 +97,7 @@ def loss_landscape(T, input_length, batch_size=128, ouput_bias=1, noise_in='weig
     """
     np.random.seed(10)
     
-    thetas = np.logspace(-5,-2, 30)
+    thetas = np.logspace(-5,-1, 30)
     thetas = np.concatenate([-thetas[::-1],[0], thetas])
     loss_theta = np.zeros((thetas.shape[0], 3))
     
@@ -298,7 +298,7 @@ def plot_losses(mean_losses, thetas, thresholds, input_length, noise_in):
             ax.axhline(y=threshold, linestyle='--')
     ax.set_xscale('log')
     ax.set_yscale('log')
-    ax.set_xlabel(r'$|\alpha|$')
+    ax.set_xlabel(r'$|\sigma|$')
     ax.set_ylabel('loss')
     ax.legend(title='Network')
     ax.grid()
@@ -319,7 +319,7 @@ if __name__ == "__main__":
     alphas = [.5, .5, .5]
     
     cont = True
-    Ts = np.array([500])
+    Ts = np.array([1000])
     input_length = 10
     ouput_bias = 20
     batch_size = 1024
@@ -328,18 +328,18 @@ if __name__ == "__main__":
     thresholds = [1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6]
     noise_in_list = ['weights', 'input', 'internal']
 
-    all_alpha_stars =  {} 
-    for n_i, noise_in in enumerate(noise_in_list):
-        thetas = logspaces[n_i]
-        mean_losses = calculate_losses(thetas, Ts, input_length, batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in, cont=cont)
+    # all_alpha_stars =  {} 
+    # for n_i, noise_in in enumerate(noise_in_list):
+    #     thetas = logspaces[n_i]
+    #     mean_losses = calculate_losses(thetas, Ts, input_length, batch_size=batch_size, ouput_bias=ouput_bias, noise_in=noise_in, cont=cont)
 
-        alpha_stars = plot_losses(mean_losses, thetas, thresholds, input_length, noise_in)
-        all_alpha_stars[noise_in] = alpha_stars
+    #     alpha_stars = plot_losses(mean_losses, thetas, thresholds, input_length, noise_in)
+    #     all_alpha_stars[noise_in] = alpha_stars
     
-    if cont:   
-        with open(parent_dir+f'/experiments/cnoisy_thrs/matching_single_T{Ts[0]}_input{input_length}.pickle', 'wb') as handle:
-            pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    # if cont:   
+    #     with open(parent_dir+f'/experiments/cnoisy_thrs/matching_single_T{Ts[0]}_input{input_length}.pickle', 'wb') as handle:
+    #         pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
-    else:
-        with open(parent_dir+f'/experiments/noisy_thrs/matching_single_T{Ts[0]}_input{input_length}.pickle', 'wb') as handle:
-            pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    # else:
+    #     with open(parent_dir+f'/experiments/noisy_thrs/matching_single_T{Ts[0]}_input{input_length}.pickle', 'wb') as handle:
+    #         pickle.dump(all_alpha_stars, handle, protocol=pickle.HIGHEST_PROTOCOL)
