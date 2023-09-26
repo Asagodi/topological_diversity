@@ -932,10 +932,9 @@ def plot_weight_diffnorm_losses():
     plot_losses(main_exp_name)
     #plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weight_diffnorm_{noise_in}_T{T}_F{factor}_lr{lr}.pdf", bbox_inches="tight")
  
-def weight_distance_MSE_scatter_plot_i(w_orig_pert_diff_norms, losses, ax):
-    ax.plot(w_orig_pert_diff_norms, losses, alpha=.5)
+
     
-def weight_distance_MSE_scatter_plots(main_exp_names, exp_i, cutoff, factor,
+def weight_distance_MSE_scatter_plots(main_exp_names, exp_is, cutoff, factor,
                                       set_xlim=None,set_ylim=None):
     colors = ['k', 'r', 'b']
     
@@ -943,45 +942,52 @@ def weight_distance_MSE_scatter_plots(main_exp_names, exp_i, cutoff, factor,
     ax.set_yscale('log')
     ax.set_xlabel("$||W_{init}-W_{epoch}||$");
     ax.set_ylabel("MSE");
-    ax.set_title("$\sigma=10^{%02d}$" %int(np.log10(factor*1e-5)))
-    ylim = [1e0,1e1]
+    # ax.set_title("$\sigma=10^{%02d}$" %int(np.log10(factor*1e-5)))
+    ylim = [1e0,1e-10]
     xlim = [0,1e-7]
+    optlr_info = {'w_orig_grad_diff_norms':np.zeros((3,10,30)), 
+                  'losses':np.zeros((3,10,30))}
     for model_i, exp_name in enumerate(main_exp_names):
-        # print(exp_name, i, exp_i)
         info = get_info(exp_name).copy()
-        ylim[0] = np.min([ylim[0], np.nanmin(info['losses'][model_i,exp_i,:])]).copy()
-        ylim[1] = np.min([ylim[1], np.nanmax(info['losses'][model_i,exp_i,:])]).copy()
-        xlim[1] = np.max([xlim[1], np.nanmax(info['w_orig_grad_diff_norms'][model_i,exp_i,:])]).copy()
-        # print(i, info['w_orig_pert_diff_norms'][i,exp_i,0])
-        # print(i, info['losses'][i,exp_i,0])
-        ax.plot(info['w_orig_grad_diff_norms'][model_i,exp_i,:].copy(),
-                info['losses'][model_i,exp_i,:].copy(), color=colors[model_i], alpha=.5)
+        optlr_info['w_orig_grad_diff_norms'][model_i,:,:] = info['w_orig_grad_diff_norms'][model_i,:,:]
+        optlr_info['losses'][model_i,:,:] = info['losses'][model_i,:,:]
+
+        for exp_i in range(10):
+        # print(exp_name, i, exp_i)
         
+
+            ylim[0] = np.min([ylim[0], np.nanmin(info['losses'][model_i,exp_i,:])]).copy()
+            ylim[1] = np.max([ylim[1], np.nanmax(info['losses'][model_i,exp_i,:])]).copy()
+            xlim[1] = np.max([xlim[1], np.nanmax(info['w_orig_grad_diff_norms'][model_i,exp_i,:])]).copy()
+            # print(i, info['w_orig_pert_diff_norms'][i,exp_i,0])
+            # print(i, info['losses'][i,exp_i,0])
+            ax.plot(info['w_orig_grad_diff_norms'][model_i,exp_i,:].copy(),
+                    info['losses'][model_i,exp_i,:].copy(), color=colors[model_i], alpha=.5)
+            
+            
+            towards_solution = np.where(info['dot_grad'][model_i,exp_i,:].copy()>=cutoff)
+            ax.scatter(
+                info['w_orig_grad_diff_norms'][model_i,exp_i,:][towards_solution].copy(),
+                info['losses'][model_i,exp_i,:][towards_solution].copy(),
+                color=colors[model_i],
+                    s=info['dot_grad'][model_i,exp_i,:][towards_solution], marker='o')
+            
+            awayfrom_solution = np.where(info['dot_grad'][model_i,exp_i,:]<cutoff)
+            ax.scatter(info['w_orig_grad_diff_norms'][model_i,exp_i,:][awayfrom_solution],
+                    info['losses'][model_i,exp_i,:][awayfrom_solution], color=colors[model_i], marker='x')
         
-        towards_solution = np.where(info['dot_grad'][model_i,exp_i,:].copy()>=cutoff)
-        ax.scatter(
-            info['w_orig_grad_diff_norms'][model_i,exp_i,:][towards_solution].copy(),
-            info['losses'][model_i,exp_i,:][towards_solution].copy(),
-            color=colors[model_i],
-                s=info['dot_grad'][model_i,exp_i,:][towards_solution], marker='o')
-        
-        awayfrom_solution = np.where(info['dot_grad'][model_i,exp_i,:]<cutoff)
-        ax.scatter(info['w_orig_grad_diff_norms'][model_i,exp_i,:][awayfrom_solution],
-                info['losses'][model_i,exp_i,:][awayfrom_solution], color=colors[model_i], marker='x')
-        print(xlim)
-        
-    if not xlim:
+    if set_xlim:
         ax.set_xlim(set_xlim)    
     else:
-        ax.set_xlim([xlim[0]-xlim[1]*.1, xlim[1]*1.2])
+        ax.set_xlim([xlim[0]-xlim[1]*.1, xlim[1]*1.1])
 
-    if not ylim:
+    if set_ylim:
         ax.set_ylim(set_ylim)
     else:    
         ax.set_ylim([ylim[0]*.9, ylim[1]*1.2])
 
     plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_{noise_in}_T{T}_optlr.pdf", bbox_inches="tight")
-    return xlim, ylim
+    return [xlim[0]-xlim[1]*.1, xlim[1]*1.1], [ylim[0]*.9, ylim[1]*1.2], optlr_info
         
 def weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i, lr, factor, cutoff,
                                       set_xlim=None,set_ylim=None):
@@ -993,20 +999,33 @@ def weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i, lr, factor, cut
     ax.set_yscale('log')
     ax.set_xlabel("$||W_{init}-W_{epoch}||$");
     ax.set_ylabel("MSE");
-    if lr==0:
-        ax.set_title("$\sigma=10^{%02d}, \lambda=0$" %(int(np.log10(factor*1e-5))))
+    # if lr==0:
+    #     ax.set_title("$\sigma=10^{%02d}, \lambda=0$" %(int(np.log10(factor*1e-5))))
 
-    else:
-        ax.set_title("$\sigma=10^{%02d}, \lambda=10^{%02d}$" %(int(np.log10(factor*1e-5)), int(np.log10(lr))))
+    # else:
+    #     ax.set_title("$\sigma=10^{%02d}, \lambda=10^{%02d}$" %(int(np.log10(factor*1e-5)), int(np.log10(lr))))
 
-    ylim = [1e0,1e1]
+    ylim = [1e0,1e-10]
     xlim = [0,1e-7]
     if exp_i==None:
         for exp_i in range(10):
+            ylim[0] = np.min([ylim[0], np.nanmin(info['losses'][:,exp_i,:])])
+            ylim[1] = np.max([ylim[1], np.nanmax(info['losses'][:,exp_i,:])]).copy()
+            xlim[1] = np.max([xlim[1], np.nanmax(info['w_orig_grad_diff_norms'][:,exp_i,:])])
             for model_i in range(3):
                 ax.plot(info['w_orig_pert_diff_norms'][model_i,exp_i,:],
                         info['losses'][model_i,exp_i,:], color=colors[model_i], alpha=.5)
-                
+
+        if set_xlim:
+            ax.set_xlim(set_xlim)    
+        else:
+            ax.set_xlim([xlim[0]-xlim[1]*.1, xlim[1]*1.1])
+
+        if set_ylim:
+            ax.set_ylim(set_ylim)
+        else:    
+            ax.set_ylim([ylim[0]*.9, ylim[1]*1.5])                
+            
         plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_{noise_in}_T{T}_F{factor}_lr{lr}.pdf", bbox_inches="tight")
 
     else:
@@ -1035,19 +1054,42 @@ def weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i, lr, factor, cut
             awayfrom_solution = np.where(info['dot_grad'][model_i,exp_i,:]<cutoff)
             ax.scatter(info['w_orig_grad_diff_norms'][model_i,exp_i,1:][awayfrom_solution],
                     info['losses'][model_i,exp_i,1:][awayfrom_solution], color=colors[model_i], marker='x')
-            if not set_xlim:
-                ax.set_xlim(set_xlim)    
-            else:
-                ax.set_xlim([xlim[0]-xlim[1]*.1, xlim[1]*1.2])
-        
-            if not set_ylim:
-                ax.set_ylim(set_ylim)
-            else:    
-                ax.set_ylim([ylim[0]*.9, ylim[1]*1.2])
+            
+        if set_xlim:
+            ax.set_xlim(set_xlim)    
+        else:
+            ax.set_xlim([xlim[0]-xlim[1]*.1, xlim[1]*1.1])
+
+        if set_ylim:
+            ax.set_ylim(set_ylim)
+        else:    
+            ax.set_ylim([ylim[0]*.9, ylim[1]*1.2])
+
         plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_{noise_in}_T{T}_F{factor}_lr{lr}_{exp_i}.pdf", bbox_inches="tight")
-    return [xlim[0]-xlim[1]*.1, xlim[1]*1.2], [ylim[0]*.9, ylim[1]*1.2]
+    
+    return [xlim[0]-xlim[1]*.1, xlim[1]*1.1], [ylim[0]*.9, ylim[1]*1.2]
 
+def weigh_mse_traj_hist(info, xlim, ylim, lr, ax=None):
+    if ax==None:
+        fig, ax = plt.subplots(1, 1, figsize=(5, 5));
+        
+    # ax.set_title("$\sigma=10^{%02d}$" %int(np.log10(factor*1e-5)))
 
+    ax.set_yscale('log')
+    ax.set_xlabel("$||W_{init}-W_{epoch}||$");
+    ax.set_ylabel("MSE");
+    sns.kdeplot(x=info['w_orig_grad_diff_norms'][0,...].flatten(), y=info['losses'][0,...].flatten(),
+                cmap="Greys", fill=True, bw_adjust=.5, alpha=.5, thresh=.25)
+    sns.kdeplot(x=info['w_orig_grad_diff_norms'][1,...].flatten(), y=info['losses'][1,...].flatten(),
+                cmap="Reds", fill=True, bw_adjust=.5, alpha=.5, thresh=.25)
+    sns.kdeplot(x=info['w_orig_grad_diff_norms'][2,...].flatten(), y=info['losses'][2,...].flatten(),
+                cmap="Blues", fill=True, bw_adjust=.5, alpha=.5, thresh=0.25)
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+
+    plt.savefig(parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/weightdiffnorm_vs_MSE_contour_{noise_in}_T{T}_F{factor}_lr{lr}.pdf", bbox_inches="tight")
+
+    
 
 def fig3(main_exp_name, learning_rates, factor):    
     colors = ['k', 'r', 'b']
@@ -1189,7 +1231,7 @@ if __name__ == "__main__":
     print(main_exp_name)
     info = get_info(main_exp_name)
     cutoff=1/np.sqrt(6)
-    xlim, ylim = weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i=exp_i, lr=learning_rate, factor=factor, cutoff=cutoff)
+    xlim, ylim = weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i=None, lr=learning_rate, factor=factor, cutoff=cutoff)
                                         # xlim=[0, 2e-4],
                                         # ylim=[1e-8, 2e-4])
     
@@ -1204,9 +1246,12 @@ if __name__ == "__main__":
             parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-7}",
             parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-9}",
             parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-8}"]
-    weight_distance_MSE_scatter_plots(main_exp_names, exp_i, cutoff, factor=factor,
+    _, _, optlr_info = weight_distance_MSE_scatter_plots(main_exp_names, exp_is=range(10), cutoff=cutoff, factor=factor,
                                         set_xlim=xlim,
                                         set_ylim=ylim)
+    weigh_mse_traj_hist(info, xlim, ylim, lr=0)
+
+    weigh_mse_traj_hist(optlr_info, xlim, ylim, lr='opt')
 
     #VECTOR FIELDS
     # for i in range(3):
