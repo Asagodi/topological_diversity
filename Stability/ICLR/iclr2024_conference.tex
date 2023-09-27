@@ -272,7 +272,7 @@ When used to accumulate stimulus, continuous attractors are also called neural i
 Neural representation of continuous values have been observed as persistent activity in the prefrontal cortex of primates, ellipsoid body of the fly, and hypothalamus~\cite{Romo1999,Noorman2022,Nair2023}.
 A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} and finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:hd}.
 
-However, the so-called ``fine-tuning problem'' describing the theoretical and practical brittleness of continuous attractors was recognized in~\citep{seung1998}.
+However, the so-called ``fine-tuning problem'' describing the theoretical and practical brittleness of continuous attractors has long been recognized \citep{seung1998,Park2023a}.
 Since biological neural systems have constantly fluctuating synaptic weights~\cite{shimizu2021}, this has been a big puzzle in the field.
 There have been efforts and remedies to lessen the degradation for particular implementations, often focusing on keeping the short-term behavior close to the continuous attractor case~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003}.
 
@@ -280,7 +280,7 @@ Our theory shows that not all continuous attractors are born equal, and there ar
 In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
 Animal behavior is finite time in nature and the longer the temporal distance the harder it is to learn in general.
 The conditions are favorable in the recurrent neuronal networks: (1) mutual inhibition is widely present and evidence points to inhibition dominated dynamics,
-(2) the neural state space is bounded due to physiological constraints-- by a non-negative firing rate below and a maximum firing rate above.
+(2) the neural state space is bounded due to physiological constraints, namely by a non-negative firing rate below and a maximum firing rate above.
 
 %Given an $d$-dimensional continuous attractor manifold embedded within a recurrent dynamics of $n$-dimensions, it supports persistent continuous memory of $d$-dimension.
 %There are $d$ zero Lyapunov exponents corresponding to the perturbations tangent to the manifold, coinciding with the memory representation, and $(n-d)$ negative Lyapunov exponents that expresses the attractive nature.
@@ -297,7 +297,7 @@ due to the discrete nature of the relevant stimulus space, the solutions do not 
 We designed a simple integration task where one of the optimal solutions is the continuous attractor.
 
 We extend the Poisson clicks task which has been used for studying perceptual decision making~\cite{brunton2013}.
-Neural integrators are considered to be crucial for the task for accumulating evidence over time and maintaining a continuous representation of the accumulated evidence.
+Neural integrators are considered to be crucial for the task for accumulating sensory evidence over time and maintaining a continuous representation of the accumulated evidence.
 For our experiments, we used discrete time representations over $T$ time bins and the real-valued\footnote{Approximated as single precision IEEE 754 floating point.} stimulus encoded as difference of two non-negative values:
 \begin{align}
     I_{t,i} &= m_{t,i} \cdot u_{t,i} 
@@ -433,7 +433,7 @@ Specifically, we take the self-recurrent connection and systematically vary:
 \begin{align}
     \vW_{1,1} \leftarrow \vW_{1,1} + \Delta.
 \end{align}
-The result is shown in Fig.~\ref{fig:maintenance}A.
+The result is shown in Fig.~\ref{fig:maintenance}D.
 For UBLA and iRNN, positive perturbations shows exponentially increasing loss due to the bifurcation to an exploding gradient dynamical system.
 In all other cases, including all perturbations of BLA, leads to vanishing gradient, hence the loss is bounded.
 
@@ -1046,7 +1046,7 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
   (E) Distribution of gradients shows bimodal distribution for UBLA.
     (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
   }
-  \label{fig:maintenance}
+  \label{fig:maintenance:long}
 \end{figure}
 
 
