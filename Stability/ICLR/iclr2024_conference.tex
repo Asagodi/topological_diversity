@@ -126,7 +126,7 @@ When the information of interest is continuous-valued, a natural solution is to 
 Continuous attractors are prevalent in theoretical neuroscience as tools to model neural representation and computation ranging from internal representations of head directions and eye positions to perceptual decision-making and working memory~\cite{Khona2022}.
 Continuous attractors are also at the core of long short-term memory (LSTM)~\cite{Greff2017} units and the neural Turning machine (NTM)~\cite{Graves2014} to provide digital computer memory like properties not natural to recurrent networks. % with many applications such as meta-learning~\cite{Santoro2016}.
 In fact, the critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroys the continuous attractor structures implemented in RNNs~\cite{seung1996,Renart2003}, even if biologically plausible asymmetric connections are used to construct them \citep{darshan2022}.
-However, not all RNN implementations of continuous attractors behave similarly in their brittleness.
+However, as we will show, not all RNN implementations of continuous attractors behave similarly in their brittleness.
 
 We found that in the space of RNNs, some have neighbourhoods with highly undesirable exploding gradients. We will describe some continuous attractors which have such neighbourhoods.
 Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
