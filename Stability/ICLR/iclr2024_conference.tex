@@ -233,7 +233,7 @@ However, the local invariance implies that trajectories remain within the manifo
 Furthermore, the non-zero flow on the slow manifold is slow and given in the $\epsilon \to 0$ limit as $\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)$ where $\tau = \epsilon t$ is a rescaled time and $c^\epsilon(\cdot)$ parameterizes the $l$ dimensional slow manifold.
 In addition, the stable manifold(s) of $\manifold_0$ are similarly approximately maintained~\cite{Jones1995}, allowing the manifold $\manifold_\epsilon$ to remain attractive.
 
-These conditions are met (up to numerical precision) for the BLA example in Fig.~\ref{fig:ublabla}B.
+These conditions are met (up to numerical precision) for the BLA example in Fig.~\ref{fig:ublabla}B (see Supp. Sec. \label{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points, and overall still attractive.
 On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence.
 Importantly, the ``slow'' flow on the perturbed system is not bounded.
@@ -557,10 +557,15 @@ The distribution of MSE for the task can be used as proxy for the misadjustment 
 
 Continuous attractor models of the head direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a circular or ring-like structure \citep{zhang1996, Noorman2022, ajabi2023}. 
 Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
-We will demonstrate the implications of the Persistence theorem in the case of the implementation of a continuous ring attractor presented in \citep{Noorman2022}.
+We demonstrate the consequences of the Persistence Theorem in two ODE models with a continuous ring attractor.
+
+We first of all looked at a simple (non-biological) system that has a ring attractor we analysed is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
+This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$. We investigate bifurcations caused by parametric perturbations and bump perturbations of the ring invariant manifold (see Supp. Sec. \label{sec:supp:ring_perturbations}), which is bounded and boundaryless. All perturbations maintain the invariant manifold (Fig. \ref{fig:both_rings}B).
+
+Second, we investigate perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies \citep{Noorman2022}.
 As this continuous ring attractor is bounded its invariant manifold persists and, hence, no divergent orbits are created under small perturbations to this system. 
 Furthermore, because the ring attractor is boundaryless it is both forward and backward invariant, i.e. hence it is invariant and trajectories never leave the persistent invariant manifold\citep{wiggins1994}.
-This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians.
+This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec \label{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
 
 \begin{figure}[tbhp]
@@ -572,11 +577,9 @@ For sufficiently strong local excitation (given by the parameter $J_E$) and broa
        }
          \label{fig:both_rings}
 \end{figure}
-We will first of all look at a simple (non-biological) system that has a ring attractor to demonstrate the consequences of the Persistence Theorem.
-The system we will analyse is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
-This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$. We investigate bifurcations caused by parametric perturbations of the ring invariant manifold, which is bounded and boundaryless. All perturbations maintain the invariant manifold (Fig. \ref{fig:both_rings}B).
 
-We evaluate the  the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ through. 
+
+We evaluate the  the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ through \label{sec:supp:ring_perturbations}. 
 We found that the ring can be perturbed into systems with between 2 and 12 fixed points (Fig. \ref{fig:both_rings}A).
 The probability of the different perturbations were calculated numerically.
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
@@ -591,9 +594,8 @@ This theory implies backpropagating gradient does not explode for systems near c
 This insight also suggests that there can exist homeostatic mechanisms for certain implementations of continuous attractors that maintain the structure of the attractor sufficiently for the neural computation it is used in, which we demonstrate in simple networks.
 
 %activation functions
-It is well-known that activation functions play a critical role in propagating these gradients effectively through the network  \citep{jagtap2023, ramachandran2017, hayou2019}.
-The activation function can have many forms.
-The ones that are $C^r$ for $r\geq 1$ are the ones to which the Persistence Theorem applies. 
+It is well-known that activation functions, which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023, ramachandran2017, hayou2019}.
+Activation functions that are $C^r$ for $r\geq 1$ are the ones to which the Persistence Theorem applies. 
 The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistence invariant manifold.
 For situations where smoothness of the persistent invariant manifold is of importance, smoother activation functions might be preferable, such as the Exponential Linear Unit (ELU)\citep{clevert2015} or the Continuously Differentiable Exponential Linear Units (CELU) \citep{barron2017}.
 
@@ -1136,7 +1138,7 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
 
 %All perturbations maintain the invariant manifold.
 
-\subsection{Fast-slow form}
+\subsection{Fast-slow form}\label{sec:supp:fast_slow_form}
 
 We transform the state space so that the line attractor aligns with the $y$-axis.
 So, we apply the affine transformation $R_\theta(x-\frac{1}{2})$ with the rotation matrix $R_\theta = \begin{bmatrix}\cos\theta &-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}= \frac{1}{\sqrt{2}}\begin{bmatrix}1 &1\\-1&1\end{bmatrix}$ where we have set $\theta=-\frac{\pi}{4}$.
@@ -1157,7 +1159,7 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 
 
 
-\section{Ring perturbations}
+\section{Ring perturbations}\label{sec:supp:ring_perturbations}
 
 %Definition of a bump perturbation
 We define a local perturbation (i.e., a change to the ODE with compact support) through the bump function $\Psi(x) = \exp\left(\frac{1}{\|x\|^2-1}\right)$ for $\|x\|<1$ and zero outisde, by multiplying it with a uniform, unidirectional vector field. All such perturbations leave at least a part of the continuous attractor intact and preserve the invariant manifold, i.e. the parts where the fixed points disappear a slow flow appears.
@@ -1166,7 +1168,7 @@ The parametrized perturbations are characterized as the addition of random matri
 
 
 
-\section{Heading direction network}
+\section{Heading direction network}\label{sec:supp:headdirection}
 
 \begin{equation}
 \tau \dot h_j = -h_j + \frac{1}{N} \sum_k (W^{sym}_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
