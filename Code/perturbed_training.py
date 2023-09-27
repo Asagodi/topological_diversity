@@ -453,7 +453,7 @@ def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
     
     
     result = train(net, task=task, n_epochs=training_kwargs['n_epochs'], batch_size=training_kwargs['batch_size'],
-              learning_rate=training_kwargs['learning_rate'], clip_gradient=None, cuda=False, record_step=1, h_init=h0_init,
+              learning_rate=training_kwargs['learning_rate'], clip_gradient=None, cuda=training_kwargs['cuda'], record_step=1, h_init=h0_init,
               loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
               optimizer='sgd', momentum=0, weight_decay=training_kwargs['weight_decay'], fix_seed=training_kwargs['fix_seed'], trial=trial,
               perturb_weights=training_kwargs['perturb_weights'], weight_sigma=training_kwargs['weight_sigma'], noise_step=training_kwargs['noise_step'],
@@ -465,6 +465,8 @@ def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
         pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
     return result
+
+
     
 if __name__ == "__main__":
     # print(current_dir)
@@ -474,6 +476,7 @@ if __name__ == "__main__":
     models = ['irnn', 'ubla', 'bla']
     sigmas = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9]
     
+    training_kwargs['cuda'] = True
     training_kwargs['verbose'] = False
     training_kwargs['fix_seed'] = True
     training_kwargs['cont'] = True
@@ -495,10 +498,10 @@ if __name__ == "__main__":
     training_kwargs['ouput_bias_value'] = 20
     exp_info = training_kwargs
     
-    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
-    noise_in_list = ['weights', 'input', 'internal']
-    # factors = [1000, 100, 10, 1, .1, .01]
-    thresholds = [1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6]
+    learning_rates = [1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
+    noise_in_list = ['weights']
+    factors = [10, 1, .1]
+    # thresholds = [1e-3, 1e-4, 1e-5, 1e-6]
 
     exp_info['learning_rates'] = learning_rates
     exp_info['noise_in_list'] = noise_in_list
@@ -506,11 +509,12 @@ if __name__ == "__main__":
         all_alpha_stars = pickle.load(handle)
         exp_info['all_alpha_stars'] = all_alpha_stars
 
-    for threshold in tqdm(thresholds):
-        
+    for factor in tqdm(factors):
+    # for factor in tqdm(factors):
         for n_i, noise_in in enumerate(noise_in_list):
-            main_exp_folder = parent_dir + f"/experiments/cnoisy_thrs/T{training_kwargs['T']}/gradstep{training_kwargs['noise_step']}/threshold{threshold}/{noise_in}/input{training_kwargs['input_length']}"
-    
+            # main_exp_folder = parent_dir + f"/experiments/cnoisy_thrs/T{training_kwargs['T']}/gradstep{training_kwargs['noise_step']}/threshold{threshold}/{noise_in}/input{training_kwargs['input_length']}"
+            main_exp_folder = parent_dir + f"/experiments/cnoisy_nomatch/T{training_kwargs['T']}/gradstep{training_kwargs['noise_step']}/alpha_star_factor{factor}/{noise_in}/input{training_kwargs['input_length']}"
+
             makedirs(main_exp_folder) 
             
             training_kwargs['weight_sigma'] = 0.
@@ -529,13 +533,13 @@ if __name__ == "__main__":
                     experiment_folder = main_exp_folder+f"/lr{learning_rate}/"+model
                     if noise_in == 'weights':
                         training_kwargs['perturb_weights'] = True
-                        training_kwargs['weight_sigma'] = all_alpha_stars[noise_in][model][threshold][0]
+                        training_kwargs['weight_sigma'] = factor*1e-5 #all_alpha_stars[noise_in][model][threshold][0]
                     elif noise_in == 'input':
-                        training_kwargs['task_noise_sigma'] = all_alpha_stars[noise_in][model][threshold][0]
+                        training_kwargs['task_noise_sigma'] = factor*1e-5 #all_alpha_stars[noise_in][model][threshold][0]
                     elif noise_in == 'internal':
-                        training_kwargs['internal_noise_std'] = all_alpha_stars[noise_in][model][threshold][0]
+                        training_kwargs['internal_noise_std'] = factor*1e-5 #all_alpha_stars[noise_in][model][threshold][0]
                     else:
-                        training_kwargs['weight_decay'] =  all_alpha_stars[noise_in][model][threshold][0]
+                        training_kwargs['weight_decay'] =  factor*1e-5 #all_alpha_stars[noise_in][model][threshold][0]
                     makedirs(experiment_folder) 
         
                     for i in range(10):
