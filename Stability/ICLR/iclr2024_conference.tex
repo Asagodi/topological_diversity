@@ -239,8 +239,8 @@ Importantly, the ``slow'' flow on the perturbed system is not bounded.
 
 % the compact case is that you have that the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
 
-In practice, the sufficient conditions for RNNs implementing continuous attractors to have this graceful breakdown is for the continuous attractor manifold to be of finite dimension throughout, connected, and bounded. 
-However, in systems with an invariant manifold with dimension at least three, it is possible that a slow manifold with chaotic dynamics is created through a perturbation. This would have as consequence that the perturbed system acquires positive Lyapunov exponents (corresponding to the chaotic orbit), which then can still lead to exploding gradients.
+In practice, the sufficient conditions for RNNs implementing continuous attractors to have this graceful breakdown (like BLA but not UBLA) is for the continuous attractor manifold to be of finite dimension throughout, connected, and bounded.
+However, in systems with an invariant manifold with dimension at least three, it is possible that a slow manifold with chaotic dynamics is created through a perturbation. This would have as consequence that the perturbed system acquires positive Lyapunov exponents (corresponding to the chaotic orbit), which then can still lead to exploding gradients albeit with very slow flow that has little practical consequence in finite time experiments.
 
 \subsection{Implications on Machine Learning}\label{sec:imp:ML}
 Extending the memory time constant of RNNs have long been an important area of research with much focus on random weights~\cite{Legenstein2007,Goldman2009,Toyoizumi2011,Kerg2019,Chen2018,Henaff2016,Rusch2021,arjovsky2016}.
