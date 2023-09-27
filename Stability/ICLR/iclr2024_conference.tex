@@ -428,10 +428,10 @@ The inputs push the input along the line attractor in two opposite directions, s
 \end{equation}
 
 \subsubsection{Asymmetric loss landscape due to exploding gradients}
-To illustrate the effect of bifurcations from continuous attractor solution, we take a 1-dimensional slice of the loss surface.
+To illustrate the effect of bifurcations from continuous attractor solution, we take a 1-dimensional slice of the loss surface, see Fig. \ref{fig:maintenance2}D.
 Specifically, we take the self-recurrent connection and systematically vary:
 \begin{align}
-    \vW_{1,1} \leftarrow \vW_{1,1} + \Delta.
+    \vW_{1,1} \leftarrow \vW_{1,1} + \Delta \text{  with } \Delta\in[-\tfrac{1}{10},\tfrac{1}{10}].
 \end{align}
 The result is shown in Fig.~\ref{fig:maintenance}D.
 For UBLA and iRNN, positive perturbations shows exponentially increasing loss due to the bifurcation to an exploding gradient dynamical system.
@@ -442,7 +442,7 @@ In all other cases, including all perturbations of BLA, leads to vanishing gradi
   \includegraphics[width=\textwidth]{maintenance_T100.pdf}
   \caption{
   Comparing three continuous attractor solutions to the click integration task for a length of $T=100$ time steps.
-  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps.
+  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps. Averages (thick lines) over 10 simulations (thin lines) are shown for each network.
   (B) Changes to the recurrent parameters (matrix and bias), without (upper) and with (lower) learning (with the optimal learning rates). iRNN converges to a different solution.
  (C)  The distribution of the MSE for different learning rates. The dip in the MSE defines the optimal learning rate for each of the three neural integrators. 
     (D) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
