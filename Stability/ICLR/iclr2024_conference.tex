@@ -7,8 +7,8 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{forloop}
 \usepackage{stmaryrd}
-\usepackage{natbib}
-\setcitestyle{square, comma, numbers,sort&compress, super}
+%\usepackage{natbib}
+%\setcitestyle{square, comma, numbers,sort&compress, super}
 \usepackage{subcaption}
 \usepackage{graphicx}
 \usepackage{caption}
@@ -187,7 +187,7 @@ Together these theoretical results practically nullify the concern of the fine t
 %\subsection{Structural stability and bifurcations}
 
 \section{Theory of gracefully degrading continuous attractors}\label{sec:theory}
-In this section, we apply Fenichel's work on invariant manifolds to RNNs and translate the results for the machine learning and theoretical neuroscience audience.
+In this section, we apply invariant manifold theory to RNNs and translate the results for the machine learning and theoretical neuroscience audience.
 
 \subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
 We start by formulating RNNs implementing a continuous attractor in continuous time: $\dot{\vx} = \vf(\vx)$.
@@ -217,7 +217,7 @@ Equivalently, for the ODE, $\dot{\vx} = \vf(\vx)$, the variational system is of 
 
 When $\epsilon > 0$, the continuous attractor bifurcates away.
 What can we say about the fate of the perturbed system?
-The continuous dependence theorem~\cite{Chicone2006} says that the trajectories will change continuously as a function of $\epsilon$ without a guarantee on how quickly they change.
+The continuous dependence theorem~\citep{Chicone2006} says that the trajectories will change continuously as a function of $\epsilon$ without a guarantee on how quickly they change.
 Moreover, the topological structure and the asymptotic behavior of trajectories change discontinuously due to the bifurcation.
 Surprisingly there is a strong connection in the geometry due to Fenichel's theorem~\cite{fenichel1971}.
 We informally present a special case due to~\cite{Jones1995}:
