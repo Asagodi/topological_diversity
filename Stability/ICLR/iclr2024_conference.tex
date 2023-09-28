@@ -478,8 +478,8 @@ Fig.~\ref{fig:maintenance}A shows that for all networks, gradient descent (with 
 %Note that the magnitude of perturbation were identical for all networks, but iRNN is more robust in terms of MSE.
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
 BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to without learning. BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
-The invariant manifold of the BLA is persistent throughout learning in many cases, see Fig. \ref{sec:supp:learning} and \ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Fig. \ref{fig:wdn_mse_trajectories_F1}, Fig. \ref{fig:vfs5} and Fig. \ref{fig:vfs30}).
-iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:maintenance} and Fig \ref{fig:vfs1}).
+The invariant manifold of the BLA is persistent throughout learning in many cases, see Supp. Fig. \ref{sec:supp:learning} and \ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp Fig. \ref{fig:wdn_mse_trajectories_F1}, Supp. Fig. \ref{fig:vfs5} and Supp. Fig. \ref{fig:vfs30}).
+iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:maintenance} and Supp. Fig \ref{fig:vfs1}).
 UBLA can stay close to the initial solution for a small enough learning rate.
 
 To dissociate the effect of misadjustment from gradient descent and external perturbation, we interleaved a larger perturbation with 10 gradient steps.
@@ -498,9 +498,9 @@ The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t
 
 The noise level $\sigma$ was chosen individually for the three networks as follows. 
 We calculated the loss on a batch of inputs for various noise levels.
-We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Sec. \ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
+We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Supp. Sec. \ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
 This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
-In the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Fig \ref{fig:all_lrs_vs_mses}. 
+In the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Supp. Fig. \ref{fig:all_lrs_vs_mses}. 
 
 %The parameters that were used for the effects of input- and parameter-type noise are summarized in Table \ref{tab:params}.
 %The bias parameters of the UBLA and BLA networks were set to $\beta=100$, while $\alpha=1$. 
@@ -552,7 +552,7 @@ The distribution of MSE for the task can be used as proxy for the misadjustment 
 
 Continuous attractor models of the head direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a circular or ring-like structure \citep{zhang1996, Noorman2022, ajabi2023}. 
 Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
-We demonstrate the consequences of the Persistence Theorem in two ODE models with a continuous ring attractor.
+We demonstrate the consequences of the Persistence Theorem in two models with a continuous ring attractor.
 
 We first of all looked at a simple (non-biological) system that has a ring attractor we analysed is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
 This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$. We investigate bifurcations caused by parametric perturbations and bump perturbations of the ring invariant manifold (see Supp. Sec. \label{sec:supp:ring_perturbations}), which is bounded and boundaryless. All perturbations maintain the invariant manifold (Fig. \ref{fig:both_rings}B).
@@ -582,8 +582,8 @@ The probability of the different perturbations were calculated numerically.
 
 \section{Discussion}
 We have derived a general theory that describes the loss landscape of RNNs around continuous attractor solutions.
-This theory implies backpropagating gradient does not explode for systems near compact continuous attractors because of divergent dynamics.
-This insight also suggests that there can exist homeostatic mechanisms for certain implementations of continuous attractors that maintain the structure of the attractor sufficiently for the neural computation it is used in, which we demonstrate in simple networks.
+This theory implies that backpropagating gradient does not explode for systems near compact continuous attractors because of divergent dynamics.
+This insight also suggests that there can exist homeostatic mechanisms for certain implementations of continuous attractors that maintain the structure of the attractor sufficiently for the neural computation it is used in, which we demonstrate in a simple network.
 
 %activation functions
 It is well-known that activation functions, which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023, ramachandran2017, hayou2019}.
