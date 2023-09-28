@@ -344,7 +344,7 @@ Assuming an Euler integration with unit time step, the discrete-time RNN of \eqr
 \begin{align}
     \dot{\vx} &= -\vx + \sigma(\win \vI + \vW \vx + \vb) \label{eq:RNN:continuous}
 \end{align}
-
+%
 For tractable analysis, we consider $2$ dimensional systems with ReLU activation. %We include another continuous attractor, the identity RNN, which is also a popular initialization for RNN training \citep{le2015}.
 We study the three different ReLU RNN implementations of an integrator in a 2 dimensional system, the Identity RNN (iRNN)  \citep{le2015}, UBLA and BLA.
 On the original clicks task the UBLA and BLA networks count the click differences directly, while iRNN counts the clicks separately and then subtracts these representations through the output mapping.
