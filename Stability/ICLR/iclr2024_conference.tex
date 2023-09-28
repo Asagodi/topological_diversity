@@ -467,7 +467,7 @@ For the SGD, the last output of the network after $T$ steps was taken to calcula
 
 In the first experiment, Gaussian random noise is injected to all parameters inducing a constant diffusion of the parameters, which emulates the biological synaptic variability.
 This type of noise is directly applied to the weights as $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\sigma)$. To dissociate the effect of misadjustment from gradient descent and external perturbation, we measured the effect of a single perturbation on the learning dynamics.
-Fig.~\ref{fig:nonmaintenance}C shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
+Fig.~\ref{fig:maintenance_h0}C shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
 %Note that the magnitude of perturbation were identical for all networks, but iRNN is more robust in terms of MSE.
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
 BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to without learning. BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
@@ -481,7 +481,7 @@ UBLA can stay close to the initial solution for a small enough learning rate.
 
 \begin{figure}[thbp]
   \centering
-  \includegraphics[width=\textwidth]{nonmaintenance.pdf}
+  \includegraphics[width=\textwidth]{maintenance_h0.pdf}
   \caption{
   Comparing three continuous attractor solutions to the click integration task for a length of $T=100$ time steps.
 (A) MSE distribution during learning with different learning rates.
@@ -490,7 +490,7 @@ UBLA can stay close to the initial solution for a small enough learning rate.
 (D) Closeness of the parameters  to the original  while learning with noise.
 (E) All networks converge to local non-optimal solutions after perturbations.
   }
-  \label{fig:nonmaintenance}
+  \label{fig:maintenance_h0}
 \end{figure}
 
 
@@ -507,6 +507,12 @@ The noise level $\sigma$ was chosen individually for the three networks as follo
 We calculated the loss on a batch of inputs for various noise levels for all three noise types (Supp.~Fig.~\ref{fig:matching_noise_3types_cont}).
 We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Supp.~Sec.~\ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
 This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
+
+%description of finding optimal learning rate
+For the matched noise level, we find the optimal learning rate for all three networks.
+The optimal learning rates for the input-type noise experiments were chosed from a set of values 
+($\{10^{-10}\}_{i=4,\dots 10}$)  based on best performance of the task, measured as mean last ten MSE values averaged over ten runs.
+
 In the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Supp.~Fig.~\ref{fig:all_lrs_vs_mses}. 
 
 
@@ -514,22 +520,19 @@ In the presence of input and internal noise the UBLA has a higher tendency to ha
 
 
 %gradientdistribution 
-Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates (Fig. \ref{fig:nonmaintenance}B).
-The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig.~\ref{fig:nonmaintenance}D).
+Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates (Fig. \ref{fig:maintenance_h0}B).
+The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig.~\ref{fig:maintenance_h0}D).
 
 %Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. 
 %Fig.~\ref{fig:maintenance}E shows that both UBLA and iRNN diverge more quickly under gradient descent than the BLA.
 %$This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
 
 
-%description of finding optimal learning rate
-The optimal learning rates for the input-type noise experiments were chosed from a set of values 
-($\{10^{-8},10^{-9},10^{-10}\}$)
- based on best performance of the task of 10 runs.
+
 
 %new conclusions
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
- We further show that all networks converge to a different, non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator Fig.~\ref{fig:nonmaintenance}D and E.
+ We further show that all networks converge to a different, non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator Fig.~\ref{fig:maintenance_h0}D and E.
  We conclude therefore that, in practice, it is difficult to maintain all 3 attractors.
 
 
