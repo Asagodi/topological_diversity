@@ -480,7 +480,7 @@ Fig.~\ref{fig:maintenance}A shows that for all networks, gradient descent (with 
 BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to without learning. BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
 The invariant manifold of the BLA is persistent throughout learning in many cases, see Fig. \ref{sec:supp:learning} and \ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Fig. \ref{fig:wdn_mse_trajectories_F1}, Fig. \ref{fig:vfs5} and Fig. \ref{fig:vfs30}).
 iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:maintenance} and Fig \ref{fig:vfs1}).
-UBLA can stays close to the initial solution for small enough learning rate.
+UBLA can stay close to the initial solution for a small enough learning rate.
 
 To dissociate the effect of misadjustment from gradient descent and external perturbation, we interleaved a larger perturbation with 10 gradient steps.
 Fig.~\ref{fig:maintenance}C shows consistent learning in the average MSE for BLA and iRNN, but not in UBLA.
@@ -644,15 +644,15 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %Many different methods have been proposed for overcoming this difficulty.
 
 
-\section{Persistence in non-differentiable vector fields}
-The applicability of the Persistence Theorem to non-differentiable vector fields would depend on the specific characteristics of the system and the nature of the non-differentiability.
+%\section{Persistence in non-differentiable vector fields}
+%The applicability of the Persistence Theorem to non-differentiable vector fields would depend on the specific characteristics of the system and the nature of the non-differentiability.
 %
 
 \section{Bifurcation analysis of the line attractors}
 
-\subsection{Discrepancies between discrete and continuous RNNs}
-\label{sec:discrepancies}
-In the discrete time version of vanilla RNN \eqref{eq:RNN:discrete}, there can exist 2-period orbits, which are absent in the \eqref{eq:RNN:continuous} version.
+%\subsection{Discrepancies between discrete and continuous RNNs}
+%\label{sec:discrepancies}
+%In the discrete time version of vanilla RNN \eqref{eq:RNN:discrete}, there can exist 2-period orbits, which are absent in the \eqref{eq:RNN:continuous} version.
 
 \subsection{Unbounded line attractor}
 \label{sec:ubla}
