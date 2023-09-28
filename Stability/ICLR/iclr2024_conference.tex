@@ -473,9 +473,6 @@ The invariant manifold of the BLA is persistent throughout learning in many case
 iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig.~\ref{fig:maintenance_h0}F and Supp.~Fig~\ref{fig:vfs1}).
 UBLA can stay close to the initial solution for a small enough learning rate.
 
-
-
-
 We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
 The second type of noise is injected into the input $x_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$.
 To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output $O_t^*$ (Eq.~\ref{eq:output}).
@@ -486,11 +483,15 @@ We calculated the loss on a batch of inputs for various noise levels $\sigma$ fo
 We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Supp.~Sec.~\ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
 This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
 
-
 %description of finding optimal learning rate
 For the matched noise level, we find the optimal learning rate for all each network separately.
 The optimal learning rates for the input-type noise experiments were chosed from a set of values 
 ($\{10^{-10}\}_{i=4,\dots 10}$)  based on best performance of the task, measured as mean last ten MSE values averaged over ten runs.
+ The slow manifold that is created after perturbations is provides gradients that can counteract parameter diffusions for all networks (on short trials), even for the ones that have the potential for exploding gradients ( Fig.~\ref{fig:maintenance_h0}A and D).
+ %new conclusions
+%The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
+ We further show that all networks converge to a different, non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator Fig.~\ref{fig:maintenance_h0}D and E.
+ We conclude therefore that, in practice, it is difficult to maintain any of the 3 attractors. 
 
 %gradientdistribution 
 %Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. 
@@ -499,11 +500,8 @@ Also in the presence of input and internal noise the UBLA has a higher tendency 
 %This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
 %The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig.~\ref{fig:maintenance_h0}D).
 
-%new conclusions
-%The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
- We further show that all networks converge to a different, non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator Fig.~\ref{fig:maintenance_h0}D and E.
- We conclude therefore that, in practice, it is difficult to maintain any of the 3 attractors. 
-Finally, the slow manifold that is created after perturbations is helpful to counteract parameter diffusions for all networks (on short trials), even for the ones that have the potential for exploding gradients.
+
+
 
 %The individual runs indicate larger variability induced by learning over time, which we quantify in Fig.~\ref{fig:maintenance}D.
 %iRNN and UBLA both have larger learning noise than BLA, consistent with the absence of exploding gradient configuration around the optimum.
@@ -514,10 +512,11 @@ Finally, the slow manifold that is created after perturbations is helpful to cou
   \caption{
   Comparing three continuous attractor solutions to the click integration task for a length of $T=100$ time steps.
 (A) MSE distribution during learning with different learning rates.
-(B) Gradient distribution at the beginning and end of trials.
-(C) MSE distribution during learning and in the presence of noise. Learning counteracts learning in all three networks.
-(D) Closeness of the parameters  to the original  while learning with noise.
-(E) All networks converge to local non-optimal solutions after perturbations.
+(B) Loss landscape is steeper around the LAs. The BLA has a bounded loss in the neighborhood.
+(C) Gradient distribution at the beginning (upper) and end (lower) of trials.
+(D) MSE distribution during learning and in the presence of noise. Learning counteracts learning in all three networks.
+(E) Closeness of the parameters  to the original  while learning with noise.
+(F) All networks converge to local non-optimal solutions after perturbations.
   }
   \label{fig:maintenance_h0}
 \end{figure}
@@ -551,9 +550,9 @@ For sufficiently strong local excitation (given by the parameter $J_E$) and broa
          \label{fig:both_rings}
 \end{figure}
 
-We evaluate the  the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\iidsample\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ through~\ref{sec:supp:ring_perturbations}.
+We evaluate the  the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\iidsample\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ by identifying all bifurcations (Supp.~Sec.~\ref{sec:supp:ring_perturbations}).
 We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:both_rings}A).
-The probability over the bifurcations is numerically estimated.
+The probability of each type of bifurcation was numerically estimated.
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 
 
@@ -991,7 +990,7 @@ we always have that
 This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $\epsilon$-ball around the BLA neural integrator with $\epsilon<1$.
 
 
-
+\newpage
 \section{Noise level matching}\label{sec:supp:matching}
 %Rationale: what is a universal measure of noise level
 %that is applicable to any dyn sys and makes comparisons of performance (under gradient descent) meaningful?
@@ -1003,8 +1002,8 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
          \label{fig:matching_noise_3types_cont}
 \end{figure}
 
-
-\section{}
+\newpage
+\section{Continuous attractor solutions in click integration tasks with noise in the weights}
 \begin{figure}[thbp]
   \centering
   \includegraphics[width=\textwidth]{maintenance_T100.pdf}
@@ -1035,7 +1034,7 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
   \label{fig:maintenance:long}
 \end{figure}
 
-
+\newpage
 \section{Stability of the neural integrators for different learning rates}
 
 \begin{figure}[thbp]
@@ -1045,6 +1044,8 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
          \label{fig:all_lrs_vs_mses}
 \end{figure}
 
+
+\newpage
 \section{Trajectories of the neural integrators in the recurrent network space}
 
 \begin{figure}[thbp]
@@ -1054,6 +1055,8 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
          \label{fig:wdn_mse_trajectories_F1}
 \end{figure}
 
+
+\newpage
 \section{Influence of the different noise types on the found solutions for the neural integrators}
 
 \begin{figure}[H]
@@ -1168,7 +1171,7 @@ and
 x^*_i<0 \text{   for  	 } i\in\sigma.
 \end{equation}
 
-
+\newpage
 \subsection{Independence of norm of perturnation on bifurcation}
 
 \begin{figure}[tbhp]
