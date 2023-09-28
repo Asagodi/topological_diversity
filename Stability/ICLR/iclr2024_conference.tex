@@ -431,15 +431,17 @@ The inputs push the input along the line attractor in two opposite directions, s
 \bout = 0.
 \end{equation}
 
-\subsubsection{Asymmetric loss landscape due to exploding gradients}
-To illustrate the effect of bifurcations from continuous attractor solution, we take a 1-dimensional slice of the loss surface, see Fig. \ref{fig:maintenance}D.
-Specifically, we take the self-recurrent connection and systematically vary:
+\subsubsection{Asymmetric loss landscape reflecting dynamics after bifurcation}\label{sec:asymmetricloss}
+To illustrate the effect of bifurcations from continuous attractor solution, we take a 1-dimensional slice of the loss surface, see Fig.~\ref{fig:maintenance}D.
+Specifically, we continuously vary one of the entries of the self-recurrent connection matrix:
 \begin{align}
-    \vW_{1,1} \leftarrow \vW_{1,1} + \Delta \text{  with } \Delta\in[-\tfrac{1}{10},\tfrac{1}{10}].
+    \vW_{1,1} \leftarrow \vW_{1,1} + \Delta \quad \text{  with } \Delta\in[-\tfrac{1}{10},\tfrac{1}{10}].
 \end{align}
-The result is shown in Fig.~\ref{fig:maintenance}D.
-For UBLA and iRNN, positive perturbations shows exponentially increasing loss due to the bifurcation to an exploding gradient dynamical system.
+At any $\Delta \neq 0$, the continuous attractor disappears and the spontaneous dynamics of the networks show convergent and/or divergent behavior at exponential rates.
+Therefore, as the number of time steps in a trial increases, the error in the output also exponentially converge or diverge in a corresponding manner.
+As can be seen in Fig.~\ref{fig:maintenance}D, for UBLA and iRNN, $\Delta > 0$  perturbations shows exponentially increasing loss and corresponds to an exploding gradient dynamical system.
 In all other cases, including all perturbations of BLA, leads to vanishing gradient, hence the loss is bounded.
+Note also the high curvature of the loss landscape around the optimal solution indicating that the slow manifold may only be maintained for a small neighborhood.
 
 \begin{figure}[H]
   \centering
