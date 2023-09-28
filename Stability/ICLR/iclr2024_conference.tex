@@ -54,6 +54,8 @@
 
 \DeclareMathOperator{\relu}{ReLU}
 
+\newcommand{\iidsample}{\stackrel{iid}{\sim}}
+
 \newcommand{\probP}{\text{I\kern-0.15em P}}
 \newcommand{\cmark}{\ding{51}}%
 \newcommand{\xmark}{\ding{55}}%
@@ -555,11 +557,12 @@ Since continuous attractors are susceptible to noise and perturbations the preci
 We demonstrate the consequences of the Persistence Theorem in two models with a continuous ring attractor.
 
 We first of all looked at a simple (non-biological) system that has a ring attractor we analysed is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
-This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$. We investigate bifurcations caused by parametric perturbations and bump perturbations of the ring invariant manifold (see Supp. Sec. \label{sec:supp:ring_perturbations}), which is bounded and boundaryless. All perturbations maintain the invariant manifold (Fig. \ref{fig:both_rings}B).
+This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$. We investigate bifurcations caused by parametric perturbations and bump perturbations of the ring invariant manifold (see Supp.~Sec.~\ref{sec:supp:ring_perturbations}), which is bounded and boundaryless.
+All perturbations maintain the invariant manifold (Fig.~\ref{fig:both_rings}B).
 
-Second, we investigate perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies \citep{Noorman2022}.
+Second, we investigate perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
 As this continuous ring attractor is bounded its invariant manifold persists and, hence, no divergent orbits are created under small perturbations to this system. 
-Furthermore, because the ring attractor is boundaryless it is both forward and backward invariant, i.e. hence it is invariant and trajectories never leave the persistent invariant manifold\citep{wiggins1994}.
+Furthermore, because the ring attractor is boundaryless it is both forward and backward invariant, i.e. hence it is invariant and trajectories never leave the persistent invariant manifold~\citep{wiggins1994}.
 This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec \label{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
 
@@ -573,10 +576,9 @@ For sufficiently strong local excitation (given by the parameter $J_E$) and broa
          \label{fig:both_rings}
 \end{figure}
 
-
-We evaluate the  the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ through \label{sec:supp:ring_perturbations}. 
-We found that the ring can be perturbed into systems with between 2 and 12 fixed points (Fig. \ref{fig:both_rings}A).
-The probability of the different perturbations were calculated numerically.
+We evaluate the  the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\iidsample\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ through~\ref{sec:supp:ring_perturbations}.
+We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:both_rings}A).
+The probability over the bifurcations is numerically estimated.
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 
 
