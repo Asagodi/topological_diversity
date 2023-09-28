@@ -289,21 +289,19 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 %In theory, the topology of the manifold can be arbitrary, ideally matching the desired structure of the target variables.
 
 \section{Experiments}
-To computationally investigate the properties of the neighborhood of recurrent dynamical systems that implement continuous attractors, we investigate 5 RNNs that are known a priori to form 1 or 2 dimensional continuous attractors.
-We consider two topologically distinct continuous integration tasks: (i) linear integration, and (ii) angular integration.
+To computationally investigate the neighborhood of recurrent dynamical systems that implement continuous attractors, we investigate 5 RNNs that are known a priori to form 1 or 2 dimensional continuous attractors.
+We consider two topologically distinct temporal integration tasks: (i) linear integration, and (ii) angular integration.
+For all experiments we used single precision floating point arithmetic and PyTorch.
+%In order to demonstrate the implications of the theory of the persistence of bounded continuous attractors, we rigorously test the predictions of the theory on the stability of the BLA.
+% Our objective is to assess the practical implications of the theoretical findings of bounded continuous attractors in a small and tractable system, and second, to contribute empirical evidence that can help refine and extend existing theoretical frameworks. 
+%
+\subsection{Linear temporal integration task}\label{sec:task:continuous-clicks}
+Given a sequence of scalar input, the job of the network is to accumulate the values over time and report the final value at a later time.
+In the context of perceptual decision-making, subjects can be trained to perform the Poisson clicks task where they have to count the differing number of sensory stimulus events from the left and right side and report the side~\cite{brunton2013}.
+A perfect linear integrator and continuous attractor memory is a natural solution to such a task.
+We generalize the clicks to have associated continuous-values for the training of RNNs to discourage discrete counting solutions.
 
-In order to demonstrate the implications of the theory of the persistence of bounded continuous attractors, we rigorously test the predictions of the theory on the stability of the BLA.
- Our objective is to assess the practical implications of the theoretical findings of bounded continuous attractors in a small and tractable system, and second, to contribute empirical evidence that can help refine and extend existing theoretical frameworks. 
-
-\subsection{Continuous-valued click integration task}\label{sec:task:continuous-clicks}
-In order to demonstrate the stability of bounded attractors, we tested the theory in an integration task.
-Although there are several standard benchmark tasks for temporal dependence learning with memory components,
-due to the discrete nature of the relevant stimulus space, the solutions do not necessarily require a continuously-valued memory.
-We designed a simple integration task where one of the optimal solutions is the continuous attractor.
-
-We extend the Poisson clicks task which has been used for studying perceptual decision making~\cite{brunton2013}.
-Neural integrators are considered to be crucial for the task for accumulating sensory evidence over time and maintaining a continuous representation of the accumulated evidence.
-For our experiments, we used discrete time representations over $T$ time bins and the real-valued\footnote{Approximated as single precision IEEE 754 floating point.} stimulus encoded as difference of two non-negative values:
+We used discrete time representations over $T$ time bins and the stimulus encoded as difference of two non-negative values:
 \begin{align}
     I_{t,i} &= m_{t,i} \cdot u_{t,i} 
              \qquad & t=1,\dots, T, \ i=1,2 &&\text{(continuous clicks)}	\label{eq:input}
@@ -317,7 +315,9 @@ where $m_{t,i}$ are independent Bernoulli random variables with probability $0.2
 We used mean squared error (MSE) of the 1-dimensional output over time as the loss function over all time bins.
 We used $T=500$ time bins per trial unless specified otherwise.
 The gradients were computed in batch mode with $1024$ randomly generated trials.
-The main challenges of this task are (1) addition and subtraction and (2) maintain the accumulated clicks for an extended period of time.
+% The main challenges of this task are (1) addition and subtraction and (2) maintain the accumulated clicks for an extended period of time.
+
+% We designed a simple integration task where one of the optimal solutions is the continuous attractor. % <== not necessarily true!
 
 %The inputs for the clicks task are incoming clicks in two channels ($K=2$) and are given as follows.
 %The non-zero inputs follow a Poisson distribution with given rates.
@@ -326,7 +326,7 @@ The main challenges of this task are (1) addition and subtraction and (2) mainta
 
 %A noisy version of the task also includes noise added to a part of the input, without alternation to the target output, i.e., the noise added to the system should be ignored by the system.
 
-\subsubsection{RNN solutions to the integration task}\label{sec:rnn:integration}
+\subsubsection{RNN solutions to the linear integration task}\label{sec:rnn:integration}
 We use vanilla RNN implementations with the standard parameterization:
 %An RNN \citep{elmanFindingStructureTime1990} consists of a $N \times N$ transition matrix $W$, an $L \times N$ decoder matrix $\wout$ (where $L$ is the output dimension), a $N \times K$ encoder matrix $\win$ (where $K$ is the input dimension), and a bias $b$ for the hidden state and $\bout$ for the output.
 % If either the output or input is categorical, $M$ (respectively $N$) is the number of classes, and we use a one-hot representation. 
