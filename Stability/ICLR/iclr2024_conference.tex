@@ -443,20 +443,7 @@ As can be seen in Fig.~\ref{fig:maintenance}D, for UBLA and iRNN, $\Delta > 0$  
 In all other cases, including all perturbations of BLA, leads to vanishing gradient, hence the loss is bounded.
 Note also the high curvature of the loss landscape around the optimal solution indicating that the slow manifold may only be maintained for a small neighborhood.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{maintenance_T100.pdf}
-  \caption{
-  Comparing three continuous attractor solutions to the click integration task for a length of $T=100$ time steps.
-  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps. Averages (thick lines) over 10 simulations (thin lines) are shown for each network.
-  (B) Changes to the recurrent parameters (matrix and bias), without (upper) and with (lower) learning (with the optimal learning rates). iRNN converges to a different solution.
- (C)  The distribution of the MSE for different learning rates. The dip in the MSE defines the optimal learning rate for each of the three neural integrators. 
-    (D) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
-  (E) Distribution of gradients shows bimodal distribution for UBLA. %Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates.
-    (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
-  }
-  \label{fig:maintenance}
-\end{figure}
+
 
 
 \subsubsection{Bifurcation probability and random perturbations}
@@ -487,6 +474,20 @@ BLA and UBLA with learning have superior misadjustment compared to iRNN and comp
 The invariant manifold of the BLA is persistent throughout learning in many cases, see Supp. Fig. \ref{sec:supp:learning} and \ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp Fig. \ref{fig:wdn_mse_trajectories_F1}, Supp. Fig. \ref{fig:vfs5} and Supp. Fig. \ref{fig:vfs30}).
 iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:maintenance} and Supp. Fig \ref{fig:vfs1}).
 UBLA can stay close to the initial solution for a small enough learning rate.
+
+\begin{figure}[thbp]
+  \centering
+  \includegraphics[width=\textwidth]{nonmaintenance.pdf}
+  \caption{
+  Comparing three continuous attractor solutions to the click integration task for a length of $T=100$ time steps.
+(A) MSE distribution during learning with different learning rates.
+(B) Gradient distribution at the beginning and end of trials.
+(C) MSE distribution during learning and in the presence of noise. Learning counteracts learning in all three networks.
+(D) Closeness of the parameters  to the original  while learning with noise.
+(E) All networks converge to local non-optimal solutions after perturbations.
+  }
+  \label{fig:nonmaintenance}
+\end{figure}
 
 To dissociate the effect of misadjustment from gradient descent and external perturbation, we interleaved a larger perturbation with 10 gradient steps.
 Fig.~\ref{fig:maintenance}C shows consistent learning in the average MSE for BLA and iRNN, but not in UBLA.
@@ -1034,7 +1035,7 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
 %Rationale: what is a universal measure of noise level
 %that is applicable to any dyn sys and makes comparisons of performance (under gradient descent) meaningful?
 
-\begin{figure}[H]
+\begin{figure}[thbp]
      \centering
     \includegraphics[width=\textwidth]{matching_noise_3types_cont}
        \caption{For various values the loss was calculated for the three types of noise. The matched noise levels were chosen based on these curves.}
@@ -1042,8 +1043,23 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
 \end{figure}
 
 
-\section{Longer trials}
-\begin{figure}[H]
+\section{}
+\begin{figure}[thbp]
+  \centering
+  \includegraphics[width=\textwidth]{maintenance_T100.pdf}
+  \caption{
+  Comparing three continuous attractor solutions to the click integration task for a length of $T=100$ time steps.
+  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps. Averages (thick lines) over 10 simulations (thin lines) are shown for each network.
+  (B) Changes to the recurrent parameters (matrix and bias), without (upper) and with (lower) learning (with the optimal learning rates). iRNN converges to a different solution.
+ (C)  The distribution of the MSE for different learning rates. The dip in the MSE defines the optimal learning rate for each of the three neural integrators. 
+    (D) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
+  (E) Distribution of gradients shows bimodal distribution for UBLA. %Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates.
+    (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
+  }
+  \label{fig:maintenance}
+\end{figure}
+
+\begin{figure}[thbp]
   \centering
   \includegraphics[width=\textwidth]{maintenance_T1000.pdf}
   \caption{
@@ -1061,7 +1077,7 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
 
 \section{Stability of the neural integrators for different learning rates}
 
-\begin{figure}[H]
+\begin{figure}[thbp]
      \centering
     \includegraphics[width=\textwidth]{all_lrs_vs_mses_f1}
        \caption{.}
@@ -1070,7 +1086,7 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
 
 \section{Trajectories of the neural integrators in the recurrent network space}
 
-\begin{figure}[H]
+\begin{figure}[thbp]
      \centering
     \includegraphics[width=\textwidth]{wdn_mse_trajectories_F1}
        \caption{Trajectories of learning. The LAs follow a trajectory that is orthogonal to the initial parameters, but that yet decreases the MSE.}
