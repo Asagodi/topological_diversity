@@ -235,7 +235,7 @@ However, the local invariance implies that trajectories remain within the manifo
 Furthermore, the non-zero flow on the slow manifold is slow and given in the $\epsilon \to 0$ limit as $\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)$ where $\tau = \epsilon t$ is a rescaled time and $c^\epsilon(\cdot)$ parameterizes the $l$ dimensional slow manifold.
 In addition, the stable manifold(s) of $\manifold_0$ are similarly approximately maintained~\cite{Jones1995}, allowing the manifold $\manifold_\epsilon$ to remain attractive.
 
-These conditions are met (up to numerical precision) for the BLA example in Fig.~\ref{fig:ublabla}B (see Supp. Sec. \label{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
+These conditions are met (up to numerical precision) for the BLA example in Fig.~\ref{fig:ublabla}B (see Supp.~Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points, and overall still attractive.
 On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence.
 Importantly, the ``slow'' flow on the perturbed system is not bounded.
@@ -432,14 +432,11 @@ The inputs push the input along the line attractor in two opposite directions, s
 \end{equation}
 
 \subsubsection{Asymmetric loss landscape reflecting dynamics after bifurcation}\label{sec:asymmetricloss}
-To illustrate the effect of bifurcations from continuous attractor solution, we take a 1-dimensional slice of the loss surface, see Fig.~\ref{fig:maintenance}D.
-Specifically, we continuously vary one of the entries of the self-recurrent connection matrix:
-\begin{align}
-    \vW_{1,1} \leftarrow \vW_{1,1} + \Delta \quad \text{  with } \Delta\in[-\tfrac{1}{10},\tfrac{1}{10}].
-\end{align}
+To illustrate the effect of bifurcations from continuous attractor solution, we take a 1-dimensional slice of the loss surface, see Fig.~\ref{fig:maintenance_h0}B.
+Specifically, we continuously vary one of the entries of the self-recurrent connection matrix: $    \vW_{1,1} \leftarrow \vW_{1,1} + \Delta \quad \text{  with } \Delta\in[-\tfrac{1}{10},\tfrac{1}{10}].$
 At any $\Delta \neq 0$, the continuous attractor disappears and the spontaneous dynamics of the networks show convergent and/or divergent behavior at exponential rates.
 Therefore, as the number of time steps in a trial increases, the error in the output also exponentially converge or diverge in a corresponding manner.
-As can be seen in Fig.~\ref{fig:maintenance}D, for UBLA and iRNN, $\Delta > 0$  perturbations shows exponentially increasing loss and corresponds to an exploding gradient dynamical system.
+As can be seen in Fig.~\ref{fig:maintenance_h0}B, for UBLA and iRNN, $\Delta > 0$  perturbations shows exponentially increasing loss and corresponds to an exploding gradient dynamical system.
 In all other cases, including all perturbations of BLA, leads to vanishing gradient, hence the loss is bounded.
 Note also the high curvature of the loss landscape around the optimal solution indicating that the slow manifold may only be maintained for a small neighborhood.
 
@@ -449,11 +446,12 @@ Note also the high curvature of the loss landscape around the optimal solution i
 \subsubsection{Bifurcation probability and random perturbations}
 We consider all parametrized perturbations of the form $ \vW \leftarrow \vW + \vV$ for a random matrix $\vV\in \mathbb{R}^{2\times 2}$.
 The BLA can bifurcate in the following systems, characterized by their invariant sets: a system with single stable fixed point, a system with three fixed points (one unstable and two stable) and  a system with two fixed points (one stable and the other a half-stable node) and a system with a (rotated) line attractor. 
-Only the first two bifurcations (Fig. ~\ref{fig:ublabla}) can happen with nonzero chance for the type of random perturbations we consider.
+Only the first two bifurcations (Fig.~\ref{fig:ublabla}) can happen with nonzero chance for the type of random perturbations we consider.
 The perturbations that leave the line attractor intact or to lead to a system with two fixed points have measure zero in parameter space.
 %The types of perturbation with measure zero are codimension 2 bifurcations.
-The perturbation that results in one fixed point happen with probability $\frac{3}{4}$, while perturbations lead to a system with three fixed points with probability $\frac{1}{4}$, see Supp.Sec. \ref{sec:supp:bla}.
-The (local, in the case of the single fixed point) invariant manifold manifold is indeed persistent for the BLA and homeomorphic to the original (the bounded line).
+The perturbation that results in one fixed point happen with probability $\frac{3}{4}$, while perturbations lead to a system with three fixed points with probability $\frac{1}{4}$, see Supp.~Sec.~\ref{sec:supp:bla}.
+The (local) %, in the case of the single fixed point)
+ invariant manifold manifold is indeed persistent for the BLA and homeomorphic to the original (the bounded line).
 
 
 
@@ -469,7 +467,8 @@ In the first experiment, Gaussian random noise is injected to all parameters ind
 This type of noise is directly applied to the weights as $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\sigma)$. To dissociate the effect of misadjustment from gradient descent and external perturbation, we measured the effect of a single perturbation on the learning dynamics.
 Fig.~\ref{fig:maintenance_h0}C shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
-BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to without learning. BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
+BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to perturbations without learning (Fig.~\ref{fig:maintenance_h0}A).
+BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
 The invariant manifold of the BLA is persistent throughout learning in many cases, see Supp.~Fig.~\ref{sec:supp:learning} and \ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp~Fig.~\ref{fig:wdn_mse_trajectories_F1}, Supp.~Fig.~\ref{fig:vfs5} and Supp. Fig.~\ref{fig:vfs30}).
 iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig.~\ref{fig:maintenance_h0}F and Supp.~Fig~\ref{fig:vfs1}).
 UBLA can stay close to the initial solution for a small enough learning rate.
@@ -477,8 +476,39 @@ UBLA can stay close to the initial solution for a small enough learning rate.
 
 
 
+We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
+The second type of noise is injected into the input $x_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$.
+To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output $O_t^*$ (Eq.~\ref{eq:output}).
+The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$ for $t=1,\dots, T$ and $i=1,2$. 
 
-\begin{figure}[thbp]
+%The noise level $\sigma$ was chosen individually for the three networks as follows. 
+We calculated the loss on a batch of inputs for various noise levels $\sigma$ for all three noise types (Supp.~Fig.~\ref{fig:matching_noise_3types_cont}).
+We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Supp.~Sec.~\ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
+This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
+
+
+%description of finding optimal learning rate
+For the matched noise level, we find the optimal learning rate for all each network separately.
+The optimal learning rates for the input-type noise experiments were chosed from a set of values 
+($\{10^{-10}\}_{i=4,\dots 10}$)  based on best performance of the task, measured as mean last ten MSE values averaged over ten runs.
+
+%gradientdistribution 
+%Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. 
+Note that exploding gradients can be seen for UBLA manifested as the bimodal distribution of the gradients in Fig.~\ref{fig:maintenance_h0}C. This does lead to faster divergence (for lower learning rate) but has on the other hand the benefit of providing useful gradients to maintain the (local) solution around the optimal solution, which explains the superior performance at the optimal learning rate for the UBLA (Fig.~\ref{fig:maintenance_h0}A), at least on this timescale for the trial that we investigated.
+Also in the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Supp.~Fig.~\ref{fig:all_lrs_vs_mses}. 
+%This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
+%The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig.~\ref{fig:maintenance_h0}D).
+
+%new conclusions
+%The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
+ We further show that all networks converge to a different, non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator Fig.~\ref{fig:maintenance_h0}D and E.
+ We conclude therefore that, in practice, it is difficult to maintain any of the 3 attractors. 
+Finally, the slow manifold that is created after perturbations is helpful to counteract parameter diffusions for all networks (on short trials), even for the ones that have the potential for exploding gradients.
+
+%The individual runs indicate larger variability induced by learning over time, which we quantify in Fig.~\ref{fig:maintenance}D.
+%iRNN and UBLA both have larger learning noise than BLA, consistent with the absence of exploding gradient configuration around the optimum.
+
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{maintenance_h0.pdf}
   \caption{
@@ -492,51 +522,7 @@ UBLA can stay close to the initial solution for a small enough learning rate.
   \label{fig:maintenance_h0}
 \end{figure}
 
-%The individual runs indicate larger variability induced by learning over time, which we quantify in Fig.~\ref{fig:maintenance}D.
-%iRNN and UBLA both have larger learning noise than BLA, consistent with the absence of exploding gradient configuration around the optimum.
-
-We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
-The second type of noise is injected into the input $x_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$.
-To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output $O_t^*$ (Eq.~\ref{eq:output}).
-The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$ for $t=1,\dots, T$ and $i=1,2$. 
-
-
-The noise level $\sigma$ was chosen individually for the three networks as follows. 
-We calculated the loss on a batch of inputs for various noise levels for all three noise types (Supp.~Fig.~\ref{fig:matching_noise_3types_cont}).
-We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Supp.~Sec.~\ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
-This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
-
-%description of finding optimal learning rate
-For the matched noise level, we find the optimal learning rate for all three networks.
-The optimal learning rates for the input-type noise experiments were chosed from a set of values 
-($\{10^{-10}\}_{i=4,\dots 10}$)  based on best performance of the task, measured as mean last ten MSE values averaged over ten runs.
-
-Note that exploding gradient can be seen for UBLA as the bimodal distribution of the gradients in Fig.~\ref{fig:maintenance_h0}C. This does lead to faster divergence (for lower learning rate) but has on the other hand the benefit of providing useful gradients to maintain the (local) solution around the optimal solution, which explains the superior performance at the optimal learning rate for the UBLA (Fig.~\ref{fig:maintenance_h0}A).
-Also in the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Supp.~Fig.~\ref{fig:all_lrs_vs_mses}. 
-
-
-
-
-
-%gradientdistribution 
-Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates (Fig. \ref{fig:maintenance_h0}B).
-The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig.~\ref{fig:maintenance_h0}D).
-
-%Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. 
-%Fig.~\ref{fig:maintenance}E shows that both UBLA and iRNN diverge more quickly under gradient descent than the BLA.
-%$This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
-
-
-
-
-%new conclusions
-%The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
- We further show that all networks converge to a different, non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator Fig.~\ref{fig:maintenance_h0}D and E.
- We conclude therefore that, in practice, it is difficult to maintain all 3 attractors.
-
-
-
-\subsection{Perturbation of a continuous attractor: Finite-sized head direction network model}\label{sec:hd}
+\subsection{Perturbation of a continuous attractor}\label{sec:hd} % Finite-sized head direction network models
 %We will now investigate the effects that perturbations might have on the gradients in some continuous attractor network models used in computational neuroscience.
 
 %\subsubsection{Finite-sized head direction network model}
@@ -574,7 +560,7 @@ The probability over the bifurcations is numerically estimated.
 \section{Discussion}
 We have derived a general theory that describes the loss landscape of RNNs around continuous attractor solutions.
 This theory implies that backpropagating gradient does not explode for systems near compact continuous attractors because of divergent dynamics.
-This insight also suggests that there can exist homeostatic mechanisms for certain implementations of continuous attractors that maintain the structure of the attractor sufficiently for the neural computation it is used in, which we demonstrate in a simple network.
+This insight also suggests that there can exist homeostatic mechanisms for certain implementations of continuous attractors that maintain the structure of the attractor sufficiently for the neural computation it is used in, which we demonstrate in a simple network. 
 
 %activation functions
 It is well-known that activation functions, which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023, ramachandran2017, hayou2019}.
@@ -1188,7 +1174,7 @@ x^*_i<0 \text{   for  	 } i\in\sigma.
 \begin{figure}[tbhp]
      \centering
     \includegraphics[width=\textwidth]{noorman_ring_N6_pert_allfxdpnts_allnorms}
-       \caption{Rows show the bifurcations resulting from perturbations from the matrices with the same direction in Fig. \ref{fig:both_rings}A but with different norms (columns). }
+       \caption{Rows show the bifurcations resulting from perturbations from the matrices with the same direction in Fig.~\ref{fig:both_rings}A but with different norms (columns). }
          \label{fig:noorman_ring_allfxdpnts_allnorm}
 \end{figure}
 
