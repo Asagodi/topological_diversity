@@ -119,7 +119,7 @@ class RNN(nn.Module):
             self.brec.requires_grad = False
         self.bwo = nn.Parameter(torch.Tensor(output_size))
         self.h0 = nn.Parameter(torch.Tensor(hidden_size))
-        self.h0.requires_grad = False
+        #self.h0.requires_grad = False
 
         # Initialize parameters
         with torch.no_grad():
@@ -174,7 +174,7 @@ class RNN(nn.Module):
             h = self.h0
         else:
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
-            h_init_torch.requires_grad = False
+            # h_init_torch.requires_grad = False
             # Initialize parameters
             with torch.no_grad():
                 h = h_init_torch.copy_(torch.from_numpy(h_init))
@@ -295,7 +295,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             wos[k] = net.wo.cpu().detach().numpy()
             brecs[k] = net.brec.cpu().detach().numpy()
             h0s[k] = net.h0.cpu().detach().numpy()
-                
+        # if perturb_weights and (i==0):
+        #     0
         if perturb_weights and (i==1 or (i-1) % noise_step == 0):
             with torch.no_grad():
                 net.wrec += torch.normal(0., weight_sigma, net.wrec.shape)
