@@ -547,7 +547,16 @@ Fig.~\ref{fig:maintenance}A and F shows that for all networks, gradient descent 
 The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution. We further show that iRNN converges to a different solution as it settles in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator.
 %BLA with learning has superior misadjustment to UBLA and BLA without learning.
 
+%description of finding optimal learning rate
 
+
+
+%observation: attractors converge to other solutions
+gradient descent stably converges to non-optimal solution.
+
+%new conclusions
+all 3 attractors
+ We conclude therefore that, in practice, it is difficult to maintain all 3 attractors.
 
 
 
@@ -567,7 +576,7 @@ All perturbations maintain the invariant manifold (Fig.~\ref{fig:both_rings}B).
 Second, we investigate perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
 As this continuous ring attractor is bounded its invariant manifold persists and, hence, no divergent orbits are created under small perturbations to this system. 
 Furthermore, because the ring attractor is boundaryless it is both forward and backward invariant, i.e. hence it is invariant and trajectories never leave the persistent invariant manifold~\citep{wiggins1994}.
-This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec \label{sec:supp:headdirection}).
+This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec \ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
 
 \begin{figure}[tbhp]
