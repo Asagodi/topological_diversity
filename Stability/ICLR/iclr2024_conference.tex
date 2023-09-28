@@ -466,14 +466,18 @@ We investigate the effects of three types of noise on the learning or readjustme
 For the SGD, the last output of the network after $T$ steps was taken to calculate the loss based on the mean squared error (MSE) over a batch of 1024 trials. A gradient step was then taken with a fixed gradient step size $\lambda$ (the learning rate). We set $\alpha=1$ and $\beta=20$ in Eq \ref{eq:ubla} and \ref{eq:bla}.
 
 In the first experiment, Gaussian random noise is injected to all parameters inducing a constant diffusion of the parameters, which emulates the biological synaptic variability.
-This type of noise is directly applied to the weights as $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\sigma)$.
-Fig.~\ref{fig:maintenance}A shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
+This type of noise is directly applied to the weights as $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\sigma)$. To dissociate the effect of misadjustment from gradient descent and external perturbation, we measured the effect of a single perturbation on the learning dynamics.
+Fig.~\ref{fig:nonmaintenance}C shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
 %Note that the magnitude of perturbation were identical for all networks, but iRNN is more robust in terms of MSE.
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
 BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to without learning. BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
 The invariant manifold of the BLA is persistent throughout learning in many cases, see Supp. Fig. \ref{sec:supp:learning} and \ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp Fig. \ref{fig:wdn_mse_trajectories_F1}, Supp. Fig. \ref{fig:vfs5} and Supp. Fig. \ref{fig:vfs30}).
 iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig. \ref{fig:maintenance} and Supp. Fig \ref{fig:vfs1}).
 UBLA can stay close to the initial solution for a small enough learning rate.
+
+
+
+
 
 \begin{figure}[thbp]
   \centering
@@ -489,74 +493,43 @@ UBLA can stay close to the initial solution for a small enough learning rate.
   \label{fig:nonmaintenance}
 \end{figure}
 
-To dissociate the effect of misadjustment from gradient descent and external perturbation, we interleaved a larger perturbation with 10 gradient steps.
-Fig.~\ref{fig:maintenance}C shows consistent learning in the average MSE for BLA and iRNN, but not in UBLA.
-The individual runs indicate larger variability induced by learning over time, which we quantify in Fig.~\ref{fig:maintenance}D.
-iRNN and UBLA both have larger learning noise than BLA, consistent with the absence of exploding gradient configuration around the optimum.
+
+%The individual runs indicate larger variability induced by learning over time, which we quantify in Fig.~\ref{fig:maintenance}D.
+%iRNN and UBLA both have larger learning noise than BLA, consistent with the absence of exploding gradient configuration around the optimum.
 
 We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
 The second type of noise is injected into the input $x_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$.
-To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output $O_t^*$ (Eq. \ref{eq:output}).
+To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output $O_t^*$ (Eq.~\ref{eq:output}).
 The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$ for $t=1,\dots, T$ and $i=1,2$. 
-%\ref{fig:}
+
+
+The noise level $\sigma$ was chosen individually for the three networks as follows. 
+We calculated the loss on a batch of inputs for various noise levels for all three noise types (Supp.~Fig.~\ref{fig:matching_noise_3types_cont}).
+We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Supp.~Sec.~\ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
+This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
+In the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Supp.~Fig.~\ref{fig:all_lrs_vs_mses}. 
+
+
+%The hidden state at the beginning of a trial is a learnable parameter. 
+
+
+%gradientdistribution 
+Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates (Fig. \ref{fig:nonmaintenance}B).
+The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig.~\ref{fig:nonmaintenance}D).
+
 %Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. 
 %Fig.~\ref{fig:maintenance}E shows that both UBLA and iRNN diverge more quickly under gradient descent than the BLA.
 %$This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
 
-The noise level $\sigma$ was chosen individually for the three networks as follows. 
-We calculated the loss on a batch of inputs for various noise levels.
-We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Supp. Sec. \ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
-This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
-In the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Supp. Fig. \ref{fig:all_lrs_vs_mses}. 
-
-%The parameters that were used for the effects of input- and parameter-type noise are summarized in Table \ref{tab:params}.
-%The bias parameters of the UBLA and BLA networks were set to $\beta=100$, while $\alpha=1$. 
-%The hidden state at the beginning of a trial is a learnable parameter. 
-%The optimal learning rates for the input-type noise experiments were chosed from a set of three values ($\{10^{-8},10^{-9},10^{-10}\}$) based on best performance of the task of 20 runs.
-%
-%A sequence of inputs is generated of maximum length $T_I$ generated as described above. 
-%For the experiments with D-type noise, we generate noise in the input for a sequence length of 10 time steps and distribution width sampled from the uniform distribution $(-\sigma,\sigma)$ with $\sigma=10^{-6}$.
-%For the experiments with noise in the weights, we perturb the weights with a matrix with entries sampled from $\mathcal{N}(0, \sigma)$.
-%We inject this noise into the system either after each learning epoch (Fig. \ref{fig:maintenance}B) or in pulses only at epochs 1,11 and 21 (Fig. \ref{fig:maintenance}C).
-%The first experiment should demonstrate the effects of the restorative force of learning.
-
-%\begin{table}
-%\caption{Summary of parameters for experiments.}\label{tab:params}
-%\centering
-%\bgroup
-%\def\arraystretch{1.52}
-%\begin{tabular}{|c||c|c|}
-%\hline
-%Parameter     &  Input noise & Parameter noise \\\hline \hline
-%Trial length (time steps)	 &    200   & 500			\\\hline 
-%Input sequence length ($T_I$) &		100 & 50   \\\hline
-%Learning rate\footnote{The optimal value of $10^{-10}$ was used for the parameter noise for UBLA and BLA for the interleaved perturbation experiment. } &	 		$10^{-4}$   &  $10^{-9}$\\\hline 
-%Perturbation	parameter ($\sigma$) &		$10^{-6}$   & $10^{-5}$\\\hline 
-%\end{tabular}
-%\egroup
-%\end{table}
-
-
-%gradientdistribution 
-Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates (Fig. \ref{fig:maintenance}E).
-The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig. \ref{fig:maintenance}D).
-
-%example
-%standard: mses over epochs
-Fig.~\ref{fig:maintenance}A and F shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
-%Note that the magnitude of perturbation were identical for all networks, but iRNN is more robust in terms of MSE.
-The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution. We further show that iRNN converges to a different solution as it settles in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator.
-%BLA with learning has superior misadjustment to UBLA and BLA without learning.
 
 %description of finding optimal learning rate
-
-
-
-%observation: attractors converge to other solutions
-gradient descent stably converges to non-optimal solution.
+The optimal learning rates for the input-type noise experiments were chosed from a set of values 
+($\{10^{-8},10^{-9},10^{-10}\}$)
+ based on best performance of the task of 10 runs.
 
 %new conclusions
-all 3 attractors
+%The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
+ We further show that all networks converge to a different, non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator Fig.~\ref{fig:nonmaintenance}D and E.
  We conclude therefore that, in practice, it is difficult to maintain all 3 attractors.
 
 
@@ -1209,7 +1182,6 @@ x^*_i<0 \text{   for  	 } i\in\sigma.
 
 
 \subsection{Independence of norm of perturnation on bifurcation}
-
 
 \begin{figure}[tbhp]
      \centering
