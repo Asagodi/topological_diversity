@@ -470,7 +470,7 @@ The input and output are defined as in Eqs. \ref{eq:input} and \ref{eq:output} w
 %T=100,500,1000
 We investigate the effects of three types of noise on the learning or readjustment of the parameters during gradient descent starting from the perfect solutions to the task.
 %MSE at last time step
-For the SGD, the last output of the network after $T$ steps was taken to calculate the loss based on the mean squared error (MSE) over a batch of 1024 trials. A gradient step was then taken with a fixed gradient step size $\lambda$ (the learning rate).
+For the SGD, the last output of the network after $T$ steps was taken to calculate the loss based on the mean squared error (MSE) over a batch of 1024 trials. A gradient step was then taken with a fixed gradient step size $\lambda$ (the learning rate). We set $\alpha=1$ and $\beta=20$ in Eq \ref{eq:ubla} and \ref{eq:bla}.
 
 In the first experiment, Gaussian random noise is injected to all parameters inducing a constant diffusion of the parameters, which emulates the biological synaptic variability.
 This type of noise is directly applied to the weights as $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\sigma)$.
@@ -530,14 +530,9 @@ In the presence of input and internal noise the UBLA has a higher tendency to ha
 %\end{table}
 
 
-
-
-%$Observations
-
-
 %gradientdistribution 
-Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates.
-The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution.
+Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates (Fig. \ref{fig:maintenance}E).
+The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig. \ref{fig:maintenance}D).
 
 %example
 %standard: mses over epochs
@@ -655,28 +650,28 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %In the discrete time version of vanilla RNN \eqref{eq:RNN:discrete}, there can exist 2-period orbits, which are absent in the \eqref{eq:RNN:continuous} version.
 
 \subsection{Unbounded line attractor}
-\label{sec:ubla}
-
-The parameters:
-\begin{equation}\label{eq:bla}
-\win = \alpha
-\begin{pmatrix}
--1  &  1 \\
-1  &  -1
-\end{pmatrix}, \
-W = 
-\begin{pmatrix}
-0  &  1 \\
-1  &  0
-\end{pmatrix}, \
-\wout = \frac{1}{2\alpha}
-\begin{pmatrix}
-1  &  1 
-\end{pmatrix}, \
-\bout = -\frac{\beta}{\alpha}.
-\end{equation}
-
-The bias to the recurrent units is zero.
+%\label{sec:ubla}
+%
+%The parameters:
+%\begin{equation}\label{eq:bla}
+%\win = \alpha
+%\begin{pmatrix}
+%-1  &  1 \\
+%1  &  -1
+%\end{pmatrix}, \
+%W = 
+%\begin{pmatrix}
+%0  &  1 \\
+%1  &  0
+%\end{pmatrix}, \
+%\wout = \frac{1}{2\alpha}
+%\begin{pmatrix}
+%1  &  1 
+%\end{pmatrix}, \
+%\bout = -\frac{\beta}{\alpha}.
+%\end{equation}
+%
+%The bias to the recurrent units is zero.
 
 
 \paragraph{Stabilty of the fixed point with full support}
@@ -702,34 +697,33 @@ There are only two types of invariant set for the perturbations of the line attr
 \paragraph{Input}
 Parameter that determines step size along line attractor $\alpha$.
 The size determines the maximum number of clicks as the difference between the two channels. 
-
 This pushes the input along the line ``attractor" in two opposite directions, %what is the correct word for this type of invariant set?
 see below.
 
-The parameters:
-\begin{equation}\label{eq:bla}
-\win = \alpha
-\begin{pmatrix}
--1  &  1 \\
-1  &  -1
-\end{pmatrix}, \
-W = 
-\begin{pmatrix}
-0  &  -1 \\
--1  &  0
-\end{pmatrix}, \
-\wout = \frac{1}{2\alpha}
-\begin{pmatrix}
-1  &  -1 
-\end{pmatrix}, \
-b = \beta
-\begin{pmatrix}
-1 \\  1 
-\end{pmatrix}, \
-\bout = 0.
-\end{equation}
-
-Needs to be initialized at $\tfrac{\beta}{2}(1,1)$ for correct decoding, i.e., output projection
+%The parameters:
+%\begin{equation}\label{eq:bla}
+%\win = \alpha
+%\begin{pmatrix}
+%-1  &  1 \\
+%1  &  -1
+%\end{pmatrix}, \
+%W = 
+%\begin{pmatrix}
+%0  &  -1 \\
+%-1  &  0
+%\end{pmatrix}, \
+%\wout = \frac{1}{2\alpha}
+%\begin{pmatrix}
+%1  &  -1 
+%\end{pmatrix}, \
+%b = \beta
+%\begin{pmatrix}
+%1 \\  1 
+%\end{pmatrix}, \
+%\bout = 0.
+%\end{equation}
+%
+%Needs to be initialized at $\tfrac{\beta}{2}(1,1)$ for correct decoding, i.e., output projection
 
 
 
