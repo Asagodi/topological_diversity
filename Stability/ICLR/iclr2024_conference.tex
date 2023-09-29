@@ -481,14 +481,14 @@ We then chose the corresponding noise level per integrator that corresponded to 
 This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
 
 %description of finding optimal learning rate
-For the matched noise level, we find the optimal learning rate for all each network separately.
+For the matched noise level, we find the optimal learning rate for each network separately.
 The optimal learning rates for the input-type noise experiments were chosed from a set of values 
-($\{10^{-10}\}_{i=4,\dots 10}$)  based on best performance of the task, measured as mean last ten MSE values averaged over ten runs.
- The slow manifold that is created after perturbations is provides gradients that can counteract parameter diffusions for all networks (on short trials), even for the ones that have the potential for exploding gradients ( Fig.~\ref{fig:maintenance_h0}A and D).
+($\{10^{-i}\}_{i=4,\dots 10}$)  based on best performance of the task, measured as mean MSE of the last ten epochs averaged over ten runs.
+The slow manifold that is created after perturbations is provides gradients that can counteract parameter diffusions for all networks (on short trials), even for the ones that have the potential for exploding gradients ( Fig.~\ref{fig:maintenance_h0}A and D).
  %new conclusions
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
  We further show that all networks converge to a different, non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator Fig.~\ref{fig:maintenance_h0}D and E.
- We conclude therefore that, in practice, it is difficult to maintain any of the 3 attractors. 
+ We conclude therefore that, in practice, it is difficult to maintain any of the continuous attractors.
 
 %gradientdistribution 
 %Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. 
