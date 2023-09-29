@@ -551,21 +551,20 @@ The probability of each type of bifurcation was numerically estimated.
 There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\ref{fig:meaure_zero_perturbations}).
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 
-
 \section{Discussion}
-We have derived a general theory that describes the loss landscape of RNNs around continuous attractor solutions.
-This theory implies that backpropagating gradient does not explode for systems near compact continuous attractors because of divergent dynamics.
-This insight also suggests that there can exist homeostatic mechanisms for certain implementations of continuous attractors that maintain the structure of the attractor sufficiently for the neural computation it is used in, which we demonstrate in a simple network. 
+The attractive manifold of equilibria in continuous attractor networks provides two key functions continuous memory and propagation of gradient through time.
+Although the corresponding configurations are measure zero, we showed that the when the invariant manifold theorem holds, the finite time behavior of the trajectories and the gradient through time only slowly breakdown.
+We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in 5 example systems.
+There were surprisingly diverse bifurcations which provide additional insights to vanishing and exploding gradient regimes that the network visits in the presence of stochasticity in synapses and learning signals.
+In particular, we showed that some RNNs do not have non-zero measure bifurcations that lead to exploding gradients.
 
-%activation functions
-It is well-known that activation functions, which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023, ramachandran2017, hayou2019}.
-Activation functions that are $C^r$ for $r\geq 1$ are the ones to which the Persistence Theorem applies. 
-The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistence invariant manifold.
-For situations where smoothness of the persistent invariant manifold is of importance, smoother activation functions might be preferable, such as the Exponential Linear Unit (ELU)\citep{clevert2015} or the Continuously Differentiable Exponential Linear Units (CELU) \citep{barron2017}.
+As the theory predicts, our numerical experiments demonstrate the properties of loss landscape and gradient near the fine-tuned system.
+However, after small perturbatinos, plain gradient descent typically converges to a non-continuous attractor solution, indicating that the homeostatic restoration of continous attractor may be challenging.
+Further research on finding architectures and continuous attractor networks that allow restorative learning for a larger perturbations in the parameter space is needed.
 
-
-
-
+% We have derived a general theory that describes the loss landscape of RNNs around continuous attractor solutions.
+% This theory implies that backpropagating gradient does not explode for systems near compact continuous attractors because of divergent dynamics.
+% This insight also suggests that there can exist homeostatic mechanisms for certain implementations of continuous attractors that maintain the structure of the attractor sufficiently for the neural computation it is used in, which we demonstrate in a simple network. 
 
 %\begin{ack}
 %Use unnumbered first level headings for the acknowledgments. All acknowledgments go at the end of the paper before the list of references. Moreover, you are required to declare
@@ -938,7 +937,6 @@ This is the case if $v=0$.
 It is not possible to have a line attractor with a fixed point off of it for as there cannot be disjoint fixed points that are linearly dependent \citep[Lemma 5.2]{morrison2016a}.
 \end{proof}
 
-
 \subsection{Structure of the parameter space}
 \begin{table}[H]
 \caption{Summary of the conditions for the different bifurcations.}\label{tab:bifs}
@@ -1004,6 +1002,11 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 \dot x' &=\left(\begin{bmatrix}-2 &0\\0&0\end{bmatrix}+\frac{\epsilon}{2}\begin{bmatrix}1 &-1\\-1&1\end{bmatrix}\right)x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon \\-\epsilon\end{bmatrix}
 \end{align}
 
+\section{Smoother activation functions}
+It is well-known that activation functions, which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023,ramachandran2017,hayou2019}.
+Activation functions that are $C^r$ for $r\geq 1$ are the ones to which the Persistence Theorem applies. 
+The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistence invariant manifold.
+For situations where smoothness of the persistent invariant manifold is of importance, smoother activation functions might be preferable, such as the Exponential Linear Unit (ELU)\citep{clevert2015} or the Continuously Differentiable Exponential Linear Units (CELU) \citep{barron2017}.
 
 \newpage
 \section{Noise level matching}\label{sec:supp:matching}
