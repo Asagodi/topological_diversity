@@ -518,12 +518,10 @@ We hypothesise that the negative effect of exploding gradients shows only for lo
   \label{fig:maintenance_h0}
 \end{figure}
 
-\subsection{Perturbation of a continuous attractor}\label{sec:hd} % Finite-sized head direction network models
-%We will now investigate the effects that perturbations might have on the gradients in some continuous attractor network models used in computational neuroscience.
+\subsection{Angular integration networks}\label{sec:hd}
+For circular variables such as the goal-direction or head-direction needed for spatial navigation in 2D, the temporal integration and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology).
+Continuous attractor models of the head-direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a ring-like structure~\citep{zhang1996,Noorman2022,ajabi2023}.
 
-%\subsubsection{Finite-sized head direction network model}
-
-Continuous attractor models of the head direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a circular or ring-like structure \citep{zhang1996, Noorman2022, ajabi2023}. 
 Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 We demonstrate the consequences of the Persistence Theorem in two models with a continuous ring attractor.
 
