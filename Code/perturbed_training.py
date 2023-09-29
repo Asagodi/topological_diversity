@@ -220,7 +220,7 @@ class RNN(nn.Module):
         
 
 def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False, record_step=1, h_init=None,
-          loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
+          loss_function='mse_loss_masked', act_norm_lambda=0.,
           optimizer='sgd', momentum=0, weight_decay=.0, 
           perturb_weights=False, weight_sigma=1e-6, noise_step=1, fix_seed=None, trial=0,
           verbose=True):
@@ -413,11 +413,13 @@ def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
     if training_kwargs['cont']:
         task = contbernouilli_noisy_integration_task(T=training_kwargs['T'],
                                                   input_length=training_kwargs['input_length'],
-                                                  sigma=training_kwargs['task_noise_sigma'])
+                                                  sigma=training_kwargs['task_noise_sigma'],
+                                                  final_loss=training_kwargs['final_loss'])
     else:
         task = bernouilli_noisy_integration_task(T=training_kwargs['T'],
                                                   input_length=training_kwargs['input_length'],
-                                                  sigma=training_kwargs['task_noise_sigma'])
+                                                  sigma=training_kwargs['task_noise_sigma'],
+                                                  final_loss=training_kwargs['final_loss'])
 
     
     dims = (2,2,1)
@@ -455,7 +457,7 @@ def run_noisy_training(experiment_folder, trial=None, training_kwargs={}):
     
     result = train(net, task=task, n_epochs=training_kwargs['n_epochs'], batch_size=training_kwargs['batch_size'],
               learning_rate=training_kwargs['learning_rate'], clip_gradient=None, cuda=training_kwargs['cuda'], record_step=1, h_init=h0_init,
-              loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
+              loss_function='mse_loss_masked',  act_norm_lambda=0.,
               optimizer='sgd', momentum=0, weight_decay=training_kwargs['weight_decay'], fix_seed=training_kwargs['fix_seed'], trial=trial,
               perturb_weights=training_kwargs['perturb_weights'], weight_sigma=training_kwargs['weight_sigma'], noise_step=training_kwargs['noise_step'],
               verbose=training_kwargs['verbose'])
@@ -481,6 +483,7 @@ if __name__ == "__main__":
     training_kwargs['verbose'] = False
     training_kwargs['fix_seed'] = True
     training_kwargs['cont'] = True
+    training_kwargs['final_loss'] = False
     training_kwargs['perturb_weights'] = False
     training_kwargs['task_noise_sigma'] = 0.
     training_kwargs['internal_noise_std'] = 0.
