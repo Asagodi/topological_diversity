@@ -298,7 +298,7 @@ For all experiments we used single precision floating point arithmetic and PyTor
 \subsection{Linear temporal integration task}\label{sec:task:continuous-clicks}
 Given a sequence of scalar input, the job of the network is to accumulate the values over time and report the final value at a later time.
 In the context of perceptual decision-making, subjects can be trained to perform the Poisson clicks task where they have to count the differing number of sensory stimulus events from the left and right side and report the side~\cite{brunton2013}.
-A perfect linear integrator and continuous attractor memory is a natural solution to such a task.
+A linear integrator as a continuous attractor is a natural solution to such a task.
 We generalize the clicks to have associated continuous-values for the training of RNNs to discourage discrete counting solutions.
 
 We used discrete time representations over $T$ time bins and the stimulus encoded as difference of two non-negative values:
