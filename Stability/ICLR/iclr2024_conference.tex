@@ -492,11 +492,11 @@ The slow manifold that is created after perturbations is provides gradients that
 
 %gradientdistribution 
 %Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. 
-Note that exploding gradients can be seen for UBLA manifested as the bimodal distribution of the gradients in Fig.~\ref{fig:maintenance_h0}C. This does lead to faster divergence (for lower learning rate) but has on the other hand the benefit of providing useful gradients to maintain the (local) solution around the optimal solution, which explains the superior performance at the optimal learning rate for the UBLA (Fig.~\ref{fig:maintenance_h0}A), at least on this timescale for the trial that we investigated.
+Note that exploding gradients can be seen for UBLA manifested as the bimodal distribution of the gradients in Fig.~\ref{fig:maintenance_h0}C. This does lead to faster divergence (for lower learning rate) but has on the other hand the benefit of providing useful gradients to maintain the (local) solution around the optimal solution, which explains the superior performance at the optimal learning rate for the UBLA (Fig.~\ref{fig:maintenance_h0}A), on this timescale for the trial that we investigated.
 Also in the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Supp.~Fig.~\ref{fig:all_lrs_vs_mses}. 
 %This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
 %The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig.~\ref{fig:maintenance_h0}D).
-
+We hypothesise that the negative effect of exploding gradients shows only for longer trials.
 
 
 
@@ -541,7 +541,7 @@ For sufficiently strong local excitation (given by the parameter $J_E$) and broa
      \centering
   \includegraphics[width=\textwidth]{both_rings}
        \caption{Characterization of bifurcations of two ring attractors. 
-       (A)       Perturbations to the ring attractor introduced in \cite{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (stable and saddle points are paired) up to $2N$. 
+       (A)       Perturbations to the ring attractor introduced in \cite{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs)  up to $2N$ (stable and saddle points are paired). 
        (B) Perturbations to a simple implementation of a ring attractor lead to bifurcations that all leave the invariant manifold intact.
        }
          \label{fig:both_rings}
