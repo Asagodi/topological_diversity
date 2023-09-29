@@ -235,7 +235,7 @@ However, the local invariance implies that trajectories remain within the manifo
 Furthermore, the non-zero flow on the slow manifold is slow and given in the $\epsilon \to 0$ limit as $\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)$ where $\tau = \epsilon t$ is a rescaled time and $c^\epsilon(\cdot)$ parameterizes the $l$ dimensional slow manifold.
 In addition, the stable manifold(s) of $\manifold_0$ are similarly approximately maintained~\cite{Jones1995}, allowing the manifold $\manifold_\epsilon$ to remain attractive.
 
-These conditions are met (up to numerical precision) for the BLA example in Fig.~\ref{fig:ublabla}B (see Supp.~Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
+These conditions are met (up to numerical precision) for the BLA example in Fig.~\ref{fig:ublabla}B (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points, and overall still attractive.
 On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence.
 Importantly, the ``slow'' flow on the perturbed system is not bounded.
@@ -446,7 +446,7 @@ The BLA can bifurcate in the following systems, characterized by their invariant
 Only the first two bifurcations (Fig.~\ref{fig:ublabla}) can happen with nonzero chance for the type of random perturbations we consider.
 The perturbations that leave the line attractor intact or to lead to a system with two fixed points have measure zero in the parameter space.
 %The types of perturbation with measure zero are codimension 2 bifurcations.
-The perturbation that results in one fixed point happen with probability $\frac{3}{4}$, while perturbations lead to a system with three fixed points with probability $\frac{1}{4}$, see Supp.~Sec.~\ref{sec:supp:bla}.
+The perturbation that results in one fixed point happen with probability $\frac{3}{4}$, while perturbations lead to a system with three fixed points with probability $\frac{1}{4}$, see Sec.~\ref{sec:supp:bla}.
 The (local) %, in the case of the single fixed point)
  invariant manifold manifold is indeed persistent for the BLA and homeomorphic to the original (the bounded line).
 
@@ -466,8 +466,8 @@ Fig.~\ref{fig:maintenance_h0}C shows that for all networks, gradient descent (wi
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
 BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to perturbations without learning (Fig.~\ref{fig:maintenance_h0}A).
 BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
-The invariant manifold of the BLA is persistent throughout learning in many cases, see Supp.~\ref{sec:supp:learning} and Fig.~\ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp~Fig.~\ref{fig:wdn_mse_trajectories_F1}, Supp.~Fig.~\ref{fig:vfs5} and Supp. Fig.~\ref{fig:vfs30}).
-iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig.~\ref{fig:maintenance_h0}F and Supp.~Fig~\ref{fig:vfs1}).
+The invariant manifold of the BLA is persistent throughout learning in many cases, see \ref{sec:supp:learning} and Fig.~\ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp~Fig.~\ref{fig:wdn_mse_trajectories_F1}, Fig.~\ref{fig:vfs5} and Supp. Fig.~\ref{fig:vfs30}).
+iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig.~\ref{fig:maintenance_h0}F and Fig~\ref{fig:vfs1}).
 UBLA can stay close to the initial solution for a small enough learning rate.
 
 We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
@@ -476,8 +476,8 @@ To inject noisy gradients naturally, we added noise to the input to the first 10
 The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$ for $t=1,\dots, T$ and $i=1,2$. 
 
 %The noise level $\sigma$ was chosen individually for the three networks as follows. 
-We calculated the loss on a batch of inputs for various noise levels $\sigma$ for all three noise types (Supp.~Fig.~\ref{fig:matching_noise_3types_cont}).
-We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Supp.~Sec.~\ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
+We calculated the loss on a batch of inputs for various noise levels $\sigma$ for all three noise types (Fig.~\ref{fig:matching_noise_3types_cont}).
+We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Sec.~\ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
 This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
 
 %description of finding optimal learning rate
@@ -493,7 +493,7 @@ The slow manifold that is created after perturbations provides gradients that ca
 %gradientdistribution 
 %Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. 
 Note that exploding gradients can be seen for UBLA manifested as the bimodal distribution of the gradients in Fig.~\ref{fig:maintenance_h0}C. This does lead to faster divergence (for lower learning rate) but has on the other hand the benefit of providing useful gradients to maintain the (local) solution around the optimal solution, which explains the superior performance at the optimal learning rate for the UBLA (Fig.~\ref{fig:maintenance_h0}A), on this timescale for the trial that we investigated.
-Also in the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Supp.~Fig.~\ref{fig:all_lrs_vs_mses}. 
+Also in the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Fig.~\ref{fig:all_lrs_vs_mses}. 
 %This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
 %The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig.~\ref{fig:maintenance_h0}D).
 We hypothesise that the negative effect of exploding gradients shows only for longer trials.
@@ -528,7 +528,7 @@ Since continuous attractors are susceptible to noise and perturbations the preci
 We demonstrate the consequences of the Persistence Theorem in two models with a continuous ring attractor.
 
 We first of all looked at a simple (non-biological) system that has a ring attractor we analysed is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
-This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$. We investigate bifurcations caused by parametric perturbations and bump perturbations of the ring invariant manifold (see Supp.~Sec.~\ref{sec:supp:ring_perturbations}), which is bounded and boundaryless.
+This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$. We investigate bifurcations caused by parametric perturbations and bump perturbations of the ring invariant manifold (see Sec.~\ref{sec:supp:ring_perturbations}), which is bounded and boundaryless.
 All perturbations maintain the invariant manifold (Fig.~\ref{fig:both_rings}B).
 
 Second, we investigate perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
@@ -547,7 +547,7 @@ For sufficiently strong local excitation (given by the parameter $J_E$) and broa
          \label{fig:both_rings}
 \end{figure}
 
-We evaluate the  the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\iidsample\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ by identifying all bifurcations (Supp.~Sec.~\ref{sec:supp:ring_perturbations}).
+We evaluate the  the effect of parameteric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\iidsample\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E^*= 4$ and $J_I=-2.4$ by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
 We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:both_rings}A).
 The probability of each type of bifurcation was numerically estimated.
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
@@ -605,6 +605,7 @@ For situations where smoothness of the persistent invariant manifold is of impor
 \section*{Supplementary Material}
 \setcounter{section}{0}
 \renewcommand{\thefigure}{S\arabic{figure}} % figure numbering for supplement
+\renewcommand{\thesection}{S\arabic{section}} % figure numbering for supplement
 
 %RNNs are capable of learning complex patterns and relationships in the data, which makes them in particular useful as models for neural computations. This is achieved through the use of non-linear activation functions and the training of the network using backpropagation through time (BPTT).
 %BPTT allows the network to adjust the weights of the connections between neurons based on the error signal that is propagated backwards through time. 
