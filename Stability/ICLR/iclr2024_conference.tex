@@ -475,8 +475,8 @@ UBLA can stay close to the initial solution for a small enough learning rate (Fi
 
 %The noise level $\sigma$ was chosen individually for the three networks as follows. 
 We calculated the loss on a batch of inputs for various noise levels $\sigma$ for all three noise types (Fig.~\ref{fig:matching_noise_3types_cont}).
-We then chose the corresponding noise level per integrator that corresponded to the average loss (see also in Sec.~\ref{sec:supp:matching}). For the noise in the weights the average was taken over 200 weight perturbations.
-This way of matching noise level to induce the same average loss should be a universal approach to be able to compare the performance of different networks to each other.
+We chose a matched noise level per integrator that corresponded to a set average loss averaged over 200 weight perturbations (see also in Sec.~\ref{sec:supp:matching}).
+This way of matching noise level to induce the same loss should be a universal approach to be able to compare the performance of different networks.
 
 %description of finding optimal learning rate
 For the matched noise level, we find the optimal learning rate for each network separately.
@@ -485,7 +485,7 @@ The optimal learning rates for the input-type noise experiments were chosen from
 The slow manifold that is created after perturbations provides gradients that can counteract parameter diffusions for all networks (on short trials), even for the ones that have the potential for exploding gradients (Fig.~\ref{fig:maintenance_h0}A and D).
  %new conclusions
 We use the normed difference to the initial parameters at every gradient step as proxy for the misadjustment from the optimal solution (Fig.~\ref{fig:maintenance_h0}E and F).
- We further show that all networks converge to a different (from the initialization), non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator Fig.~\ref{fig:maintenance_h0}E and F.
+ We further show that all networks converge to a different (from the initialization), non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator in ten different runs with the same random seed for the noise for the three integrators (Fig.~\ref{fig:maintenance_h0}E and F).
  We conclude therefore that, in practice, it is difficult to maintain any of the continuous attractors.
 
 %gradientdistribution 
