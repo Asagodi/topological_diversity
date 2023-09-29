@@ -146,7 +146,7 @@ def simplestep_integration_task(T, dt, amplitude=1, pulse_time=1, delay=1):
 
     return task
 
-def bernouilli_integration_task(T, input_length):
+def bernouilli_integration_task(T, input_length, final_loss):
     """
     Creates a trial with a positive and negative step with length step_length and amplitude
     Inputs are left and right angular velocity and 
@@ -161,14 +161,17 @@ def bernouilli_integration_task(T, input_length):
         inputs[:,:input_length,:] = np.random.binomial(1, p=.2, size=(batch_size,input_length,2))
         outputs = np.cumsum(inputs[:,:,1], axis=1) - np.cumsum(inputs[:,:,0], axis=1)
         mask = np.zeros((batch_size, T, 1))
-        mask[:,-1,:] = 1
+        if final_loss:
+            mask[:,-1,:] = 1
+        else:
+            mask[:,:,:] = 1
 
 
         return inputs, outputs.reshape((batch_size,T,1)), mask
 
     return task
 
-def bernouilli_noisy_integration_task(T, input_length, sigma):
+def bernouilli_noisy_integration_task(T, input_length, sigma, final_loss):
     """
     Creates a trial with a positive and negative step with length step_length and amplitude
     Inputs are left and right angular velocity and 
@@ -185,13 +188,16 @@ def bernouilli_noisy_integration_task(T, input_length, sigma):
         inputs[:,:input_length,:] += np.random.uniform(-sigma, sigma, size=(batch_size,input_length,2))
 
         mask = np.zeros((batch_size, T, 1))
-        mask[:,-1,:] = 1
+        if final_loss:
+            mask[:,-1,:] = 1
+        else:
+            mask[:,:,:] = 1
 
         return inputs, outputs.reshape((batch_size,T,1)), mask
 
     return task
 
-def contbernouilli_noisy_integration_task(T, input_length, sigma):
+def contbernouilli_noisy_integration_task(T, input_length, sigma, final_loss):
     """
     Creates a trial with a positive and negative step with length step_length and amplitude
     Inputs are left and right angular velocity and 
@@ -209,7 +215,10 @@ def contbernouilli_noisy_integration_task(T, input_length, sigma):
         inputs[:,:input_length,:] += np.random.uniform(-sigma, sigma, size=(batch_size,input_length,2))
 
         mask = np.zeros((batch_size, T, 1))
-        mask[:,-1,:] = 1
+        if final_loss:
+            mask[:,-1,:] = 1
+        else:
+            mask[:,:,:] = 1
 
         return inputs, outputs.reshape((batch_size,T,1)), mask
 
