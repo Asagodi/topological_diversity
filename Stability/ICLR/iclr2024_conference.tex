@@ -1019,20 +1019,20 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 
 \newpage
 \section{Continuous attractor solutions in click integration tasks with noise in the weights}
-\begin{figure}[thbp]
-  \centering
-  \includegraphics[width=\textwidth]{maintenance_T100.pdf}
-  \caption{
-  Comparing three continuous attractor solutions to the click integration task for a length of $T=100$ time steps.
-  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps. Averages (thick lines) over 10 simulations (thin lines) are shown for each network.
-  (B) Changes to the recurrent parameters (matrix and bias), without (upper) and with (lower) learning (with the optimal learning rates). iRNN converges to a different solution.
- (C)  The distribution of the MSE for different learning rates. The dip in the MSE defines the optimal learning rate for each of the three neural integrators. 
-    (D) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
-  (E) Distribution of gradients shows bimodal distribution for UBLA. %Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates.
-    (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
-  }
-  \label{fig:maintenance}
-\end{figure}
+%\begin{figure}[thbp]
+%  \centering
+%  \includegraphics[width=\textwidth]{maintenance_T100.pdf}
+%  \caption{
+%  Comparing three continuous attractor solutions to the click integration task for a length of $T=100$ time steps.
+%  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps. Averages (thick lines) over 10 simulations (thin lines) are shown for each network.
+%  (B) Changes to the recurrent parameters (matrix and bias), without (upper) and with (lower) learning (with the optimal learning rates). iRNN converges to a different solution.
+% (C)  The distribution of the MSE for different learning rates. The dip in the MSE defines the optimal learning rate for each of the three neural integrators. 
+%    (D) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
+%  (E) Distribution of gradients shows bimodal distribution for UBLA. %Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates.
+%    (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
+%  }
+%  \label{fig:maintenance}
+%\end{figure}
 
 \begin{figure}[thbp]
   \centering
@@ -1055,7 +1055,7 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 \begin{figure}[thbp]
      \centering
     \includegraphics[width=\textwidth]{all_lrs_vs_mses_f1}
-       \caption{.}
+       \caption{Distribution of MSE for the three noisy types for different learning rates.}
          \label{fig:all_lrs_vs_mses}
 \end{figure}
 
@@ -1066,7 +1066,7 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 \begin{figure}[thbp]
      \centering
     \includegraphics[width=\textwidth]{wdn_mse_trajectories_F1}
-       \caption{Trajectories of learning. The LAs follow a trajectory that is orthogonal to the initial parameters, but that yet decreases the MSE.}
+       \caption{Trajectories of learning in parameter space relative to the initial recurrent parameters. The LAs follow a trajectory that is orthogonal to the initial parameters, but that yet decreases the MSE.}
          \label{fig:wdn_mse_trajectories_F1}
 \end{figure}
 
@@ -1077,7 +1077,7 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 \begin{figure}[H]
      \centering
     \includegraphics[width=\textwidth]{allnoise_contours}
-       \caption{Because of relative scale of perturnation, iRNN is further away from the initial parameters with internal and input noise.
+       \caption{Distribution of parameters for the three noise types for three noise levels. Because of relative scale of perturnation, iRNN is further away from the initial parameters with internal and input noise.
         Depending on the level of the noise it performs better or worse than the LAs.}
          \label{fig:interal_input_contours}
 \end{figure}
