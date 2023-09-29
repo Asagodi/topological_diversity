@@ -1092,21 +1092,21 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 \begin{figure}[H]
      \centering
     \includegraphics[width=\textwidth]{vfs_f100_gs1_optlrs}
-       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. 30 gradient steps after a perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
+       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. A gradient step is taken after every perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
          \label{fig:vfs1}
 \end{figure}
 
 \begin{figure}[H]
      \centering
     \includegraphics[width=\textwidth]{vfs_f100_gs5_optlrs}
-       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. 30 gradient steps after a perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
+       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. A gradient step is taken after every 5 perturbations. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
          \label{fig:vfs5}
 \end{figure}
 
 \begin{figure}[H]
      \centering
     \includegraphics[width=\textwidth]{vfs_f100_gs30_optlrs}
-       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. 30 gradient steps after a perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
+       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. 30 gradient steps are take after a single perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
          \label{fig:vfs30}
 \end{figure}
 
@@ -1114,7 +1114,9 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 \begin{figure}[H]
      \centering
     \includegraphics[width=\textwidth]{speeds}
-       \caption{Speeds along the invariant manifold during learning. }
+       \caption{Speed along the invariant manifold during learning. For the iRNN a slice (the diagonal) is shown.
+       %UBLA has a lower
+       }
          \label{fig:speeds}
 \end{figure}
 
