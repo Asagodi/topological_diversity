@@ -515,7 +515,7 @@ Also in the presence of input and internal noise the UBLA has a higher tendency 
 (B) Loss landscape is steeper around the LAs. The BLA has a bounded loss in the neighborhood.
 (C) Gradient distribution at the beginning (upper) and end (lower) of trials.
 (D) MSE distribution during learning and in the presence of noise. Learning counteracts learning in all three networks.
-(E) Closeness of the parameters  to the original  while learning with noise.
+(E) Closeness of the parameters to the original while learning with noise (right) and without learning (right).
 (F) All networks converge to local non-optimal solutions after perturbations.
   }
   \label{fig:maintenance_h0}
@@ -990,6 +990,23 @@ we always have that
 This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $\epsilon$-ball around the BLA neural integrator with $\epsilon<1$.
 
 
+\subsection{Fast-slow form}\label{sec:supp:fast_slow_form}
+
+We transform the state space so that the line attractor aligns with the $y$-axis.
+So, we apply the affine transformation $R_\theta(x-\frac{1}{2})$ with the rotation matrix $R_\theta = \begin{bmatrix}\cos\theta &-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}= \frac{1}{\sqrt{2}}\begin{bmatrix}1 &1\\-1&1\end{bmatrix}$ where we have set $\theta=-\frac{\pi}{4}$.
+So we perform the transformation $x\rightarrow x'= R_\theta(x-\frac{1}{2})$ and so we have $x=R^{-1}_\theta x'+\frac{1}{2}$ with $R^{-1}_\theta = R_{-\theta}$.
+Then we get that 
+\begin{align}
+R_{\theta}^{-1}\dot x' = \operatorname{ReLU}\left(W(R^{-1}_\theta x'+\frac{1}{2})+1\right)-R^{-1}_\theta x'-\frac{1}{2}.
+\end{align}
+For a perturbed connection matrix $W=\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}$ we get 
+\begin{align}
+R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}\left(\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'+\frac{1}{2}\right)+1\right)-\frac{1}{\sqrt{2}}\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'-\frac{1}{2}\\
+\dot x' &=\begin{bmatrix}-1 &1\\1&1\end{bmatrix}\left(\frac{1}{2}\begin{bmatrix}\epsilon-1 &-\epsilon-1\\-1&1\end{bmatrix}x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon-1 \\-1\end{bmatrix}+\begin{bmatrix}1 \\1\end{bmatrix}-\frac{1}{2}\begin{bmatrix}1 \\1\end{bmatrix}\right)-x'\\
+\dot x' &=\left(\begin{bmatrix}-2 &0\\0&0\end{bmatrix}+\frac{\epsilon}{2}\begin{bmatrix}1 &-1\\-1&1\end{bmatrix}\right)x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon \\-\epsilon\end{bmatrix}
+\end{align}
+
+
 \newpage
 \section{Noise level matching}\label{sec:supp:matching}
 %Rationale: what is a universal measure of noise level
@@ -1125,21 +1142,6 @@ This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $
 
 %All perturbations maintain the invariant manifold.
 
-\subsection{Fast-slow form}\label{sec:supp:fast_slow_form}
-
-We transform the state space so that the line attractor aligns with the $y$-axis.
-So, we apply the affine transformation $R_\theta(x-\frac{1}{2})$ with the rotation matrix $R_\theta = \begin{bmatrix}\cos\theta &-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}= \frac{1}{\sqrt{2}}\begin{bmatrix}1 &1\\-1&1\end{bmatrix}$ where we have set $\theta=-\frac{\pi}{4}$.
-So we perform the transformation $x\rightarrow x'= R_\theta(x-\frac{1}{2})$ and so we have $x=R^{-1}_\theta x'+\frac{1}{2}$ with $R^{-1}_\theta = R_{-\theta}$.
-Then we get that 
-\begin{align}
-R_{\theta}^{-1}\dot x' = \operatorname{ReLU}\left(W(R^{-1}_\theta x'+\frac{1}{2})+1\right)-R^{-1}_\theta x'-\frac{1}{2}.
-\end{align}
-For a perturbed connection matrix $W=\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}$ we get 
-\begin{align}
-R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}\left(\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'+\frac{1}{2}\right)+1\right)-\frac{1}{\sqrt{2}}\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'-\frac{1}{2}\\
-\dot x' &=\begin{bmatrix}-1 &1\\1&1\end{bmatrix}\left(\frac{1}{2}\begin{bmatrix}\epsilon-1 &-\epsilon-1\\-1&1\end{bmatrix}x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon-1 \\-1\end{bmatrix}+\begin{bmatrix}1 \\1\end{bmatrix}-\frac{1}{2}\begin{bmatrix}1 \\1\end{bmatrix}\right)-x'\\
-\dot x' &=\left(\begin{bmatrix}-2 &0\\0&0\end{bmatrix}+\frac{\epsilon}{2}\begin{bmatrix}1 &-1\\-1&1\end{bmatrix}\right)x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon \\-\epsilon\end{bmatrix}
-\end{align}
 
 
 
