@@ -457,7 +457,7 @@ To investigate the differential effect of stochastic gradient descent (SGD) on t
 The theory of persistent invariant manifolds for compact continuous attractors suggests that the BLA should have bounded gradients (unlike UBLA and iRNN) and hence it should be easier to maintain it in the presence of noise.
 The input and output are defined as in Eqs.~\ref{eq:input} and \ref{eq:output} with $I_{t,i}=0$ for $t=11,\dots,T$.
 %T=100,500,1000
-We investigate the effects of three types of noise on the learning of the parameters during gradient descent starting from the perfect solutions to the task.
+We investigate the effects of perturbations of the recurrent matrix on the learning of the parameters during gradient descent starting from the perfect solutions to the task.
 %MSE at last time step
 For SGD, the output of the network over $T$ steps was taken to calculate the loss based on the mean squared error (MSE) over a batch of 1024 trials. Gradient step were taken with a fixed gradient step size $\lambda$ (learning rate). We set $\alpha=1$ and $\beta=20$ in Eq \ref{eq:ubla} and \ref{eq:bla}. The hidden state at the start of a trial is a learnable parameter. 
 
@@ -467,10 +467,9 @@ Fig.~\ref{fig:maintenance_h0}C shows that for all networks, gradient descent (wi
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
 BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to perturbations without learning (Fig.~\ref{fig:maintenance_h0}A).
 BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
-The invariant manifold of the BLA is persistent throughout learning in many cases, see \ref{sec:supp:learning} and Fig.~\ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp~Fig.~\ref{fig:wdn_mse_trajectories_F1}, Fig.~\ref{fig:vfs5} and Supp. Fig.~\ref{fig:vfs30}). We determine the alignment of the gradient as the cosine similarity of the gradient step with the vector in recurrent parameter space that points towards the initial parameters at every gradient step and use a cutoff of 45\textdegree for alignment.
+The invariant manifold of the BLA is persistent throughout learning in many cases, see \ref{sec:supp:learning} and Fig.~\ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp~Fig.~\ref{fig:wdn_mse_trajectories_F1}, Fig.~\ref{fig:vfs5} and Supp. Fig.~\ref{fig:vfs30}). We determine the alignment of the gradient as the cosine similarity of the gradient step with the vector in recurrent parameter space that points towards the initial parameters at every gradient step and use a cutoff of a maximum deviationof 45\textdegree as aligned gradients with the optimal solution direction.
 iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig.~\ref{fig:maintenance_h0}F and Fig~\ref{fig:vfs1}).
-UBLA can stay close to the initial solution for a small enough learning rate.
-
+UBLA can stay close to the initial solution for a small enough learning rate (Fig.~\ref{fig:maintenance_h0}E and F) and maintains a slower flow than the BLA (Fig.~\ref{fig:speeds}).
 
 
 %The noise level $\sigma$ was chosen individually for the three networks as follows. 
@@ -484,8 +483,8 @@ The optimal learning rates for the input-type noise experiments were chosed from
 ($\{(1+j\frac{1}{4}))10^{-i}\}_{i=4,\dots 10, j=0,1,2,3}$))  based on best performance of the task, measured as mean MSE of the last ten epochs averaged over ten runs.
 The slow manifold that is created after perturbations provides gradients that can counteract parameter diffusions for all networks (on short trials), even for the ones that have the potential for exploding gradients (Fig.~\ref{fig:maintenance_h0}A and D).
  %new conclusions
-%The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
- We further show that all networks converge to a different, non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator Fig.~\ref{fig:maintenance_h0}D and E.
+We use the normed difference to the initial parameters at every gradient step as proxy for the misadjustment from the optimal solution (Fig.~\ref{fig:maintenance_h0}E and F).
+ We further show that all networks converge to a different, non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator Fig.~\ref{fig:maintenance_h0}E and F.
  We conclude therefore that, in practice, it is difficult to maintain any of the continuous attractors.
 
 %gradientdistribution 
@@ -1007,10 +1006,12 @@ The Persistence Theorem further specifies how the smoothness of the activation c
 For situations where smoothness of the persistent invariant manifold is of importance, smoother activation functions might be preferable, such as the Exponential Linear Unit (ELU)\citep{clevert2015} or the Continuously Differentiable Exponential Linear Units (CELU) \citep{barron2017}.
 
 \newpage
-\section{Noise level matching}\label{sec:supp:matching}
+\section{Internal and input noise and noise level matching}\label{sec:supp:matching}
 %Rationale: what is a universal measure of noise level
 %that is applicable to any dyn sys and makes comparisons of performance (under gradient descent) meaningful?
 
+
+We investigate the effects of two other types of noise on the learning of the parameters during gradient descent starting from the perfect solutions to the task.
 We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
 The second type of noise is injected into the input $x_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$.
 To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output $O_t^*$ (Eq.~\ref{eq:output}).
