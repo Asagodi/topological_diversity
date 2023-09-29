@@ -483,7 +483,7 @@ This way of matching noise level to induce the same average loss should be a uni
 %description of finding optimal learning rate
 For the matched noise level, we find the optimal learning rate for each network separately.
 The optimal learning rates for the input-type noise experiments were chosed from a set of values 
-($\{10^{-i}\}_{i=4,\dots 10}$)  based on best performance of the task, measured as mean MSE of the last ten epochs averaged over ten runs.
+($\{(1+j\frac{1}{4}))10^{-i}\}_{i=4,\dots 10, j=0,1,2,3}$))  based on best performance of the task, measured as mean MSE of the last ten epochs averaged over ten runs.
 The slow manifold that is created after perturbations provides gradients that can counteract parameter diffusions for all networks (on short trials), even for the ones that have the potential for exploding gradients (Fig.~\ref{fig:maintenance_h0}A and D).
  %new conclusions
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
