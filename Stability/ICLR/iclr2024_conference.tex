@@ -466,7 +466,7 @@ Fig.~\ref{fig:maintenance_h0}C shows that for all networks, gradient descent (wi
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
 BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to perturbations without learning (Fig.~\ref{fig:maintenance_h0}A).
 BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
-The invariant manifold of the BLA is persistent throughout learning in many cases, see Supp.~Fig.~\ref{sec:supp:learning} and \ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp~Fig.~\ref{fig:wdn_mse_trajectories_F1}, Supp.~Fig.~\ref{fig:vfs5} and Supp. Fig.~\ref{fig:vfs30}).
+The invariant manifold of the BLA is persistent throughout learning in many cases, see Supp.~\ref{sec:supp:learning} and Fig.~\ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp~Fig.~\ref{fig:wdn_mse_trajectories_F1}, Supp.~Fig.~\ref{fig:vfs5} and Supp. Fig.~\ref{fig:vfs30}).
 iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig.~\ref{fig:maintenance_h0}F and Supp.~Fig~\ref{fig:vfs1}).
 UBLA can stay close to the initial solution for a small enough learning rate.
 
@@ -604,6 +604,7 @@ For situations where smoothness of the persistent invariant manifold is of impor
 \appendix
 \section*{Supplementary Material}
 \setcounter{section}{0}
+\renewcommand{\thefigure}{S\arabic{figure}} % figure numbering for supplement
 
 %RNNs are capable of learning complex patterns and relationships in the data, which makes them in particular useful as models for neural computations. This is achieved through the use of non-linear activation functions and the training of the network using backpropagation through time (BPTT).
 %BPTT allows the network to adjust the weights of the connections between neurons based on the error signal that is propagated backwards through time. 
