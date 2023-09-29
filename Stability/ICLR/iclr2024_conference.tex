@@ -1004,7 +1004,7 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 \end{align}
 
 \section{Smoother activation functions}
-It is well-known that activation functions, which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023,ramachandran2017,hayou2019}.
+It is well-known that activation functions ($\sigma$ in  Eqs.~\ref{eq:RNN:discrete} and  \ref{eq:RNN:continuous}), which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023,ramachandran2017,hayou2019}.
 Activation functions that are $C^r$ for $r\geq 1$ are the ones to which the Persistence Theorem applies. 
 The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistence invariant manifold.
 For situations where smoothness of the persistent invariant manifold is of importance, smoother activation functions might be preferable, such as the Exponential Linear Unit (ELU)\citep{clevert2015} or the Continuously Differentiable Exponential Linear Units (CELU) \citep{barron2017}.
