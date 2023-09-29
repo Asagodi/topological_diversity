@@ -432,22 +432,19 @@ The inputs push the input along the line attractor in two opposite directions, s
 \end{equation}
 
 \subsubsection{Asymmetric loss landscape reflecting dynamics after bifurcation}\label{sec:asymmetricloss}
-To illustrate the effect of bifurcations from continuous attractor solution, we take a 1-dimensional slice of the loss surface, see Fig.~\ref{fig:maintenance_h0}B.
-Specifically, we continuously vary one of the entries of the self-recurrent connection matrix: $    \vW_{1,1} \leftarrow \vW_{1,1} + \Delta \quad \text{  with } \Delta\in[-\tfrac{1}{10},\tfrac{1}{10}].$
+To illustrate the effect of bifurcations from the continuous attractor solution, we take a 1-dimensional slice of the loss surface, see Fig.~\ref{fig:maintenance_h0}B.
+Specifically, we continuously vary one of the entries of the self-recurrent connection matrix: $    \vW_{1,1} \leftarrow \vW_{1,1} + \Delta$. % with $\Delta\in[-\tfrac{1}{10},\tfrac{1}{10}].$
 At any $\Delta \neq 0$, the continuous attractor disappears and the spontaneous dynamics of the networks show convergent and/or divergent behavior at exponential rates.
 Therefore, as the number of time steps in a trial increases, the error in the output also exponentially converge or diverge in a corresponding manner.
 As can be seen in Fig.~\ref{fig:maintenance_h0}B, for UBLA and iRNN, $\Delta > 0$  perturbations shows exponentially increasing loss and corresponds to an exploding gradient dynamical system.
 In all other cases, including all perturbations of BLA, leads to vanishing gradient, hence the loss is bounded.
 Note also the high curvature of the loss landscape around the optimal solution indicating that the slow manifold may only be maintained for a small neighborhood.
 
-
-
-
-\subsubsection{Bifurcation probability and random perturbations}
-We consider all parametrized perturbations of the form $ \vW \leftarrow \vW + \vV$ for a random matrix $\vV\in \mathbb{R}^{2\times 2}$.
+\subsubsection{Bifurcation probability and random perturbations of BLA}
+We consider all parametrized perturbations of the form $ \vW \leftarrow \vW + \vV$ for a random matrix $\vV\in \mathbb{R}^{2\times 2}$ to the BLA.
 The BLA can bifurcate in the following systems, characterized by their invariant sets: a system with single stable fixed point, a system with three fixed points (one unstable and two stable) and  a system with two fixed points (one stable and the other a half-stable node) and a system with a (rotated) line attractor. 
 Only the first two bifurcations (Fig.~\ref{fig:ublabla}) can happen with nonzero chance for the type of random perturbations we consider.
-The perturbations that leave the line attractor intact or to lead to a system with two fixed points have measure zero in parameter space.
+The perturbations that leave the line attractor intact or to lead to a system with two fixed points have measure zero in the parameter space.
 %The types of perturbation with measure zero are codimension 2 bifurcations.
 The perturbation that results in one fixed point happen with probability $\frac{3}{4}$, while perturbations lead to a system with three fixed points with probability $\frac{1}{4}$, see Supp.~Sec.~\ref{sec:supp:bla}.
 The (local) %, in the case of the single fixed point)
@@ -456,7 +453,7 @@ The (local) %, in the case of the single fixed point)
 
 
 \subsubsection{Maintaining a neural integrator}\label{sec:exp:maintaining}
-To investigate the differential effect of stoachstich gradient descent (SGD) on the three neural integrator models, we performed three learning experiments using the continuous-valued click integration task.
+To investigate the differential effect of stochastic gradient descent (SGD) on the three neural integrator models, we performed three learning experiments using the continuous-valued click integration task.
 The input and output are defined as in Eqs.~\ref{eq:input} and \ref{eq:output} with $I_{t,i}=0$ for $t=11,\dots,T$.
 %T=100,500,1000
 We investigate the effects of three types of noise on the learning or readjustment of the parameters during gradient descent starting from the perfect solutions to the task.
