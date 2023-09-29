@@ -553,11 +553,12 @@ The attractive manifold of equilibria in continuous attractor networks provides 
 Although the corresponding configurations are measure zero, we showed that the when the invariant manifold theorem holds, the finite time behavior of the trajectories and the gradient through time only slowly breakdown.
 We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in 5 example systems.
 There were surprisingly diverse bifurcations which provide additional insights to vanishing and exploding gradient regimes that the network visits in the presence of stochasticity in synapses and learning signals.
-In particular, we showed that some RNNs do not have non-zero measure bifurcations that lead to exploding gradients.
+In particular, we showed that some RNNs are devoid of bifurcations that lead to exploding gradients with non-zero measure.
 
 As the theory predicts, our numerical experiments demonstrate the properties of loss landscape and gradient near the fine-tuned system.
 However, after small perturbations, plain gradient descent typically converges to a non-continuous attractor solution, indicating that the homeostatic restoration of continuous attractor may be challenging.
-Further research on finding architectures and continuous attractor networks that allow restorative learning for a larger perturbations in the parameter space is needed.
+Based on our observations, we cannot conclude that continuous attractors solutions are universally brittle.
+Further research on finding continuous attractor networks that may allow restorative learning for a larger perturbations in the parameter space is needed.
 
 % We have derived a general theory that describes the loss landscape of RNNs around continuous attractor solutions.
 % This theory implies that backpropagating gradient does not explode for systems near compact continuous attractors because of divergent dynamics.
