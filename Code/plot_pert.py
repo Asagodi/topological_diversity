@@ -23,7 +23,7 @@ from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 from sklearn import preprocessing
 from scipy.optimize import minimize
 from itertools import chain, combinations, permutations
-
+import scipy.stats as st
 from math import floor, log10
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -302,6 +302,16 @@ def plot_losses_pairbox(main_exp_name_lists):
     max_y = np.power(10,np.ceil(np.log10(np.max(all_losses))))
     ax.set_ylim([min_y, max_y])
     return fig
+
+def get_weights(main_exp_name,model_name,exp_i):
+    exp = glob.glob(main_exp_name +'/'+ model_name + "/result_{exp_i}.pickle")[0]
+    
+    with open(exp, 'rb') as handle:
+        result = pickle.load(handle)
+    
+    losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
+    
+    return weights_init, weights_last, weights_train
 
 def get_info(main_exp_name):
     
@@ -1091,7 +1101,7 @@ def weigh_mse_traj_hist(info, xlim, ylim, lr, ax=None):
 
     
 
-def fig3(main_exp_name, learning_rates, factor):    
+def fig3(main_exp_name, learning_rates, factor, last_mses=10):    
     colors = ['k', 'r', 'b']
 
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
@@ -1100,6 +1110,7 @@ def fig3(main_exp_name, learning_rates, factor):
     ax.set_xlabel('learning rate')
     ax.set_ylabel('MSE (log-scale)')
     mean_losses = np.zeros((3,len(learning_rates)))
+    cis = np.zeros((3,len(learning_rates),2))
     lr_labels = []
     for lr_i,lr in enumerate(learning_rates):
         exp_name = main_exp_name + f"/lr{lr}"
@@ -1110,23 +1121,30 @@ def fig3(main_exp_name, learning_rates, factor):
         lr_labels.append(lr_log)
         print(exp_name)
         info = get_info(exp_name)
-        m=np.mean(info['losses'][...,-10:], axis=(1,-1))
+        m=np.mean(info['losses'][...,-last_mses:], axis=(1,-1))
         mean_losses[:, lr_i]=m
 
-        for mi in range(3):
-            violin_parts = ax.violinplot( info['losses'][mi,-10:].reshape((-1,1)),[lr_log-.5+mi/4.],
-                          points=60, widths=0.3, quantiles=[0.05, 0.1, 0.8, 0.9],
-                         showmeans=True, showextrema=False, showmedians=True, bw_method=0.2)
-            violin_parts['cmedians'].set_colors(colors[mi])
-            violin_parts['cquantiles'].set_colors(colors[mi])
-            # violin_parts['cmaxes'].set_colors(colors[mi])
+        for mi in range(1):
+            a=info['losses'][mi,:,-last_mses:].flatten()
+            
+            ci = st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))
+            cis[mi,lr_i,:] = ci 
 
-            for pc in violin_parts['bodies']:
-                pc.set_facecolor(colors[mi])
-                pc.set_edgecolor(colors[mi])
+            # violin_parts = ax.violinplot( info['losses'][mi,-10:].reshape((-1,1)),[lr_log-.5+mi/4.],
+            #               points=60, widths=0.3, quantiles=[0.05, 0.1, 0.8, 0.9],
+            #              showmeans=True, showextrema=False, showmedians=True, bw_method=0.2)
+            # violin_parts['cmedians'].set_colors(colors[mi])
+            # violin_parts['cquantiles'].set_colors(colors[mi])
+            # # violin_parts['cmaxes'].set_colors(colors[mi])
+
+            # for pc in violin_parts['bodies']:
+            #     pc.set_facecolor(colors[mi])
+            #     pc.set_edgecolor(colors[mi])
             
     for mi in range(3):
         ax.plot(np.array(lr_labels)-.5+mi/4., mean_losses[mi,:], color=colors[mi])
+        ax.fill_between(cis)
+
     # ax.set_ylim([7e-2,1.1e-1])
     fig.savefig(main_exp_name+f"lr_mse_f{factor}.pdf", bbox_inches="tight")
 
@@ -1191,9 +1209,50 @@ def plot_gradient_distributions(gradstep, noise_in, T, learning_rates, factors, 
             plt.savefig(parent_dir + f"/experiments/cnoisy_thrs/T{T}/gradstep{gradstep}/grad_distribs_factor{factors[0]}_lastmses{mses}.pdf", bbox_inches="tight")
 
     plt.show()
+    
+    
+def speed_over_epochs(main_exp_name, noise_in, model_i, exp_i):
+    fig, ax = plt.subplots(1, 1, figsize=(4, 2))
+    cmap = cmx.get_cmap("Blues_r");
+    norm = mplcolors.Normalize(vmin=0, vmax=30)
+    norm = norm(np.linspace(0, 30, num=30, endpoint=False))
+    for t in range(0,29,1):
+        get_speed_along_invariant_manifold(main_exp_name, noise_in, model_i, exp_i, ax=ax, t=t, color=cmap(norm[t]))
+    a = np.array([[0,1]])
+
+    cb_ax = fig.add_axes([0.925,.1,.1,.75])
+    img = cb_ax.imshow(a, cmap="Blues")
+    #pl.gca().set_visible(False)
+    fig.colorbar(img, cax=cb_ax)
+    cb_ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    cb_ax.set_ylabel("Epoch")
+    
+def get_speed_along_invariant_manifold(main_exp_name, noise_in, model_i, exp_i, ax=None, t=0, color=None):
+    model_names = ['irnn', 'ubla', 'bla']
+    if not ax:
+        fig, ax = plt.subplots(1, 1, figsize=(4, 2))
+
+    weights_init, weights_last, weights_train = get_weights(main_exp_name,model_i,exp_i)
+    W = weights_train["wrec_pp"][t]
+    b = weights_train["brec"][t]
+    # wo = weights_train["wo"][t];
+    X = np.arange(-1,21,.01); Y = np.arange(21,-1,-.01)
+    U = ReLU(W[0,0]*X + W[0,1]*Y + b[0]) - X
+    V = ReLU(W[1,0]*X + W[1,1]*Y + b[1]) - Y
+    speed = np.log(np.sqrt(U**2 + V**2))
+    ax.set_xlabel("Location along line attractor")
+    ax.set_ylabel("log(speed)")
+    ax.set_xticks([100,2100], [0,1])
+    sp=ax.plot(speed, color=color);
+    makedirs(main_exp_name+"/vf_figs")
+    if not ax:
+        plt.savefig(main_exp_name+f"/vf_figs/{model_names[i]}_speed_along_invman_{exp_i}_{t}.pdf")
+    return sp
+
+
                 
 if __name__ == "__main__":
-    noisy = 'cnoisy_thrs'
+    noisy = 'cnoisy_nomatch'
     learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
     factors = [10000, 1000, 100, 10, 1, .1]
     # learning_rates = [1e-5,1e-6,1e-7, 0]
@@ -1204,7 +1263,7 @@ if __name__ == "__main__":
     factors = [factor]
 
     noise_in = 'weights'
-    T = 1000
+    T = 10000
     gradstep = 1
     input_length = 10
     
@@ -1219,10 +1278,11 @@ if __name__ == "__main__":
 
 
     ###########MSEs vs learning rates
-    # main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}"
-    # fig3(main_exp_name, learning_rates, factor)
-    
-    
+    learning_rates = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 0]
+    learning_rates = [1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12, 1e-13, 0]
+
+    main_exp_name = parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}"
+    fig3(main_exp_name, learning_rates, factor)
     
     #Weight norm diff vs MSE
     learning_rate = 0
@@ -1231,7 +1291,7 @@ if __name__ == "__main__":
     print(main_exp_name)
     info = get_info(main_exp_name)
     cutoff=1/np.sqrt(6)
-    xlim, ylim = weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i=None, lr=learning_rate, factor=factor, cutoff=cutoff)
+    # xlim, ylim = weight_distance_MSE_scatter_plot(main_exp_name, info, exp_i=None, lr=learning_rate, factor=factor, cutoff=cutoff)
                                         # xlim=[0, 2e-4],
                                         # ylim=[1e-8, 2e-4])
     
@@ -1246,12 +1306,12 @@ if __name__ == "__main__":
             parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-7}",
             parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-9}",
             parent_dir + f"/experiments/{noisy}/T{T}/gradstep{gradstep}/alpha_star_factor{factor}/{noise_in}/input{input_length}/lr{1e-8}"]
-    _, _, optlr_info = weight_distance_MSE_scatter_plots(main_exp_names, exp_is=range(10), cutoff=cutoff, factor=factor,
-                                        set_xlim=xlim,
-                                        set_ylim=ylim)
-    weigh_mse_traj_hist(info, xlim, ylim, lr=0)
+    # _, _, optlr_info = weight_distance_MSE_scatter_plots(main_exp_names, exp_is=range(10), cutoff=cutoff, factor=factor,
+    #                                     set_xlim=xlim,
+    #                                     set_ylim=ylim)
+    # weigh_mse_traj_hist(info, xlim, ylim, lr=0)
 
-    weigh_mse_traj_hist(optlr_info, xlim, ylim, lr='opt')
+    # weigh_mse_traj_hist(optlr_info, xlim, ylim, lr='opt')
 
     #VECTOR FIELDS
     # for i in range(3):
