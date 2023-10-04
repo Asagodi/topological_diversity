@@ -210,6 +210,12 @@ def v_zero(t):
     #zero input
     return 0
 
+def v_zero(t, t_switch):
+    if t<t_switch:
+        return value
+    else:
+        return 0
+
 
 #Ring, bumps and corners
 def get_corners(N, m):
@@ -358,7 +364,7 @@ def simulate_ring(W_sym, W_asym, c_ff, y0=None, tau=1, transfer_function=ReLU, v
                     args=tuple([tau, transfer_function, W_sym, W_asym, c_ff, N, v_in]),
                     dense_output=True)
     
-    return sol,t
+    return sol.sol(t),t
 
 def simulate_bumps(bumps_oneside, W_sym, W_asym, c_ff, tau=1, 
                    transfer_function=ReLU,  v_in=v_zero,
@@ -379,7 +385,7 @@ def simulate_bumps(bumps_oneside, W_sym, W_asym, c_ff, tau=1,
 
 def plot_ring(sols, corners, lims = 3.):
     """
-    
+    Plots ring (from corners) and solutions (initialized close to ring)
 
     Parameters
     ----------
@@ -411,13 +417,50 @@ def plot_ring(sols, corners, lims = 3.):
                 'k', label="Original attractor", zorder=0, alpha=1., linewidth=10, 
                 solid_capstyle='round')
         
-    ax.plot(X_proj2[:,0], X_proj2[:,1], '.r', label="Stable", zorder=10, alpha=1., markersize=20)
-    # ax.plot(all_bumps_proj2[:,0], all_bumps_proj2[:,1], '.r', label="Stable", zorder=10, alpha=1., markersize=20)
+    ax.plot(X_proj2[:,0], X_proj2[:,1], '.r', zorder=10, alpha=1., markersize=20)
+    # ax.plot(all_bumps_proj2[:,0], all_bumps_proj2[:,1], '.r', zorder=10, alpha=1., markersize=20)
 
     ax.set(xlim=(-lims, lims), ylim=(-lims,lims))
     ax.set_axis_off()
 
     return pca
+
+
+def plot_solution(sol, corners, pca, lims = 3.):
+    """
+    Plots ring (from corners) and solution 
+    
+    Parameters
+    ----------
+    sol : (#time points, N) 
+        solutions that with initial values (close to) ring
+    corners : 
+        corners of the ring.
+    pca : sklearn.decomposition.PCA
+        pca of the sols. First 2 components
+    lims : float, optional
+        lims of plot. The default is 3
+
+    Returns
+    -------
+    """
+    N = sol.shape[-1]
+    X_proj2 = pca.transform(sol) 
+    corners_proj2 = pca.transform(corners)
+    
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    for i in range(N):
+        ax.plot([corners_proj2[i-1,0], corners_proj2[i,0]],
+                [corners_proj2[i-1,1], corners_proj2[i,1]],
+                'k', label="Original attractor", zorder=0, alpha=1., linewidth=10, 
+                solid_capstyle='round')
+        
+    ax.plot(X_proj2[:,0], X_proj2[:,1], '.r', zorder=10, alpha=1., markersize=5)
+    ax.set(xlim=(-lims, lims), ylim=(-lims,lims))
+    ax.set_axis_off()
+
+    return pca
+
 
 def plot_ring_and_fixedpoints(W_sym, pca, eps, c_ff, corners, lims=3, ax=None,  markersize=20):
     
