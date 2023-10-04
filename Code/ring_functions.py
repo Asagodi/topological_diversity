@@ -326,3 +326,95 @@ def spherical_to_cartesian(r, theta):
     x1 = r*np.cos(theta)  
     x2 = r*np.sin(theta)    
     return np.array([x1, x2])
+
+
+def define_ring(N, je = 4, ji = -2.4, c_ff=1):
+    W_sym = get_noorman_symmetric_weights(N, ji, je)
+    W_asym = get_noorman_asymmetric_weights(N)
+    
+    return W_sym, W_asym
+
+def simulate_ring(W_sym, W_asym, c_ff, y0=None, tau=1, transfer_function=ReLU,
+                  maxT = 25, tsteps=501):
+    
+    N = W_sym.shape[0]
+    if not y0:
+        y0 = np.random.uniform(0,1,N)
+    t = np.linspace(0, maxT, tsteps)
+
+    sol = solve_ivp(noorman_ode, y0=y0,  t_span=[0,maxT], args=tuple([tau, transfer_function, W_sym, W_asym, c_ff, N]),dense_output=True)
+    
+    return sol,t
+
+def simulate_bumps(bumps_oneside, W_sym, W_asym, c_ff, tau=1, transfer_function=ReLU,
+                   maxT = 25, tsteps=501):
+    
+    N = bumps_oneside.shape[0]
+    t = np.linspace(0, maxT, tsteps)
+    sols = np.zeros((bumps_oneside.shape[1], N, t.shape[0], N))
+    for bump_i in range(bumps_oneside.shape[1]):
+        for support_j in range(N):
+            y0 = np.roll(bumps_oneside[:,bump_i], support_j)
+            sol = solve_ivp(noorman_ode, y0=y0,  t_span=[0,maxT], args=tuple([tau, transfer_function, W_sym, W_asym, c_ff, N]),dense_output=True)
+            sols[bump_i,support_j,...] = sol.sol(t).T
+            
+    return sols
+
+def plot_ring(sols, corners, lims = 3.):
+
+    N = sols.shape[3]
+    sols = sols.reshape((-1, sols.shape[2], N))
+    pca = sklearn.decomposition.PCA(n_components=2)
+    X_proj2 = pca.fit_transform(sols[:,-1,:]) 
+    corners_proj2 = pca.transform(corners)
+    # all_bumps_proj2 = pca.fit_transform(all_bumps) 
+    
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    for i in range(N):
+        ax.plot([corners_proj2[i-1,0], corners_proj2[i,0]],
+                [corners_proj2[i-1,1], corners_proj2[i,1]],
+                'k', label="Original attractor", zorder=0, alpha=1., linewidth=10, 
+                solid_capstyle='round')
+        
+    ax.plot(X_proj2[:,0], X_proj2[:,1], '.r', label="Stable", zorder=10, alpha=1., markersize=20)
+    # ax.plot(all_bumps_proj2[:,0], all_bumps_proj2[:,1], '.r', label="Stable", zorder=10, alpha=1., markersize=20)
+
+    ax.set(xlim=(-lims, lims), ylim=(-lims,lims))
+    ax.set_axis_off()
+
+    return pca
+
+def plot_ring_and_fixedpoints(W_sym, pca, eps, c_ff, corners, lims=3, ax=None,  markersize=20):
+    
+    N = W_sym.shape[0]
+    fixed_points = noorman_fixed_points(W_sym+eps, c_ff)
+    fixed_points_proj2 = pca.transform(fixed_points) 
+    corners_proj2 = pca.transform(corners)
+
+    if not ax:
+        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    n_stab=0
+    n_sadd=0
+    for f_i, fixed_point_p in enumerate(fixed_points_proj2[:-1]):
+        fixed_point = fixed_points[f_i]
+        eigenvalues, _ = scipy.linalg.eig(noorman_jacobian(fixed_point, W_sym+eps))
+        if np.all(np.real(eigenvalues)<0):
+            ax.plot(fixed_point_p[0], fixed_point_p[1], '.g', label="Analytical", zorder=99, alpha=1., markersize= markersize)
+            n_stab+=1
+        else:
+            ax.plot(fixed_point_p[0], fixed_point_p[1], '.', color='darkorange', label="Analytical", zorder=99, alpha=1., markersize= markersize)
+            n_sadd+=1
+
+    for i in range(N):
+        ax.plot([corners_proj2[i-1,0], corners_proj2[i,0]],
+                [corners_proj2[i-1,1], corners_proj2[i,1]],
+                'k', label="Original attractor", zorder=0, alpha=1., linewidth=10, 
+                solid_capstyle='round')
+
+    ax.set(xlim=(-lims, lims), ylim=(-lims,lims))
+    ax.set_axis_off()
+
+    ax.set_axis_off()
+    if not ax:
+        plt.savefig(currentdir+f"/Stability/figures/noorman_ring_N{N}_pert_{n_stab}stab_{n_sadd-1}sadd.pdf", bbox_inches="tight")
+        # plt.savefig(currentdir+f"/Stability/figures/noorman_ring_N{N}_pert_{n_stab}stab_{n_sadd-1}sadd.png", bbox_inches="tight")
