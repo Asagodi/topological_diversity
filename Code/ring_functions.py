@@ -77,7 +77,8 @@ def get_noorman_asymmetric_weights(N):
     W = scipy.linalg.circulant(row)
     return W
 
-def noorman_ode(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N):
+
+def noorman_ode(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N,v_in):
     """Differential equation of head direction network in Noorman et al., 2022. 
     tau: integration constant
     transfer_function: each neuron transforms its inputs via a nonlinear transfer function
@@ -86,8 +87,9 @@ def noorman_ode(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N):
     c_ff: a constant feedforward input to all neurons in the network
     N: number of neurons in the network
     """
-
+    
     return (-x + np.dot(W_sym+v_in(t)*W_asym, transfer_function(x))/N + c_ff)/tau
+
 
 #Bump perturbations
 def noorman_ode_pert(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N,center,rotation_mat,amplitude,b):
@@ -98,6 +100,7 @@ def noorman_ode_pert(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N,center,rotati
     vector_bump = bump_perturbation(x, center, rotation_mat, amplitude, b)
     noor = noorman_ode(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N)
     return noor + vector_bump
+
 
 def noorman_ode_Npert(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N,Nbumps,bumps):
     """
@@ -116,6 +119,7 @@ def noorman_ode_Npert(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N,Nbumps,bumps
 
     return noorode
 
+
 # Fixed points and their stabilities
 def noorman_jacobian(x, W_sym):
     N = W_sym.shape[0]
@@ -126,6 +130,7 @@ def noorman_jacobian(x, W_sym):
     J = -np.eye(N)
     J += W_sub/N
     return J
+
 
 def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
@@ -172,6 +177,7 @@ def noorman_speed(x,tau,transfer_function,W_sym,W_asym,c_ff,N):
     return np.linalg.norm(f_x)
 
 
+
 def bump_perturbation(x, center, rotation_mat, amplitude, b=1):
     """
     Perturbation is composed of parallel vector field 
@@ -194,9 +200,15 @@ def bump_perturbation(x, center, rotation_mat, amplitude, b=1):
 
 # we will take phi(·) to be threshold linear
 
-def v_in(t):
-    return 0
 
+
+def v_constant(t, value=1):
+    #constant input
+    return value
+
+def v_zero(t):
+    #zero input
+    return 0
 
 
 #Ring, bumps and corners
@@ -211,6 +223,7 @@ def get_corners(N, m):
         corners.append(np.roll(corner_0, support_j))
     corners = np.array(corners)
     return corners
+
 
 def get_bumps_along_oneside_ring(N, m, corners, step_size=0.1):
     x = np.arange(0, m+step_size, step_size)
@@ -334,19 +347,21 @@ def define_ring(N, je = 4, ji = -2.4, c_ff=1):
     
     return W_sym, W_asym
 
-def simulate_ring(W_sym, W_asym, c_ff, y0=None, tau=1, transfer_function=ReLU,
-                  maxT = 25, tsteps=501):
+def simulate_ring(W_sym, W_asym, c_ff, y0=None, tau=1, transfer_function=ReLU, v_in=v_zero,
+                  maxT=25, tsteps=501):
     
     N = W_sym.shape[0]
-    if not y0:
+    if not np.any(y0):
         y0 = np.random.uniform(0,1,N)
     t = np.linspace(0, maxT, tsteps)
-
-    sol = solve_ivp(noorman_ode, y0=y0,  t_span=[0,maxT], args=tuple([tau, transfer_function, W_sym, W_asym, c_ff, N]),dense_output=True)
+    sol = solve_ivp(noorman_ode, y0=y0,  t_span=[0,maxT],
+                    args=tuple([tau, transfer_function, W_sym, W_asym, c_ff, N, v_in]),
+                    dense_output=True)
     
     return sol,t
 
-def simulate_bumps(bumps_oneside, W_sym, W_asym, c_ff, tau=1, transfer_function=ReLU,
+def simulate_bumps(bumps_oneside, W_sym, W_asym, c_ff, tau=1, 
+                   transfer_function=ReLU,  v_in=v_zero,
                    maxT = 25, tsteps=501):
     
     N = bumps_oneside.shape[0]
@@ -355,12 +370,32 @@ def simulate_bumps(bumps_oneside, W_sym, W_asym, c_ff, tau=1, transfer_function=
     for bump_i in range(bumps_oneside.shape[1]):
         for support_j in range(N):
             y0 = np.roll(bumps_oneside[:,bump_i], support_j)
-            sol = solve_ivp(noorman_ode, y0=y0,  t_span=[0,maxT], args=tuple([tau, transfer_function, W_sym, W_asym, c_ff, N]),dense_output=True)
+            sol = solve_ivp(noorman_ode, y0=y0,  t_span=[0,maxT],
+                            args=tuple([tau, transfer_function, W_sym, W_asym, c_ff, N, v_in]),
+                            dense_output=True)
             sols[bump_i,support_j,...] = sol.sol(t).T
             
     return sols
 
 def plot_ring(sols, corners, lims = 3.):
+    """
+    
+
+    Parameters
+    ----------
+    sols : (#bumps along side, N, #time points, N) 
+        solutions that with initial values (close to) ring
+    corners : 
+        corners of the ring.
+    lims : float, optional
+        lims of plot. The default is 3
+
+    Returns
+    -------
+    pca : sklearn.decomposition.PCA
+        pca of the sols. First 2 components
+
+    """
 
     N = sols.shape[3]
     sols = sols.reshape((-1, sols.shape[2], N))
