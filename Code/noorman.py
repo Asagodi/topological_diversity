@@ -13,6 +13,7 @@ sys.path.insert(0, parentdir)
 sys.path.insert(0, currentdir + "\Code") 
 
 import math
+import numpy as np
 import sklearn.decomposition
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
@@ -31,19 +32,21 @@ cmap = 'gray'
 rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
 rc('text', usetex=True)
 
-def define_ring(N, je = 4, ji = -2.4, c_ff=1, tau=1):
-    W_sym = get_noorman_symmetric_weights(N, je, ji)
-    W_asym = get_noorman_asymmetric_weights(N)
-    
-    
-    return W_sym, W_aym
 
-def simulate_ring(tau, transfer_function, W_sym, W_asym, c_ff, N, 
-                  maxT = 25, tsteps=501):
-    sol = solve_ivp(noorman_ode, y0=y0,  t_span=[0,maxT], args=tuple([tau, transfer_function, W_sym, W_asym, c_ff, N]),dense_output=True)
-    
-if __main__:
-    
+if __name__ == "__main__":
+
+    N = 6    
     tau = 1
+    c_ff = 1
+
     transfer_function = ReLU
-    define_ring(N, je = 4, ji = -2.4, c_ff=1, tau=1)
+    W_sym, W_asym = define_ring(N, je = 4, ji = -2.4, c_ff=c_ff)
+    sol,t = simulate_ring(W_sym, W_asym, c_ff)
+    
+    m = np.max(sol.sol(t)) # m #round? what should the maximum be according to the paper?
+    
+    corners = get_corners(N, m)
+    bumps_oneside = get_bumps_along_oneside_ring(N, m, corners, step_size=0.05)
+    all_bumps = get_all_bumps(N, bumps)
+
+    sols = simulate_bumps(bumps_oneside, W_sym, W_asym, c_ff)
