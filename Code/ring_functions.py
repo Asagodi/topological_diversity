@@ -202,21 +202,7 @@ def bump_perturbation(x, center, rotation_mat, amplitude, b=1):
 
 
 
-def v_constant(t, value=1):
-    #constant input
-    return value
-
-def v_zero(t):
-    #zero input
-    return 0
-
-def v_zero(t, t_switch):
-    if t<t_switch:
-        return value
-    else:
-        return 0
-
-
+################
 #Ring, bumps and corners
 def get_corners(N, m):
     #works for even N
@@ -353,6 +339,34 @@ def define_ring(N, je = 4, ji = -2.4, c_ff=1):
     
     return W_sym, W_asym
 
+
+
+
+# def v_constant(t, value=1):
+#     #constant input
+#     return value
+
+def v_constant(value=1):
+      return  lambda x : value
+
+def v_zero(t):
+    #zero input
+    return 0
+
+
+
+def v_switch(t, t_switch=10, value=1):
+    if t<t_switch:
+        return value
+    else:
+        return 0
+    
+def get_v(v_name='zero'):
+    if v_name=='zero':
+        return v_zero
+    elif v_name=='constant':
+        return v_constant(value=1)
+
 def simulate_ring(W_sym, W_asym, c_ff, y0=None, tau=1, transfer_function=ReLU, v_in=v_zero,
                   maxT=25, tsteps=501):
     
@@ -402,7 +416,7 @@ def plot_ring(sols, corners, lims = 3.):
         pca of the sols. First 2 components
 
     """
-
+    
     N = sols.shape[3]
     sols = sols.reshape((-1, sols.shape[2], N))
     pca = sklearn.decomposition.PCA(n_components=2)
@@ -411,12 +425,9 @@ def plot_ring(sols, corners, lims = 3.):
     # all_bumps_proj2 = pca.fit_transform(all_bumps) 
     
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    for i in range(N):
-        ax.plot([corners_proj2[i-1,0], corners_proj2[i,0]],
-                [corners_proj2[i-1,1], corners_proj2[i,1]],
-                'k', label="Original attractor", zorder=0, alpha=1., linewidth=10, 
-                solid_capstyle='round')
+    plot_ring_from_corners(N, corners_proj2, ax)
         
+
     ax.plot(X_proj2[:,0], X_proj2[:,1], '.r', zorder=10, alpha=1., markersize=20)
     # ax.plot(all_bumps_proj2[:,0], all_bumps_proj2[:,1], '.r', zorder=10, alpha=1., markersize=20)
 
@@ -425,7 +436,14 @@ def plot_ring(sols, corners, lims = 3.):
 
     return pca
 
-
+def plot_ring_from_corners(N, corners_proj2, ax):
+    for i in range(N):
+        ax.plot([corners_proj2[i-1,0], corners_proj2[i,0]],
+                [corners_proj2[i-1,1], corners_proj2[i,1]],
+                'k', zorder=0, alpha=1., linewidth=10, 
+                solid_capstyle='round')
+    
+    
 def plot_solution(sol, corners, pca, lims = 3.):
     """
     Plots ring (from corners) and solution 
@@ -444,17 +462,17 @@ def plot_solution(sol, corners, pca, lims = 3.):
     Returns
     -------
     """
+    tsteps=sol.shape[0]
     N = sol.shape[-1]
     X_proj2 = pca.transform(sol) 
     corners_proj2 = pca.transform(corners)
     
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    for i in range(N):
-        ax.plot([corners_proj2[i-1,0], corners_proj2[i,0]],
-                [corners_proj2[i-1,1], corners_proj2[i,1]],
-                'k', label="Original attractor", zorder=0, alpha=1., linewidth=10, 
-                solid_capstyle='round')
+    plot_ring_from_corners(N, corners_proj2, ax)
         
+    cmap = cmx.get_cmap("Blues_r");
+    norm = mplcolors.Normalize(vmin=0, vmax=30)
+    norm = norm(np.linspace(0, 30, num=30, endpoint=False))
     ax.plot(X_proj2[:,0], X_proj2[:,1], '.r', zorder=10, alpha=1., markersize=5)
     ax.set(xlim=(-lims, lims), ylim=(-lims,lims))
     ax.set_axis_off()
