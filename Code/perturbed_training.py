@@ -187,7 +187,7 @@ class RNN(nn.Module):
         for i in range(seq_len):
             if self.ML_RNN=='noorman':
                 rec_input = (
-                    self.nonlinearity(h).matmul(self.wrec.t/self.hidden_size + input[:, i, :].matmul(self.wi)/self.hidden_size) 
+                    self.nonlinearity(h).matmul(self.wrec.t + input[:, i, :].matmul(self.wi)) 
                      + self.brec)
                 h = ((1 - self.dt) * h 
                       + self.dt * rec_input

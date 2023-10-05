@@ -353,19 +353,19 @@ def v_zero(t):
     #zero input
     return 0
 
-
-
-def v_switch(t, t_switch=10, value=1):
+def v_switch(t, values=[0,1], t_switch=10):
     if t<t_switch:
-        return value
+        return values[0]
     else:
-        return 0
+        return values[1]
     
-def get_v(v_name='zero'):
+def get_v(v_name='zero', value=1, values=[0,1], t_switch=10):
     if v_name=='zero':
         return v_zero
     elif v_name=='constant':
-        return v_constant(value=1)
+        return v_constant(value=value)
+    elif v_name=='switch':
+        return v_switch(t_switch=t_switch, value=value)
 
 def simulate_ring(W_sym, W_asym, c_ff, y0=None, tau=1, transfer_function=ReLU, v_in=v_zero,
                   maxT=25, tsteps=501):
@@ -477,7 +477,9 @@ def plot_solution(sol, corners, pca, lims = 3.):
     ax.set(xlim=(-lims, lims), ylim=(-lims,lims))
     ax.set_axis_off()
     
-    return fig, ax
+    theta = np.arctan2(X_proj2[:,1], X_proj2[:,0])
+    
+    return fig, ax, theta
 
 
 def plot_ring_and_fixedpoints(W_sym, pca, eps, c_ff, corners, lims=3, ax=None,  markersize=20):
@@ -530,6 +532,6 @@ def get_ring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
     dims = (1,N,2)
     net = RNN(dims=dims, noise_std=internal_noise_std, dt=dt,
               nonlinearity='relu', readout_nonlinearity='identity',
-              wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=c_ff, bwo_init=bwo_init,
+              wi_init=wi_init/N, wrec_init=wrec_init/N, wo_init=wo_init, brec_init=c_ff, bwo_init=bwo_init,
               h0_init=h0_init, ML_RNN='noorman')
     
