@@ -19,13 +19,13 @@ from scipy.optimize import minimize
 from itertools import chain, combinations, permutations
 
 import seaborn as sns
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
-from matplotlib import cm
-from matplotlib import rc
 import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib import cm, rc
+from matplotlib.ticker import MaxNLocator
 import matplotlib.lines as mlines
 from matplotlib.ticker import LinearLocator
+import matplotlib.colors as mplcolors
 
 def ReLU(x):
     return np.where(x<0,0,x)
@@ -436,11 +436,11 @@ def plot_ring(sols, corners, lims = 3.):
 
     return pca
 
-def plot_ring_from_corners(N, corners_proj2, ax):
+def plot_ring_from_corners(N, corners_proj2, ax, color='k', zorder=0, alpha=1., linewidth=10):
     for i in range(N):
         ax.plot([corners_proj2[i-1,0], corners_proj2[i,0]],
                 [corners_proj2[i-1,1], corners_proj2[i,1]],
-                'k', zorder=0, alpha=1., linewidth=10, 
+                color=color, zorder=zorder, alpha=alpha, linewidth=linewidth, 
                 solid_capstyle='round')
     
     
@@ -468,16 +468,16 @@ def plot_solution(sol, corners, pca, lims = 3.):
     corners_proj2 = pca.transform(corners)
     
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    plot_ring_from_corners(N, corners_proj2, ax)
+    plot_ring_from_corners(N, corners_proj2, ax, alpha=.2)
         
-    cmap = cmx.get_cmap("Blues_r");
-    norm = mplcolors.Normalize(vmin=0, vmax=30)
-    norm = norm(np.linspace(0, 30, num=30, endpoint=False))
-    ax.plot(X_proj2[:,0], X_proj2[:,1], '.r', zorder=10, alpha=1., markersize=5)
+    cmap = cm.get_cmap("jet");
+    norm = mplcolors.Normalize(vmin=0, vmax=tsteps)
+    norm = norm(np.linspace(0, tsteps, num=tsteps, endpoint=False))
+    ax.scatter(X_proj2[:,0], X_proj2[:,1], c=norm[np.arange(tsteps)], cmap=cmap, zorder=10, alpha=.5, s=5)
     ax.set(xlim=(-lims, lims), ylim=(-lims,lims))
     ax.set_axis_off()
-
-    return pca
+    
+    return fig, ax
 
 
 def plot_ring_and_fixedpoints(W_sym, pca, eps, c_ff, corners, lims=3, ax=None,  markersize=20):
@@ -514,3 +514,22 @@ def plot_ring_and_fixedpoints(W_sym, pca, eps, c_ff, corners, lims=3, ax=None,  
     if not ax:
         plt.savefig(currentdir+f"/Stability/figures/noorman_ring_N{N}_pert_{n_stab}stab_{n_sadd-1}sadd.pdf", bbox_inches="tight")
         # plt.savefig(currentdir+f"/Stability/figures/noorman_ring_N{N}_pert_{n_stab}stab_{n_sadd-1}sadd.png", bbox_inches="tight")
+
+
+from perturbed_training import RNN
+###########RNNs and learning
+def get_ring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
+    
+    wrec_init, wi_init = define_ring(N, je=je, ji=ji, c_ff=c_ff) # W_sym, W_asym 
+    # wo_init = ???
+    bwo_init = np.zeros((2,1))
+
+    corners = get_corners(N, m=1.2512167690384801)
+    h0_init = corners[3]#along the ring, e.g. corner
+
+    dims = (1,N,2)
+    net = RNN(dims=dims, noise_std=internal_noise_std, dt=dt,
+              nonlinearity='relu', readout_nonlinearity='identity',
+              wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=c_ff, bwo_init=bwo_init,
+              h0_init=h0_init, ML_RNN='noorman')
+    
