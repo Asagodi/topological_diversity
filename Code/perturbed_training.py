@@ -55,7 +55,7 @@ class RNN(nn.Module):
         :param train_wrec: bool
         :param train_brec: bool
         :param train_h0: bool
-        :param ML_RNN: bool; whether forward pass is ML convention f(Wr)
+        :param ML_RNN: bool or string; whether forward pass is ML convention f(Wr+WinI) or Wf(r)+WinI or (W+W_inI)f(r)
         """
         super(RNN, self).__init__()
         self.dims = dims
@@ -185,7 +185,15 @@ class RNN(nn.Module):
 
         # simulation loop
         for i in range(seq_len):
-            if self.ML_RNN:
+            if self.ML_RNN=='noorman':
+                rec_input = (
+                    self.nonlinearity(h).matmul(self.wrec.t/self.hidden_size + input[:, i, :].matmul(self.wi)/self.hidden_size) 
+                     + self.brec)
+                h = ((1 - self.dt) * h 
+                      + self.dt * rec_input
+                      + np.sqrt(self.dt) * self.noise_std * noise[:, i, :])
+                out_i = self.readout_nonlinearity(h).matmul(self.wo)+self.bwo
+            elif self.ML_RNN:
                 rec_input = self.nonlinearity(
                     h.matmul(self.wrec.t()) 
                     + input[:, i, :].matmul(self.wi)
