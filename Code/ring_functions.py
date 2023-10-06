@@ -347,17 +347,15 @@ def define_ring(N, je = 4, ji = -2.4, c_ff=1):
 #     return value
 
 def v_constant(value=1):
-      return  lambda x : value
+      return  lambda t : value
 
 def v_zero(t):
     #zero input
     return 0
 
-def v_switch(t, values=[0,1], t_switch=10):
-    if t<t_switch:
-        return values[0]
-    else:
-        return values[1]
+def v_switch(values=[0,1], t_switch=10):
+      return  lambda t : values[0] if t<t_switch else values[1]
+
     
 def get_v(v_name='zero', value=1, values=[0,1], t_switch=10):
     if v_name=='zero':
@@ -367,7 +365,7 @@ def get_v(v_name='zero', value=1, values=[0,1], t_switch=10):
     elif v_name=='switch':
         return v_switch(t_switch=t_switch, value=value)
 
-def simulate_ring(W_sym, W_asym, c_ff, y0=None, tau=1, transfer_function=ReLU, v_in=v_zero,
+def simulate_ring(W_sym, W_asym, c_ff, tau=1, y0=None, transfer_function=ReLU, v_in=v_zero,
                   maxT=25, tsteps=501):
     
     N = W_sym.shape[0]
@@ -379,6 +377,21 @@ def simulate_ring(W_sym, W_asym, c_ff, y0=None, tau=1, transfer_function=ReLU, v
                     dense_output=True)
     
     return sol.sol(t),t
+
+def simulate_from_y0s(y0s, W_sym, W_asym, c_ff, tau=1, 
+                   transfer_function=ReLU,  v_in=v_zero,
+                   maxT = 25, tsteps=501):
+    
+    N = W_sym.shape[0]
+    t = np.linspace(0, maxT, tsteps)
+    sols = np.zeros((y0s.shape[1], t.shape[0], N))
+    for yi,y0 in enumerate(y0s.T):
+        sol = solve_ivp(noorman_ode, y0=y0,  t_span=[0,maxT],
+                        args=tuple([tau, transfer_function, W_sym, W_asym, c_ff, N, v_in]),
+                        dense_output=True)
+        sols[yi,...] = sol.sol(t).T
+            
+    return sols
 
 def simulate_bumps(bumps_oneside, W_sym, W_asym, c_ff, tau=1, 
                    transfer_function=ReLU,  v_in=v_zero,
@@ -397,7 +410,7 @@ def simulate_bumps(bumps_oneside, W_sym, W_asym, c_ff, tau=1,
             
     return sols
 
-def plot_ring(sols, corners, lims = 3.):
+def plot_ring(sols, corners, pca=None, lims = 3.):
     """
     Plots ring (from corners) and solutions (initialized close to ring)
 
@@ -417,10 +430,14 @@ def plot_ring(sols, corners, lims = 3.):
 
     """
     
-    N = sols.shape[3]
-    sols = sols.reshape((-1, sols.shape[2], N))
-    pca = sklearn.decomposition.PCA(n_components=2)
-    X_proj2 = pca.fit_transform(sols[:,-1,:]) 
+    N = sols.shape[-1]
+    sols = sols.reshape((-1, sols.shape[-2], N))
+    if not pca:
+        pca = sklearn.decomposition.PCA(n_components=2)
+        X_proj2 = pca.fit_transform(sols[:,-1,:]) 
+    else:
+        X_proj2 = pca.transform(sols[:,-1,:]) 
+
     corners_proj2 = pca.transform(corners)
     # all_bumps_proj2 = pca.fit_transform(all_bumps) 
     
