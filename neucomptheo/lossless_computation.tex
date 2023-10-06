@@ -1,0 +1,76 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb, amsmath, amsthm}
+\usepackage{thmtools, mathtools, mathrsfs}
+\usepackage{amsfonts}
+\usepackage[sort&compress,numbers]{natbib}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{positioning,matrix,arrows,decorations.pathmorphing}
+\usepackage{tikz-cd} 
+\definecolor {processblue}{cmyk}{0.8,0,0,0}
+
+\newcommand{\mb}[1]{\mathbb{#1}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\DeclareMathOperator{\Inv}{Inv}
+\DeclareMathOperator{\innt}{int}
+\newcommand{\probP}{\text{I\kern-0.15em P}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+ \usepackage{thmtools, thm-restate} \newtheorem{conjecture}[theorem]{Conjecture}
+
+\title{}
+\author{\'Abel S\'agodi}
+\date{September 1, 2023}
+
+\begin{document}
+\maketitle
+
+\section{Infinite horizon computation}	
+\begin{definition}
+
+\end{definition}
+
+\section{}
+\begin{theorem}
+Neural computation that is bounded and is agnostic to decoding time has to rely on asymptotic dynamics or on omega sets.
+\end{theorem}
+
+\begin{proof}
+Invariance to time decoding implies that trajectories (after the input is presented) that get decoded into a certain output need to retain that decoding
+
+Convergence to the non-wandering set for a compact dynamical system
+
+Each of these trajectories will be in the same $\omega$-limit set
+\end{proof}
+
+
+%\begin{figure}[H]
+% \centering
+% \includegraphics[width=0.99\textwidth]{figs/.pdf}
+% \caption{}
+% \label{fig:tanh_dydot}
+%\end{figure}
+
+
+\begin{theorem}
+For neural computation with a linear decoder, the sets of trajectories grouped by input must be linearly separable.
+\end{theorem}
+
+
+% \newpage
+% \addcontentsline{toc}{section}{References}
+% \bibliographystyle{plain}
+% \bibliography{CIT-for-Computation.bib, cit.bib, CITCOD.bib}
+
+\end{document}
