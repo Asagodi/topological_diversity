@@ -330,14 +330,14 @@ def flipflop(dims, dt,
         return task
     
 def poisson_clicks_task(T, dt, set_stim_duration=None,
-                        cue_output_durations = [10,5,10,5,10], 
+                        cue_output_durations = [10,5,10,5,1], 
                         ratios=[-39,-37/3,-31/9,-26/14,26/14,31/9,37/3,39],  sum_of_rates=40,
-                        exp_trunc_params={'b':1,'scale':200,'loc':1000}, 
+                        exp_trunc_params={'b':1,'scale':1000,'loc':500}, 
                         clicks_capped=True, equal_clicks='addone_random'
                         ):
     
     
-    input_length = int(T/dt)
+    input_length = int(T*dt)
     
     stim_cue_delay, stim_cue_duration, output_cue_delay, output_cue_duration, output_duration = cue_output_durations
     delay_to_stim = stim_cue_delay + stim_cue_duration + 1
@@ -394,9 +394,8 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
     
 
             output_cue = stim_cue_delay + stim_cue_duration + stim_duration + output_cue_delay
-            input[batch_i, :, 3][output_cue-output_cue_duration:output_cue] = 1.
+            input[batch_i, output_cue-output_cue_duration:output_cue, 3] = 1.
             target[batch_i, output_cue:output_cue+output_duration, highest_click_count_index] = 1.
-            # target[batch_i, output_cue:output_cue+output_duration, 1-highest_click_count_index] = 0.
             
         input[:, :, :2] = stimulus
         input[:, stim_cue_delay:stim_cue_delay+stim_cue_duration, 2] = 1.
