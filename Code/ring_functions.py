@@ -548,7 +548,7 @@ def get_ring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
 
     dims = (1,N,2)
     net = RNN(dims=dims, noise_std=internal_noise_std, dt=dt,
-              nonlinearity='relu', readout_nonlinearity='identity',
+              nonlinearity='relu', readout_nonlinearity='id',
               wi_init=wi_init/N, wrec_init=wrec_init/N, wo_init=wo_init, brec_init=c_ff, bwo_init=bwo_init,
               h0_init=h0_init, ML_RNN='noorman')
     
