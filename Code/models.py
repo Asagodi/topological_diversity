@@ -25,16 +25,9 @@ def mse_loss_masked(output, target, mask):
     :param mask: idem -- or torch tensor of shape (num_trials, num_timesteps, 1)
     :return: float
     """
-    # If mask has the same shape as output:
-    if output.shape == mask.shape:
-        loss = (mask * (target - output).pow(2)).sum() / mask.sum()
-    else:
-        raise Exception("This is problematic...")
-        output_dim = output.shape[-1]
-        loss = (mask * (target - output).pow(2)).sum() / (mask.sum() * output_dim)
-    # Take half:
-    # loss = 0.5 * loss
+    loss = (mask * (target - output).pow(2)).sum() / mask.sum()
     return loss
+
 
 def get_optimizer(model, optimizer, learning_rate, weight_decay=0, momentum=0, adam_betas=(0.9, 0.999), adam_eps=1e-08):
     #initialize optimizer
@@ -554,15 +547,19 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             # Convert training data to pytorch tensors
             _input = torch.from_numpy(_input)
             _target = torch.from_numpy(_target)
-            _mask = torch.from_numpy(_mask)
             # Allocate
             input = _input.to(device=device).float() 
             target = _target.to(device=device).float() 
-            mask = _mask.to(device=device).float() 
         
             optimizer.zero_grad()
             output, trajectories = net(input, h_init=h_init, return_dynamics=True)
-            loss = loss_function(output, target, mask)
+            if _mask:
+                _mask = torch.from_numpy(_mask)
+                mask = _mask.to(device=device).float() 
+                loss = loss_function(output, target, mask)
+            else: 
+                loss = loss_function(output, target)
+
             
             act_norm = 0.
             if act_norm_lambda != 0.: 
