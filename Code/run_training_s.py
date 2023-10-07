@@ -27,7 +27,7 @@ import torch.optim as optim
 
 from models import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget, LSTM_noforget2, LSTM
 from network_initialization import qpta_rec_weights
-from tasks import angularintegration_task, eyeblink_task
+from tasks import angularintegration_task, eyeblink_task, poisson_clicks_task
 from qpta_initializers import _qpta_tanh_hh
 
 def makedirs(dirname):
@@ -41,6 +41,9 @@ def get_task(task_name = 'angularintegration', T=10, dt=.1, t_delay=50, sparsity
 
     elif task_name == 'angularintegration':
         task =  angularintegration_task(T=T, dt=dt, sparsity=sparsity, last_mses=last_mses)
+        
+    elif task_name == 'poisson_clicks':
+        task =  poisson_clicks_task(T=T, dt=dt)
     else:
         raise Exception("Task not known.")
         
@@ -294,11 +297,30 @@ def size_experiment(main_exp_name, sub_exp_name):
                                                                   model_name=model_name, trials=11, training_kwargs=training_kwargs)
     
     
+    
+if __name__ == "__main__":
+    parameter_file_name = 'params_poisson_clicks.yml'
 
+    parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
+    training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
+
+    main_exp_name = 'poisson_clicks'
+    sub_exp_name  = 'test'
+    training_kwargs['g_in'] = 14.142135623730951
+    model_name = 'high'
+    training_kwargs['network_type'] = 'high'
+    training_kwargs['initialization_type'] = 'gain'
+
+    run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
+                                                            sub_exp_name=sub_exp_name,
+                                                          model_name=model_name, trials=11, training_kwargs=training_kwargs)
+
+    
     
 if __name__ == "__main__":
     print(current_dir)
     parameter_file_name = 'params_ang_sparse.yml'
+
     parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
     
@@ -313,8 +335,8 @@ if __name__ == "__main__":
     
     # size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
     
-    main_exp_name = 'angularintegration'
-    sub_exp_name  = 'act_norm'
+    main_exp_name = 'poisson_clicks'
+    sub_exp_name  = 'test'
 
     model_i, model_name = 2, 'high'
     # model_i, model_name = 3, 'ortho'
@@ -322,20 +344,20 @@ if __name__ == "__main__":
     # model_i, model_name = 0, 'lstm'
 
     # training_kwargs['clip_gradient'] = 
-    training_kwargs['task'] = 'angularintegration'
+    training_kwargs['task'] = 'poisson_clicks'
     # training_kwargs['nonlinearity'] = 'relu'
-    training_kwargs['act_norm_lambda'] = 1e-5
+    # training_kwargs['act_norm_lambda'] = 1e-5
 
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['batch_size'] = 128
+    training_kwargs['batch_size'] = 1024
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
     training_kwargs['g_in'] = 14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
-    training_kwargs['learning_rate'] = 1e-3
+    training_kwargs['learning_rate'] = 1e-4
     training_kwargs['n_epochs'] = 1000
-    training_kwargs['T'] = 12.8 #
-    training_kwargs['dt_rnn'] = .1
+    training_kwargs['T'] = 200
+    training_kwargs['dt_rnn'] = 1
     training_kwargs['adam_beta1'] = 0.9
     training_kwargs['adam_beta2'] = 0.999
     training_kwargs['network_type'] = network_types[model_i]
@@ -348,24 +370,24 @@ if __name__ == "__main__":
 
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
-                                                          model_name=model_name, trials=11, training_kwargs=training_kwargs)
+                                                          model_name=model_name, trials=1, training_kwargs=training_kwargs)
 
     
-    param_grid = {'initialization_type': ['qpta'],
-                  'g': [.5],
-                'T': [25.6],
-                  'dt_rnn': [.1],
-                  'g_in': [1e-3, 1e-2],
-                  'learning_rate':[1e-2],
-                  'batch_size': [128],
-                  'optimizer': ['adam'],
-                  'n_epochs': [1000],
-                  'scheduler_step_size':[1000],
-                  'adam_beta1': [.8], #[.7, .8, .9, .95],
-                  'adam_beta2': [0.99], # [.9, .99, .999, .9999],
-                  'scheduler_gamma':[1.],
-                  'scheduler': ['steplr'],
-                  'clip_gradient': [None]}
+    # param_grid = {'initialization_type': ['qpta'],
+    #               'g': [.5],
+    #             'T': [25.6],
+    #               'dt_rnn': [.1],
+    #               'g_in': [1e-3, 1e-2],
+    #               'learning_rate':[1e-2],
+    #               'batch_size': [128],
+    #               'optimizer': ['adam'],
+    #               'n_epochs': [1000],
+    #               'scheduler_step_size':[1000],
+    #               'adam_beta1': [.8], #[.7, .8, .9, .95],
+    #               'adam_beta2': [0.99], # [.9, .99, .999, .9999],
+    #               'scheduler_gamma':[1.],
+    #               'scheduler': ['steplr'],
+    #               'clip_gradient': [None]}
     # df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
     #                                                                 experiment_folder='angularintegration/gin256_lr1e-2',
     #                                                                 sub_exp_name='qpta',
