@@ -347,9 +347,7 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
         input =  np.zeros([batch_size, input_length, 4])
         stimulus =  np.zeros([batch_size, input_length, 2])
         target = np.zeros([batch_size, input_length, 2])
-        mask = np.ones([batch_size, input_length, 2])
-
-        
+        mask = None # np.ones([batch_size, input_length, 2])
         
         stim_durations = []
         if not set_stim_duration:
