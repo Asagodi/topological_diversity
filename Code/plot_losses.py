@@ -503,9 +503,13 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
         fig, axes = plt.subplots(1, 3, figsize=(9, 3), sharex=False, sharey=False)
 
     for trial_i in range(trajectories.shape[0]):
-        axes[0].plot(trajectories[trial_i,after_t:before_t,0], trajectories[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
+        target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
+
+        # axes[0].plot(trajectories[trial_i,after_t:before_t,0], trajectories[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
+        axes[0].plot(trajectories[trial_i,after_t:before_t,0], trajectories[trial_i,after_t:before_t,1], '-', c=cmap2(norm2(target_angle)))
+
         if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
-            axes[0].scatter(trajectories[trial_i,-1,0], trajectories[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
+            axes[0].scatter(trajectories[trial_i,-1,0], trajectories[trial_i,-1,1], marker='.', s=100, c=cmap2(norm2(target_angle)), zorder=100)
 
     axes[0].set_axis_off()
     axes[0].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
