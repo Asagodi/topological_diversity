@@ -434,26 +434,24 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
     norm2 = mpl.colors.Normalize(-np.pi, np.pi)
     
     # fig, axes = plt.subplots(3, 3, figsize=(9, 9), sharex=True, sharey=True)
-    fig, axes = plt.subplots(3, 3, figsize=(9, 9), sharex=False, sharey=False)
-    axes = axes.flatten()
-
-    if plot_output:
-        fig2, axes2 = plt.subplots(3, 3, figsize=(9, 10), sharex=False, sharey=False)
-        axes2 = axes2.flatten()
+    fig, axes = plt.subplots(3, 6, figsize=(18, 9), sharex=False, sharey=False)
+    axes1 = axes[:,:3].flatten()
+    axes2 = axes[:,3:].flatten()
+    # if plot_output:
+    #     fig2, axes2 = plt.subplots(3, 3, figsize=(9, 10), sharex=False, sharey=False)
+    #     axes2 = axes2.flatten()
 
     for exp_i, exp in enumerate(exp_list[:9]):
         trajectories, start, target, output = plot_trajs_model(main_exp_name, model_name, exp, T=T, which=which, hidden_i=hidden_i, input_length=input_length,
                          plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to, input_range=input_range)
 
         for trial_i in range(trajectories.shape[0]):
-            axes[exp_i].plot(trajectories[trial_i,:,0], trajectories[trial_i,:,1], '-', c=cmap(norm[trial_i]))
+            axes1[exp_i].plot(trajectories[trial_i,:,0], trajectories[trial_i,:,1], '-', c=cmap(norm[trial_i]))
             if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
-                axes[exp_i].scatter(trajectories[trial_i,-1,0], trajectories[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
-        
+                axes1[exp_i].scatter(trajectories[trial_i,-1,0], trajectories[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
 
-
-        axes[exp_i].set_axis_off()
-        axes[exp_i].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
+        axes1[exp_i].set_axis_off()
+        axes1[exp_i].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
         
         if plot_output:
             x = np.linspace(0, 2*np.pi, 1000)
@@ -462,7 +460,7 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
                 # if trial_i<output.shape[0]-1:
                 #     axes2[exp_i].plot([target[trial_i,-1,0], target[trial_i+1,-1,0]], [target[trial_i,-1,1], target[trial_i+1,-1,1]], '--', c=cmap(norm[trial_i]), alpha=.5)
                 # axes2[exp_i].scatter(target[trial_i,-1,0], target[trial_i,-1,1], color=cmap(norm[trial_i]), alpha=.1)
-                axes2[exp_i].plot(output[trial_i,:,0], output[trial_i,:,1], '-', c=cmap(norm[trial_i]))
+                # axes2[exp_i].plot(output[trial_i,:,0], output[trial_i,:,1], '-', c=cmap(norm[trial_i]))
                 if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
                     axes2[exp_i].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
             
@@ -473,7 +471,6 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
                 # ax.scatter(xval, yval, c=xval, s=300, cmap=colormap, norm=norm, linewidths=0)
 
             axes2[exp_i].set_axis_off()
-
             
     if not timepart:
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/trajpca_{which}_{after_t}to{before_t}.png', bbox_inches="tight")
@@ -520,11 +517,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     norm = norm(np.linspace(min_input, max_input, num=num_of_inputs, endpoint=True))
     cmap = cmx.get_cmap("coolwarm")
     
-    fig, ax = plt.subplots(1, 1, figsize=(5, 3))
-    # input = np.zeros((1,128,1))
-    # input = np.repeat(np.arange(-.5,.5,.1),128).reshape((10,128,1))
-    # input = np.repeat(np.linspace(-.5, .5, num=11, endpoint=True),128).reshape((11,128,1))
-    
+    # fig, ax = plt.subplots(1, 1, figsize=(5, 3))
     
     input = np.zeros((num_of_inputs,T,training_kwargs['N_in']))
     # stim = np.zeros((num_of_inputs,T))
@@ -547,10 +540,10 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
             # ax.plot(trajectories[trial_i,...,hidden_i].numpy(), c=cmap(norm[trial_i]))
             if timepart=='all' or not timepart:
                 traj = trajectories[:,:,:]
-                ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
+                # ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
             else:
                 traj = trajectories[:,after_t:before_t,:]
-                ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
+                # ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
     else:
         # pca_label = 'pca'
         pca = PCA(n_components=2)   
@@ -564,17 +557,17 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
         for trial_i in range(trajectories.shape[0]):
             if timepart=='all' or not timepart:
                 traj = traj_pca[:,:,:]
-                ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
+                # ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
             else:
                 traj = traj_pca[:,after_t:before_t,:]
-                ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
+                # ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
         
 
-    ax.set_axis_off()
+    # ax.set_axis_off()
     makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7])
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7]+f'/trajpca_{which}_{timepart}_{after_t}to{before_t}.pdf', bbox_inches="tight")
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7]+f'/trajpca_{which}_{timepart}_{after_t}to{before_t}.png', bbox_inches="tight")
-    plt.close()
+    # plt.close()
 
 
     return traj, start, target, output
@@ -700,38 +693,29 @@ if __name__ == "__main__":
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
 
-    main_exp_name='angularintegration/hidden_long/25.6'
-    main_exp_name='angularintegration/hidden'
+    main_exp_name='angularintegration/hidden/51.2'
+    # main_exp_name='angularintegration/hidden'
     # main_exp_name='angularintegration/all_mse/'
 
     # main_exp_name='poisson_clicks/relu_mse'
     model_name = 'high'
 
-    T = 126
-    num_of_inputs = 1
+    T = 256*2
+    num_of_inputs = 31
     input_range = (-.5,.5)
-    input_length = T
+    input_length = int(T/4)
     # input_range = (-.1,.1)
     which='post'
-    plot_from_to = (0,T)
+    plot_from_to = (T-input_length,T)
     pca_from_to = (0,T)
     # for timepart in ['all', 'beginning', 'end']:
     #     plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which, plotpca=True, timepart=timepart, num_of_inputs=num_of_inputs, input_range=input_range)
-
-
-    # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
-    #                       plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=0, before_t=128, input_range=input_range)
     
-    # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
-    #                       plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=1024, before_t=None, input_range=input_range)
+    plot_all_trajs_model(main_exp_name, model_name, T=T, which='post', hidden_i=0, input_length=input_length,
+                             plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
+                             plot_from_to=plot_from_to, pca_from_to=pca_from_to,
+                             plot_output=True, input_range=input_range)
     
-    # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
-    #                       plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=T-128, before_t=None, input_range=input_range)
-    
-    # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
-    #                       plotpca=True, timepart=None, num_of_inputs=num_of_inputs, after_t=128, before_t=T, plot_output=True, input_range=input_range)
-
-
     # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
     #                       plotpca=False, num_of_inputs=num_of_inputs, timepart='end',
     #                       plot_output=True, input_range=input_range,
@@ -754,7 +738,7 @@ if __name__ == "__main__":
     # main_exp_name='poisson_clicks/relu_mse'
     # model_name = "high"
     # task = poisson_clicks_task(T=20, dt=.1)
-    plot_losses_and_trajectories(plot_losses_or_trajectories='trajectories', main_exp_name=main_exp_name, model_name=model_name)
+    # plot_losses_and_trajectories(plot_losses_or_trajectories='trajectories', main_exp_name=main_exp_name, model_name=model_name)
     # plot_losses_and_trajectories(plot_losses_or_trajectories='losses', main_exp_name=main_exp_name, model_name=model_name)
     # plot_losses_experiment(plot_losses_or_trajectories='losses',
     #                              main_exp_name='angularintegration', model_name=model_name, training_label='weight_decay')
@@ -762,11 +746,11 @@ if __name__ == "__main__":
 # plot_losses_and_trajectories(plot_losses_or_trajectories='losses', main_exp_name='angularintegration', model_name='high_gain')
     
     # model_names=['lstm', 'low','high', 'ortho', 'qpta']
-    i, model_names = 3, ['ortho']
+    # i, model_names = 3, ['ortho']
 
     # plot_all(model_names=model_names,                   main_exp_name='angularintegration/lambda_T2/12.8')
-    for sparsity in [0.01, 0.1, 1.]:
-        plot_bestmodel_traj(model_names=model_names, main_exp_name=main_exp_name, sparsity=sparsity, i=i)
+    # for sparsity in [0.01, 0.1, 1.]:
+    #     plot_bestmodel_traj(model_names=model_names, main_exp_name=main_exp_name, sparsity=sparsity, i=i)
     
     # experiment_folder = 'lambda_grid_2'
     # for model_name in model_names:
