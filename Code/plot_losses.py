@@ -437,16 +437,13 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
     fig, axes = plt.subplots(3, 6, figsize=(18, 9), sharex=False, sharey=False)
     axes1 = axes[:,:3].flatten()
     axes2 = axes[:,3:].flatten()
-    # if plot_output:
-    #     fig2, axes2 = plt.subplots(3, 3, figsize=(9, 10), sharex=False, sharey=False)
-    #     axes2 = axes2.flatten()
 
     for exp_i, exp in enumerate(exp_list[:9]):
         trajectories, start, target, output = plot_trajs_model(main_exp_name, model_name, exp, T=T, which=which, hidden_i=hidden_i, input_length=input_length,
                          plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to, input_range=input_range)
 
         for trial_i in range(trajectories.shape[0]):
-            axes1[exp_i].plot(trajectories[trial_i,:,0], trajectories[trial_i,:,1], '-', c=cmap(norm[trial_i]))
+            axes1[exp_i].plot(trajectories[trial_i,before_t:after_t,0], trajectories[trial_i,before_t:after_t,1], '-', c=cmap(norm[trial_i]))
             if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
                 axes1[exp_i].scatter(trajectories[trial_i,-1,0], trajectories[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
 
@@ -568,7 +565,6 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7]+f'/trajpca_{which}_{timepart}_{after_t}to{before_t}.pdf', bbox_inches="tight")
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7]+f'/trajpca_{which}_{timepart}_{after_t}to{before_t}.png', bbox_inches="tight")
     # plt.close()
-
 
     return traj, start, target, output
 
@@ -700,10 +696,10 @@ if __name__ == "__main__":
     # main_exp_name='poisson_clicks/relu_mse'
     model_name = 'high'
 
-    T = 256*2
+    T = 256*16
     num_of_inputs = 31
     input_range = (-.5,.5)
-    input_length = int(T/4)
+    input_length = int(T/32)
     # input_range = (-.1,.1)
     which='post'
     plot_from_to = (T-input_length,T)
