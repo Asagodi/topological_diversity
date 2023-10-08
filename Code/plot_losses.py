@@ -418,6 +418,8 @@ def plot_allLEs_model(main_exp_name, model_name, which='last', T=10, from_t_step
     #     plt.close()
     return ax
 
+
+
 def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_i=0, input_length=10,
                          plotpca=True, timepart='all', num_of_inputs=51, plot_from_to=(0,None), pca_from_to=(0,None),
                          plot_output=False, input_range=(-3,3)):
@@ -439,7 +441,7 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
     axes2 = axes[:,3:].flatten()
 
     for exp_i, exp in enumerate(exp_list[:9]):
-        trajectories, start, target, output = plot_trajs_model(main_exp_name, model_name, exp, T=T, which=which, hidden_i=hidden_i, input_length=input_length,
+        trajectories, start, target, output = get_hidden_trajs(main_exp_name, model_name, exp, T=T, which=which, hidden_i=hidden_i, input_length=input_length,
                          plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to, input_range=input_range)
 
         for trial_i in range(trajectories.shape[0]):
@@ -485,6 +487,44 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
     
 
 def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidden_i=0, input_length=10,
+                     plotpca=True, timepart='all',  num_of_inputs=51, plot_from_to=(0,None), pca_from_to=(0,None), input_range=(-3,3), axes=None):
+    pca_before_t, pca_after_t = pca_from_to
+    before_t, after_t = plot_from_to
+    norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
+    norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
+    cmap = cmx.get_cmap("coolwarm")
+    norm2 = mpl.colors.Normalize(-np.pi, np.pi)
+    cmap2 = plt.get_cmap('hsv')
+    
+    trajectories, start, target, output = get_hidden_trajs(main_exp_name, model_name, exp, T=T, which=which, hidden_i=hidden_i, input_length=input_length,
+                     plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to, input_range=input_range)
+    if not axes:
+        fig, axes = plt.subplots(1, 2, figsize=(6, 3), sharex=False, sharey=False)
+
+    ax1 = axes[0]
+    ax2 = axes[1]
+    for trial_i in range(trajectories.shape[0]):
+        ax1.plot(trajectories[trial_i,before_t:after_t,0], trajectories[trial_i,before_t:after_t,1], '-', c=cmap(norm[trial_i]))
+        if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
+            ax1.scatter(trajectories[trial_i,-1,0], trajectories[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
+
+    ax1.set_axis_off()
+    ax1.scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
+    
+    x = np.linspace(0, 2*np.pi, 1000)
+    ax2.plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
+    for trial_i in range(output.shape[0]):
+        if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
+            ax2.scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
+    
+    for t in range(output.shape[1]):
+        ax2.plot([target[trial_i,t,0], output[trial_i,t,0]],
+                         [target[trial_i,t,1], output[trial_i,t,1]], '-', 
+                         color=cmap2(norm2(np.arctan2(target[trial_i,t,1], target[trial_i,t,0]))))
+
+        ax2.set_axis_off()
+    
+def get_hidden_trajs(main_exp_name, model_name, exp, T=128, which='post',  hidden_i=0, input_length=10,
                      plotpca=True, timepart='all',  num_of_inputs=51, plot_from_to=(0,None), pca_from_to=(0,None), input_range=(-3,3)):
     pca_after_t, pca_before_t = pca_from_to
     after_t, before_t = plot_from_to
@@ -534,30 +574,23 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     if not plotpca:
         start=trajectories[0,0,:]
         for trial_i in range(trajectories.shape[0]):
-            # ax.plot(trajectories[trial_i,...,hidden_i].numpy(), c=cmap(norm[trial_i]))
             if timepart=='all' or not timepart:
                 traj = trajectories[:,:,:]
-                # ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
             else:
                 traj = trajectories[:,after_t:before_t,:]
-                # ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
     else:
-        # pca_label = 'pca'
         pca = PCA(n_components=2)   
 
         trajectories_tofit = trajectories[:,pca_after_t:pca_before_t,:].numpy().reshape((-1,training_kwargs['N_rec']))
         pca.fit(trajectories_tofit)
-        # traj_pca = pca.fit_transform(X).reshape((num_of_inputs,-1,2))
         traj_pca = pca.transform(trajectories.numpy().reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,2))
 
         start=traj_pca[0,0,:]
         for trial_i in range(trajectories.shape[0]):
             if timepart=='all' or not timepart:
                 traj = traj_pca[:,:,:]
-                # ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
             else:
                 traj = traj_pca[:,after_t:before_t,:]
-                # ax.plot(traj[trial_i,:,0], traj[trial_i,:,1], '.', c=cmap(norm[trial_i]))
         
 
     # ax.set_axis_off()
@@ -707,10 +740,17 @@ if __name__ == "__main__":
     # for timepart in ['all', 'beginning', 'end']:
     #     plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which, plotpca=True, timepart=timepart, num_of_inputs=num_of_inputs, input_range=input_range)
     
-    plot_all_trajs_model(main_exp_name, model_name, T=T, which='post', hidden_i=0, input_length=input_length,
-                             plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
-                             plot_from_to=plot_from_to, pca_from_to=pca_from_to,
-                             plot_output=True, input_range=input_range)
+    exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
+    exp = exp_list[6]
+    plot_trajs_model(main_exp_name, model_name, exp, T=T, which='post', hidden_i=0, input_length=input_length,
+                              plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
+                              plot_from_to=plot_from_to, pca_from_to=pca_from_to,
+                              input_range=input_range)
+    
+    # plot_all_trajs_model(main_exp_name, model_name, T=T, which='post', hidden_i=0, input_length=input_length,
+    #                          plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
+    #                          plot_from_to=plot_from_to, pca_from_to=pca_from_to,
+    #                          plot_output=True, input_range=input_range)
     
     # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
     #                       plotpca=False, num_of_inputs=num_of_inputs, timepart='end',
