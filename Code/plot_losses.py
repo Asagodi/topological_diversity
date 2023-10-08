@@ -489,40 +489,55 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
 def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidden_i=0, input_length=10,
                      plotpca=True, timepart='all',  num_of_inputs=51, plot_from_to=(0,None), pca_from_to=(0,None), input_range=(-3,3), axes=None):
     pca_before_t, pca_after_t = pca_from_to
-    before_t, after_t = plot_from_to
+    after_t, before_t = plot_from_to
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
     norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
     cmap = cmx.get_cmap("coolwarm")
     norm2 = mpl.colors.Normalize(-np.pi, np.pi)
+    # norm2 = norm2(np.linspace(-np.pi, np.pi, endpoint=True))
     cmap2 = plt.get_cmap('hsv')
     
-    trajectories, start, target, output = get_hidden_trajs(main_exp_name, model_name, exp, T=T, which=which, hidden_i=hidden_i, input_length=input_length,
+    trajectories, start, target, output, input_proj = get_hidden_trajs(main_exp_name, model_name, exp, T=T, which=which, hidden_i=hidden_i, input_length=input_length,
                      plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to, input_range=input_range)
     if not axes:
-        fig, axes = plt.subplots(1, 2, figsize=(6, 3), sharex=False, sharey=False)
+        fig, axes = plt.subplots(1, 3, figsize=(9, 3), sharex=False, sharey=False)
 
-    ax1 = axes[0]
-    ax2 = axes[1]
     for trial_i in range(trajectories.shape[0]):
-        ax1.plot(trajectories[trial_i,before_t:after_t,0], trajectories[trial_i,before_t:after_t,1], '-', c=cmap(norm[trial_i]))
+        axes[0].plot(trajectories[trial_i,after_t:before_t,0], trajectories[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
         if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
-            ax1.scatter(trajectories[trial_i,-1,0], trajectories[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
+            axes[0].scatter(trajectories[trial_i,-1,0], trajectories[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
 
-    ax1.set_axis_off()
-    ax1.scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
+    axes[0].set_axis_off()
+    axes[0].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
     
-    x = np.linspace(0, 2*np.pi, 1000)
-    ax2.plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
+    x = np.linspace(-np.pi, np.pi, 1000)
+    # axes[1].plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
+    axes[1].scatter(np.cos(x), np.sin(x), c=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1)
+
     for trial_i in range(output.shape[0]):
-        if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
-            ax2.scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
-    
-    for t in range(output.shape[1]):
-        ax2.plot([target[trial_i,t,0], output[trial_i,t,0]],
-                         [target[trial_i,t,1], output[trial_i,t,1]], '-', 
-                         color=cmap2(norm2(np.arctan2(target[trial_i,t,1], target[trial_i,t,0]))))
+        target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
+        axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap2(norm2(target_angle)))
 
-        ax2.set_axis_off()
+
+    # for trial_i in range(output.shape[0]):
+    #     axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
+
+        if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
+            axes[1].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=100)
+
+    #     for t in range(output.shape[1]):
+    #         axes[1].plot([target[trial_i,t,0], output[trial_i,t,0]],
+    #                          [target[trial_i,t,1], output[trial_i,t,1]], '-', 
+                             # color=cmap2(norm2(np.arctan2(target[trial_i,t,1], target[trial_i,t,0]))))
+
+        axes[1].set_axis_off()
+        
+        axes[2].plot(input_proj[trial_i,after_t:before_t,0], '-', c=cmap2(norm2(target_angle)))
+        axes[2].set_xticks([])
+        
+    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}.pdf', bbox_inches="tight")
+
+    
     
 def get_hidden_trajs(main_exp_name, model_name, exp, T=128, which='post',  hidden_i=0, input_length=10,
                      plotpca=True, timepart='all',  num_of_inputs=51, plot_from_to=(0,None), pca_from_to=(0,None), input_range=(-3,3)):
@@ -571,6 +586,8 @@ def get_hidden_trajs(main_exp_name, model_name, exp, T=128, which='post',  hidde
     with torch.no_grad():
         output, trajectories = net(input, return_dynamics=True, h_init=h_init)
     
+    print(trajectories.shape, wi_init.shape)
+    input_proj = np.dot(trajectories, wi_init.T)
     if not plotpca:
         start=trajectories[0,0,:]
         for trial_i in range(trajectories.shape[0]):
@@ -599,7 +616,7 @@ def get_hidden_trajs(main_exp_name, model_name, exp, T=128, which='post',  hidde
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7]+f'/trajpca_{which}_{timepart}_{after_t}to{before_t}.png', bbox_inches="tight")
     # plt.close()
 
-    return traj, start, target, output
+    return traj, start, target, output, input_proj
 
 
 def plot_allLEs(main_exp_name, mean_colors, trial_colors, labels, T=10, from_t_step=0, which='post'):
