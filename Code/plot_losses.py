@@ -520,8 +520,9 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
 
     for trial_i in range(output.shape[0]):
         target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
+        axes[1].plot(output[trial_i,0,0], output[trial_i,0,1], '.', c='k', zorder=100)
+        axes[1].plot(output[trial_i,:,0], output[trial_i,:,1], '-', alpha=.1)
         axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap2(norm2(target_angle)))
-
 
     # for trial_i in range(output.shape[0]):
     #     axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
@@ -751,7 +752,7 @@ if __name__ == "__main__":
     model_name = 'high'
 
     T = 256*16
-    num_of_inputs = 31
+    num_of_inputs = 11
     input_range = (-.5,.5)
     input_length = int(T/32)
     # input_range = (-.1,.1)
@@ -762,7 +763,7 @@ if __name__ == "__main__":
     #     plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which, plotpca=True, timepart=timepart, num_of_inputs=num_of_inputs, input_range=input_range)
     
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
-    exp = exp_list[6]
+    exp = exp_list[7]
     plot_trajs_model(main_exp_name, model_name, exp, T=T, which='post', hidden_i=0, input_length=input_length,
                               plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
                               plot_from_to=plot_from_to, pca_from_to=pca_from_to,
