@@ -497,57 +497,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     # norm2 = norm2(np.linspace(-np.pi, np.pi, endpoint=True))
     cmap2 = plt.get_cmap('hsv')
     
-    trajectories, start, target, output, input_proj = get_hidden_trajs(main_exp_name, model_name, exp, T=T, which=which, hidden_i=hidden_i, input_length=input_length,
-                     plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to, input_range=input_range)
-    if not axes:
-        fig, axes = plt.subplots(1, 3, figsize=(9, 3), sharex=False, sharey=False)
-
-    for trial_i in range(trajectories.shape[0]):
-        target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
-
-        # axes[0].plot(trajectories[trial_i,after_t:before_t,0], trajectories[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
-        axes[0].plot(trajectories[trial_i,after_t:before_t,0], trajectories[trial_i,after_t:before_t,1], '-', c=cmap2(norm2(target_angle)))
-
-        if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
-            axes[0].scatter(trajectories[trial_i,-1,0], trajectories[trial_i,-1,1], marker='.', s=100, c=cmap2(norm2(target_angle)), zorder=100)
-
-    axes[0].set_axis_off()
-    axes[0].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
     
-    x = np.linspace(-np.pi, np.pi, 1000)
-    # axes[1].plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
-    axes[1].scatter(np.cos(x), np.sin(x), c=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1)
-
-    for trial_i in range(output.shape[0]):
-        target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
-        axes[1].plot(output[trial_i,0,0], output[trial_i,0,1], '.', c='k', zorder=100)
-        axes[1].plot(output[trial_i,:,0], output[trial_i,:,1], '-', alpha=.1)
-        axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap2(norm2(target_angle)))
-
-    # for trial_i in range(output.shape[0]):
-    #     axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
-
-        if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
-            axes[1].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=100)
-
-    #     for t in range(output.shape[1]):
-    #         axes[1].plot([target[trial_i,t,0], output[trial_i,t,0]],
-    #                          [target[trial_i,t,1], output[trial_i,t,1]], '-', 
-                             # color=cmap2(norm2(np.arctan2(target[trial_i,t,1], target[trial_i,t,0]))))
-
-        axes[1].set_axis_off()
-        
-        axes[2].plot(input_proj[trial_i,after_t:before_t,0], '-', c=cmap2(norm2(target_angle)))
-        axes[2].set_xticks([])
-        
-    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}.pdf', bbox_inches="tight")
-
-    
-    
-def get_hidden_trajs(main_exp_name, model_name, exp, T=128, which='post',  hidden_i=0, input_length=10,
-                     plotpca=True, timepart='all',  num_of_inputs=51, plot_from_to=(0,None), pca_from_to=(0,None), input_range=(-3,3)):
-    pca_after_t, pca_before_t = pca_from_to
-    after_t, before_t = plot_from_to
     # print(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')
     params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')[0]
     training_kwargs = yaml.safe_load(Path(params_path).read_text())
@@ -561,9 +511,74 @@ def get_hidden_trajs(main_exp_name, model_name, exp, T=128, which='post',  hidde
         losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = result
 
     if which=='post':
-        wi_init, wrec_init, wo_init, brec_init, h0_init = weights_last
+        wi, wrec, wo, brec, h0 = weights_last
     elif which=='pre':
-        wi_init, wrec_init, wo_init, brec_init, h0_init = weights_init
+        wi, wrec, wo, brec, h0 = weights_init
+    
+    trajectories, traj_pca, start, target, output, input_proj = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+                                                                       T=T, which=which, hidden_i=hidden_i, input_length=input_length,
+                     plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to,
+                     input_range=input_range)
+    print("F",trajectories.shape)
+
+    if not axes:
+        fig, axes = plt.subplots(1, 3, figsize=(9, 3), sharex=False, sharey=False)
+        fig, axes = plt.subplots(1, 4, figsize=(12, 3), sharex=False, sharey=False)
+
+
+    for trial_i in range(trajectories.shape[0]):
+        target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
+
+        # axes[0].plot(trajectories[trial_i,after_t:before_t,0], trajectories[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
+        axes[0].plot(traj_pca[trial_i,after_t:before_t,0], traj_pca[trial_i,after_t:before_t,1], '-', c=cmap2(norm2(target_angle)))
+
+        if np.linalg.norm(trajectories[trial_i,-5000,:]-trajectories[trial_i,-1,:])  < 1e-6:
+            axes[0].scatter(traj_pca[trial_i,-1,0], traj_pca[trial_i,-1,1], marker='.', s=100, c=cmap2(norm2(target_angle)), zorder=100)
+
+    axes[0].set_axis_off()
+    axes[0].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
+    
+    x = np.linspace(-np.pi, np.pi, 1000)
+    # axes[1].plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
+    axes[1].scatter(np.cos(x), np.sin(x), c=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1)
+
+    for trial_i in range(output.shape[0]):
+        target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
+        axes[1].plot(output[trial_i,0,0], output[trial_i,0,1], '.', c='k', zorder=100)
+        axes[1].plot(output[trial_i,:,0], output[trial_i,:,1], '-', alpha=.25)
+        axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap2(norm2(target_angle)))
+
+    # for trial_i in range(output.shape[0]):
+    #     axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
+
+        if np.linalg.norm(trajectories[trial_i,-5000,:]-trajectories[trial_i,-1,:])  < 1e-6:
+            axes[1].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=100)
+        axes[2].plot(input_proj[trial_i,after_t:before_t,0], '-', c=cmap2(norm2(target_angle)))
+
+    #     for t in range(output.shape[1]):
+    #         axes[1].plot([target[trial_i,t,0], output[trial_i,t,0]],
+    #                          [target[trial_i,t,1], output[trial_i,t,1]], '-', 
+                             # color=cmap2(norm2(np.arctan2(target[trial_i,t,1], target[trial_i,t,0]))))
+
+        
+    x_lim = 1.2 #np.max(np.abs(output))
+    output_logspeeds, all_logspeeds = average_logspeed(wrec, wo, brec, trajectories[:,128:,:], x_min=-x_lim, x_max=x_lim, num_x_points=21)
+    im=axes[3].imshow(output_logspeeds, cmap='inferno')
+    cbar = fig.colorbar(im, ax=axes[3])
+    cbar.set_label("log(speed)")
+    axes[1].set_axis_off()
+    axes[2].set_xticks([])
+    axes[3].set_axis_off()
+
+    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}.pdf', bbox_inches="tight")
+
+    
+    
+def get_hidden_trajs(wi_init, wrec_init, wo_init, brec_init, h0_init, training_kwargs, T=128, which='post',  hidden_i=0, input_length=10,
+                     plotpca=True, timepart='all',  num_of_inputs=51, plot_from_to=(0,None), pca_from_to=(0,None), input_range=(-3,3)):
+    pca_after_t, pca_before_t = pca_from_to
+    after_t, before_t = plot_from_to
+
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
               nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
@@ -610,9 +625,9 @@ def get_hidden_trajs(main_exp_name, model_name, exp, T=128, which='post',  hidde
         start=traj_pca[0,0,:]
         for trial_i in range(trajectories.shape[0]):
             if timepart=='all' or not timepart:
-                traj = traj_pca[:,:,:]
+                traj_pca = traj_pca[:,:,:]
             else:
-                traj = traj_pca[:,after_t:before_t,:]
+                traj_pca = traj_pca[:,after_t:before_t,:]
         
 
     # ax.set_axis_off()
@@ -621,8 +636,93 @@ def get_hidden_trajs(main_exp_name, model_name, exp, T=128, which='post',  hidde
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7]+f'/trajpca_{which}_{timepart}_{after_t}to{before_t}.png', bbox_inches="tight")
     # plt.close()
 
-    return traj, start, target, output, input_proj
+    return trajectories, traj_pca, start, target, output, input_proj
 
+
+def average_vectorfield(wi_init, wrec_init, wo_init, brec_init):
+    
+    return 
+
+
+
+def ReLU(x):
+    return np.where(x<0,0,x)
+
+def relu_ode(t,x,W):
+    return ReLU(np.dot(W,x)) - x 
+
+def tanh_ode(t,x,W):
+    return np.tanh(np.dot(W,x)) - x 
+
+
+# def speed(wrec_init):
+    
+def find_grid_cell(target_point, x_values, y_values, num_x_points=11):
+    
+    # Iterate through grid cells and find the cell containing the target point
+    for i in range(num_x_points - 1):
+        for j in range(num_x_points - 1):
+            x1, x2 = x_values[i], x_values[i + 1]
+            y1, y2 = y_values[j], y_values[j + 1]
+            
+            if x1 <= target_point[0] <= x2 and y1 <= target_point[1] <= y2:
+                cell_containing_point = (i, j)
+                break
+    return cell_containing_point
+    
+def average_logspeed(wrec, wo, brec, trajectories, x_min=-2, x_max=2, num_x_points=11):
+    """
+    Calculate the average speed over the trajectories per grid element in output space
+
+    Parameters
+    ----------
+    wrec : TYPE
+        DESCRIPTION.
+    wo : TYPE
+        DESCRIPTION.
+    brec : TYPE
+        DESCRIPTION.
+    trajectories : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    all_logspeeds : TYPE
+        DESCRIPTION.
+
+    """
+    
+    #discretize output space
+    print("A", trajectories.shape[0], trajectories.shape[1]-1)
+
+    # Create a regular grid
+    x_values = np.linspace(x_min, x_max, num_x_points)
+    y_values = np.linspace(x_min, x_max, num_x_points)
+    
+    # Generate all grid points
+    grid_points = [(np.round(x,5), np.round(y,5)) for x in x_values for y in y_values]
+    output_logspeeds = np.zeros((num_x_points, num_x_points))
+    bin_counts = np.zeros((num_x_points, num_x_points))
+    
+    #calculate speed along trajectories
+    all_logspeeds = np.zeros((trajectories.shape[0], trajectories.shape[1]-1))
+    for trial_i in range(trajectories.shape[0]):
+        # speeds = np.linalg.norm(trajectories[trial_i, :-1, :]-trajectories[trial_i, 1:, :])
+        # all_logspeeds[trial_i,:] = np.log(speeds)
+
+        for t in range(trajectories.shape[1]-1):
+            x = trajectories[trial_i, t, :]
+            # speed = np.linalg.norm(np.dot(wrec,np.tanh(x))+brec - x)
+            
+            speed = np.linalg.norm(trajectories[trial_i, t+1, :]-trajectories[trial_i, t, :])
+            
+            all_logspeeds[trial_i,t] = np.log(speed)
+            
+            target_point = np.dot(wo.T, x)
+            cell_containing_point = find_grid_cell(target_point, x_values, y_values, num_x_points=num_x_points)
+            output_logspeeds[cell_containing_point] += np.log(speed)
+            bin_counts[cell_containing_point] += 1
+    return output_logspeeds/bin_counts, all_logspeeds
 
 def plot_allLEs(main_exp_name, mean_colors, trial_colors, labels, T=10, from_t_step=0, which='post'):
     
@@ -751,10 +851,10 @@ if __name__ == "__main__":
     # main_exp_name='poisson_clicks/relu_mse'
     model_name = 'high'
 
-    T = 256*16
-    num_of_inputs = 11
+    T = 256*32
+    num_of_inputs = 101
     input_range = (-.5,.5)
-    input_length = int(T/32)
+    input_length = int(T/64)
     # input_range = (-.1,.1)
     which='post'
     plot_from_to = (T-input_length,T)
