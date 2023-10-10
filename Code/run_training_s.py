@@ -34,12 +34,12 @@ def makedirs(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
-def get_task(task_name = 'angularintegration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None):
+def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None):
     
     if task_name == 'eyeblink':
         task =  eyeblink_task(input_length=T, t_delay=t_delay)
 
-    elif task_name == 'angularintegration':
+    elif task_name == 'angular_integration':
         task =  angularintegration_task(T=T, dt=dt, sparsity=sparsity, last_mses=last_mses)
         
     elif task_name == 'poisson_clicks':
@@ -48,7 +48,6 @@ def get_task(task_name = 'angularintegration', T=10, dt=.1, t_delay=50, sparsity
         raise Exception("Task not known.")
         
     return task
-
 
 def run_experiment(parameter_file_name, main_exp_name='', sub_exp_name='', model_name='', trials=10, training_kwargs={}):
     experiment_folder = parent_dir + '/experiments/' + main_exp_name +'/'+ sub_exp_name +'/'+ model_name
@@ -144,6 +143,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
               optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'],
               adam_betas=(training_kwargs['adam_beta1'],training_kwargs['adam_beta2']), adam_eps=1e-8, #optimizers 
               scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
+              stop_patience=training_kwargs['stop_patience'], stop_min_delta=training_kwargs['stop_min_delta'],
               verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
     
     
@@ -298,22 +298,22 @@ def size_experiment(main_exp_name, sub_exp_name):
     
     
     
-if __name__ == "__main__":
-    parameter_file_name = 'params_poisson_clicks.yml'
+# if __name__ == "__main__":
+#     parameter_file_name = 'params_poisson_clicks.yml'
 
-    parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
-    training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
+#     parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
+#     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
 
-    main_exp_name = 'poisson_clicks'
-    sub_exp_name  = 'test'
-    training_kwargs['g_in'] = 14.142135623730951
-    model_name = 'high'
-    training_kwargs['network_type'] = 'high'
-    training_kwargs['initialization_type'] = 'gain'
+#     main_exp_name = 'poisson_clicks'
+#     sub_exp_name  = 'test'
+#     training_kwargs['g_in'] = 14.142135623730951
+#     model_name = 'high'
+#     training_kwargs['network_type'] = 'high'
+#     training_kwargs['initialization_type'] = 'gain'
 
-    run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
-                                                            sub_exp_name=sub_exp_name,
-                                                          model_name=model_name, trials=11, training_kwargs=training_kwargs)
+#     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
+#                                                             sub_exp_name=sub_exp_name,
+#                                                           model_name=model_name, trials=11, training_kwargs=training_kwargs)
 
     
     
@@ -333,10 +333,13 @@ if __name__ == "__main__":
     gammas = [1., 0.5, 0.75, 0.75, 1.]
     nrecs = [115, 200, 200, 200, 200]
     
-    # size_experiment(main_exp_name='angularintegration', sub_exp_name='lambda')
+    # size_experiment(main_exp_name='angular_integration', sub_exp_name='lambda')
     
-    main_exp_name = 'poisson_clicks'
-    sub_exp_name  = 'test'
+    main_exp_name = 'angular_integration'
+    sub_exp_name  = 'stopper'
+
+    training_kwargs['stop_patience'] = 10
+    training_kwargs['stop_min_delta'] = 0
 
     model_i, model_name = 2, 'high'
     # model_i, model_name = 3, 'ortho'
@@ -344,25 +347,25 @@ if __name__ == "__main__":
     # model_i, model_name = 0, 'lstm'
 
     # training_kwargs['clip_gradient'] = 
-    training_kwargs['task'] = 'poisson_clicks'
+    training_kwargs['task'] = 'angular_integration'
     # training_kwargs['nonlinearity'] = 'relu'
-    # training_kwargs['act_norm_lambda'] = 1e-5
+    training_kwargs['act_norm_lambda'] = 1e-4
 
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
+    training_kwargs['N_rec'] = 200
     training_kwargs['batch_size'] = 1024
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
     training_kwargs['g_in'] = 14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
-    training_kwargs['learning_rate'] = 1e-4
-    training_kwargs['n_epochs'] = 1000
-    training_kwargs['T'] = 200
-    training_kwargs['dt_rnn'] = 1
+    training_kwargs['learning_rate'] = 1e-3
+    training_kwargs['n_epochs'] = 5000
+    training_kwargs['T'] = 51.2
+    training_kwargs['dt_rnn'] = .1
     training_kwargs['adam_beta1'] = 0.9
     training_kwargs['adam_beta2'] = 0.999
     training_kwargs['network_type'] = network_types[model_i]
     training_kwargs['initialization_type'] = initialization_type_list[model_i]
-    # training_kwargs['N_rec'] = 200
     training_kwargs['loss_function'] = loss_functions[model_i]
     training_kwargs['rnn_init_gain'] = g_list[model_i]        ##########
     training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
@@ -389,6 +392,6 @@ if __name__ == "__main__":
     #               'scheduler': ['steplr'],
     #               'clip_gradient': [None]}
     # df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
-    #                                                                 experiment_folder='angularintegration/gin256_lr1e-2',
+    #                                                                 experiment_folder='angular_integration/gin256_lr1e-2',
     #                                                                 sub_exp_name='qpta',
     #                                                                 parameter_path=parameter_path, trials=3)

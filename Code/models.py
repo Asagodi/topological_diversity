@@ -15,7 +15,7 @@ from warnings import warn
 import time
 
 
-        
+
         
 def mse_loss_masked(output, target, mask):
     """
@@ -74,6 +74,26 @@ def get_scheduler(model, optimizer, scheduler_name, scheduler_step_size, schedul
         raise Exception("Scheduler not known.")
     return scheduler    
 
+class EarlyStopper:
+    """
+    Stop training when the best validation error is at least N epochs (patience) past
+    """
+    
+    def __init__(self, patience=1, min_delta=0):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.counter = 0
+        self.min_loss = float('inf')
+
+    def early_stop(self, loss):
+        if loss < self.min_loss:
+            self.min_loss = loss
+            self.counter = 0
+        elif loss > (self.min_loss + self.min_delta):
+            self.counter += 1
+            if self.counter >= self.patience:
+                return True
+        return False
 
 
 class RNN(nn.Module):
@@ -443,6 +463,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
           loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
           optimizer='sgd', momentum=0, weight_decay=.0, adam_betas=(0.9, 0.999), adam_eps=1e-8, #optimizers 
           scheduler=None, scheduler_step_size=100, scheduler_gamma=0.3, 
+          stop_patience=10, stop_min_delta=0,
           verbose=True):
     """
     Train a network
@@ -475,6 +496,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
     scheduler = get_scheduler(net, optimizer, scheduler, scheduler_step_size, scheduler_gamma, n_epochs)
 
     loss_function = get_loss_function(net, loss_function)
+    
+    early_stopper = EarlyStopper(patience=stop_patience, min_delta=stop_min_delta)
     
     if data:
         train_input, train_target, train_mask = data['train_input'], data['train_target'], data['train_mask']
@@ -553,12 +576,12 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         
             optimizer.zero_grad()
             output, trajectories = net(input, h_init=h_init, return_dynamics=True)
-            if _mask:
+            if np.any(_mask):
                 _mask = torch.from_numpy(_mask)
                 mask = _mask.to(device=device).float() 
                 loss = loss_function(output, target, mask)
             else: 
-                loss = loss_function(output, target)
+                loss = loss_function(output.view(-1,2), target.view(-1,2))
 
             
             act_norm = 0.
@@ -612,6 +635,9 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             output = net(validation_input, h_init=h_init)
             validation_loss = loss_function(output, validation_target, validation_mask)
             validation_losses[i] = validation_loss.item()
+            
+        if early_stopper.early_stop(loss.item()):             
+            break
 
         # Save
         epochs[i] = i
