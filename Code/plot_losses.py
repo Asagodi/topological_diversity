@@ -569,16 +569,16 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     cbar.set_label("log(speed)")
     
     # Create a regular grid
-    x_min=-2
-    x_max=2
-    num_x_points=11
-    x_values = np.linspace(x_min, x_max, num_x_points)
-    y_values = np.linspace(x_min, x_max, num_x_points)
+
+    num_x_points=51
+    x_values = np.linspace(-x_lim, x_lim, num_x_points)
+    y_values = np.linspace(-x_lim, x_lim, num_x_points)
     
     # Generate all grid points
     grid_points = np.array([(np.round(x,5), np.round(y,5)) for x in x_values for y in y_values])
-    average_ivf = np.zeros((num_x_points, num_x_points, 2))
-    for I, trajectory in zip(input_range, trajectories[:,:input_length,:]):
+    average_ivf = np.empty((num_x_points, num_x_points, 2))
+    for I, trajectory in zip(np.linspace(input_range[0], input_range[1], num=num_of_inputs, endpoint=True), trajectories[:,:input_length,:]):
+        print(I, trajectory.shape)
         average_ivf += average_input_vectorfield(wi, wrec, brec, wo, I, trajectory, pca, x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
         
     average_ivf /= num_of_inputs
@@ -589,6 +589,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     axes[1].set_axis_off()
     axes[2].set_xticks([])
     axes[3].set_axis_off()
+    axes[4].set_axis_off()
 
     plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}.pdf', bbox_inches="tight")
 
