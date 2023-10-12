@@ -515,7 +515,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     elif which=='pre':
         wi, wrec, wo, brec, h0 = weights_init
     
-    trajectories, traj_pca, start, target, output, input_proj = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+    trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
                                                                        T=T, which=which, hidden_i=hidden_i, input_length=input_length,
                      plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to,
                      input_range=input_range)
@@ -524,7 +524,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     if not axes:
         fig, axes = plt.subplots(1, 3, figsize=(9, 3), sharex=False, sharey=False)
         fig, axes = plt.subplots(1, 4, figsize=(12, 3), sharex=False, sharey=False)
-
+        fig, axes = plt.subplots(1, 5, figsize=(15, 3), sharex=False, sharey=False)
 
     for trial_i in range(trajectories.shape[0]):
         target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
@@ -532,7 +532,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
         # axes[0].plot(trajectories[trial_i,after_t:before_t,0], trajectories[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
         axes[0].plot(traj_pca[trial_i,after_t:before_t,0], traj_pca[trial_i,after_t:before_t,1], '-', c=cmap2(norm2(target_angle)))
 
-        if np.linalg.norm(trajectories[trial_i,-5000,:]-trajectories[trial_i,-1,:])  < 1e-6:
+        if np.linalg.norm(trajectories[trial_i,-5,:]-trajectories[trial_i,-1,:])  < 1e-6:
             axes[0].scatter(traj_pca[trial_i,-1,0], traj_pca[trial_i,-1,1], marker='.', s=100, c=cmap2(norm2(target_angle)), zorder=100)
 
     axes[0].set_axis_off()
@@ -551,7 +551,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     # for trial_i in range(output.shape[0]):
     #     axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
 
-        if np.linalg.norm(trajectories[trial_i,-5000,:]-trajectories[trial_i,-1,:])  < 1e-6:
+        if np.linalg.norm(trajectories[trial_i,-5,:]-trajectories[trial_i,-1,:])  < 1e-6:
             axes[1].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=100)
         axes[2].plot(input_proj[trial_i,after_t:before_t,0], '-', c=cmap2(norm2(target_angle)))
 
@@ -562,10 +562,30 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
 
         
     x_lim = 1.2 #np.max(np.abs(output))
-    output_logspeeds, all_logspeeds = average_logspeed(wrec, wo, brec, trajectories[:,128:,:], x_min=-x_lim, x_max=x_lim, num_x_points=21)
+    num_x_points = 21
+    output_logspeeds, all_logspeeds = average_logspeed(wrec, wo, brec, trajectories[:,128:,:], x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
     im=axes[3].imshow(output_logspeeds, cmap='inferno')
     cbar = fig.colorbar(im, ax=axes[3])
     cbar.set_label("log(speed)")
+    
+    # Create a regular grid
+    x_min=-2
+    x_max=2
+    num_x_points=11
+    x_values = np.linspace(x_min, x_max, num_x_points)
+    y_values = np.linspace(x_min, x_max, num_x_points)
+    
+    # Generate all grid points
+    grid_points = np.array([(np.round(x,5), np.round(y,5)) for x in x_values for y in y_values])
+    average_ivf = np.zeros((num_x_points, num_x_points, 2))
+    for I, trajectory in zip(input_range, trajectories[:,:input_length,:]):
+        average_ivf += average_input_vectorfield(wi, wrec, brec, wo, I, trajectory, pca, x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
+        
+    average_ivf /= num_of_inputs
+    print(grid_points.shape, average_ivf.shape)
+    axes[4].quiver(grid_points[:,0], grid_points[:,1],
+                   average_ivf.reshape((num_x_points**2,2))[:,0], average_ivf.reshape((num_x_points**2,2))[:,1])
+    
     axes[1].set_axis_off()
     axes[2].set_xticks([])
     axes[3].set_axis_off()
@@ -636,12 +656,59 @@ def get_hidden_trajs(wi_init, wrec_init, wo_init, brec_init, h0_init, training_k
     # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7]+f'/trajpca_{which}_{timepart}_{after_t}to{before_t}.png', bbox_inches="tight")
     # plt.close()
 
-    return trajectories, traj_pca, start, target, output, input_proj
+    return trajectories, traj_pca, start, target, output, input_proj, pca
 
 
-def average_vectorfield(wi_init, wrec_init, wo_init, brec_init):
+
+def average_input_vectorfield(wi, wrec, brec, wo, I, trajectories, pca, x_min=-2, x_max=2, num_x_points=11):
+    """
+    Calculates average over x for  g(x,I) = tanh(Wx+b+W_inI) - tanh(Wx+b)
+    for a fixed I
+
+    """
+    # Create a regular grid
+    x_values = np.linspace(x_min, x_max, num_x_points)
+    y_values = np.linspace(x_min, x_max, num_x_points)
     
-    return 
+    # Generate all grid points
+    grid_points = [(np.round(x,5), np.round(y,5)) for x in x_values for y in y_values]
+    average_vector_field = np.zeros((num_x_points, num_x_points, 2))
+    bin_counts = np.zeros((num_x_points, num_x_points))
+     
+    for x in trajectories:
+        target_point = np.dot(wo.T, x)
+        cell_containing_point = find_grid_cell(target_point, x_values, y_values, num_x_points=num_x_points)
+        full_vf_at_x = input_vectorfield(x, wi, wrec, brec, I)
+        
+        average_vector_field[cell_containing_point] += pca.transform(full_vf_at_x).squeeze()
+    return average_vector_field
+
+def input_vectorfield(x, wi, wrec, brec, I):
+    """
+    Calculates g(x, I) in the split RNN equation \dot x = f(x)+g(x,I)
+    for \dot x = tanh(Wx+b+W_inI)
+    i.e. g(x,I) = tanh(Wx+b+W_inI) - tanh(Wx+b)
+
+    Parameters
+    ----------
+    wi_init : TYPE
+        DESCRIPTION.
+    wrec_init : TYPE
+        DESCRIPTION.
+    wo_init : TYPE
+        DESCRIPTION.
+    brec_init : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
+    dotx = np.tanh(np.dot(wrec, x)+brec+np.dot(wi,I))
+    fx = np.tanh(np.dot(wrec, x)+brec+np.dot(wi,I))
+
+    return dotx- fx
 
 
 
@@ -844,7 +911,7 @@ if __name__ == "__main__":
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
 
-    main_exp_name='angularintegration/hidden/51.2'
+    main_exp_name='angular_integration/hidden/51.2'
     # main_exp_name='angularintegration/hidden'
     # main_exp_name='angularintegration/all_mse/'
 

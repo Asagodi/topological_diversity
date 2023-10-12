@@ -603,7 +603,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             
             scheduler.step()
             
-            # These 2 lines important to prevent memory leaks
+            # Important to prevent memory leaks:
             loss.detach()
             output.detach()
         else:
