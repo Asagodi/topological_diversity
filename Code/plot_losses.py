@@ -483,25 +483,9 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/output_{which}__{after_t}to{before_t}.pdf', bbox_inches="tight")
             
             
-
-    
-
-def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidden_i=0, input_length=10,
-                     plotpca=True, timepart='all',  num_of_inputs=51, plot_from_to=(0,None), pca_from_to=(0,None), input_range=(-3,3), axes=None):
-    pca_before_t, pca_after_t = pca_from_to
-    after_t, before_t = plot_from_to
-    norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
-    norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
-    cmap = cmx.get_cmap("coolwarm")
-    norm2 = mpl.colors.Normalize(-np.pi, np.pi)
-    # norm2 = norm2(np.linspace(-np.pi, np.pi, endpoint=True))
-    cmap2 = plt.get_cmap('hsv')
-    
-    
-    # print(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')
+def get_params_exp(main_exp_name, model_name, exp, which='post'):
     params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')[0]
     training_kwargs = yaml.safe_load(Path(params_path).read_text())
-    # exp = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/results_2023-08-05-13-02-03.pickle'
     with open(exp, 'rb') as handle:
         result = pickle.load(handle)
     
@@ -514,11 +498,28 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
         wi, wrec, wo, brec, h0 = weights_last
     elif which=='pre':
         wi, wrec, wo, brec, h0 = weights_init
+        
+    return wi, wrec, wo, brec, h0, training_kwargs
+    
+
+def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidden_i=0, input_length=10,
+                     plotpca=True, timepart='all',  num_of_inputs=51, plot_from_to=(0,None),
+                     pca_from_to=(0,None), input_range=(-3,3), axes=None):
+    pca_before_t, pca_after_t = pca_from_to
+    after_t, before_t = plot_from_to
+    norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
+    norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
+    cmap = cmx.get_cmap("coolwarm")
+    norm2 = mpl.colors.Normalize(-np.pi, np.pi)
+    cmap2 = plt.get_cmap('hsv')
+    
+    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
     
     trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
-                                                                       T=T, which=which, hidden_i=hidden_i, input_length=input_length,
-                     plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to,
-                     input_range=input_range)
+                                                                       T=T, which=which, plotpca=plotpca,
+                                                                       input_length=input_length, timepart=timepart,
+                                                                       num_of_inputs=num_of_inputs, pca_from_to=pca_from_to,
+                                                                       input_range=input_range)
 
     if not axes:
         fig, axes = plt.subplots(1, 3, figsize=(9, 3), sharex=False, sharey=False)
@@ -566,8 +567,23 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     im=axes[3].imshow(output_logspeeds, cmap='inferno')
     cbar = fig.colorbar(im, ax=axes[3])
     cbar.set_label("log(speed)")
+    plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=input_length,
+                    num_of_inputs=num_of_inputs, input_range=input_range,
+                    ax=axes[4], x_lim=x_lim, num_x_points=num_x_points)
+
+    axes[1].set_axis_off()
+    axes[2].set_xticks([])
+    axes[3].set_axis_off()
+    axes[4].set_axis_off()
+
+    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}.pdf', bbox_inches="tight")
+
+def plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=10,
+                     num_of_inputs=51, input_range=(-3,3),
+                     ax=None, x_lim=1.2, num_x_points=21):
     
-    # Create a regular grid
+    if not ax:
+        fig, ax = plt.subplots(1, 1, figsize=(3, 3), sharex=False, sharey=False)
 
     # num_x_points=51
     x_values = np.linspace(-x_lim, x_lim, num_x_points)
@@ -577,32 +593,24 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     grid_points = np.array([(np.round(x,5), np.round(y,5)) for x in x_values for y in y_values])
     average_ivf = np.empty((num_x_points, num_x_points, 2))
     for I, trajectory in zip(np.linspace(input_range[0], input_range[1], num=num_of_inputs, endpoint=True), trajectories[:,:input_length,:]):
-        print(I, trajectory.shape)
-        average_ivf += average_input_vectorfield(wi, wrec, brec, wo, I, trajectory, pca, x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
+        average_ivf += average_input_vectorfield(wi, wrec, brec, wo, I, trajectory, x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
         
     average_ivf /= num_of_inputs
-    print(grid_points.shape, average_ivf.shape)
-    axes[4].quiver(grid_points[:,0], grid_points[:,1],
+    # print(average_ivf)
+    ax.quiver(grid_points[:,0], grid_points[:,1],
                    average_ivf.reshape((num_x_points**2,2))[:,0], average_ivf.reshape((num_x_points**2,2))[:,1])
-    
-    axes[1].set_axis_off()
-    axes[2].set_xticks([])
-    axes[3].set_axis_off()
-    axes[4].set_axis_off()
-
-    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}.pdf', bbox_inches="tight")
-
+    ax.set_axis_off()
     
     
-def get_hidden_trajs(wi_init, wrec_init, wo_init, brec_init, h0_init, training_kwargs, T=128, which='post',  hidden_i=0, input_length=10,
-                     plotpca=True, timepart='all',  num_of_inputs=51, plot_from_to=(0,None), pca_from_to=(0,None), input_range=(-3,3)):
+    
+def get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, T=128, which='post', input_length=10, timepart='all',
+                     plotpca=True, num_of_inputs=51, pca_from_to=(0,None), input_range=(-3,3)):
     pca_after_t, pca_before_t = pca_from_to
-    after_t, before_t = plot_from_to
 
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
               nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-              wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=training_kwargs['ml_rnn'])
+              wi_init=wi, wrec_init=wrec, wo_init=wo, brec_init=brec, h0_init=h0, ML_RNN=training_kwargs['ml_rnn'])
     
     min_input, max_input = input_range
     norm = mplcolors.Normalize(vmin=min_input, vmax=max_input)
@@ -621,13 +629,13 @@ def get_hidden_trajs(wi_init, wrec_init, wo_init, brec_init, h0_init, training_k
     
     outputs_1d = np.cumsum(input, axis=1)*training_kwargs['dt_task']
     target = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1).reshape((num_of_inputs, T, training_kwargs['N_out']))
-    h_init = h0_init # np.zeros((num_of_inputs,training_kwargs['N_rec'])) 
+    h = h0 # np.zeros((num_of_inputs,training_kwargs['N_rec'])) 
 
     with torch.no_grad():
-        output, trajectories = net(input, return_dynamics=True, h_init=h_init)
+        output, trajectories = net(input, return_dynamics=True, h_init=h)
     
-    print(trajectories.shape, wi_init.shape)
-    input_proj = np.dot(trajectories, wi_init.T)
+    print(trajectories.shape, wi.shape)
+    input_proj = np.dot(trajectories, wi.T)
     if not plotpca:
         start=trajectories[0,0,:]
         for trial_i in range(trajectories.shape[0]):
@@ -660,7 +668,7 @@ def get_hidden_trajs(wi_init, wrec_init, wo_init, brec_init, h0_init, training_k
 
 
 
-def average_input_vectorfield(wi, wrec, brec, wo, I, trajectories, pca, x_min=-2, x_max=2, num_x_points=11):
+def average_input_vectorfield(wi, wrec, brec, wo, I, trajectories, x_min=-2, x_max=2, num_x_points=11):
     """
     Calculates average over x for  g(x,I) = tanh(Wx+b+W_inI) - tanh(Wx+b)
     for a fixed I
@@ -677,12 +685,10 @@ def average_input_vectorfield(wi, wrec, brec, wo, I, trajectories, pca, x_min=-2
      
     for x in trajectories:
         target_point = np.dot(wo.T, x)
-        # target_point = pca.transform(x.reshape(1,-1)).squeeze()
 
         cell_containing_point = find_grid_cell(target_point, x_values, y_values, num_x_points=num_x_points)
         full_vf_at_x = input_vectorfield(x, wi, wrec, brec, I).squeeze()
         average_vector_field[cell_containing_point] += np.dot(wo.T, full_vf_at_x).squeeze()
-        # average_vector_field[cell_containing_point] += pca.transform(full_vf_at_x).squeeze()
         
         bin_counts[cell_containing_point] += 1
 
@@ -698,13 +704,13 @@ def input_vectorfield(x, wi, wrec, brec, I):
 
     Parameters
     ----------
-    wi_init : TYPE
+    wi : TYPE
         DESCRIPTION.
-    wrec_init : TYPE
+    wrec : TYPE
         DESCRIPTION.
-    wo_init : TYPE
+    wo : TYPE
         DESCRIPTION.
-    brec_init : TYPE
+    brec : TYPE
         DESCRIPTION.
 
     Returns
@@ -728,7 +734,6 @@ def tanh_ode(t,x,W):
     return np.tanh(np.dot(W,x)) - x 
 
 
-# def speed(wrec_init):
     
 def find_grid_cell(target_point, x_values, y_values, num_x_points=11):
     
@@ -923,8 +928,8 @@ if __name__ == "__main__":
     model_name = 'high'
 
     T = 256*32
-    num_of_inputs = 11
-    input_range = (-.5, 5)#(-.55,-.45)
+    num_of_inputs = 2
+    input_range = (-.51, -.5)#(-.55,-.45)
     input_length = int(T/32)
     # input_range = (-.1,.1)
     which='post'
@@ -939,6 +944,22 @@ if __name__ == "__main__":
                               plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
                               plot_from_to=plot_from_to, pca_from_to=pca_from_to,
                               input_range=input_range)
+    
+    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
+    # trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+    #                                                                                   T=T, input_length=input_length, which=which,
+    #                                                                                   pca_from_to=pca_from_to,
+    #                                                                                   num_of_inputs=num_of_inputs, input_range=input_range)
+    
+    trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+                                                                       plotpca=True, timepart='all',
+                                                                       T=T, which=which, input_length=input_length,
+                                                                       num_of_inputs=num_of_inputs, pca_from_to=pca_from_to,
+                     input_range=input_range)
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
+    plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=input_length, 
+                    num_of_inputs=num_of_inputs, input_range=input_range, ax=ax)
+    
     
     # plot_all_trajs_model(main_exp_name, model_name, T=T, which='post', hidden_i=0, input_length=input_length,
     #                          plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
