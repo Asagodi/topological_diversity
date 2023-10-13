@@ -519,7 +519,6 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
                                                                        T=T, which=which, hidden_i=hidden_i, input_length=input_length,
                      plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to,
                      input_range=input_range)
-    print("F",trajectories.shape)
 
     if not axes:
         fig, axes = plt.subplots(1, 3, figsize=(9, 3), sharex=False, sharey=False)
@@ -570,7 +569,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     
     # Create a regular grid
 
-    num_x_points=51
+    # num_x_points=51
     x_values = np.linspace(-x_lim, x_lim, num_x_points)
     y_values = np.linspace(-x_lim, x_lim, num_x_points)
     
@@ -678,11 +677,18 @@ def average_input_vectorfield(wi, wrec, brec, wo, I, trajectories, pca, x_min=-2
      
     for x in trajectories:
         target_point = np.dot(wo.T, x)
+        # target_point = pca.transform(x.reshape(1,-1)).squeeze()
+
         cell_containing_point = find_grid_cell(target_point, x_values, y_values, num_x_points=num_x_points)
-        full_vf_at_x = input_vectorfield(x, wi, wrec, brec, I)
+        full_vf_at_x = input_vectorfield(x, wi, wrec, brec, I).squeeze()
+        average_vector_field[cell_containing_point] += np.dot(wo.T, full_vf_at_x).squeeze()
+        # average_vector_field[cell_containing_point] += pca.transform(full_vf_at_x).squeeze()
         
-        average_vector_field[cell_containing_point] += pca.transform(full_vf_at_x).squeeze()
-    return average_vector_field
+        bin_counts[cell_containing_point] += 1
+
+    avf = average_vector_field/bin_counts.reshape((num_x_points,num_x_points,1))
+    avf = np.where(avf==np.nan, 0, avf)
+    return avf
 
 def input_vectorfield(x, wi, wrec, brec, I):
     """
@@ -707,9 +713,8 @@ def input_vectorfield(x, wi, wrec, brec, I):
 
     """
     dotx = np.tanh(np.dot(wrec, x)+brec+np.dot(wi,I))
-    fx = np.tanh(np.dot(wrec, x)+brec+np.dot(wi,I))
-
-    return dotx- fx
+    fx = np.tanh(np.dot(wrec, x)+brec)
+    return dotx - fx
 
 
 
@@ -761,8 +766,6 @@ def average_logspeed(wrec, wo, brec, trajectories, x_min=-2, x_max=2, num_x_poin
     """
     
     #discretize output space
-    print("A", trajectories.shape[0], trajectories.shape[1]-1)
-
     # Create a regular grid
     x_values = np.linspace(x_min, x_max, num_x_points)
     y_values = np.linspace(x_min, x_max, num_x_points)
@@ -920,9 +923,9 @@ if __name__ == "__main__":
     model_name = 'high'
 
     T = 256*32
-    num_of_inputs = 101
-    input_range = (-.5,.5)
-    input_length = int(T/64)
+    num_of_inputs = 11
+    input_range = (-.5, 5)#(-.55,-.45)
+    input_length = int(T/32)
     # input_range = (-.1,.1)
     which='post'
     plot_from_to = (T-input_length,T)
