@@ -535,6 +535,24 @@ def plot_ring_and_fixedpoints(W_sym, pca, eps, c_ff, corners, lims=3, ax=None,  
         # plt.savefig(currentdir+f"/Stability/figures/noorman_ring_N{N}_pert_{n_stab}stab_{n_sadd-1}sadd.png", bbox_inches="tight")
 
 
+
+#lowrank
+gaussian_norm = (1/np.sqrt(np.pi))
+gauss_points, gauss_weights = np.polynomial.hermite.hermgauss(200)
+gauss_points = gauss_points*np.sqrt(2)
+
+def phi_prime(mu, delta0):
+    integrand = 1 - (np.tanh(mu+np.sqrt(delta0)*gauss_points))**2
+    return gaussian_norm * np.dot (integrand,gauss_weights)
+
+def transf(K):
+    return(K*phi_prime(0, np.dot(K.T, K)))
+
+def ring_ode_lowrank(t, x, Sigma):
+    return - x+ np.dot(Sigma, transf(x))
+
+
+
 from perturbed_training import RNN
 ###########RNNs and learning
 def get_ring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
@@ -552,3 +570,6 @@ def get_ring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
               wi_init=wi_init/N, wrec_init=wrec_init/N, wo_init=wo_init, brec_init=c_ff, bwo_init=bwo_init,
               h0_init=h0_init, ML_RNN='noorman')
     
+
+
+
