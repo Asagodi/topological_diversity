@@ -19,7 +19,8 @@ import numpy as np
 import pandas as pd
 from numpy.linalg import svd 
 from sklearn.decomposition import PCA
-
+from scipy.optimize import minimize
+from tqdm import tqdm
 
 import matplotlib.pyplot as plt
 from matplotlib import rc
@@ -503,7 +504,7 @@ def get_params_exp(main_exp_name, model_name, exp, which='post'):
     return wi, wrec, wo, brec, h0, training_kwargs
     
 
-def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidden_i=0, input_length=10,
+def plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=128, which='post',  hidden_i=0, input_length=10,
                      plotpca=True, timepart='all',  num_of_inputs=51, plot_from_to=(0,None),
                      pca_from_to=(0,None), input_range=(-3,3), axes=None):
     pca_before_t, pca_after_t = pca_from_to
@@ -533,8 +534,9 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
         # axes[0].plot(trajectories[trial_i,after_t:before_t,0], trajectories[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
         axes[0].plot(traj_pca[trial_i,after_t:before_t,0], traj_pca[trial_i,after_t:before_t,1], '-', color=cmap2(norm2(target_angle)))
 
-        if np.linalg.norm(trajectories[trial_i,-5,:]-trajectories[trial_i,-1,:])  < 1e-6:
-            axes[0].scatter(traj_pca[trial_i,-1,0], traj_pca[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=100)
+        if np.linalg.norm(trajectories[trial_i,-100,:]-trajectories[trial_i,-1,:])  < 1e-6:
+            axes[0].scatter(traj_pca[trial_i,-1,0], traj_pca[trial_i,-1,1], marker='.', s=100,
+                            color=cmap2(norm2(target_angle)), zorder=100)
 
     axes[0].set_axis_off()
     axes[0].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
@@ -552,7 +554,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     # for trial_i in range(output.shape[0]):
     #     axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
 
-        if np.linalg.norm(trajectories[trial_i,-5,:]-trajectories[trial_i,-1,:])  < 1e-6:
+        if np.linalg.norm(trajectories[trial_i,-100,:]-trajectories[trial_i,-1,:])  < 1e-6:
             axes[1].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=100)
         axes[2].plot(input_proj[trial_i,after_t:before_t,0], '-', color=cmap2(norm2(target_angle)))
 
@@ -560,9 +562,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     #         axes[1].plot([target[trial_i,t,0], output[trial_i,t,0]],
     #                          [target[trial_i,t,1], output[trial_i,t,1]], '-', 
                              # color=cmap2(norm2(np.arctan2(target[trial_i,t,1], target[trial_i,t,0]))))
-
-        
-    x_lim = 1.2 #np.max(np.abs(output))
+    x_lim = 1.3 #np.max(np.abs(output))
     num_x_points = 21
     output_logspeeds, all_logspeeds = average_logspeed(wrec, wo, brec, trajectories[:,128:,:], x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
     im=axes[3].imshow(output_logspeeds, cmap='inferno')
@@ -577,7 +577,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     axes[3].set_axis_off()
     # axes[4].set_axis_off()
 
-    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}.pdf', bbox_inches="tight")
+    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}_{exp_i}.pdf', bbox_inches="tight")
 
 def plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=10,
                      num_of_inputs=51, input_range=(-3,3),
@@ -639,11 +639,6 @@ def get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, T=128, which='post
     input_proj = np.dot(trajectories, wi.T)
     if not plotpca:
         start=trajectories[0,0,:]
-        for trial_i in range(trajectories.shape[0]):
-            if timepart=='all' or not timepart:
-                traj = trajectories[:,:,:]
-            else:
-                traj = trajectories[:,after_t:before_t,:]
     else:
         pca = PCA(n_components=2)   
 
@@ -651,13 +646,8 @@ def get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, T=128, which='post
         pca.fit(trajectories_tofit)
         traj_pca = pca.transform(trajectories.numpy().reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,2))
 
-        start=traj_pca[0,0,:]
-        for trial_i in range(trajectories.shape[0]):
-            if timepart=='all' or not timepart:
-                traj_pca = traj_pca[:,:,:]
-            else:
-                traj_pca = traj_pca[:,after_t:before_t,:]
-        
+        start= pca.transform(h0.reshape((1,-1))).T
+        traj_pca = traj_pca[:,:,:]
 
     # ax.set_axis_off()
     makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7])
@@ -731,8 +721,8 @@ def ReLU(x):
 def relu_ode(t,x,W):
     return ReLU(np.dot(W,x)) - x 
 
-def tanh_ode(t,x,W):
-    return np.tanh(np.dot(W,x)) - x 
+# def tanh_ode(t,x,W):
+#     return np.tanh(np.dot(W,x)) - x 
 
 
     
@@ -904,6 +894,35 @@ def plot_participatioratio(main_exp_name, model_name, task, first_or_last='last'
         trajectories -= np.mean(trajectories, axis=0) 
         U, S, Vt = svd(trajectories, full_matrices=True)
         print(participation_ratio(S))
+        
+def tanh_step(h, wrec, brec, dt):
+    rec_input = np.tanh(np.dot(wrec, h) + brec)
+    h =  - dt * h  + dt * rec_input
+    return h
+        
+def tanh_ode(t,x,wrec, brec):
+    return np.tanh(np.dot(wrec,x)+brec) - x 
+
+def tanh_rnn_speed(x, wrec, brec, dt):
+    return np.linalg.norm(tanh_step(x, wrec, brec, dt))
+
+# def tanh_rnn_speed(x, wrec, brec):
+#     f_x = tanh_ode(0,x,wrec, brec)
+#     return np.linalg.norm(f_x)
+        
+def find_slow_points(wrec, brec, dt, n_points=100):
+    N = wrec.shape[0]
+    fxd_points = []
+    speeds = []
+    for p_i in tqdm(range(n_points)):
+        # print(p_i)
+        x0 = np.random.uniform(-1,1,N)
+        res = minimize(tanh_rnn_speed, x0, method='SLSQP', tol=1e-7, args=tuple([wrec, brec, dt]))
+        if res.success:
+            fxd_points.append(res.x)
+            speeds.append(res.fun)
+        
+    return np.array(fxd_points), np.array(speeds)
 
 if __name__ == "__main__":
 
@@ -921,14 +940,14 @@ if __name__ == "__main__":
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
 
-    main_exp_name='angular_integration/hidden/51.2'
-    # main_exp_name='angularintegration/hidden'
+    main_exp_name='angular_integration/hidden/25.6'
+    main_exp_name='angular_integration/stopper'
     # main_exp_name='angularintegration/all_mse/'
 
     # main_exp_name='poisson_clicks/relu_mse'
     model_name = 'high'
 
-    T = 256*32
+    T = 256*16
     num_of_inputs = 11
     input_range = (-.5, .5)#(-.55,-.45)
     input_length = int(T/32)
@@ -940,8 +959,9 @@ if __name__ == "__main__":
     #     plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which, plotpca=True, timepart=timepart, num_of_inputs=num_of_inputs, input_range=input_range)
     
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
-    exp = exp_list[2]
-    plot_trajs_model(main_exp_name, model_name, exp, T=T, which='post', input_length=input_length,
+    exp_i = 0
+    exp = exp_list[exp_i]
+    plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=T, which='post', input_length=input_length,
                               plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
                               plot_from_to=plot_from_to, pca_from_to=pca_from_to,
                               input_range=input_range)
@@ -952,20 +972,37 @@ if __name__ == "__main__":
                                                                                       pca_from_to=pca_from_to,
                                                                                       num_of_inputs=num_of_inputs, input_range=input_range)
     
-    # trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
-    #                                                                    plotpca=True, timepart='all',
-    #                                                                    T=T, which=which, input_length=input_length,
-    #                                                                    num_of_inputs=num_of_inputs, pca_from_to=pca_from_to,
-    #                  input_range=input_range)
+    # fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
+    # # plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=input_length, 
+    # #                 num_of_inputs=2, input_range=(-.51,-.5), ax=ax)
+    # # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/vf_{which}.pdf', bbox_inches="tight")
     
+    # fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], n_points=10)
+    # #pca projection
+    # proj_fxd_points = pca.transform(fxd_points.reshape(-1, training_kwargs['N_rec']))
+    # proj_h0 = pca.transform(h0.reshape(1, -1))
+    # #output projection
+    # proj_fxd_points = np.dot(fxd_points, wo)
+    # proj_h0 = np.dot(h0, wo)
     
+    # ax.scatter(proj_fxd_points[:,0], proj_fxd_points[:,1])    
+    # ax.scatter(proj_h0[0], proj_h0[1], c='k')
     
-    fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
-    plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=input_length, 
-                    num_of_inputs=2, input_range=(-.51,-.5), ax=ax)
-    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/vf_{which}.pdf', bbox_inches="tight")
+    # cmap2 = plt.get_cmap('hsv')
+    # norm2 = mpl.colors.Normalize(-np.pi, np.pi)
+    # x = np.linspace(-np.pi, np.pi, 1000)
+    # ax.scatter(np.cos(x), np.sin(x), color=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1)
     
-    
+    # for trial_i in range(trajectories.shape[0]):
+    #     target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
+
+    #     ax.plot(traj_pca[trial_i,after_t:before_t,0], traj_pca[trial_i,after_t:before_t,1], '-', color=cmap2(norm2(target_angle)))
+
+
+
+
+
+
     # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
     #                       plotpca=False, num_of_inputs=num_of_inputs, timepart='end',
     #                       plot_output=True, input_range=input_range,
