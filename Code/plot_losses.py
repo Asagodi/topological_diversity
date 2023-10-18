@@ -441,11 +441,12 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
     axes2 = axes[:,3:].flatten()
 
     for exp_i, exp in enumerate(exp_list[:9]):
-        trajectories, start, target, output = get_hidden_trajs(main_exp_name, model_name, exp, T=T, which=which, hidden_i=hidden_i, input_length=input_length,
-                         plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, plot_from_to=plot_from_to, pca_from_to=pca_from_to, input_range=input_range)
+        trajectories, start, target, output = get_hidden_trajs(main_exp_name, model_name, exp, T=T, which=which, input_length=input_length,
+                         plotpca=plotpca, timepart=timepart, num_of_inputs=num_of_inputs, pca_from_to=pca_from_to, input_range=input_range)
 
         for trial_i in range(trajectories.shape[0]):
-            axes1[exp_i].plot(trajectories[trial_i,before_t:after_t,0], trajectories[trial_i,before_t:after_t,1], '-', c=cmap(norm[trial_i]))
+            axes1[exp_i].plot(trajectories[trial_i,before_t:after_t,0], trajectories[trial_i,before_t:after_t,1], '-',
+                              color=cmap(norm[trial_i]))
             if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
                 axes1[exp_i].scatter(trajectories[trial_i,-1,0], trajectories[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
 
@@ -524,13 +525,13 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     if not axes:
         fig, axes = plt.subplots(1, 3, figsize=(9, 3), sharex=False, sharey=False)
         fig, axes = plt.subplots(1, 4, figsize=(12, 3), sharex=False, sharey=False)
-        fig, axes = plt.subplots(1, 5, figsize=(15, 3), sharex=False, sharey=False)
+        # fig, axes = plt.subplots(1, 5, figsize=(15, 3), sharex=False, sharey=False)
 
     for trial_i in range(trajectories.shape[0]):
         target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
 
         # axes[0].plot(trajectories[trial_i,after_t:before_t,0], trajectories[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
-        axes[0].plot(traj_pca[trial_i,after_t:before_t,0], traj_pca[trial_i,after_t:before_t,1], '-', c=cmap2(norm2(target_angle)))
+        axes[0].plot(traj_pca[trial_i,after_t:before_t,0], traj_pca[trial_i,after_t:before_t,1], '-', color=cmap2(norm2(target_angle)))
 
         if np.linalg.norm(trajectories[trial_i,-5,:]-trajectories[trial_i,-1,:])  < 1e-6:
             axes[0].scatter(traj_pca[trial_i,-1,0], traj_pca[trial_i,-1,1], marker='.', s=100, c=cmap2(norm2(target_angle)), zorder=100)
@@ -546,14 +547,14 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
         target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
         axes[1].plot(output[trial_i,0,0], output[trial_i,0,1], '.', c='k', zorder=100)
         axes[1].plot(output[trial_i,:,0], output[trial_i,:,1], '-', alpha=.25)
-        axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap2(norm2(target_angle)))
+        axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', color=cmap2(norm2(target_angle)))
 
     # for trial_i in range(output.shape[0]):
     #     axes[1].plot(output[trial_i,after_t:before_t,0], output[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
 
         if np.linalg.norm(trajectories[trial_i,-5,:]-trajectories[trial_i,-1,:])  < 1e-6:
             axes[1].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=100)
-        axes[2].plot(input_proj[trial_i,after_t:before_t,0], '-', c=cmap2(norm2(target_angle)))
+        axes[2].plot(input_proj[trial_i,after_t:before_t,0], '-', color=cmap2(norm2(target_angle)))
 
     #     for t in range(output.shape[1]):
     #         axes[1].plot([target[trial_i,t,0], output[trial_i,t,0]],
@@ -567,14 +568,14 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
     im=axes[3].imshow(output_logspeeds, cmap='inferno')
     cbar = fig.colorbar(im, ax=axes[3])
     cbar.set_label("log(speed)")
-    plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=input_length,
-                    num_of_inputs=num_of_inputs, input_range=input_range,
-                    ax=axes[4], x_lim=x_lim, num_x_points=num_x_points)
+    # plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=input_length,
+    #                 num_of_inputs=num_of_inputs, input_range=input_range,
+    #                 ax=axes[4], x_lim=x_lim, num_x_points=num_x_points)
 
     axes[1].set_axis_off()
     axes[2].set_xticks([])
     axes[3].set_axis_off()
-    axes[4].set_axis_off()
+    # axes[4].set_axis_off()
 
     plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}.pdf', bbox_inches="tight")
 
@@ -928,8 +929,8 @@ if __name__ == "__main__":
     model_name = 'high'
 
     T = 256*32
-    num_of_inputs = 2
-    input_range = (-.51, -.5)#(-.55,-.45)
+    num_of_inputs = 11
+    input_range = (-.5, .5)#(-.55,-.45)
     input_length = int(T/32)
     # input_range = (-.1,.1)
     which='post'
@@ -939,32 +940,31 @@ if __name__ == "__main__":
     #     plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which, plotpca=True, timepart=timepart, num_of_inputs=num_of_inputs, input_range=input_range)
     
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
-    exp = exp_list[7]
-    plot_trajs_model(main_exp_name, model_name, exp, T=T, which='post', hidden_i=0, input_length=input_length,
+    exp = exp_list[2]
+    plot_trajs_model(main_exp_name, model_name, exp, T=T, which='post', input_length=input_length,
                               plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
                               plot_from_to=plot_from_to, pca_from_to=pca_from_to,
                               input_range=input_range)
     
     wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
-    # trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
-    #                                                                                   T=T, input_length=input_length, which=which,
-    #                                                                                   pca_from_to=pca_from_to,
-    #                                                                                   num_of_inputs=num_of_inputs, input_range=input_range)
-    
     trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
-                                                                       plotpca=True, timepart='all',
-                                                                       T=T, which=which, input_length=input_length,
-                                                                       num_of_inputs=num_of_inputs, pca_from_to=pca_from_to,
-                     input_range=input_range)
+                                                                                      T=T, input_length=input_length, which=which,
+                                                                                      pca_from_to=pca_from_to,
+                                                                                      num_of_inputs=num_of_inputs, input_range=input_range)
+    
+    # trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+    #                                                                    plotpca=True, timepart='all',
+    #                                                                    T=T, which=which, input_length=input_length,
+    #                                                                    num_of_inputs=num_of_inputs, pca_from_to=pca_from_to,
+    #                  input_range=input_range)
+    
+    
+    
     fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
     plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=input_length, 
-                    num_of_inputs=num_of_inputs, input_range=input_range, ax=ax)
+                    num_of_inputs=2, input_range=(-.51,-.5), ax=ax)
+    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/vf_{which}.pdf', bbox_inches="tight")
     
-    
-    # plot_all_trajs_model(main_exp_name, model_name, T=T, which='post', hidden_i=0, input_length=input_length,
-    #                          plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
-    #                          plot_from_to=plot_from_to, pca_from_to=pca_from_to,
-    #                          plot_output=True, input_range=input_range)
     
     # plot_all_trajs_model(main_exp_name, model_name=model_name, T=T, which=which,
     #                       plotpca=False, num_of_inputs=num_of_inputs, timepart='end',
