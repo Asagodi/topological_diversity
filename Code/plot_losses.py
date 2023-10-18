@@ -562,7 +562,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=128, which='post',
     #         axes[1].plot([target[trial_i,t,0], output[trial_i,t,0]],
     #                          [target[trial_i,t,1], output[trial_i,t,1]], '-', 
                              # color=cmap2(norm2(np.arctan2(target[trial_i,t,1], target[trial_i,t,0]))))
-    x_lim = 1.3 #np.max(np.abs(output))
+    x_lim = 1.5 #np.max(np.abs(output))
     num_x_points = 21
     output_logspeeds, all_logspeeds = average_logspeed(wrec, wo, brec, trajectories[:,128:,:], x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
     im=axes[3].imshow(output_logspeeds, cmap='inferno')
@@ -941,13 +941,13 @@ if __name__ == "__main__":
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
 
     main_exp_name='angular_integration/hidden/25.6'
-    main_exp_name='angular_integration/stopper'
+    main_exp_name='angular_integration/act_norm/0'
     # main_exp_name='angularintegration/all_mse/'
 
     # main_exp_name='poisson_clicks/relu_mse'
     model_name = 'high'
 
-    T = 256*16
+    T = 256*64
     num_of_inputs = 11
     input_range = (-.5, .5)#(-.55,-.45)
     input_length = int(T/32)
