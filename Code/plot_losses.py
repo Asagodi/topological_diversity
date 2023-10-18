@@ -458,9 +458,9 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
             axes2[exp_i].plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
             for trial_i in range(output.shape[0]):
                 # if trial_i<output.shape[0]-1:
-                #     axes2[exp_i].plot([target[trial_i,-1,0], target[trial_i+1,-1,0]], [target[trial_i,-1,1], target[trial_i+1,-1,1]], '--', c=cmap(norm[trial_i]), alpha=.5)
+                #     axes2[exp_i].plot([target[trial_i,-1,0], target[trial_i+1,-1,0]], [target[trial_i,-1,1], target[trial_i+1,-1,1]], '--', color=cmap(norm[trial_i]), alpha=.5)
                 # axes2[exp_i].scatter(target[trial_i,-1,0], target[trial_i,-1,1], color=cmap(norm[trial_i]), alpha=.1)
-                # axes2[exp_i].plot(output[trial_i,:,0], output[trial_i,:,1], '-', c=cmap(norm[trial_i]))
+                # axes2[exp_i].plot(output[trial_i,:,0], output[trial_i,:,1], '-', color=cmap(norm[trial_i]))
                 if np.linalg.norm(trajectories[trial_i,-2,:]-trajectories[trial_i,-1,:])  < 1e-4:
                     axes2[exp_i].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap(norm[trial_i]), zorder=100)
             
@@ -534,14 +534,14 @@ def plot_trajs_model(main_exp_name, model_name, exp, T=128, which='post',  hidde
         axes[0].plot(traj_pca[trial_i,after_t:before_t,0], traj_pca[trial_i,after_t:before_t,1], '-', color=cmap2(norm2(target_angle)))
 
         if np.linalg.norm(trajectories[trial_i,-5,:]-trajectories[trial_i,-1,:])  < 1e-6:
-            axes[0].scatter(traj_pca[trial_i,-1,0], traj_pca[trial_i,-1,1], marker='.', s=100, c=cmap2(norm2(target_angle)), zorder=100)
+            axes[0].scatter(traj_pca[trial_i,-1,0], traj_pca[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=100)
 
     axes[0].set_axis_off()
     axes[0].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
     
     x = np.linspace(-np.pi, np.pi, 1000)
     # axes[1].plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
-    axes[1].scatter(np.cos(x), np.sin(x), c=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1)
+    axes[1].scatter(np.cos(x), np.sin(x), color=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1)
 
     for trial_i in range(output.shape[0]):
         target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
