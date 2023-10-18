@@ -6,9 +6,9 @@ Created on Fri Jul 28 12:25:35 2023
 """
 
 import os, sys
-import glob
-current_dir = os.path.dirname(os.path.realpath('__file__'))
-parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+import glob 
+current_dir = os.path.dirname(os.path.realpath('__file__')) 
+parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir)) 
 import pickle
 import time
 
@@ -336,10 +336,12 @@ if __name__ == "__main__":
     # size_experiment(main_exp_name='angular_integration', sub_exp_name='lambda')
     
     main_exp_name = 'angular_integration'
-    sub_exp_name  = 'stopper'
+    sub_exp_name  = 'act_norm'
 
-    training_kwargs['stop_patience'] = 10
+    training_kwargs['stop_patience'] = 100
     training_kwargs['stop_min_delta'] = 0
+    training_kwargs['last_mses'] = False
+
 
     model_i, model_name = 2, 'high'
     # model_i, model_name = 3, 'ortho'
@@ -349,7 +351,9 @@ if __name__ == "__main__":
     # training_kwargs['clip_gradient'] = 
     training_kwargs['task'] = 'angular_integration'
     # training_kwargs['nonlinearity'] = 'relu'
-    training_kwargs['act_norm_lambda'] = 1e-4
+    training_kwargs['act_norm_lambda'] = 1e-7
+    
+    sub_exp_name += f"/{training_kwargs['act_norm_lambda']}"
 
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
     training_kwargs['N_rec'] = 200
@@ -360,10 +364,10 @@ if __name__ == "__main__":
     training_kwargs['verbose'] = True
     training_kwargs['learning_rate'] = 1e-3
     training_kwargs['n_epochs'] = 5000
-    training_kwargs['T'] = 51.2
+    training_kwargs['T'] = 12.8
     training_kwargs['dt_rnn'] = .1
     training_kwargs['adam_beta1'] = 0.9
-    training_kwargs['adam_beta2'] = 0.999
+    training_kwargs['adam_beta2'] = 0.99
     training_kwargs['network_type'] = network_types[model_i]
     training_kwargs['initialization_type'] = initialization_type_list[model_i]
     training_kwargs['loss_function'] = loss_functions[model_i]
