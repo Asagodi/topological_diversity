@@ -40,8 +40,8 @@ def get_theory_weights(N):
     W = scipy.linalg.circulant(row)
     return W
 
-def relu_ode(t,x,W):
-    return ReLU(np.dot(W,x)) - x 
+def relu_ode(t,x,W, b=0):
+    return ReLU(np.dot(W,x)+b) - x 
 
 def sigmoid_ode(t,x,W):
     return sigmoid(np.dot(W,x)) - x 
@@ -548,10 +548,34 @@ def phi_prime(mu, delta0):
 def transf(K):
     return(K*phi_prime(0, np.dot(K.T, K)))
 
-def ring_ode_lowrank(t, x, Sigma):
+def ode_lowrank(t, x, Sigma):
+    "Mastrogiuseppe 2018 (ring:Sigma=sigma[[1,0],[0,1]]"
     return - x+ np.dot(Sigma, transf(x))
 
 
+def ring_nef(N, j0, j1):
+    "Barak 2021"
+    x = np.arange(0,N,1)
+    row = np.cos(2*np.pi*x/N)
+    W = j0 + j1*scipy.linalg.circulant(row)
+    
+    return W
+
+
+def simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=501):
+    
+    N = W.shape[0]
+    if not np.any(y0):
+        y0 = np.random.uniform(0,1,N)
+    t = np.linspace(0, maxT, tsteps)
+    sol = solve_ivp(relu_ode, y0=y0,  t_span=[0,maxT],
+                    args=tuple([W, -np.cos(I_e)]),
+                    dense_output=True)
+    return sol.sol(t)
+
+# row = sol.sol(t)[:,-1]; sols = scipy.linalg.circulant(row)
+# for i in range(N):
+#     new_sols[i,:] = simulate_nefring(W, I_e, y0=sols[i,:], maxT=25, tsteps=501)[:,-1]
 
 from perturbed_training import RNN
 ###########RNNs and learning
