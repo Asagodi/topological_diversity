@@ -28,6 +28,7 @@ import matplotlib.patches as mpatches
 import matplotlib.colors as mplcolors
 import matplotlib.cm as cmx
 import matplotlib as mpl
+from matplotlib import transforms
 
 from models import RNN, run_net, LSTM_noforget, run_lstm
 from tasks import angularintegration_task, angularintegration_delta_task, simplestep_integration_task, poisson_clicks_task
@@ -569,10 +570,11 @@ def plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=128, which='post',
 
 
     #Speed
+    tr = transforms.Affine2D().rotate_deg(90)
     x_lim = np.max(np.abs(output.numpy()))
     num_x_points = 21
     output_logspeeds, all_logspeeds = average_logspeed(wrec, wo, brec, trajectories[:,128:,:], x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
-    im=axes[3].imshow(output_logspeeds, cmap='inferno')
+    im=axes[3].imshow(np.rot90(output_logspeeds), cmap='inferno')
     cbar = fig.colorbar(im, ax=axes[3])
     cbar.set_label("log(speed)")
     
@@ -612,7 +614,6 @@ def plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=10,
                    average_ivf.reshape((num_x_points**2,2))[:,0], average_ivf.reshape((num_x_points**2,2))[:,1])
     ax.set_axis_off()
     
-    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/vf_{which}_{exp_i}.pdf', bbox_inches="tight")
 
     
 def get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, T=128, which='post', input_length=10, timepart='all',
@@ -977,7 +978,7 @@ if __name__ == "__main__":
     pca_from_to = (0,T)
 
     # fig, ax = plt.subplots(1, 1, figsize=(3, 3));
-    main_exp_name='angular_integration/hidden/25.6'
+    main_exp_name='angular_integration/hidden/51.2'
     act_lambdas = [0.01, 0.001, 1e-05, 1e-07, 1e-09, 0]
     num_lines = 5
     colors = [plt.cm.jet(i) for i in np.linspace(.5, 1, num_lines)]
@@ -998,19 +999,32 @@ if __name__ == "__main__":
                                   plot_from_to=plot_from_to, pca_from_to=pca_from_to,
                                   input_range=input_range)
         
-        input_range = (-.51, -.5)
-        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
-        trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
-                                                                                          T=T, input_length=input_length, which=which,
-                                                                                          pca_from_to=pca_from_to,
-                                                                                          num_of_inputs=num_of_inputs, input_range=input_range)
+        # input_range = (-.51, -.5)
+        # wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
+        # trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+        #                                                                                   T=T, input_length=input_length, which=which,
+        #                                                                                   pca_from_to=pca_from_to,
+        #                                                                                   num_of_inputs=num_of_inputs, input_range=input_range)
         
-        x_lim = 1.3
-        num_x_points = 21
-        plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=512, 
-                        num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
-                        num_x_points=num_x_points)
-    
+        # x_lim = 1.4
+        # num_x_points = 21
+        # plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=512, 
+        #                 num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
+        #                 num_x_points=num_x_points)
+        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/vf_onedir_{which}_{exp_i}.pdf', bbox_inches="tight")
+
+
+        # input_range = (-.5, .5)  
+        # wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
+        # trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+        #                                                                                   T=T, input_length=input_length, which=which,
+        #                                                                                   pca_from_to=pca_from_to,
+        #                                                                                   num_of_inputs=num_of_inputs, input_range=input_range)
+        # plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=512, 
+        #                 num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
+        #                 num_x_points=num_x_points)
+        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/vf__bothdirs_{which}_{exp_i}.pdf', bbox_inches="tight")
+
     # dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     # net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
     #           nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
