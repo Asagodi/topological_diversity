@@ -543,31 +543,24 @@ def plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=128, which='post',
 
     for trial_i in range(trajectories.shape[0]):
         target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
-        axes[1].plot(output[trial_i,0,0], output[trial_i,0,1], '.', c='k', zorder=100)
-        axes[1].plot(output[trial_i,:,0], output[trial_i,:,1], '-', alpha=.25)
-        # axes[0].plot(trajectories[trial_i,after_t:before_t,0], trajectories[trial_i,after_t:before_t,1], '-', c=cmap(norm[trial_i]))
-        # axes[0].plot(traj_pca[trial_i,after_t:before_t,0], traj_pca[trial_i,after_t:before_t,1], '-', color=cmap2(norm2(target_angle)))
-
-        axes[2].plot(input_proj[trial_i,after_t:before_t,0], '-', color=cmap2(norm2(target_angle)))
-
-        idx, mind = identify_limit_cycle(trajectories[trial_i,:,:], tol=1e-1)
+        axes[1].plot(output[trial_i,0,0], output[trial_i,0,1], '.', c='k', zorder=100) #starting point
+        axes[1].plot(output[trial_i,:,0], output[trial_i,:,1], '-', alpha=.25) #all trajectories
+        idx, mind = identify_limit_cycle(trajectories[trial_i,:,:], tol=1e-3) #
         if idx:
             axes[0].plot(traj_pca[trial_i,idx:,0], traj_pca[trial_i,idx:,1], '-', color=cmap2(norm2(target_angle)))
-            axes[1].plot(output[trial_i,idx:,0], output[trial_i,idx:,1], '-', color=cmap2(norm2(target_angle)))
+            axes[1].plot(output[trial_i,idx:,0], output[trial_i,idx:,1], '-', linewidth=5, color=cmap2(norm2(target_angle)), zorder=100)
+            axes[2].plot(input_proj[trial_i,after_t:before_t,0], '-', color=cmap2(norm2(target_angle)))
 
-            if mind==0.0:
+            if mind<1e-4:
                 axes[0].scatter(traj_pca[trial_i,-1,0], traj_pca[trial_i,-1,1], color=cmap2(norm2(target_angle)))
-                axes[1].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=100)
-
+                axes[1].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=110)
 
     axes[0].set_axis_off()
     axes[0].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
     
     x = np.linspace(-np.pi, np.pi, 1000)
     # axes[1].plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
-    axes[1].scatter(np.cos(x), np.sin(x), color=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1)
-
-
+    axes[1].scatter(np.cos(x), np.sin(x), color=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1) #ring
 
     #Speed
     tr = transforms.Affine2D().rotate_deg(90)
@@ -585,7 +578,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=128, which='post',
 
     axes[1].set_axis_off()
     axes[2].set_xticks([])
-    # axes[3].set_axis_off()
+    axes[3].set_axis_off()
     # axes[4].set_axis_off()
 
     plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}_{exp_i}.pdf', bbox_inches="tight")
@@ -976,11 +969,11 @@ if __name__ == "__main__":
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
     model_name = 'high'
-    T = 512*8
+    T = 512*32
     num_of_inputs = 21
     input_length = int(512)
     which='post'
-    plot_from_to = (T-input_length,T)
+    plot_from_to = (T-8*input_length,T)
     pca_from_to = (0,T)
 
     # fig, ax = plt.subplots(1, 1, figsize=(3, 3));
@@ -999,11 +992,13 @@ if __name__ == "__main__":
         exp_i = 7
     for exp_i in range(10):
         exp = exp_list[exp_i]
-        # input_range = (-.5, .5)   
-        # plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=T, which='post', input_length=input_length,
-        #                           plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
-        #                           plot_from_to=plot_from_to, pca_from_to=pca_from_to,
-        #                           input_range=input_range)
+        input_range = (-.5, .5)   
+        num_of_inputs = 21
+
+        plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=T, which='post', input_length=input_length,
+                                  plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
+                                  plot_from_to=plot_from_to, pca_from_to=pca_from_to,
+                                  input_range=input_range)
         
         input_range = (-.51, -.5)
         wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
@@ -1014,7 +1009,6 @@ if __name__ == "__main__":
         
         x_lim = 1.4
         num_x_points = 21
-        num_of_inputs = 21
         plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=512, 
                         num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
                         num_x_points=num_x_points)
