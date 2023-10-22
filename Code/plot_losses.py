@@ -610,11 +610,17 @@ def plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=10,
         
     average_ivf /= num_of_inputs
     # print(average_ivf)
+
+    theta = np.radians(90)
+    c, s = np.cos(theta), np.sin(theta)
+    R = np.array(((c, -s), (s, c)))
+    # grid_points = np.dot(grid_points, R)
+    average_ivf = np.dot(average_ivf, R)
+
     ax.quiver(grid_points[:,0], grid_points[:,1],
                    average_ivf.reshape((num_x_points**2,2))[:,0], average_ivf.reshape((num_x_points**2,2))[:,1])
     ax.set_axis_off()
     
-
     
 def get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, T=128, which='post', input_length=10, timepart='all',
                      plotpca=True, num_of_inputs=51, pca_from_to=(0,None), input_range=(-3,3)):
@@ -993,38 +999,40 @@ if __name__ == "__main__":
         exp_i = 7
     for exp_i in range(10):
         exp = exp_list[exp_i]
-        input_range = (-.5, .5)   
-        plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=T, which='post', input_length=input_length,
-                                  plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
-                                  plot_from_to=plot_from_to, pca_from_to=pca_from_to,
-                                  input_range=input_range)
+        # input_range = (-.5, .5)   
+        # plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=T, which='post', input_length=input_length,
+        #                           plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
+        #                           plot_from_to=plot_from_to, pca_from_to=pca_from_to,
+        #                           input_range=input_range)
         
-        # input_range = (-.51, -.5)
-        # wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
-        # trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
-        #                                                                                   T=T, input_length=input_length, which=which,
-        #                                                                                   pca_from_to=pca_from_to,
-        #                                                                                   num_of_inputs=num_of_inputs, input_range=input_range)
+        input_range = (-.51, -.5)
+        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
+        trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+                                                                                          T=T, input_length=input_length, which=which,
+                                                                                          pca_from_to=pca_from_to,
+                                                                                          num_of_inputs=num_of_inputs, input_range=input_range)
         
-        # x_lim = 1.4
-        # num_x_points = 21
-        # plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=512, 
-        #                 num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
-        #                 num_x_points=num_x_points)
-        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/vf_onedir_{which}_{exp_i}.pdf', bbox_inches="tight")
+        x_lim = 1.4
+        num_x_points = 21
+        num_of_inputs = 21
+        plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=512, 
+                        num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
+                        num_x_points=num_x_points)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/vf_onedir_{which}_{exp_i}.pdf', bbox_inches="tight")
+        plt.show()
 
-
-        # input_range = (-.5, .5)  
-        # wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
-        # trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
-        #                                                                                   T=T, input_length=input_length, which=which,
-        #                                                                                   pca_from_to=pca_from_to,
-        #                                                                                   num_of_inputs=num_of_inputs, input_range=input_range)
-        # plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=512, 
-        #                 num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
-        #                 num_x_points=num_x_points)
-        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/vf__bothdirs_{which}_{exp_i}.pdf', bbox_inches="tight")
-
+        input_range = (-.5, .5)  
+        num_of_inputs = 2
+        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
+        trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+                                                                                          T=T, input_length=input_length, which=which,
+                                                                                          pca_from_to=pca_from_to,
+                                                                                          num_of_inputs=num_of_inputs, input_range=input_range)
+        plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=512, 
+                        num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
+                        num_x_points=num_x_points)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/vf__bothdirs_{which}_{exp_i}.pdf', bbox_inches="tight")
+        plt.show()
     # dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     # net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
     #           nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
