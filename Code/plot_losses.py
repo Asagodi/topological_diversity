@@ -545,10 +545,10 @@ def plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=128, which='post',
         target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
         axes[1].plot(output[trial_i,0,0], output[trial_i,0,1], '.', c='k', zorder=100) #starting point
         axes[1].plot(output[trial_i,:,0], output[trial_i,:,1], '-', alpha=.25) #all trajectories
-        idx, mind = identify_limit_cycle(trajectories[trial_i,:,:], tol=1e-3) #
+        idx, mind = identify_limit_cycle(trajectories[trial_i,:,:], tol=1e-2) #
         if idx:
-            axes[0].plot(traj_pca[trial_i,idx:,0], traj_pca[trial_i,idx:,1], '-', color=cmap2(norm2(target_angle)))
-            axes[1].plot(output[trial_i,idx:,0], output[trial_i,idx:,1], '-', linewidth=5, color=cmap2(norm2(target_angle)), zorder=100)
+            axes[0].plot(traj_pca[trial_i,idx:,0], traj_pca[trial_i,idx:,1], '-', linewidth=3, color=cmap2(norm2(target_angle)))
+            axes[1].plot(output[trial_i,idx:,0], output[trial_i,idx:,1], '-', linewidth=1, color=cmap2(norm2(target_angle)), zorder=100)
             axes[2].plot(input_proj[trial_i,after_t:before_t,0], '-', color=cmap2(norm2(target_angle)))
 
             if mind<1e-4:
@@ -953,6 +953,47 @@ def find_slow_points(wrec, brec, dt, n_points=100):
         
     return np.array(fxd_points), np.array(speeds)
 
+
+def plot_error_over_time(main_exp_name, model_name, exp, T=None, sparsity=0.2, batch_size=2**8, ax=None, label=None):
+    if not ax:
+        fig, ax = plt.subplots(1, 1, figsize=(3, 3));
+    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
+
+    dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
+    net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
+              nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
+              wi_init=wi, wrec_init=wrec, wo_init=wo, brec_init=brec, h0_init=h0, ML_RNN=training_kwargs['ml_rnn'])
+    if not T:
+        T = training_kwargs['T']
+    task = angularintegration_task(T=T, dt=training_kwargs['dt_task'], sparsity=sparsity)
+    input, target, mask, output, loss = run_net(net, task, batch_size=batch_size, return_dynamics=False)
+    #plot error over time
+    errors = np.linalg.norm(output-target, axis=(2))
+    ax.plot(np.mean(errors,axis=0), label=label)
+    # error = np.mean(errors)
+
+def plot_error_over_time_list(main_exp_name, model_name, batch_size=2**8, 
+                              act_lambdas = [0.01, 0.001, 1e-05, 1e-07, 1e-09, 0]):
+    colors = [plt.cm.jet(i) for i in np.linspace(.5, 1, len(act_lambdas))]
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3));
+    ax.set_prop_cycle('color', colors)
+    for act_lambda in tqdm(act_lambdas):
+        np.random.seed(0)
+        main_exp_name_an = main_exp_name + f'/{act_lambda}'
+        exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name_an +'/'+ model_name + "/result*")
+        exp = exp_list[0]
+        # print(main_exp_name_an)
+        if act_lambda==0:
+            label = 0
+        else:
+            label=r'$10^{%02d}$' %np.log10(act_lambda)
+        plot_error_over_time(main_exp_name_an, model_name, exp, batch_size=batch_size, ax=ax, label=label)
+    ax.set_xlabel("Time")
+    ax.set_ylabel("Error")
+    plt.legend(title='Reg. param.', bbox_to_anchor=(1., 1.))
+    plt.savefig(parent_dir+"/experiments/angular_integration/act_norm/error.pdf", bbox_inches="tight")
+
+
 if __name__ == "__main__":
 
     model_names=['lstm', 'low','high', 'ortho', 'qpta']
@@ -973,19 +1014,10 @@ if __name__ == "__main__":
     num_of_inputs = 21
     input_length = int(512)
     which='post'
-    plot_from_to = (T-8*input_length,T)
+    plot_from_to = (T-4*input_length,T)
     pca_from_to = (0,T)
 
-    # fig, ax = plt.subplots(1, 1, figsize=(3, 3));
-    main_exp_name='angular_integration/hidden/51.2'
-    act_lambdas = [0.01, 0.001, 1e-05, 1e-07, 1e-09, 0]
-    num_lines = 5
-    colors = [plt.cm.jet(i) for i in np.linspace(.5, 1, num_lines)]
-    # ax.set_prop_cycle('color', colors)
-
-    # for act_lambda in act_lambdas:
-    # main_exp_name = 'angular_integration/act_norm/' + f'{act_lambda}'
-
+    main_exp_name='angular_integration/hidden/25.6'
 
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
     if True:
@@ -993,60 +1025,42 @@ if __name__ == "__main__":
     for exp_i in range(10):
         exp = exp_list[exp_i]
         input_range = (-.5, .5)   
-        num_of_inputs = 21
 
         plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=T, which='post', input_length=input_length,
                                   plotpca=True, timepart='all', num_of_inputs=num_of_inputs,
                                   plot_from_to=plot_from_to, pca_from_to=pca_from_to,
                                   input_range=input_range)
         
-        input_range = (-.51, -.5)
-        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
-        trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
-                                                                                          T=T, input_length=input_length, which=which,
-                                                                                          pca_from_to=pca_from_to,
-                                                                                          num_of_inputs=num_of_inputs, input_range=input_range)
-        
+        #Vector field plotting
+        #Single direction
         x_lim = 1.4
         num_x_points = 21
-        plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=512, 
-                        num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
-                        num_x_points=num_x_points)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/vf_onedir_{which}_{exp_i}.pdf', bbox_inches="tight")
-        plt.show()
-
-        input_range = (-.5, .5)  
         num_of_inputs = 2
         wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
         trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
-                                                                                          T=T, input_length=input_length, which=which,
+                                                                                          T=input_length, input_length=input_length, which=which,
                                                                                           pca_from_to=pca_from_to,
                                                                                           num_of_inputs=num_of_inputs, input_range=input_range)
-        plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=512, 
+        plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=T, 
                         num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
                         num_x_points=num_x_points)
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/vf__bothdirs_{which}_{exp_i}.pdf', bbox_inches="tight")
         plt.show()
-    # dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
-    # net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
-    #           nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-    #           wi_init=wi, wrec_init=wrec, wo_init=wo, brec_init=brec, h0_init=h0, ML_RNN=training_kwargs['ml_rnn'])
         
-    #     task = angularintegration_task(T=12.8, dt=.1, sparsity=0.2)
-    #     # task = angularintegration_task(T=training_kwargs['T'], dt=training_kwargs['dt_task'], sparsity=training_kwargs['task_sparsity'])
-    #     input, target, mask, output, loss = run_net(net, task, batch_size=2**16, return_dynamics=False, h_init=h0)
-    #     #plot error over time
-    #     errors = np.linalg.norm(output-target, axis=(2))
-    #     if act_lambda==0:
-    #         label = 0
-    #     else:
-    #         label=r'$10^{%02d}$' %np.log10(act_lambda)
-    #     ax.plot(np.mean(errors,axis=0), label=label)
-    #     error = np.mean(errors)
-    #     print("Lambda: ", act_lambda, "Error: ", error)
-    # ax.legend()
-    # plt.savefig(parent_dir+"/experiments/angular_integration/act_norm/error.pdf")
-    
+        #Single direction
+        input_range = (-.51, -.5)
+        num_of_inputs = 21
+        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(main_exp_name, model_name, exp)
+        trajectories, traj_pca, start, target, output, input_proj, pca = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+                                                                                          T=input_length, input_length=input_length, which=which,
+                                                                                          pca_from_to=pca_from_to,
+                                                                                          num_of_inputs=num_of_inputs, input_range=input_range)
+
+        plot_average_vf(trajectories, wi, wrec, brec, wo, exp_i, input_length=T, 
+                        num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
+                        num_x_points=num_x_points)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/vf_onedir_{which}_{exp_i}.pdf', bbox_inches="tight")
+        plt.show()
     
     # fig, ax = plt.subplots(1, 1, figsize=(3, 3));
     # for i in range(10):
