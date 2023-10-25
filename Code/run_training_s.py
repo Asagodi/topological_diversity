@@ -29,6 +29,7 @@ from models import train, mse_loss_masked, get_optimizer, get_loss_function, get
 from network_initialization import qpta_rec_weights
 from tasks import angularintegration_task, eyeblink_task, poisson_clicks_task
 from qpta_initializers import _qpta_tanh_hh
+from plot_losses import get_params_exp
 
 def makedirs(dirname):
     if not os.path.exists(dirname):
@@ -58,7 +59,7 @@ def run_experiment(parameter_file_name, main_exp_name='', sub_exp_name='', model
     for trial in tqdm.tqdm(range(trials)):
         run_single_training(parameter_file_name, exp_name= main_exp_name +'/'+ sub_exp_name +'/'+ model_name, trial=trial, training_kwargs=training_kwargs)
 
-def run_single_training(parameter_file_name, exp_name='', trial=None, save=True, training_kwargs={}):
+def run_single_training(parameter_file_name, exp_name='', trial=None, save=True, params_folder='', training_kwargs={}):
     
     timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
     
@@ -115,6 +116,9 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
               scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
               verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
     else:
+        if training_kwargs['initialization_type'] == 'trained':
+            wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(training_kwargs['params_folder'])
+            
         if training_kwargs['initialization_type'] == 'gain':
             wrec_init, brec_init = None, None
             
@@ -336,7 +340,7 @@ if __name__ == "__main__":
     # size_experiment(main_exp_name='angular_integration', sub_exp_name='lambda')
     
     main_exp_name = 'angular_integration'
-    sub_exp_name  = 'act_norm'
+    sub_exp_name  = 'act_reg_from10'
 
     training_kwargs['stop_patience'] = 100
     training_kwargs['stop_min_delta'] = 0
@@ -351,10 +355,11 @@ if __name__ == "__main__":
     # training_kwargs['clip_gradient'] = 
     training_kwargs['task'] = 'angular_integration'
     # training_kwargs['nonlinearity'] = 'relu'
-    training_kwargs['act_norm_lambda'] = 1e-7
+    training_kwargs['act_norm_lambda'] = 1e-8
     
     sub_exp_name += f"/{training_kwargs['act_norm_lambda']}"
 
+    training_kwargs['initialization_type'] = 'trained'
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
     training_kwargs['N_rec'] = 200
     training_kwargs['batch_size'] = 1024
@@ -375,6 +380,7 @@ if __name__ == "__main__":
     training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
     training_kwargs['scheduler_gamma'] = gammas[model_i]
 
+    training_kwargs['params_folder'] = parent_dir = '/experiments/angular_integration/act_reg_from/10/high'
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
                                                           model_name=model_name, trials=1, training_kwargs=training_kwargs)
