@@ -52,7 +52,8 @@ def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsit
 
 def run_experiment(parameter_file_name, main_exp_name='', sub_exp_name='', model_name='', trials=10, training_kwargs={}):
     experiment_folder = parent_dir + '/experiments/' + main_exp_name +'/'+ sub_exp_name +'/'+ model_name
-    print(experiment_folder)
+    print(parent_dir, main_exp_name, sub_exp_name)
+    print("EXPFOLDER", experiment_folder)
     
     makedirs(experiment_folder) 
     
@@ -62,6 +63,9 @@ def run_experiment(parameter_file_name, main_exp_name='', sub_exp_name='', model
 def run_single_training(parameter_file_name, exp_name='', trial=None, save=True, params_folder='', training_kwargs={}):
     
     timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
+    if training_kwargs['fix_seed']:
+        np.random.seed(trial)
+        torch.manual_seed(trial)
     
     parameter_path = parent_dir + '/experiments/' + parameter_file_name
     if not training_kwargs['record_step']:
@@ -116,10 +120,12 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
               scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
               verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
     else:
+        wi_init, wo_init, h0_init = None, None, None
+        
         if training_kwargs['initialization_type'] == 'trained':
-            wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(training_kwargs['network_folder'])
+            wi_init, wrec_init, wo_init, brec_init, h0_init, _ = get_params_exp(training_kwargs['network_folder'])
             
-        if training_kwargs['initialization_type'] == 'gain':
+        elif training_kwargs['initialization_type'] == 'gain':
             wrec_init, brec_init = None, None
             
         elif training_kwargs['initialization_type'] == 'qpta':
@@ -136,14 +142,15 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         else:
             raise Exception("Recurrent weight initialization not known.")
             
+        
         net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'], g_in=training_kwargs['g_in'],
                   nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-                  wi_init=None, wrec_init=wrec_init, wo_init=None, brec_init=brec_init, h0_init=None, ML_RNN=training_kwargs['ml_rnn'])
+                  wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=training_kwargs['ml_rnn'])
 
         result = train(net, task=task, data=data, n_epochs=training_kwargs['n_epochs'],
               batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
               clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], h_init=None,
-              loss_function=training_kwargs['loss_function'], act_norm_lambda=training_kwargs['act_norm_lambda'],
+              loss_function=training_kwargs['loss_function'], act_reg_lambda=training_kwargs['act_reg_lambda'],
               optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'],
               adam_betas=(training_kwargs['adam_beta1'],training_kwargs['adam_beta2']), adam_eps=1e-8, #optimizers 
               scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
@@ -345,7 +352,7 @@ if __name__ == "__main__":
     training_kwargs['stop_patience'] = 100
     training_kwargs['stop_min_delta'] = 0
     training_kwargs['last_mses'] = False
-
+    training_kwargs['fix_seed'] = True
 
     model_i, model_name = 2, 'high'
     # model_i, model_name = 3, 'ortho'
@@ -355,11 +362,10 @@ if __name__ == "__main__":
     # training_kwargs['clip_gradient'] = 
     training_kwargs['task'] = 'angular_integration'
     # training_kwargs['nonlinearity'] = 'relu'
-    training_kwargs['act_norm_lambda'] = 0
+    training_kwargs['act_reg_lambda'] = 0
     
-    sub_exp_name += f"/{training_kwargs['act_norm_lambda']}"
+    sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
 
-    training_kwargs['initialization_type'] = 'trained'
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
     training_kwargs['N_rec'] = 200
     training_kwargs['batch_size'] = 1024
@@ -368,19 +374,19 @@ if __name__ == "__main__":
     training_kwargs['g_in'] = 14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
     training_kwargs['learning_rate'] = 1e-3
-    training_kwargs['n_epochs'] = 50
+    training_kwargs['n_epochs'] = 5000
     training_kwargs['T'] = 12.8
     training_kwargs['dt_rnn'] = .1
     training_kwargs['adam_beta1'] = 0.9
     training_kwargs['adam_beta2'] = 0.99
     training_kwargs['network_type'] = network_types[model_i]
-    training_kwargs['initialization_type'] = initialization_type_list[model_i]
+    training_kwargs['initialization_type'] = 'trained' #initialization_type_list[model_i]
     training_kwargs['loss_function'] = loss_functions[model_i]
     training_kwargs['rnn_init_gain'] = g_list[model_i]        ##########
     training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
     training_kwargs['scheduler_gamma'] = gammas[model_i]
 
-    training_kwargs['network_folder'] = parent_dir = '/experiments/angular_integration/act_reg_from/.1/high'
+    training_kwargs['network_folder'] = parent_dir + '/experiments/angular_integration/act_reg_from/10/high'
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
                                                           model_name=model_name, trials=1, training_kwargs=training_kwargs)
