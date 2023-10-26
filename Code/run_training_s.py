@@ -363,7 +363,6 @@ if __name__ == "__main__":
     training_kwargs['task'] = 'angular_integration'
     # training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['act_reg_lambda'] = 0
-    
     sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
 
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
