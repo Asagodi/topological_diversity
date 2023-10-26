@@ -460,7 +460,7 @@ class GRU(nn.Module):
 
 
 def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False, record_step=1, h_init=None,
-          loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_norm_lambda=0.,
+          loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_reg_lambda=0.,
           optimizer='sgd', momentum=0, weight_decay=.0, adam_betas=(0.9, 0.999), adam_eps=1e-8, #optimizers 
           scheduler=None, scheduler_step_size=100, scheduler_gamma=0.3, 
           stop_patience=10, stop_min_delta=0,
@@ -585,12 +585,15 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
 
             
             act_norm = 0.
-            if act_norm_lambda != 0.: 
+            if act_reg_lambda != 0.: 
+                # trajectories.detach()
                 for t_id in range(trajectories.shape[1]):  #all states through time
-                    act_norm += torch.mean(torch.linalg.vector_norm(trajectories[:,t_id,:], dim=1))
+                    h = trajectories[:,t_id,:]
+                    h.detach()
+                    act_norm += torch.mean(torch.linalg.vector_norm(h, dim=1))
                 act_norm /= trajectories.shape[1]
                 # print(act_norm)
-                loss += act_norm_lambda*act_norm
+                loss += act_reg_lambda*act_norm
             
             # Gradient descent
             loss.backward()
