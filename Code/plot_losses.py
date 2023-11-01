@@ -39,11 +39,19 @@ def makedirs(dirname):
         os.makedirs(dirname)
         
         
-def load_net_from_weights(weights, dt=.1):
-    wi_init, wrec_init, wo_init, brec_init, h0_init = weights
-    dims=(wi_init.shape[0],wi_init.shape[1],wo_init.shape[1])
-    net = RNN(dims=dims, dt=dt,
-              wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init)
+# def load_net_from_weights(weights, dt=.1):
+#     wi_init, wrec_init, wo_init, brec_init, h0_init = weights
+#     dims=(wi_init.shape[0],wi_init.shape[1],wo_init.shape[1])
+#     net = RNN(dims=dims, dt=dt,
+#               wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init)
+#     return net
+
+def load_net_from_weights(params_folder, exp_i):
+    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i=exp_i)
+    dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
+    net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
+              nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
+              wi_init=wi, wrec_init=wrec, wo_init=wo, brec_init=brec, h0_init=h0, ML_RNN=training_kwargs['ml_rnn'])
     return net
     
 def plot_io_net(net, task, ax=None, ax2=None):
@@ -518,8 +526,108 @@ def identify_limit_cycle(time_series, tol=1e-6):
         return False, mind
     
 
-def plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=128, which='post',  hidden_i=0, input_length=10, timepart='all',  num_of_inputs=51, plot_from_to=(0,None),
-                     pca_from_to=(0,None), input_range=(-3,3), axes=None):
+def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
+                                    plot_asymp=False, limcyctol=1e-2, mindtol=1e-4, fxd_points = None, ops_fxd_points=None, ax=None):
+    if not ax:
+        fig, ax = plt.subplots(1, 1, figsize=(3, 3))
+    
+    norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
+    norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
+    cmap = cmx.get_cmap("coolwarm")
+    norm2 = mpl.colors.Normalize(-np.pi, np.pi)
+    cmap2 = plt.get_cmap('hsv')
+    output = np.dot(traj, wo)
+    for trial_i in range(traj.shape[0]):
+        ax.plot(traj_pca[trial_i,:,0], traj_pca[trial_i,:,1], color=cmap(norm[trial_i]))
+        if plot_asymp:
+            target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
+            idx, mind = identify_limit_cycle(traj[trial_i,:,:], tol=limcyctol) #find recurrence
+            if idx:
+                ax.plot(traj_pca[trial_i,idx:,0], traj_pca[trial_i,idx:,1], '-', linewidth=3, color=cmap2(norm2(target_angle)), zorder=100)
+                
+                if mind<mindtol:
+                    ax.scatter(traj_pca[trial_i,-1,0], traj_pca[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=110)
+    
+    ax.set_axis_off()
+    if np.any(fxd_points):
+        pca_fxd_points = pca.transform(fxd_points)
+        pca_ops_fxd_points = pca.transform(ops_fxd_points)
+        ax.scatter(pca_fxd_points[:,0], pca_fxd_points[:,1], marker='s', color='k',     alpha=.5, zorder=101)
+        ax.scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1],  marker='x', color='k', alpha=.5, zorder=101)
+
+        
+def plot_input_driven_trajectory_3d(traj, input_length,
+                                    fxd_points=None, ops_fxd_points=None,
+                                    elev=20., azim=-35, roll=0):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d")
+    norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
+    norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
+    cmap = cmx.get_cmap("coolwarm")
+    for trial_i in range(traj.shape[0]):
+        ax.plot(traj[trial_i,:input_length,0], traj[trial_i,:input_length,1], zs=traj[trial_i,:input_length,2],
+                zdir='z', color=cmap(norm[trial_i]))
+        ax.plot(traj[trial_i,input_length:,0], traj[trial_i,input_length:,1], zs=traj[trial_i,input_length:,2],
+                linestyle='--', zdir='z', color=cmap(norm[trial_i]))
+
+    if np.any(fxd_points):
+        pca_fxd_points = pca.transform(fxd_points)
+        pca_ops_fxd_points = pca.transform(ops_fxd_points)
+        ax.scatter(pca_fxd_points[:,0], pca_fxd_points[:,1], pca_fxd_points[:,2],
+                   marker='s', color='k',     alpha=.5, zorder=101)
+        ax.scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1], pca_ops_fxd_points[:,2],
+                   marker='x', color='k', alpha=.5, zorder=101)
+
+    ax.view_init(elev=elev, azim=azim, roll=roll)
+    ax.set_xlabel("PC1")
+    ax.set_ylabel("PC2")
+    ax.set_zlabel("PC3")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    
+def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
+                           fxd_points=None, ops_fxd_points=None,
+                           plot_asymp=False, limcyctol=1e-2, mindtol=1e-4, ax=None):
+    if not ax:
+        fig, ax = plt.subplots(1, 1, figsize=(3, 3))
+
+    norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
+    norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
+    cmap = cmx.get_cmap("coolwarm")
+    norm2 = mpl.colors.Normalize(-np.pi, np.pi)
+    cmap2 = plt.get_cmap('hsv')
+    x = np.linspace(-np.pi, np.pi, 1000)
+    # axes[1].plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
+    ax.scatter(np.cos(x), np.sin(x), color=cmap2(norm2(x)), alpha=.1, s=5, zorder=100) #ring
+    
+    output = np.dot(traj, wo)
+    for trial_i in range(traj.shape[0]):
+        if plot_traj:
+            ax.plot(output[trial_i,0,0], output[trial_i,0,1], '.', c='k', zorder=100) #starting point
+            ax.plot(output[trial_i,:input_length,0], output[trial_i,:input_length,1], '-', color=cmap(norm[trial_i]), alpha=.5) #all trajectories
+            ax.plot(output[trial_i,input_length:,0], output[trial_i,input_length:,1], '--', color=cmap(norm[trial_i]), alpha=.5) #all trajectories
+    
+        if plot_asymp:
+            target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
+            idx, mind = identify_limit_cycle(traj[trial_i,:,:], tol=limcyctol) #find recurrence
+            if idx:
+                ax.plot(output[trial_i,idx:,0], output[trial_i,idx:,1], '-', linewidth=3, color=cmap2(norm2(target_angle)), zorder=100)
+    
+                if mind<mindtol:
+                    ax.scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=110)
+    if np.any(fxd_points):
+        proj_fxd_points = np.dot(fxd_points, wo)
+        proj_ops_fxd_points = np.dot(ops_fxd_points, wo)
+        ax.scatter(proj_fxd_points[:,0], proj_fxd_points[:,1],  marker='s', color='k', alpha=.5, zorder=101)    
+        ax.scatter(proj_ops_fxd_points[:,0], proj_ops_fxd_points[:,1],  marker='x', color='k', alpha=.5, zorder=101)    
+
+    ax.set_axis_off()
+        
+def plot_trajs_model(main_exp_name, model_name, exp_i, T=128, which='post',  hidden_i=0,
+                     input_length=10, timepart='all',  num_of_inputs=51, plot_from_to=(0,None),
+                     pca_from_to=(0,None), input_range=(-3,3), axes=None, limcyctol=1e-2,
+                     slowpointtol=1e-8, slowpointmethod='L-BFGS-B'):
     pca_before_t, pca_after_t = pca_from_to
     after_t, before_t = plot_from_to
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
@@ -528,7 +636,7 @@ def plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=128, which='post',
     norm2 = mpl.colors.Normalize(-np.pi, np.pi)
     cmap2 = plt.get_cmap('hsv')
     params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
-    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder)
+    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i=exp_i)
     
     trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
                                                                        T=T, which=which,
@@ -539,73 +647,86 @@ def plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=128, which='post',
     if not axes:
         # fig, axes = plt.subplots(1, 3, figsize=(9, 3), sharex=False, sharey=False)
         # fig, axes = plt.subplots(1, 4, figsize=(12, 3), sharex=False, sharey=False)
-        # fig, axes = plt.subplots(1, 5, figsize=(15, 3), sharex=False, sharey=False)
-        fig, axes = plt.subplots(1, 6, figsize=(18, 3), sharex=False, sharey=False)
-
-        
-    for trial_i in range(trajectories.shape[0]):
-        axes[4].plot(traj_pca[trial_i,:,0], traj_pca[trial_i,:,1], color=cmap(norm[trial_i]))
+        fig, axes = plt.subplots(1, 5, figsize=(15, 3), sharex=False, sharey=False)
+        # fig, axes = plt.subplots(1, 6, figsize=(18, 3), sharex=False, sharey=False)
 
     for trial_i in range(trajectories.shape[0]):
+        axes[0].plot(traj_pca[trial_i,:,0], traj_pca[trial_i,:,1], color=cmap(norm[trial_i]))
+
         target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
-        axes[1].plot(output[trial_i,0,0], output[trial_i,0,1], '.', c='k', zorder=100) #starting point
-        axes[1].plot(output[trial_i,:,0], output[trial_i,:,1], '-', alpha=.25) #all trajectories
-        idx, mind = identify_limit_cycle(trajectories[trial_i,:,:], tol=1e-2) #
+        axes[2].plot(output[trial_i,0,0], output[trial_i,0,1], '.', c='k', zorder=100) #starting point
+        axes[2].plot(output[trial_i,:input_length,0], output[trial_i,:input_length,1], '-', color=cmap(norm[trial_i]), alpha=.25) #all trajectories
+        axes[2].plot(output[trial_i,input_length:,0], output[trial_i,input_length:,1], '--', color=cmap(norm[trial_i]), alpha=.25) #all trajectories
+        idx, mind = identify_limit_cycle(trajectories[trial_i,:,:], tol=limcyctol) #find recurrence
         if idx:
-            axes[0].plot(traj_pca[trial_i,idx:,0], traj_pca[trial_i,idx:,1], '-', linewidth=3, color=cmap2(norm2(target_angle)))
-            axes[1].plot(output[trial_i,idx:,0], output[trial_i,idx:,1], '-', linewidth=3, color=cmap2(norm2(target_angle)), zorder=100)
-            axes[2].plot(input_proj[trial_i,after_t:before_t,0], '-', color=cmap2(norm2(target_angle)))
+            axes[1].plot(traj_pca[trial_i,idx:,0], traj_pca[trial_i,idx:,1], '-', linewidth=3, color=cmap2(norm2(target_angle)), zorder=100)
+            axes[2].plot(output[trial_i,idx:,0], output[trial_i,idx:,1], '-', linewidth=3, color=cmap2(norm2(target_angle)), zorder=100)
+            axes[3].plot(input_proj[trial_i,after_t:before_t,0], '-', color=cmap2(norm2(target_angle)))
 
             if mind<1e-4:
-                axes[0].scatter(traj_pca[trial_i,-1,0], traj_pca[trial_i,-1,1], color=cmap2(norm2(target_angle)))
-                axes[1].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=110)
+                axes[1].scatter(traj_pca[trial_i,-1,0], traj_pca[trial_i,-1,1],  marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=110)
+                axes[2].scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=110)
 
-    axes[0].set_axis_off()
-    axes[0].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
+    axes[1].set_axis_off()
+    axes[1].scatter(start[0], start[1], marker='.', s=100, color='k', zorder=100)
         
-    traj = trajectories[:,:input_length:50,:].reshape((-1,training_kwargs['N_rec']))
-    fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], trajectory=traj, tol=1e-8)
+    traj = trajectories[:,:input_length:1500,:].reshape((-1,training_kwargs['N_rec']))
+    print('Finding slow points in hidden space')
+    fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], trajectory=traj, tol=slowpointtol, method=slowpointmethod)
+    print('Finding slow points in output space')
+    ops_fxd_points, speeds = find_slow_points(wrec, brec, wo=wo, dt=training_kwargs['dt_rnn'], trajectory=traj,
+                                              outputspace=True, tol=slowpointtol, method=slowpointmethod)
+
     print(fxd_points.shape)
     if fxd_points.shape[0]>0:
         pca_fxd_points = pca.transform(fxd_points)
-        axes[0].scatter(pca_fxd_points[:,0], pca_fxd_points[:,1], color='k', alpha=.5, zorder=101)    
-        axes[4].scatter(pca_fxd_points[:,0], pca_fxd_points[:,1], color='k', alpha=.5, zorder=101)    
-
+        pca_ops_fxd_points = pca.transform(ops_fxd_points)
+        axes[1].scatter(pca_fxd_points[:,0], pca_fxd_points[:,1], marker='s', color='k', alpha=.5, zorder=101)    
+        axes[0].scatter(pca_fxd_points[:,0], pca_fxd_points[:,1],  marker='s', color='k', alpha=.5, zorder=101)    
+        axes[1].scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1],  marker='x', color='k', alpha=.5, zorder=101)    
+        axes[0].scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1],  marker='x', color='k', alpha=.5, zorder=101)    
         proj_fxd_points = np.dot(fxd_points, wo)
-        axes[1].scatter(proj_fxd_points[:,0], proj_fxd_points[:,1], color='k', alpha=.5, zorder=101)    
+        proj_ops_fxd_points = np.dot(ops_fxd_points, wo)
+        axes[2].scatter(proj_fxd_points[:,0], proj_fxd_points[:,1],  marker='s', color='k', alpha=.5, zorder=101)    
+        axes[2].scatter(proj_ops_fxd_points[:,0], proj_ops_fxd_points[:,1],  marker='x', color='k', alpha=.5, zorder=101)    
+
     
     x = np.linspace(-np.pi, np.pi, 1000)
     # axes[1].plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
-    axes[1].scatter(np.cos(x), np.sin(x), color=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1) #ring
+    axes[2].scatter(np.cos(x), np.sin(x), color=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1) #ring
 
     #Speed
     x_lim = np.max(np.abs(output.numpy()))
     num_x_points = 21
-    output_logspeeds, all_logspeeds = average_logspeed(wrec, wo, brec, trajectories[:,input_length:,:], x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
-    im=axes[3].imshow(np.rot90(output_logspeeds), cmap='inferno')
-    cbar = fig.colorbar(im, ax=axes[3])
-    cbar.set_label("log(speed)")
+    # output_logspeeds, all_logspeeds = average_logspeed(wrec, wo, brec, trajectories[:,input_length:,:], x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
+    # im=axes[4].imshow(np.rot90(output_logspeeds), cmap='inferno')
+    # cbar = fig.colorbar(im, ax=axes[3])
+    # cbar.set_label("log(speed)")
     
     #Vector field
-    plot_average_vf(trajectories[:1,:input_length], wi, wrec, brec, wo, input_length=input_length, 
+    plot_average_vf(trajectories[:1,:input_length,:], wi, wrec, brec, wo, input_length=input_length, 
                     num_of_inputs=num_of_inputs, input_range=(input_range[0],input_range[0]), x_lim=x_lim,
-                    num_x_points=num_x_points, color='red', ax=axes[5])
+                    num_x_points=num_x_points, color='red', ax=axes[4], change_from_outtraj=False)
     
-    plot_average_vf(trajectories[-1:,:input_length], wi, wrec, brec, wo, input_length=input_length, 
-                    num_of_inputs=num_of_inputs, input_range=(input_range[-1],input_range[-1]), x_lim=x_lim,
-                    num_x_points=num_x_points, color='blue', ax=axes[5])
+    plot_average_vf(trajectories[-1:,:input_length,:], wi, wrec, brec, wo, input_length=input_length, 
+                    num_of_inputs=num_of_inputs, input_range=(input_range[1],input_range[1]), x_lim=x_lim,
+                    num_x_points=num_x_points, color='blue', ax=axes[4], change_from_outtraj=False)
+    axes[2].set_xlim([-x_lim, x_lim])
+    axes[2].set_ylim([-x_lim, x_lim])
 
+    axes[0].set_axis_off()
     axes[1].set_axis_off()
-    axes[2].set_xticks([])
-    axes[3].set_axis_off()
+    axes[2].set_axis_off()
+    axes[3].set_xticks([])
     axes[4].set_axis_off()
 
     plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}_{exp_i}.pdf', bbox_inches="tight")
     plt.show()
     
+    
 
 def plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=10,
-                     num_of_inputs=51, input_range=(-3,3),
+                     num_of_inputs=51, input_range=(-3,3), change_from_outtraj=False,
                      ax=None, x_lim=1.2, num_x_points=21, color='k'):
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3), sharex=False, sharey=False)
@@ -615,15 +736,23 @@ def plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=10,
     
     # Generate all grid points
     grid_points = np.array([(np.round(x,5), np.round(y,5)) for x in x_values for y in y_values])+(2*x_lim)/num_x_points
-    average_vf = np.empty((num_x_points, num_x_points, 2))
-    if input_length==0:
+    average_vf = np.zeros((num_x_points, num_x_points, 2))
+    if change_from_outtraj:
+        for trajectory in trajectories:
+            outtrajectories = np.dot(trajectory, wo)    
+            average_vf += average_output_changevectors(wi, wrec, brec, wo, 0, outtrajectories, x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
+
+    elif input_length==0:
         for trajectory in trajectories:
             average_vf += average_input_vectorfield(wi, wrec, brec, wo, 0, trajectory, x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
     else:
         for I, trajectory in zip(np.linspace(input_range[0], input_range[1], num=num_of_inputs, endpoint=True), trajectories[:,:input_length,:]):
+            # print("I", I)
             average_vf += average_input_vectorfield(wi, wrec, brec, wo, I, trajectory, x_min=-x_lim, x_max=x_lim, num_x_points=num_x_points)
-
+    
+    average_vf = np.round(average_vf, 2)
     average_vf /= num_of_inputs
+    # print(average_vf)
     theta = np.radians(90)
     c, s = np.cos(theta), np.sin(theta)
     R = np.array(((c, -s), (s, c)))
@@ -663,14 +792,14 @@ def get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, T=128, which='post
     pca.fit(trajectories.reshape((-1,training_kwargs['N_rec'])))
     explained_variance = pca.explained_variance_ratio_.cumsum()
 
-    pca = PCA(n_components=2)   
+    # pca = PCA(n_components=2)   
     trajectories_tofit = trajectories[:,pca_after_t:pca_before_t,:].numpy().reshape((-1,training_kwargs['N_rec']))
     pca.fit(trajectories_tofit)
-    traj_pca = pca.transform(trajectories.numpy().reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,2))
+    traj_pca = pca.transform(trajectories.numpy().reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,10))
     start= pca.transform(h0.reshape((1,-1))).T
     traj_pca = traj_pca[:,:,:]
 
-    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7])
+    # makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7])
     return trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance
 
 def plot_output_vs_target(target, output, ax=None):
@@ -693,7 +822,27 @@ def plot_output_vs_target(target, output, ax=None):
     ax.set_axis_off()
     plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/output_vs_target.pdf', bbox_inches="tight")
 
-def average_input_vectorfield(wi, wrec, brec, wo, I, trajectories, x_min=-2, x_max=2, num_x_points=11):
+def average_output_changevectors(wi, wrec, brec, wo, I, trajectories, x_min=-2, x_max=2, num_x_points=11):
+    # Create a regular grid
+    x_values = np.linspace(x_min, x_max, num_x_points)
+    y_values = np.linspace(x_min, x_max, num_x_points)
+    
+    # Generate all grid points
+    # grid_points = [(np.round(x,5), np.round(y,5)) for x in x_values for y in y_values]
+    average_vector_field = np.zeros((num_x_points, num_x_points, 2))
+    bin_counts = np.zeros((num_x_points, num_x_points))
+     
+    for i,x in enumerate(trajectories[:-1,:]):
+        cell_containing_point = find_grid_cell(x, x_values, y_values, num_x_points=num_x_points)
+        full_vf_at_x = x-trajectories[i+1,:]
+        average_vector_field[cell_containing_point] += full_vf_at_x.squeeze()
+        bin_counts[cell_containing_point] += 1
+    
+    avf = average_vector_field/bin_counts.reshape((num_x_points,num_x_points,1))
+    avf = np.where(avf==np.nan, 0, avf)
+    return avf
+
+def average_input_vectorfield(wi, wrec, brec, wo, I, trajectory, x_min=-2, x_max=2, num_x_points=11):
     """
     Calculates average over x for  g(x,I) = tanh(Wx+b+W_inI) - tanh(Wx+b)
     for a fixed I
@@ -706,20 +855,24 @@ def average_input_vectorfield(wi, wrec, brec, wo, I, trajectories, x_min=-2, x_m
     # Generate all grid points
     # grid_points = [(np.round(x,5), np.round(y,5)) for x in x_values for y in y_values]
     average_vector_field = np.zeros((num_x_points, num_x_points, 2))
-    bin_counts = np.zeros((num_x_points, num_x_points))
-     
-    for x in trajectories:
+    bin_counts = np.ones((num_x_points, num_x_points))
+
+    for t, x in enumerate(trajectory):
         target_point = np.dot(wo.T, x)
+
         cell_containing_point = find_grid_cell(target_point, x_values, y_values, num_x_points=num_x_points)
+
         if I==0:
             full_vf_at_x = np.tanh(np.dot(wrec, x)+brec).squeeze()
         else:
             full_vf_at_x = input_vectorfield(x, wi, wrec, brec, I).squeeze()
+        # print(t, target_point, cell_containing_point, np.dot(wo.T, full_vf_at_x).squeeze())
+
         average_vector_field[cell_containing_point] += np.dot(wo.T, full_vf_at_x).squeeze()
         bin_counts[cell_containing_point] += 1
 
     avf = average_vector_field/bin_counts.reshape((num_x_points,num_x_points,1))
-    avf = np.where(avf==np.nan, 0, avf)
+    # avf = np.where(np.isnan(avf), 0, avf)
     return avf
 
 
@@ -943,24 +1096,41 @@ def tanh_ode(t,x,wrec, brec):
 def tanh_rnn_speed(x, wrec, brec, dt):
     return np.linalg.norm(tanh_step(x, wrec, brec, dt))**2
 
+def tanh_rnn_speed_in_outputspace(x, wrec, brec, wo, dt):
+    return np.linalg.norm(np.dot(wo.T, tanh_step(x, wrec, brec, dt)))**2
+
 # def tanh_rnn_speed(x, wrec, brec):
 #     f_x = tanh_ode(0,x,wrec, brec)
 #     return np.linalg.norm(f_x)
+
+def tanh_jacobian(x, wrec, brec, dt, mlrnn=True):
+      # = 2*tanh_step(x, wrec, brec, dt)
+    if mlrnn:
+        return np.sum(dt*(-np.eye(wrec.shape[0]) + np.multiply(wrec,1/np.cosh(np.dot(wrec,x)+brec)**2)), axis=1)
+    else:
+        return dt*(-np.eye(wrec.shape[0]) + np.multiply(wrec,1/np.cosh(x)**2))
         
-def find_slow_points(wrec, brec, dt, trajectory=None, n_points=100, tol=1e-9):
+def find_slow_points(wrec, brec, wo=None, dt=1, outputspace=False, trajectory=None, n_points=100,
+                     method='L-BFGS-B', tol=1e-9):
     N = wrec.shape[0]
     fxd_points = []
     speeds = []
     if not np.any(trajectory.numpy()):
         for p_i in tqdm(range(n_points)):    
             x0 = np.random.uniform(-1,1,N)
-            res = minimize(tanh_rnn_speed, x0, method='L-BFGS-B', tol=tol, args=tuple([wrec, brec, dt]))
+            if outputspace:
+                res = minimize(tanh_rnn_speed_in_outputspace, x0, method=method, tol=tol, args=tuple([wrec, brec, wo, dt]))
+            else:
+                res = minimize(tanh_rnn_speed, x0, method=method, tol=tol, args=tuple([wrec, brec, dt]))
             if res.success: # and res.fun<tol: 
                 fxd_points.append(res.x)
                 speeds.append(res.fun)
     else:
-        for x0 in trajectory:
-            res = minimize(tanh_rnn_speed, x0, method='L-BFGS-B', tol=tol, args=tuple([wrec, brec, dt]))
+        for x0 in tqdm(trajectory):
+            if outputspace:
+                res = minimize(tanh_rnn_speed_in_outputspace, x0, method=method, tol=tol, args=tuple([wrec, brec, wo, dt])) #jac=tanh_jacobian
+            else:
+                res = minimize(tanh_rnn_speed, x0, method=method, tol=tol,  args=tuple([wrec, brec, dt]))
             if res.success: # and res.fun<tol: 
                 fxd_points.append(res.x)
                 speeds.append(res.fun)
@@ -968,11 +1138,11 @@ def find_slow_points(wrec, brec, dt, trajectory=None, n_points=100, tol=1e-9):
     return np.array(fxd_points), np.array(speeds)
 
 
-def plot_error_over_time(main_exp_name, model_name, exp, T=None, sparsity=0.2, batch_size=2**8, ax=None, label=None):
+def plot_error_over_time(params_folder, exp_i, T=None, sparsity=0.2, batch_size=2**8, ax=None, label=None):
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3));
     params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
-    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder)
+    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i=exp_i)
 
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
@@ -985,7 +1155,7 @@ def plot_error_over_time(main_exp_name, model_name, exp, T=None, sparsity=0.2, b
     trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
                                                                                       T=T, input_length=T, which=which,
                                                                                       pca_from_to=pca_from_to,
-                                                                                      num_of_inputs=num_of_inputs, input_range=input_range)
+                                                                                      num_of_inputs=num_of_inputs, input_range=(-.5,.5))
     #plot error over time
     errors = np.linalg.norm(output-target, axis=(2))
     ax.plot(np.mean(errors,axis=0), label=label)
@@ -1012,7 +1182,7 @@ def plot_error_over_time_list(main_exp_name, model_name, T=None, batch_size=2**8
     plt.legend(title='Reg. param.', bbox_to_anchor=(1., 1.))
     plt.savefig(parent_dir+f"/experiments/angular_integration/act_norm/error_T{T}.pdf", bbox_inches="tight")
 
-def plot_explained_variances(main_exp_name, model_name, T=None, batch_size=2**8, 
+def plot_explained_variances(main_exp_name, model_name, input_length, batch_size=2**8, 
                               act_lambdas = [0.01, 0.001, 1e-05, 1e-07, 1e-09, 0]):
     colors = [plt.cm.jet(i) for i in np.linspace(.5, 1, len(act_lambdas))]
     fig, ax = plt.subplots(1, 1, figsize=(3, 3));
@@ -1020,29 +1190,29 @@ def plot_explained_variances(main_exp_name, model_name, T=None, batch_size=2**8,
     for act_lambda in tqdm(act_lambdas):
         np.random.seed(0)
         main_exp_name_an = main_exp_name + f'/{act_lambda}'
+        print(parent_dir+"/experiments/" + main_exp_name_an +'/'+ model_name + "/result*")
         exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name_an +'/'+ model_name + "/result*")
         exp = exp_list[0]
-        # print(main_exp_name_an)
         if act_lambda==0:
             label = 0
         else:
             label=r'$10^{%02d}$' %np.log10(act_lambda)
         # explained_variance
-        params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
-        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder)
+        params_folder = parent_dir+'/experiments/' + main_exp_name_an +'/'+ model_name
+        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i=0)
         trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
                                                                                           T=2*input_length, input_length=input_length, which=which,
                                                                                           pca_from_to=pca_from_to,
-                                                                                          num_of_inputs=num_of_inputs, input_range=input_range)
+                                                                                          num_of_inputs=num_of_inputs, input_range=(-.5,.5))
         ax.plot(explained_variance, label=label)
         ax.set_xlabel("Principal component")
         ax.set_ylabel("Explained variance")
         plt.legend(title='Reg. param.', bbox_to_anchor=(1., 1.))
         plt.savefig(parent_dir+"/experiments/angular_integration/act_norm/exp_vars.pdf", bbox_inches="tight")
 
-def plot_slowpoints(main_exp_name, model_name, exp):
+def plot_slowpoints(params_folder, exp_i):
     params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
-    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder)
+    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i=exp_i)
     trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
                                                                                       T=2*input_length, input_length=input_length, which=which,
                                                                                       pca_from_to=pca_from_to,
@@ -1085,44 +1255,72 @@ if __name__ == "__main__":
     # T = 20
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
-    model_name = 'high'
+    model_name = ''
     T = 128*32
-    num_of_inputs = 21
-    input_length = int(128)*2
+    num_of_inputs = 51
+    input_length = int(128)*4
     which='post'
-    plot_from_to = (T-4*input_length,T)
+    plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,T)
 
     main_exp_name='angular_integration/hidden/51.2'
-    # main_exp_name='angular_integration/act_norm'
-    main_exp_name='angular_integration/act_norm/0'
-    main_exp_name='angular_integration/act_reg_from10/1e-07'
+    main_exp_name='angular_integration/N50'
 
-    
-    # plot_explained_variances(main_exp_name, model_name, T=None, batch_size=2**8, 
-    #                               act_lambdas = [0.01, 0.001, 1e-05, 1e-07, 1e-09, 0])
+    # main_exp_name='angular_integration/act_norm/0'
+    # main_exp_name='angular_integration/act_reg_from10'
+
+    # plot_explained_variances(main_exp_name, model_name, input_length=input_length, batch_size=2**8, 
+    #                               act_lambdas = [1e-05, 1e-07, 1e-09, 0])
 
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
     if True:
         exp_i = 0
-    
-    # for exp_i in range(10):
-        exp = exp_list[exp_i]   
-        input_range = (-.5, .5)   
-
-        plot_trajs_model(main_exp_name, model_name, exp, exp_i, T=T, which='post', input_length=input_length,
-                                  timepart='all', num_of_inputs=num_of_inputs,
-                                  plot_from_to=plot_from_to, pca_from_to=pca_from_to,
-                                  input_range=input_range)
         
-        #Vector field plotting
+    # for exp_i in range(10):
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
-        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder)
+        net =  load_net_from_weights(params_folder, exp_i)
+        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i)
+        exp = exp_list[exp_i]   
+        input_range = (-.25, .25)   
+        slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
+        
+        trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+                                                                                           T=T, input_length=input_length, which=which,
+                                                                                           pca_from_to=pca_from_to,
+         num_of_inputs=num_of_inputs, input_range=input_range)
+        
+        plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, ax=None)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_{which}_{exp_i}.pdf', bbox_inches="tight")
+        
+        plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, plot_asymp=True, ax=None);
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_{which}_{exp_i}.pdf', bbox_inches="tight")
+        
+        plot_input_driven_trajectory_3d(traj_pca, input_length, elev=45, azim=135)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
+        
+        traj = trajectories[:,:input_length:50,:].reshape((-1,training_kwargs['N_rec']));
+        slowpointtol=1e-15
+        fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], trajectory=traj, tol=slowpointtol, method=slowpointmethod)
+        
+        ops_fxd_points, speeds = find_slow_points(wrec, brec, wo=wo, dt=training_kwargs['dt_rnn'], trajectory=traj,
+                                                  outputspace=True, tol=slowpointtol, method=slowpointmethod)
+
+        plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, fxd_points=fxd_points, 
+                                        ops_fxd_points=ops_fxd_points, plot_asymp=True, ax=None);
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
+        # plot_trajs_model(main_exp_name, model_name, exp_i, T=T, which='post', input_length=input_length,
+        #                           timepart='all', num_of_inputs=num_of_inputs,
+        #                           plot_from_to=plot_from_to, pca_from_to=pca_from_to,
+        #                           input_range=input_range, slowpointtol=1e-15, slowpointmethod=slowpointmethod)
+        
+        # #Vector field plotting
+        # params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
+        # wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder)
 
         #Both directions
-        x_lim = 1.4
-        num_x_points = 21
-        num_of_inputs = 11
+        # x_lim = 1.4
+        # num_x_points = 21
+        # num_of_inputs = 11
         # input_range = (-.25,.25)
         # trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
         #                                                                                   T=2*input_length, input_length=input_length, which=which,
