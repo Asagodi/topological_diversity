@@ -532,6 +532,7 @@ def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
         fig, ax = plt.subplots(1, 1, figsize=(3, 3))
     
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
+    num_of_inputs = traj.shape[0]
     norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
     cmap = cmx.get_cmap("coolwarm")
     norm2 = mpl.colors.Normalize(-np.pi, np.pi)
@@ -1103,12 +1104,12 @@ def tanh_rnn_speed_in_outputspace(x, wrec, brec, wo, dt):
 #     f_x = tanh_ode(0,x,wrec, brec)
 #     return np.linalg.norm(f_x)
 
-def tanh_jacobian(x, wrec, brec, dt, mlrnn=True):
-      # = 2*tanh_step(x, wrec, brec, dt)
-    if mlrnn:
-        return np.sum(dt*(-np.eye(wrec.shape[0]) + np.multiply(wrec,1/np.cosh(np.dot(wrec,x)+brec)**2)), axis=1)
-    else:
-        return dt*(-np.eye(wrec.shape[0]) + np.multiply(wrec,1/np.cosh(x)**2))
+# def tanh_jacobian(x, wrec, brec, dt, mlrnn=True):
+#       # = 2*tanh_step(x, wrec, brec, dt)
+#     if mlrnn:
+#         return np.sum(dt*(-np.eye(wrec.shape[0]) + np.multiply(wrec,1/np.cosh(np.dot(wrec,x)+brec)**2)), axis=1)
+#     else:
+#         return dt*(-np.eye(wrec.shape[0]) + np.multiply(wrec,1/np.cosh(x)**2))
         
 def find_slow_points(wrec, brec, wo=None, dt=1, outputspace=False, trajectory=None, n_points=100,
                      method='L-BFGS-B', tol=1e-9):
@@ -1255,15 +1256,15 @@ if __name__ == "__main__":
     # T = 20
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
-    model_name = ''
     T = 128*32
     num_of_inputs = 51
-    input_length = int(128)*4
+    input_length = int(128)*2
     which='post'
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,T)
 
-    main_exp_name='angular_integration/hidden/51.2'
+    model_name = ''
+    main_exp_name='angular_integration/hidden/25.6'
     main_exp_name='angular_integration/N50'
 
     # main_exp_name='angular_integration/act_norm/0'
@@ -1275,19 +1276,18 @@ if __name__ == "__main__":
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
     if True:
         exp_i = 0
-        
     # for exp_i in range(10):
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
         net =  load_net_from_weights(params_folder, exp_i)
         wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i)
         exp = exp_list[exp_i]   
-        input_range = (-.25, .25)   
+        input_range = (-.5, .5)   
         slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
         
         trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
-                                                                                           T=T, input_length=input_length, which=which,
-                                                                                           pca_from_to=pca_from_to,
-         num_of_inputs=num_of_inputs, input_range=input_range)
+                                                                                            T=T, input_length=input_length, which=which,
+                                                                                            pca_from_to=pca_from_to,
+          num_of_inputs=num_of_inputs, input_range=input_range)
         
         plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, ax=None)
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_{which}_{exp_i}.pdf', bbox_inches="tight")
@@ -1298,16 +1298,16 @@ if __name__ == "__main__":
         plot_input_driven_trajectory_3d(traj_pca, input_length, elev=45, azim=135)
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
         
-        traj = trajectories[:,:input_length:50,:].reshape((-1,training_kwargs['N_rec']));
-        slowpointtol=1e-15
+        traj = trajectories[:,:input_length:20,:].reshape((-1,training_kwargs['N_rec']));
+        slowpointtol=1e-27
         fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], trajectory=traj, tol=slowpointtol, method=slowpointmethod)
         
-        ops_fxd_points, speeds = find_slow_points(wrec, brec, wo=wo, dt=training_kwargs['dt_rnn'], trajectory=traj,
+        ops_fxd_points, ops_speeds = find_slow_points(wrec, brec, wo=wo, dt=training_kwargs['dt_rnn'], trajectory=traj,
                                                   outputspace=True, tol=slowpointtol, method=slowpointmethod)
 
         plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, fxd_points=fxd_points, 
                                         ops_fxd_points=ops_fxd_points, plot_asymp=True, ax=None);
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
+        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
         # plot_trajs_model(main_exp_name, model_name, exp_i, T=T, which='post', input_length=input_length,
         #                           timepart='all', num_of_inputs=num_of_inputs,
         #                           plot_from_to=plot_from_to, pca_from_to=pca_from_to,
@@ -1318,10 +1318,10 @@ if __name__ == "__main__":
         # wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder)
 
         #Both directions
-        # x_lim = 1.4
-        # num_x_points = 21
-        # num_of_inputs = 11
-        # input_range = (-.25,.25)
+        x_lim = 1.4
+        num_x_points = 21
+        num_of_inputs = 11
+        input_range = (-.25,.25)
         # trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
         #                                                                                   T=2*input_length, input_length=input_length, which=which,
         #                                                                                   pca_from_to=pca_from_to,
@@ -1335,7 +1335,7 @@ if __name__ == "__main__":
         #Single direction
         # fig, ax = plt.subplots(1, 1, figsize=(3, 3));
         # input_range = (.5, .51)
-        # num_of_inputs = 3
+        # num_of_inputs = 1
         # trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
         #                                                                                   T=input_length, input_length=input_length, which=which,
         #                                                                                   pca_from_to=pca_from_to,
@@ -1345,7 +1345,7 @@ if __name__ == "__main__":
         #                 num_x_points=num_x_points, color='blue', ax=ax)
         
         # input_range = (-.51, -.5)
-        # num_of_inputs = 3
+        # num_of_inputs = 1
         # trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
         #                                                                                   T=input_length, input_length=input_length, which=which,
         #                                                                                   pca_from_to=pca_from_to,
