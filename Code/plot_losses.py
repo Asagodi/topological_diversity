@@ -527,7 +527,10 @@ def identify_limit_cycle(time_series, tol=1e-6):
     
 
 def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
-                                    plot_asymp=False, limcyctol=1e-2, mindtol=1e-4, fxd_points = None, ops_fxd_points=None, ax=None):
+                                    plot_asymp=False, limcyctol=1e-2, mindtol=1e-4,
+                                    fxd_points = None, ops_fxd_points=None, 
+                                    h_stabilities=None, o_stabilities=None, 
+                                    ax=None):
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3))
     
@@ -537,6 +540,8 @@ def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
     cmap = cmx.get_cmap("coolwarm")
     norm2 = mpl.colors.Normalize(-np.pi, np.pi)
     cmap2 = plt.get_cmap('hsv')
+    stab_colors = np.array(['g', 'pink', 'red'])
+    
     output = np.dot(traj, wo)
     for trial_i in range(traj.shape[0]):
         ax.plot(traj_pca[trial_i,:,0], traj_pca[trial_i,:,1], color=cmap(norm[trial_i]))
@@ -553,8 +558,10 @@ def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
     if np.any(fxd_points):
         pca_fxd_points = pca.transform(fxd_points)
         pca_ops_fxd_points = pca.transform(ops_fxd_points)
-        ax.scatter(pca_fxd_points[:,0], pca_fxd_points[:,1], marker='s', color='k',     alpha=.5, zorder=101)
-        ax.scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1],  marker='x', color='k', alpha=.5, zorder=101)
+        ax.scatter(pca_fxd_points[:,0], pca_fxd_points[:,1], marker='s',
+                   c=stab_colors[h_stabilities], alpha=.5, zorder=101)
+        ax.scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1],
+                   marker='x', c=stab_colors[o_stabilities], alpha=.5, zorder=101)
 
         
 def plot_input_driven_trajectory_3d(traj, input_length,
