@@ -557,10 +557,15 @@ def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
     ax.set_axis_off()
     if np.any(fxd_points):
         pca_fxd_points = pca.transform(fxd_points)
-        pca_ops_fxd_points = pca.transform(ops_fxd_points)
         ax.scatter(pca_fxd_points[:,0], pca_fxd_points[:,1], marker='s',
                    c=stab_colors[h_stabilities], alpha=.5, zorder=101)
-        ax.scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1],
+    if np.any(ops_fxd_points):
+        pca_ops_fxd_points = pca.transform(ops_fxd_points)
+        if o_stabilities==None:
+            ax.scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1],
+                       marker='x', c='k', alpha=.5, zorder=101)
+        else:
+            ax.scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1],
                    marker='x', c=stab_colors[o_stabilities], alpha=.5, zorder=101)
 
         
@@ -580,9 +585,10 @@ def plot_input_driven_trajectory_3d(traj, input_length,
 
     if np.any(fxd_points):
         pca_fxd_points = pca.transform(fxd_points)
-        pca_ops_fxd_points = pca.transform(ops_fxd_points)
         ax.scatter(pca_fxd_points[:,0], pca_fxd_points[:,1], pca_fxd_points[:,2],
                    marker='s', color='k',     alpha=.5, zorder=101)
+    if np.any(ops_fxd_points):
+        pca_ops_fxd_points = pca.transform(ops_fxd_points)
         ax.scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1], pca_ops_fxd_points[:,2],
                    marker='x', color='k', alpha=.5, zorder=101)
 
@@ -596,15 +602,18 @@ def plot_input_driven_trajectory_3d(traj, input_length,
     
 def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
                            fxd_points=None, ops_fxd_points=None,
+                           h_stabilities=None, o_stabilities=None,
                            plot_asymp=False, limcyctol=1e-2, mindtol=1e-4, ax=None):
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3))
 
+    num_of_inputs = traj.shape[0]
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
     norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
     cmap = cmx.get_cmap("coolwarm")
     norm2 = mpl.colors.Normalize(-np.pi, np.pi)
     cmap2 = plt.get_cmap('hsv')
+    stab_colors = np.array(['g', 'pink', 'red'])
     x = np.linspace(-np.pi, np.pi, 1000)
     # axes[1].plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
     ax.scatter(np.cos(x), np.sin(x), color=cmap2(norm2(x)), alpha=.1, s=5, zorder=100) #ring
@@ -626,9 +635,11 @@ def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
                     ax.scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=110)
     if np.any(fxd_points):
         proj_fxd_points = np.dot(fxd_points, wo)
+        ax.scatter(proj_fxd_points[:,0], proj_fxd_points[:,1],  marker='s',
+                   c=stab_colors[h_stabilities], alpha=.5, zorder=101)    
+    if np.any(ops_fxd_points):
         proj_ops_fxd_points = np.dot(ops_fxd_points, wo)
-        ax.scatter(proj_fxd_points[:,0], proj_fxd_points[:,1],  marker='s', color='k', alpha=.5, zorder=101)    
-        ax.scatter(proj_ops_fxd_points[:,0], proj_ops_fxd_points[:,1],  marker='x', color='k', alpha=.5, zorder=101)    
+        ax.scatter(proj_ops_fxd_points[:,0], proj_ops_fxd_points[:,1],  marker='x', color='k', alpha=.3, zorder=101)    
 
     ax.set_axis_off()
         
@@ -1111,6 +1122,13 @@ def tanh_rnn_speed_in_outputspace(x, wrec, brec, wo, dt):
 #     f_x = tanh_ode(0,x,wrec, brec)
 #     return np.linalg.norm(f_x)
 
+def tanh_jacobian(x,W,b,tau, mlrnn=True):
+
+    if mlrnn:
+        return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(np.dot(W,x)+b)**2))/tau
+    else:
+        return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(x)**2))/tau
+
 # def tanh_jacobian(x, wrec, brec, dt, mlrnn=True):
 #       # = 2*tanh_step(x, wrec, brec, dt)
 #     if mlrnn:
@@ -1248,6 +1266,17 @@ def plot_slowpoints(params_folder, exp_i):
     x = np.linspace(-np.pi, np.pi, 1000)
     ax.scatter(np.cos(x), np.sin(x), color=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1)
 
+def get_stabilities(fxd, wrec, brec, tau):
+    h_stabilities = []
+    for fxd in fxd_points:
+        J = tanh_jacobian(fxd, wrec, brec, tau=tau)
+        eigvals, _ = np.linalg.eig(J)
+        maxeig = np.max(np.real(eigvals))
+        numpos = np.where(np.real(eigvals)>0)[0].shape[0]
+        # print(maxeig, numpos)
+        h_stabilities.append(numpos)
+    return h_stabilities
+
 if __name__ == "__main__":
 
     model_names=['lstm', 'low','high', 'ortho', 'qpta']
@@ -1263,23 +1292,27 @@ if __name__ == "__main__":
     # T = 20
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
-    T = 128*32
+    T = 128*32*2
     num_of_inputs = 51
     input_length = int(128)*2
     which='post'
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,T)
+    slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
 
-    model_name = ''
+    model_name = 'high'
     main_exp_name='angular_integration/hidden/25.6'
-    main_exp_name='angular_integration/N50'
+    # main_exp_name='angular_integration/gains/1'
+    # main_exp_name='angular_integration/N30'
+    # main_exp_name='angular_integration/long/100'
+    # main_exp_name='angular_integration/long/pretrained'
 
-    # main_exp_name='angular_integration/act_norm/0'
+    # main_exp_name='angular_integration/act_norm/1e-07'
     # main_exp_name='angular_integration/act_reg_from10'
 
     # plot_explained_variances(main_exp_name, model_name, input_length=input_length, batch_size=2**8, 
     #                               act_lambdas = [1e-05, 1e-07, 1e-09, 0])
-
+    
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
     if True:
         exp_i = 0
@@ -1289,7 +1322,6 @@ if __name__ == "__main__":
         wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i)
         exp = exp_list[exp_i]   
         input_range = (-.5, .5)   
-        slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
         
         trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
                                                                                             T=T, input_length=input_length, which=which,
@@ -1305,6 +1337,17 @@ if __name__ == "__main__":
         plot_input_driven_trajectory_3d(traj_pca, input_length, elev=45, azim=135)
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
         
+        plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
+                                   fxd_points=None, ops_fxd_points=None,
+                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp_{which}_{exp_i}.pdf', bbox_inches="tight")
+
+        plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
+                                   fxd_points=None, ops_fxd_points=None,
+                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp_notraj_{which}_{exp_i}.pdf', bbox_inches="tight")
+
+        
         traj = trajectories[:,:input_length:20,:].reshape((-1,training_kwargs['N_rec']));
         slowpointtol=1e-27
         fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], trajectory=traj, tol=slowpointtol, method=slowpointmethod)
@@ -1312,9 +1355,25 @@ if __name__ == "__main__":
         ops_fxd_points, ops_speeds = find_slow_points(wrec, brec, wo=wo, dt=training_kwargs['dt_rnn'], trajectory=traj,
                                                   outputspace=True, tol=slowpointtol, method=slowpointmethod)
 
+        h_stabilities=get_stabilities(fxd_points, wrec, brec, tau=1/training_kwargs['dt_rnn'])
+        h_stabilities = np.where(np.array(h_stabilities)>2,2,h_stabilities)
         plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, fxd_points=fxd_points, 
-                                        ops_fxd_points=ops_fxd_points, plot_asymp=True, ax=None);
-        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
+                                        ops_fxd_points=ops_fxd_points,
+                                        h_stabilities=h_stabilities, plot_asymp=True, ax=None);
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
+        
+        plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
+                                   fxd_points=fxd_points, ops_fxd_points=ops_fxd_points,
+                                   h_stabilities=h_stabilities,
+                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
+
+        plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
+                                   fxd_points=fxd_points, ops_fxd_points=ops_fxd_points,
+                                   h_stabilities=h_stabilities,
+                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_slow_notraj_{which}_{exp_i}.pdf', bbox_inches="tight")
+
         # plot_trajs_model(main_exp_name, model_name, exp_i, T=T, which='post', input_length=input_length,
         #                           timepart='all', num_of_inputs=num_of_inputs,
         #                           plot_from_to=plot_from_to, pca_from_to=pca_from_to,
@@ -1325,10 +1384,10 @@ if __name__ == "__main__":
         # wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder)
 
         #Both directions
-        x_lim = 1.4
-        num_x_points = 21
-        num_of_inputs = 11
-        input_range = (-.25,.25)
+        # x_lim = 1.4
+        # num_x_points = 21
+        # num_of_inputs = 11
+        # input_range = (-.25,.25)
         # trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
         #                                                                                   T=2*input_length, input_length=input_length, which=which,
         #                                                                                   pca_from_to=pca_from_to,

@@ -331,7 +331,7 @@ def size_experiment(main_exp_name, sub_exp_name):
 if __name__ == "__main__":
     print(current_dir)
     parameter_file_name = 'params_ang_sparse.yml'
-
+    
     parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
     
@@ -347,14 +347,15 @@ if __name__ == "__main__":
     # size_experiment(main_exp_name='angular_integration', sub_exp_name='lambda')
     
     main_exp_name = 'angular_integration'
-    sub_exp_name  = 'act_reg_from10'
+    # sub_exp_name  = 'act_reg_from10_fulltrajnorm'
+    sub_exp_name = 'long'
 
-    training_kwargs['stop_patience'] = 100
+    training_kwargs['stop_patience'] = 200
     training_kwargs['stop_min_delta'] = 0
     training_kwargs['last_mses'] = False
     training_kwargs['fix_seed'] = True
 
-    model_i, model_name = 2, 'high'
+    model_i, model_name = 2, 'N30'
     # model_i, model_name = 3, 'ortho'
     # model_i, model_name = 4, 'qpta'
     # model_i, model_name = 0, 'lstm'
@@ -362,30 +363,30 @@ if __name__ == "__main__":
     # training_kwargs['clip_gradient'] = 
     training_kwargs['task'] = 'angular_integration'
     # training_kwargs['nonlinearity'] = 'relu'
-    training_kwargs['act_reg_lambda'] = 0
-    sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
-
+    training_kwargs['act_reg_lambda'] = 0 # 1e-7
+    # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
+    
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['N_rec'] = 200
-    training_kwargs['batch_size'] = 1024
+    training_kwargs['N_rec'] = 30
+    training_kwargs['batch_size'] = 512
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
-    training_kwargs['g_in'] = 14.142135623730951 #np.sqrt(nrecs[model_i])
+    training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
-    training_kwargs['learning_rate'] = 1e-3
-    training_kwargs['n_epochs'] = 5000
-    training_kwargs['T'] = 12.8
+    training_kwargs['learning_rate'] = 3e-3
+    training_kwargs['n_epochs'] = 20000
+    training_kwargs['T'] = 12.8*2
     training_kwargs['dt_rnn'] = .1
     training_kwargs['adam_beta1'] = 0.9
     training_kwargs['adam_beta2'] = 0.99
     training_kwargs['network_type'] = network_types[model_i]
-    training_kwargs['initialization_type'] = 'trained' #initialization_type_list[model_i]
+    training_kwargs['initialization_type'] = 'gain' #initialization_type_list[model_i]
     training_kwargs['loss_function'] = loss_functions[model_i]
-    training_kwargs['rnn_init_gain'] = g_list[model_i]        ##########
-    training_kwargs['scheduler_step_size'] = scheduler_step_sizes[model_i]
-    training_kwargs['scheduler_gamma'] = gammas[model_i]
+    training_kwargs['rnn_init_gain'] = 1.5 # g_list[model_i]        ##########
+    training_kwargs['scheduler_step_size'] = 500 # scheduler_step_sizes[model_i]
+    training_kwargs['scheduler_gamma'] = .5 #gammas[model_i]
 
-    training_kwargs['network_folder'] = parent_dir + '/experiments/angular_integration/act_reg_from/10/high'
+    training_kwargs['network_folder'] = parent_dir + '/experiments/angular_integration/longest'
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
                                                           model_name=model_name, trials=1, training_kwargs=training_kwargs)
