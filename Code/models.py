@@ -219,7 +219,8 @@ class RNN(nn.Module):
                     brec_init = torch.from_numpy(brec_init)
                 self.brec.copy_(brec_init)
             if h0_init is None:
-                self.h0.zero_()
+                torch.nn.init.uniform_(self.h0, a=-1, b=1)
+                # self.h0.zero_()
             else:
                 if type(h0_init) == np.ndarray:
                     h0_init = torch.from_numpy(h0_init)
@@ -584,16 +585,17 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                 loss = loss_function(output.view(-1,2), target.view(-1,2))
 
             
-            act_norm = 0.
+            act_reg = 0.
             if act_reg_lambda != 0.: 
                 # trajectories.detach()
-                for t_id in range(trajectories.shape[1]):  #all states through time
-                    h = trajectories[:,t_id,:]
-                    h.detach()
-                    act_norm += torch.mean(torch.linalg.vector_norm(h, dim=1))
-                act_norm /= trajectories.shape[1]
-                # print(act_norm)
-                loss += act_reg_lambda*act_norm
+                act_reg += torch.mean(torch.linalg.norm(trajectories[:,:,:], dim=(1,2)))
+                # for t_id in range(trajectories.shape[1]):  #all states through time
+                #     h = trajectories[:,t_id,:]
+                #     h.detach()
+                #     act_reg += torch.mean(torch.linalg.vector_norm(h, dim=1))
+                act_reg /= trajectories.shape[1]
+                # print(act_reg)
+                loss += act_reg_lambda*act_reg
             
             # Gradient descent
             loss.backward()
