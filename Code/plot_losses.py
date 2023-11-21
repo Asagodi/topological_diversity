@@ -1277,6 +1277,58 @@ def get_stabilities(fxd, wrec, brec, tau):
         h_stabilities.append(numpos)
     return h_stabilities
 
+
+from itertools import chain, combinations, permutations
+from analysis_functions import find_analytic_fixed_points, powerset, relu_step_input
+def fixed_point_analysis():
+    T = 2000
+    batch_size = 1000
+    for exp_i in range(10):
+        task = contbernouilli_noisy_integration_task(T=T,
+                                                  input_length=training_kwargs['input_length'],
+                                                  sigma=training_kwargs['task_noise_sigma'],
+                                                  final_loss=training_kwargs['final_loss'])
+        # if exp_i==8:
+        #     continue
+        print("EXP:", exp_i)
+        main_exp_name='integration/N20_long'
+        params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
+        net =  load_net_from_weights(params_folder, exp_i)
+        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i)
+        input, target, mask, output, loss, trajectories = run_net(net, task, batch_size=batch_size, return_dynamics=True, h_init=None);
+    
+        plt.show()
+        fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(wrec, brec)
+    
+        trajectories_tofit = trajectories[:,:200,:].reshape((-1,training_kwargs['N_rec']))
+        pca.fit(trajectories_tofit)
+        traj_pca = pca.transform(trajectories[:,:2000,:].reshape((-1,training_kwargs['N_rec']))).reshape((batch_size,-1,10))
+        fixed_point_pca = pca.transform(np.array(fixed_point_list).reshape(1, -1))
+    
+        for i in range(batch_size):
+            plt.plot(traj_pca[i,200:, 0],traj_pca[i,200:, 1])
+            # for t in range(0,T,50):
+            #     plt.scatter(traj_pca[i,t, 0],traj_pca[i,t, 1], color=cmap(norm[t]), s=1)
+        # plt.scatter(fixed_point_pca[:,0], fixed_point_pca[:,1], zorder=100, c='k')
+        
+        for i in range(len(fixed_point_list)):
+            plt.scatter(fixed_point_pca[i,0], fixed_point_pca[i,1], zorder=100, c=colors[stabilist[i]])
+            
+        minx = np.min(fixed_point_pca[:,0])-2
+        maxx = np.max(fixed_point_pca[:,0])+20
+        miny = np.min(fixed_point_pca[:,1])-2
+        maxy = np.max(fixed_point_pca[:,1])+20
+        plt.xlim([minx, maxx])
+        plt.ylim([miny, maxy])
+        plt.show()
+    
+        for i in range(len(fixed_point_list)):
+            #print(np.real(eigenvalues_list[i][0]))
+            nearest_to_zero = min(np.real(eigenvalues_list[i]), key=lambda x:abs(x))
+            print(nearest_to_zero)
+        
+        
+
 if __name__ == "__main__":
 
     model_names=['lstm', 'low','high', 'ortho', 'qpta']
@@ -1300,12 +1352,12 @@ if __name__ == "__main__":
     pca_from_to = (0,T)
     slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
 
-    model_name = 'high'
+    model_name = ''
     main_exp_name='angular_integration/hidden/25.6'
     # main_exp_name='angular_integration/gains/1'
-    # main_exp_name='angular_integration/N30'
+    main_exp_name='angular_integration/N30'
     # main_exp_name='angular_integration/long/100'
-    # main_exp_name='angular_integration/long/pretrained'
+    main_exp_name='angular_integration/long/pretrained'
 
     # main_exp_name='angular_integration/act_norm/1e-07'
     # main_exp_name='angular_integration/act_reg_from10'
@@ -1321,7 +1373,7 @@ if __name__ == "__main__":
         net =  load_net_from_weights(params_folder, exp_i)
         wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i)
         exp = exp_list[exp_i]   
-        input_range = (-.5, .5)   
+        input_range = (-.25, .25)   
         
         trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
                                                                                             T=T, input_length=input_length, which=which,
