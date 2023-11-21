@@ -183,14 +183,16 @@ In this paper, we lay out a new theory of general continuous-valued memory in th
 Our theory provides answers to both questions under mild assumptions in an architecture agnostic manner.
 Using Fenichel's invariant manifold theorem, we derive a sufficient condition for RNNs implementing continuous attractors to remain free of exploding gradients.
 Moreover, even after a bifurcation, these RNNs still approximately behave like the original continuous attractor for a while.
-Together these theoretical results practically nullify the concern of the fine tuning problem in theoretical neuroscience and suggest general principles for evaluating and designing new architectures and initialization strategies for RNNs in machine learning.
+Together these theoretical results significantly mitigate the concern of the fine tuning problem in theoretical neuroscience and suggest general principles for evaluating and designing new architectures and initialization strategies for RNNs in machine learning.
 
 %\section{Background}
 %\subsection{Dynamical systems and gradient propagation}
 %\subsection{Structural stability and bifurcations}
 
 \section{Theory of gracefully degrading continuous attractors}\label{sec:theory}
-In this section, we apply invariant manifold theory to RNNs and translate the results for the machine learning and theoretical neuroscience audience.
+In this section, we apply invariant manifold theory to RNNs and translate the results for the machine learning and theoretical neuroscience audience. Our emphasis in this paper centers on investigating the distinctive properties of continuous attractors that prove essential for specific tasks, with a deliberate exclusion of considerations related to learning chaotic dynamics.
+
+
 
 \subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
 We start by formulating RNNs implementing a continuous attractor in continuous time: $\dot{\vx} = \vf(\vx)$.
@@ -202,7 +204,7 @@ To describe an arbitrary bifurcation of interest, we introduce a sufficiently sm
     \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}
 \end{align}
 where $\epsilon = 0$ gives the condition for the continuous attractor $\dot{\vy} = \mathbf{0}$.
-We denote the corresponding manifold of $l$ dimensions $M_0 = \{(\vy,\vz) \mid \vh(\vy,\vz,0) = 0\}$.
+We denote the corresponding manifold of $l$ dimensions $\manifold_0 = \{(\vy,\vz) \mid \vh(\vy,\vz,0) = 0\}$.
 
 We need the flow normal to the manifold to be hyperbolic, that is \emph{normally hyperbolic}, meaning that the Jacobians $\nabla_\vz \vh$ evaluated on any point on the $\manifold_0$ has $d-l$ eigenvalues with their real part uniformly away from zero, and $\nabla_\vy \vg$ has $l$ eigenvalues with zero real parts.
 More specifically, for continuous attractors, the real part of the eigenvalues of $\nabla_\vz \vh$ will be negative, representing sufficiently strong attractive flow toward the manifold.
@@ -210,7 +212,7 @@ Equivalently, for the ODE, $\dot{\vx} = \vf(\vx)$, the variational system is of 
 
 \begin{figure}[bthp]
   \centering
-  \includegraphics{FenichelThm.pdf}
+  \includegraphics[width=0.5\textwidth]{FenichelThm.pdf}
   \caption{
     Fenichel's invariant manifold theorem applied to compact continuous attractor guarantees the flow on the slow manifold is locally invariant and continues to be attractive.
     The dashed line is a trajectory ``trapped'' in the slow manifold (locally invariant).
@@ -227,15 +229,16 @@ We informally present a special case due to~\cite{Jones1995}:
 \begin{theorem}[Fenichel's Invariant Manifold Theorem]
 Let $\manifold_0$ be a connected, compact, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
 For a sufficiently small perturbation $\epsilon > 0$, there exists a manifold $\manifold_\epsilon$ diffeomorphic to $\manifold_0$ and locally invariant under the flow of \eqref{eq:fenichel:flow}.
-Moreover, $\manifold_\epsilon$ has corresponding smoothness.
+Moreover, $\manifold_\epsilon$ has $\mathcal{O}(\epsilon)$ Hausdoff distance to $\manifold_0$ and has the same smoothness as $g$ and $h$ in (\ref{eq:fenichel:flow}).
 \end{theorem}
 
 The manifold $\manifold_\epsilon$ is called the \emph{slow manifold} which is no longer necessarily a continuum of equilibria.
 However, the local invariance implies that trajectories remain within the manifold except potentially at the boundary.
 Furthermore, the non-zero flow on the slow manifold is slow and given in the $\epsilon \to 0$ limit as $\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)$ where $\tau = \epsilon t$ is a rescaled time and $c^\epsilon(\cdot)$ parameterizes the $l$ dimensional slow manifold.
-In addition, the stable manifold(s) of $\manifold_0$ are similarly approximately maintained~\cite{Jones1995}, allowing the manifold $\manifold_\epsilon$ to remain attractive.
+In addition, the stable manifold of $\manifold_0$ is similarly approximately maintained~\cite{Jones1995}, allowing the manifold $\manifold_\epsilon$ to remain attractive.
 
-These conditions are met (up to numerical precision) for the BLA example in Fig.~\ref{fig:ublabla}B (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
+These conditions are met (up to numerical precision) for the BLA example in Fig.~\ref{fig:ublabla}B (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form). As a technical note, for the theory apply to a continuous piecewise-linear system, it is required that the invariant manifold is attracting \cite{simpson2018}, which is also the case for the BLA.
+%applicability of Fenichel’s invariant manifold theorem on continuous piecewise linear (PWL) dynamical systems.
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points, and overall still attractive.
 On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence.
 Importantly, the ``slow'' flow on the perturbed system is not bounded.
@@ -261,8 +264,7 @@ As far as we know, there is no architecture agnostic theory describing the loss 
 We remark that due to the singular nature of the center manifold that supports the continuous attractor, the usual analysis approach of linearization fails.
 \emph{Our theory successfully connects the invariant manifold theory and the gradient signal propagation theory in RNNs to describe two types of loss landscape around continuous attractor solutions.}
 In one case, when the theorem holds, the landscape is shallow in all directions due to (asymptotically) vanishing gradients induced by the attractor structure---we have the gracefully degrading continuous attractor.
-On the other case, we can find examples where the theorem does not hold, and the continuous attractor solution is at the boundary of network configurations with exploding gradients, meaning the loss landscape is very steep in some directions.
-
+In the other case, we can find examples where the theorem does not hold, and the continuous attractor solution is at the boundary of network configurations with exploding gradients, meaning the loss landscape is very steep in some directions.
 While exploding gradients would prevent gradient descent to correct for deviations from the optima,
 for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
 
@@ -408,7 +410,6 @@ We formulate this implementation of a bounded integrator with a parameter that d
 \paragraph{Bounded line attractor}\label{sec:bla}
 Similarly as for UBLA, the BLA has a parameter that determines step size along line attractor $\alpha$. Analogously as for UBLA, these parameters determine the capacity of the network.
 The inputs push the input along the line attractor in two opposite directions, see below. UBLA and BLA need to be initialized at $\beta(1,1)$ and $\tfrac{\beta}{2}(1,1)$, respectively, for correct decoding, i.e., output projection.
-
 \begin{equation}\label{eq:bla}
 \win = \alpha
 \begin{pmatrix}
@@ -466,11 +467,11 @@ In the first experiment, Gaussian random noise is injected to all parameters ind
 This type of noise is directly applied to the weights as $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\sim\mathcal{N}(0,\sigma)$. To dissociate the effect of misadjustment from gradient descent and external perturbation, we measured the effect of a single perturbation on the learning dynamics.
 Fig.~\ref{fig:maintenance_h0}C shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
 %The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
-BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to perturbations without learning (Fig.~\ref{fig:maintenance_h0}A).
+BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to perturbations without learning, while the BLA has the broadest range of learning rates that are optimal and far away from exploding gradients (Fig.~\ref{fig:maintenance_h0}A).
 BLA has a slight advantage in terms of a smaller spread of MSE compared to UBLA.
-The invariant manifold of the BLA is persistent throughout learning in many cases, see \ref{sec:supp:learning} and Fig.~\ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp~Fig.~\ref{fig:wdn_mse_trajectories_F1}, Fig.~\ref{fig:vfs5} and Supp. Fig.~\ref{fig:vfs30}). We determine the alignment of the gradient as the cosine similarity of the gradient step with the vector in recurrent parameter space that points towards the initial parameters at every gradient step and use a cutoff of a maximum deviation of 45\textdegree as aligned gradients with the optimal solution direction.
-iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig.~\ref{fig:maintenance_h0}F and Fig~\ref{fig:vfs1}).
-UBLA can stay close to the initial solution for a small enough learning rate (Fig.~\ref{fig:maintenance_h0}E and F) and maintains a slower flow than the BLA (Fig.~\ref{fig:speeds}).
+The invariant manifold of the BLA is persistent throughout learning in many cases, see \ref{sec:supp:learning} and Fig.~\ref{fig:vfs1}. However, the gradients are not pointing towards the BLA but to one of the bifurcations of the BLA (see Supp~Fig.~\ref{fig:wdn_mse_trajectories_F1}, Fig.~\ref{fig:vfs5} and Supp. Fig.~\ref{fig:vfs30}). We determine the alignment of the gradient as the cosine similarity of the gradient step with the vector in recurrent parameter space that points towards the initial parameters at every gradient step and use a cutoff of a maximum deviation of 45\textdegree\  as aligned gradients with the optimal solution direction.
+iRNN often finds a different optimum (it settles at a part of the state space that is at a non-zero distance from the initial recurrent matrix and bias (Fig.~\ref{fig:maintenance_h0}D and Fig~\ref{fig:vfs1}).
+UBLA can stay close to the initial solution for a small enough learning rate (Fig.~\ref{fig:maintenance_h0}D and E) and maintains a slower flow than the BLA (Fig.~\ref{fig:speeds}).
 
 
 %The noise level $\sigma$ was chosen individually for the three networks as follows. 
@@ -482,36 +483,32 @@ This way of matching noise level to induce the same loss should be a universal a
 For the matched noise level, we find the optimal learning rate for each network separately.
 The optimal learning rates for the input-type noise experiments were chosen from a set of values 
 ($\{(1+j\frac{1}{4}))10^{-i}\}_{i=4,\dots 10, j=1,2,3}$))  based on best performance of the task, measured as mean MSE of the last ten epochs averaged over ten runs.
-The slow manifold that is created after perturbations provides gradients that can counteract parameter diffusions for all networks (on short trials), even for the ones that have the potential for exploding gradients (Fig.~\ref{fig:maintenance_h0}A and D).
+The slow manifold that is created after perturbations provides gradients that can counteract parameter diffusions for all networks (on short trials), even for the ones that have the potential for exploding gradients (Fig.~\ref{fig:maintenance_h0}A and C).
  %new conclusions
-We use the normed difference to the initial parameters at every gradient step as proxy for the misadjustment from the optimal solution (Fig.~\ref{fig:maintenance_h0}E and F).
- We further show that all networks converge to a different (from the initialization), non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator in ten different runs with the same random seed for the noise for the three integrators (Fig.~\ref{fig:maintenance_h0}E and F).
+We use the normed difference to the initial parameters at every gradient step as proxy for the misadjustment from the optimal solution (Fig.~\ref{fig:maintenance_h0}D and E).
+ We further show that all networks converge to a different (from the initialization), non-optimal, solution as they settle in a regime in parameter space that has a higher norm difference with the initial parameters of the neural integrator in ten different runs with the same random seed for the noise for the three integrators (Fig.~\ref{fig:maintenance_h0}D and E).
  We conclude therefore that, in practice, it is difficult to maintain any of the continuous attractors.
 
 %gradientdistribution 
 %Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher. 
-Note that exploding gradients can be seen for UBLA manifested as the bimodal distribution of the gradients in Fig.~\ref{fig:maintenance_h0}C. This does lead to faster divergence (for lower learning rate) but has on the other hand the benefit of providing useful gradients to maintain the (local) solution around the optimal solution, which explains the superior performance at the optimal learning rate for the UBLA (Fig.~\ref{fig:maintenance_h0}A), on this timescale for the trial that we investigated.
+Note that exploding gradients can be seen for UBLA manifested as the bimodal distribution of the gradients in Fig.~\ref{fig:maintenance_h0}F. This does lead to faster divergence (for lower learning rate) but has on the other hand the benefit of providing useful gradients to maintain the (local) solution around the optimal solution, which explains the superior performance at the optimal learning rate for the UBLA (Fig.~\ref{fig:maintenance_h0}A), on this timescale for the trial that we investigated.
 Also in the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Fig.~\ref{fig:all_lrs_vs_mses}. 
 %This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
-%The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig.~\ref{fig:maintenance_h0}D).
+%The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig.~\ref{fig:maintenance_h0}C).
 We hypothesise that the negative effect of exploding gradients shows only for longer trials.
 
 
-
-%The individual runs indicate larger variability induced by learning over time, which we quantify in Fig.~\ref{fig:maintenance}D.
-%iRNN and UBLA both have larger learning noise than BLA, consistent with the absence of exploding gradient configuration around the optimum.
-
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{maintenance_h0.pdf}
+  \includegraphics[width=\textwidth]{maintenance_h0_less.pdf}
   \caption{
   Comparing three continuous attractor solutions on the click integration task of $T=100$ time steps.
 (A) MSE distribution during learning with different learning rates.
-(B) Loss landscape is steeper around the attractors. The BLA has a bounded loss in it's neighborhood.
-(C) Gradient distribution at the beginning (upper) and end (lower) of trials.
-(D) MSE distribution during learning and in the presence of noise. Learning counteracts diffusion in all three-types of initializations.
+(B) Loss landscape is steeper around the attractors. The BLA has a bounded loss in its neighborhood.
+(C) MSE distribution during learning and in the presence of noise. Learning counteracts diffusion in all three-types of initializations.
+(D) All networks converge to local non-optimal solutions after a single perturbation in 30 gradient steps.
 (E) Distance of parameters to original during learning with noise (left) and without learning (right).
-(F) All networks converge to local non-optimal solutions after a single perturbation in 30 gradient steps.
+(F) Gradient distribution at the beginning (upper) and end (lower) of trials.
   }
   \label{fig:maintenance_h0}
 \end{figure}
@@ -559,7 +556,7 @@ In particular, we showed that some RNNs are devoid of bifurcations that lead to 
 As the theory predicts, our numerical experiments demonstrate the properties of loss landscape and gradient near the fine-tuned system.
 However, after small perturbations, plain gradient descent typically converges to a non-continuous attractor solution, indicating that the homeostatic restoration of continuous attractor may be challenging.
 Based on our observations, we cannot conclude that continuous attractors solutions are universally brittle.
-Further research on finding continuous attractor networks that may allow restorative learning for a larger perturbations in the parameter space is needed.
+Further research on finding continuous attractor networks that may allow restorative learning for larger perturbations in the parameter space is needed.
 
 % We have derived a general theory that describes the loss landscape of RNNs around continuous attractor solutions.
 % This theory implies that backpropagating gradient does not explode for systems near compact continuous attractors because of divergent dynamics.
@@ -1004,7 +1001,7 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 \section{Smoother activation functions}
 It is well-known that activation functions ($\sigma$ in  Eqs.~\ref{eq:RNN:discrete} and  \ref{eq:RNN:continuous}), which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023,ramachandran2017,hayou2019}.
 Activation functions that are $C^r$ for $r\geq 1$ are the ones to which the Persistence Theorem applies. 
-The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistence invariant manifold.
+The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistent invariant manifold.
 For situations where smoothness of the persistent invariant manifold is of importance, smoother activation functions might be preferable, such as the Exponential Linear Unit (ELU)\citep{clevert2015} or the Continuously Differentiable Exponential Linear Units (CELU) \citep{barron2017}.
 
 \newpage
@@ -1203,7 +1200,7 @@ x^*_i<0 \text{   for  	 } i\in\sigma.
 \end{figure}
 
 
-
+\newpage
 \subsection{Independence of norm of perturbation on bifurcation}
 
 \begin{figure}[tbhp]
@@ -1213,7 +1210,25 @@ x^*_i<0 \text{   for  	 } i\in\sigma.
          \label{fig:noorman_ring_allfxdpnts_allnorm}
 \end{figure}
 
+\newpage
+\section{Training RNNs on an integration task from scratch}
 
+\newpage
+\section{Training RNNs on an angular velocity integration task from scratch}
+
+\begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=\textwidth]{analysis_small}
+       \caption{Analysis steps for the distillation of the implemented computation in a trained RNN. A) Input driven hidden trajectories for constant inputs of different magnitudes in the left (blue) and right (red) direction. B) Projection onto the output space of the attractors found by simulation until convergence to periodic solutions (color indicates the angular direction it maps to) with slow points found by minimizing the speed of the hidden (square) or output (cross) dynamics. Stability is indicated by green for stable, pink and red for saddles with 1 and 2 unstable dimensions, respectively. C) Effective input drive shown as average vector fields for the hidden dynamics projected onto the output space. Averages taken for a single constant input in left (blue) and right (red) directions.}
+         \label{fig:asymptotic_analysis}
+\end{figure}
+
+\begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=\textwidth]{task_fig}
+       \caption{}
+         \label{fig:angular_task}
+\end{figure}
 
 %\include{iclr2024_supplementary.tex}
 
