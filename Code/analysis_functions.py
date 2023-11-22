@@ -240,7 +240,7 @@ def powerset(iterable):
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 
-def find_analytic_fixed_points(W_hh, b, W_ih, I, tol=10**-4):
+def find_analytic_fixed_points(W_hh, b, W_ih=None, I=None, tol=10**-4):
     """
     Takes as argument all the parameters of the recurrent part of the model (W_hh, b) with a possible input I that connects into the RNN throught the weight matrix W_ih
     """
@@ -248,6 +248,7 @@ def find_analytic_fixed_points(W_hh, b, W_ih, I, tol=10**-4):
     stabilist = []
     unstabledimensions = []
     Nrec = W_hh.shape[0]
+    eigenvalues_list = []
     
     subsets = powerset(range(Nrec))
     for support in subsets:
@@ -258,7 +259,10 @@ def find_analytic_fixed_points(W_hh, b, W_ih, I, tol=10**-4):
         
         #invert equation
         fixed_point = np.zeros(Nrec)
-        fpnt_nonzero = -np.dot(np.linalg.inv(W_hh[r[:,None], r]-np.eye(len(support))), b[r] + np.dot(W_ih[r,:], I))
+        if I:
+            fpnt_nonzero = -np.dot(np.linalg.inv(W_hh[r[:,None], r]-np.eye(len(support))), b[r] + np.dot(W_ih[r,:], I))
+        else:
+            fpnt_nonzero = -np.dot(np.linalg.inv(W_hh[r[:,None], r]-np.eye(len(support))), b[r])
         fixed_point[r] = fpnt_nonzero
         
         #check whether it is a fixed point: zero derivative
@@ -275,8 +279,9 @@ def find_analytic_fixed_points(W_hh, b, W_ih, I, tol=10**-4):
                 # print("Stable")
                 stabilist.append(1)
             unstabledimensions.append(np.where(np.real(eigenvalues)>0)[0].shape[0])
-    return fixed_point_list, stabilist, unstabledimensions
-
+            eigenvalues_list.append(eigenvalues)
+            
+    return fixed_point_list, stabilist, unstabledimensions, eigenvalues_list
 
 
 def lu_step(x, W, b):
@@ -287,8 +292,11 @@ def relu_step(x, W, b):
     res[res < 0] = 0
     return res
  
-def relu_step_input(x, W, b, W_ih, I):
-    res = np.array(np.dot(W,x) + b + np.dot(W_ih, I))
+def relu_step_input(x, W, b, W_ih=None, I=None):
+    if I:
+        res = np.array(np.dot(W,x) + b + np.dot(W_ih, I))
+    else:
+        res = np.array(np.dot(W,x) + b)
     res[res < 0] = 0
     return res
 
