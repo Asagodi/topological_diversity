@@ -586,7 +586,18 @@ def get_ring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
     bwo_init = np.zeros((2,1))
 
     corners = get_corners(N, m=1.2512167690384801)
-    h0_init = corners[3]#along the ring, e.g. corner
+    h0_init = corners[3] #along the ring, e.g. corner
+    
+    X = corners
+    X_standardized = (X - np.mean(X, axis=0))
+    covariance_matrix = np.cov(X_standardized, rowvar=False)
+    eigenvalues, eigenvectors = np.linalg.eig(covariance_matrix)
+    sorted_indices = np.argsort(eigenvalues)[::-1]
+    eigenvalues = eigenvalues[sorted_indices]
+    eigenvectors = eigenvectors[:, sorted_indices]
+    top_eigenvectors = eigenvectors[:, :2]
+    wo_init = top_eigenvectors
+
 
     dims = (1,N,2)
     net = RNN(dims=dims, noise_std=internal_noise_std, dt=dt,
