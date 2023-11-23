@@ -26,8 +26,8 @@ import torch.nn as nn
 import torch.optim as optim
 
 from models import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget, LSTM_noforget2, LSTM
-from network_initialization import qpta_rec_weights
-from tasks import angularintegration_task, eyeblink_task, poisson_clicks_task
+from network_initialization import qpta_rec_weights, bla_rec_weights
+from tasks import angularintegration_task, eyeblink_task, poisson_clicks_task, bernouilli_noisy_integration_task, contbernouilli_noisy_integration_task
 from qpta_initializers import _qpta_tanh_hh
 from plot_losses import get_params_exp
 
@@ -35,7 +35,8 @@ def makedirs(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
-def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None):
+def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None,
+             input_length=0, task_noise_sigma=0., final_loss=False):
     
     if task_name == 'eyeblink':
         task =  eyeblink_task(input_length=T, t_delay=t_delay)
@@ -43,8 +44,13 @@ def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsit
     elif task_name == 'angular_integration':
         task =  angularintegration_task(T=T, dt=dt, sparsity=sparsity, last_mses=last_mses)
         
-    elif task_name == 'poisson_clicks':
+    elif task_name == 'poisson_clicks_task':
         task =  poisson_clicks_task(T=T, dt=dt)
+    elif task_name == 'contbernouilli_noisy_integration_task':
+        task = contbernouilli_noisy_integration_task(T=T,
+                                                  input_length=input_length,
+                                                  sigma=task_noise_sigma,
+                                                  final_loss=final_loss)
     else:
         raise Exception("Task not known.")
         
@@ -88,8 +94,11 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         data = np.load(parent_dir+"/experiments/datasets/"+training_kwargs['dataset_filename'])
     else:
         data = None
-        task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'],
-                        sparsity=training_kwargs['task_sparsity'], last_mses=training_kwargs['last_mses'])
+        # task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'],
+        #                 sparsity=training_kwargs['task_sparsity'], last_mses=training_kwargs['last_mses'])
+        
+        task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], input_length=training_kwargs['input_length'],
+                        sparsity=training_kwargs['task_noise_sigma'], last_mses=training_kwargs['final_loss'])
     # if training_kwargs['dataset_filename']!='':
 
     
@@ -127,6 +136,17 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
             
         elif training_kwargs['initialization_type'] == 'gain':
             wrec_init, brec_init = None, None
+            
+        elif training_kwargs['initialization_type'] == 'irnn':
+            wrec_init =  np.identity(training_kwargs['N_rec'])
+            brec_init = np.zeros((training_kwargs['N_rec']))
+            
+        elif training_kwargs['initialization_type'] == 'bla':
+            wrec_init, brec_init =  bla_rec_weights(training_kwargs['N_in'],
+                                                    int(training_kwargs['N_rec']/2),
+                                                    training_kwargs['N_out'],
+                                                    a=training_kwargs['b_a'])
+            
             
         elif training_kwargs['initialization_type'] == 'qpta':
             # N_blas = int(training_kwargs['N_rec']/2)
@@ -346,50 +366,57 @@ if __name__ == "__main__":
     
     # size_experiment(main_exp_name='angular_integration', sub_exp_name='lambda')
     
-    main_exp_name = 'angular_integration'
+    main_exp_name = 'integration'
     # sub_exp_name  = 'act_reg_from10_fulltrajnorm'
-    sub_exp_name = 'long'
+    sub_exp_name = 'N20_gain1'
 
     training_kwargs['stop_patience'] = 200
     training_kwargs['stop_min_delta'] = 0
     training_kwargs['last_mses'] = False
     training_kwargs['fix_seed'] = True
 
-    model_i, model_name = 2, 'N30'
+    model_i, model_name = 2, ''
     # model_i, model_name = 3, 'ortho'
     # model_i, model_name = 4, 'qpta'
     # model_i, model_name = 0, 'lstm'
 
     # training_kwargs['clip_gradient'] = 
-    training_kwargs['task'] = 'angular_integration'
-    # training_kwargs['nonlinearity'] = 'relu'
+    # training_kwargs['task'] = 'angular_integration'
+    training_kwargs['task'] = 'contbernouilli_noisy_integration_task'
+    training_kwargs['input_length'] = 25
+    training_kwargs['T'] = 25
+    training_kwargs['task_noise_sigma'] = 10-5
+    training_kwargs['finall_loss'] = False
+    training_kwargs['N_in'] = 2
+    training_kwargs['N_out'] = 1
+
+    training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['act_reg_lambda'] = 0 # 1e-7
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['N_rec'] = 30
+    training_kwargs['N_rec'] = 20
     training_kwargs['batch_size'] = 512
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
-    training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
+    training_kwargs['g_in'] = 1 #14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
     training_kwargs['learning_rate'] = 3e-3
     training_kwargs['n_epochs'] = 20000
-    training_kwargs['T'] = 12.8*2
-    training_kwargs['dt_rnn'] = .1
+    training_kwargs['dt_rnn'] = .5
     training_kwargs['adam_beta1'] = 0.9
     training_kwargs['adam_beta2'] = 0.99
     training_kwargs['network_type'] = network_types[model_i]
-    training_kwargs['initialization_type'] = 'gain' #initialization_type_list[model_i]
+    training_kwargs['initialization_type'] = 'bla' #initialization_type_list[model_i]
     training_kwargs['loss_function'] = loss_functions[model_i]
-    training_kwargs['rnn_init_gain'] = 1.5 # g_list[model_i]        ##########
+    training_kwargs['rnn_init_gain'] = 1. # g_list[model_i]        ##########
     training_kwargs['scheduler_step_size'] = 500 # scheduler_step_sizes[model_i]
-    training_kwargs['scheduler_gamma'] = .5 #gammas[model_i]
+    training_kwargs['scheduler_gamma'] = .9 #gammas[model_i]
 
-    training_kwargs['network_folder'] = parent_dir + '/experiments/angular_integration/longest'
+    training_kwargs['network_folder'] = parent_dir + '/experiments/integration/N20'
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
-                                                          model_name=model_name, trials=1, training_kwargs=training_kwargs)
+                                                          model_name=model_name, trials=10, training_kwargs=training_kwargs)
 
     
     # param_grid = {'initialization_type': ['qpta'],
