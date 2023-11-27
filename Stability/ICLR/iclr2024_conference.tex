@@ -1213,14 +1213,29 @@ x^*_i<0 \text{   for  	 } i\in\sigma.
 \newpage
 \section{Training RNNs on an integration task from scratch}
 
-\newpage
-\section{Training RNNs on an angular velocity integration task from scratch}
-
-We trained vanilla RNNs with a ReLU or tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:task_fig}. The network size varies between 50 and 200 units, initialized using a normal distribution for the parameters. Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 100 epochs. The task has 256 time steps for the training samples, and the mean squared error loss.
+We trained vanilla RNNs with a ReLU nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}. The network size varies between 50 and 200 units, initialized using a normal distribution for the parameters. Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 100 epochs. The task has 256 time steps for the training samples, and training was based on the mean squared error loss.
 
 \begin{figure}[tbhp]
      \centering
-    \includegraphics[width=0.5\textwidth]{task_fig}
+    \includegraphics[width=\textwidth]{line_attractor_like_solutions}
+       \caption{The two types of found solutions. A) A line attractor with hyperbolically stable fixed points at the end of the line. B) Saddle nodes at the ends of the line.
+}
+         \label{fig:line_att_sols}
+\end{figure}
+
+From an arbitrary initialization, we find that a line attractor-like structure often (8 out of 10 runs) emerged with hyperbolically stable fixed points (Fig.\ref{fig:line_att_sols}A) when trained on a longer version of the task. For shorter trial lengths, saddle nodes are more likely to emerge (6 out of 10 runs) at the ends of the line (Fig.~\ref{fig:line_att_sols}B), meaning that the resulting structure is not an attractor. 
+
+
+
+
+\newpage
+\section{Training RNNs on an angular velocity integration task from scratch}
+
+We trained vanilla RNNs with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}. The network size is 20 units, initialized using a normal distribution for the parameters. Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 100 epochs. The task has 100 time steps for the training samples, and the mean squared error loss was used.
+
+\begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=0.75\textwidth]{task_fig}
        \caption{Description of the tasks. A) The angular velocity integration task. B) The output of the angular velocity integration in the output space, color coded according to the integrated angle. An example of an input is shown with constant velocity and it is provided until one turn is completed.}
          \label{fig:angular_task}
 \end{figure}
@@ -1236,10 +1251,15 @@ We trained vanilla RNNs with a ReLU or tanh nonlinearity for the recurrent layer
 \begin{figure}[tbhp]
      \centering
     \includegraphics[width=\textwidth]{example_solutions}
-       \caption{A) A solution with a single limit cycle (light blue) that gets mapped onto a small subset of the output space. B) A solution with multiple limit cycles spread around the ring attractor. C) A solution with a limit cycle (yellow line) that wraps around one of the approximate ring attractors.}
+       \caption{A) A solution with a single limit cycle (light blue) that gets mapped onto a small subset of the output space. B) A solution with multiple limit cycles spread around the ring attractor. C) A solution with only fixed points spread around a ring like attractor with slow dynamics.}
          \label{fig:angular_solutions}
 \end{figure}
 
+
+For the angular velocity integration task, typical solutions have two limit cycles corresponding to the two directions of constant inputs. The autonomous dynamics can be characterized by an (approximate) line attractor with two (approximate) ring attractors at the ends. 
+The found solutions Fig.\ref{fig:angular_solutions}A-C all show bounded ring-like attractors. These solutions are all composed of two rings (Fig.\ref{fig:asymptotic_analysis}A) connected by an (approximate) line attractor.
+
+The vector field (Fig. \ref{fig:asymptotic_analysis}C) suggests that the system exhibits input driven dynamics  corresponding to a limit cycle, which would mean that the invariant manifold of the input-driven dynamics is compact.
 %\include{iclr2024_supplementary.tex}
 
 \end{document}
