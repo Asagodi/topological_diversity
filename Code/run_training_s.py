@@ -15,7 +15,8 @@ import time
 import yaml
 import shutil
 from pathlib import Path
-from scipy.linalg import qr
+from scipy.linalg import qr, block_diag
+
 import numpy as np
 import pandas as pd
 from itertools import product
@@ -142,6 +143,16 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
             brec_init = np.zeros((training_kwargs['N_rec']))
             
         elif training_kwargs['initialization_type'] == 'bla':
+            wrec_init, brec_init =  bla_rec_weights(training_kwargs['N_in'],
+                                                    int(training_kwargs['N_rec']/2),
+                                                    training_kwargs['N_out'],
+                                                    a=training_kwargs['b_a'])
+            
+        elif training_kwargs['initialization_type'] == 'ubla':
+            ubla_mat = np.array(([[0,1],[1,0]]))
+            wrec_init = block_diag(*[ubla_mat]*int(training_kwargs['N_rec']/2))
+            brec_init = np.array([0]*training_kwargs['N_rec'])
+
             wrec_init, brec_init =  bla_rec_weights(training_kwargs['N_in'],
                                                     int(training_kwargs['N_rec']/2),
                                                     training_kwargs['N_out'],
@@ -368,7 +379,7 @@ if __name__ == "__main__":
     
     main_exp_name = 'integration'
     # sub_exp_name  = 'act_reg_from10_fulltrajnorm'
-    sub_exp_name = 'N20_gain1'
+    sub_exp_name = 'N20_T200_bla'
 
     training_kwargs['stop_patience'] = 200
     training_kwargs['stop_min_delta'] = 0
@@ -384,18 +395,20 @@ if __name__ == "__main__":
     # training_kwargs['task'] = 'angular_integration'
     training_kwargs['task'] = 'contbernouilli_noisy_integration_task'
     training_kwargs['input_length'] = 25
-    training_kwargs['T'] = 25
+    training_kwargs['T'] = 200
     training_kwargs['task_noise_sigma'] = 10-5
     training_kwargs['finall_loss'] = False
     training_kwargs['N_in'] = 2
     training_kwargs['N_out'] = 1
+    training_kwargs['b_a'] = 20
+
 
     training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['act_reg_lambda'] = 0 # 1e-7
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['N_rec'] = 20
+    training_kwargs['N_rec'] = 2
     training_kwargs['batch_size'] = 512
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
@@ -403,7 +416,7 @@ if __name__ == "__main__":
     training_kwargs['verbose'] = True
     training_kwargs['learning_rate'] = 3e-3
     training_kwargs['n_epochs'] = 20000
-    training_kwargs['dt_rnn'] = .5
+    training_kwargs['dt_rnn'] = 1
     training_kwargs['adam_beta1'] = 0.9
     training_kwargs['adam_beta2'] = 0.99
     training_kwargs['network_type'] = network_types[model_i]
