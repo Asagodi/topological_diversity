@@ -99,9 +99,9 @@ class EarlyStopper:
 class RNN(nn.Module):
     def __init__(self, dims, noise_std=0., dt=0.5, 
                  nonlinearity='tanh', readout_nonlinearity='id',
-                 g=None, g_in=1, wi_init=None, wrec_init=None, wo_init=None, brec_init=None, h0_init=None,
+                 g=None, g_in=1, wi_init=None, wrec_init=None, wo_init=None, brec_init=None, h0_init=None, oth_init=None,
                  train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True, 
-                 ML_RNN=True):
+                 ML_RNN=True, map_output_to_hidden=False):
         """
         :param dims: list = [input_size, hidden_size, output_size]
         :param noise_std: float
@@ -228,13 +228,15 @@ class RNN(nn.Module):
                 self.h0.copy_(h0_init)
                 
         if map_output_to_hidden:
+            self.h0.requires_grad = False
             self.output_to_hidden = nn.Parameter(torch.Tensor(output_size, hidden_size))
 
             if oth_init is None:
-                self.output_to_hidden.normal_(std=1 / np.sqrt(hidden_size))
+                with torch.no_grad():
+                    self.output_to_hidden.normal_(std=1 / np.sqrt(hidden_size))
             else:
-                oth_init = torch.from_numpy(wo_init)
-            self.output_to_hidden.copy_(oth_init)
+                oth_init = torch.from_numpy(oth_init)
+                self.output_to_hidden.copy_(oth_init)
             # self.oth_nonlinearity = nonlinearity
             self.oth_nonlinearity = lambda x: x
 
@@ -253,13 +255,20 @@ class RNN(nn.Module):
         if h_init is None:
             h = self.h0
         if self.map_output_to_hidden:
-            h = target.matmul(self.output_to_hidden)
+            h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
+            h_init_torch.requires_grad = False
+            h_init_torch = target[:,0,:].matmul(self.output_to_hidden)
+
+            with torch.no_grad():
+                h = h_init_torch.copy_(h_init_torch)
+
         else:
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
             h_init_torch.requires_grad = False
             # Initialize parameters
             with torch.no_grad():
                 h = h_init_torch.copy_(torch.from_numpy(h_init))
+                
         noise = torch.randn(batch_size, seq_len, self.hidden_size, device=self.wrec.device)
         output = torch.zeros(batch_size, seq_len, self.output_size, device=self.wrec.device)
         if return_dynamics:
@@ -479,7 +488,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
           loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_reg_lambda=0.,
           optimizer='sgd', momentum=0, weight_decay=.0, adam_betas=(0.9, 0.999), adam_eps=1e-8, #optimizers 
           scheduler=None, scheduler_step_size=100, scheduler_gamma=0.3, 
-          stop_patience=10, stop_min_delta=0,
+          stop_patience=10, stop_min_delta=0, 
           verbose=True):
     """
     Train a network
@@ -591,7 +600,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             target = _target.to(device=device).float() 
         
             optimizer.zero_grad()
-            output, trajectories = net(input, h_init=h_init, return_dynamics=True)
+            output, trajectories = net(input, h_init=h_init, return_dynamics=True, target=target)
             if np.any(_mask):
                 _mask = torch.from_numpy(_mask)
                 mask = _mask.to(device=device).float() 

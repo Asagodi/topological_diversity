@@ -62,7 +62,7 @@ def eyeblink_task(input_length, t_delay, t_stim=1, t_target=1, min_us_time=5, ma
 
 
 #########################################
-def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=None, random_angle_init=False):
+def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, random_angle_init=False):
     """
     Creates N_batch trials of the angular integration task with Guassian Process angular velocity inputs.
     Inputs are left and right angular velocity and 
@@ -87,15 +87,16 @@ def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=None, r
         outputs_1d = np.cumsum(inputs, axis=1)*dt
         outputs = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
         if random_angle_init:
-            random_angles = np.random.uniform(np.pi, np.pi, size=batch_size)
-            outputs += random_angles
-        if last_mses:
-            fin_int = np.random.randint(1,last_mses,size=batch_size)
-            mask = np.zeros((batch_size, input_length, 2))
-            mask[np.arange(batch_size), -fin_int, :] = 1
+            random_angles = np.random.uniform(-np.pi, np.pi, size=batch_size)
+            outputs_0 = np.stack((np.cos(random_angles), np.sin(random_angles)), axis=-1)
+            outputs = outputs + outputs_0[:, np.newaxis, :]
+        # if last_mses:
+        #     fin_int = np.random.randint(1,last_mses,size=batch_size)
+        #     mask = np.zeros((batch_size, input_length, 2))
+        #     mask[np.arange(batch_size), -fin_int, :] = 1
 
-        else:
-            mask = np.ones((batch_size, input_length, 2))
+        # else:
+        mask = np.ones((batch_size, input_length, 2))
 
         return inputs.reshape((batch_size, input_length, 1)), outputs, mask
     

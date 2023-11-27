@@ -176,7 +176,8 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         
         net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'], g_in=training_kwargs['g_in'],
                   nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-                  wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=training_kwargs['ml_rnn'])
+                  wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=training_kwargs['ml_rnn'],
+                  map_output_to_hidden=training_kwargs['map_output_to_hidden'])
 
         result = train(net, task=task, data=data, n_epochs=training_kwargs['n_epochs'],
               batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
@@ -377,9 +378,9 @@ if __name__ == "__main__":
     
     # size_experiment(main_exp_name='angular_integration', sub_exp_name='lambda')
     
-    main_exp_name = 'integration'
+    main_exp_name = 'angular_integration'
     # sub_exp_name  = 'act_reg_from10_fulltrajnorm'
-    sub_exp_name = 'N20_T200_bla'
+    sub_exp_name = 'random_angle'
 
     training_kwargs['stop_patience'] = 200
     training_kwargs['stop_min_delta'] = 0
@@ -392,35 +393,36 @@ if __name__ == "__main__":
     # model_i, model_name = 0, 'lstm'
 
     # training_kwargs['clip_gradient'] = 
-    # training_kwargs['task'] = 'angular_integration'
-    training_kwargs['task'] = 'contbernouilli_noisy_integration_task'
+    training_kwargs['task'] = 'angular_integration'
+    # training_kwargs['task'] = 'contbernouilli_noisy_integration_task'
     training_kwargs['input_length'] = 25
-    training_kwargs['T'] = 200
+    training_kwargs['random_angle_init'] = True
+    training_kwargs['map_output_to_hidden'] = True
+    training_kwargs['T'] = 12.8
     training_kwargs['task_noise_sigma'] = 10-5
     training_kwargs['finall_loss'] = False
-    training_kwargs['N_in'] = 2
-    training_kwargs['N_out'] = 1
+    training_kwargs['N_in'] = 1
+    training_kwargs['N_out'] = 2
     training_kwargs['b_a'] = 5
 
-
-    training_kwargs['nonlinearity'] = 'relu'
+    training_kwargs['nonlinearity'] = 'tanh'
     training_kwargs['act_reg_lambda'] = 0 # 1e-7
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['N_rec'] = 20
+    training_kwargs['N_rec'] = 50
     training_kwargs['batch_size'] = 512
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
-    training_kwargs['g_in'] = 1 #14.142135623730951 #np.sqrt(nrecs[model_i])
+    training_kwargs['g_in'] = 15 #14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
     training_kwargs['learning_rate'] = 3e-3
     training_kwargs['n_epochs'] = 20000
-    training_kwargs['dt_rnn'] = 1
+    training_kwargs['dt_rnn'] = .1
     training_kwargs['adam_beta1'] = 0.9
     training_kwargs['adam_beta2'] = 0.99
     training_kwargs['network_type'] = network_types[model_i]
-    training_kwargs['initialization_type'] = 'bla' #initialization_type_list[model_i]
+    training_kwargs['initialization_type'] = 'gain' #initialization_type_list[model_i]
     training_kwargs['loss_function'] = loss_functions[model_i]
     training_kwargs['rnn_init_gain'] = 1. # g_list[model_i]        ##########
     training_kwargs['scheduler_step_size'] = 500 # scheduler_step_sizes[model_i]
