@@ -37,13 +37,14 @@ def makedirs(dirname):
         os.makedirs(dirname)
 
 def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None,
-             input_length=0, task_noise_sigma=0., final_loss=False):
+             input_length=0, task_noise_sigma=0., final_loss=False, random_angle_init=False):
     
     if task_name == 'eyeblink':
         task =  eyeblink_task(input_length=T, t_delay=t_delay)
 
     elif task_name == 'angular_integration':
-        task =  angularintegration_task(T=T, dt=dt, sparsity=sparsity, last_mses=last_mses)
+        task =  angularintegration_task(T=T, dt=dt, sparsity=sparsity,
+                                        last_mses=last_mses, random_angle_init=random_angle_init)
         
     elif task_name == 'poisson_clicks_task':
         task =  poisson_clicks_task(T=T, dt=dt)
@@ -99,10 +100,9 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         #                 sparsity=training_kwargs['task_sparsity'], last_mses=training_kwargs['last_mses'])
         
         task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], input_length=training_kwargs['input_length'],
-                        sparsity=training_kwargs['task_noise_sigma'], last_mses=training_kwargs['final_loss'])
-    # if training_kwargs['dataset_filename']!='':
+                        sparsity=training_kwargs['task_noise_sigma'], last_mses=training_kwargs['final_loss'],
+                        random_angle_init=training_kwargs['random_angle_init'])
 
-    
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     
     if training_kwargs['network_type'] == 'lstm_noforget':
@@ -400,7 +400,7 @@ if __name__ == "__main__":
     training_kwargs['finall_loss'] = False
     training_kwargs['N_in'] = 2
     training_kwargs['N_out'] = 1
-    training_kwargs['b_a'] = 20
+    training_kwargs['b_a'] = 5
 
 
     training_kwargs['nonlinearity'] = 'relu'
@@ -408,7 +408,7 @@ if __name__ == "__main__":
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['N_rec'] = 2
+    training_kwargs['N_rec'] = 20
     training_kwargs['batch_size'] = 512
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0

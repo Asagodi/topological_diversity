@@ -62,7 +62,7 @@ def eyeblink_task(input_length, t_delay, t_stim=1, t_target=1, min_us_time=5, ma
 
 
 #########################################
-def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=None):
+def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=None, random_angle_init=False):
     """
     Creates N_batch trials of the angular integration task with Guassian Process angular velocity inputs.
     Inputs are left and right angular velocity and 
@@ -86,7 +86,9 @@ def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=None):
             inputs[mask_input] = 0.
         outputs_1d = np.cumsum(inputs, axis=1)*dt
         outputs = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
-        
+        if random_angle_init:
+            random_angles = np.random.uniform(np.pi, np.pi, size=batch_size)
+            outputs += random_angles
         if last_mses:
             fin_int = np.random.randint(1,last_mses,size=batch_size)
             mask = np.zeros((batch_size, input_length, 2))
@@ -347,7 +349,7 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
         input =  np.zeros([batch_size, input_length, 4])
         stimulus =  np.zeros([batch_size, input_length, 2])
         target = np.zeros([batch_size, input_length, 2])
-        mask = None # np.ones([batch_size, input_length, 2])
+        mask = np.ones([batch_size, input_length, 2])
         
         stim_durations = []
         if not set_stim_duration:
@@ -394,7 +396,8 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
             output_cue = stim_cue_delay + stim_cue_duration + stim_duration + output_cue_delay
             input[batch_i, output_cue-output_cue_duration:output_cue, 3] = 1.
             target[batch_i, output_cue:output_cue+output_duration, highest_click_count_index] = 1.
-            
+            output_end = output_cue+output_duration
+            mask[:, output_end, :] = 0.
         input[:, :, :2] = stimulus
         input[:, stim_cue_delay:stim_cue_delay+stim_cue_duration, 2] = 1.
         

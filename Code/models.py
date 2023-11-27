@@ -135,6 +135,7 @@ class RNN(nn.Module):
         self.train_brec = train_brec
         self.train_h0 = train_h0
         self.ML_RNN = ML_RNN
+        self.map_output_to_hidden = map_output_to_hidden #oth
         
         # Either set g or choose initial parameters. Otherwise, there's a conflict!
         assert (g is not None) or (wrec_init is not None), "Choose g or initial wrec!"
@@ -225,9 +226,21 @@ class RNN(nn.Module):
                 if type(h0_init) == np.ndarray:
                     h0_init = torch.from_numpy(h0_init)
                 self.h0.copy_(h0_init)
+                
+        if map_output_to_hidden:
+            self.output_to_hidden = nn.Parameter(torch.Tensor(output_size, hidden_size))
+
+            if oth_init is None:
+                self.output_to_hidden.normal_(std=1 / np.sqrt(hidden_size))
+            else:
+                oth_init = torch.from_numpy(wo_init)
+            self.output_to_hidden.copy_(oth_init)
+            # self.oth_nonlinearity = nonlinearity
+            self.oth_nonlinearity = lambda x: x
+
+        
             
-            
-    def forward(self, input, return_dynamics=False, h_init=None):
+    def forward(self, input, return_dynamics=False, h_init=None, target=None):
         """
         :param input: tensor of shape (batch_size, #timesteps, input_dimension)
         Important: the 3 dimensions need to be present, even if they are of size 1.
@@ -239,6 +252,8 @@ class RNN(nn.Module):
         seq_len = input.shape[1]
         if h_init is None:
             h = self.h0
+        if self.map_output_to_hidden:
+            h = target.matmul(self.output_to_hidden)
         else:
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
             h_init_torch.requires_grad = False
@@ -583,7 +598,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                 loss = loss_function(output, target, mask)
             else: 
                 loss = loss_function(output.view(-1,2), target.view(-1,2))
-
+                # for t_id in range(x.shape[1]):
+                    
             
             act_reg = 0.
             if act_reg_lambda != 0.: 
