@@ -550,17 +550,22 @@ def identify_limit_cycle(time_series, tol=1e-6):
     else:
         return False, mind
     
-def find_periodic_orbits(traj, limcyctol=1e-2, mindtol=1e-4):
+def find_periodic_orbits(traj, traj_pca, limcyctol=1e-2, mindtol=1e-10):
     recurrences = []
+    recurrences_pca = []
     for trial_i in range(traj.shape[0]):
         idx, mind = identify_limit_cycle(traj[trial_i,:,:], tol=limcyctol) #find recurrence
-        if idx:
+        # print(idx, mind)
+        if mind<mindtol: #for fixed point
+            recurrences.append([traj[trial_i,-1,:]])
+            recurrences_pca.append([traj_pca[trial_i,-1,:]])
+            
+        elif idx: #for closed orbit
             recurrences.append(traj[trial_i,idx:,:])
-            if mind<mindtol:
-                recurrences.append([traj[trial_i,-1,:]])
-    return recurrences
+            recurrences_pca.append(traj_pca[trial_i,idx:,:])
 
-    
+    return recurrences, recurrences_pca
+
 
 def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
                                     plot_asymp=False, limcyctol=1e-2, mindtol=1e-4,
@@ -605,19 +610,36 @@ def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
                    marker='x', c=stab_colors[o_stabilities], alpha=.5, zorder=101)
 
         
-def plot_input_driven_trajectory_3d(traj, input_length, 
+def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
+                                    recurrences=None, recurrences_pca=None, wo=None,
                                     fxd_points=None, ops_fxd_points=None,
                                     elev=20., azim=-35, roll=0):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
     norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
+    norm2 = mpl.colors.Normalize(-np.pi, np.pi)
+    cmap2 = plt.get_cmap('hsv')
     cmap = cmx.get_cmap("coolwarm")
-    for trial_i in range(traj.shape[0]):
-        ax.plot(traj[trial_i,:input_length,0], traj[trial_i,:input_length,1], zs=traj[trial_i,:input_length,2],
-                zdir='z', color=cmap(norm[trial_i]))
-        ax.plot(traj[trial_i,input_length:,0], traj[trial_i,input_length:,1], zs=traj[trial_i,input_length:,2],
-                linestyle='--', zdir='z', color=cmap(norm[trial_i]))
+    
+    if plot_traj:
+        for trial_i in range(traj.shape[0]):
+            ax.plot(traj[trial_i,:input_length,0], traj[trial_i,:input_length,1], zs=traj[trial_i,:input_length,2],
+                    zdir='z', color=cmap(norm[trial_i]))
+            ax.plot(traj[trial_i,input_length:,0], traj[trial_i,input_length:,1], zs=traj[trial_i,input_length:,2],
+                    linestyle='--', zdir='z', color=cmap(norm[trial_i]))
+
+    if recurrences is not None:
+        for r_i, recurrence in enumerate(recurrences):
+            recurrence_pca = recurrences_pca[r_i]
+
+            for t, point in enumerate(recurrence):
+                output = np.dot(point, wo)
+                output_angle = np.arctan2(output[...,1], output[...,0])
+
+                point_pca = recurrence_pca[t]
+                ax.scatter(point_pca[...,0], point_pca[...,1], point_pca[...,2],
+                           marker='.', s=100, color=cmap2(norm2(output_angle)), zorder=100)
 
     if np.any(fxd_points):
         pca_fxd_points = pca.transform(fxd_points)
@@ -819,7 +841,7 @@ def plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=10,
 
     
 def get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth=None, T=128, which='post', input_length=10, timepart='all',
-                     num_of_inputs=51, pca_from_to=(0,None), input_range=(-3,3)):
+                     num_of_inputs=51, pca_from_to=(0,None), input_range=(-3,3), random_angle_init=False):
     pca_after_t, pca_before_t = pca_from_to
 
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
@@ -836,15 +858,20 @@ def get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth=None, T=128, w
     input = torch.from_numpy(input).float() 
     
     outputs_1d = np.cumsum(input, axis=1)*training_kwargs['dt_task']
+    if random_angle_init:
+        random_angles = np.random.uniform(-np.pi, np.pi, size=num_of_inputs).astype('f')
+        outputs_1d += random_angles[:, np.newaxis, np.newaxis]
     target = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1).reshape((num_of_inputs, T, training_kwargs['N_out']))
     h = h0 # np.zeros((num_of_inputs,training_kwargs['N_rec'])) 
     
-    print(net.map_output_to_hidden)
+    # print(net.map_output_to_hidden)
     # if training_kwargs['random_angle_init']:
     #     with torch.no_grad():
     #         h =  np.dot(target[:,0,:],net.output_to_hidden)
 
     _target = torch.from_numpy(target)
+    # print(net.output_to_hidden.dtype)
+
     # _target = _target.to(device=training_kwargs['device']).float() 
     with torch.no_grad():
         output, trajectories = net(input, return_dynamics=True, h_init=h, target=_target)
@@ -1419,8 +1446,8 @@ if __name__ == "__main__":
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
     T = 128*32*2
-    num_of_inputs = 3
-    input_length = int(128)*2
+    num_of_inputs = 9
+    input_length = int(128)*4
     which='post'
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,T)
@@ -1431,7 +1458,7 @@ if __name__ == "__main__":
     # main_exp_name='angular_integration/gains/1'
     main_exp_name='angular_integration/N30'
     # main_exp_name='angular_integration/long/100'
-    main_exp_name='angular_integration/relu_random_angle'
+    main_exp_name='angular_integration/relu_noisy'
     
     # main_exp_name='angular_integration/act_norm/1e-07'
     # main_exp_name='angular_integration/act_reg_from10'
@@ -1448,12 +1475,12 @@ if __name__ == "__main__":
         net =  load_net_from_weights(params_folder, exp_i)
         wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i)
         exp = exp_list[exp_i]   
-        input_range = (-.5, .5)   
+        input_range = (-15., 15.)   
         
         trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth,
                                                                                             T=T, input_length=input_length, which=which,
                                                                                             pca_from_to=pca_from_to,
-          num_of_inputs=num_of_inputs, input_range=input_range)
+          num_of_inputs=num_of_inputs, input_range=input_range, random_angle_init=False)
         
         plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, ax=None)
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_{which}_{exp_i}.pdf', bbox_inches="tight")
@@ -1464,8 +1491,11 @@ if __name__ == "__main__":
         plot_input_driven_trajectory_3d(traj_pca, input_length, elev=45, azim=135)
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
         
-        plot_input_driven_trajectory_3d(traj_pca, input_length, elev=45, azim=135)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
+        recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
+        plot_input_driven_trajectory_3d(traj_pca, input_length, plot_traj=True,
+                                            recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
+                                            elev=45, azim=135)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_asymp_{which}_{exp_i}.pdf', bbox_inches="tight")
         
         plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
                                    fxd_points=None, ops_fxd_points=None,
