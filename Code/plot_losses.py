@@ -550,6 +550,17 @@ def identify_limit_cycle(time_series, tol=1e-6):
     else:
         return False, mind
     
+def find_periodic_orbits(traj, limcyctol=1e-2, mindtol=1e-4):
+    recurrences = []
+    for trial_i in range(traj.shape[0]):
+        idx, mind = identify_limit_cycle(traj[trial_i,:,:], tol=limcyctol) #find recurrence
+        if idx:
+            recurrences.append(traj[trial_i,idx:,:])
+            if mind<mindtol:
+                recurrences.append([traj[trial_i,-1,:]])
+    return recurrences
+
+    
 
 def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
                                     plot_asymp=False, limcyctol=1e-2, mindtol=1e-4,
@@ -594,7 +605,7 @@ def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
                    marker='x', c=stab_colors[o_stabilities], alpha=.5, zorder=101)
 
         
-def plot_input_driven_trajectory_3d(traj, input_length,
+def plot_input_driven_trajectory_3d(traj, input_length, 
                                     fxd_points=None, ops_fxd_points=None,
                                     elev=20., azim=-35, roll=0):
     fig = plt.figure()
@@ -1449,6 +1460,9 @@ if __name__ == "__main__":
         
         plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, plot_asymp=True, ax=None);
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_{which}_{exp_i}.pdf', bbox_inches="tight")
+        
+        plot_input_driven_trajectory_3d(traj_pca, input_length, elev=45, azim=135)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
         
         plot_input_driven_trajectory_3d(traj_pca, input_length, elev=45, azim=135)
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
