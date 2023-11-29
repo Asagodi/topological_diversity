@@ -1446,8 +1446,8 @@ if __name__ == "__main__":
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
     T = 128*32*2
-    num_of_inputs = 9
-    input_length = int(128)*4
+    num_of_inputs = 111
+    input_length = int(128)*10
     which='post'
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,T)
@@ -1458,7 +1458,7 @@ if __name__ == "__main__":
     # main_exp_name='angular_integration/gains/1'
     main_exp_name='angular_integration/N30'
     # main_exp_name='angular_integration/long/100'
-    main_exp_name='angular_integration/relu_noisy'
+    main_exp_name='angular_integration/tanh_N20'
     
     # main_exp_name='angular_integration/act_norm/1e-07'
     # main_exp_name='angular_integration/act_reg_from10'
@@ -1467,7 +1467,7 @@ if __name__ == "__main__":
     #                               act_lambdas = [1e-05, 1e-07, 1e-09, 0])
     
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
-    if True:
+    if True:    
         exp_i = 0
     # for exp_i in range(10):
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
@@ -1475,7 +1475,7 @@ if __name__ == "__main__":
         net =  load_net_from_weights(params_folder, exp_i)
         wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i)
         exp = exp_list[exp_i]   
-        input_range = (-15., 15.)   
+        input_range = (-.1, .1)   
         
         trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth,
                                                                                             T=T, input_length=input_length, which=which,
@@ -1507,33 +1507,40 @@ if __name__ == "__main__":
                                    plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp_notraj_{which}_{exp_i}.pdf', bbox_inches="tight")
 
+        if training_kwargs['nonlinearity'] == 'relu':
+            fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(wrec, brec)
+            plot_output_trajectory(trajectories[:,:,:], wo, input_length, plot_traj=True,
+                                       fxd_points=fixed_point_list,
+                                       h_stabilities=stabilist,
+                                       plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
         
-        traj = trajectories[:,:input_length:20,:].reshape((-1,training_kwargs['N_rec']));
-        slowpointtol=1e-27
-        fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], trajectory=traj, tol=slowpointtol, method=slowpointmethod)
-        
-        ops_fxd_points, ops_speeds = find_slow_points(wrec, brec, wo=wo, dt=training_kwargs['dt_rnn'], trajectory=traj,
-                                                  outputspace=True, tol=slowpointtol, method=slowpointmethod,
-                                                  nonlinearity=training_kwargs['nonlinearity'])
-
-        h_stabilities=get_stabilities(fxd_points, wrec, brec, tau=1/training_kwargs['dt_rnn'])
-        h_stabilities = np.where(np.array(h_stabilities)>2,2,h_stabilities)
-        plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, fxd_points=fxd_points, 
-                                        ops_fxd_points=ops_fxd_points,
-                                        h_stabilities=h_stabilities, plot_asymp=True, ax=None);
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
-        
-        plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
-                                   fxd_points=fxd_points, ops_fxd_points=ops_fxd_points,
-                                   h_stabilities=h_stabilities,
-                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
-
-        plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
-                                   fxd_points=fxd_points, ops_fxd_points=ops_fxd_points,
-                                   h_stabilities=h_stabilities,
-                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_slow_notraj_{which}_{exp_i}.pdf', bbox_inches="tight")
+        if False:
+            traj = trajectories[:,:input_length:20,:].reshape((-1,training_kwargs['N_rec']));
+            slowpointtol=1e-27
+            fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], trajectory=traj, tol=slowpointtol, method=slowpointmethod)
+            
+            ops_fxd_points, ops_speeds = find_slow_points(wrec, brec, wo=wo, dt=training_kwargs['dt_rnn'], trajectory=traj,
+                                                      outputspace=True, tol=slowpointtol, method=slowpointmethod,
+                                                      nonlinearity=training_kwargs['nonlinearity'])
+    
+            h_stabilities=get_stabilities(fxd_points, wrec, brec, tau=1/training_kwargs['dt_rnn'])
+            h_stabilities = np.where(np.array(h_stabilities)>2,2,h_stabilities)
+            plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, fxd_points=fxd_points, 
+                                            ops_fxd_points=ops_fxd_points,
+                                            h_stabilities=h_stabilities, plot_asymp=True, ax=None);
+            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
+            
+            plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
+                                       fxd_points=fxd_points, ops_fxd_points=ops_fxd_points,
+                                       h_stabilities=h_stabilities,
+                                       plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
+            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
+    
+            plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
+                                       fxd_points=fxd_points, ops_fxd_points=ops_fxd_points,
+                                       h_stabilities=h_stabilities,
+                                       plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
+            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_slow_notraj_{which}_{exp_i}.pdf', bbox_inches="tight")
 
         # plot_trajs_model(main_exp_name, model_name, exp_i, T=T, which='post', input_length=input_length,
         #                           timepart='all', num_of_inputs=num_of_inputs,
