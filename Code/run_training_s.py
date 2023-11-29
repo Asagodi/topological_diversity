@@ -130,10 +130,12 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
               scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
               verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
     else:
-        wi_init, wo_init, h0_init = None, None, None
+        wi_init, wo_init, h0_init, oth_init = None, None, None, None
         
         if training_kwargs['initialization_type'] == 'trained':
-            wi_init, wrec_init, wo_init, brec_init, h0_init, _ = get_params_exp(training_kwargs['network_folder'])
+            wi_init, wrec_init, wo_init, brec_init, h0_init, oth_init, _ = get_params_exp(training_kwargs['network_folder'], exp_i=training_kwargs['trained_exp_i'])
+
+            # wi_init, wrec_init, wo_init, brec_init, h0_init, _ = get_params_exp(training_kwargs['network_folder'])
             
         elif training_kwargs['initialization_type'] == 'gain':
             wrec_init, brec_init = None, None
@@ -176,7 +178,8 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         
         net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'], g_in=training_kwargs['g_in'],
                   nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-                  wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=training_kwargs['ml_rnn'],
+                  wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init, oth_init=oth_init,
+                  ML_RNN=training_kwargs['ml_rnn'],
                   map_output_to_hidden=training_kwargs['map_output_to_hidden'])
 
         result = train(net, task=task, data=data, n_epochs=training_kwargs['n_epochs'],
@@ -380,7 +383,7 @@ if __name__ == "__main__":
     
     main_exp_name = 'angular_integration'
     # sub_exp_name  = 'act_reg_from10_fulltrajnorm'
-    sub_exp_name = 'random_angle'
+    sub_exp_name = 'tanh_N20'
 
     training_kwargs['stop_patience'] = 200
     training_kwargs['stop_min_delta'] = 0
@@ -398,19 +401,21 @@ if __name__ == "__main__":
     training_kwargs['input_length'] = 25
     training_kwargs['random_angle_init'] = True
     training_kwargs['map_output_to_hidden'] = True
-    training_kwargs['T'] = 12.8
-    training_kwargs['task_noise_sigma'] = 10-5
+    training_kwargs['T'] = 12.8*1
     training_kwargs['finall_loss'] = False
     training_kwargs['N_in'] = 1
     training_kwargs['N_out'] = 2
     training_kwargs['b_a'] = 5
 
     training_kwargs['nonlinearity'] = 'tanh'
+    # training_kwargs['ml_rnn'] = False
+    # training_kwargs['noise_std'] = 1e-5
+    training_kwargs['task_noise_sigma'] = 0  #10-5
     training_kwargs['act_reg_lambda'] = 0 # 1e-7
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['N_rec'] = 50
+    training_kwargs['N_rec'] = 20   
     training_kwargs['batch_size'] = 512
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
@@ -428,10 +433,11 @@ if __name__ == "__main__":
     training_kwargs['scheduler_step_size'] = 500 # scheduler_step_sizes[model_i]
     training_kwargs['scheduler_gamma'] = .9 #gammas[model_i]
 
-    training_kwargs['network_folder'] = parent_dir + '/experiments/integration/N20'
+    training_kwargs['network_folder'] = parent_dir + '/experiments/angular_integration/rect_tanh_long'
+    training_kwargs['trained_exp_i'] = 1
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
-                                                          model_name=model_name, trials=10, training_kwargs=training_kwargs)
+                                                          model_name=model_name, trials=1, training_kwargs=training_kwargs)
 
     
     # param_grid = {'initialization_type': ['qpta'],
