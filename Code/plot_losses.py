@@ -46,17 +46,10 @@ def makedirs(dirname):
 #               wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init)
 #     return net
 
-def load_net_from_weights(params_folder, exp_i):
-    # wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i=exp_i)
-    # training_kwargs['map_output_to_hidden'] = False
+def load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs):
 
-    try:
-        wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i=exp_i)
-
-    except:
-        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i=exp_i)
+    if oth is None:
         training_kwargs['map_output_to_hidden'] = False
-        oth_init=None
 
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
@@ -1454,7 +1447,7 @@ if __name__ == "__main__":
     T = 128*32*2
     num_of_inputs = 111
     input_length = int(128)*10
-    which='post'
+    which= 0 #'post'
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,T)
     slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
@@ -1474,13 +1467,13 @@ if __name__ == "__main__":
     
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
     if True:    
-        exp_i = 1
+        exp_i = 0
     # for exp_i in range(5):
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
         # training_kwargs['map_output_to_hidden'] = False
-        net =  load_net_from_weights(params_folder, exp_i)
-        wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i)
-        exp = exp_list[exp_i]   
+        wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
+        # net =  load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs)
+        # exp = exp_list[exp_i]   
         input_range = (-.1, .1)   
         
         trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth,
