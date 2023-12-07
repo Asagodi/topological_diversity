@@ -31,6 +31,8 @@ import matplotlib as mpl
 from matplotlib import transforms
 from pylab import rcParams
 from matplotlib.collections import LineCollection
+from mpl_toolkits.mplot3d.art3d import Line3DCollection
+from matplotlib.colors import Normalize
 
 from models import RNN, run_net, LSTM_noforget, run_lstm
 from tasks import angularintegration_task, angularintegration_delta_task, simplestep_integration_task, poisson_clicks_task
@@ -581,7 +583,7 @@ def find_periodic_orbits(traj, traj_pca, limcyctol=1e-2, mindtol=1e-10):
             recurrences_pca.append([traj_pca[trial_i,-1,:]])
             
         elif idx: #for closed orbit
-            recurrences.append(traj[trial_i,idx:,:])
+            recurrences.append(traj[trial_i,idx:,:].numpy())
             recurrences_pca.append(traj_pca[trial_i,idx:,:])
 
     return recurrences, recurrences_pca
@@ -643,9 +645,12 @@ def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
     ax = fig.add_subplot(111, projection="3d")
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
     norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
+    cmap = cmx.get_cmap("coolwarm")
+
     norm2 = mpl.colors.Normalize(-np.pi, np.pi)
     cmap2 = plt.get_cmap('hsv')
-    cmap = cmx.get_cmap("coolwarm")
+
+    norm3 = Normalize(-np.pi, np.pi)
     stab_colors = np.array(['g', 'pink', 'red'])
     
     if plot_traj:
@@ -656,22 +661,34 @@ def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
                     linestyle='--', zdir='z', color=cmap(norm[trial_i]))
 
     if recurrences is not None:
+
         for r_i, recurrence in enumerate(recurrences):
-            recurrence_pca = recurrences_pca[r_i]
+            # print(np.array(recurrences_pca[r_i]).shape)
             
-            # segments = np.concatenate([recurrence_pca[:-1], recurrence_pca[1:]], axis=1)
-            # lc = LineCollection(segments, cmap=cmap, norm=norm)
-            # lc.set_array(y)
+            recurrence_pca = np.array(recurrences_pca[r_i]).T
 
-            # # Plot the line segments
-            # plt.gca().add_collection(lc)
+            if np.array(recurrences_pca[r_i]).shape[0]>1:
+                recurrence_pca = recurrences_pca[r_i][:,:3]
+                # print(recurrences[r_i].numpy().shape)
+                output = np.dot(recurrences[r_i], wo)
+                output_angle = np.arctan2(output[...,1], output[...,0])
+                
+                segments = np.stack([recurrence_pca[:-1], recurrence_pca[1:]], axis=1)
+                lc = Line3DCollection(segments, cmap=cmap2, norm=norm3)
+                lc.set_array(output_angle)
+                
+                # Plot the line segments in 3D
+                ax.add_collection3d(lc)
 
-            for t, point in enumerate(recurrence):
+            else:
+            # for t, point in enumerate(recurrence):
+                point = recurrence[0]
+                # print("P", point)
                 output = np.dot(point, wo)
                 output_angle = np.arctan2(output[...,1], output[...,0])
 
-                point_pca = recurrence_pca[t]
-                ax.scatter(point_pca[...,0], point_pca[...,1], point_pca[...,2],
+                point_pca = recurrence_pca
+                ax.scatter(point_pca[0], point_pca[1], point_pca[2],
                             marker='.', s=100, color=cmap2(norm2(output_angle)), zorder=100)
 
 
@@ -718,6 +735,8 @@ def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
     cmap = cmx.get_cmap("coolwarm")
     norm2 = mpl.colors.Normalize(-np.pi, np.pi)
     cmap2 = plt.get_cmap('hsv')
+    norm3 = Normalize(-np.pi, np.pi)
+
     stab_colors = np.array(['g', 'pink', 'red'])
     x = np.linspace(-np.pi, np.pi, 1000)
     # axes[1].plot(np.cos(x), np.sin(x), 'k', alpha=.5, linewidth=5, zorder=-1)
@@ -733,11 +752,20 @@ def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
         if plot_asymp:
             target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
             idx, mind = identify_limit_cycle(traj[trial_i,:,:], tol=limcyctol) #find recurrence
-            if idx:
-                ax.plot(output[trial_i,idx:,0], output[trial_i,idx:,1], '-', linewidth=3, color=cmap2(norm2(target_angle)), zorder=100)
-    
-                if mind<mindtol:
-                    ax.scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=110)
+            if idx and not mind<mindtol:
+                # ax.plot(output[trial_i,idx:,0], output[trial_i,idx:,1], '-', linewidth=3, color=cmap2(norm2(target_angle)), zorder=100)
+                out_i = output[trial_i,idx:,:]
+                out_i = out_i.reshape(-1, 1, 2)
+                # print(out_i[:-1].shape)
+                output_angle = np.arctan2(out_i[:,0,1], out_i[:,0,0])
+                segments = np.concatenate([out_i[:-1], out_i[1:]], axis=1)
+                lc = LineCollection(segments, cmap=cmap2, norm=norm3)
+                lc.set_array(output_angle)
+                ax.add_collection(lc)
+
+                
+            if mind<mindtol:
+                ax.scatter(output[trial_i,-1,0], output[trial_i,-1,1], marker='.', s=100, color=cmap2(norm2(target_angle)), zorder=110)
     if np.any(fxd_points):
         proj_fxd_points = np.dot(fxd_points, wo)
         ax.scatter(proj_fxd_points[:,0], proj_fxd_points[:,1],  marker='s',
@@ -1510,7 +1538,7 @@ if __name__ == "__main__":
     # main_exp_name='angular_integration/gains/1'
     main_exp_name='angular_integration/N30'
     # main_exp_name='angular_integration/long/100'
-    main_exp_name='angular_integration/tanh_N100_fixedstart/' #training_fullest
+    main_exp_name='angular_integration/rect_tanh_N100_fixedstart/' #training_fullest
     
     # main_exp_name='angular_integration/act_norm/1e-07'
     # main_exp_name='angular_integration/act_reg_from10'
@@ -1556,8 +1584,8 @@ if __name__ == "__main__":
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_analytic')
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
         
-    for which in range(500, 5500, 25):
-    # for which in range(100, 500, 5):
+    # for which in range(500, 5500, 25):
+    for which in range(100, 500, 5):
     # for which in range(0, 100, 1):
 
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
