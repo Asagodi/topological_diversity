@@ -29,10 +29,13 @@ import matplotlib.colors as mplcolors
 import matplotlib.cm as cmx
 import matplotlib as mpl
 from matplotlib import transforms
+from pylab import rcParams
+from matplotlib.collections import LineCollection
 
 from models import RNN, run_net, LSTM_noforget, run_lstm
 from tasks import angularintegration_task, angularintegration_delta_task, simplestep_integration_task, poisson_clicks_task
 from analysis_functions import calculate_lyapunov_spectrum, tanh_jacobian, participation_ratio
+
 
 def makedirs(dirname):
     if not os.path.exists(dirname):
@@ -530,12 +533,30 @@ def get_params_exp(params_folder, exp_i=0, which='post'):
         elif which=='pre':
             wi, wrec, wo, brec, h0 = weights_init
         else:
-            return weights_train["wi"][which], weights_train["wrec"][which], weights_train["wo"][which], weights_train["brec"][which], weights_train["h0"][which],  training_kwargs
+            return weights_train["wi"][which], weights_train["wrec"][which], weights_train["wo"][which], weights_train["brec"][which], weights_train["h0"][which], None,  training_kwargs
 
-        return wi, wrec, wo, brec, h0, training_kwargs
+        return wi, wrec, wo, brec, h0, None, training_kwargs
 
     
         
+def get_traininginfo_exp(params_folder, exp_i=0, which='post'):
+    exp_list = glob.glob(params_folder + "/result*")
+    exp = exp_list[exp_i]
+    params_path = glob.glob(params_folder + '/param*.yml')[0]
+    training_kwargs = yaml.safe_load(Path(params_path).read_text())
+    with open(exp, 'rb') as handle:
+        result = pickle.load(handle)
+    
+    try:
+        losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
+        
+        
+    except:
+        losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = result
+
+
+    return losses, gradient_norms, epochs, rec_epochs, weights_train
+    
 
 from scipy.spatial.distance import cdist
 
@@ -570,7 +591,7 @@ def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
                                     plot_asymp=False, limcyctol=1e-2, mindtol=1e-4,
                                     fxd_points = None, ops_fxd_points=None, 
                                     h_stabilities=None, o_stabilities=None, 
-                                    ax=None):
+                                    ax=None, plot_epoch=False):
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3))
     
@@ -607,6 +628,9 @@ def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
         else:
             ax.scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1],
                    marker='x', c=stab_colors[o_stabilities], alpha=.5, zorder=101)
+            
+    if plot_epoch:
+        plt.text(.0, 0., s=plot_epoch, fontsize=10)
 
         
 def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
@@ -614,7 +638,7 @@ def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
                                     fxd_points=None, ops_fxd_points=None,
                                     h_stabilities=None,
                                     elev=20., azim=-35, roll=0,
-                                    lims=[]):
+                                    lims=[], plot_epoch=False):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
@@ -634,6 +658,13 @@ def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
     if recurrences is not None:
         for r_i, recurrence in enumerate(recurrences):
             recurrence_pca = recurrences_pca[r_i]
+            
+            # segments = np.concatenate([recurrence_pca[:-1], recurrence_pca[1:]], axis=1)
+            # lc = LineCollection(segments, cmap=cmap, norm=norm)
+            # lc.set_array(y)
+
+            # # Plot the line segments
+            # plt.gca().add_collection(lc)
 
             for t, point in enumerate(recurrence):
                 output = np.dot(point, wo)
@@ -641,7 +672,7 @@ def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
 
                 point_pca = recurrence_pca[t]
                 ax.scatter(point_pca[...,0], point_pca[...,1], point_pca[...,2],
-                           marker='.', s=100, color=cmap2(norm2(output_angle)), zorder=100)
+                            marker='.', s=100, color=cmap2(norm2(output_angle)), zorder=100)
 
 
     if np.any(fxd_points):
@@ -656,6 +687,9 @@ def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
         pca_ops_fxd_points = pca.transform(ops_fxd_points)
         ax.scatter(pca_ops_fxd_points[:,0], pca_ops_fxd_points[:,1], pca_ops_fxd_points[:,2],
                    marker='x', color='k', alpha=.5, zorder=101)
+        
+    # if plot_epoch:
+    #     plt.text(.0, 0., 0, s=plot_epoch, fontsize=10)
 
     ax.view_init(elev=elev, azim=azim, roll=roll)
     ax.set_xlabel("PC1")
@@ -674,7 +708,7 @@ def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
                            fxd_points=None, ops_fxd_points=None,
                            h_stabilities=None, o_stabilities=None,
                            plot_asymp=False, limcyctol=1e-2, mindtol=1e-4, ax=None,
-                           xylims=[-1.2,1.2]):
+                           xylims=[-1.2,1.2], plot_epoch=False):
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3))
 
@@ -711,6 +745,9 @@ def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
     if np.any(ops_fxd_points):
         proj_ops_fxd_points = np.dot(ops_fxd_points, wo)
         ax.scatter(proj_ops_fxd_points[:,0], proj_ops_fxd_points[:,1],  marker='x', color='k', alpha=.3, zorder=101)    
+
+    if plot_epoch:
+        plt.text(-1.4, 1.4, s=plot_epoch, fontsize=10)
 
     ax.set_axis_off()
     ax.set_xlim(xylims)
@@ -1462,7 +1499,7 @@ if __name__ == "__main__":
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
     T = 128*32*2
     num_of_inputs = 11
-    input_length = int(128)*10
+    input_length = int(128)*2
     which =  3# 'post'
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,T)
@@ -1473,7 +1510,7 @@ if __name__ == "__main__":
     # main_exp_name='angular_integration/gains/1'
     main_exp_name='angular_integration/N30'
     # main_exp_name='angular_integration/long/100'
-    main_exp_name='angular_integration/relu_N20/training_full'
+    main_exp_name='angular_integration/tanh_N100_fixedstart/' #training_fullest
     
     # main_exp_name='angular_integration/act_norm/1e-07'
     # main_exp_name='angular_integration/act_reg_from10'
@@ -1482,17 +1519,24 @@ if __name__ == "__main__":
     #                               act_lambdas = [1e-05, 1e-07, 1e-09, 0])
     
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
-    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_asymp')
-    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_analytic')
-    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_asymp')
-    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
+
+
     if True:    
         exp_i = 0
-        input_range = (-.1, .1)   
+        input_range = (-.5, .5)   
 
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
         which = 'post'
-        wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
+        losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, which)
+        print("Epochs trained: ", np.argmin(losses))
+        # plt.plot(np.log(losses))
+        # plt.close()
+        try:
+            wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
+        except:
+            wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i, which)
+            oth = None
+
         
         trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth,
                                                                                             T=T, input_length=input_length, which=which,
@@ -1502,10 +1546,24 @@ if __name__ == "__main__":
         xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
         ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
         zlim = [np.min(traj_pca[...,2]), np.max(traj_pca[...,2])]
-    for which in range(0,2000):
+        
+    rcParams["figure.dpi"] = 500
+    plt.rcParams["figure.figsize"] = (5,5)
+    xylims=[-1.5,1.5]
+    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_asymp')
+    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_asymp')
+    if training_kwargs['nonlinearity'] == 'relu' and training_kwargs['N_rec'] <= 25:
+        makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_analytic')
+        makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
+        
+    for which in range(500, 5500, 25):
+    # for which in range(100, 500, 5):
+    # for which in range(0, 100, 1):
+
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
         # training_kwargs['map_output_to_hidden'] = False
         wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
+
         # net =  load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs)
         # exp = exp_list[exp_i]   
         
@@ -1526,14 +1584,14 @@ if __name__ == "__main__":
         recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
         plot_input_driven_trajectory_3d(traj_pca, input_length, plot_traj=True,
                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
-                                            elev=45, azim=135, lims=[xlim, ylim, zlim])
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_asymp/{which:03d}_{exp_i}.png', bbox_inches="tight")
+                                            elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_asymp/{which:04d}_{exp_i}.png', bbox_inches="tight")
         plt.close()
         
         plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
                                    fxd_points=None, ops_fxd_points=None,
-                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp/{which:03d}_{exp_i}.png', bbox_inches="tight")
+                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp/{which:04d}_{exp_i}.png', bbox_inches="tight")
         plt.close()
 
         # plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
@@ -1549,16 +1607,16 @@ if __name__ == "__main__":
                                                 recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
                                                 fxd_points=fixed_point_list,
                                                 h_stabilities=unstabledimensions,
-                                                elev=45, azim=135, lims=[xlim, ylim, zlim])
-            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_analytic/{which:03d}_{exp_i}.png', bbox_inches="tight")
+                                                elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
+            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_analytic/{which:04d}_{exp_i}.png', bbox_inches="tight")
             plt.close()
 
             
             plot_output_trajectory(trajectories[:,:,:], wo, input_length, plot_traj=True,
                                        fxd_points=fixed_point_list,
                                        h_stabilities=unstabledimensions,
-                                       plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
-            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_analytic/{which:03d}_{exp_i}.png', bbox_inches="tight")
+                                       plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which)
+            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_analytic/{which:04d}_{exp_i}.png', bbox_inches="tight")
             plt.close()
         
         if False:
