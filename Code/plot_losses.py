@@ -1525,7 +1525,7 @@ if __name__ == "__main__":
     # T = 20
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
-    T = 128*32*2
+    T = 128*32*1
     num_of_inputs = 11
     input_length = int(128)*2
     which =  3# 'post'
@@ -1538,7 +1538,7 @@ if __name__ == "__main__":
     # main_exp_name='angular_integration/gains/1'
     main_exp_name='angular_integration/N30'
     # main_exp_name='angular_integration/long/100'
-    main_exp_name='angular_integration/rect_tanh_N100_fixedstart/' #training_fullest
+    main_exp_name='angular_integration/tanh_N100_T256/' #training_fullest
     
     # main_exp_name='angular_integration/act_norm/1e-07'
     # main_exp_name='angular_integration/act_reg_from10'
@@ -1550,7 +1550,7 @@ if __name__ == "__main__":
 
 
     if True:    
-        exp_i = 0
+        exp_i = 1
         input_range = (-.5, .5)   
 
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
@@ -1575,7 +1575,7 @@ if __name__ == "__main__":
         ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
         zlim = [np.min(traj_pca[...,2]), np.max(traj_pca[...,2])]
         
-    rcParams["figure.dpi"] = 500
+    rcParams["figure.dpi"] = 250
     plt.rcParams["figure.figsize"] = (5,5)
     xylims=[-1.5,1.5]
     makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_asymp')
@@ -1584,9 +1584,9 @@ if __name__ == "__main__":
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_analytic')
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
         
-    # for which in range(500, 5500, 25):
-    for which in range(100, 500, 5):
-    # for which in range(0, 100, 1):
+    # for which in range(500, np.argmin(losses), 100):
+    # for which in ['000000000pre'] + range(0, 500, 5) + 'post':
+    for which in range(0, 100, 1):
 
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
         # training_kwargs['map_output_to_hidden'] = False
@@ -1608,18 +1608,18 @@ if __name__ == "__main__":
         
         # plot_input_driven_trajectory_3d(traj_pca, input_length, elev=45, azim=135)
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
-        
+        which *= training_kwargs['record_step']
         recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
         plot_input_driven_trajectory_3d(traj_pca, input_length, plot_traj=True,
                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
                                             elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_asymp/{which:04d}_{exp_i}.png', bbox_inches="tight")
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_asymp/{exp_i}_{which:04d}.png', bbox_inches="tight")
         plt.close()
         
         plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
                                    fxd_points=None, ops_fxd_points=None,
                                    plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp/{which:04d}_{exp_i}.png', bbox_inches="tight")
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp/{exp_i}_{which:04d}.png', bbox_inches="tight")
         plt.close()
 
         # plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
@@ -1636,7 +1636,7 @@ if __name__ == "__main__":
                                                 fxd_points=fixed_point_list,
                                                 h_stabilities=unstabledimensions,
                                                 elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
-            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_analytic/{which:04d}_{exp_i}.png', bbox_inches="tight")
+            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_analytic/{exp_i}_{which:04d}.png', bbox_inches="tight")
             plt.close()
 
             
@@ -1644,7 +1644,7 @@ if __name__ == "__main__":
                                        fxd_points=fixed_point_list,
                                        h_stabilities=unstabledimensions,
                                        plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which)
-            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_analytic/{which:04d}_{exp_i}.png', bbox_inches="tight")
+            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_analytic/{exp_i}_{which:04d}.png', bbox_inches="tight")
             plt.close()
         
         if False:
