@@ -1509,6 +1509,54 @@ def fixed_point_analysis():
             print(nearest_to_zero)
         
         
+from ripser import ripser
+from persim import plot_diagrams
+def tda_trajectories(trajectories, nrec):
+    data = trajectories.reshape((-1,nrec))
+    diagrams = ripser(data)['dgms']
+    plot_diagrams(diagrams, show=True)
+    
+    
+        
+def plot_learning_trajectory(main_exp_name, exp_i, T=128*32*4, num_of_inputs=11, xylims=[-1.5,1.5]):
+
+    input_length = int(128)*4
+    plot_from_to = (T-1*input_length,T)
+    pca_from_to = (0,input_length)
+    slowpointmethod= 'L-BFGS-B'
+    input_range = (-.5, .5)   
+    full_num_of_inputs = 111
+    params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
+    which = 'post'
+    losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, which)
+    print("Epochs trained: ", np.argmin(losses))
+
+    try:
+        wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
+    except:
+        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i, which)
+        oth = None
+
+    
+    trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth,
+                                                                                        T=T, input_length=input_length, which=which,
+                                                                                        pca_from_to=pca_from_to,
+      num_of_inputs=full_num_of_inputs, input_range=input_range, random_angle_init=False)
+    
+    xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
+    ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
+    zlim = [np.min(traj_pca[...,2]), np.max(traj_pca[...,2])]
+    
+    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_asymp')
+    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_asymp')
+    
+    
+    
+    
+    for which in range(0, 100, 1) + range(330, 335, 1) + range(500, np.argmin(losses), 100):
+        wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
+
+        
 
 if __name__ == "__main__":
 
@@ -1525,22 +1573,17 @@ if __name__ == "__main__":
     # T = 20
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
-    T = 128*32*1
-    num_of_inputs = 11
-    input_length = int(128)*2
+    T = 128*16*1
+    num_of_inputs = 2
+    input_length = int(128)*4
     which =  3# 'post'
     plot_from_to = (T-1*input_length,T)
-    pca_from_to = (0,T)
+    pca_from_to = (0,input_length)
     slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
 
     model_name = ''
     main_exp_name='angular_integration/hidden/25.6'
-    # main_exp_name='angular_integration/gains/1'
-    main_exp_name='angular_integration/N30'
-    # main_exp_name='angular_integration/long/100'
-    main_exp_name='angular_integration/tanh_N100_T256/' #training_fullest
-    
-    # main_exp_name='angular_integration/act_norm/1e-07'
+    main_exp_name='angular_integration/relu_N100_T256_fixed_steplr/' #training_fullest
     # main_exp_name='angular_integration/act_reg_from10'
 
     # plot_explained_variances(main_exp_name, model_name, input_length=input_length, batch_size=2**8, 
@@ -1548,9 +1591,8 @@ if __name__ == "__main__":
     
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
 
-
     if True:    
-        exp_i = 1
+        exp_i = 0
         input_range = (-.5, .5)   
 
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
@@ -1583,12 +1625,11 @@ if __name__ == "__main__":
     if training_kwargs['nonlinearity'] == 'relu' and training_kwargs['N_rec'] <= 25:
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_analytic')
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
-        
+    
     # for which in range(500, np.argmin(losses), 100):
-    # for which in ['000000000pre'] + range(0, 500, 5) + 'post':
-    for which in range(0, 100, 1):
+    for which in  range(330, 335, 1):
+    # for which in range(0, 100, 1):
 
-        params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
         # training_kwargs['map_output_to_hidden'] = False
         wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
 
@@ -1608,7 +1649,7 @@ if __name__ == "__main__":
         
         # plot_input_driven_trajectory_3d(traj_pca, input_length, elev=45, azim=135)
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
-        which *= training_kwargs['record_step']
+
         recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
         plot_input_driven_trajectory_3d(traj_pca, input_length, plot_traj=True,
                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
