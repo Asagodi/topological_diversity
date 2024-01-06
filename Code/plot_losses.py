@@ -562,8 +562,8 @@ def get_traininginfo_exp(params_folder, exp_i=0, which='post'):
 
 from scipy.spatial.distance import cdist
 
-def identify_limit_cycle(time_series, tol=1e-6):
-    d = cdist(time_series[-1,:].reshape((1,-1)),time_series[:-100])
+def identify_limit_cycle(time_series, skip_first=10, tol=1e-6):
+    d = cdist(time_series[-1,:].reshape((1,-1)),time_series[:-skip_first])
     mind = np.min(d)
     idx = np.argmin(d)
     
@@ -664,13 +664,10 @@ def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
     if recurrences is not None:
 
         for r_i, recurrence in enumerate(recurrences):
-            # print(np.array(recurrences_pca[r_i]).shape)
-            
             recurrence_pca = np.array(recurrences_pca[r_i]).T
 
             if np.array(recurrences_pca[r_i]).shape[0]>1:
                 recurrence_pca = recurrences_pca[r_i][:,:3]
-                # print(recurrences[r_i].numpy().shape)
                 output = np.dot(recurrences[r_i], wo)
                 output_angle = np.arctan2(output[...,1], output[...,0])
                 
@@ -1657,6 +1654,8 @@ if __name__ == "__main__":
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
 
         recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
+        id_recurrences, id_recurrences_pca = find_periodic_orbits(trajectories[:,:input_length,:], traj_pca[:,:input_length,:], limcyctol=1e-2, mindtol=1e-4)
+
         plot_input_driven_trajectory_3d(traj_pca, input_length, plot_traj=True,
                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
                                             elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
