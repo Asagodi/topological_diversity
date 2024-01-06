@@ -641,6 +641,7 @@ def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
                                     h_stabilities=None,
                                     elev=20., azim=-35, roll=0,
                                     lims=[], plot_epoch=False):
+    
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
@@ -1511,10 +1512,15 @@ def fixed_point_analysis():
         
 from ripser import ripser
 from persim import plot_diagrams
-def tda_trajectories(trajectories, nrec):
-    data = trajectories.reshape((-1,nrec))
+def tda_trajectories(trajectories):
+    
+    data = trajectories.reshape((-1,trajectories.shape[-1]))
     diagrams = ripser(data)['dgms']
     plot_diagrams(diagrams, show=True)
+    
+    # recarr = [np.array(rec) if len(rec)>1 else np.array(rec[0]) for rec in recurrences]
+    # allrec = np.vstack(recarr)
+    # u, c = np.unique(np.round(allrec,4), return_counts=True, axis=0)
     
     
         
@@ -1574,9 +1580,8 @@ if __name__ == "__main__":
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
     T = 128*16*1
-    num_of_inputs = 2
+    num_of_inputs = 111
     input_length = int(128)*4
-    which =  3# 'post'
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,input_length)
     slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
@@ -1627,8 +1632,9 @@ if __name__ == "__main__":
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
     
     # for which in range(500, np.argmin(losses), 100):
-    for which in  range(330, 335, 1):
+    # for which in  range(330, 335, 1):
     # for which in range(0, 100, 1):
+    if False:
 
         # training_kwargs['map_output_to_hidden'] = False
         wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
