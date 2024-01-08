@@ -1520,6 +1520,13 @@ def tda_trajectories(trajectories):
     # u, c = np.unique(np.round(allrec,4), return_counts=True, axis=0)
     
     
+def tda_inputdriven_recurrent(id_recurrences):
+    recarr = [np.array(rec) if len(rec)>1 else np.array(rec[0]) for rec in id_recurrences]
+    allrec = np.vstack(recarr)
+    u, c = np.unique(np.round(allrec,4), return_counts=True, axis=0)
+    diagrams = ripser(u)['dgms']
+    plot_diagrams(diagrams, show=True)
+    
         
 def plot_learning_trajectory(main_exp_name, exp_i, T=128*32*4, num_of_inputs=11, xylims=[-1.5,1.5]):
 
@@ -1655,6 +1662,7 @@ if __name__ == "__main__":
 
         recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
         id_recurrences, id_recurrences_pca = find_periodic_orbits(trajectories[:,:input_length,:], traj_pca[:,:input_length,:], limcyctol=1e-2, mindtol=1e-4)
+        tda_inputdriven_recurrent(id_recurrences)
 
         plot_input_driven_trajectory_3d(traj_pca, input_length, plot_traj=True,
                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
