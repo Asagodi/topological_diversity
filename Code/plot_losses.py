@@ -1529,6 +1529,20 @@ def tda_inputdriven_recurrent(id_recurrences, maxdim=1):
     diagrams = ripser(u, maxdim=maxdim)['dgms']
 
     plot_diagrams(diagrams, show=True)
+    
+    colors = ['b', 'r', 'g']
+    s=2
+    plt.style.use('seaborn-dark-palette')
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3));
+    for i in range(len(diagrams)):
+        for point in diagrams[i]:
+            ax.scatter(point[0], point[1], c=colors[i], s=s)
+    maximal = np.nanmax(diagrams[0][np.isfinite(diagrams[0])])
+    ax.scatter(0, 1.01*maximal, c=colors[0], s=s)
+    ax.plot([-maximal,1.1*maximal], [-maximal,1.1*maximal], 'k--')
+    ax.plot([-maximal,1.1*maximal], [1.01*maximal,1.01*maximal], 'k--')
+    ax.set_xlim([-maximal/10.,1.1*maximal]); ax.set_ylim([-maximal/10.,1.1*maximal])
+    
     return diagrams
         
 def plot_learning_trajectory(main_exp_name, exp_i, T=128*32*4, num_of_inputs=11, xylims=[-1.5,1.5]):
@@ -1595,7 +1609,7 @@ if __name__ == "__main__":
 
     model_name = ''
     main_exp_name='angular_integration/hidden/25.6'
-    main_exp_name='angular_integration/relu_N100_T256_fixed_steplr/' #training_fullest
+    main_exp_name='angular_integration/N50/' #training_fullest
     # main_exp_name='angular_integration/act_reg_from10'
 
     # plot_explained_variances(main_exp_name, model_name, input_length=input_length, batch_size=2**8, 
@@ -1611,15 +1625,20 @@ if __name__ == "__main__":
         which = 'post'
         losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, which)
         print("Epochs trained: ", np.argmin(losses))
-        which = np.argmin(losses)
+        # which = np.argmin(losses)
         # plt.plot(np.log(losses))
         # plt.close()
+
         try:
             wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
         except:
             wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i, which)
             oth = None
 
+        try:
+            training_kwargs['map_output_to_hidden']
+        except:
+            training_kwargs['map_output_to_hidden'] = False
         
         trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth,
                                                                                             T=T, input_length=input_length, which=which,
@@ -1646,6 +1665,10 @@ if __name__ == "__main__":
 
         # training_kwargs['map_output_to_hidden'] = False
         wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
+        try:
+            training_kwargs['map_output_to_hidden']
+        except:
+            training_kwargs['map_output_to_hidden'] = False
 
         # net =  load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs)
         # exp = exp_list[exp_i]   
@@ -1672,6 +1695,7 @@ if __name__ == "__main__":
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven_tda_{exp_i}.png', bbox_inches="tight")
         plt.close()
 
+    if False:
         plot_input_driven_trajectory_3d(traj_pca, input_length, plot_traj=True,
                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
                                             elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
