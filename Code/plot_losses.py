@@ -1529,7 +1529,7 @@ def tda_inputdriven_recurrent(id_recurrences, maxdim=1):
     diagrams = ripser(u, maxdim=maxdim)['dgms']
 
     plot_diagrams(diagrams, show=True)
-    
+    return diagrams
         
 def plot_learning_trajectory(main_exp_name, exp_i, T=128*32*4, num_of_inputs=11, xylims=[-1.5,1.5]):
 
@@ -1587,8 +1587,8 @@ if __name__ == "__main__":
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
     T = 128*16*1
-    num_of_inputs = 111
-    input_length = int(128)*4
+    num_of_inputs = 2
+    input_length = int(128)*8
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,input_length)
     slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
@@ -1605,12 +1605,13 @@ if __name__ == "__main__":
 
     if True:    
         exp_i = 0
-        input_range = (-.5, .5)   
+        input_range = (-.2, .2)   
 
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
         which = 'post'
         losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, which)
         print("Epochs trained: ", np.argmin(losses))
+        which = np.argmin(losses)
         # plt.plot(np.log(losses))
         # plt.close()
         try:
@@ -1641,7 +1642,7 @@ if __name__ == "__main__":
     # for which in range(500, np.argmin(losses), 100):
     # for which in  range(330, 335, 1):
     # for which in range(0, 100, 1):
-    if False:
+    if True:
 
         # training_kwargs['map_output_to_hidden'] = False
         wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
@@ -1664,8 +1665,12 @@ if __name__ == "__main__":
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
 
         recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
-        id_recurrences, id_recurrences_pca = find_periodic_orbits(trajectories[:,:input_length,:], traj_pca[:,:input_length,:], limcyctol=1e-2, mindtol=1e-4)
-        tda_inputdriven_recurrent(id_recurrences)
+        id_recurrences, id_recurrences_pca = find_periodic_orbits(trajectories[:,:input_length,:], traj_pca[:,:input_length,:], limcyctol=1e-1, mindtol=1e-4)
+        
+        diagrams = tda_inputdriven_recurrent(id_recurrences, maxdim=2)
+        plot_diagrams(diagrams, show=True)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven_tda_{exp_i}.png', bbox_inches="tight")
+        plt.close()
 
         plot_input_driven_trajectory_3d(traj_pca, input_length, plot_traj=True,
                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
