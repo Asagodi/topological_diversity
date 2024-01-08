@@ -1513,6 +1513,8 @@ def tda_trajectories(trajectories):
     
     data = trajectories.reshape((-1,trajectories.shape[-1]))
     diagrams = ripser(data)['dgms']
+    # diagrams = ripser(data, maxdim=2)['dgms'] #higher homology groups 
+
     plot_diagrams(diagrams, show=True)
     
     # recarr = [np.array(rec) if len(rec)>1 else np.array(rec[0]) for rec in recurrences]
@@ -1520,11 +1522,12 @@ def tda_trajectories(trajectories):
     # u, c = np.unique(np.round(allrec,4), return_counts=True, axis=0)
     
     
-def tda_inputdriven_recurrent(id_recurrences):
+def tda_inputdriven_recurrent(id_recurrences, maxdim=1):
     recarr = [np.array(rec) if len(rec)>1 else np.array(rec[0]) for rec in id_recurrences]
     allrec = np.vstack(recarr)
     u, c = np.unique(np.round(allrec,4), return_counts=True, axis=0)
-    diagrams = ripser(u)['dgms']
+    diagrams = ripser(u, maxdim=maxdim)['dgms']
+
     plot_diagrams(diagrams, show=True)
     
         
