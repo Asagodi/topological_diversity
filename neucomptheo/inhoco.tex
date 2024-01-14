@@ -1,4 +1,5 @@
-\documentclass{article}
+%\documentclass{article}
+\documentclass{scrartcl}
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb, amsmath, amsthm}
 \usepackage{thmtools, mathtools, mathrsfs}
@@ -36,24 +37,92 @@
 \begin{document}
 \maketitle
 
+\section{Dynamial systems}
+Conley's decomposition theorem states that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
+
+\section{Cortical computation theory}
+\citep{stevens1995}
+
+\subsection{Types of cortex}\label{sec:types}
+\paragraph{Unitary}
+Only a single major computational type of cortex exists
+
+\paragraph{Continuous diversity theory}
+The character of some mathematical operation might vary continuously across even an apparently uniform coortical region like primary visual cortex
+
+
+
+\subsection{Four requirements}
+The theory 
+\begin{itemize}
+\item can accommodate the spectrum of possibilities: from unitary to continuous  diversity views (see \ref{sec:types})
+\item should be probabilistic, because synaptic transmission is stochastic 
+\item should be coarse grained and should treat cortical inputs and outputs as continuous variables
+\item the output at any one point should be a functional of both inputs and outputs 
+\end{itemize}
+
+
+
+
+
 \section{Infinite horizon computation}	
 \begin{definition}
 Infinite horizon: agnostic to decoding time
 \end{definition}
 
-\section{Theorems on infinite horizon neural computation}
+\begin{remark}
+The output can only change if there is a change in the input. 
+So cued output is allowed, but timing tasks are excluded.
+\end{remark}
+
+\section{Theorems on infinite horizon neural computation on a compact domain}
+
+
+\subsection{Memory states}%the words in the language
+
 \begin{theorem}
-Neural computation that is bounded has to rely on asymptotic dynamics or on omega sets.
+Asymptotic neural computation that is bounded has to rely on chain-recurrent sets.
 \end{theorem}
+
+\begin{theorem}	
+Infinite horizon neural computation that is bounded has to rely on the sets that have a chain-recurrent set as their $\omega$-limit set.
+\end{theorem}	
+
+
 
 \begin{proof}
 Invariance to time decoding implies that trajectories (after the input is presented) that get decoded into a certain output need to retain that decoding
 
-Convergence to the non-wandering set for a compact dynamical system
+Convergence to the non-wandering set for a compact dynamical system \citep{conley1978}
 
-Each of these trajectories will be in the same $\omega$-limit set
+Each of these trajectories will be in the set that has the same $\omega$-limit set.
 \end{proof}
 
+
+\subsubsection{Meaningful memory states (for the behavior) are charaterized by the output}
+\begin{theorem}
+For neural computation with a linear decoder, the sets of trajectories grouped by input (i.e. preimages of the decoder $f^{-1}(y)$ for $y\in Y$ the output space) must be linearly separable.
+\end{theorem}
+
+\begin{remark}
+If the assumption of a compact domain is relaxed, then the computation can involve an inertial manifold (as long as it is aligned with the nullspace of the decoder).
+\end{remark}
+
+
+\subsection{Syntax}%how words and morphemes combine to form larger units
+%how information is integrated
+%how input interacts with the represented information/the internal state
+
+\subsubsection{Input driven dynamics}
+Two cases to model it:
+\begin{enumerate}
+\item Input is modelled as a delta function, input reinitializes the system
+\item Input is continuous 
+\begin{itemize}
+\item If input is constant, study it as a bifurcation parameter
+\item Otherwise: non-autonomous dynamics (perhaps inertial manifold can be useful, they can provide a condition when dynamics is equivalent to the dynamics of an autonomous system)
+\end{itemize}•
+\end{enumerate}•
 
 %\begin{figure}[H]
 % \centering
@@ -62,10 +131,6 @@ Each of these trajectories will be in the same $\omega$-limit set
 % \label{fig:tanh_dydot}
 %\end{figure}
 
-
-\begin{theorem}
-For neural computation with a linear decoder, the sets of trajectories grouped by input must be linearly separable.
-\end{theorem}
 
 
 % \newpage
