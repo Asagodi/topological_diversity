@@ -43,11 +43,6 @@
 \section{Goal}
 The goal is to give a framework to be able to characterize and describe all possible computations that can be implemented in neural networks with asymptotic dynamics and robustly in the language of dynamical systems (at a level that is understandable for humans).
 
-\section{Dynamial systems}
-Conley's decomposition theorem states that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
-
-
-
 
 \section{Abstract}
 This document presents a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems,  leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states, crucial to neural behavior, are dissected, revealing their characterization in terms of sets with chain-recurrent sets as $\omega$-limit. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by input. Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
@@ -84,17 +79,15 @@ So cued output is allowed, but timing tasks are excluded.
 \subsection{Memory states}%the words in the language
 
 \begin{theorem}
-Asymptotic neural computation that is bounded (that happens on a compact domain) has to rely on chain-recurrent sets.
+Asymptotic neural computation that is bounded (that happens on a compact domain) has to rely on Morse sets.
 \end{theorem}
 
 \begin{theorem}	
 Infinite horizon neural computation that is bounded has to rely on the sets that have a chain-recurrent set as their $\omega$-limit set.
 \end{theorem}	
 
-
-
 \begin{proof}
-Invariance to time decoding implies that trajectories (after the input is presented) that get decoded into a certain output need to retain that decoding
+Invariance to time decoding implies that trajectories (after the input is presented) that get decoded into a certain output need to retain that decoding.
 
 Convergence to the non-wandering set for a compact dynamical system \citep{conley1978}
 
@@ -150,13 +143,13 @@ The chain recurrent set of $X$ under the flow $\varphi$ is defined by
 \[\mathcal{R}(X,\varphi) = \{x\in X|x\succeq x\}.\]
 \end{definition}
 
-The flow is called \epmh{strongly gradient-like} if the chain recurrent set is totally disconnected (and consequently equal to the rest point set). 
+The flow is called \emph{strongly gradient-like} if the chain recurrent set is totally disconnected (and consequently equal to the rest point set). 
 
 The recurrent set captures all the recurrent dynamics as stated and proven in \cite[Chapter I.8.2]{conley1978}.
 
-The only type of dynamics that is outside of the recurrent set is strongly gradient-like':
+The only type of dynamics that is outside of the recurrent set is strongly gradient-like:
 
-Statement. Every flow on a compact space is uniquely represented as the extension of a chain recu"ent flow by a strongly gradient-like flow; that is the flow admits a unique subflow which is chain recu"ent and such that the quotient flow is strongly gradient-like.
+Statement. Every flow on a compact space is uniquely represented as the extension of a chain recu"ent flow by a strongly gradient-like flow; that is the flow admits a unique subflow which is chain recurrent and such that the quotient flow is strongly gradient-like.
 
 
 
