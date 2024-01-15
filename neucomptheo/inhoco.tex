@@ -73,7 +73,7 @@ We define the implemented (neural) computation as an input-output mapping for ti
 \begin{equation}
 o(t) = \varphi(\{u(t)\}_{t\in T})
 \end{equation}
-where $o(t)$ is the target output for each time point $t$ and  $u(t)$ is the input.
+where $o(t)$ is the target output for each time point $t\in T$ and  $u(t)$ is the input.
 
 Internal dynamics is a non-autonomous ODE, driven by input $u(t)$:
 \begin{align}
@@ -144,7 +144,10 @@ The Morse sets in this class either have a periodic or quasiperiodic behavior or
 All points inside such a set need to be mapped onto the same point, i.e. for some $y\in Y$ for all $x\in M$ we have that $g(x)=y$.
 
 The second one can hold a continuum of memory states. %These are continuous attractor-like sets.
+Such sets to be used as a neural integrator we state the following constraint on the input:
+There is an input value that pushes the internal state along $M$.
 
+On the other hand if $M$ is  mapped onto a single output, then the integrated information is either not used or used only internally in the computation.
 
 \subsection{Syntax}%how words and morphemes combine to form larger units
 %how information is integrated
