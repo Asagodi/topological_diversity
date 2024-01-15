@@ -45,7 +45,9 @@ The goal is to give a framework to be able to characterize and describe all poss
 
 \section{Dynamial systems}
 Conley's decomposition theorem states that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
-\mpcomment{Define chain-crecurrent and gradient-like.}
+
+
+
 
 \section{Abstract}
 This document presents a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems,  leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states, crucial to neural behavior, are dissected, revealing their characterization in terms of sets with chain-recurrent sets as $\omega$-limit. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by input. Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
@@ -131,6 +133,19 @@ Two cases to model it:
 \subsection{Dynamical systems theory}
 
 Conley's decomposition theorem states that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
+
+\begin{definition}[$(\epsilon,\tau)$ chain]
+An $(\epsilon,\tau)$ chain from $x$ to $y$ is a finite sequence 
+\[f(x_i, t_i) \subset  X \times  [\tau,\infty); i = 1, \dots, n\]
+such that $x = x_1, t_i\geq \tau, \mu(\varphi(t_i, x_i), x_{i+1})\leq \varepsilon$   and $\mu(\varphi(t_n, x_n), y)\leq \epsilon$.
+ If there exists an $(\epsilon,\tau)$ chain from $x$ to $y$, then we write $x \succeq_{(\epsilon,\tau)}y$. If  $x \succeq_{(\epsilon,\tau)}y$ for all $(\epsilon,\tau)$, then  $x \succeq y$.
+\end{definition}
+
+
+\begin{definition}[Chain-recurrent set]
+The chain recurrent set of $X$ under the flow $\varphi$ is defined by 
+\[\mathcal{R}(X,\varphi) = \{x\in X|x\succeq x\}.\]
+\end{definition}
 
 
 %\begin{figure}[H]
