@@ -43,6 +43,8 @@
 \section{Goal}
 The goal is to give a framework to be able to characterize and describe all possible computations that can be implemented in neural networks with asymptotic dynamics and robustly in the language of dynamical systems (at a level that is understandable for humans).
 
+For asymptotic dynamics one can formulate a 1-to-1 mapping to finite-state machines.
+
 
 \section{Abstract}
 This document presents a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems,  leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states, crucial to neural behavior, are dissected, revealing their characterization in terms of sets with chain-recurrent sets as $\omega$-limit. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by input. Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
@@ -63,7 +65,20 @@ Brain is noisy
 
 
 \section{Infinite horizon computation}	
-Neural Computation: IO 
+Neural Computation: I/O mapping for times $t\in T$
+\begin{equation}
+o(t) = \varphi(\{u(t)\}_{t\in T})
+\end{equation}
+
+
+\begin{align}
+\begin{cases}
+\dot x(t) &= f(x(t),u(t))\\
+y(t) &= g(x(t))
+\end{cases}
+\end{align}
+
+
 \begin{definition}
 Infinite horizon: agnostic to decoding time
 \end{definition}
@@ -79,25 +94,34 @@ So cued output is allowed, but timing tasks are excluded.
 \subsection{Memory states}%the words in the language
 
 \begin{theorem}
-Asymptotic neural computation that is bounded (that happens on a compact domain) has to rely on Morse sets.
+Asymptotic neural computation that is bounded (that happens on a compact domain) has to rely on Morse sets to represent (input, internal and output states).
 \end{theorem}
 
+\begin{proof}
+The asymptotic dynamics converges to the Morse sets for a compact dynamical system \citep{conley1978}, see Sec.~\ref{sec:dst}.
+\end{proof}
+
+
 \begin{theorem}	
-Infinite horizon neural computation that is bounded has to rely on the sets that have a chain-recurrent set as their $\omega$-limit set.
+Infinite horizon neural computation that is bounded has to rely on the sets that have a Morse set as their $\omega$-limit set.
 \end{theorem}	
 
 \begin{proof}
 Invariance to time decoding implies that trajectories (after the input is presented) that get decoded into a certain output need to retain that decoding.
+%mathematical formulation
 
-Convergence to the non-wandering set for a compact dynamical system \citep{conley1978}
+Each trajectory converges to a Morse set asymptotically.
 
-Each of these trajectories will be in the set that has the same $\omega$-limit set.
+\begin{itemize}
+\item For constant output (after last input): Each of these trajectories needs to be mapped onto the same value as the $\omega$-limit set.
+\item For dynamic output: Each state along these trajectories needs to be mapped onto the same value as the $\omega$-limit set corresponding to a value along the dynamic output. %is the notion of inertial manifold useful here
+\end{itemize}•
 \end{proof}
 
 
 \subsubsection{Meaningful memory states (for the behavior) are charaterized by the output}
 \begin{theorem}
-For neural computation with a linear decoder, the sets of trajectories grouped by input (i.e. preimages of the decoder $f^{-1}(y)$ for $y\in Y$ the output space) must be linearly separable.
+For neural computation with a linear decoder, the sets of trajectories grouped by input (i.e. preimages of the decoder $g^{-1}(y)$ for $y\in Y$ the output space) must be linearly separable.
 \end{theorem}
 
 \begin{remark}
@@ -123,7 +147,7 @@ Two cases to model it:
 
 
 \section*{Appendix}
-\subsection{Dynamical systems theory}
+\subsection{Dynamical systems theory}\label{sec:dst}
 
 Conley's decomposition theorem states that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
 
@@ -151,7 +175,17 @@ The only type of dynamics that is outside of the recurrent set is strongly gradi
 
 Statement. Every flow on a compact space is uniquely represented as the extension of a chain recu"ent flow by a strongly gradient-like flow; that is the flow admits a unique subflow which is chain recurrent and such that the quotient flow is strongly gradient-like.
 
+\begin{remark}
+error->noise
+The significance of the statement is explained by contrasting the two types (strongly gradient-like and chain recurrent) of flow, and the contrast is best seen if (arbitrarily) small errors are allowed in following solutions. For strongly gradient-like flows the following is true: if $U$ is any neighborhood of the rest point set, there exists a positive $\epsilon$ such that if the (persistent) error made in following solutions for time 1 is no larger than $\epsilon$ then all solutions eventually enter and subsequently stay in $U$.
 
+Chain recurrent flows are just the opposite: if $\dots,x_{-1},x_0, x{1},\dots$ is any bi-infinite sequence of points all of which lie in the same component of the space, then no matter how small the allowed (persistent) error, there is an approximate solution which runs through these points in sequence. Thus all knowledge of the asymptotic behavior is lost when (arbitrarily small) persistent errors are allowed.
+\end{remark}
+
+\begin{definition}
+Let $\{M_1, \dots, M_n\}$ be any finite ordered collection of invariant sets with the following property: the sets are disjoint and on collapsing them to distinct points there is obtained a gradient-like quotient flow whose rest point set consists of the collapse points, and such that the ordering of the sets corresponds to that of the points induced by the Lyapounov function.
+ Each of the sets $M_i$ is called a Morse set and the ordered collection is called a Morse decomposition.
+\end{definition}
 
 %\begin{figure}[H]
 % \centering
