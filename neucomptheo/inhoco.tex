@@ -134,6 +134,9 @@ Two cases to model it:
 
 Conley's decomposition theorem states that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
 
+
+Given a compact invariant set $S$ is there a finest collection of subsets of $S$ off of which one can define a Lyapunov function: the chain recurrent set. Let us first introduce the notion of chain recurrence.
+
 \begin{definition}[$(\epsilon,\tau)$ chain]
 An $(\epsilon,\tau)$ chain from $x$ to $y$ is a finite sequence 
 \[f(x_i, t_i) \subset  X \times  [\tau,\infty); i = 1, \dots, n\]
@@ -146,6 +149,15 @@ such that $x = x_1, t_i\geq \tau, \mu(\varphi(t_i, x_i), x_{i+1})\leq \varepsilo
 The chain recurrent set of $X$ under the flow $\varphi$ is defined by 
 \[\mathcal{R}(X,\varphi) = \{x\in X|x\succeq x\}.\]
 \end{definition}
+
+The flow is called \epmh{strongly gradient-like} if the chain recurrent set is totally disconnected (and consequently equal to the rest point set). 
+
+The recurrent set captures all the recurrent dynamics as stated and proven in \cite[Chapter I.8.2]{conley1978}.
+
+The only type of dynamics that is outside of the recurrent set is strongly gradient-like':
+
+Statement. Every flow on a compact space is uniquely represented as the extension of a chain recu"ent flow by a strongly gradient-like flow; that is the flow admits a unique subflow which is chain recu"ent and such that the quotient flow is strongly gradient-like.
+
 
 
 %\begin{figure}[H]
