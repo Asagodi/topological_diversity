@@ -30,6 +30,8 @@
 \theoremstyle{remark}
 \newtheorem{remark}{Remark}
 
+\newcommand{\reals}{\mathbb{R}}
+
  \usepackage{thmtools, thm-restate} \newtheorem{conjecture}[theorem]{Conjecture}
 
 \title{A framework for Infinite Horizon Neural Computation on Compact Domains}
@@ -40,18 +42,19 @@
 \maketitle
 
 
-\section{Goal}
+\section*{Goal}
 The goal is to give a framework to be able to characterize and describe all possible computations that can be implemented in neural networks with asymptotic dynamics and robustly in the language of dynamical systems (at a level that is understandable for humans).
 
 For asymptotic dynamics one can formulate a 1-to-1 mapping to finite-state machines. *If no continua are allowed (because they are not robust)*
 But this framework is more expressive because it can deal with infinite states as long as they are on a continuum.
 
 
-\section{Abstract}
-This document presents a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems,  leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states, crucial to neural behavior, are dissected, revealing their characterization in terms of sets with chain-recurrent sets as $\omega$-limit. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by input. Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
+\section*{Abstract}
+This document presents a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems,  leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states are identified as the Morse sets of the system. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by the preimage of the input. 
+Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
 
-
-\section{Justifications}
+\newpage
+\section{Justifications and restrictions}\label{sec:jar}
 \subsection{Asymptotic}
 We justify the focus on asymptotic dynamics by considering systems where the asymptotic dynamics dominates due to a significant time scale difference between stimulus statistics and the asymptotic dynamics.
 
@@ -66,19 +69,21 @@ Brain is noisy
 
 
 \section{Infinite horizon computation}	
-Neural Computation: I/O mapping for times $t\in T$
+We define the implemented (neural) computation as an input-output mapping for times $t\in T$ defined by the function $\varphi:\reals^\reals\rightarrow\reals^K$:\footnote{We discuss some restrictions on the type of mapping we consider in Sec.~\ref{sec:jar}.}
 \begin{equation}
 o(t) = \varphi(\{u(t)\}_{t\in T})
 \end{equation}
+where $o(t)$ is the target output for each time point $t$ and  $u(t)$ is the input.
 
-
+Internal dynamics is a non-autonomous ODE, driven by input $u(t)$:
 \begin{align}
 \begin{cases}
 \dot x(t) &= f(x(t),u(t))\\
 y(t) &= g(x(t))
 \end{cases}
 \end{align}
-
+where $f:\reals^N\rightarrow\reals^N$,
+while the output is given a simple (linear, monotonic) mapping $g:\reals^N\rightarrow\reals^K$.
 
 \begin{definition}
 Infinite horizon: agnostic to decoding time
@@ -89,12 +94,12 @@ The output can only change if there is a change in the input.
 So cued output is allowed, but timing tasks are excluded.
 \end{remark}
 
-\section{Theorems on infinite horizon neural computation on a compact domain}
+\section{Theorems on infinite horizon neural computation on a compact domain}\label{sec:theorems}
 
 
 \subsection{Memory states}%the words in the language
 Q: What form can the states in the finite-state machine take?
-A: They are 
+A: They are the Morse sets.
 
 \begin{theorem}
 Asymptotic neural computation that is bounded (that happens on a compact domain) has to rely on Morse sets to represent (input, internal and output states).
@@ -122,7 +127,9 @@ Each trajectory converges to a Morse set asymptotically.
 \end{proof}
 
 
-\subsubsection{Meaningful memory states (for the behavior) are charaterized by the output}
+%\subsubsection{Meaningful memory states (for the behavior) are charaterized by the output}
+\subsection{Characterization of memory states}
+
 \begin{theorem}
 For neural computation with a linear decoder, the sets of trajectories grouped by input (i.e. preimages of the decoder $g^{-1}(y)$ for $y\in Y$ the output space) must be linearly separable.
 \end{theorem}
@@ -130,6 +137,13 @@ For neural computation with a linear decoder, the sets of trajectories grouped b
 \begin{remark}
 If the assumption of a compact domain is relaxed, then the computation can involve an inertial manifold (as long as it is aligned with the nullspace of the decoder).
 \end{remark}
+
+We distinguish between two classes of Morse sets.
+The first one can only hold a single memory state. 
+The Morse sets in this class either have a periodic or quasiperiodic behavior or they contain a wandering set.
+All points inside such a set need to be mapped onto the same point, i.e. for some $y\in Y$ for all $x\in M$ we have that $g(x)=y$.
+
+The second one can hold a continuum of memory states. %These are continuous attractor-like sets.
 
 
 \subsection{Syntax}%how words and morphemes combine to form larger units
@@ -149,7 +163,7 @@ Two cases to model it:
 \end{enumerate}
 
 
-\section*{Appendix}
+\section{Appendix}
 \subsection{Dynamical systems theory}\label{sec:dst}
 
 Conley's decomposition theorem states that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
