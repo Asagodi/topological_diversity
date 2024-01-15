@@ -43,7 +43,8 @@
 \section{Goal}
 The goal is to give a framework to be able to characterize and describe all possible computations that can be implemented in neural networks with asymptotic dynamics and robustly in the language of dynamical systems (at a level that is understandable for humans).
 
-For asymptotic dynamics one can formulate a 1-to-1 mapping to finite-state machines.
+For asymptotic dynamics one can formulate a 1-to-1 mapping to finite-state machines. *If no continua are allowed (because they are not robust)*
+But this framework is more expressive because it can deal with infinite states as long as they are on a continuum.
 
 
 \section{Abstract}
@@ -92,6 +93,8 @@ So cued output is allowed, but timing tasks are excluded.
 
 
 \subsection{Memory states}%the words in the language
+Q: What form can the states in the finite-state machine take?
+A: They are 
 
 \begin{theorem}
 Asymptotic neural computation that is bounded (that happens on a compact domain) has to rely on Morse sets to represent (input, internal and output states).
@@ -115,7 +118,7 @@ Each trajectory converges to a Morse set asymptotically.
 \begin{itemize}
 \item For constant output (after last input): Each of these trajectories needs to be mapped onto the same value as the $\omega$-limit set.
 \item For dynamic output: Each state along these trajectories needs to be mapped onto the same value as the $\omega$-limit set corresponding to a value along the dynamic output. %is the notion of inertial manifold useful here
-\end{itemize}•
+\end{itemize}
 \end{proof}
 
 
