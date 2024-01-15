@@ -13,7 +13,9 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,matrix,arrows,decorations.pathmorphing}
 \usepackage{tikz-cd} 
-\definecolor {processblue}{cmyk}{0.8,0,0,0}
+\definecolor{processblue}{cmyk}{0.8,0,0,0}
+\definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
+\newcommand{\mpcomment}[1]{(\textbf{MP:\ }\textcolor{mpcolor}{#1})}
 
 \newcommand{\mb}[1]{\mathbb{#1}}
 \newcommand{\mc}[1]{\mathcal{#1}}
@@ -37,8 +39,13 @@
 \begin{document}
 \maketitle
 
+
 \section{Goal}
-The goal is to give a framework to be able to characterize and describe all possible computations that can be implemented in neural networks robustly in the language of dynamical systems but at a level that is understandable for humans.
+The goal is to give a framework to be able to characterize and describe all possible computations that can be implemented in neural networks with asymptotic dynamics and robustly in the language of dynamical systems (at a level that is understandable for humans).
+
+\section{Dynamial systems}
+Conley's decomposition theorem states that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
+\mpcomment{Define chain-crecurrent and gradient-like.}
 
 \section{Abstract}
 This document presents a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems,  leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states, crucial to neural behavior, are dissected, revealing their characterization in terms of sets with chain-recurrent sets as $\omega$-limit. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by input. Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
@@ -51,9 +58,15 @@ We justify the focus on asymptotic dynamics by considering systems where the asy
 \subsection{Compact domain}
 Brain activity is compact
 
+\subsection{Robustness requirement}
+Brain is noisy
+
+\subsubsection{Robustness definition}
+
 
 
 \section{Infinite horizon computation}	
+Neural Computation: IO 
 \begin{definition}
 Infinite horizon: agnostic to decoding time
 \end{definition}
