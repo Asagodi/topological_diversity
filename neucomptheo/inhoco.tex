@@ -30,38 +30,26 @@
 
  \usepackage{thmtools, thm-restate} \newtheorem{conjecture}[theorem]{Conjecture}
 
-\title{}
+\title{A framework for Infinite Horizon Neural Computation on Compact Domains}
 \author{\'Abel S\'agodi}
 \date{September 1, 2023}
 
 \begin{document}
 \maketitle
 
-\section{Dynamial systems}
-Conley's decomposition theorem states that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
+\section{Goal}
+The goal is to give a framework to be able to characterize and describe all possible computations that can be implemented in neural networks robustly in the language of dynamical systems but at a level that is understandable for humans.
 
-\section{Cortical computation theory}
-\citep{stevens1995}
-
-\subsection{Types of cortex}\label{sec:types}
-\paragraph{Unitary}
-Only a single major computational type of cortex exists
-
-\paragraph{Continuous diversity theory}
-The character of some mathematical operation might vary continuously across even an apparently uniform coortical region like primary visual cortex
+\section{Abstract}
+This document presents a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems,  leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states, crucial to neural behavior, are dissected, revealing their characterization in terms of sets with chain-recurrent sets as $\omega$-limit. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by input. Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
 
 
+\section{Justifications}
+\subsection{Asymptotic}
+We justify the focus on asymptotic dynamics by considering systems where the asymptotic dynamics dominates due to a significant time scale difference between stimulus statistics and the asymptotic dynamics.
 
-\subsection{Four requirements}
-The theory 
-\begin{itemize}
-\item can accommodate the spectrum of possibilities: from unitary to continuous  diversity views (see \ref{sec:types})
-\item should be probabilistic, because synaptic transmission is stochastic 
-\item should be coarse grained and should treat cortical inputs and outputs as continuous variables
-\item the output at any one point should be a functional of both inputs and outputs 
-\end{itemize}
-
-
+\subsection{Compact domain}
+Brain activity is compact
 
 
 
@@ -81,7 +69,7 @@ So cued output is allowed, but timing tasks are excluded.
 \subsection{Memory states}%the words in the language
 
 \begin{theorem}
-Asymptotic neural computation that is bounded has to rely on chain-recurrent sets.
+Asymptotic neural computation that is bounded (that happens on a compact domain) has to rely on chain-recurrent sets.
 \end{theorem}
 
 \begin{theorem}	
@@ -121,8 +109,16 @@ Two cases to model it:
 \begin{itemize}
 \item If input is constant, study it as a bifurcation parameter
 \item Otherwise: non-autonomous dynamics (perhaps inertial manifold can be useful, they can provide a condition when dynamics is equivalent to the dynamics of an autonomous system)
-\end{itemize}•
-\end{enumerate}•
+\item Consider timescale of input effect much shorter, then consider only asymptotic of input driven dynamics (but this would make neural integration of a continuous signal impossible)
+\end{itemize}
+\end{enumerate}
+
+
+\section*{Appendix}
+\subsection{Dynamical systems theory}
+
+Conley's decomposition theorem states that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
+
 
 %\begin{figure}[H]
 % \centering
