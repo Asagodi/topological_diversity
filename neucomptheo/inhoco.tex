@@ -13,7 +13,9 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,matrix,arrows,decorations.pathmorphing}
 \usepackage{tikz-cd} 
-\definecolor {processblue}{cmyk}{0.8,0,0,0}
+\definecolor{processblue}{cmyk}{0.8,0,0,0}
+\definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
+\newcommand{\mpcomment}[1]{(\textbf{MP:\ }\textcolor{mpcolor}{#1})}
 
 \newcommand{\mb}[1]{\mathbb{#1}}
 \newcommand{\mc}[1]{\mathcal{#1}}
@@ -37,8 +39,11 @@
 \begin{document}
 \maketitle
 
+\mpcomment{What is the goal of this note?}
+
 \section{Dynamial systems}
 Conley's decomposition theorem states that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
+\mpcomment{Define chain-crecurrent and gradient-like.}
 
 \section{Cortical computation theory}
 \citep{stevens1995}
