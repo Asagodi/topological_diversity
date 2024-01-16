@@ -62,18 +62,14 @@ We define the implemented (neural) computation as an input-output mapping for ti
 \begin{equation}
 o(t) = \varphi(\{u(t)\}_{t\in T})
 \end{equation}
-where $o(t)$ is the target output for each time point $t\in T$ and the input  u:\mathbb {R} _{+}\to \mathbb {R} ^{m}}  is a Lebesgue measurable essentially bounded external input and 
-$f$ is a Lipschitz continuous function w.r.t. the first argument uniformly w.r.t. the second one
-. This ensures that there exists a unique absolutely continuous solution of the system .
+where $o(t)$ is the target output for each time point $t\in T$ and the input  $u:\reals_{+}\to \reals^{m}$  is a Lebesgue measurable essentially bounded external input.
 
 Internal dynamics is a non-autonomous ODE, driven by input $u(t)$:
 \begin{align}
-\begin{cases}
-\dot x(t) &= f(x(t),u(t))\\
-y(t) &= g(x(t))
-\end{cases} 
+\dot x(t) &= f(x(t),u(t))\label{eq:ode}\\
+y(t) &= g(x(t))	\label{eq:output}
 \end{align}
-where $f:\reals^N\rightarrow\reals^N$,
+where $f:\reals^N\rightarrow\reals^N$, is a Lipschitz continuous function w.r.t. the first argument and uniformly w.r.t. the second one. This ensures that there exists a unique absolutely continuous solution of the system in Eq.~\ref{eq:ode}.
 while the output is given a simple (linear, monotonic) mapping $g:\reals^N\rightarrow\reals^K$.
 
 \begin{definition}
@@ -92,10 +88,11 @@ We justify the focus on asymptotic dynamics by considering systems where the asy
 \subsubsection{Compact domain}
 Brain activity is compact
 
-\subsubsection{Robustness requirement}
+\subsubsection{Robustness}
 Brain is noisy, see also Rem.~\ref{rem:error_noise}
 
-\paragraph{Robustness definition}
+\paragraph{Robustness definition(s)}
+
 \begin{definition}[Robust computation]\footnote{Based on Definition 2.2.1.in \citep{kuehn2015}}
  Let $\varphi$ and $\varphi'$ be two input-output mappings.
   Then we say that $\varphi$ is $\epsilon$-close to $\varphi'$ if
@@ -103,6 +100,13 @@ Brain is noisy, see also Rem.~\ref{rem:error_noise}
 \sup_{u\in \mathcal{I}}\|\int_{t\in T}\varphi(t) - \int_{t\in T}\varphi'(t)\| & \leq \epsilon,
 \end{align*}
 \end{definition}
+
+
+Minimal noise model: 
+
+Robustness in the light of this
+
+Later: implications to what can be a robust, persistent memory state
 
 
 \section{Theorems on infinite horizon neural computation on a compact domain}\label{sec:theorems}
