@@ -62,7 +62,9 @@ We define the implemented (neural) computation as an input-output mapping for ti
 \begin{equation}
 o(t) = \varphi(\{u(t)\}_{t\in T})
 \end{equation}
-where $o(t)$ is the target output for each time point $t\in T$ and  $u(t)$ is the input.
+where $o(t)$ is the target output for each time point $t\in T$ and the input  u:\mathbb {R} _{+}\to \mathbb {R} ^{m}}  is a Lebesgue measurable essentially bounded external input and 
+$f$ is a Lipschitz continuous function w.r.t. the first argument uniformly w.r.t. the second one
+. This ensures that there exists a unique absolutely continuous solution of the system .
 
 Internal dynamics is a non-autonomous ODE, driven by input $u(t)$:
 \begin{align}
