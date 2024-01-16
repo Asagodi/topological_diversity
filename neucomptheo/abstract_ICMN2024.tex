@@ -1,0 +1,90 @@
+\documentclass[12pt,letterpaper, onecolumn]{article}
+%\documentclass{article}
+%\documentclass{scrartcl}
+\usepackage[left=1.2cm, right=1.2cm,top=1.5cm,bottom=1.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{titling}\setlength{\droptitle}{-1em}   % This is your set screw
+\usepackage{amssymb, amsmath, amsthm}
+\usepackage{thmtools, mathtools, mathrsfs}
+\usepackage{amsfonts}
+%\usepackage[sort&compress,numbers]{natbib}
+%\usepackage[round,sort&compress,numbers]{natbib}
+\usepackage[%
+  giveninits=true,
+  backend=bibtex,
+  doi=false,
+  isbn=false,
+  url=false,
+  natbib,     % <=======================================================
+]{biblatex}
+\AtEveryBibitem{%
+  \clearfield{pages}%
+}
+\renewcommand{\bibfont}{\normalfont\footnotesize}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{positioning,matrix,arrows,decorations.pathmorphing}
+\usepackage{tikz-cd} 
+\usepackage{etoolbox}
+
+\definecolor{processblue}{cmyk}{0.8,0,0,0}
+\definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
+\newcommand{\mpcomment}[1]{(\textbf{MP:\ }\textcolor{mpcolor}{#1})}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+ \usepackage{thmtools, thm-restate} \newtheorem{conjecture}[theorem]{Conjecture}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\mb}[1]{\mathbb{#1}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\DeclareMathOperator{\Inv}{Inv}
+\DeclareMathOperator{\innt}{int}
+\newcommand{\probP}{\text{I\kern-0.15em P}}
+
+
+ 
+ \addbibresource{ref.bib}
+\defbibenvironment{bibliography}
+  {\noindent}
+  {\unspace}
+  {\printtext[labelnumberwidth]{%
+    \printfield{labelprefix}%
+    \printfield{labelnumber}}
+    \addspace}
+\renewbibmacro*{finentry}{\finentry\addspace}
+
+%\title{A framework for Infinite Horizon Neural Computation} %on Compact Domains
+
+\begin{document}
+%\maketitle
+
+\begin{center}
+\LARGE{\textbf{A framework for infinite horizon neural computation}}
+\end{center}
+\begin{center}
+{\textbf{\'Abel S\'agodi, Memming Park}}
+\end{center}
+
+\section*{Abstract}
+We propose a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems, leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states are identified as the Morse sets of the system. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by the preimage of the input. 
+Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
+
+%\citep{kuehn2015}
+The recurrent set captures all the recurrent dynamics as stated and proven in \cite[Chapter I.8.2]{conley1978}.
+% 
+% \addcontentsline{toc}{section}{References}
+% \bibliographystyle{plain}
+% \bibliography{ref.bib}
+
+  \printbibliography
+
+\end{document}
