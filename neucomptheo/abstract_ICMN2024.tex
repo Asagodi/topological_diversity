@@ -75,15 +75,46 @@
 \end{center}
 
 \section*{Abstract}
-We propose a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems, leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states are identified as the Morse sets of the system. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by the preimage of the input. 
-Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
+There is a lack of a framework for dynamical systems based computation that could be used to describe neural computation \cite{jaeger2021}.
+
+
+We propose a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems, leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits.
+We focus on the scope of the possible computations that we call infinite horizon computations, i.e. ones agnostic with respect to decoding time. 
+
+We define the implemented (neural) computation as an input-output mapping for times $t\in T\subset\reals$ defined by the function $\varphi:\reals^T\rightarrow\reals^K$:
+\begin{equation}
+o(t) = \varphi(\{u(t)\}_{t\in T})
+\end{equation}
+where $o(t)$ is the target output for each time point $t\in T$ and  $u(t)$ is the input.
+
+Internal dynamics is a non-autonomous ODE, driven by input $u(t)$:
+\begin{align}
+\begin{cases}
+\dot x(t) &= f(x(t),u(t))\\
+y(t) &= g(x(t))
+\end{cases} 
+\end{align}
+where $f:\reals^N\rightarrow\reals^N$,
+while the output is given a simple (linear, monotonic) mapping $g:\reals^N\rightarrow\reals^K$.
+ 
+ 
+ We state and prove theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states are identified as the Morse sets of the system. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by the preimage of the input. 
+Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions.
+The use of these memory states is formulated in terms of the decoded activity that then charactizes how behavior is produced from these internal representations. 
+
+We prove that linear separability of the preimages of the Morse sets \cite{mischaikow1999} is necessary.
+
+
+The theoretical justifications include a rationale for prioritizing asymptotic dynamics, justified by significant time scale differences between stimulus statistics and asymptotic dynamics. The robustness requirement to handle noise in neural computations is also discussed.
+
+The framework contributes to understanding the computations realized by neural networks on an abstract level, shedding light on their internal dynamics and memory representation.
+
+It furthermore provides a bridge between the computational and algorithmic level as proposed by \cite{marr2010}.
 
 %\citep{kuehn2015}
 The recurrent set captures all the recurrent dynamics as stated and proven in \cite[Chapter I.8.2]{conley1978}.
-% 
-% \addcontentsline{toc}{section}{References}
-% \bibliographystyle{plain}
-% \bibliography{ref.bib}
+
+
 
   \printbibliography
 
