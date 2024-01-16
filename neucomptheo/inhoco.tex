@@ -54,22 +54,11 @@ This document presents a comprehensive framework for characterizing and describi
 Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
 
 \newpage
-\section{Justifications and restrictions}\label{sec:jar}
-\subsection{Asymptotic}
-We justify the focus on asymptotic dynamics by considering systems where the asymptotic dynamics dominates due to a significant time scale difference between stimulus statistics and the asymptotic dynamics.
-
-\subsection{Compact domain}
-Brain activity is compact
-
-\subsection{Robustness requirement}
-Brain is noisy 
-
-\subsubsection{Robustness definition}
 
 
 
-\section{Infinite horizon computation}	
-We define the implemented (neural) computation as an input-output mapping for times $t\in T$ defined by the function $\varphi:\reals^\reals\rightarrow\reals^K$:\footnote{We discuss some restrictions on the type of mapping we consider in Sec.~\ref{sec:jar}.}
+\section{Introduction to Infinite horizon computation with ODEs}	
+We define the implemented (neural) computation as an input-output mapping for times $t\in T\subset\reals$ defined by the function $\varphi:T^\reals\rightarrow\reals^K$:\footnote{We discuss some restrictions on the type of mapping we consider in Sec.~\ref{sec:jar}.}
 \begin{equation}
 o(t) = \varphi(\{u(t)\}_{t\in T})
 \end{equation}
@@ -93,6 +82,26 @@ Infinite horizon: agnostic to decoding time
 The output can only change if there is a change in the input. 
 So cued output is allowed, but timing tasks are excluded.
 \end{remark}
+
+\subsection{Justifications and restrictions}\label{sec:jar}
+\subsubsection{Asymptotic}
+We justify the focus on asymptotic dynamics by considering systems where the asymptotic dynamics dominates due to a significant time scale difference between stimulus statistics and the asymptotic dynamics.
+
+\subsubsection{Compact domain}
+Brain activity is compact
+
+\subsubsection{Robustness requirement}
+Brain is noisy, see also Rem.~\ref{rem:error_noise}
+
+\paragraph{Robustness definition}
+\begin{definition}[Robust computation]\footnote{Based on Definition 2.2.1.in \citep{kuehn2015}}
+ Let $\varphi$ and $\varphi'$ be two input-output mappings.
+  Then we say that $\varphi$ is $\epsilon$-close to $\varphi'$ if
+\begin{align*}
+\sup_{u\in \mathcal{I}}\|\int_{t\in T}\varphi(t) - \int_{t\in T}\varphi'(t)\| & \leq \epsilon,
+\end{align*}
+\end{definition}
+
 
 \section{Theorems on infinite horizon neural computation on a compact domain}\label{sec:theorems}
 
@@ -195,8 +204,8 @@ The only type of dynamics that is outside of the recurrent set is strongly gradi
 
 Statement. Every flow on a compact space is uniquely represented as the extension of a chain recu"ent flow by a strongly gradient-like flow; that is the flow admits a unique subflow which is chain recurrent and such that the quotient flow is strongly gradient-like.
 
-\begin{remark}
-error->noise
+\begin{remark}\label{rem:error_noise}
+%error->noise
 The significance of the statement is explained by contrasting the two types (strongly gradient-like and chain recurrent) of flow, and the contrast is best seen if (arbitrarily) small errors are allowed in following solutions. For strongly gradient-like flows the following is true: if $U$ is any neighborhood of the rest point set, there exists a positive $\epsilon$ such that if the (persistent) error made in following solutions for time 1 is no larger than $\epsilon$ then all solutions eventually enter and subsequently stay in $U$.
 
 Chain recurrent flows are just the opposite: if $\dots,x_{-1},x_0, x{1},\dots$ is any bi-infinite sequence of points all of which lie in the same component of the space, then no matter how small the allowed (persistent) error, there is an approximate solution which runs through these points in sequence. Thus all knowledge of the asymptotic behavior is lost when (arbitrarily small) persistent errors are allowed.
