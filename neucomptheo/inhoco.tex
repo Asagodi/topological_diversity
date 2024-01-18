@@ -102,7 +102,7 @@ Brain is noisy, see also Rem.~\ref{rem:error_noise}
  Let $\varphi$ and $\varphi'$ be two input-output mappings.
   Then we say that $\varphi$ is $\epsilon$-close to $\varphi'$ if
 \begin{equation}\label{eq:error_def}
-\sup_{u\in \mathcal{I}}\|\int_{t\in T}\varphi(t) - \int_{t\in T}\varphi'(t)\| & \leq \epsilon,
+\sup_{u\in \mathcal{I}}\|\int_{t\in T}\varphi(t) - \int_{t\in T}\varphi'(t)\|  \leq \epsilon,
 \end{equation}
 \end{definition}
 
@@ -113,10 +113,13 @@ Definition:
 Asymptotic dynamics is given by $x(t)$
 For a random $t \in \reals$ we reinitilize the system as $x'(t)=x(t) + \theta$ where $\theta\sim \mathcal{U}(\mathcal{N}_\epsilon(M))$ (the uniform distribution over the $\epsilon$-neighbourhood of the Morse set $M=\{x(t)\colon t\in \reals\}$.
 
-Robustness in the light of this definition for a FSM equivalent DS can be formulated as that the error as defined in Eq.~\ref{eq:error_def} is zeros.
+Def 1: Robustness in the light of this definition for a FSM equivalent DS can be formulated as that the error as defined in Eq.~\ref{eq:error_def} is zero.
 
+Def 2: Robustness in the light of this definition for a FSM equivalent DS can be formulated as that the error as defined in Eq.~\ref{eq:error_def} is a continuous function of $\epsilon$.
 
 Later: implications to what can be a robust, persistent memory state
+E.g.  FSM equivalent DS: only stable fixed points as memory states (because of equivalence)
+but also CAs are not allowed (because of error/perturbation effect)
 
 
 \section{Theorems on infinite horizon neural computation on a compact domain}\label{sec:theorems}
