@@ -59,6 +59,10 @@ Additionally, we describe the syntax of neural computation, providing insights i
 
 \section{Introduction to Infinite horizon computation with ODEs}	
 Computation is generally equated with information-processing, and this is why the notion of information is crucial in models of computation for the account of implementation: a computational process is one that transforms the stream of information it has as input into a stream of information for output \citep{milkowski2014}.
+Flexibility: Both computers and brains are general‑purpose devices: they can operate in a variety of ways, which makes them adaptable to their environment, and this, in turn, can explain intelligence. \citep{milkowski2018computermetaphor}
+cognition requires not only flexibility, which in turn requires universality, but also that semantic interpretability requires universality.
+ In other words, \citep{pylyshyn1984} has claimed that finite‑state machines (FSM) cannot be semantically interpretable
+%This is exactly why Newell and Simon made \emph{universal computation} part of their hypothesis.
 We define the implemented (neural) computation as an input-output mapping for times $t\in T\subset\reals$ defined by the function $\varphi:\reals^T\rightarrow\reals^K$:\footnote{We discuss some restrictions on the type of mapping we consider in Sec.~\ref{sec:jar}.}
 \begin{equation}
 o(t) = \varphi(\{u(t)\}_{t\in T})
@@ -97,15 +101,20 @@ Brain is noisy, see also Rem.~\ref{rem:error_noise}
 \begin{definition}[Robust computation]\footnote{Based on Definition 2.2.1.in \citep{kuehn2015}}
  Let $\varphi$ and $\varphi'$ be two input-output mappings.
   Then we say that $\varphi$ is $\epsilon$-close to $\varphi'$ if
-\begin{align*}
+\begin{equation}\label{eq:error_def}
 \sup_{u\in \mathcal{I}}\|\int_{t\in T}\varphi(t) - \int_{t\in T}\varphi'(t)\| & \leq \epsilon,
-\end{align*}
+\end{equation}
 \end{definition}
 
 
 Minimal noise model: 
+A single random delta function is applied to the asymptotic behavior
+Definition:
+Asymptotic dynamics is given by $x(t)$
+For a random $t \in \reals$ we reinitilize the system as $x'(t)=x(t) + \theta$ where $\theta\sim \mathcal{U}(\mathcal{N}_\epsilon(M))$ (the uniform distribution over the $\epsilon$-neighbourhood of the Morse set $M=\{x(t)\colon t\in \reals\}$.
 
-Robustness in the light of this
+Robustness in the light of this definition for a FSM equivalent DS can be formulated as that the error as defined in Eq.~\ref{eq:error_def} is zeros.
+
 
 Later: implications to what can be a robust, persistent memory state
 
@@ -117,12 +126,14 @@ Later: implications to what can be a robust, persistent memory state
 Q: What form can the states in the finite-state machine take?
 A: They are the Morse sets.
 
+Young’s account of basic memory unitsmnemons in his terminology—is not entirely loose, as the mnemon is supposed to “record one bit of information” \citep{young1978}.
+
 \begin{theorem}
 Asymptotic neural computation that is bounded (that happens on a compact domain) has to rely on Morse sets to represent (input, internal and output states).
 \end{theorem}
 
 \begin{proof}
-The asymptotic dynamics converges to the Morse sets for a compact dynamical system \citep{conley1978}, see Sec.~\ref{sec:dst}.
+The asymptotic dynamics converges to the Morse sets for a compact dynamical system \cite{conley1978}, see Sec.~\ref{sec:dst}.
 \end{proof}
 
 
@@ -233,8 +244,8 @@ Let $\{M_1, \dots, M_n\}$ be any finite ordered collection of invariant sets wit
 
 
  \newpage
-% \addcontentsline{toc}{section}{References}
-% \bibliographystyle{plain}
+ \addcontentsline{toc}{section}{References}
+ \bibliographystyle{plain}
  \bibliography{ref.bib}
 
 \end{document}
