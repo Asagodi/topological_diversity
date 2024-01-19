@@ -25,6 +25,7 @@
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{prop}{Proposition}
+
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
 \theoremstyle{remark}
@@ -33,6 +34,7 @@
 \newcommand{\reals}{\mathbb{R}}
 
  \usepackage{thmtools, thm-restate} \newtheorem{conjecture}[theorem]{Conjecture}
+ \newtheorem{corollary}[theorem]{Corollary}
 
 \title{A framework for Infinite Horizon Neural Computation on Compact Domains}
 \author{\'Abel S\'agodi}
@@ -45,8 +47,8 @@
 \section*{Goal}
 The goal is to give a framework to be able to characterize and describe all possible computations that can be implemented in neural networks with asymptotic dynamics and robustly in the language of dynamical systems (at a level that is understandable for humans).
 
-For asymptotic dynamics one can formulate a surjective mapping to finite-state machines if MSs are fixed points or one restricts what effects the input can have.
- *If no continua are allowed (because they are not robust) there is a surjective mapping to nondeterministic FSMs*
+For asymptotic dynamics one can formulate a surjective mapping to finite-state machines (FSMs) if MSs are fixed points or one restricts what effects the input can have.
+If no continua are allowed (because they are not robust) there is a surjective mapping to nondeterministic FSMs. 
 But this framework is more expressive because it can deal with infinite states as long as they are on a continuum.
 See Sec.\ref{sec:fsm}
 
@@ -245,14 +247,18 @@ Let $\{M_1, \dots, M_n\}$ be any finite ordered collection of invariant sets wit
 \end{definition}
 
 
-\section{FSM}\label{sec:fsm}
+\section{Finite state machine equivalencies}\label{sec:fsm}
 \begin{theorem}
-If the sinks (final nodes in the DAG representation of the Morse Decomposition) of finest Morse decomposition is composed of fixed points, then there exists a surjective mapping to deterministic finite state machines.
+If the sinks (final nodes in the directed acyclic graph (DAG) representation of the Morse Decomposition) of finest Morse decomposition is composed of fixed points, then there exists a surjective mapping to deterministic finite state machines.
 \end{theorem}
 
 \begin{proof}
 
 \end{proof}
+
+\begin{corollary}
+Morse sets can be non-stationary as long as they are the final states of the FSM.
+\end{corollary}
 
 %\begin{figure}[H]
 % \centering
