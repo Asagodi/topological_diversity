@@ -45,9 +45,10 @@
 \section*{Goal}
 The goal is to give a framework to be able to characterize and describe all possible computations that can be implemented in neural networks with asymptotic dynamics and robustly in the language of dynamical systems (at a level that is understandable for humans).
 
-For asymptotic dynamics one can formulate a 1-to-1 mapping to finite-state machines. *If no continua are allowed (because they are not robust)*
+For asymptotic dynamics one can formulate a surjective mapping to finite-state machines if MSs are fixed points or one restricts what effects the input can have.
+ *If no continua are allowed (because they are not robust) there is a surjective mapping to nondeterministic FSMs*
 But this framework is more expressive because it can deal with infinite states as long as they are on a continuum.
-
+See Sec.\ref{sec:fsm}
 
 \section*{Abstract}
 This document presents a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems,  leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states are identified as the Morse sets of the system. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by the preimage of the input. 
@@ -242,6 +243,16 @@ Chain recurrent flows are just the opposite: if $\dots,x_{-1},x_0, x_{1},\dots$ 
 Let $\{M_1, \dots, M_n\}$ be any finite ordered collection of invariant sets with the following property: the sets are disjoint and on collapsing them to distinct points there is obtained a gradient-like quotient flow whose rest point set consists of the collapse points, and such that the ordering of the sets corresponds to that of the points induced by the Lyapounov function.
  Each of the sets $M_i$ is called a Morse set and the ordered collection is called a Morse decomposition.
 \end{definition}
+
+
+\section{FSM}\label{sec:fsm}
+\begin{theorem}
+If the sinks (final nodes in the DAG representation of the Morse Decomposition) of finest Morse decomposition is composed of fixed points, then there exists a surjective mapping to deterministic finite state machines.
+\end{theorem}
+
+\begin{proof}
+
+\end{proof}
 
 %\begin{figure}[H]
 % \centering
