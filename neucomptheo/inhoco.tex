@@ -224,7 +224,7 @@ Equivalency to Moore machines.
 \end{corollary}
 
 \begin{corollary}
-Morse sets can be non-stationary as long as they are the final states of the FSM.
+This mapping can be extended to dynamical systems where the  the final states of the FSM are non-stationary Morse sets.
 \end{corollary}
 
 All these surjective maps define equivalence relations on the 
@@ -272,6 +272,17 @@ Let $\{M_1, \dots, M_n\}$ be any finite ordered collection of invariant sets wit
 \end{definition}
 
 
+\subsubsection{Equivalence}
+\paragraph{Bisimulation}
+Bisimulation of dynamical systems is shown to be a concept which unifies the system-theoretic concepts of state space
+equivalence and state space reduction, and which allows to study equivalence of systems with non-minimal state space dimension. 
+%same computation, different implementations
+The notion of bisimulation is especially powerful for ’non-deterministic’ dynamical systems, and leads in this case to a notion of equivalence which is finer than equality of external behavior.
+
+\citep{vanderschaft2004bisimulation}
+
+\citep{vanderschaft2004equivalence}
+
 \subsection{Finite state machines}
 %Synchronous sequential logic
 %propagation delay Sec.\ref{sec:} in particular Def.~\ref{def:}
@@ -281,7 +292,6 @@ $\delta :S\times \Sigma \rightarrow S$ (in a nondeterministic finite automaton i
 
 
 \begin{remark}
-
 For both deterministic and non-deterministic FSMs, it is conventional to allow  $\delta$  to be a partial function, i.e. $\delta (s,x)$ does not have to be defined for every combination of $s\in S$ and $x\in \Sigma$. If an FSM $M$ is in a state $s$, the next symbol is $x$ and $\delta (s,x)$ is not defined, then $M$ can announce an error (i.e. reject the input). This is useful in definitions of general state machines, but less useful when transforming the machine. Some algorithms in their default form may require total functions.
 \end{remark}
 
@@ -302,6 +312,9 @@ A Moore machine can be regarded as a restricted type of finite-state transducer.
 
 
 
+
+
+
 %\begin{figure}[H]
 % \centering
 % \includegraphics[width=0.99\textwidth]{figs/.pdf}
@@ -313,7 +326,7 @@ A Moore machine can be regarded as a restricted type of finite-state transducer.
 
  \newpage
  \addcontentsline{toc}{section}{References}
- \bibliographystyle{plain}
+ \bibliographystyle{ieeetr}
  \bibliography{ref.bib}
 
 \end{document}
