@@ -205,6 +205,26 @@ Two cases to model it:
 \end{enumerate}
 
 
+\section{Finite state machine equivalencies}\label{sec:fsm}
+\begin{theorem}
+If the sinks (final nodes in the directed acyclic graph (DAG) representation of the Morse Decomposition) of finest Morse decomposition is composed of fixed points, then there exists a surjective mapping to deterministic finite state machines.
+\end{theorem}
+
+\begin{proof}
+
+\end{proof}
+
+\begin{corollary}
+Equivalency to Moore machines.
+\end{corollary}
+
+\begin{corollary}
+Morse sets can be non-stationary as long as they are the final states of the FSM.
+\end{corollary}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Appendix}
 \subsection{Dynamical systems theory}\label{sec:dst}
 
@@ -247,22 +267,23 @@ Let $\{M_1, \dots, M_n\}$ be any finite ordered collection of invariant sets wit
 \end{definition}
 
 
-\section{Finite state machine equivalencies}\label{sec:fsm}
-\begin{theorem}
-If the sinks (final nodes in the directed acyclic graph (DAG) representation of the Morse Decomposition) of finest Morse decomposition is composed of fixed points, then there exists a surjective mapping to deterministic finite state machines.
-\end{theorem}
+\subsection{Finite state machines}
 
-\begin{proof}
+A deterministic finite-state machine or deterministic finite-state acceptor is a quintuple $(\Sigma ,S,s_{0},\delta,F)$, where: $\Sigma$  is the input alphabet (a finite non-empty set of symbols); $S$ is a finite non-empty set of states; $s_{0}$ is an initial state, an element of $S$ and $\delta$  is the state-transition function: 
+$\delta :S\times \Sigma \rightarrow S$ (in a nondeterministic finite automaton it would be $\delta :S\times \Sigma \rightarrow {\mathcal {P}}(S)$, i.e. $\delta$  would return a set of states); $F$ is the set of final states, a (possibly empty) subset of $S$.
 
-\end{proof}
 
-\begin{corollary}
-Equivalency to Moore machines
-\end{corollary}
 
-\begin{corollary}
-Morse sets can be non-stationary as long as they are the final states of the FSM.
-\end{corollary}
+\subsubsection{Moore machines}% FSM + output
+
+A Moore machine can be defined as a 6-tuple  $(S,s_{0},\Sigma ,O,\delta ,G)$ where $(\Sigma ,S,s_{0},\delta ,F)$ are the same as for an FSM and 
+an output function $G:S\rightarrow O$ mapping each state to the output alphabet.
+
+
+
+A Moore machine can be regarded as a restricted type of finite-state transducer.
+
+
 
 %\begin{figure}[H]
 % \centering
