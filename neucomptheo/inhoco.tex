@@ -80,6 +80,11 @@ y(t) &= g(x(t))	\label{eq:output}
 where $f:\reals^N\rightarrow\reals^N$, is a Lipschitz continuous function w.r.t. the first argument and uniformly w.r.t. the second one. This ensures that there exists a unique absolutely continuous solution of the system in Eq.~\ref{eq:ode}.
 while the output is given a simple (linear, monotonic) mapping $g:\reals^N\rightarrow\reals^K$.
 
+In a synchronous circuit, an electronic oscillator called a clock (or clock generator) generates a sequence of repetitive pulses called the clock signal which is distributed to all the memory elements in the circuit. 
+The ``clock'' determines the sequence of events in the following way:
+\paragraph{Input driven dynamics}
+
+
 \begin{definition}
 Infinite horizon: agnostic to decoding time
 \end{definition}
@@ -222,7 +227,7 @@ Equivalency to Moore machines.
 Morse sets can be non-stationary as long as they are the final states of the FSM.
 \end{corollary}
 
-
+All these surjective maps define equivalence relations on the 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Appendix}
@@ -268,10 +273,22 @@ Let $\{M_1, \dots, M_n\}$ be any finite ordered collection of invariant sets wit
 
 
 \subsection{Finite state machines}
+%Synchronous sequential logic
+%propagation delay Sec.\ref{sec:} in particular Def.~\ref{def:}
 
 A deterministic finite-state machine or deterministic finite-state acceptor is a quintuple $(\Sigma ,S,s_{0},\delta,F)$, where: $\Sigma$  is the input alphabet (a finite non-empty set of symbols); $S$ is a finite non-empty set of states; $s_{0}$ is an initial state, an element of $S$ and $\delta$  is the state-transition function: 
 $\delta :S\times \Sigma \rightarrow S$ (in a nondeterministic finite automaton it would be $\delta :S\times \Sigma \rightarrow {\mathcal {P}}(S)$, i.e. $\delta$  would return a set of states); $F$ is the set of final states, a (possibly empty) subset of $S$.
 
+
+\begin{remark}
+
+For both deterministic and non-deterministic FSMs, it is conventional to allow  $\delta$  to be a partial function, i.e. $\delta (s,x)$ does not have to be defined for every combination of $s\in S$ and $x\in \Sigma$. If an FSM $M$ is in a state $s$, the next symbol is $x$ and $\delta (s,x)$ is not defined, then $M$ can announce an error (i.e. reject the input). This is useful in definitions of general state machines, but less useful when transforming the machine. Some algorithms in their default form may require total functions.
+\end{remark}
+
+
+\begin{remark}
+A finite-state machine has the same computational power as a Turing machine that is restricted such that its head may only perform "read" operations, and always has to move from left to right. That is, each formal language accepted by a finite-state machine is accepted by such a kind of restricted Turing machine, and vice versa.
+\end{remark}
 
 
 \subsubsection{Moore machines}% FSM + output
