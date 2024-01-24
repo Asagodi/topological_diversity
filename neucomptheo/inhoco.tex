@@ -100,7 +100,7 @@ We justify the focus on asymptotic dynamics by considering systems where the asy
 
 
 We now define a discrete time representation of a continuous time dynamical system defined by an ODE
-\begin{equation}
+\begin{equation}\label{eq:inputdriven}
 \dot x(t) = f(x(t), u(t))
 \end{equation}
 which in turn defines a flow $\varphi(t,x)$.
@@ -108,7 +108,21 @@ which in turn defines a flow $\varphi(t,x)$.
 Remark: For infinite horizon computation this representation is lossless (if the output is not considered, for nonstationary output there is a loss).
 Explain why?
 
+The input sequence has the following restrictions
 
+Because incoho should work where arbitrary silent (zero input) sequences are introduced into the original the input sequence, this restriction is natural for incoho.
+
+The dynamics of the discrete dynamical is defined in two steps
+
+1. The system is integrated as a input forced/input driven system (Eq.~\ref{eq:inputdriven}) until the next zero input sequence, at time $T$.
+
+2. The $\omega$-limit set is calculated from the autonomous flow given the initial state $x_0=x(T)$.
+
+
+
+Restrictions on the type of output:
+
+This corresponds to saying that non-stationary inputs are like behavioral syllables.
 
 
 \subsubsection{Compact domain}
