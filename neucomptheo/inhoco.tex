@@ -98,6 +98,19 @@ So cued output is allowed, but timing tasks are excluded.
 \subsubsection{Asymptotic}
 We justify the focus on asymptotic dynamics by considering systems where the asymptotic dynamics dominates due to a significant time scale difference between stimulus statistics and the asymptotic dynamics.
 
+
+We now define a discrete time representation of a continuous time dynamical system defined by an ODE
+\begin{equation}
+\dot x(t) = f(x(t), u(t))
+\end{equation}
+which in turn defines a flow $\varphi(t,x)$.
+
+Remark: For infinite horizon computation this representation is lossless (if the output is not considered, for nonstationary output there is a loss).
+Explain why?
+
+
+
+
 \subsubsection{Compact domain}
 Brain activity is compact
 
@@ -119,7 +132,7 @@ Minimal noise model:
 A single random delta function is applied to the asymptotic behavior
 Definition:
 Asymptotic dynamics is given by $x(t)$
-For a random $t \in \reals$ we reinitilize the system as $x'(t)=x(t) + \theta$ where $\theta\sim \mathcal{U}(\mathcal{N}_\epsilon(M))$ (the uniform distribution over the $\epsilon$-neighbourhood of the Morse set $M=\{x(t)\colon t\in \reals\}$.
+For an arbitrary $t \in \reals$ we reinitilize the system as $x'(t)=x(t) + \theta$ where $\theta\sim \mathcal{U}(\mathcal{N}_\epsilon(M))$ (the uniform distribution over the $\epsilon$-neighbourhood of the Morse set $M=\{x(t)\colon t\in \reals\}$.
 
 Def 1: Robustness in the light of this definition for a FSM equivalent DS can be formulated as that the error as defined in Eq.~\ref{eq:error_def} is zero.
 
@@ -220,7 +233,7 @@ If the sinks (final nodes in the directed acyclic graph (DAG) representation of 
 \end{proof}
 
 \begin{corollary}
-Equivalency to Moore machines.
+Surjective mapping from ADSs with output to Moore machines.
 \end{corollary}
 
 \begin{corollary}
