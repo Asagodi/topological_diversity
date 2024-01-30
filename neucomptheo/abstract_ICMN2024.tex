@@ -79,15 +79,16 @@ However, there is a lack of a framework for dynamical systems based computation 
 Therefore, we propose a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems, leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits.
 We focus on the scope of the possible computations that we call infinite horizon computations, i.e. ones which are agnostic with respect to decoding time. 
 
-We define the implemented (neural) computation as an input-output mapping for times $t\in T\subset\reals$ defined by the function $\varphi:{(\reals^L)}^T\rightarrow\reals^K$: $o(t) = \varphi(\{u(t)\}_{t\in T})$
-where $o(t)$ is the target output for each time point $t\in T$ and  $u(t)\in \reals^L$ is the input with dimension $L$.
-The internal dynamics is a non-autonomous ODE, driven by input $u(t)$: $\dot x(t) = f(x(t),u(t))$ where $f:\reals^N\rightarrow\reals^N$,
+We define the implemented (neural) computation as an input-output mapping defined by the function $\varphi\in (\mathcal{L}^2)^K$:
+$\varphi(\{u(t)\}_{t\in T})=o(t)$
+where $o(t)$ is the output for each time point $t\in T$ and  $u(t)\in \reals^L$ is the input with dimension $L$.
+The internal dynamics is a non-autonomous ODE, driven by input $u(t)$: $\dot x(t) = f(x(t),u(t))$ where $f:\reals^N\rightarrow\reals^N$ is Lipschitz,
 while the output is given a linear mapping $g:\reals^N\rightarrow\reals^K$, i.e., $y(t) = g(x(t))$.
-For this abstract, we focus on neural computation that is perfect, i.e. it agrees with the intended computation (the distance between the intended and implemented computation is zero in the sup norm).
+For this abstract, we focus on neural computation that is perfect, i.e. it agrees with the intended computation (the distance between the original and perturbed computation is zero in the sup norm).
 % For this abstract, we focus on the case that $\epsilon=0$.
  
 We state and prove theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states are identified as the Morse sets \cite{mischaikow1999} of the system, which follows from the fact that the recurrent set captures all the recurrent dynamics as stated and proven in \cite[Chapter I.8.2]{conley1978}. We show that the only robust memory traces are the attractors with a non-zero measure basin of attraction.\footnote{We define basin of attraction without the common requirement of it being a neighbourhood of the attractor.}
-We propose a slight extensions to these results by considering the primages of $\omega$-limit be able to also contribute to the encoding of the neural computation, relaxing the requirement of asymptotic dynamics. For this to work, we show that linear separability of the preimages of the Morse sets is necessary.
+We propose a slight extensions to these results by considering the preimages of $\omega$-limit be able to also contribute to the encoding of the neural computation, relaxing the requirement of asymptotic dynamics. For this to work, we show that linear separability of the preimages of the Morse sets is necessary.
 
  The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by the preimage of the input. 
 Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions.
@@ -96,7 +97,7 @@ The use of these memory states is formulated in terms of the decoded activity th
 
 The focus on asymptotic dynamics can be justified by significant time scale differences between the stimulus statistics and the asymptotic dynamics.
 Because neural computation has been shown to be robust to different types of noise \cite{Park2023a}, we discuss the implications of this robustness requirement to handle state- and dynamics-type noise in the computation. 
-The framework contributes to understanding the computations realized by neural networks on an abstract level, shedding light on their internal dynamics and memory representation.
+The framework contributes to representing the computations realized by neural networks on an abstract, interpretable level, shedding light on their internal dynamics and memory representation.
 It furthermore provides a bridge between the computational and algorithmic level as proposed by Marr \cite{marr2010}.
 
 
