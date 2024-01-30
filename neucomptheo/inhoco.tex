@@ -57,14 +57,28 @@ See Sec.\ref{sec:fsm}
 This document presents a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems,  leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states are identified as the Morse sets of the system. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by the preimage of the input. 
 Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
 
+
+
 \newpage
 \section*{The story so far}
+We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
+If a system is implementing such a computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set.
+These states corrspond to memories: internal/intermediary (no change in output), external/behavioral (change in output when transitioning to it).\footnote{Change is characterized in terms of a complete output sequence. }
+
 
 
 \section*{How to proceed}
 
+Define input space.
+
+Define possible outputs. Constant/perdiodic vs. transient (only possible as final behavior).
+
+Define allowable I/O mappings.
+
 
 \section*{Open questions}
+
+
 
 
 \section*{Issues}
