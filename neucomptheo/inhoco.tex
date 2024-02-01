@@ -65,6 +65,7 @@ We describe the general implementational principles of robust, timing-independen
 If a system is implementing such a computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set.
 These states corrspond to memories: internal/intermediary (no change in output), external/behavioral (change in output when transitioning to it).\footnote{Change is characterized in terms of a complete output sequence. }
 
+Such computation can be represented as a finite-state machine (FSM) in a lossess way (without losing anything relevant for the computation).
 
 
 \section*{How to proceed}
@@ -82,11 +83,16 @@ Metrics:
 - CA approximations 
 
 
+Consequences for what can be an implementation of a (inho) computation.
+- (linear) separability of basin of attraction
+
+
+
+
 \section*{Open questions}
 
-
-
 Output mapping: What can we say when $g$ is nonlinear?
+- if monotonous: separability is still required (?)
 
 
 Inference: 
@@ -120,14 +126,16 @@ y(t) &= g(x(t))	\label{eq:output}
 where $f:\reals^N\rightarrow\reals^N$, is a Lipschitz continuous function w.r.t. the first argument and uniformly w.r.t. the second one. This ensures that there exists a unique absolutely continuous solution of the system in Eq.~\ref{eq:ode}.
 while the output is given a simple (linear, monotonic) mapping $g:\reals^N\rightarrow\reals^K$.
 
-In a synchronous circuit, an electronic oscillator called a clock (or clock generator) generates a sequence of repetitive pulses called the clock signal which is distributed to all the memory elements in the circuit. 
-The ``clock'' determines the sequence of events in the following way:
-\paragraph{Input driven dynamics}
-
 
 \begin{definition}
 Infinite horizon: agnostic to decoding time
 \end{definition}
+
+
+
+
+
+
 
 \begin{remark}
 The output can only change if there is a change in the input. 
@@ -278,6 +286,24 @@ Two cases to model it:
 
 
 \section{Finite state machine equivalencies}\label{sec:fsm}
+
+\subsection{FSM representation}
+%FSM repr
+In a synchronous circuit, an electronic oscillator called a clock (or clock generator) generates a sequence of repetitive pulses called the clock signal which is distributed to all the memory elements in the circuit. 
+The ``clock'' determines the sequence of events in the following way:
+\paragraph{Input driven dynamics}
+
+
+
+\subsection{Infinite horizon computation represented as a deterministic FSM}
+For the representation to be lossless, the system 
+\begin{itemize}
+\item has to have only fixed points as attractors in the chain-recurrent set (with the possibility of other non-stationary attractors that get mapped to the final states of the FSM).
+\item  the input driven dynamics needs to be restricted in such a way that each (relevant) input has a unique effect on each attractor (Morse set).
+\item the output needs to map the possible non-unique effects to a single output.
+\end{itemize}
+
+
 \begin{theorem}
 If the sinks (final nodes in the directed acyclic graph (DAG) representation of the Morse Decomposition) of finest Morse decomposition is composed of fixed points, then there exists a surjective mapping to deterministic finite state machines.
 \end{theorem}
