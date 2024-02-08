@@ -63,9 +63,11 @@ Additionally, we describe the syntax of neural computation, providing insights i
 \section*{The story so far}
 We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
 If a system is implementing such a computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set.
-These states corrspond to memories: internal/intermediary (no change in output), external/behavioral (change in output when transitioning to it).\footnote{Change is characterized in terms of a complete output sequence. }
+These states corrspond to memories: internal/intermediary (no change in output), external/behavioral (change in output when transitioning to it).\footnote{Change is characterized in terms of a complete output sequence.}
 
 Such computation can be represented as a finite-state machine (FSM) in a lossess way (without losing anything relevant for the computation).
+
+To describe neural computation in more generality, we construct a metric in the space of dynamical systems defined by the distance to the input-output mapping to infinite horizon computation systems.
 
 
 \section*{How to proceed}
@@ -101,7 +103,8 @@ Inference:
 \section*{Issues}
 
 
-
+Representation: for models in different classes (can be lossy or lossless).
+Abstraction: for models in the same class but one is a lossy representation of the other.
 
 
 
@@ -168,7 +171,7 @@ The dynamics of the discrete dynamical is defined in two steps
 
 
 
-Restrictions on the type of output:
+Restrictions on the type of output: 
 
 This corresponds to saying that non-stationary inputs are like behavioral syllables.
 
@@ -244,6 +247,14 @@ Each trajectory converges to a Morse set asymptotically.
 \item For dynamic output: Each state along these trajectories needs to be mapped onto the same value as the $\omega$-limit set corresponding to a value along the dynamic output. %is the notion of inertial manifold useful here
 \end{itemize}
 \end{proof}
+
+
+\subsubsection{Robust memory states}
+Attractor and basin of attraction should be nonzero measure set.
+
+
+\subsubsection{Continuous attractors}%and its approximations
+
 
 
 %\subsubsection{Meaningful memory states (for the behavior) are charaterized by the output}
