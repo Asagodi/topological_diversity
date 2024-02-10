@@ -958,7 +958,8 @@ def get_hidden_trajs(net, training_kwargs, T=128, input_length=10, timepart='all
     if training_kwargs['map_output_to_hidden']:
         with torch.no_grad():
             h =  np.dot(target[:,0,:], net.output_to_hidden)
-
+            
+    h = h.detach().numpy()
     _target = torch.from_numpy(target).float() 
 
     with torch.no_grad():
@@ -973,7 +974,7 @@ def get_hidden_trajs(net, training_kwargs, T=128, input_length=10, timepart='all
     pca.fit(trajectories_tofit)
     traj_pca = pca.transform(trajectories.numpy().reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,10))
     
-    h0_pca = pca.transform(net.h0.reshape((1,-1))).T
+    h0_pca = pca.transform(net.h0.detach().numpy().reshape((1,-1))).T
 
     return trajectories, traj_pca, h0_pca, input, target, output, input_proj, pca, explained_variance
 
@@ -1634,14 +1635,14 @@ def plot_learning_trajectory(main_exp_name, exp_i, T=128*62, num_of_inputs=11, x
         
 
 if __name__ == "__main__":
-    main_exp_name='angular_integration/N50_tanh_T128/' #training_fullest
+    main_exp_name='angular_integration/rect_tanh_N100_fixedstart/' #training_fullest
     
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name + "/result*")
     
     exp_i = 0
 
     plot_learning_trajectory(main_exp_name, exp_i, T=128*32, num_of_inputs=11, 
-                                 input_length=int(128)*1, input_type='gp')
+                                 input_length=int(128)*1, input_type='constant')
     
     
 
