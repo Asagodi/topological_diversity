@@ -978,6 +978,8 @@ def get_hidden_trajs(net, training_kwargs, T=128, input_length=10, timepart='all
 
     return trajectories, traj_pca, h0_pca, input, target, output, input_proj, pca, explained_variance
 
+
+
 def plot_output_vs_target(target, output, ax=None):
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3))
@@ -1575,12 +1577,12 @@ def load_net(main_exp_name, exp_i, which):
 
 
 
-def plot_learning_trajectory(main_exp_name, exp_i, T=128*62, num_of_inputs=11, xylims=[-1.5,1.5],
-                             input_length=int(128)*2, input_type='constant', input_range = (-.5, .5),     
-                             pca_from_to=(0, None),
+def plot_learning_trajectory(exp_name, exp_i, T=256, num_of_inputs=11, xylims=[-1.5,1.5],
+                             input_length=128, input_type='constant', input_range = (-.5, .5),     
+                             random_angle_init=False,
                              slowpointmethod= 'L-BFGS-B'):
 
-    params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
+    params_folder = parent_dir+'/experiments/' + exp_name +'/'
     losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, 'post')
     if input_type=='constant':
         cmap = cmx.get_cmap("coolwarm")
@@ -1589,11 +1591,14 @@ def plot_learning_trajectory(main_exp_name, exp_i, T=128*62, num_of_inputs=11, x
     
     net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
     
-    trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs,
+    trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs, 
                                                                                         T=T, input_length=input_length, 
                                                                                         pca_from_to=pca_from_to,
                                                                                         num_of_inputs=num_of_inputs,
-                                                                                        input_range=input_range)
+                                                                                        input_range=input_range,
+                                                                                        input_type=input_type,
+                                                                                        random_angle_init=random_angle_init, 
+                                                                                        task=task)
     xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
     ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
     zlim = [np.min(traj_pca[...,2]), np.max(traj_pca[...,2])]
@@ -1608,12 +1613,19 @@ def plot_learning_trajectory(main_exp_name, exp_i, T=128*62, num_of_inputs=11, x
     makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder)
     makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder)
     
-    for which in tqdm(np.concatenate([np.arange(0, 100, 1), np.arange(100, 500, 5), np.arange(500, np.argmin(losses), 25)])):
+    targets = np.zeros((num_of_inputs, input_length, 2))
+    outputs = np.zeros((num_of_inputs, input_length, 2))
+    
+    # for which in tqdm(np.concatenate([np.arange(0, 100, 1), np.arange(100, 500, 5), np.arange(500, np.argmin(losses), 25)])):
+    for which in tqdm(np.arange(0, np.argmin(losses))):
+
         net, training_kwargs = load_net(main_exp_name, exp_i, which)
         wo = net.wo.detach().numpy()
         
         trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs, T=T, input_length=input_length, pca_from_to=pca_from_to, num_of_inputs=num_of_inputs, input_range=input_range)
-        
+        targets[which] = target
+        outputs[which] = output
+
         traj_pca = pca.transform(trajectories.reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,pca.n_components))
         recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
         
@@ -1631,18 +1643,46 @@ def plot_learning_trajectory(main_exp_name, exp_i, T=128*62, num_of_inputs=11, x
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder + f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
         plt.close()
 
-    return 
+    return targets, outputs
         
+def plot_weights_during_learning(exp_name, parent_dir, exp_i):
+    params_folder = parent_dir+'/experiments/' + exp_name +'/'
+    losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, 'post')
+    
+    wrec = weights_train['wrec']
+
+    plt.style.use('seaborn-dark-palette')
+    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + 'weights_folder')
+    for i in range(0, np.argmin(losses)):
+        
+        plt.scatter(range(wrec.shape[1]**2), wrec[i].flatten(), s=1)
+        
+        plt.xticks([])
+        plt.ylim(np.min(wrec), np.max(wrec))
+        plt.ylabel(r"$W_{rec}$")
+        
+        plt.text(1000, -3, s=i, fontsize=10)
+        
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/' + 'weights_folder' + f'/{i:04d}.png', bbox_inches="tight")
+        plt.close()
+
 
 if __name__ == "__main__":
-    main_exp_name='angular_integration/rect_tanh_N100_fixedstart/' #training_fullest
+    main_exp_name='angular_integration/N50_tanh_T128/'
     
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name + "/result*")
-    
     exp_i = 0
 
-    plot_learning_trajectory(main_exp_name, exp_i, T=128*32, num_of_inputs=11, 
-                                 input_length=int(128)*1, input_type='constant')
+    targets, outputs = plot_learning_trajectory(main_exp_name, exp_i, T=128*32, num_of_inputs=11, 
+                                 input_length=int(128)*1, input_type='gp', random_angle_init=True)
+    
+    
+    params_folder = parent_dir+'/experiments/' + main_exp_name +'/'
+    losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, 'post')
+    wrecs = weights_train['wrec']
+    
+    all_data = {"targets":targets, "outputs":outputs, "wrecs":wrecs}
+    
     
     
 
@@ -1698,7 +1738,7 @@ if False:
             training_kwargs['map_output_to_hidden'] = False
 
 
-        task =  angularintegration_task(T=input_length*training_kwargs['dt_task'], dt=training_kwargs['dt_task'], sparsity=1, length_scale=.01,
+        task =  angularintegration_task(T=input_length*training_kwargs['dt_task'], dt=training_kwargs['dt_task'], sparsity=1, length_scale=1,
                                         last_mses=training_kwargs['last_mses'], random_angle_init=random_angle_init)
         
         trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs, 
