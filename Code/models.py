@@ -582,7 +582,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
     if net.map_output_to_hidden:
         oths = np.zeros((n_rec_epochs, dim_out, dim_rec), dtype=np.float32)
     if net.save_inputs:
-        all_inputs = np.zeros((n_rec_epochs, dim_out, dim_rec), dtype=np.float32)
+        _input, _target, _mask = task(batch_size)
+        all_inputs = np.zeros((n_rec_epochs, batch_size, _input.shape[1], dim_in), dtype=np.float32)
 
     time0 = time.time()
     if verbose:
@@ -604,8 +605,6 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                 h0s[k] = net.h0.cpu().detach().numpy()
             if net.map_output_to_hidden:
                 oths[k] = net.output_to_hidden.cpu().detach().numpy()
-            
-                
         
         if not data:
             # Generate batch
