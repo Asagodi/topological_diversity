@@ -184,7 +184,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
                   ML_RNN=training_kwargs['ml_rnn'], save_inputs=training_kwargs['save_inputs'],
                   map_output_to_hidden=training_kwargs['map_output_to_hidden'])
 
-        result = train(net, task=task, data=data, n_epochs=training_kwargs['n_epochs'],
+        result, res_dict = train(net, task=task, data=data, n_epochs=training_kwargs['n_epochs'],
               batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
               clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], h_init=None,
               loss_function=training_kwargs['loss_function'], act_reg_lambda=training_kwargs['act_reg_lambda'],
@@ -198,8 +198,12 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
     #save result (losses, weights, etc)
     if save:
         result.append(training_kwargs)
+        res_dict['training_kwargs'] = training_kwargs
         with open(experiment_folder + '/results_%s.pickle'%timestamp, 'wb') as handle:
             pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        with open(experiment_folder + '/result_dict_%s.pickle'%timestamp, 'wb') as handle:
+            pickle.dump(res_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
     return result
     
