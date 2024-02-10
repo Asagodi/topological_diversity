@@ -65,7 +65,7 @@ def eyeblink_task(input_length, t_delay, t_stim=1, t_target=1, min_us_time=5, ma
 def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, random_angle_init=False):
     """
     Creates N_batch trials of the angular integration task with Guassian Process angular velocity inputs.
-    Inputs are left and right angular velocity and 
+    Inputs is angular velocity (postive: right, negative:left) and 
     target output is sine and cosine of integrated angular velocity.
     Returns inputs, outputs, mask
     -------
@@ -85,11 +85,13 @@ def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, 
         if sparsity:
             inputs[mask_input] = 0.
         outputs_1d = np.cumsum(inputs, axis=1)*dt
-        outputs = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
         if random_angle_init:
             random_angles = np.random.uniform(-np.pi, np.pi, size=batch_size)
-            outputs_0 = np.stack((np.cos(random_angles), np.sin(random_angles)), axis=-1)
-            outputs = outputs + outputs_0[:, np.newaxis, :]
+            outputs_1d += random_angles[:, np.newaxis]
+            # outputs_0 = np.stack((np.cos(random_angles), np.sin(random_angles)), axis=-1)
+            # outputs = outputs + outputs_0[:, np.newaxis, :]
+        outputs = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
+
         # if last_mses:
         #     fin_int = np.random.randint(1,last_mses,size=batch_size)
         #     mask = np.zeros((batch_size, input_length, 2))
@@ -106,7 +108,7 @@ def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, 
 def angularintegration_delta_task(T, dt, p=.1, amplitude=1):
     """
     Creates N_batch trials of the angular integration task with dela pulses.
-    Inputs are left and right angular velocity and 
+    Inputs is angular velocity (postive: right, negative:left) and 
     target output is sine and cosine of integrated angular velocity.
     Returns inputs, outputs, mask
     -------
@@ -123,6 +125,8 @@ def angularintegration_delta_task(T, dt, p=.1, amplitude=1):
         return inputs.reshape((batch_size, input_length, 1)), outputs, mask
     
     return task
+
+
 
 def simplestep_integration_task(T, dt, amplitude=1, pulse_time=1, delay=1):
     """
@@ -398,7 +402,7 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
             input[batch_i, output_cue-output_cue_duration:output_cue, 3] = 1.
             target[batch_i, output_cue:output_cue+output_duration, highest_click_count_index] = 1.
             output_end = output_cue+output_duration
-            mask[:, output_end, :] = 0.
+            mask[:, output_end:, :] = 0.
         input[:, :, :2] = stimulus
         input[:, stim_cue_delay:stim_cue_delay+stim_cue_duration, 2] = 1.
         
