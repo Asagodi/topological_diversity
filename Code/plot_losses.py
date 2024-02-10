@@ -938,12 +938,10 @@ def get_hidden_trajs(net, training_kwargs, T=128, input_length=10, timepart='all
         #random init
         outputs_1d = np.cumsum(input, axis=1)*training_kwargs['dt_task']
         if random_angle_init:
-            print("DDWWD")
             random_angles = np.random.uniform(-np.pi, np.pi, size=num_of_inputs).astype('f')
             outputs_1d += random_angles[:, np.newaxis, np.newaxis]
             
         target = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1).reshape((num_of_inputs, T, training_kwargs['N_out']))
-
 
     else:
         _input, target, mask = task(num_of_inputs)
@@ -1707,8 +1705,9 @@ if __name__ == "__main__":
                                                                                             random_angle_init=random_angle_init,
                                                                                             task=task)
         
-        recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
         traj_pca = pca.transform(trajectories.reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,10))
+        recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
+
         
         # plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, ax=None)
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_{which}_{exp_i}.pdf', bbox_inches="tight")
