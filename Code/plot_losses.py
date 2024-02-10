@@ -641,6 +641,7 @@ def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
                                     h_stabilities=None,
                                     elev=20., azim=-35, roll=0,
                                     lims=[], plot_epoch=False,
+                                    num_of_inputs = 0,
                                     cmap = cmx.get_cmap("coolwarm")):
     
     fig = plt.figure()
@@ -724,6 +725,7 @@ def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
                            h_stabilities=None, o_stabilities=None,
                            plot_asymp=False, limcyctol=1e-2, mindtol=1e-4, ax=None,
                            xylims=[-1.2,1.2], plot_epoch=False,
+                           num_of_inputs = 0,
                            cmap = cmx.get_cmap("coolwarm")):
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3))
@@ -1579,11 +1581,14 @@ def plot_learning_trajectory(main_exp_name, exp_i, T=128*62, num_of_inputs=11, x
 
     params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
     losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, 'post')
-    print("Epochs trained: ", np.argmin(losses))
+    if input_type=='constant':
+        cmap = cmx.get_cmap("coolwarm")
+    else:
+        cmap = cmx.get_cmap("tab10")
     
     net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
     
-    trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs,
+    trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs,
                                                                                         T=T, input_length=input_length, 
                                                                                         pca_from_to=pca_from_to,
                                                                                         num_of_inputs=num_of_inputs,
@@ -1602,16 +1607,46 @@ def plot_learning_trajectory(main_exp_name, exp_i, T=128*62, num_of_inputs=11, x
     makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder)
     makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder)
     
-    for which in range(0, 100, 1) + range(100, 500, 1) + range(500, np.argmin(losses), 100):
+    for which in tqdm(np.concatenate([np.arange(0, 100, 1), np.arange(100, 500, 5), np.arange(500, np.argmin(losses), 25)])):
         net, training_kwargs = load_net(main_exp_name, exp_i, which)
+        wo = net.wo.detach().numpy()
         
-        trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs, T=T, input_length=input_length, pca_from_to=pca_from_to, num_of_inputs=num_of_inputs, input_range=input_range)
+        trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs, T=T, input_length=input_length, pca_from_to=pca_from_to, num_of_inputs=num_of_inputs, input_range=input_range)
         
+        traj_pca = pca.transform(trajectories.reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,pca.n_components))
+        recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
+        
+        plot_inputdriven_trajectory_3d(traj_pca, input_length, plot_traj=True,
+                                            recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
+                                            elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which,
+                                            num_of_inputs=num_of_inputs, cmap=cmap)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder + f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
+        plt.close()
+        
+        plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
+                                   fxd_points=None, ops_fxd_points=None,
+                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which,
+                                   num_of_inputs=num_of_inputs, cmap=cmap)
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder + f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
+        plt.close()
 
     return 
         
 
 if __name__ == "__main__":
+    main_exp_name='angular_integration/N50_tanh_T128/' #training_fullest
+    
+    exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name + "/result*")
+    
+    exp_i = 0
+
+    plot_learning_trajectory(main_exp_name, exp_i, T=128*32, num_of_inputs=11, 
+                                 input_length=int(128)*1, input_type='gp')
+    
+    
+
+if False:
+# if __name__ == "__main__":
 
     model_names=['lstm', 'low','high', 'ortho', 'qpta']
     mean_colors = ['k', 'r',  'darkorange', 'g', 'b']
@@ -1637,7 +1672,7 @@ if __name__ == "__main__":
     pca_from_to = (0,input_length)
     slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
     
-    cmap = cmx.get_cmap("coolwarm")
+    cmap = cmx.get_cmap("tab10")
 
     model_name = ''
     main_exp_name='angular_integration/hidden/25.6'
@@ -1696,8 +1731,6 @@ if __name__ == "__main__":
     # for which in range(0, 100, 1):
         net, training_kwargs = load_net(main_exp_name, exp_i, which)
         wo = net.wo.detach().numpy()
-        wrec = net.wo.detach().numpy()
-        brec = net.wo.detach().numpy()
         
         trajectories, traj_pca, start, input, target, output, input_proj, _, explained_variance = get_hidden_trajs(net, training_kwargs, 
                                                                                             T=T, input_length=input_length,
