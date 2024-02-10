@@ -736,7 +736,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                 "weights_init":weights_init, "weights_last":weights_last, "weights_train":weights_train,
                 "epochs":epochs, "rec_epochs":rec_epochs, "all_inputs":all_inputs}
 
-    return res, 
+    return res, res_dict
 
 def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
     # Generate batch
