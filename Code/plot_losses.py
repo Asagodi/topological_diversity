@@ -640,13 +640,13 @@ def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
                                     fxd_points=None, ops_fxd_points=None,
                                     h_stabilities=None,
                                     elev=20., azim=-35, roll=0,
-                                    lims=[], plot_epoch=False):
+                                    lims=[], plot_epoch=False,
+                                    cmap = cmx.get_cmap("coolwarm")):
     
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
     norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
-    cmap = cmx.get_cmap("coolwarm")
 
     norm2 = mpl.colors.Normalize(-np.pi, np.pi)
     cmap2 = plt.get_cmap('hsv')
@@ -723,14 +723,15 @@ def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
                            fxd_points=None, ops_fxd_points=None,
                            h_stabilities=None, o_stabilities=None,
                            plot_asymp=False, limcyctol=1e-2, mindtol=1e-4, ax=None,
-                           xylims=[-1.2,1.2], plot_epoch=False):
+                           xylims=[-1.2,1.2], plot_epoch=False,
+                           cmap = cmx.get_cmap("coolwarm")):
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3))
 
     num_of_inputs = traj.shape[0]
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
     norm = norm(np.linspace(-.5, .5, num=num_of_inputs, endpoint=True))
-    cmap = cmx.get_cmap("coolwarm")
+
     norm2 = mpl.colors.Normalize(-np.pi, np.pi)
     cmap2 = plt.get_cmap('hsv')
     norm3 = Normalize(-np.pi, np.pi)
@@ -1626,15 +1627,17 @@ if __name__ == "__main__":
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
     T = 128*32*2    
-    num_of_inputs = 11
+    num_of_inputs = 10
     input_length = int(128)*1
-    input_type= 'constant'
+    input_type = 'gp'
     random_angle_init = True
     input_range = (-.2, .2)   
 
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,input_length)
     slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
+    
+    cmap = cmx.get_cmap("coolwarm")
 
     model_name = ''
     main_exp_name='angular_integration/hidden/25.6'
@@ -1688,9 +1691,9 @@ if __name__ == "__main__":
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
     
     # for which in ['post']:
-    # for which in range(500, np.argmin(losses), 25):
+    for which in range(3500, np.argmin(losses), 25):
     # for which in  range(100, 500, 5):
-    for which in range(0, 100, 1):
+    # for which in range(0, 100, 1):
         net, training_kwargs = load_net(main_exp_name, exp_i, which)
         wo = net.wo.detach().numpy()
         wrec = net.wo.detach().numpy()
@@ -1733,17 +1736,17 @@ if __name__ == "__main__":
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven_tda_{exp_i}.png', bbox_inches="tight")
         # plt.close()
 
-    # if False:
-
         plot_inputdriven_trajectory_3d(traj_pca, input_length, plot_traj=True,
                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
-                                            elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
+                                            elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which,
+                                            cmap=cmap)
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder + f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
         plt.close()
         
         plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
                                    fxd_points=None, ops_fxd_points=None,
-                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which)
+                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which,
+                                   cmap=cmap)
         plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder + f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
         plt.close()
 
