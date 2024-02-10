@@ -100,7 +100,7 @@ class RNN(nn.Module):
     def __init__(self, dims, noise_std=0., dt=0.5, 
                  nonlinearity='tanh', readout_nonlinearity='id',
                  g=None, g_in=1, wi_init=None, wrec_init=None, wo_init=None, brec_init=None, h0_init=None, oth_init=None,
-                 train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True, 
+                 train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True, save_inputs=False,
                  ML_RNN=True, map_output_to_hidden=False):
         """
         :param dims: list = [input_size, hidden_size, output_size]
@@ -135,6 +135,7 @@ class RNN(nn.Module):
         self.train_brec = train_brec
         self.train_h0 = train_h0
         self.ML_RNN = ML_RNN
+        self.save_inputs = save_inputs
         self.map_output_to_hidden = map_output_to_hidden #oth
         
         # Either set g or choose initial parameters. Otherwise, there's a conflict!
@@ -152,6 +153,13 @@ class RNN(nn.Module):
                     warn("g > 1. For a linear network, we need stable dynamics!")
         elif nonlinearity.lower() == 'relu':
             self.nonlinearity = nn.ReLU()
+        elif nonlinearity.lower() == 'rect_tanh':
+            # if self.noise_std!=0.:
+            self.nonlinearity = nn.ReLU(torch.tanh)                 ##works with noise
+            # self.nonlinearity = lambda x: 1.*(torch.tanh(x)>0)   #works with ml_rnn False
+
+        elif nonlinearity.lower() == 'talu':
+            self.nonlinearity = lambda x: torch.tanh(x) if x<0 else x
         elif nonlinearity == 'softplus':
             softplus_scale = 1 # Note that scale 1 is quite far from relu
             self.nonlinearity = lambda x: torch.log(1. + torch.exp(softplus_scale * x)) / softplus_scale
@@ -159,6 +167,7 @@ class RNN(nn.Module):
             raise NotImplementedError("Nonlinearity not yet implemented.")
         else:
             self.nonlinearity = nonlinearity
+            
             
         # Readout nonlinearity
         if readout_nonlinearity is None:
@@ -235,8 +244,9 @@ class RNN(nn.Module):
                 with torch.no_grad():
                     self.output_to_hidden.normal_(std=1 / np.sqrt(hidden_size))
             else:
-                oth_init = torch.from_numpy(oth_init)
-                self.output_to_hidden.copy_(oth_init)
+                with torch.no_grad():
+                    oth_init = torch.from_numpy(oth_init)
+                    self.output_to_hidden.copy_(oth_init)
             # self.oth_nonlinearity = nonlinearity
             self.oth_nonlinearity = lambda x: x
 
@@ -252,16 +262,16 @@ class RNN(nn.Module):
         """
         batch_size = input.shape[0]
         seq_len = input.shape[1]
-        if h_init is None:
-            h = self.h0
+
         if self.map_output_to_hidden:
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
             h_init_torch.requires_grad = False
             h_init_torch = target[:,0,:].matmul(self.output_to_hidden)
 
             with torch.no_grad():
-                h = h_init_torch.copy_(h_init_torch)
-
+                h = h_init_torch#.copy_(h_init_torch)
+        elif h_init is None:
+            h = self.h0
         else:
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
             h_init_torch.requires_grad = False
@@ -569,6 +579,10 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         brecs = np.zeros((n_rec_epochs, dim_rec), dtype=np.float32)
     if net.train_h0:
         h0s = np.zeros((n_rec_epochs, dim_rec), dtype=np.float32)
+    if net.map_output_to_hidden:
+        oths = np.zeros((n_rec_epochs, dim_out, dim_rec), dtype=np.float32)
+    if net.save_inputs:
+        all_inputs = np.zeros((n_rec_epochs, dim_out, dim_rec), dtype=np.float32)
 
     time0 = time.time()
     if verbose:
@@ -588,10 +602,16 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                 brecs[k] = net.brec.cpu().detach().numpy()
             if net.train_h0:
                 h0s[k] = net.h0.cpu().detach().numpy()
+            if net.map_output_to_hidden:
+                oths[k] = net.output_to_hidden.cpu().detach().numpy()
+            
+                
         
         if not data:
             # Generate batch
             _input, _target, _mask = task(batch_size)
+            if net.save_inputs:
+                all_inputs[k] = _input
             # Convert training data to pytorch tensors
             _input = torch.from_numpy(_input)
             _target = torch.from_numpy(_target)
@@ -693,6 +713,9 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
     brec_last = net.brec.cpu().detach().numpy().copy()
     h0_last = net.h0.cpu().detach().numpy().copy()
     weights_last = [wi_last, wrec_last, wo_last, brec_last, h0_last]
+    if net.map_output_to_hidden:
+        oth_last = net.output_to_hidden.cpu().detach().numpy()
+        weights_last = [wi_last, wrec_last, wo_last, brec_last, h0_last, oth_last]
     
     # Weights throughout training: 
     weights_train = {}
@@ -706,9 +729,15 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         weights_train["brec"] = brecs
     if net.train_h0:
         weights_train["h0"] = h0s
+    if net.map_output_to_hidden:
+        weights_train["oths"] = oths
     
     res = [losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs]
-    return res
+    res_dict = {"losses":losses, "validation_losses":validation_losses, "gradient_norms":gradient_norms,
+                "weights_init":weights_init, "weights_last":weights_last, "weights_train":weights_train,
+                "epochs":epochs, "rec_epochs":rec_epochs, "all_inputs":all_inputs}
+
+    return res, 
 
 def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
     # Generate batch
@@ -721,9 +750,9 @@ def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
     with torch.no_grad():
         # Run dynamics
         if return_dynamics:
-            output, trajectories = net(input, return_dynamics, h_init=h_init)
+            output, trajectories = net(input, return_dynamics, h_init=h_init, target=target)
         else:
-            output = net(input, h_init=h_init)
+            output = net(input, h_init=h_init, target=target)
         loss = mse_loss_masked(output, target, mask)
     res = [input, target, mask, output, loss]
     if return_dynamics:
