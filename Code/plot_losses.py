@@ -635,7 +635,7 @@ def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
         plt.text(.0, 0., s=plot_epoch, fontsize=10)
 
         
-def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
+def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
                                     recurrences=None, recurrences_pca=None, wo=None,
                                     fxd_points=None, ops_fxd_points=None,
                                     h_stabilities=None,
@@ -680,7 +680,7 @@ def plot_input_driven_trajectory_3d(traj, input_length, plot_traj=True,
 
             else:
             # for t, point in enumerate(recurrence):
-                point = recurrence[0]
+                point = recurrence[-1]
                 # print("P", point)
                 output = np.dot(point, wo)
                 output_angle = np.arctan2(output[...,1], output[...,0])
@@ -918,57 +918,63 @@ def plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=10,
 
 
     
-def get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth=None, T=128, which='post', input_length=10, timepart='all',
-                     num_of_inputs=51, pca_from_to=(0,None), input_range=(-3,3), random_angle_init=False):
-    pca_after_t, pca_before_t = pca_from_to
-
-    dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
-    net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
-              nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-              wi_init=wi, wrec_init=wrec, wo_init=wo, brec_init=brec, h0_init=h0, oth_init=oth,
-              ML_RNN=training_kwargs['ml_rnn'], map_output_to_hidden=training_kwargs['map_output_to_hidden'])
+def get_hidden_trajs(net, training_kwargs, T=128, input_length=10, timepart='all',
+                     num_of_inputs=51, pca_from_to=(0,None), input_range=(-3,3),
+                     input_type='constant', random_angle_init=False, task=None):
     
+    pca_after_t, pca_before_t = pca_from_to
     min_input, max_input = input_range
 
-    input = np.zeros((num_of_inputs,T,training_kwargs['N_in']))
-    stim = np.linspace(min_input, max_input, num=num_of_inputs, endpoint=True)
-    input[:,:input_length,0] = np.repeat(stim,input_length).reshape((num_of_inputs,input_length))
-    input = torch.from_numpy(input).float() 
-    
-    outputs_1d = np.cumsum(input, axis=1)*training_kwargs['dt_task']
-    if random_angle_init:
-        random_angles = np.random.uniform(-np.pi, np.pi, size=num_of_inputs).astype('f')
-        outputs_1d += random_angles[:, np.newaxis, np.newaxis]
-    target = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1).reshape((num_of_inputs, T, training_kwargs['N_out']))
-    h = h0 # np.zeros((num_of_inputs,training_kwargs['N_rec'])) 
-    
-    # print(net.map_output_to_hidden)
-    # if training_kwargs['random_angle_init']:
-    #     with torch.no_grad():
-    #         h =  np.dot(target[:,0,:],net.output_to_hidden)
+    #Generate input
+    if input_type == 'constant':  #generate constant inputs (left/right with a range determined by input_range)
+        input = np.zeros((num_of_inputs, T, training_kwargs['N_in']))
+        stim = np.linspace(min_input, max_input, num=num_of_inputs, endpoint=True)
+        input[:,:input_length,0] = np.repeat(stim,input_length).reshape((num_of_inputs,input_length))
+        input = torch.from_numpy(input).float() 
+        
+        #Integrate input to get target output
+        outputs_1d = np.cumsum(input, axis=1)*training_kwargs['dt_task']
+        
+        #random init
+        outputs_1d = np.cumsum(input, axis=1)*training_kwargs['dt_task']
+        if random_angle_init:
+            print("DDWWD")
+            random_angles = np.random.uniform(-np.pi, np.pi, size=num_of_inputs).astype('f')
+            outputs_1d += random_angles[:, np.newaxis, np.newaxis]
+            
+        target = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1).reshape((num_of_inputs, T, training_kwargs['N_out']))
 
-    _target = torch.from_numpy(target)
-    # print(net.output_to_hidden.dtype)
 
-    # _target = _target.to(device=training_kwargs['device']).float() 
+    else:
+        _input, target, mask = task(num_of_inputs)
+        input = np.zeros((num_of_inputs, T, training_kwargs['N_in']))
+        input[:,:input_length,:] = _input
+        input = torch.from_numpy(input).float() 
+    
+    #Get initial hidden activations
+    h = net.h0  
+
+    if training_kwargs['map_output_to_hidden']:
+        with torch.no_grad():
+            h =  np.dot(target[:,0,:], net.output_to_hidden)
+
+    _target = torch.from_numpy(target).float() 
+
     with torch.no_grad():
         output, trajectories = net(input, return_dynamics=True, h_init=h, target=_target)
-    
-    input_proj = np.dot(trajectories, wi.T)
+
+    input_proj = np.dot(trajectories, net.wi.detach().numpy().T)
     
     pca = PCA(n_components=10)
     pca.fit(trajectories.reshape((-1,training_kwargs['N_rec'])))
     explained_variance = pca.explained_variance_ratio_.cumsum()
-
-    # pca = PCA(n_components=2)   
     trajectories_tofit = trajectories[:,pca_after_t:pca_before_t,:].numpy().reshape((-1,training_kwargs['N_rec']))
     pca.fit(trajectories_tofit)
     traj_pca = pca.transform(trajectories.numpy().reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,10))
-    start= pca.transform(h0.reshape((1,-1))).T
-    traj_pca = traj_pca[:,:,:]
+    
+    h0_pca = pca.transform(net.h0.reshape((1,-1))).T
 
-    # makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'/hidden'+exp[-21:-7])
-    return trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance
+    return trajectories, traj_pca, h0_pca, input, target, output, input_proj, pca, explained_variance
 
 def plot_output_vs_target(target, output, ax=None):
     if not ax:
@@ -1528,61 +1534,82 @@ def tda_inputdriven_recurrent(id_recurrences, maxdim=1):
     u, c = np.unique(np.round(allrec,4), return_counts=True, axis=0)
     diagrams = ripser(u, maxdim=maxdim)['dgms']
 
-    plot_diagrams(diagrams, show=True)
+    # plot_diagrams(diagrams, show=True)
     
     colors = ['b', 'r', 'g']
-    s=2
-    plt.style.use('seaborn-dark-palette')
+    s=4
+    # plt.style.use('seaborn-dark-palette')
     fig, ax = plt.subplots(1, 1, figsize=(3, 3));
     for i in range(len(diagrams)):
         for point in diagrams[i]:
             ax.scatter(point[0], point[1], c=colors[i], s=s)
-    maximal = np.nanmax(diagrams[0][np.isfinite(diagrams[0])])
+    maximal = np.max([np.nanmax(diagrams[i][np.isfinite(diagrams[i])]) for i in range(len(diagrams))])
     ax.scatter(0, 1.01*maximal, c=colors[0], s=s)
     ax.plot([-maximal,1.1*maximal], [-maximal,1.1*maximal], 'k--')
     ax.plot([-maximal,1.1*maximal], [1.01*maximal,1.01*maximal], 'k--')
     ax.set_xlim([-maximal/10.,1.1*maximal]); ax.set_ylim([-maximal/10.,1.1*maximal])
+    handles = [mpatches.Patch(color=color, label=f'H_{i}') for i, color in enumerate(colors)]
+    labels = [r'$H_{%01d}$'%i for i in range(len(colors))]
+    ax.legend(handles, labels)
     
-    return diagrams
+    return diagrams, fig, ax
         
-def plot_learning_trajectory(main_exp_name, exp_i, T=128*32*4, num_of_inputs=11, xylims=[-1.5,1.5]):
 
-    input_length = int(128)*4
-    plot_from_to = (T-1*input_length,T)
-    pca_from_to = (0,input_length)
-    slowpointmethod= 'L-BFGS-B'
-    input_range = (-.5, .5)   
-    full_num_of_inputs = 111
-    params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
-    which = 'post'
-    losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, which)
-    print("Epochs trained: ", np.argmin(losses))
-
+def load_net(main_exp_name, exp_i, which):
+    
     try:
         wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
     except:
         wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i, which)
         oth = None
+        
+    dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
+    net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
+              nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
+              wi_init=wi, wrec_init=wrec, wo_init=wo, brec_init=brec, h0_init=h0, oth_init=oth,
+              ML_RNN=training_kwargs['ml_rnn'], map_output_to_hidden=training_kwargs['map_output_to_hidden'])
+    
+    return net, training_kwargs
 
+
+
+def plot_learning_trajectory(main_exp_name, exp_i, T=128*62, num_of_inputs=11, xylims=[-1.5,1.5],
+                             input_length=int(128)*2, input_type='constant', input_range = (-.5, .5),     
+                             pca_from_to=(0, None),
+                             slowpointmethod= 'L-BFGS-B'):
+
+    params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
+    losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, 'post')
+    print("Epochs trained: ", np.argmin(losses))
     
-    trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth,
-                                                                                        T=T, input_length=input_length, which=which,
+    net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
+    
+    trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs,
+                                                                                        T=T, input_length=input_length, 
                                                                                         pca_from_to=pca_from_to,
-      num_of_inputs=full_num_of_inputs, input_range=input_range, random_angle_init=False)
-    
+                                                                                        num_of_inputs=num_of_inputs,
+                                                                                        input_range=input_range)
     xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
     ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
     zlim = [np.min(traj_pca[...,2]), np.max(traj_pca[...,2])]
     
-    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_asymp')
-    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_asymp')
-    
-    
-    
-    
-    for which in range(0, 100, 1) + range(330, 335, 1) + range(500, np.argmin(losses), 100):
-        wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
+    if input_type=='constant':
+        inputdriven_folder = '/inputdriven3d_asymp'
+        output_folder = '/output_asymp'
+    else:
+        inputdriven_folder = '/gp_inputdriven3d_asymp'
+        output_folder = '/gp_output_asymp'
 
+    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder)
+    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder)
+    
+    for which in range(0, 100, 1) + range(100, 500, 1) + range(500, np.argmin(losses), 100):
+        net, training_kwargs = load_net(main_exp_name, exp_i, which)
+        
+        trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs, T=T, input_length=input_length, pca_from_to=pca_from_to, num_of_inputs=num_of_inputs, input_range=input_range)
+        
+
+    return 
         
 
 if __name__ == "__main__":
@@ -1600,50 +1627,51 @@ if __name__ == "__main__":
     # T = 20
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
-    T = 128*16*1
-    num_of_inputs = 2
-    input_length = int(128)*8
+    T = 128*32*2    
+    num_of_inputs = 11
+    input_length = int(128)*1
+    input_type= 'constant'
+    random_angle_init = True
+    input_range = (-.2, .2)   
+
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,input_length)
     slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
 
     model_name = ''
     main_exp_name='angular_integration/hidden/25.6'
-    main_exp_name='angular_integration/N50/' #training_fullest
-    # main_exp_name='angular_integration/act_reg_from10'
-
-    # plot_explained_variances(main_exp_name, model_name, input_length=input_length, batch_size=2**8, 
-    #                               act_lambdas = [1e-05, 1e-07, 1e-09, 0])
+    main_exp_name='angular_integration/N50_tanh_T128/' #training_fullest
     
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
 
     if True:    
+        np.random.seed(1234)
         exp_i = 0
-        input_range = (-.2, .2)   
 
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
         which = 'post'
         losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, which)
         print("Epochs trained: ", np.argmin(losses))
-        # which = np.argmin(losses)
-        # plt.plot(np.log(losses))
-        # plt.close()
 
-        try:
-            wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
-        except:
-            wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i, which)
-            oth = None
+        net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
 
         try:
             training_kwargs['map_output_to_hidden']
         except:
             training_kwargs['map_output_to_hidden'] = False
+
+
+        task =  angularintegration_task(T=input_length*training_kwargs['dt_task'], dt=training_kwargs['dt_task'], sparsity=1, length_scale=.01,
+                                        last_mses=training_kwargs['last_mses'], random_angle_init=random_angle_init)
         
-        trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth,
-                                                                                            T=T, input_length=input_length, which=which,
+        trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs, 
+                                                                                            T=T, input_length=input_length, 
                                                                                             pca_from_to=pca_from_to,
-          num_of_inputs=num_of_inputs, input_range=input_range, random_angle_init=False)
+                                                                                            num_of_inputs=num_of_inputs,
+                                                                                            input_range=input_range,
+                                                                                            input_type=input_type,
+                                                                                            random_angle_init=random_angle_init, 
+                                                                                            task=task)
         
         xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
         ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
@@ -1652,60 +1680,72 @@ if __name__ == "__main__":
     rcParams["figure.dpi"] = 250
     plt.rcParams["figure.figsize"] = (5,5)
     xylims=[-1.5,1.5]
-    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_asymp')
-    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_asymp')
+    inputdriven_folder = '/gp_inputdriven3d_asymp'
+    output_folder = '/gp_output_asymp'
+
+    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder)
+    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder)
     if training_kwargs['nonlinearity'] == 'relu' and training_kwargs['N_rec'] <= 25:
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_analytic')
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
     
-    # for which in range(500, np.argmin(losses), 100):
-    # for which in  range(330, 335, 1):
-    # for which in range(0, 100, 1):
-    if True:
-
-        # training_kwargs['map_output_to_hidden'] = False
-        wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
-        try:
-            training_kwargs['map_output_to_hidden']
-        except:
-            training_kwargs['map_output_to_hidden'] = False
-
-        # net =  load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs)
-        # exp = exp_list[exp_i]   
+    # for which in ['post']:
+    # for which in range(500, np.argmin(losses), 25):
+    # for which in  range(100, 500, 5):
+    for which in range(0, 100, 1):
+        net, training_kwargs = load_net(main_exp_name, exp_i, which)
+        wo = net.wo.detach().numpy()
+        wrec = net.wo.detach().numpy()
+        brec = net.wo.detach().numpy()
         
-        trajectories, traj_pca, start, target, output, input_proj, _, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs, oth,
-                                                                                            T=T, input_length=input_length, which=which,
-                                                                                            pca_from_to=pca_from_to,
-          num_of_inputs=num_of_inputs, input_range=input_range, random_angle_init=False)
+        trajectories, traj_pca, start, input, target, output, input_proj, _, explained_variance = get_hidden_trajs(net, training_kwargs, 
+                                                                                            T=T, input_length=input_length,
+                                                                                            pca_from_to=pca_from_to, 
+                                                                                            num_of_inputs=num_of_inputs,
+                                                                                            input_range=input_range, 
+                                                                                            input_type=input_type,
+                                                                                            random_angle_init=random_angle_init,
+                                                                                            task=task)
+        
+        recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
         traj_pca = pca.transform(trajectories.reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,10))
+        
         # plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, ax=None)
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_{which}_{exp_i}.pdf', bbox_inches="tight")
         
         # plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, plot_asymp=True, ax=None);
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_{which}_{exp_i}.pdf', bbox_inches="tight")
         
-        # plot_input_driven_trajectory_3d(traj_pca, input_length, elev=45, azim=135)
+        # plot_inputdriven_trajectory_3d(traj_pca, input_length, plot_traj=True,
+        #                                     recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
+        #                                     elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
 
-        recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
-        id_recurrences, id_recurrences_pca = find_periodic_orbits(trajectories[:,:input_length,:], traj_pca[:,:input_length,:], limcyctol=1e-1, mindtol=1e-4)
-        
-        diagrams = tda_inputdriven_recurrent(id_recurrences, maxdim=2)
-        plot_diagrams(diagrams, show=True)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven_tda_{exp_i}.png', bbox_inches="tight")
-        plt.close()
+        # plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
+        #                            fxd_points=None, ops_fxd_points=None,
+        #                            plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which)
+        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_{which}_{exp_i}.pdf', bbox_inches="tight")
 
-    if False:
-        plot_input_driven_trajectory_3d(traj_pca, input_length, plot_traj=True,
+        
+        # id_recurrences, id_recurrences_pca = find_periodic_orbits(trajectories[:,:input_length,:], traj_pca[:,:input_length,:], limcyctol=1e-1, mindtol=1e-4)
+        
+        # diagrams, fig, ax = tda_inputdriven_recurrent(id_recurrences, maxdim=1)
+        # plot_diagrams(diagrams, show=True)
+        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven_tda_{exp_i}.png', bbox_inches="tight")
+        # plt.close()
+
+    # if False:
+
+        plot_inputdriven_trajectory_3d(traj_pca, input_length, plot_traj=True,
                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
                                             elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_asymp/{exp_i}_{which:04d}.png', bbox_inches="tight")
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder + f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
         plt.close()
         
         plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
                                    fxd_points=None, ops_fxd_points=None,
                                    plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp/{exp_i}_{which:04d}.png', bbox_inches="tight")
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder + f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
         plt.close()
 
         # plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
@@ -1717,7 +1757,7 @@ if __name__ == "__main__":
         
             fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(wrec, brec)
             
-            plot_input_driven_trajectory_3d(traj_pca, input_length, plot_traj=True,
+            plot_inputdriven_trajectory_3d(traj_pca, input_length, plot_traj=True,
                                                 recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
                                                 fxd_points=fixed_point_list,
                                                 h_stabilities=unstabledimensions,
