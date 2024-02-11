@@ -514,7 +514,6 @@ def get_params_exp(params_folder, exp_i=0, which='post'):
     try:
         losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
         
-        
     except:
         losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = result
 
@@ -641,9 +640,9 @@ def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
                                     h_stabilities=None,
                                     elev=20., azim=-35, roll=0,
                                     lims=[], plot_epoch=False,
-                                    num_of_inputs = 0,
                                     cmap = cmx.get_cmap("coolwarm")):
     
+    num_of_inputs = traj_pca.shape[0]
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     norm = mplcolors.Normalize(vmin=-.5,vmax=.5)
@@ -923,7 +922,8 @@ def plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=10,
     
 def get_hidden_trajs(net, training_kwargs, T=128, input_length=10, timepart='all',
                      num_of_inputs=51, pca_from_to=(0,None), input_range=(-3,3),
-                     input_type='constant', random_angle_init=False, task=None):
+                     input_type='constant', random_angle_init=False, task=None,
+                     input=None, target=None):
     
     pca_after_t, pca_before_t = pca_from_to
     min_input, max_input = input_range
@@ -946,20 +946,25 @@ def get_hidden_trajs(net, training_kwargs, T=128, input_length=10, timepart='all
             
         target = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1).reshape((num_of_inputs, T, training_kwargs['N_out']))
 
-    else:
+    elif input_type == 'training': 
+        num_of_inputs = input.shape[0]
+
+    elif input_type == 'gp':
         _input, target, mask = task(num_of_inputs)
         input = np.zeros((num_of_inputs, T, training_kwargs['N_in']))
         input[:,:input_length,:] = _input
         input = torch.from_numpy(input).float() 
+    else:
+        print("Input type not known")
     
     #Get initial hidden activations
     h = net.h0  
-
     if training_kwargs['map_output_to_hidden']:
         with torch.no_grad():
             h =  np.dot(target[:,0,:], net.output_to_hidden)
             
-    h = h.detach().numpy()
+    else:
+        h = h.detach().numpy()
     _target = torch.from_numpy(target).float() 
 
     with torch.no_grad():
@@ -1668,25 +1673,25 @@ def plot_weights_during_learning(exp_name, parent_dir, exp_i):
 
 
 if __name__ == "__main__":
-    main_exp_name='angular_integration/N50_tanh_T128/'
+#     main_exp_name='angular_integration/N50_recttanh_T128/'
     
-    exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name + "/result*")
-    exp_i = 0
+#     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name + "/result*")
+#     exp_i = 0
 
-    targets, outputs = plot_learning_trajectory(main_exp_name, exp_i, T=128*32, num_of_inputs=11, 
-                                 input_length=int(128)*1, input_type='gp', random_angle_init=True)
+#     targets, outputs = plot_learning_trajectory(main_exp_name, exp_i, T=128*32, num_of_inputs=11, 
+#                                  input_length=int(128)*1, input_type='gp', random_angle_init=True)
     
     
-    params_folder = parent_dir+'/experiments/' + main_exp_name +'/'
-    losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, 'post')
-    wrecs = weights_train['wrec']
+#     params_folder = parent_dir+'/experiments/' + main_exp_name +'/'
+#     losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, 'post')
+#     wrecs = weights_train['wrec']
     
-    all_data = {"targets":targets, "outputs":outputs, "wrecs":wrecs}
+#     all_data = {"targets":targets, "outputs":outputs, "wrecs":wrecs}
     
     
     
 
-if False:
+# if False:
 # if __name__ == "__main__":
 
     model_names=['lstm', 'low','high', 'ortho', 'qpta']
@@ -1703,9 +1708,8 @@ if False:
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
     T = 128*32*2    
-    num_of_inputs = 10
     input_length = int(128)*1
-    input_type = 'gp'
+    input_type = 'training'
     random_angle_init = True
     input_range = (-.2, .2)   
 
@@ -1717,13 +1721,26 @@ if False:
 
     model_name = ''
     main_exp_name='angular_integration/hidden/25.6'
-    main_exp_name='angular_integration/N50_tanh_T128/' #training_fullest
+    main_exp_name='angular_integration/N50_recttanh_T128/' #training_fullest
     
-    exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
+    exp_i = 0
+    
+    params_folder = parent_dir+"/experiments/" + main_exp_name +'/'+ model_name
+    exp_list = glob.glob(params_folder + "/result*")
+    exp_list = glob.glob(params_folder + "/result_*")
+    
+    params_path = glob.glob(params_folder + '/param*.yml')[0]
+    exp = exp_list[exp_i]
+    training_kwargs = yaml.safe_load(Path(params_path).read_text())
+    with open(exp, 'rb') as handle:
+        result = pickle.load(handle)
+        
+    input = torch.from_numpy(result['all_inputs'][0]).float() 
+    target = result['all_targets'][0]
+    num_of_inputs = input.shape[0]
 
     if True:    
         np.random.seed(1234)
-        exp_i = 0
 
         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
         which = 'post'
@@ -1739,7 +1756,7 @@ if False:
 
 
         task =  angularintegration_task(T=input_length*training_kwargs['dt_task'], dt=training_kwargs['dt_task'], sparsity=1, length_scale=1,
-                                        last_mses=training_kwargs['last_mses'], random_angle_init=random_angle_init)
+                                        last_mses=training_kwargs['last_mses'], random_angle_init=random_angle_init, max_velocity=1)
         
         trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs, 
                                                                                             T=T, input_length=input_length, 
@@ -1748,7 +1765,9 @@ if False:
                                                                                             input_range=input_range,
                                                                                             input_type=input_type,
                                                                                             random_angle_init=random_angle_init, 
-                                                                                            task=task)
+                                                                                            task=task,
+                                                                                            input=input,
+                                                                                            target=target)
         
         xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
         ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
@@ -1766,8 +1785,8 @@ if False:
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_analytic')
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
     
-    # for which in ['post']:
-    for which in range(3500, np.argmin(losses), 25):
+    for which in ['post']:
+    # for which in range(3500, np.argmin(losses), 25):
     # for which in  range(100, 500, 5):
     # for which in range(0, 100, 1):
         net, training_kwargs = load_net(main_exp_name, exp_i, which)
@@ -1780,7 +1799,9 @@ if False:
                                                                                             input_range=input_range, 
                                                                                             input_type=input_type,
                                                                                             random_angle_init=random_angle_init,
-                                                                                            task=task)
+                                                                                            task=task,
+                                                                                            input=input,
+                                                                                            target=target)
         
         traj_pca = pca.transform(trajectories.reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,10))
         recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
