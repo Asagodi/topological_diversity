@@ -37,7 +37,7 @@ def makedirs(dirname):
         os.makedirs(dirname)
 
 def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None,
-             input_length=0, task_noise_sigma=0., final_loss=False, random_angle_init=False):
+             input_length=0, task_noise_sigma=0., final_loss=False, random_angle_init=False, max_input=None):
     
     if task_name == 'eyeblink':
         task =  eyeblink_task(input_length=T, t_delay=t_delay)
@@ -103,7 +103,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         
         task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], input_length=training_kwargs['input_length'],
                         sparsity=training_kwargs['task_noise_sigma'], last_mses=training_kwargs['final_loss'],
-                        random_angle_init=training_kwargs['random_angle_init'])
+                        random_angle_init=training_kwargs['random_angle_init'], max_input=training_kwargs['max_input'])
 
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     
@@ -374,6 +374,7 @@ if __name__ == "__main__":
     parameter_file_name = 'params_ang_sparse.yml'
     
     parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
+    parameter_path = parent_dir + '/experiments/angular_integration/N50_tanh_T128_B512_nomax/parameters.yml'
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
     
     network_types = ['lstm_noforget', 'rnn', 'rnn', 'rnn', 'rnn']
@@ -389,7 +390,7 @@ if __name__ == "__main__":
     
     main_exp_name = 'angular_integration' #poisson_clicks_task' # angular_integration'
     # sub_exp_name  = 'act_reg_from10_fulltrajnorm'
-    sub_exp_name = 'N50_recttanh_T128'
+    sub_exp_name = 'N30_recttanh_T128'
 
     training_kwargs['stop_patience'] = 500
     training_kwargs['stop_min_delta'] = 0
@@ -403,11 +404,12 @@ if __name__ == "__main__":
     # training_kwargs['clip_gradient'] = 
     training_kwargs['task'] = 'angular_integration'
     # training_kwargs['task'] = 'poisson_clicks_task'
+    training_kwargs['max_input'] = None
     training_kwargs['input_length'] = 25
     training_kwargs['random_angle_init'] = True
     training_kwargs['map_output_to_hidden'] = True
     training_kwargs['T'] = 12.8*1 # 12.8*2
-    training_kwargs['finall_loss'] = False
+    training_kwargs['final_loss'] = False
     training_kwargs['N_in'] = 1
     training_kwargs['N_out'] = 2
     training_kwargs['b_a'] = 5
@@ -427,7 +429,7 @@ if __name__ == "__main__":
     training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
     training_kwargs['learning_rate'] = 3e-3
-    training_kwargs['n_epochs'] = 20000
+    training_kwargs['n_epochs'] = 5000
     training_kwargs['record_step'] = 1
     training_kwargs['dt_rnn'] = .1
     training_kwargs['adam_beta1'] = 0.9
@@ -436,7 +438,7 @@ if __name__ == "__main__":
     training_kwargs['initialization_type'] = 'gain' #initialization_type_list[model_i]
     training_kwargs['loss_function'] = loss_functions[model_i]
     training_kwargs['rnn_init_gain'] = 1.5 # g_list[model_i]        ##########
-    training_kwargs['scheduler_step_size'] = 200 # scheduler_step_sizes[model_i]
+    training_kwargs['scheduler_step_size'] = 500 # scheduler_step_sizes[model_i]
     training_kwargs['scheduler_gamma'] = .75 #gammas[model_i]
 
     training_kwargs['network_folder'] = parent_dir + '/experiments/angular_integration/N200'

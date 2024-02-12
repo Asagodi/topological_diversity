@@ -584,6 +584,10 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
     if net.save_inputs:
         _input, _target, _mask = task(batch_size)
         all_inputs = np.zeros((n_rec_epochs, batch_size, _input.shape[1], dim_in), dtype=np.float32)
+        all_targets = np.zeros((n_rec_epochs, batch_size, _target.shape[1], dim_out), dtype=np.float32)
+        all_trajectories = np.zeros((n_rec_epochs, batch_size, _target.shape[1], dim_rec), dtype=np.float32)
+        all_outputs = np.zeros((n_rec_epochs, batch_size, _target.shape[1], dim_out), dtype=np.float32)
+
 
     time0 = time.time()
     if verbose:
@@ -609,8 +613,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         if not data:
             # Generate batch
             _input, _target, _mask = task(batch_size)
-            if net.save_inputs:
-                all_inputs[k] = _input
+
             # Convert training data to pytorch tensors
             _input = torch.from_numpy(_input)
             _target = torch.from_numpy(_target)
@@ -628,7 +631,12 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                 loss = loss_function(output.view(-1,2), target.view(-1,2))
                 # for t_id in range(x.shape[1]):
                     
-            
+            if net.save_inputs:
+                all_inputs[k] = _input
+                all_targets[k] = _target
+                all_trajectories[k] = trajectories.detach().numpy()
+                all_outputs[k] = output.detach().numpy()
+                        
             act_reg = 0.
             if act_reg_lambda != 0.: 
                 # trajectories.detach()
@@ -734,7 +742,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
     res = [losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs]
     res_dict = {"losses":losses, "validation_losses":validation_losses, "gradient_norms":gradient_norms,
                 "weights_init":weights_init, "weights_last":weights_last, "weights_train":weights_train,
-                "epochs":epochs, "rec_epochs":rec_epochs, "all_inputs":all_inputs}
+                "epochs":epochs, "rec_epochs":rec_epochs,
+                "all_inputs":all_inputs, "all_targets":all_targets, "all_outputs":all_outputs, "all_trajectories":all_trajectories}
 
     return res, res_dict
 
