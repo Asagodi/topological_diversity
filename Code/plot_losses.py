@@ -920,9 +920,9 @@ def plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=10,
 
 
     
-def get_hidden_trajs(net, dt_task=1, T=128, input_length=10,
+def get_hidden_trajs(net, T=128, input_length=10, input_type='constant', 
                      num_of_inputs=51, pca_from_to=(0,None), input_range=(-3,3),
-                     input_type='constant', random_angle_init=False, task=None,
+                     dt_task=1, random_angle_init=False, task=None,
                      input=None, target=None):
     
     pca_after_t, pca_before_t = pca_from_to
