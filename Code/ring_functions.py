@@ -577,27 +577,32 @@ def simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=501):
 # for i in range(N):
 #     new_sols[i,:] = simulate_nefring(W, I_e, y0=sols[i,:], maxT=25, tsteps=501)[:,-1]
 
-from perturbed_training import RNN
-###########RNNs and learning
-def get_ring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
-    
-    wrec_init, wi_init = define_ring(N, je=je, ji=ji, c_ff=c_ff) # W_sym, W_asym 
-    # wo_init = ???
-    bwo_init = np.zeros((2,1))
 
-    corners = get_corners(N, m=1.2512167690384801)
-    h0_init = corners[3] #along the ring, e.g. corner
-    
-    X = corners
+def pca_transform(X, number_of_pcs):
     X_standardized = (X - np.mean(X, axis=0))
     covariance_matrix = np.cov(X_standardized, rowvar=False)
     eigenvalues, eigenvectors = np.linalg.eig(covariance_matrix)
     sorted_indices = np.argsort(eigenvalues)[::-1]
     eigenvalues = eigenvalues[sorted_indices]
     eigenvectors = eigenvectors[:, sorted_indices]
-    top_eigenvectors = eigenvectors[:, :2]
-    wo_init = top_eigenvectors
+    top_eigenvectors = eigenvectors[:, :number_of_pcs]
+    transformed_data = np.dot(X_standardized, top_eigenvectors)
 
+    return top_eigenvectors, transformed_data
+
+from perturbed_training import RNN
+###########RNNs and learning
+def get_ring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
+    
+    wrec_init, wi_init = define_ring(N, je=je, ji=ji, c_ff=c_ff) # W_sym, W_asym 
+    bwo_init = np.zeros((2,1))
+
+    corners = get_corners(N, m=1.2512167690384801)
+    h0_init = corners[3] #along the ring, e.g. corner
+    
+
+    top_eigenvectors, X_transformed = pca_transform(corners, number_of_pcs=2)
+    wo_init = top_eigenvectors
 
     dims = (1,N,2)
     net = RNN(dims=dims, noise_std=internal_noise_std, dt=dt,
@@ -605,6 +610,6 @@ def get_ring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
               wi_init=wi_init/N, wrec_init=wrec_init/N, wo_init=wo_init, brec_init=c_ff, bwo_init=bwo_init,
               h0_init=h0_init, ML_RNN='noorman')
     
-
-
+    
+    
 
