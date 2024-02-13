@@ -94,13 +94,13 @@ def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, 
             # outputs = outputs + outputs_0[:, np.newaxis, :]
         outputs = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
 
-        # if last_mses:
-        #     fin_int = np.random.randint(1,last_mses,size=batch_size)
-        #     mask = np.zeros((batch_size, input_length, 2))
-        #     mask[np.arange(batch_size), -fin_int, :] = 1
+        if last_mses:
+            fin_int = np.random.randint(1,last_mses,size=batch_size)
+            mask = np.zeros((batch_size, input_length, 2))
+            mask[np.arange(batch_size), -fin_int, :] = 1
 
-        # else:
-        mask = np.ones((batch_size, input_length, 2))
+        else:
+            mask = np.ones((batch_size, input_length, 2))
 
         return inputs.reshape((batch_size, input_length, 1)), outputs, mask
     

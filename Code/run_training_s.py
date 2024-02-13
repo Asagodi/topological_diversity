@@ -390,7 +390,7 @@ if __name__ == "__main__":
     
     main_exp_name = 'angular_integration' #poisson_clicks_task' # angular_integration'
     # sub_exp_name  = 'act_reg_from10_fulltrajnorm'
-    sub_exp_name = 'N30_recttanh_T128'
+    sub_exp_name = 'N200_tanh_T128'
 
     training_kwargs['stop_patience'] = 500
     training_kwargs['stop_min_delta'] = 0
@@ -399,7 +399,7 @@ if __name__ == "__main__":
 
     model_i, model_name = 2, ''
 
-    training_kwargs['save_inputs'] = True
+    training_kwargs['save_inputs'] = False
 
     # training_kwargs['clip_gradient'] = 
     training_kwargs['task'] = 'angular_integration'
@@ -409,12 +409,12 @@ if __name__ == "__main__":
     training_kwargs['random_angle_init'] = True
     training_kwargs['map_output_to_hidden'] = True
     training_kwargs['T'] = 12.8*1 # 12.8*2
-    training_kwargs['final_loss'] = False
+    training_kwargs['last_mses'] = None
     training_kwargs['N_in'] = 1
     training_kwargs['N_out'] = 2
     training_kwargs['b_a'] = 5
 
-    training_kwargs['nonlinearity'] = 'rect_tanh'
+    training_kwargs['nonlinearity'] = 'tanh'
     # training_kwargs['ml_rnn'] = False
     # training_kwargs['noise_std'] = 1e-5
     training_kwargs['task_noise_sigma'] = 0  #10-5
@@ -422,8 +422,8 @@ if __name__ == "__main__":
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['N_rec'] = 50
-    training_kwargs['batch_size'] = 32
+    training_kwargs['N_rec'] = 200
+    training_kwargs['batch_size'] = 512
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
     training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
