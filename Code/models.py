@@ -740,12 +740,16 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         weights_train["oths"] = oths
     
     res = [losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs]
-    res_dict = {"losses":losses, "validation_losses":validation_losses, "gradient_norms":gradient_norms,
-                "weights_init":weights_init, "weights_last":weights_last, "weights_train":weights_train,
-                "epochs":epochs, "rec_epochs":rec_epochs,
-                "all_inputs":all_inputs, "all_targets":all_targets, "all_outputs":all_outputs, "all_trajectories":all_trajectories}
+    if net.save_inputs:
+        res_dict = {"losses":losses, "validation_losses":validation_losses, "gradient_norms":gradient_norms,
+                    "weights_init":weights_init, "weights_last":weights_last, "weights_train":weights_train,
+                    "epochs":epochs, "rec_epochs":rec_epochs,
+                    "all_inputs":all_inputs, "all_targets":all_targets, "all_outputs":all_outputs, "all_trajectories":all_trajectories}
 
-    return res, res_dict
+    if net.save_inputs:
+        return res, res_dict
+    else:
+        return res, {}
 
 def run_net(net, task, batch_size=32, return_dynamics=False, h_init=None):
     # Generate batch
