@@ -920,7 +920,7 @@ def plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=10,
 
 
     
-def get_hidden_trajs(net, training_kwargs, T=128, input_length=10, timepart='all',
+def get_hidden_trajs(net, dt_task=1, T=128, input_length=10,
                      num_of_inputs=51, pca_from_to=(0,None), input_range=(-3,3),
                      input_type='constant', random_angle_init=False, task=None,
                      input=None, target=None):
@@ -928,34 +928,35 @@ def get_hidden_trajs(net, training_kwargs, T=128, input_length=10, timepart='all
     pca_after_t, pca_before_t = pca_from_to
     min_input, max_input = input_range
 
+    input_size, hidden_size, output_size = net.dims
+
     #Generate input
     if input_type == 'constant':  #generate constant inputs (left/right with a range determined by input_range)
-        input = np.zeros((num_of_inputs, T, training_kwargs['N_in']))
+        input = np.zeros((num_of_inputs, T, input_size))
         stim = np.linspace(min_input, max_input, num=num_of_inputs, endpoint=True)
         input[:,:input_length,0] = np.repeat(stim,input_length).reshape((num_of_inputs,input_length))
         input = torch.from_numpy(input).float() 
         
         #Integrate input to get target output
-        outputs_1d = np.cumsum(input, axis=1)*training_kwargs['dt_task']
+        outputs_1d = np.cumsum(input, axis=1)*dt_task
         
         #random init
-        outputs_1d = np.cumsum(input, axis=1)*training_kwargs['dt_task']
+        outputs_1d = np.cumsum(input, axis=1)*dt_task
         if random_angle_init:
             random_angles = np.random.uniform(-np.pi, np.pi, size=num_of_inputs).astype('f')
             outputs_1d += random_angles[:, np.newaxis, np.newaxis]
-            
-        target = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1).reshape((num_of_inputs, T, training_kwargs['N_out']))
+        target = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1).reshape((num_of_inputs, T, output_size))
 
     elif input_type == 'training': 
         input_length = input.shape[1]
         num_of_inputs = input.shape[0]
-        all_input = np.zeros((num_of_inputs, T, training_kwargs['N_in']))
+        all_input = np.zeros((num_of_inputs, T, input_size))
         all_input[:,:input_length,0] = input.squeeze()
         input = torch.from_numpy(all_input).float() 
 
     elif input_type == 'gp':
         _input, target, mask = task(num_of_inputs)
-        input = np.zeros((num_of_inputs, T, training_kwargs['N_in']))
+        input = np.zeros((num_of_inputs, T, input_size))
         input[:,:input_length,:] = _input
         input = torch.from_numpy(input).float() 
     else:
@@ -963,7 +964,7 @@ def get_hidden_trajs(net, training_kwargs, T=128, input_length=10, timepart='all
     
     #Get initial hidden activations
     h = net.h0  
-    if training_kwargs['map_output_to_hidden']:
+    if net.map_output_to_hidden:
         with torch.no_grad():
             h =  np.dot(target[:,0,:], net.output_to_hidden)
             
@@ -977,15 +978,13 @@ def get_hidden_trajs(net, training_kwargs, T=128, input_length=10, timepart='all
     input_proj = np.dot(trajectories, net.wi.detach().numpy().T)
     
     pca = PCA(n_components=10)
-    pca.fit(trajectories.reshape((-1,training_kwargs['N_rec'])))
+    pca.fit(trajectories.reshape((-1,hidden_size)))
     explained_variance = pca.explained_variance_ratio_.cumsum()
-    trajectories_tofit = trajectories[:,pca_after_t:pca_before_t,:].numpy().reshape((-1,training_kwargs['N_rec']))
+    trajectories_tofit = trajectories[:,pca_after_t:pca_before_t,:].numpy().reshape((-1,hidden_size))
     pca.fit(trajectories_tofit)
-    traj_pca = pca.transform(trajectories.numpy().reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,10))
+    traj_pca = pca.transform(trajectories.numpy().reshape((-1,hidden_size))).reshape((num_of_inputs,-1,10))
     
     h0_pca = pca.transform(net.h0.detach().numpy().reshape((1,-1))).T
-    
-    # print(input.shape)
 
     return trajectories, traj_pca, h0_pca, input, target, output, input_proj, pca, explained_variance
 
@@ -1598,23 +1597,34 @@ def plot_learning_trajectory(exp_name, exp_i, T=256, num_of_inputs=11, xylims=[-
 
     params_folder = parent_dir+'/experiments/' + exp_name +'/'
     losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, 'post')
-    if input_type=='training':
-        cmap = cmx.get_cmap("coolwarm")
-    else:
-        cmap = cmx.get_cmap("tab10")
     
     net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
-    exp_file = glob.glob(parent_dir+"/experiments/" + main_exp_name + "/result_*")[0]
-    with open(exp_file, 'rb') as handle:
-        result = pickle.load(handle)
+    input = None
+    target= None
+        
+    if input_type=='constant':
+        inputdriven_folder = '/inputdriven3d_asymp'
+        output_folder = '/output_asymp'
+        cmap = cmx.get_cmap("coolwarm")
     
-    input = torch.from_numpy(result['all_inputs'][0]).float() 
-    training_input_length = input.shape[1]
-    target = result['all_targets'][0]
-    num_of_inputs = input.shape[0]
-    max_epoch = np.argmin(losses)
+    elif input_type=='training': 
+        exp_file = glob.glob(parent_dir+"/experiments/" + exp_name + "/result_*")[0]
+        with open(exp_file, 'rb') as handle:
+            result = pickle.load(handle)
+        
+        input = torch.from_numpy(result['all_inputs'][0]).float() 
+        training_input_length = input.shape[1]
+        target = result['all_targets'][0]
+        num_of_inputs = input.shape[0]
+        max_epoch = np.argmin(losses)
+        cmap = cmx.get_cmap("tab10")
     
-    trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs, 
+    else:
+        inputdriven_folder = '/gp_inputdriven3d_asymp'
+        output_folder = '/gp_output_asymp'
+        cmap = cmx.get_cmap("tab10")
+        
+    trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
                                                                                         T=T, input_length=input_length, 
                                                                                         num_of_inputs=num_of_inputs,
                                                                                         input_range=input_range,
@@ -1626,35 +1636,25 @@ def plot_learning_trajectory(exp_name, exp_i, T=256, num_of_inputs=11, xylims=[-
     xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
     ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
     zlim = [np.min(traj_pca[...,2]), np.max(traj_pca[...,2])]
-    
-    if input_type=='constant':
-        inputdriven_folder = '/inputdriven3d_asymp'
-        output_folder = '/output_asymp'
-        cmap = cmx.get_cmap("coolwarm")
-    else:
-        inputdriven_folder = '/gp_inputdriven3d_asymp'
-        output_folder = '/gp_output_asymp'
-        cmap = cmx.get_cmap("tab10")
+
 
     makedirs(parent_dir+'/experiments/'+main_exp_name+'/' + inputdriven_folder)
     makedirs(parent_dir+'/experiments/'+main_exp_name+'/' + output_folder)
     
-
-    
     for which in tqdm(np.concatenate([np.arange(0, 100, 1), np.arange(100, 500, 5), np.arange(500, np.argmin(losses), 25)])):
     # for which in tqdm(np.arange(4000, max_epoch, 25)):
-        
-        input = torch.from_numpy(result['all_inputs'][which]).float() 
-        # training_input_length = input.shape[1]
-        target = result['all_targets'][which]
-        output = result['all_outputs'][which]
-        trajectories = result['all_trajectories'][which]
+        num_of_inputs = 11
+        if input_type=='training': 
+            input = torch.from_numpy(result['all_inputs'][which]).float() 
+            target = result['all_targets'][which]
+            output = result['all_outputs'][which]
+            trajectories = result['all_trajectories'][which]
 
         net, training_kwargs = load_net(main_exp_name, exp_i, which)
         wo = net.wo.detach().numpy()
         
         # if input_type != 'training': 
-        trajectories, traj_pca, start, input, target, output, input_proj, _, explained_variance = get_hidden_trajs(net, training_kwargs, T=T, input_length=input_length, num_of_inputs=num_of_inputs, input_range=input_range, input_type=input_type, input=input, target=target)
+        trajectories, traj_pca, start, input, target, output, input_proj, _, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], T=T, input_length=input_length, num_of_inputs=num_of_inputs, input_range=input_range, input_type=input_type, input=input, target=target)
 
         traj_pca = pca.transform(trajectories.reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,pca.n_components))
         recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
@@ -1701,24 +1701,23 @@ def plot_weights_during_learning(exp_name, parent_dir, exp_i):
 
 
 if __name__ == "__main__":
-    main_exp_name='angular_integration/N30_recttanh_T128/'
+    main_exp_name='angular_integration/N200_tanh_T128/'
     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name + "/result*")
     exp_i = 0
+    # net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
     
-    net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
+    # task =  angularintegration_task(T=training_kwargs['T'], dt=training_kwargs['dt_task'], sparsity=training_kwargs['task_sparsity'], 
+    #                                 last_mses=training_kwargs['last_mses'], random_angle_init=training_kwargs['random_angle_init'],
+    #                                 max_input=.5)
     
-    task =  angularintegration_task(T=training_kwargs['T'], dt=training_kwargs['dt_task'], sparsity=training_kwargs['task_sparsity'], 
-                                    last_mses=training_kwargs['last_mses'], random_angle_init=training_kwargs['random_angle_init'],
-                                    max_input=training_kwargs['max_input'])
-    
-    targets, outputs = plot_learning_trajectory(main_exp_name, exp_i, T=128*32,
-                                  input_length=int(128)*1, input_type='constant', random_angle_init=True)
+    # targets, outputs = plot_learning_trajectory(main_exp_name, exp_i, T=128*32,
+    #                               input_length=int(128)*2, input_type='constant', random_angle_init=True)
     
     params_folder = parent_dir+'/experiments/' + main_exp_name +'/'
     losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, 'post')
     wrecs = weights_train['wrec']
-    
-    # plot_weights_during_learning(main_exp_name, parent_dir, exp_i)
+    # 
+    plot_weights_during_learning(main_exp_name, parent_dir, exp_i)
     
     
     
@@ -1816,7 +1815,7 @@ if __name__ == "__main__":
         task =  angularintegration_task(T=input_length*training_kwargs['dt_task'], dt=training_kwargs['dt_task'], sparsity=1, length_scale=1,
                                         last_mses=training_kwargs['last_mses'], random_angle_init=random_angle_init, max_input=.5)
         
-        trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, training_kwargs, 
+        trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
                                                                                             T=T, input_length=input_length, 
                                                                                             pca_from_to=pca_from_to,
                                                                                             num_of_inputs=num_of_inputs,
@@ -1859,7 +1858,7 @@ if __name__ == "__main__":
         # net, training_kwargs = load_net(main_exp_name, exp_i, which)
         wo = net.wo.detach().numpy()
         
-        # trajectories, traj_pca, start, input, target, output, input_proj, _, explained_variance = get_hidden_trajs(net, training_kwargs, 
+        # trajectories, traj_pca, start, input, target, output, input_proj, _, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
         #                                                                                     T=T, input_length=input_length,
         #                                                                                     pca_from_to=pca_from_to, 
         #                                                                                     num_of_inputs=num_of_inputs,
