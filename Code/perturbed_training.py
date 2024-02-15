@@ -106,6 +106,8 @@ class RNN(nn.Module):
 
         # Define parameters
         self.wi = nn.Parameter(torch.Tensor(input_size, hidden_size))
+        if self.ML_RNN=='noorman':
+            self.wi = nn.Parameter(torch.Tensor(hidden_size, hidden_size))
         if not train_wi:
             self.wi.requires_grad = False
         self.wrec = nn.Parameter(torch.Tensor(hidden_size, hidden_size))
@@ -172,27 +174,38 @@ class RNN(nn.Module):
         seq_len = input.shape[1]
         if h_init is None:
             h = self.h0
+            h = h.expand(batch_size, self.hidden_size)
+            
         else:
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
             # h_init_torch.requires_grad = False
             # Initialize parameters
             with torch.no_grad():
                 h = h_init_torch.copy_(torch.from_numpy(h_init))
+                h = h.expand(batch_size, self.hidden_size)
         noise = torch.randn(batch_size, seq_len, self.hidden_size, device=self.wrec.device)
         output = torch.zeros(batch_size, seq_len, self.output_size, device=self.wrec.device)
         if return_dynamics:
             trajectories = torch.zeros(batch_size, seq_len, self.hidden_size, device=self.wrec.device)
 
+        print("h_0: ", h)
+
         # simulation loop
         for i in range(seq_len):
             if self.ML_RNN=='noorman':
-                rec_input = (
-                    self.nonlinearity(h).matmul(self.wrec.t + input[:, i, :].matmul(self.wi)) 
-                     + self.brec)
-                h = ((1 - self.dt) * h 
+                vector = self.nonlinearity(h).unsqueeze(2)
+                matrix = (self.wrec.t() + input[:, i, :].unsqueeze(2)*self.wi)
+                
+                rec_input = (torch.sum(vector * matrix, dim=2) + self.brec)
+                # print("rec_input: ", rec_input.shape)
+
+                h = ((1 - self.dt) * h  
                       + self.dt * rec_input
                       + np.sqrt(self.dt) * self.noise_std * noise[:, i, :])
+                print("h-rec_input: ", h-rec_input)
+
                 out_i = self.readout_nonlinearity(h).matmul(self.wo)+self.bwo
+                # print(out_i.shape, self.wo.shape, h.shape, self.bwo.shape)
             elif self.ML_RNN:
                 rec_input = self.nonlinearity(
                     h.matmul(self.wrec.t()) 
@@ -501,7 +514,7 @@ if __name__ == "__main__":
     training_kwargs['dt'] = 1 
     training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['readout_nonlinearity'] = 'id'
-    training_kwargs['T'] = 100 
+    training_kwargs['T'] = 1000 
     training_kwargs['noise_step'] = 1
     training_kwargs['n_epochs'] = 30
     
