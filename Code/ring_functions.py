@@ -4,6 +4,11 @@ Created on Wed Jul 26 15:50:25 2023
 
 @author: 
 """
+import glob
+import os, sys
+current_dir = os.getcwd()
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, current_dir) 
 
 import numpy as np
 
@@ -26,6 +31,9 @@ from matplotlib.ticker import MaxNLocator
 import matplotlib.lines as mlines
 from matplotlib.ticker import LinearLocator
 import matplotlib.colors as mplcolors
+import matplotlib.cm as cmx
+
+from plot_losses import get_hidden_trajs, plot_output_trajectory
 
 def ReLU(x):
     return np.where(x<0,0,x)
@@ -531,9 +539,7 @@ def plot_ring_and_fixedpoints(W_sym, pca, eps, c_ff, corners, lims=3, ax=None,  
 
     ax.set_axis_off()
     if not ax:
-        plt.savefig(currentdir+f"/Stability/figures/noorman_ring_N{N}_pert_{n_stab}stab_{n_sadd-1}sadd.pdf", bbox_inches="tight")
-        # plt.savefig(currentdir+f"/Stability/figures/noorman_ring_N{N}_pert_{n_stab}stab_{n_sadd-1}sadd.png", bbox_inches="tight")
-
+        plt.savefig(current_dir+f"/Stability/figures/noorman_ring_N{N}_pert_{n_stab}stab_{n_sadd-1}sadd.pdf", bbox_inches="tight")
 
 
 #lowrank
@@ -550,7 +556,7 @@ def transf(K):
 
 def ode_lowrank(t, x, Sigma):
     "Mastrogiuseppe 2018 (ring:Sigma=sigma[[1,0],[0,1]]"
-    return - x+ np.dot(Sigma, transf(x))
+    return - x + np.dot(Sigma, transf(x))
 
 
 def ring_nef(N, j0, j1):
@@ -587,29 +593,45 @@ def pca_transform(X, number_of_pcs):
     eigenvectors = eigenvectors[:, sorted_indices]
     top_eigenvectors = eigenvectors[:, :number_of_pcs]
     transformed_data = np.dot(X_standardized, top_eigenvectors)
-
+    
+    explained_variance_ratio = eigenvalues / np.sum(eigenvalues)
     return top_eigenvectors, transformed_data
 
 from perturbed_training import RNN
 ###########RNNs and learning
-def get_ring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
+def get_noormanring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
+    
+    num_of_inputs = 11
     
     wrec_init, wi_init = define_ring(N, je=je, ji=ji, c_ff=c_ff) # W_sym, W_asym 
-    bwo_init = np.zeros((2,1))
-
+    bwo_init = np.zeros((2))
     corners = get_corners(N, m=1.2512167690384801)
-    h0_init = corners[3] #along the ring, e.g. corner
-    
-
+    h0_init = corners[2] #along the ring, e.g. corner
+    # h0_init = np.broadcast_to(h0_init, (num_of_inputs,) + h0_init.shape)
     top_eigenvectors, X_transformed = pca_transform(corners, number_of_pcs=2)
-    wo_init = top_eigenvectors
+    wo_init = np.real(top_eigenvectors.T)
 
     dims = (1,N,2)
     net = RNN(dims=dims, noise_std=internal_noise_std, dt=dt,
               nonlinearity='relu', readout_nonlinearity='id',
-              wi_init=wi_init/N, wrec_init=wrec_init/N, wo_init=wo_init, brec_init=c_ff, bwo_init=bwo_init,
+              wi_init=wi_init/N, wrec_init=wrec_init/N, wo_init=wo_init, brec_init=np.array([c_ff]*N), bwo_init=bwo_init,
               h0_init=h0_init, ML_RNN='noorman')
+    net.map_output_to_hidden = False
+    
+    input_range=(-1.,1.)
+    T = 500
+    res = get_hidden_trajs(net, T=T, dt_task=dt, input_length=T, 
+                         num_of_inputs=num_of_inputs, input_range=input_range,
+                         input_type='constant', random_angle_init=False, task=None)
+    
+    trajectories, traj_pca, h0_pca, input, target, output, input_proj, pca, explained_variance = res
+    xylims=[-1.5,1.5]
+    cmap = cmx.get_cmap("coolwarm")
+    plot_output_trajectory(trajectories, wo_init.T, input_length=T, plot_traj=True,
+                               fxd_points=None, ops_fxd_points=None,
+                               plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims,
+                               cmap=cmap)
     
     
-    
-
+if __name__ == "__main__": 
+    get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.1, internal_noise_std=0)
