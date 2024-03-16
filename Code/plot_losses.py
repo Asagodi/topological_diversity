@@ -1717,6 +1717,8 @@ def tuning_curves(trajectories, target, nbins=100, plot_fig=False):
     if plot_fig:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3));
         ax.plot(bins, tunings)
+        fig.show()
+        plt.close()
         
     return tunings
     
@@ -1795,10 +1797,10 @@ if __name__ == "__main__":
     cmap = cmx.get_cmap("tab10")
 
     model_name = ''
-    main_exp_name='angular_integration/hidden/25.6'
-    main_exp_name='angular_integration/N50_recttanh_T128/' #training_fullest
+    # main_exp_name='angular_integration/hidden/25.6'
+    main_exp_name='angular_integration/tanh_N20/' #training_fullest
     
-    exp_i = 0
+    exp_i = 4
     
     params_folder = parent_dir+"/experiments/" + main_exp_name +'/'+ model_name
     exp_list = glob.glob(params_folder + "/result*")
@@ -1848,7 +1850,11 @@ if __name__ == "__main__":
                                                                                             input=input,
                                                                                             target=target)
         
-        tunings = tuning_curves(trajectories, target, nbins=40, plot_fig=True)
+        nbins = 40
+        tunings = tuning_curves(trajectories, target, nbins=nbins, plot_fig=True)
+        
+        for i in range(trajectories.shape[-1]):
+            plt.plot(np.roll(tunings[:,i], -np.argmax(tunings[:,i])+int(nbins/2)))
 
         xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
         ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
@@ -1940,7 +1946,7 @@ if __name__ == "__main__":
         #                            plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp_notraj_{which}_{exp_i}.pdf', bbox_inches="tight")
 
-        if training_kwargs['nonlinearity'] == 'relu' and training_kwargs['N_rec'] <= 25:
+        if training_kwargs['nonlinearity'] == 'relu' and training_kwargs['N_rec'] <= 15:
         
             fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(wrec, brec)
             
