@@ -1786,7 +1786,7 @@ if __name__ == "__main__":
     T = 128*3    
     input_length = int(128)*3
     input_type = 'constant'
-    num_of_inputs = 111
+    num_of_inputs = 1111
     random_angle_init = True
     input_range = (-.2, .2)   
 
@@ -1853,8 +1853,22 @@ if __name__ == "__main__":
         nbins = 40
         tunings = tuning_curves(trajectories, target, nbins=nbins, plot_fig=True)
         
+        window_size = 5
         for i in range(trajectories.shape[-1]):
-            plt.plot(np.roll(tunings[:,i], -np.argmax(tunings[:,i])+int(nbins/2)))
+            # plt.plot(np.roll(tunings[:,i], -np.argmax(tunings[:,i])+int(nbins/2)))
+            
+            arr = tunings[:,i]
+            num_sequences = len(arr) - window_size + 1
+
+            # Initialize array to store averages
+            averages = np.zeros(num_sequences)
+
+            # Calculate averages for each overlapping sequence
+            for j in range(num_sequences):
+                averages[j] = np.mean(arr[j:j+window_size])
+                
+            plt.plot(np.roll(tunings[:,i], -np.argmax(averages)-int(window_size/2)+int(nbins/2)))
+
 
         xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
         ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
