@@ -95,6 +95,12 @@ class EarlyStopper:
                 return True
         return False
 
+class RectifiedTanh(nn.Module):
+    def __init__(self):
+        super(RectifiedTanh, self).__init__()
+
+    def forward(self, x):
+        return torch.max(torch.tanh(x), torch.zeros_like(x))
 
 class RNN(nn.Module):
     def __init__(self, dims, noise_std=0., dt=0.5, 
@@ -155,8 +161,9 @@ class RNN(nn.Module):
             self.nonlinearity = nn.ReLU()
         elif nonlinearity.lower() == 'rect_tanh':
             # if self.noise_std!=0.:
-            self.nonlinearity = nn.ReLU(torch.tanh)                 ##works with noise
+            # self.nonlinearity = nn.ReLU(torch.tanh)                 ##works with noise
             # self.nonlinearity = lambda x: 1.*(torch.tanh(x)>0)   #works with ml_rnn False
+            self.nonlinearity = RectifiedTanh()
 
         elif nonlinearity.lower() == 'talu':
             self.nonlinearity = lambda x: torch.tanh(x) if x<0 else x
@@ -187,6 +194,8 @@ class RNN(nn.Module):
 
         # Define parameters
         self.wi = nn.Parameter(torch.Tensor(input_size, hidden_size))
+        if self.ML_RNN=='noorman':
+            self.wi = nn.Parameter(torch.Tensor(hidden_size, hidden_size))
         if not train_wi:
             self.wi.requires_grad = False
         self.wrec = nn.Parameter(torch.Tensor(hidden_size, hidden_size))
@@ -286,6 +295,7 @@ class RNN(nn.Module):
 
         # simulation loop
         for i in range(seq_len):
+
             if self.ML_RNN:
                 rec_input = self.nonlinearity(
                     h.matmul(self.wrec.t()) 
@@ -639,25 +649,23 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                         
             act_reg = 0.
             if act_reg_lambda != 0.: 
-                # trajectories.detach()
                 act_reg += torch.mean(torch.linalg.norm(trajectories[:,:,:], dim=(1,2)))
                 # for t_id in range(trajectories.shape[1]):  #all states through time
                 #     h = trajectories[:,t_id,:]
                 #     h.detach()
                 #     act_reg += torch.mean(torch.linalg.vector_norm(h, dim=1))
                 act_reg /= trajectories.shape[1]
-                # print(act_reg)
                 loss += act_reg_lambda*act_reg
             
             # Gradient descent
             loss.backward()
             if clip_gradient is not None:
                 torch.nn.utils.clip_grad_norm_(net.parameters(), clip_gradient)
-            gradient_norm_sq = sum([(p.grad ** 2).sum() for p in net.parameters() if p.requires_grad])
+            # [print(p.grad) for p in net.parameters() if p.requires_grad]
+            gradient_norm_sq = sum([(p.grad ** 2).sum() for p in net.parameters() if p.requires_grad and p.grad!=None])
             
             # Update weights
             optimizer.step()
-            
             scheduler.step()
             
             # Important to prevent memory leaks:
