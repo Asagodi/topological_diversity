@@ -94,7 +94,7 @@ Consequences for what can be an implementation of a (inho) computation.
 \section*{Open questions}
 
 Output mapping: What can we say when $g$ is nonlinear?
-- if monotonous: separability is still required (?)
+- if monotonous: separability of boas is still required (?)
 
 
 Inference: 
@@ -106,7 +106,12 @@ Inference:
 Representation: for models in different classes (can be lossy or lossless).
 Abstraction: for models in the same class but one is a lossy representation of the other.
 
+\section*{Relevant literature}
+Similar: \citep{casey1996}
 
+Slightly related: 
+\citep{}
+\citep{}
 
 \newpage
 \section{Introduction to Infinite horizon computation with ODEs}	
@@ -331,7 +336,42 @@ Surjective mapping from ADSs with output to Moore machines.
 This mapping can be extended to dynamical systems where the  the final states of the FSM are non-stationary Morse sets.
 \end{corollary}
 
-All these surjective maps define equivalence relations on the 
+All these surjective maps define equivalence relations in the space of dynamical systems that implement infinite horizon computation.
+
+
+\section{Metrics}
+
+- ASD-FSM approximations
+
+-- Zero for inhoco, nonzero for non-inhoco
+
+
+
+
+- CA approximations 
+-- Discretization of CA
+--- Line attractor
+---- stationary asymptotic behavior
+We first look at the case of a line attractor (LA) with output trajectory $x(t)=\text{constant}$ and an approximation of a line attractor (ALA) with an output trajectory $x'(t)$:
+\begin{equation}
+d_*(LA, ALA) \coloneqq \lim_{t\rightarrow\infty} |x(t) - x'(t)|
+\end{equation}
+
+
+---- any x'(t)
+\begin{equation}
+d_T(LA, ALA) \coloneqq \frac{1}{T} \int_0^T  |x(t) - x'(t)| dt
+\end{equation}
+
+\begin{equation}
+d_\infty(LA, ALA) \coloneqq \lim_{T\rightarrow\infty} \frac{1}{T} \int_0^T  |x(t) - x'(t)| dt
+\end{equation}
+
+
+
+
+-- 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Appendix}
