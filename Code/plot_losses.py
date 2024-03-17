@@ -715,7 +715,9 @@ def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
         ax.set_xlim(lims[0])
         ax.set_ylim(lims[1])
         ax.set_zlim(lims[2])
-    
+    ax.xaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+    ax.yaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+    ax.zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
     
 def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
                            fxd_points=None, ops_fxd_points=None,
@@ -1645,6 +1647,7 @@ def plot_learning_trajectory(exp_name, exp_i, T=256, num_of_inputs=11, xylims=[-
     makedirs(parent_dir+'/experiments/'+exp_name+'/' + output_folder)
     
     for which in tqdm(np.concatenate([np.arange(0, 100, 1), np.arange(100, 500, 5), np.arange(500, np.argmin(losses), 25)])):
+        print(which, parent_dir+'/experiments/'+exp_name+'/' + inputdriven_folder)
     # for which in tqdm(np.arange(4000, max_epoch, 25)):
         # num_of_inputs = 11
         if input_type=='training': 
@@ -1721,10 +1724,72 @@ def tuning_curves(trajectories, target, nbins=100, plot_fig=False):
         plt.close()
         
     return tunings
+
+def plot_centered_tuning(trajectories, tunings=None, target=None, nbins=10, window_size=1):
+    """
+    Plot centered tuning curves from generated trajectories on angular integration task.
+
+    Parameters
+    ----------
+    trajectories : array
+        DESCRIPTION.
+    tunings : TYPE
+        DESCRIPTION.
+    centering_method : TYPE
+        DESCRIPTION.
+    nbins: int
+    Number of bins for angles 
+    average_k: int > 0
+    if 1 then use maximal activity for centeringmethod 
+    if more than 1 use average over k
+
+    Returns
+    -------
+
+    """
+    #assert average_k > 0
+    folder = parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'tuning_folder'
+    makedirs(folder)
+
+    if not np.any(tunings):
+        tunings = tuning_curves(trajectories[:,:input_length,:], target[:,:input_length,:], nbins=nbins, plot_fig=False)
+    bins = np.arange(-np.pi, np.pi, np.pi/int(nbins/2))
+
+    fig, ax = plt.subplots(1, 1, figsize=(5, 3));
+
+    if window_size==1:
+        for i in range(trajectories.shape[-1]):
+            ax.plot(tunings[:,i])
+        ax.set_xlabel("Angle")
+        ax.set_ylabel("Average activity") 
+        ax.set_xticks([-np.pi,np.pi], [r'$-\pi$', r'$\pi$'])
+        plt.savefig(folder+f'/tuning_{exp_i}.pdf', bbox_inches="tight")
+        plt.close()
+            
+    else:
+        for i in range(trajectories.shape[-1]):
+            ax.plot(bins, np.roll(tunings[:,i], -np.argmax(tunings[:,i])+int(nbins/2)))
     
+            arr = tunings[:,i]
+            num_sequences = len(arr) - window_size + 1
+    
+            # Initialize array to store averages
+            averages = np.zeros(num_sequences)
+    
+            # Calculate averages for each overlapping sequence
+            for j in range(num_sequences):
+                averages[j] = np.mean(arr[j:j+window_size])
+                
+            ax.plot(bins, np.roll(tunings[:,i], -np.argmax(averages)-int(window_size/2)+int(nbins/2)))
+        ax.set_xlabel("Angle")
+        ax.set_ylabel("Average activity")    
+        ax.set_xticks([-np.pi,np.pi], [r'$-\pi$', r'$\pi$'])
+        plt.savefig(folder+f'/tuning_centered_{exp_i}.pdf', bbox_inches="tight")
+        plt.close()
+
 
 # if __name__ == "__main__":
-#     main_exp_name='angular_integration/N50_tanh_T128/'
+#     main_exp_name='angular_integration/recttanh_N100_T128/'
 #     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name + "/result*")
 #     exp_i = 0
 #     net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
@@ -1733,16 +1798,17 @@ def tuning_curves(trajectories, target, nbins=100, plot_fig=False):
 #                                     last_mses=training_kwargs['last_mses'], random_angle_init=training_kwargs['random_angle_init'],
 #                                     max_input=.5)
     
-#     set_cmap = cmx.get_cmap("gray")
+#     # set_cmap = cmx.get_cmap("gray")
+#     set_cmap = cmx.get_cmap("coolwarm")
 #     targets, outputs = plot_learning_trajectory(main_exp_name, exp_i, T=128*32, 
-#                                   input_length=int(128)*1, input_type='gp', random_angle_init=True, task=task,
+#                                   input_length=int(128)*1, input_type='constant', random_angle_init=True, task=task,
 #                                   set_cmap=set_cmap)
     
 #     params_folder = parent_dir+'/experiments/' + main_exp_name +'/'
 #     losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, 'post')
 #     wrecs = weights_train['wrec']
-    # 
-    # plot_weights_during_learning(main_exp_name, parent_dir, exp_i)
+    
+#     plot_weights_during_learning(main_exp_name, parent_dir, exp_i)
     
     
     
@@ -1783,24 +1849,28 @@ if __name__ == "__main__":
     # T = 20
     # from_t_step = 90
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
-    T = 128*3    
-    input_length = int(128)*3
-    input_type = 'constant'
-    num_of_inputs = 1111
-    random_angle_init = True
+    T = 128*32  
+    input_length = int(128)*2
+    num_of_inputs = 111
+    random_angle_init = False
     input_range = (-.2, .2)   
 
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,input_length)
     slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
     
+    input_type = 'constant'
     cmap = cmx.get_cmap("tab10")
+    cmap = cmx.get_cmap("coolwarm")
+
 
     model_name = ''
     # main_exp_name='angular_integration/hidden/25.6'
-    main_exp_name='angular_integration/tanh_N20/' #training_fullest
-    
-    exp_i = 4
+    main_exp_name='angular_integration/tanh_N20/' #
+    # main_exp_name='angular_integration/rect_tanh_N20/' #
+    main_exp_name='angular_integration/recttanh_N100_T128_noisy/' #
+
+    exp_i = 0
     
     params_folder = parent_dir+"/experiments/" + main_exp_name +'/'+ model_name
     exp_list = glob.glob(params_folder + "/result*")
@@ -1811,8 +1881,6 @@ if __name__ == "__main__":
     training_kwargs = yaml.safe_load(Path(params_path).read_text())
     with open(exp, 'rb') as handle:
         result = pickle.load(handle)
-        
-
 
     if True:    
         np.random.seed(1234)
@@ -1835,7 +1903,6 @@ if __name__ == "__main__":
         except:
             training_kwargs['map_output_to_hidden'] = False
 
-
         task =  angularintegration_task(T=input_length*training_kwargs['dt_task'], dt=training_kwargs['dt_task'], sparsity=1, length_scale=1,
                                         last_mses=training_kwargs['last_mses'], random_angle_init=random_angle_init, max_input=.5)
         
@@ -1851,24 +1918,10 @@ if __name__ == "__main__":
                                                                                             target=target)
         
         nbins = 40
-        tunings = tuning_curves(trajectories, target, nbins=nbins, plot_fig=True)
-        
-        window_size = 5
-        for i in range(trajectories.shape[-1]):
-            # plt.plot(np.roll(tunings[:,i], -np.argmax(tunings[:,i])+int(nbins/2)))
-            
-            arr = tunings[:,i]
-            num_sequences = len(arr) - window_size + 1
+        tunings = tuning_curves(trajectories[:,:input_length,:], target[:,:input_length,:], nbins=nbins, plot_fig=False)
 
-            # Initialize array to store averages
-            averages = np.zeros(num_sequences)
-
-            # Calculate averages for each overlapping sequence
-            for j in range(num_sequences):
-                averages[j] = np.mean(arr[j:j+window_size])
-                
-            plt.plot(np.roll(tunings[:,i], -np.argmax(averages)-int(window_size/2)+int(nbins/2)))
-
+        plot_centered_tuning(trajectories, tunings=tunings, nbins=nbins, window_size=1)
+        plot_centered_tuning(trajectories, tunings=tunings, nbins=nbins, window_size=5)
 
         xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
         ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
@@ -1877,11 +1930,12 @@ if __name__ == "__main__":
     rcParams["figure.dpi"] = 250
     plt.rcParams["figure.figsize"] = (5,5)
     xylims=[-1.5,1.5]
-    inputdriven_folder = '/gp_inputdriven3d_asymp'
-    output_folder = '/gp_output_asymp'
-
-    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder)
-    makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder)
+    inputdriven_folder = '/inputdriven3d_asymp'
+    output_folder = '/output_asymp'
+    inputdriven_folder_path = parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder
+    output_folder_path = parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder
+    makedirs(inputdriven_folder_path)
+    makedirs(output_folder_path)
     if training_kwargs['nonlinearity'] == 'relu' and training_kwargs['N_rec'] <= 25:
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_analytic')
         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
@@ -1915,7 +1969,6 @@ if __name__ == "__main__":
         
         traj_pca = pca.transform(trajectories.reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,10))
         recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
-
         
         # plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, ax=None)
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_{which}_{exp_i}.pdf', bbox_inches="tight")
@@ -1923,42 +1976,32 @@ if __name__ == "__main__":
         # plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, plot_asymp=True, ax=None);
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_{which}_{exp_i}.pdf', bbox_inches="tight")
         
-        # plot_inputdriven_trajectory_3d(traj_pca, input_length, plot_traj=True,
-        #                                     recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
-        #                                     elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
-        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_{which}_{exp_i}.pdf', bbox_inches="tight")
-
-        # plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
-        #                            fxd_points=None, ops_fxd_points=None,
-        #                            plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which)
-        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_{which}_{exp_i}.pdf', bbox_inches="tight")
-
-        
         # id_recurrences, id_recurrences_pca = find_periodic_orbits(trajectories[:,:input_length,:], traj_pca[:,:input_length,:], limcyctol=1e-1, mindtol=1e-4)
         
-        # diagrams, fig, ax = tda_inputdriven_recurrent(id_recurrences, maxdim=1)
-        # plot_diagrams(diagrams, show=True)
-        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven_tda_{exp_i}.png', bbox_inches="tight")
-        # plt.close()
 
         plot_inputdriven_trajectory_3d(traj_pca, input_length, plot_traj=True,
                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
                                             elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which,
                                             cmap=cmap)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder + f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
+        plt.savefig(inputdriven_folder_path+f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
         plt.close()
         
         plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
                                    fxd_points=None, ops_fxd_points=None,
                                    plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which,
                                    cmap=cmap)
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder + f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
+        plt.savefig(output_folder_path+f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
         plt.close()
 
         # plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
         #                            fxd_points=None, ops_fxd_points=None,
         #                            plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp_notraj_{which}_{exp_i}.pdf', bbox_inches="tight")
+        
+        # diagrams, fig, ax = tda_inputdriven_recurrent(id_recurrences, maxdim=1)
+        # plot_diagrams(diagrams, show=True)
+        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven_tda_{exp_i}.png', bbox_inches="tight")
+        # plt.close()
 
         if training_kwargs['nonlinearity'] == 'relu' and training_kwargs['N_rec'] <= 15:
         
