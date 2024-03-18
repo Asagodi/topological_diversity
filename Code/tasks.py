@@ -95,6 +95,7 @@ def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, 
         outputs = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
 
         if last_mses:
+            print(last_mses)
             fin_int = np.random.randint(1,last_mses,size=batch_size)
             mask = np.zeros((batch_size, input_length, 2))
             mask[np.arange(batch_size), -fin_int, :] = 1
@@ -375,7 +376,7 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
         
         for batch_i in range(batch_size): 
             stim_duration = stim_durations[batch_i]
-            # print(stim_duration)
+
             # delay_to_cue = max(1,int(np.random.random() * self.T *.1 *self.dt)) #duration is tenth of the trial
             
             ratio = np.random.choice(ratios)
@@ -403,8 +404,10 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
             output_cue = stim_cue_delay + stim_cue_duration + stim_duration + output_cue_delay
             input[batch_i, output_cue-output_cue_duration:output_cue, 3] = 1.
             target[batch_i, output_cue:output_cue+output_duration, highest_click_count_index] = 1.
-            output_end = output_cue+output_duration
-            mask[:, output_end:, :] = 0.
+            target[batch_i, output_cue:, highest_click_count_index] = 1.
+
+            output_end = output_cue+output_duration+1
+            # mask[batch_i, output_end:, :] = 0.
         input[:, :, :2] = stimulus
         input[:, stim_cue_delay:stim_cue_delay+stim_cue_duration, 2] = 1.
         

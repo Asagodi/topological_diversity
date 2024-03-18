@@ -107,7 +107,7 @@ class RNN(nn.Module):
                  nonlinearity='tanh', readout_nonlinearity='id',
                  g=None, g_in=1, wi_init=None, wrec_init=None, wo_init=None, brec_init=None, h0_init=None, oth_init=None,
                  train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True, save_inputs=False,
-                 ML_RNN=True, map_output_to_hidden=False):
+                 ML_RNN=True, map_output_to_hidden=False, input_nonlinearity=None):
         """
         :param dims: list = [input_size, hidden_size, output_size]
         :param noise_std: float
@@ -191,6 +191,13 @@ class RNN(nn.Module):
             raise NotImplementedError("readout_nonlinearity not yet implemented.")
         else:
             self.readout_nonlinearity = readout_nonlinearity
+            
+        # Input mapping nonlinearity
+        if input_nonlinearity is None or input_nonlinearity == 'id':
+            self.input_nonlinearity = lambda x: x
+        elif input_nonlinearity == 'recurrent':
+            self.input_nonlinearity = self.nonlinearity
+            
 
         # Define parameters
         self.wi = nn.Parameter(torch.Tensor(input_size, hidden_size))
@@ -276,9 +283,10 @@ class RNN(nn.Module):
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
             h_init_torch.requires_grad = False
             h_init_torch = target[:,0,:].matmul(self.output_to_hidden)
-
+            h_init_torch = self.input_nonlinearity(h_init_torch)
             with torch.no_grad():
                 h = h_init_torch#.copy_(h_init_torch)
+                
         elif h_init is None:
             h = self.h0
         else:
@@ -633,12 +641,18 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         
             optimizer.zero_grad()
             output, trajectories = net(input, h_init=h_init, return_dynamics=True, target=target)
-            if np.any(_mask):
+            if np.any(_mask-1):
                 _mask = torch.from_numpy(_mask)
                 mask = _mask.to(device=device).float() 
                 loss = loss_function(output, target, mask)
             else: 
-                loss = loss_function(output.view(-1,2), target.view(-1,2))
+                # print(output)
+                loss = loss_function(output.view(-1), target.view(-1))
+
+                # print("L", loss)
+                # loss = loss_function(output[...,0], target[...,0])
+                # loss += loss_function(output[...,1], target[...,1])
+
                 # for t_id in range(x.shape[1]):
                     
             if net.save_inputs:

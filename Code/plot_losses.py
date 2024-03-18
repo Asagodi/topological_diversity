@@ -59,7 +59,7 @@ def load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs):
               nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
               wi_init=wi, wrec_init=wrec, wo_init=wo, brec_init=brec, h0_init=h0, oth_init=oth,
               ML_RNN=training_kwargs['ml_rnn'], 
-              map_output_to_hidden=training_kwargs['map_output_to_hidden'])
+              map_output_to_hidden=training_kwargs['map_output_to_hidden'], input_nonlinearity=training_kwargs['input_nonlinearity'])
     return net
     
 def plot_io_net(net, task, ax=None, ax2=None):
@@ -715,9 +715,14 @@ def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
         ax.set_xlim(lims[0])
         ax.set_ylim(lims[1])
         ax.set_zlim(lims[2])
-    ax.xaxis._axinfo["grid"]['color'] =  (1,1,1,0)
-    ax.yaxis._axinfo["grid"]['color'] =  (1,1,1,0)
-    ax.zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+    # ax.xaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+    # ax.yaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+    # ax.zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+    ax.set_axis_off()
+    ax.plot([-10, 10], [0,0], zs=[0,0], color='k', zorder=-100)
+    ax.plot( [0,0], [-10, 10], zs= [0,0], color='k', zorder=-100)
+    ax.plot( [0,0], [0,0], zs=[-10, 10], color='k', zorder=-100)
+
     
 def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
                            fxd_points=None, ops_fxd_points=None,
@@ -876,7 +881,7 @@ def plot_trajs_model(main_exp_name, model_name, exp_i, T=128, which='post',  hid
     axes[3].set_xticks([])
     axes[4].set_axis_off()
 
-    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}_{exp_i}.pdf', bbox_inches="tight")
+    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/mss_output_{which}_{exp_i}.pdf', bbox_inches="tight", pad_inches=0.0)
     plt.show()
     
     
@@ -970,12 +975,14 @@ def get_hidden_trajs(net, T=128, input_length=10, input_type='constant',
             h =  np.dot(target[:,0,:], net.output_to_hidden)
             _target = torch.from_numpy(target).float() 
             output, trajectories = net(input, return_dynamics=True, h_init=h, target=_target)
-
+            
     else:
         h = h.detach().numpy()
         output, trajectories = net(input, return_dynamics=True)
 
     trajectories = trajectories.detach().numpy()
+    output = output.detach().numpy()
+
     input_proj = np.dot(trajectories, net.wi.detach().numpy().T)
 
     pca = PCA(n_components=n_components)
@@ -1580,11 +1587,23 @@ def load_net(exp_name, exp_i, which):
         wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i, which)
         oth = None
         
+    try:
+        training_kwargs['map_output_to_hidden']
+    except:
+        training_kwargs['map_output_to_hidden'] = False
+        
+            
+    try:
+        training_kwargs['input_nonlinearity']
+    except:
+        training_kwargs['input_nonlinearity'] = None
+        
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
               nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
               wi_init=wi, wrec_init=wrec, wo_init=wo, brec_init=brec, h0_init=h0, oth_init=oth,
-              ML_RNN=training_kwargs['ml_rnn'], map_output_to_hidden=training_kwargs['map_output_to_hidden'])
+              ML_RNN=training_kwargs['ml_rnn'], map_output_to_hidden=training_kwargs['map_output_to_hidden'],
+              input_nonlinearity=training_kwargs['input_nonlinearity'])
     
     return net, training_kwargs
 
@@ -1759,7 +1778,7 @@ def plot_centered_tuning(trajectories, tunings=None, target=None, nbins=10, wind
 
     if window_size==1:
         for i in range(trajectories.shape[-1]):
-            ax.plot(tunings[:,i])
+            ax.plot(bins,   tunings[:,i])
         ax.set_xlabel("Angle")
         ax.set_ylabel("Average activity") 
         ax.set_xticks([-np.pi,np.pi], [r'$-\pi$', r'$\pi$'])
@@ -1852,8 +1871,8 @@ if __name__ == "__main__":
     T = 128*32  
     input_length = int(128)*2
     num_of_inputs = 111
-    random_angle_init = False
-    input_range = (-.2, .2)   
+    random_angle_init = True
+    input_range = (-.5, .5)   
 
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,input_length)
@@ -1863,19 +1882,16 @@ if __name__ == "__main__":
     cmap = cmx.get_cmap("tab10")
     cmap = cmx.get_cmap("coolwarm")
 
-
     model_name = ''
     # main_exp_name='angular_integration/hidden/25.6'
-    main_exp_name='angular_integration/tanh_N20/' #
-    # main_exp_name='angular_integration/rect_tanh_N20/' #
-    main_exp_name='angular_integration/recttanh_N100_T128_noisy/' #
+    main_exp_name='angular_integration/N100_T128/relu/' #
+    # main_exp_name='angular_integration/relu_N100_T128/' #
+    # main_exp_name='angular_integration/N50_T128_noisy/tanh' #
 
     exp_i = 0
     
     params_folder = parent_dir+"/experiments/" + main_exp_name +'/'+ model_name
-    exp_list = glob.glob(params_folder + "/result*")
-    # exp_list = glob.glob(params_folder + "/result_*")
-    
+    exp_list = glob.glob(params_folder + "/result*")    
     params_path = glob.glob(params_folder + '/param*.yml')[0]
     exp = exp_list[exp_i]
     training_kwargs = yaml.safe_load(Path(params_path).read_text())
@@ -1896,12 +1912,13 @@ if __name__ == "__main__":
         input = None
         target= None
 
-        net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
 
-        try:
-            training_kwargs['map_output_to_hidden']
-        except:
-            training_kwargs['map_output_to_hidden'] = False
+        net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
+        net.noise_std = 0 #1e-2
+        # training_kwargs['noise_std'] = 0
+
+
+
 
         task =  angularintegration_task(T=input_length*training_kwargs['dt_task'], dt=training_kwargs['dt_task'], sparsity=1, length_scale=1,
                                         last_mses=training_kwargs['last_mses'], random_angle_init=random_angle_init, max_input=.5)
@@ -1983,14 +2000,14 @@ if __name__ == "__main__":
                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
                                             elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which,
                                             cmap=cmap)
-        plt.savefig(inputdriven_folder_path+f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
+        plt.savefig(inputdriven_folder_path+f'/{exp_i}_{which:04d}.png', bbox_inches="tight", pad_inches=0.0)
         plt.close()
         
         plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
                                    fxd_points=None, ops_fxd_points=None,
                                    plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which,
                                    cmap=cmap)
-        plt.savefig(output_folder_path+f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
+        plt.savefig(output_folder_path+f'/{exp_i}_{which:04d}.png', bbox_inches="tight", pad_inches=0.0)
         plt.close()
 
         # plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
