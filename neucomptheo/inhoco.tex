@@ -267,9 +267,12 @@ Each trajectory converges to a Morse set asymptotically.
 \subsubsection{Robust memory states}
 Attractor and basin of attraction should be nonzero measure set.
 
+\begin{definition}
+The system is \emph{operating in a noisy environment} if, for some fixed $\epsilon > 0$, the state variables of the RNN, $x(t)$, may be replaced by any point $y(t)$ such that $|y(t) - x(t)l < \epsilon$ at each time step $t$.
+\end{definition}
 
 \subsubsection{Continuous attractors}%and its approximations
-
+See also metrics.
 
 
 %\subsubsection{Meaningful memory states (for the behavior) are charaterized by the output}
@@ -364,23 +367,27 @@ All these surjective maps define equivalence relations in the space of dynamical
 ---- stationary asymptotic behavior
 We first look at the case of a line attractor (LA) with output trajectory $x(t)=\text{constant}$ and an approximation of a line attractor (ALA) with an output trajectory $x'(t)$:
 \begin{equation}
-d_*(LA, ALA) \coloneqq \lim_{t\rightarrow\infty} |x(t) - x'(t)|
-\end{equation}
-
-
----- any x'(t)
-\begin{equation}
-d_T(LA, ALA) \coloneqq \frac{1}{T} \int_0^T  |x(t) - x'(t)| dt
+d_{*,x_0}(LA, ALA) \coloneqq\lim_{t\rightarrow\infty} |x(t, x_0) - x'(t, x_0)|
 \end{equation}
 
 \begin{equation}
-d_\infty(LA, ALA) \coloneqq \lim_{T\rightarrow\infty} \frac{1}{T} \int_0^T  |x(t) - x'(t)| dt
+d_{*}(LA, ALA) \coloneqq \int_{x_0\in LA} d_{*,x_0}(LA, ALA)
+\end{equation}
+
+
+
+For a more general trajectory $x(t)$:
+\begin{equation}
+d_{T,x_0}(LA, ALA) \coloneqq \frac{1}{T} \int_0^T   |x(t, x_0) - x'(t, x_0)| dt
+\end{equation}
+
+\begin{equation}
+d_{\infty,x_0}(LA, ALA) \coloneqq \lim_{T\rightarrow\infty} \frac{1}{T} \int_0^T   |x(t, x_0) - x'(t, x_0)| dt
 \end{equation}
 
 
 
 
--- 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
