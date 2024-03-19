@@ -38,7 +38,7 @@
 
 \title{A framework for infinite horizon neural computation on compact domains}
 \author{\'Abel S\'agodi}
-\date{September 1, 2023}
+\date{September 1, 2023}	
 
 \begin{document}
 \maketitle
@@ -110,9 +110,11 @@ Abstraction: for models in the same class but one is a lossy representation of t
 Similar: \citep{casey1996}
 
 1142-1143:
-or the sake of understanding the results in this paper, one can think of attractors rather than 6-pseudoattractors since it follows from the definition that the existence of an f-pseudoattractor will imply the existence of an attractor for the noiseless system, and if the noiseless system's attractor is sufficiently robust (as attracting fixed points, in particular, generally are) then there will be a corresponding $\epsilon$-pseudoattractorfor sufficiently low levels of noise.
+or the sake of understanding the results in this paper, one can think of attractors rather than $\epsilon$-pseudoattractors since it follows from the definition that the existence of an $\epsilon$-pseudoattractor will imply the existence of an attractor for the noiseless system, and if the noiseless system's attractor is sufficiently robust (as attracting fixed points, in particular, generally are) then there will be a corresponding $\epsilon$-pseudoattractorfor sufficiently low levels of noise.
 
 Intuitively, an $\epsilon$-pseudoattractor is just a very robust attractor, and corresponds to an oscillation or a steady state of the system that is robust in the sense that a slightly perturbed system will settle to one of these asymptotic behaviors that is stable in the sense that once the system has been perturbed into one of these behaviors the ambient noise in the system will not be sufficient to kick the system out of that behavior [though changing the input to the system will often do so (and will necessarily do so in RNNs performing certain types of computation which we will describe)].
+
+
 
 
 \emph{Hysteretic computation} is computation that can be performed using periodic orbits
@@ -412,6 +414,16 @@ The chain recurrent set of $X$ under the flow $\varphi$ is defined by
 \[\mathcal{R}(X,\varphi) = \{x\in X|x\succeq x\}.\]
 \end{definition}
 
+\begin{definition}[Chain-recurrent set, \citep{casey1996}]
+For a fixed $\epsilon > 0$ and a mappingf the $\epsilon$-chain rercurrent set, $\mathcal{R}_\epsilon(f)$,is the set of all points which are $\epsilon$-pseudoperiodic for $f$.
+\end{definition}
+
+\begin{definition}
+A point, $x$, is said to be  $\epsilon$-pseudoperiodic for a map $f$ if there exists an $\epsilon$-pseudo-orbit, $\underline{x}$, such that $x = x_n$, for some $n > 0$.
+ For the least such $n$, we say that a point is $\epsilon$-pseudoperiodic of period $n$.
+\end{definition}
+
+
 The flow is called \emph{strongly gradient-like} if the chain recurrent set is totally disconnected (and consequently equal to the rest point set). 
 
 The recurrent set captures all the recurrent dynamics as stated and proven in \citep[Chapter I.8.2]{conley1978}.
@@ -431,6 +443,15 @@ Chain recurrent flows are just the opposite: if $\dots,x_{-1},x_0, x_{1},\dots$ 
 Let $\{M_1, \dots, M_n\}$ be any finite ordered collection of invariant sets with the following property: the sets are disjoint and on collapsing them to distinct points there is obtained a gradient-like quotient flow whose rest point set consists of the collapse points, and such that the ordering of the sets corresponds to that of the points induced by the Lyapounov function.
  Each of the sets $M_i$ is called a Morse set and the ordered collection is called a Morse decomposition.
 \end{definition}
+
+\begin{definition}[$\epsilon$-pseudoattractor]
+A subset of $\mathcal{R}_\epsilon(f)$, $\mathcal{A}$, is an$\epsilon$-pseudoattractor or behavior if
+\begin{enumerate}
+\item  it is a subset of $\mathcal{R}_\epsilon(f)$ having a dense $\epsilon$-pseudo-orbit that is maximal in the sense that there is no s that is dense in a set            $\mathcal{B}$ of which  $\mathcal{A}$ is a proper subset, and
+\item  $\mathcal{A}$ is a proper subset the $\epsilon$-pseudobasin of attraction, which is the set of all points whose $\epsilon$-pseudo-orbits are eventually contained in  $\mathcal{A}$, and is denoted $\rho(A)$.
+\end{enumerate}
+\end{definition}
+
 
 
 \subsubsection{Equivalence}
