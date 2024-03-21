@@ -1383,7 +1383,58 @@ def tanh_jacobian(x,W,b,tau, mlrnn=True):
 #         return np.sum(dt*(-np.eye(wrec.shape[0]) + np.multiply(wrec,1/np.cosh(np.dot(wrec,x)+brec)**2)), axis=1)
 #     else:
 #         return dt*(-np.eye(wrec.shape[0]) + np.multiply(wrec,1/np.cosh(x)**2))
-        
+
+
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+def plot_output_speeds():
+    
+    all_trajs = []
+    all_outputs = []
+    inter_steps = 20
+    input = np.zeros((1, 1024, input_size)); input = torch.from_numpy(input).float()
+
+    for i in range(nrecs):
+        for j in range(0,inter_steps+1):
+            for k in range(2):
+                h =  (j*recs[i,:]+(inter_steps-j)*recs[closest_two[i][k],:])/inter_steps
+                output, traj1 = net(input, return_dynamics=True, h_init=h)
+                traj1 = traj1.detach().numpy()
+                all_trajs.append(traj1)
+                all_outputs.append(output.detach().numpy())
+    all_trajs = np.array(all_trajs).squeeze()
+    traj_pca = pca.transform(all_trajs.reshape((-1,training_kwargs['N_rec']))).reshape((all_trajs.shape[0],-1,10))
+    plot_inputdriven_trajectory_3d(traj_pca[:,:,:], T, plot_traj=True,
+                                        recurrences=None, recurrences_pca=None, wo=wo,
+                                        elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which,
+                                        cmap=cmap)
+    
+    lowspeed_idx = []
+    all_speeds = []
+    for trial_i in range(all_trajs.shape[0]):
+        speeds = []
+        for t in range(all_trajs.shape[1]-1):
+            
+            speed = np.linalg.norm(all_trajs[trial_i, t+1, :]-all_trajs[trial_i, t, :])
+            speeds.append(speed)
+        all_speeds.append(speeds)
+        try:
+            lowspeed_idx.append(np.min(np.where(np.array(speeds)<1e-3)))
+        except:
+            lowspeed_idx.append(10)
+            
+    all_speeds = np.array(all_speeds)
+    
+    fig, ax = plt.subplots()
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.05)
+    for i in range(all_outputs.shape[0]):
+        sc = ax.scatter(all_outputs[i,lowspeed_idx[i]:,0].flatten(), all_outputs[i,lowspeed_idx[i]:,1].flatten(), c=np.log(all_speeds[i,lowspeed_idx[i]-1:]))
+    clb=fig.colorbar(sc, cax=cax, orientation='vertical', )
+    clb.ax.set_title('log(speed)',fontsize=8)
+    ax.set_axis_off()
+    plt.savefig(output_folder_path+f'/speed_{exp_i}_{which:04d}.png', bbox_inches="tight", pad_inches=0.0)
+    
 def find_slow_points(wrec, brec, wo=None, dt=1, outputspace=False, trajectory=None, n_points=100,
                      method='L-BFGS-B', tol=1e-9, nonlinearity='tanh'):
     
@@ -1920,9 +1971,9 @@ if __name__ == "__main__":
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
     T = 128*32  
     input_length = int(128)*2
-    num_of_inputs = 111
+    num_of_inputs = 1111
     random_angle_init = True
-    input_range = (-.5, .5)   
+    input_range = (-.0, .0)   
 
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,input_length)
