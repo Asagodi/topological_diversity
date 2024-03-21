@@ -1388,11 +1388,28 @@ def tanh_jacobian(x,W,b,tau, mlrnn=True):
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 def plot_output_speeds():
+    #TODO: use unrounded recs
+    
+    recs = np.unique(np.round(recurrences, 1), axis=0).squeeze()
+    
+    closest_two = []
+    nrecs = recs.shape[0]
+    for i in range(nrecs):
+        exclude = []
+        exclude.append(i)
+        incl = np.delete(np.arange(0,nrecs,1),exclude)    
+        idx1 = sklearn.metrics.pairwise_distances_argmin_min(recs[i].reshape(1,-1), np.delete(recs, exclude, axis=0))[0][0]
+        idx1 = incl[idx1]
+        exclude.append(idx1)
+        incl = np.delete(np.arange(0,nrecs,1),exclude)
+        idx2 = sklearn.metrics.pairwise_distances_argmin_min(recs[i].reshape(1,-1), np.delete(recs, exclude, axis=0))[0][0]
+        idx2 = incl[idx2]
+        closest_two.append([idx1, idx2])
     
     all_trajs = []
     all_outputs = []
     inter_steps = 20
-    input = np.zeros((1, 1024, input_size)); input = torch.from_numpy(input).float()
+    input = np.zeros((1, 1024, 2)); input = torch.from_numpy(input).float()
 
     for i in range(nrecs):
         for j in range(0,inter_steps+1):
@@ -1971,9 +1988,9 @@ if __name__ == "__main__":
     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
     T = 128*32  
     input_length = int(128)*2
-    num_of_inputs = 1111
+    num_of_inputs = 111
     random_angle_init = True
-    input_range = (-.0, .0)   
+    input_range = (-.2, .2)   
 
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,input_length)
@@ -1986,7 +2003,7 @@ if __name__ == "__main__":
     model_name = ''
     # main_exp_name='angular_integration/hidden/25.6'
     main_exp_name='angular_integration/N500_T128/recttanh/' #
-    main_exp_name='angular_integration/recttanh_N50_T128/' #
+    main_exp_name='angular_integration/relu_N50_T128/' #
     # main_exp_name='angular_integration/N50_T128_noisy/tanh' #
 
     exp_i = 0
@@ -2017,9 +2034,7 @@ if __name__ == "__main__":
         net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
         net.noise_std = 0 #1e-2
         # training_kwargs['noise_std'] = 0
-
-
-
+        wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder)
 
         task =  angularintegration_task(T=input_length*training_kwargs['dt_task'], dt=training_kwargs['dt_task'], sparsity=1, length_scale=1,
                                         last_mses=training_kwargs['last_mses'], random_angle_init=random_angle_init, max_input=.5)
