@@ -48,8 +48,15 @@ def get_theory_weights(N):
     W = scipy.linalg.circulant(row)
     return W
 
-def relu_ode(t,x,W, b=0):
-    return ReLU(np.dot(W,x)+b) - x 
+# def relu_ode(t,x,W, b=0):
+#     return ReLU(np.dot(W,x)+b) - x 
+
+def relu_ode(t,x,W,b,tau, mlrnn=True):
+
+    if mlrnn:
+        return (-x + np.max(np.dot(W,x)+b,0))/tau
+    else:
+        return (-x + np.dot(W,np.max(x,0))+b)/tau
 
 def sigmoid_ode(t,x,W):
     return sigmoid(np.dot(W,x)) - x 
@@ -95,7 +102,6 @@ def noorman_ode(t,x,tau,transfer_function,W_sym,W_asym,c_ff,N,v_in):
     c_ff: a constant feedforward input to all neurons in the network
     N: number of neurons in the network
     """
-    
     return (-x + np.dot(W_sym+v_in(t)*W_asym, transfer_function(x))/N + c_ff)/tau
 
 
@@ -224,7 +230,6 @@ def get_corners(N, m):
     corners = np.array(corners)
     return corners
 
-
 def get_bumps_along_oneside_ring(N, m, corners, step_size=0.1):
     x = np.arange(0, m+step_size, step_size)
     n_xs = x.shape[0]
@@ -323,7 +328,6 @@ def bump_perturbation(x, center, theta, amplitude, b=1):
     return vector_bump
 
 
-
 def ring_ode_xy_globalpert_speed(x, W):
     x1, x2 = x
     hypot = np.sqrt(x1**2+x2**2)
@@ -348,14 +352,9 @@ def define_ring(N, je = 4, ji = -2.4, c_ff=1):
     return W_sym, W_asym
 
 
-
-
-# def v_constant(t, value=1):
-#     #constant input
-#     return value
-
 def v_constant(value=1):
-      return  lambda t : value
+    #constant input
+    return  lambda t : value
 
 def v_zero(t):
     #zero input
@@ -603,7 +602,7 @@ def get_noormanring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
     
     num_of_inputs = 11
     
-    wrec_init, wi_init = define_ring(N, je=je, ji=ji, c_ff=c_ff) # W_sym, W_asym 
+    wrec_init, wi_init = define_ring(N, je=je, ji=ji, c_ff=c_ff)     # W_sym, W_asym 
     bwo_init = np.zeros((2))
     corners = get_corners(N, m=1.2512167690384801)
     h0_init = corners[2] #along the ring, e.g. corner
@@ -634,4 +633,4 @@ def get_noormanring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
     
     
 if __name__ == "__main__": 
-    get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.1, internal_noise_std=0)
+    get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
