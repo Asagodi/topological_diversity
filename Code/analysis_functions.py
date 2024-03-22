@@ -14,6 +14,7 @@ from torch.utils.data import Dataset, TensorDataset, DataLoader
 import scipy
 from scipy.optimize import minimize
 from scipy.optimize import LinearConstraint
+from scipy.integrate import odeint, DOP853, solve_ivp
 
 from functools import partial
 import numpy as np
@@ -390,6 +391,55 @@ def participation_ratio(cov_mat_eigenvalues):
     pr = np.sum(cov_mat_eigenvalues)**2/np.sum(cov_mat_eigenvalues**2)
     return pr
 
+def ReLU(x):
+    return np.where(x<0,0,x)
+
+def relu_ode(t,x,W,b,tau, mlrnn=True):
+
+    if mlrnn:
+        return (-x + ReLU(np.dot(W,x)+b))/tau
+    else:
+        return (-x + np.dot(W,ReLU(x))+b)/tau
+
+def simulate_from_y0s(y0s, W, b, tau=1, 
+                   maxT = 25, tsteps=501):
+
+    N = W.shape[0]
+    t = np.linspace(0, maxT, tsteps)
+    sols = np.zeros((y0s.shape[1], t.shape[0], N))
+    for yi,y0 in enumerate(y0s.T):
+        sol = solve_ivp(relu_ode, y0=y0, t_span=[0,maxT],
+                        args=tuple([W, b, tau]),
+                        dense_output=True)
+        sols[yi,...] = sol.sol(t).T
+
+    return sols
+
+def find_bla_persisten_manifold(W, b):
+    
+    step=.01;x = np.arange(0,1+step,step); ca = np.vstack([x, np.flip(x)])
+    ca = np.vstack([x, np.flip(x)])
+    sols = simulate_from_y0s(ca, W, b, tau=10, maxT=20000, tsteps=20001);
+    idxx = np.argmax(sols[1:,-1,0]-sols[:-1,-1,0]);
+
+    lowspeed_idx = []
+    all_speeds = []
+    for trial_i in range(sols.shape[0]):
+        speeds = []
+        for t in range(sols.shape[1]-1):
+            
+            speed = np.linalg.norm(sols[trial_i, t+1, :]-sols[trial_i, t, :])
+            speeds.append(speed)
+        all_speeds.append(speeds)
+        try:
+            lowspeed_idx.append(np.min(np.where(np.array(speeds)<1e-5)))
+        except:
+            lowspeed_idx.append(20)
+    all_speeds = np.array(all_speeds)
+    
+    invariant_manifold = np.concatenate([np.flip(sols[idxx,lowspeed_idx[idxx]:,:],axis=0), sols[idxx+1,lowspeed_idx[idxx+1]:,:]])
+
+    plt.plot(invariant_manifold[:,0], invariant_manifold[:,1]);
 
 #MORSE
 def get_connection_matrix(fixed_point_cubes, RCs, cds_full):
