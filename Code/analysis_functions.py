@@ -440,6 +440,21 @@ def find_bla_persisten_manifold(W, b):
     invariant_manifold = np.concatenate([np.flip(sols[idxx,lowspeed_idx[idxx]:,:],axis=0), sols[idxx+1,lowspeed_idx[idxx+1]:,:]])
 
     plt.plot(invariant_manifold[:,0], invariant_manifold[:,1]);
+    
+    
+def digitize_manifold(time_series, num_bins_x = 100, num_bins_y = 100):
+    
+    
+
+    x_grid = np.linspace(0, max(time_series[:, 0])*1.1, num_bins_x+1)
+    y_grid = np.linspace(0, max(time_series[:, 1])*1.1, num_bins_y+1)
+    X, Y = np.meshgrid(x_grid, y_grid)
+    # Digitize the time series
+    digitized_x = np.digitize(time_series[:, 0], bins=x_grid)-1
+    digitized_y = np.digitize(time_series[:, 1], bins=y_grid)-1;
+    digitized = np.array([digitized_x, digitized_y]);
+    u_dig = np.unique(digitized,axis=1);
+    return u_dig
 
 #MORSE
 def get_connection_matrix(fixed_point_cubes, RCs, cds_full):
