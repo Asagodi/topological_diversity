@@ -415,6 +415,8 @@ def simulate_from_y0s(y0s, W, b, tau=1,
 
     return sols
 
+from scipy.signal import argrelextrema
+
 def find_bla_persisten_manifold(W, b):
     
     step=.01;x = np.arange(0,1+step,step); ca = np.vstack([x, np.flip(x)])
@@ -432,7 +434,9 @@ def find_bla_persisten_manifold(W, b):
             speeds.append(speed)
         all_speeds.append(speeds)
         try:
-            lowspeed_idx.append(np.min(np.where(np.array(speeds)<1e-5)))
+            # lowspeed_idx.append(np.min(np.where(np.array(speeds)<1e-5)))
+            lowspeed_idx.append(argrelextrema(all_speeds[trial_i,:lowspeed_idx[idxx]], np.less)[0][0])
+            
         except:
             lowspeed_idx.append(20)
     all_speeds = np.array(all_speeds)
@@ -486,10 +490,11 @@ def get_uniformly_spaced_points_from_manifold(invariant_manifold, npoints):
     points = [invariant_manifold[0]]
     for dist in np.arange(max_dist/npoints, max_dist, max_dist/npoints):
         idx = np.min(np.where(cd>dist)[0])
-        print(idx)
+
         points.append(invariant_manifold[idx])
     points.append(invariant_manifold[-1])
     return np.array(points)
+
 
 #MORSE
 def get_connection_matrix(fixed_point_cubes, RCs, cds_full):
