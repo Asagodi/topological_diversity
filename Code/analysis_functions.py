@@ -445,16 +445,51 @@ def find_bla_persisten_manifold(W, b):
 def digitize_manifold(time_series, num_bins_x = 100, num_bins_y = 100):
     
     
-
-    x_grid = np.linspace(0, max(time_series[:, 0])*1.1, num_bins_x+1)
-    y_grid = np.linspace(0, max(time_series[:, 1])*1.1, num_bins_y+1)
+    x_grid = np.linspace(0, max(time_series[:, 0])*1.1, num_bins_x)
+    y_grid = np.linspace(0, max(time_series[:, 1])*1.1, num_bins_y)
     X, Y = np.meshgrid(x_grid, y_grid)
     # Digitize the time series
     digitized_x = np.digitize(time_series[:, 0], bins=x_grid)-1
     digitized_y = np.digitize(time_series[:, 1], bins=y_grid)-1;
     digitized = np.array([digitized_x, digitized_y]);
     u_dig = np.unique(digitized,axis=1);
+    
+    plt.scatter(X[u_dig[0], u_dig[1]]+1/200., Y[u_dig[0], u_dig[1]]+1/200., marker='s', s=1);
+    plt.plot(time_series[:,0], time_series[:,1], 'r.', alpha=.01)
+    
     return u_dig
+
+
+def euclidean_distance(point1, point2):
+    return np.linalg.norm(point1 - point2)
+
+# Define function to calculate geodesic distance along the 1D manifold
+def geodesic_distance(manifold_points, point1_index, point2_index):
+    # Calculate the Euclidean distance between the points along the manifold
+    distance_along_manifold = 0
+    for i in range(point1_index, point2_index):
+        distance_along_manifold += euclidean_distance(manifold_points[i], manifold_points[i + 1])
+    return distance_along_manifold
+
+def geodesic_cumdist(invariant_manifold):
+    cumdist = 0
+    cumdist_list = []
+    for i in range(invariant_manifold.shape[0]-1):
+        distance_along_manifold = geodesic_distance(invariant_manifold, i, i+1)
+        cumdist += distance_along_manifold
+        cumdist_list.append(cumdist)
+    return cumdist_list
+
+def get_uniformly_spaced_points_from_manifold(invariant_manifold, npoints):
+    cd = geodesic_cumdist(invariant_manifold)
+    max_dist = cd[-1]
+    points = [invariant_manifold[0]]
+    for dist in np.arange(max_dist/npoints, max_dist, max_dist/npoints):
+        idx = np.min(np.where(cd>dist)[0])
+        print(idx)
+        points.append(invariant_manifold[idx])
+    points.append(invariant_manifold[-1])
+    return np.array(points)
 
 #MORSE
 def get_connection_matrix(fixed_point_cubes, RCs, cds_full):
