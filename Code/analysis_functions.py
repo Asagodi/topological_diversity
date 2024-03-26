@@ -592,7 +592,31 @@ def get_invman_fullsupp(W, b, tau, maxT=2000, tsteps=2001, fig_folder=parent_dir
     plt.plot(fixed_point_list[0][0]+eigenvectors[0,0], fixed_point_list[0][1]+eigenvectors[0,1], 'x')
     plt.savefig(fig_folder+"/1fp.pdf")
     
+def get_invman_3fps(W, b, tau, eps_=0.001):
     
+    
+    fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(W, b)
+
+    eigenvalues, eigenvectors = np.linalg.eig(W-np.eye(2))
+    y0s = np.array([fixed_point_list[0]-2*eigenvectors[:,0]]).T
+    sols_2 = simulate_from_y0s(y0s, W, b, tau=10, maxT=20000, tsteps=20001)
+    speeds, accelerations = get_speed_and_acceleration(trajectory=sols_2[0,...])
+    idx = np.where(np.abs(accelerations[:])<2e-5)[0][0]
+    invariant_manifold = np.concatenate([np.flip(sols_2[0,idx:,:],axis=0)])
+    idx = np.where(np.abs(accelerations[:])<2e-5)[0][0]
+    points_on_invman = get_uniformly_spaced_points_from_manifold(invariant_manifold, npoints=100); plt.plot(*points_on_invman.T, '-g'); 
+    x = np.arange(0,1,1/100.); 
+    ca_dense = np.vstack([x, np.flip(x)])
+    plt.plot(ca_dense[0,:], ca_dense[1,:], 'b', alpha=0.5);
+    plt.quiver(fixed_point_list[0][0], fixed_point_list[0][1], -1, 0);
+    plt.quiver(fixed_point_list[0][0], fixed_point_list[0][1], 0, 1);
+    for i, fxd_pnt in enumerate(fixed_point_list):
+        plt.plot(fxd_pnt[0], fxd_pnt[1], 'rx');
+    
+    plt.savefig(fig_folder+"/1fp_side.pdf")
+    
+    
+
     
 def get_invman_3fps(W, b, tau, eps_=0.001):
     
