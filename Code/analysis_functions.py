@@ -496,6 +496,124 @@ def get_uniformly_spaced_points_from_manifold(invariant_manifold, npoints):
     return np.array(points)
 
 
+# def get_uniformly_spaced_points_from_manifold(invariant_manifold, npoints):
+#     cd = geodesic_cumdist(invariant_manifold)
+#     max_dist = cd[-1]
+#     points = [invariant_manifold[0]]
+#     for dist in np.arange(max_dist/npoints, max_dist, max_dist/npoints):
+#         idx = np.min(np.where(cd>dist)[0])
+        
+#         idx = argrelextrema(np.abs(cd-dist), np.less)[0][0]
+#         act_dist = cd[idx]-dist
+#         if act_dist>dist_eps:
+#             next_point = 
+#                 invariant_manifold[idx]
+#         else:
+#             points.append(invariant_manifold[idx])
+#     points.append(invariant_manifold[-1])
+#     return np.array(points)
+
+
+def get_speed_and_acceleration(trajectory):
+    speeds = []
+    accelerations = []
+    for t in range(trajectory.shape[0]-1):
+        speed = np.linalg.norm(trajectory[t+1, :]-trajectory[t, :])
+        speeds.append(speed)
+    for t in range(trajectory.shape[0]-2):
+        acceleration = speeds[t+1]-speeds[t]
+        accelerations.append(acceleration)
+    speeds = np.array(speeds)
+    accelerations = np.array(accelerations)
+    return speeds, accelerations
+
+
+#identify slow manifolds
+
+#1fp with full support
+from matplotlib.ticker import MaxNLocator
+import glob
+import os, sys
+current_dir = os.getcwd()
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, current_dir)
+def get_invman_fullsupp(W, b, tau, maxT=2000, tsteps=2001, fig_folder=parent_dir+'/Stability/figures/inv_man'):
+    
+    np.random.seed(100)
+    eps = 0.1
+    W_pert = W + np.random.normal(0,scale=eps,size=(2,2))
+    
+    ts = np.linspace(0, maxT, tsteps)
+    x = np.arange(0,1,1/100.); 
+    ca_dense = np.vstack([x, np.flip(x)])
+    
+    fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(W, b)
+    eigenvalues, eigenvectors = np.linalg.eig(W-np.eye(2))
+    
+    sol_3 = solve_ivp(relu_ode, y0=[fixed_point_list[0][0]-eigenvectors[0,0], fixed_point_list[0][1]-eigenvectors[0,1]],  t_span=[0,maxT],
+                    args=tuple([W, b, tau]),
+                    dense_output=True); 
+    speeds3, accelerations3 = get_speed_and_acceleration(trajectory=sol_3.sol(ts).T)
+    idx3 = argrelextrema(accelerations3, np.less)[0][0]
+
+    sol_4 = solve_ivp(relu_ode, y0=[fixed_point_list[0][0]+eigenvectors[0,0], fixed_point_list[0][1]+eigenvectors[0,1]],  t_span=[0,maxT],
+                    args=tuple([W, b, tau]),
+                    dense_output=True);
+    speeds4, accelerations4 = get_speed_and_acceleration(trajectory=sol_4.sol(ts).T)
+    idx4 = argrelextrema(accelerations4, np.less)[0][0]
+    
+    # Define the range for the plot
+    x_vf = np.linspace(-.5, 2, 20)
+    y_vf = np.linspace(-.5, 2, 20)
+    
+    X, Y = np.meshgrid(x_vf, y_vf)
+    # Compute the derivatives at each point in the meshgrid
+    U, V = np.zeros_like(X), np.zeros_like(Y)
+    for i in range(len(x_vf)):
+        for j in range(len(y_vf)):
+            yprime = relu_ode(0, np.array([X[i, j], Y[i, j]]), W, b, tau)
+            U[i,j] = yprime[0]
+            V[i,j] = yprime[1]
+
+    # Plot the vector field
+    fig,ax=plt.subplots(1,1);
+    ax.quiver(X, Y, U, V, scale=2)
+    ax.set_xlabel(r'$x_1$', size=15)
+    ax.set_ylabel(r'$x_2$', size=15)
+    ax.set_xlim([-0.2, 1.5])
+    ax.set_ylim([-0.2, 1.5])
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True)) 
+    plt.plot(sol_3.sol(ts)[0,idx3:], sol_3.sol(ts)[1,idx3:], 'g', alpha=0.5);
+    plt.plot(sol_4.sol(ts)[0,idx4:], sol_4.sol(ts)[1,idx4:], 'g', alpha=0.5);
+    plt.plot(ca_dense[0,:], ca_dense[1,:], 'b', alpha=0.5);
+    plt.quiver(fixed_point_list[0][0], fixed_point_list[0][1], eigenvectors[0,0], eigenvectors[0,1]);
+    plt.quiver(fixed_point_list[0][0], fixed_point_list[0][1], eigenvectors[1,0], eigenvectors[1,1]);
+    plt.plot(fixed_point_list[0][0]+eigenvectors[0,0], fixed_point_list[0][1]+eigenvectors[0,1], 'x')
+    plt.savefig(fig_folder+"/1fp.pdf")
+    
+    
+    
+def get_invman_3fps(W, b, tau, eps_=0.001):
+    
+    np.random.seed(104)
+    eps = 0.1
+    W_pert = W + np.random.normal(0,scale=eps,size=(2,2))
+    
+    fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(W, b)
+    eigenvalues, eigenvectors = np.linalg.eig(W-np.eye(2))
+    y0s = np.array([fixed_point_list[2]+eps_*eigenvectors[:,1],fixed_point_list[2]-eps_*eigenvectors[:,1]]).T
+    sols_2 = simulate_from_y0s(y0s, W, b, tau=10, maxT=20000, tsteps=20001)
+    invariant_manifold = np.concatenate([np.flip(sols_2[0,:,:],axis=0), sols_2[1,:,:]])
+    points_on_invman = get_uniformly_spaced_points_from_manifold(invariant_manifold, npoints=200); plt.plot(*points_on_invman.T, '.'); 
+    
+    plt.plot(*points_on_invman.T, '-g'); 
+    plt.quiver(fixed_point_list[2][0], fixed_point_list[2][1], eigenvectors[0,0], eigenvectors[0,1]);
+    plt.quiver(fixed_point_list[2][0], fixed_point_list[2][1], eigenvectors[1,0], eigenvectors[1,1]);
+    for i, fxd_pnt in enumerate(fixed_point_list):
+        plt.plot(fxd_pnt[0], fxd_pnt[1], 'rx');
+
+
 #MORSE
 def get_connection_matrix(fixed_point_cubes, RCs, cds_full):
     #if there is a non-zero entry at [j,i] then there is a path from i to j
