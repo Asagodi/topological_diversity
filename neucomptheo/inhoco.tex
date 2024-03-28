@@ -130,7 +130,7 @@ Slightly related:
 Computation is generally equated with information-processing, and this is why the notion of information is crucial in models of computation for the account of implementation: a computational process is one that transforms the stream of information it has as input into a stream of information for output \citep{milkowski2014}.
 Flexibility: Both computers and brains are general‑purpose devices: they can operate in a variety of ways, which makes them adaptable to their environment, and this, in turn, can explain intelligence. \citep{milkowski2018computermetaphor}
 cognition requires not only flexibility, which in turn requires universality, but also that semantic interpretability requires universality.\footnote{Note we mean ‘interpretability’ in a dynamical system sense, i.e. such that the relevant topological and geometrical properties of the system can be understood.}
- In other words, \citep{pylyshyn1984} has claimed that finite‑state machines (FSM) cannot be semantically interpretable
+ In other words, \citep{pylyshyn1984} has claimed that finite‑state machines (FSM) cannot be semantically interpretable.	
 %This is exactly why Newell and Simon made \emph{universal computation} part of their hypothesis.
 We define the implemented (neural) computation as an input-output mapping for times $t\in T\subset\reals$ defined by the function $\varphi:\reals^T\rightarrow\reals^K$:\footnote{We discuss some restrictions on the type of mapping we consider in Sec.~\ref{sec:jar}.}
 \begin{equation}
@@ -494,7 +494,10 @@ A Moore machine can be regarded as a restricted type of finite-state transducer.
 
 
 
+\section{Methods}
 
+\subsection{Dynamical systems analysis}
+To locate stable fixed points used for task computations, we arrest trials at relevant time moments, then forward simulate to ascertain the asymptotic behavior of the network. This forward simulation is carried out for trials arrested at the end of the first delay period. The forward simulation iscarried out for ten times the nominal trial length, at which time we assume the network state isin astationary regime, i.e., within an $\epsilon$ distance of either astable fixed point or limit cycle.
 
 
 %\begin{figure}[H]
