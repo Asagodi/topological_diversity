@@ -1,0 +1,95 @@
+\documentclass[12pt,letterpaper, onecolumn]{article}
+%\documentclass{article}
+%\documentclass{scrartcl}
+\usepackage[left=1.2cm, right=1.2cm,top=1.5cm,bottom=1.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{titling}\setlength{\droptitle}{-1em}   % This is your set screw
+\usepackage{amssymb, amsmath, amsthm}
+\usepackage{thmtools, mathtools, mathrsfs}
+\usepackage{amsfonts}
+%\usepackage[sort&compress,numbers]{natbib}
+%\usepackage[round,sort&compress,numbers]{natbib}
+\usepackage[%
+  giveninits=true,
+  backend=bibtex,
+  doi=false,
+  isbn=false,
+  url=false,
+  natbib,     % <=======================================================
+]{biblatex}
+\AtEveryBibitem{%
+  \clearfield{pages}%
+}
+\renewcommand{\bibfont}{\normalfont\footnotesize}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{positioning,matrix,arrows,decorations.pathmorphing}
+\usepackage{tikz-cd} 
+\usepackage{etoolbox}
+
+\definecolor{processblue}{cmyk}{0.8,0,0,0}
+\definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
+\newcommand{\mpcomment}[1]{(\textbf{MP:\ }\textcolor{mpcolor}{#1})}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+ \usepackage{thmtools, thm-restate} \newtheorem{conjecture}[theorem]{Conjecture}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\mb}[1]{\mathbb{#1}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\DeclareMathOperator{\Inv}{Inv}
+\DeclareMathOperator{\innt}{int}
+\newcommand{\probP}{\text{I\kern-0.15em P}}
+ 
+ \addbibresource{ref.bib}
+ \addbibresource{catniplab.bib}
+\defbibenvironment{bibliography}
+  {\noindent}
+  {\unspace}
+  {\printtext[labelnumberwidth]{%
+    \printfield{labelprefix}%
+    \printfield{labelnumber}}
+    \addspace}
+\renewbibmacro*{finentry}{\finentry\addspace}
+
+%\title{A framework for Infinite Horizon Neural Computation} %on Compact Domains
+
+\begin{document}
+%\maketitle
+
+\begin{center}
+\LARGE{\textbf{A framework for infinite horizon neural computation}}
+\end{center}
+\begin{center}
+{\textbf{\'Abel S\'agodi}}
+\end{center}
+
+\section{State of the art}
+Most, if not all, theories of recurrent neural computation are described using dynamical systems theory. Most theories were built on carefully designed systems to implement a computation, i.e., an input-output mapping. The most often used feature is the fixed point, i.e., a neural population state that remains constant over time. Networks with a continuum of fixed points, i.e. a continuous attractor, have been used to explain how the brain might represent continuous variables.
+
+These models are remarkably delicate; even a minuscule change to the parameters (synaptic weights) can cause the continuum of fixed points to vanish (this property is called structural stability). This fragility underscores the challenge of understanding how biological neural networks, existing in a constantly changing and noisy biological substrate, perform under such conditions. Our current understanding of stability falls short in adequately capturing the intricacies of neural dynamics and their resilience to perturbations. 
+
+More generally, it is necessary to access the underlying neural states and reverse engineer their temporal evolution to understand how artificial neural networks or latent variable models compute and generate meaningful behaviors. Reverse engineering of dynamical systems descriptions of the brain has been applied to Recurrent neural networks (RNNs). Task-based modeling with RNNs has emerged as a popular way to infer the computational function of different brain regions to model large-scale neural recordings directly.
+
+Nevertheless, reverse engineering RNNs poses significant challenges. RNNs often operate in high-dimensional spaces, which can complicate the analysis and interpretation of their internal representations and dynamics. Furthermore, RNNs often lack interpretability, meaning that it can be hard to understand why they make particular predictions or produce certain outputs.
+
+One approach for this reverse engineering, fixed point analysis, assumes that the overall arrangement of fixed points of the dynamics can provide a simple and comprehensive explanation for the complex global features of neural activity observed in the system. We believe that these issues have not been adequately addressed in models that aim to describe neural computation. Fixed point analysis is only applicable to systems with a finite set of stable fixed points. Recently, limit cycles have been considered in the analysis. Limit cycles offer some promise in enhancing our understanding of the dynamics of RNNs, but further research is needed to fully explain their roles in neural computation. Furthermore, the concept of slow manifolds, which capture the dynamics of systems evolving on multiple time scales, holds promise in further enriching our understanding of RNNs and their computational properties. Integrating the insights gained from limit cycles and slow manifolds into computational models of neural networks could offer a more comprehensive framework for studying the complex dynamics of neural computation.
+
+The existing language used in theoretical neuroscience to describe neural computation is inadequate. We propose a new language specifically designed to articulate the complexities of working-memory type neural computation, that can correctly describe the stability of the system, yet provides an interpretable description of the computation. 
+
+
+
+
+
+\printbibliography
+
+\end{document}
