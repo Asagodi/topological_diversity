@@ -342,7 +342,7 @@ def flipflop(dims, dt,
 def poisson_clicks_task(T, dt, set_stim_duration=None,
                         cue_output_durations = [10,5,10,5,1], 
                         ratios=[-39,-37/3,-31/9,-26/14,26/14,31/9,37/3,39],  sum_of_rates=40,
-                        exp_trunc_params={'b':1,'scale':1000,'loc':500}, 
+                        exp_trunc_params={'b':1,'scale':100,'loc':50}, 
                         clicks_capped=True, equal_clicks='addone_random'
                         ):
     
@@ -414,4 +414,36 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
         return input, target, mask
     
     return task
+
+
+
+
+
+def center_out_reaching_task(T, dt, 
+                             cue_output_durations = [5,5,75,5,5]):
+    # cue_output_durations = [time_until_input, stim_duration, time_until_cue, cue_duration, time_until_measured_response]
     
+    input_length = int(T*dt)
+    time_until_input, stim_duration, time_until_cue, cue_duration, time_until_measured_response = cue_output_durations
+    
+    def task(batch_size):
+        input = np.zeros((batch_size, input_length, 3))
+        angles = np.pi * np.random.uniform(0, 2, (batch_size,1))
+        x = np.cos(angles)
+        y = np.sin(angles)
+        input[:, time_until_input:time_until_input+stim_duration,0] = x
+        input[:, time_until_input:time_until_input+stim_duration,1] = y
+        total_time_until_cue = time_until_input+stim_duration+time_until_cue
+        input[:, total_time_until_cue:total_time_until_cue+cue_duration,2] = 1
+            
+        total_time_until_measured_response = np.sum(cue_output_durations)
+        target = np.zeros((batch_size, input_length, 2))
+        target[:, total_time_until_measured_response:,0] = x
+        target[:, total_time_until_measured_response:,1] = y
+        
+        mask = np.ones((batch_size, input_length, 2))
+        mask[:, total_time_until_cue+cue_duration:total_time_until_measured_response,:] = 0.
+        
+        return input, target, mask
+
+    return task
