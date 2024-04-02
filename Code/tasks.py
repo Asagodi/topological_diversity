@@ -420,7 +420,8 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
 
 
 def center_out_reaching_task(T, dt, 
-                             cue_output_durations = [5,5,75,5,5]):
+                             cue_output_durations = [5,5,75,5,5],
+                             time_until_cue_range=[50, 75]):
     # cue_output_durations = [time_until_input, stim_duration, time_until_cue, cue_duration, time_until_measured_response]
     
     input_length = int(T*dt)
@@ -428,21 +429,32 @@ def center_out_reaching_task(T, dt,
     
     def task(batch_size):
         input = np.zeros((batch_size, input_length, 3))
-        angles = np.pi * np.random.uniform(0, 2, (batch_size,1))
+        target = np.zeros((batch_size, input_length, 2))
+        mask = np.ones((batch_size, input_length, 2))
+
+
+        angles = np.pi * np.random.uniform(0, 2, (batch_size))
         x = np.cos(angles)
         y = np.sin(angles)
-        input[:, time_until_input:time_until_input+stim_duration,0] = x
-        input[:, time_until_input:time_until_input+stim_duration,1] = y
-        total_time_until_cue = time_until_input+stim_duration+time_until_cue
-        input[:, total_time_until_cue:total_time_until_cue+cue_duration,2] = 1
-            
-        total_time_until_measured_response = np.sum(cue_output_durations)
-        target = np.zeros((batch_size, input_length, 2))
-        target[:, total_time_until_measured_response:,0] = x
-        target[:, total_time_until_measured_response:,1] = y
         
-        mask = np.ones((batch_size, input_length, 2))
-        mask[:, total_time_until_cue+cue_duration:total_time_until_measured_response,:] = 0.
+        
+        for trial_i in range(batch_size):
+            if time_until_cue_range == None:
+                time_until_cue_i = time_until_cue
+            else:
+                time_until_cue_i = np.random.randint(time_until_cue_range[0], time_until_cue_range[1])
+
+            input[trial_i, time_until_input:time_until_input+stim_duration,0] = x[trial_i]
+            input[trial_i, time_until_input:time_until_input+stim_duration,1] = y[trial_i]
+            total_time_until_cue = time_until_input+stim_duration+time_until_cue_i
+            input[trial_i, total_time_until_cue:total_time_until_cue+cue_duration,2] = 1
+                
+            total_time_until_measured_response = total_time_until_cue + cue_duration + time_until_measured_response
+            target[trial_i, total_time_until_measured_response:,0] = x[trial_i]
+            target[trial_i, total_time_until_measured_response:,1] = y[trial_i]
+            
+            mask[trial_i, total_time_until_cue+cue_duration:total_time_until_measured_response,:] = 0.
+            
         
         return input, target, mask
 

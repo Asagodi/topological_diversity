@@ -28,7 +28,7 @@ import torch.optim as optim
 
 from models import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget, LSTM_noforget2, LSTM
 from network_initialization import qpta_rec_weights, bla_rec_weights
-from tasks import angularintegration_task, eyeblink_task, poisson_clicks_task, bernouilli_noisy_integration_task, contbernouilli_noisy_integration_task
+from tasks import angularintegration_task, eyeblink_task, poisson_clicks_task, bernouilli_noisy_integration_task, contbernouilli_noisy_integration_task, center_out_reaching_task
 from qpta_initializers import _qpta_tanh_hh
 from plot_losses import get_params_exp
 
@@ -37,7 +37,8 @@ def makedirs(dirname):
         os.makedirs(dirname)
 
 def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None,
-             input_length=0, task_noise_sigma=0., final_loss=False, random_angle_init=False, max_input=None):
+             input_length=0, task_noise_sigma=0., final_loss=False, random_angle_init=False, max_input=None,
+             cue_output_durations=[5,5,75,5,5], time_until_cue_range=None):
     
     if task_name == 'eyeblink':
         task =  eyeblink_task(input_length=T, t_delay=t_delay)
@@ -47,13 +48,18 @@ def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsit
                                         last_mses=last_mses, random_angle_init=random_angle_init)
         
     elif task_name == 'poisson_clicks_task':
-        task =  poisson_clicks_task(T=T, dt=dt, cue_output_durations = [10,5,10,5,10])
+        task =  poisson_clicks_task(T=T, dt=dt, cue_output_durations=cue_output_durations) #[10,5,10,5,10]
 
     elif task_name == 'contbernouilli_noisy_integration_task':
         task = contbernouilli_noisy_integration_task(T=T,
                                                   input_length=input_length,
                                                   sigma=task_noise_sigma,
                                                   final_loss=final_loss)
+        
+    elif task_name == 'center_out': 
+        task = center_out_reaching_task(T, dt, 
+                                     cue_output_durations=cue_output_durations,
+                                     time_until_cue_range=time_until_cue_range)
     else:
         raise Exception("Task not known.")
         
@@ -104,7 +110,8 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         
         task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'], input_length=training_kwargs['input_length'],
                         sparsity=training_kwargs['task_noise_sigma'], last_mses=training_kwargs['last_mses'],
-                        random_angle_init=training_kwargs['random_angle_init'], max_input=training_kwargs['max_input'])
+                        random_angle_init=training_kwargs['random_angle_init'], max_input=training_kwargs['max_input'], 
+                        time_until_cue_range=training_kwargs['time_until_cue_range'])
 
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     
@@ -389,11 +396,10 @@ if __name__ == "__main__":
     
     # size_experiment(main_exp_name='angular_integration', sub_exp_name='lambda')
     
-    main_exp_name = 'angular_integration' #poisson_clicks_task' # angular_integration'
-    main_exp_name = 'poisson_clicks' #poisson_clicks_task' # angular_integration'
+    main_exp_name = 'center_out' #poisson_clicks_task' # angular_integration'
+    # main_exp_name = 'poisson_clicks' #poisson_clicks_task' # angular_integration'
 
-    sub_exp_name = 'N100_T128_noisy/tanh'
-    sub_exp_name = 'N100_T128/tanh'
+    sub_exp_name = 'variable_N50_T100/tanh'
 
     model_i, model_name = 2, ''
 
@@ -401,21 +407,22 @@ if __name__ == "__main__":
     training_kwargs['save_inputs'] = False
 
     # training_kwargs['clip_gradient'] = 
-    training_kwargs['task'] = 'angular_integration'
-    training_kwargs['task'] = 'poisson_clicks_task'
+    training_kwargs['task'] = 'center_out'
+    # training_kwargs['task'] = 'poisson_clicks_task'
     training_kwargs['max_input'] = None
     training_kwargs['input_length'] = 25
-    training_kwargs['random_angle_init'] = True
+    training_kwargs['random_angle_init'] = False
     training_kwargs['map_output_to_hidden'] = False
     training_kwargs['T'] = 2000 # 12.8*2
     training_kwargs['last_mses'] = False
-    training_kwargs['N_in'] = 4
+    training_kwargs['time_until_cue_range']=[50, 150]
+    training_kwargs['N_in'] = 3
     training_kwargs['N_out'] = 2
     training_kwargs['b_a'] = 5
 
-    training_kwargs['nonlinearity'] = 'rect_tanh'
+    training_kwargs['nonlinearity'] = 'tanh'
     training_kwargs['input_nonlinearity'] = 'recurrent'
-    training_kwargs['readout_nonlinearity'] = 'logistic'
+    training_kwargs['readout_nonlinearity'] = 'id'
     # training_kwargs['ml_rnn'] = False
     training_kwargs['noise_std'] = 0
     training_kwargs['task_noise_sigma'] = 0  #10-5
@@ -423,24 +430,24 @@ if __name__ == "__main__":
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['N_rec'] = 100
+    training_kwargs['N_rec'] = 50
     training_kwargs['batch_size'] = 128
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
-    training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
+    training_kwargs['g_in'] = 1 #14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
     training_kwargs['learning_rate'] = 3e-3
     training_kwargs['n_epochs'] = 5000
-    training_kwargs['stop_patience'] = 100
+    training_kwargs['stop_patience'] = 500
     training_kwargs['stop_min_delta'] = 0
     training_kwargs['record_step'] = 1000
-    training_kwargs['dt_rnn'] = 1
+    training_kwargs['dt_rnn'] = .1
     training_kwargs['dt_task'] = .1
     training_kwargs['adam_beta1'] = 0.9
     training_kwargs['adam_beta2'] = 0.999
     training_kwargs['network_type'] = network_types[model_i]
     training_kwargs['initialization_type'] = 'gain' #initialization_type_list[model_i]
-    training_kwargs['loss_function'] = "mse" #loss_functions[model_i]
+    training_kwargs['loss_function'] = 'mse_loss_masked' #loss_functions[model_i]
     training_kwargs['rnn_init_gain'] = 1.5 # g_list[model_i]        ##########
     training_kwargs['scheduler_step_size'] = 200 # scheduler_step_sizes[model_i]
     training_kwargs['scheduler_gamma'] = .75 #gammas[model_i]
