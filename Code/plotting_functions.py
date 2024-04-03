@@ -14,7 +14,7 @@ import matplotlib.cm as cmx
 import matplotlib.transforms as mtransforms
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
-import proplot as pplt
+#import proplot as pplt
 import seaborn as sns
 
 from utils import * 
