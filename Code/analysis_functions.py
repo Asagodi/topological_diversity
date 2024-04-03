@@ -496,6 +496,30 @@ def get_uniformly_spaced_points_from_manifold(invariant_manifold, npoints):
     return np.array(points)
 
 
+def get_uniformly_spaced_points_from_ringmanifold(invariant_manifold, npoints):
+    cd = geodesic_cumdist(invariant_manifold)
+    max_dist = cd[-1]
+    points = [invariant_manifold[0]] #start from a fixed point?
+    for dist in np.arange(max_dist/npoints, max_dist, max_dist/npoints):
+        idx = np.min(np.where(cd>dist)[0])
+
+        points.append(invariant_manifold[idx])
+    points.append(invariant_manifold[-1])
+    return np.array(points)
+
+
+from scipy.ndimage import gaussian_filter1d
+def get_cubic_spline(all_bin_locs):
+    thetas = np.arctan2(all_bin_locs[:,1],all_bin_locs[:,0]);
+    thetas_unique, idx_unique = np.unique(thetas, return_index=True);
+    idx_sorted = np.argsort(thetas_unique);
+    all_bin_locs_unique = all_bin_locs[idx_unique,:];
+    all_bin_locs_sorted = all_bin_locs_unique[idx_sorted,:];
+    all_bin_locs_sorted[-1,:] = all_bin_locs_sorted[0,:];
+    cs = scipy.interpolate.CubicSpline(thetas_unique,all_bin_locs_sorted, bc_type='periodic')
+    
+    smoothed = gaussian_filter1d(all_bin_locs_sorted, 20, axis=0, mode='wrap')
+
 # def get_uniformly_spaced_points_from_manifold(invariant_manifold, npoints):
 #     cd = geodesic_cumdist(invariant_manifold)
 #     max_dist = cd[-1]
@@ -688,7 +712,7 @@ def find_graph_isomorphism(connection_matrix, morse_dict):
 #CONLEY (move to conley_functions.py)
 def get_indexpair_and_conleyindex(cds, RCs, verbosity=False):
     """
-    Computes the index pair and the conley index for a given list of recurrent sets.
+    Computes the index      and the conley index for a given list of recurrent sets.
     
     TODO: allow logging/verbosity
     """
