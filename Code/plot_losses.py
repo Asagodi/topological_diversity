@@ -716,7 +716,7 @@ def plot_points_ring_3d(points, wo, pca, ax=None):
         output_angle = np.arctan2(output[...,1], output[...,0])
         point_pca = pca.transform(point.reshape((1,-1)))
         ax.scatter(point_pca[0][0], point_pca[0][1], point_pca[0][2],
-                s=25, zorder=1000, facecolors='w', edgecolors=cmap(norm(output_angle)))
+                s=25, zorder=50, facecolors='w', edgecolors=cmap(norm(output_angle)))
         
         
 def plot_binned_ring_3d(all_bin_locs, ax=None):
@@ -765,7 +765,7 @@ def plot_recs_3d_ring(recurrences, recurrences_pca, cmap, norm, ax=None):
     
     return ax
 
-def plot_slow_manifold_ring_3d(saddles, all_bin_locs, all_bin_locs_pca, wo, pca, exp_name):
+def plot_slow_manifold_ring_3d(saddles, all_bin_locs_pca, wo, pca, exp_name):
     cmap = plt.get_cmap('hsv')
     norm = mpl.colors.Normalize(-np.pi, np.pi)
 
@@ -774,7 +774,7 @@ def plot_slow_manifold_ring_3d(saddles, all_bin_locs, all_bin_locs_pca, wo, pca,
     ax.view_init(elev=45., azim=45)
     plot_points_ring_3d(saddles, wo, pca, ax)
     ax = plot_recs_3d_ring(recurrences, recurrences_pca, cmap, norm, ax=ax)
-    all_bin_locs_pca = pca.transform(all_bin_locs)
+
     ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
                 marker='.', s=.1, color='k', zorder=-100, alpha=.9)    
     ax = set_3daxes(ax)             
@@ -2042,7 +2042,7 @@ def load_all(exp_name, exp_i, which='post'):
     exp_list = glob.glob(folder + "/result*")    
     # exp = exp_list[exp_i]
     wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(folder, exp_i, which)
-    net, _ = load_net(main_exp_name, exp_i, which)
+    net, _ = load_net(exp_name, exp_i, which)
 
     return net, wi, wrec, wo, brec, h0, oth, training_kwargs
 
