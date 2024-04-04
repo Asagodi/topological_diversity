@@ -609,16 +609,15 @@ def get_slow_manifold(net, task, T, from_t=300, batch_size=256, n_components=3, 
     recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
     
     traj_pca_flat = traj_pca.reshape((-1,n_components))
-    trajectories_flat = trajectories.reshape((-1,n_rec))
+    # all_bin_locs = digitize_trajectories(invariant_manifold, nbins=nbins)
     all_bin_locs_pca = digitize_trajectories(traj_pca_flat, nbins=nbins)
-    all_bin_locs = digitize_trajectories(trajectories_flat, nbins=nbins)
-    thetas = np.arctan2(all_bin_locs_pca[:,1],all_bin_locs_pca[:,0]);
-    cs_pca = get_cubic_spline_ring(thetas, all_bin_locs_pca)
-    cs = get_cubic_spline_ring(thetas, all_bin_locs)
+    thetas = np.arctan2(traj_pca_flat[:,1],traj_pca_flat[:,0]);
+    cs = get_cubic_spline_ring(thetas, invariant_manifold)
+    cs_pca = get_cubic_spline_ring(thetas, traj_pca_flat)
     
     saddles = get_saddle_locations_from_theta(thetas, cs)
     
-    return cs_pca, cs, saddles, recurrences, recurrences_pca, all_bin_locs, all_bin_locs_pca
+    return saddles, pca, cs, cs_pca, recurrences, recurrences_pca, all_bin_locs_pca
 
 
 def get_saddle_locations_from_theta(thetas, cs, cutoff=0.005):
