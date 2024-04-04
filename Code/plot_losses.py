@@ -730,6 +730,40 @@ def plot_binned_ring_3d(all_bin_locs, ax=None):
     ax = set_3daxes(ax)
     return ax
 
+def plot_recs_3d_ring(recurrences, recurrences_pca, cmap, norm, ax=None):
+    
+    
+    if ax == None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+    
+    for r_i, recurrence in enumerate(recurrences):
+        recurrence_pca = np.array(recurrences_pca[r_i]).T
+        
+        if np.array(recurrences_pca[r_i]).shape[0]>1:
+            recurrence_pca = recurrences_pca[r_i][:,:3]
+            output = np.dot(recurrences[r_i], wo)
+            output_angle = np.arctan2(output[...,1], output[...,0])
+            
+            segments = np.stack([recurrence_pca[:-1], recurrence_pca[1:]], axis=1)
+            lc = Line3DCollection(segments, cmap=cmap, norm=norm)
+            lc.set_array(output_angle)
+            
+            # Plot the line segments in 3D
+            ax.add_collection3d(lc, zorder=1000)
+        
+        else:
+        # for t, point in enumerate(recurrence):
+            point = recurrence[-1]
+            # print("P", point)
+            output = np.dot(point, wo)
+            output_angle = np.arctan2(output[...,1], output[...,0])
+            
+            point_pca = recurrence_pca
+            ax.scatter(point_pca[0], point_pca[1], point_pca[2],
+                        marker='.', s=100, color=cmap(norm(output_angle)), zorder=1000)
+    
+    return ax
 
 def plot_slow_manifold_ring_3d(saddles, all_bin_locs, wo, pca, exp_name):
     cmap = plt.get_cmap('hsv')
