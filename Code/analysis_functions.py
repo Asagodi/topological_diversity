@@ -526,7 +526,7 @@ def digitize_trajectories(trajectories, nbins=1000):
     all_bin_locs = np.zeros(dig_bin_idx.shape)
     for j in range(dig_bin_idx.shape[0]):
 
-        bin_loc = np.array([all_edges[dig_bin_idx[j,i]-1,i] for i in range(3)])
+        bin_loc = np.array([all_edges[dig_bin_idx[j,i]-1,i] for i in range(dims)])
         bin_loc=bin_loc-binsizes/2.
         all_bin_locs[j, :] = bin_loc
     
@@ -618,7 +618,7 @@ def get_slow_manifold(net, task, T, from_t=300, batch_size=256, n_components=3, 
     
     saddles = get_saddle_locations_from_theta(thetas, cs)
     
-    return cs_pca, cs, saddles, recurrences, recurrences_pca
+    return cs_pca, cs, saddles, recurrences, recurrences_pca, all_bin_locs, all_bin_locs_pca
 
 
 def get_saddle_locations_from_theta(thetas, cs, cutoff=0.005):
