@@ -33,15 +33,43 @@ from pylab import rcParams
 from matplotlib.collections import LineCollection
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 from matplotlib.colors import Normalize
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from models import RNN, run_net, LSTM_noforget, run_lstm
-from tasks import angularintegration_task, angularintegration_delta_task, simplestep_integration_task, poisson_clicks_task
-from analysis_functions import calculate_lyapunov_spectrum, tanh_jacobian, participation_ratio
+from tasks import angularintegration_task, angularintegration_delta_task, simplestep_integration_task, poisson_clicks_task, center_out_reaching_task
+from analysis_functions import calculate_lyapunov_spectrum, tanh_jacobian, participation_ratio, identify_limit_cycle, find_periodic_orbits
 
 def makedirs(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
         
+        
+def set_3daxes(ax):
+    ax.xaxis.pane.fill = False
+    ax.yaxis.pane.fill = False
+    ax.zaxis.pane.fill = False
+    ax.xaxis.pane.set_edgecolor('w')
+    ax.yaxis.pane.set_edgecolor('w')
+    ax.zaxis.pane.set_edgecolor('w')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_xlabel("PC1")
+    ax.set_ylabel("PC2")
+    ax.set_zlabel("PC3", rotation=90)
+    ax.zaxis.labelpad=-15 # <- change the value here
+    ax.grid(False)
+    return ax
+        
+def simulate_rnn(net, task, T, batch_size):
+    
+
+    input, target, mask = task(batch_size); input = torch.from_numpy(input).float();
+    output, trajectories = net(input, return_dynamics=True); 
+    output = output.detach().numpy();
+    trajectories = trajectories.detach().numpy()
+    return input, target, mask, output, trajectories
+
 # def load_net_from_weights(weights, dt=.1):
 #     wi_init, wrec_init, wo_init, brec_init, h0_init = weights
 #     dims=(wi_init.shape[0],wi_init.shape[1],wo_init.shape[1])
@@ -566,33 +594,6 @@ def get_traininginfo_exp(params_folder, exp_i=0, which='post'):
     return losses, gradient_norms, epochs, rec_epochs, weights_train
     
 
-from scipy.spatial.distance import cdist
-
-def identify_limit_cycle(time_series, skip_first=10, tol=1e-6):
-    d = cdist(time_series[-1,:].reshape((1,-1)),time_series[:-skip_first])
-    mind = np.min(d)
-    idx = np.argmin(d)
-    
-    if mind < tol:
-        return idx, mind
-    else:
-        return False, mind
-    
-def find_periodic_orbits(traj, traj_pca, limcyctol=1e-2, mindtol=1e-10):
-    recurrences = []
-    recurrences_pca = []
-    for trial_i in range(traj.shape[0]):
-        idx, mind = identify_limit_cycle(traj[trial_i,:,:], tol=limcyctol) #find recurrence
-        # print(idx, mind)
-        if mind<mindtol: #for fixed point
-            recurrences.append([traj[trial_i,-1,:]])
-            recurrences_pca.append([traj_pca[trial_i,-1,:]])
-            
-        elif idx: #for closed orbit
-            recurrences.append(traj[trial_i,idx:,:])
-            recurrences_pca.append(traj_pca[trial_i,idx:,:])
-
-    return recurrences, recurrences_pca
 
 
 def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
@@ -665,9 +666,87 @@ def determine_ring_from_fixed_points(fxd_pnts):
         edges.append([i,closest_two[i][1]])
         
         
-    G=nx.Graph(); G.add_edges_from(closest_two)
+    #G=nx.Graph(); G.add_edges_from(closest_two)
     # nx.draw(G)
     return closest_two, edges
+
+def plot_recs_ring_3d(recurrences, recurrences_pca, cmap, norm, ax=None):
+    
+    if ax == None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+        
+    for r_i, recurrence in enumerate(recurrences):
+        recurrence_pca = np.array(recurrences_pca[r_i]).T
+    
+        if np.array(recurrences_pca[r_i]).shape[0]>1:
+            recurrence_pca = recurrences_pca[r_i][:,:3]
+            output = np.dot(recurrences[r_i], wo)
+            output_angle = np.arctan2(output[...,1], output[...,0])
+    
+            segments = np.stack([recurrence_pca[:-1], recurrence_pca[1:]], axis=1)
+            lc = Line3DCollection(segments, cmap=cmap, norm=norm)
+            lc.set_array(output_angle)
+    
+            # Plot the line segments in 3D
+            ax.add_collection3d(lc, zorder=1000)
+    
+        else:
+        # for t, point in enumerate(recurrence):
+            point = recurrence[-1]
+            # print("P", point)
+            output = np.dot(point, wo)
+            output_angle = np.arctan2(output[...,1], output[...,0])
+    
+            point_pca = recurrence_pca
+            ax.scatter(point_pca[0], point_pca[1], point_pca[2],
+                        marker='.', s=100, color=cmap(norm(output_angle)), zorder=1000)
+            
+    return ax
+
+
+def plot_points_ring_3d(points, wo, pca, ax=None):
+    cmap = plt.get_cmap('hsv')
+    norm = mpl.colors.Normalize(-np.pi, np.pi)
+    if ax == None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+    for p_i, point in enumerate(points):
+        output = np.dot(point, wo)
+        output_angle = np.arctan2(output[...,1], output[...,0])
+        point_pca = pca.transform(point.reshape((1,-1)))
+        ax.scatter(point_pca[0][0], point_pca[0][1], point_pca[0][2],
+                s=25, zorder=1000, facecolors='w', edgecolors=cmap(norm(output_angle)))
+        
+        
+def plot_binned_ring_3d(all_bin_locs, ax=None):
+    
+    if ax == None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+        
+    ax.scatter(all_bin_locs[:,0], all_bin_locs[:,1], all_bin_locs[:,2],
+                marker='.', s=.1, color='k', zorder=-100, alpha=.9)                 
+    ax = set_3daxes(ax)
+    return ax
+
+
+def plot_slow_manifold_ring_3d(saddles, all_bin_locs, wo, pca, exp_name):
+    cmap = plt.get_cmap('hsv')
+    norm = mpl.colors.Normalize(-np.pi, np.pi)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d", computed_zorder=False)
+    ax.view_init(elev=45., azim=45)
+    plot_points_ring_3d(saddles, wo, pca, ax)
+    ax = plot_recs_3d_ring(recurrences, recurrences_pca, cmap, norm, ax=ax)
+    all_bin_locs_pca = pca.transform(all_bin_locs)
+    ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
+                marker='.', s=.1, color='k', zorder=-100, alpha=.9)    
+    ax = set_3daxes(ax)             
+    plt.savefig(parent_dir+'/experiments/'+exp_name+'/slow_manifold.pdf', bbox_inches="tight")
+    
+    
         
 def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
                                     recurrences=None, recurrences_pca=None, wo=None,
@@ -686,7 +765,6 @@ def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
     norm2 = mpl.colors.Normalize(-np.pi, np.pi)
     cmap2 = plt.get_cmap('hsv')
 
-    norm3 = Normalize(-np.pi, np.pi)
     stab_colors = np.array(['g', 'pink', 'red'])
     
     if plot_traj:
@@ -759,6 +837,7 @@ def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
     ax.plot([-10, 10], [0,0], zs=[0,0], color='k', zorder=-100)
     ax.plot( [0,0], [-10, 10], zs= [0,0], color='k', zorder=-100)
     ax.plot( [0,0], [0,0], zs=[-10, 10], color='k', zorder=-100)
+    ax = set_3daxes(ax)
 
     
 def plot_output_trajectory(traj, wo, input_length, plot_traj=True,
@@ -1385,7 +1464,6 @@ def tanh_jacobian(x,W,b,tau, mlrnn=True):
 #         return dt*(-np.eye(wrec.shape[0]) + np.multiply(wrec,1/np.cosh(x)**2))
 
 
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 def plot_output_speeds():
     #TODO: use unrounded recs
@@ -1923,7 +2001,16 @@ def plot_centered_tuning(trajectories, tunings=None, target=None, nbins=10, wind
         ax.set_xticks([-np.pi,np.pi], [r'$-\pi$', r'$\pi$'])
         plt.savefig(folder+f'/tuning_centered_{exp_i}.pdf', bbox_inches="tight")
         plt.close()
+        
+        
+def load_all(exp_name, exp_i, which='post'):
+    folder = parent_dir+"/experiments/" + exp_name
+    exp_list = glob.glob(folder + "/result*")    
+    # exp = exp_list[exp_i]
+    wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(folder, exp_i, which)
+    net, _ = load_net(main_exp_name, exp_i, which)
 
+    return net, wi, wrec, wo, brec, h0, oth, training_kwargs
 
 # if __name__ == "__main__":
 #     main_exp_name='angular_integration/recttanh_N100_T128/'
@@ -2003,7 +2090,7 @@ if __name__ == "__main__":
     model_name = ''
     # main_exp_name='angular_integration/hidden/25.6'
     main_exp_name='angular_integration/N500_T128/recttanh/' #
-    main_exp_name='angular_integration/relu_N50_T128/' #
+    main_exp_name='angular_integration/recttanh_N50_T128/' #
     # main_exp_name='angular_integration/N50_T128_noisy/tanh' #
 
     exp_i = 0
