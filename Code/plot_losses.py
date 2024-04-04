@@ -765,7 +765,7 @@ def plot_recs_3d_ring(recurrences, recurrences_pca, cmap, norm, ax=None):
     
     return ax
 
-def plot_slow_manifold_ring_3d(saddles, all_bin_locs, wo, pca, exp_name):
+def plot_slow_manifold_ring_3d(saddles, all_bin_locs, all_bin_locs_pca, wo, pca, exp_name):
     cmap = plt.get_cmap('hsv')
     norm = mpl.colors.Normalize(-np.pi, np.pi)
 
