@@ -34,6 +34,7 @@ import matplotlib.cm as cmx
 import conley_functions as cf
 import networkx as nx
 import subprocess
+from tqdm import tqdm
 
 
 # from psychrnn.tasks.perceptual_discrimination import PerceptualDiscrimination
@@ -252,7 +253,9 @@ def find_analytic_fixed_points(W_hh, b, W_ih=None, I=None, tol=10**-4):
     eigenvalues_list = []
     
     subsets = powerset(range(Nrec))
-    for support in subsets:
+    # length = sum(1 for _ in subsets)
+    # print("Number of supports to check", length)
+    for support in tqdm(subsets):
 
         if support == ():
             continue
