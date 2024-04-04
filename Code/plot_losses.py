@@ -872,7 +872,7 @@ def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
                 output_angle = np.arctan2(output[...,1], output[...,0])
                 
                 segments = np.stack([recurrence_pca[:-1], recurrence_pca[1:]], axis=1)
-                lc = Line3DCollection(segments, cmap=cmap2, norm=norm3)
+                lc = Line3DCollection(segments, cmap=cmap2, norm=norm2)
                 lc.set_array(output_angle)
                 
                 # Plot the line segments in 3D
