@@ -730,7 +730,7 @@ def plot_binned_ring_3d(all_bin_locs, ax=None):
     ax = set_3daxes(ax)
     return ax
 
-def plot_recs_3d_ring(recurrences, recurrences_pca, cmap, norm, ax=None):
+def plot_recs_3d_ring(wo, recurrences, recurrences_pca, cmap, norm, ax=None):
     
     
     if ax == None:
@@ -765,7 +765,7 @@ def plot_recs_3d_ring(recurrences, recurrences_pca, cmap, norm, ax=None):
     
     return ax
 
-def plot_slow_manifold_ring_3d(saddles, all_bin_locs_pca, wo, pca, exp_name):
+def plot_slow_manifold_ring_3d(saddles, recurrences, recurrences_pca, all_bin_locs_pca, wo, pca, exp_name):
     cmap = plt.get_cmap('hsv')
     norm = mpl.colors.Normalize(-np.pi, np.pi)
 
@@ -773,13 +773,66 @@ def plot_slow_manifold_ring_3d(saddles, all_bin_locs_pca, wo, pca, exp_name):
     ax = fig.add_subplot(111, projection="3d", computed_zorder=False)
     ax.view_init(elev=45., azim=45)
     plot_points_ring_3d(saddles, wo, pca, ax)
-    ax = plot_recs_3d_ring(recurrences, recurrences_pca, cmap, norm, ax=ax)
+    plot_recs_3d_ring(wo, recurrences, recurrences_pca, cmap, norm, ax=ax)
 
     ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
                 marker='.', s=.1, color='k', zorder=-100, alpha=.9)    
-    ax = set_3daxes(ax)             
-    plt.savefig(parent_dir+'/experiments/'+exp_name+'/slow_manifold.pdf', bbox_inches="tight")
     
+    ax.scatter(1.5*np.min(all_bin_locs_pca[:,0])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
+                 marker='.', s=.1, color='red', zorder=-200, alpha=.9)
+    ax.scatter(all_bin_locs_pca[:,0], 1.5*np.min(all_bin_locs_pca[:,1])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,2],
+                 marker='.', s=.1, color='red', zorder=-200, alpha=.9)
+    ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], 1.5*np.min(all_bin_locs_pca[:,2])*np.ones_like(all_bin_locs_pca[:,2]),
+                 marker='*', s=.1, color='red', zorder=-200, alpha=.9)
+    fxd_pnts = np.array([recurrence for recurrence in recurrences if len(recurrence)==1]).squeeze()
+    for axis in range(3):
+        value = 1.5*np.min(all_bin_locs_pca[:,axis])
+        scatter_projection_3d(wo, fxd_pnts, axis, value, cmap, norm, marker_style='full', ax=ax)
+        scatter_projection_3d(wo, saddles, axis, value, cmap, norm, marker_style='', ax=ax)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_xlabel("PC1")
+    ax.set_ylabel("PC2")
+    ax.set_zlabel("PC3", rotation=90); ax.zaxis.labelpad=-15
+    plt.savefig(parent_dir+'/experiments/'+exp_name+'/slow_manifold_3d2d.pdf', bbox_inches="tight")
+     
+    # ax = set_3daxes(ax)             
+    
+def scatter_projection_3d(wo, points, axis, value, cmap, norm, marker_style, ax=None):
+    
+    if marker_style == "full":
+        facecolors = None
+    else:
+        facecolors = 'w'
+    
+    if ax == None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+    for p_i, point in enumerate(points):
+        output = np.dot(point, wo)
+        output_angle = np.arctan2(output[...,1], output[...,0])
+        point_pca = pca.transform(point.reshape((1,-1)))
+
+        if axis==0:
+            ax.scatter(value, point_pca[0][1], point_pca[0][2],
+                    s=25, zorder=-150,
+                    color=cmap(norm(output_angle)),
+                    facecolors=facecolors,
+                    edgecolors=cmap(norm(output_angle)))
+            
+        elif axis==1:
+            ax.scatter(point_pca[0][0], value, point_pca[0][2],
+                    s=25, zorder=-150,
+                    color=cmap(norm(output_angle)),
+                    facecolors=facecolors,
+                    edgecolors=cmap(norm(output_angle)))
+        else:
+            ax.scatter(point_pca[0][0], point_pca[0][1], value,
+                    s=25, zorder=-150,
+                    color=cmap(norm(output_angle)),
+                    facecolors=facecolors,
+                        edgecolors=cmap(norm(output_angle)))
     
         
 def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
