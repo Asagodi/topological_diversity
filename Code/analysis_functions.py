@@ -508,17 +508,124 @@ def get_uniformly_spaced_points_from_ringmanifold(invariant_manifold, npoints):
     return np.array(points)
 
 
+def digitize_trajectories(trajectories, nbins=1000):
+    npoints = trajectories.shape[0]
+    dims = trajectories.shape[1]
+    bins = np.zeros((npoints,dims),np.int64)
+    all_edges = np.zeros((nbins+1,dims))
+    for r in range(dims):
+        edges = np.histogram_bin_edges(trajectories[:,r], bins=nbins)
+        all_edges[:,r] = edges
+        bins[:,r] = np.digitize(trajectories[:,r], edges)
+    binsizes = np.array([all_edges[0,i]-all_edges[1,i] for i in range(dims)])
+    dig_bin_idx = np.unique(bins, axis=0)
+    
+    all_bin_locs = np.zeros(dig_bin_idx.shape)
+    for j in range(dig_bin_idx.shape[0]):
+
+        bin_loc = np.array([all_edges[dig_bin_idx[j,i]-1,i] for i in range(3)])
+        bin_loc=bin_loc-binsizes/2.
+        all_bin_locs[j, :] = bin_loc
+    
+    return all_bin_locs
+
 from scipy.ndimage import gaussian_filter1d
-def get_cubic_spline(all_bin_locs):
-    thetas = np.arctan2(all_bin_locs[:,1],all_bin_locs[:,0]);
+def get_cubic_spline_ring(thetas, invariant_manifold):
+    """
+
+    Parameters
+    ----------
+    all_bin_locs : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    cs : TYPE
+        DESCRIPTION.
+
+    """
+
     thetas_unique, idx_unique = np.unique(thetas, return_index=True);
     idx_sorted = np.argsort(thetas_unique);
-    all_bin_locs_unique = all_bin_locs[idx_unique,:];
-    all_bin_locs_sorted = all_bin_locs_unique[idx_sorted,:];
-    all_bin_locs_sorted[-1,:] = all_bin_locs_sorted[0,:];
-    cs = scipy.interpolate.CubicSpline(thetas_unique,all_bin_locs_sorted, bc_type='periodic')
     
-    smoothed = gaussian_filter1d(all_bin_locs_sorted, 20, axis=0, mode='wrap')
+    invariant_manifold_unique = invariant_manifold[idx_unique,:];
+    invariant_manifold_sorted = invariant_manifold_unique[idx_sorted,:];
+    invariant_manifold_sorted[-1,:] = invariant_manifold_sorted[0,:];
+    cs = scipy.interpolate.CubicSpline(thetas_unique, invariant_manifold_sorted, bc_type='periodic')
+    
+    # smoothed = gaussian_filter1d(all_bin_locs_sorted, 20, axis=0, mode='wrap')
+    
+    return cs    
+
+def simulate_rnn(net, task, T, batch_size = 256):
+    
+
+    input, target, mask = task(batch_size); input = torch.from_numpy(input).float();
+    output, trajectories = net(input, return_dynamics=True); 
+    output = output.detach().numpy();
+    trajectories = trajectories.detach().numpy()
+    return input, target, mask, output, trajectories
+
+from sklearn.decomposition import PCA
+from scipy.spatial.distance import cdist
+def identify_limit_cycle(time_series, skip_first=10, tol=1e-6):
+    d = cdist(time_series[-1,:].reshape((1,-1)),time_series[:-skip_first])
+    mind = np.min(d)
+    idx = np.argmin(d)
+    
+    if mind < tol:
+        return idx, mind
+    else:
+        return False, mind
+    
+def find_periodic_orbits(traj, traj_pca, limcyctol=1e-2, mindtol=1e-10):
+    recurrences = []
+    recurrences_pca = []
+    for trial_i in range(traj.shape[0]):
+        idx, mind = identify_limit_cycle(traj[trial_i,:,:], tol=limcyctol) #find recurrence
+        # print(idx, mind)
+        if mind<mindtol: #for fixed point
+            recurrences.append([traj[trial_i,-1,:]])
+            recurrences_pca.append([traj_pca[trial_i,-1,:]])
+            
+        elif idx: #for closed orbit
+            recurrences.append(traj[trial_i,idx:,:])
+            recurrences_pca.append(traj_pca[trial_i,idx:,:])
+
+    return recurrences, recurrences_pca
+
+def get_slow_manifold(net, task, T, from_t=300, batch_size=256, n_components=3, nbins=1000):
+    n_rec = net.dims[1]
+    
+    input, target, mask, output, trajectories = simulate_rnn(net, task, T, batch_size)
+    
+    pca = PCA(n_components=n_components)
+    invariant_manifold = trajectories[:,from_t:,:].reshape((-1,n_rec))
+    pca.fit(invariant_manifold)
+    traj_pca = pca.transform(invariant_manifold).reshape((batch_size,-1,n_components))
+    recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
+    
+    traj_pca_flat = traj_pca.reshape((-1,n_components))
+    trajectories_flat = trajectories.reshape((-1,n_rec))
+    all_bin_locs_pca = digitize_trajectories(traj_pca_flat, nbins=nbins)
+    all_bin_locs = digitize_trajectories(trajectories_flat, nbins=nbins)
+    thetas = np.arctan2(all_bin_locs_pca[:,1],all_bin_locs_pca[:,0]);
+    cs_pca = get_cubic_spline_ring(thetas, all_bin_locs_pca)
+    cs = get_cubic_spline_ring(thetas, all_bin_locs)
+    
+    saddles = get_saddle_locations_from_theta(thetas, cs)
+    
+    return cs_pca, cs, saddles, recurrences, recurrences_pca
+
+
+def get_saddle_locations_from_theta(thetas, cs, cutoff=0.005):
+    thetas_unique, idx_unique = np.unique(thetas, return_index=True);
+    th_s = np.sort(thetas_unique)
+    thetas_jump = th_s[1:] - th_s[:-1]
+    idx = np.where(thetas_jump>cutoff)[0];
+    saddles = cs((th_s[idx]+th_s[idx-1])/2.);
+
+    return saddles
 
 # def get_uniformly_spaced_points_from_manifold(invariant_manifold, npoints):
 #     cd = geodesic_cumdist(invariant_manifold)
