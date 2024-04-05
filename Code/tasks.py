@@ -421,7 +421,7 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
 
 def center_out_reaching_task(T, dt, 
                              cue_output_durations = [5,5,75,5,5],
-                             time_until_cue_range=[50, 75]):
+                             time_until_cue_range=[50, 75], angles_random=True):
     # cue_output_durations = [time_until_input, stim_duration, time_until_cue, cue_duration, time_until_measured_response]
     
     input_length = int(T*dt)
@@ -432,11 +432,13 @@ def center_out_reaching_task(T, dt,
         target = np.zeros((batch_size, input_length, 2))
         mask = np.ones((batch_size, input_length, 2))
 
+        if angles_random:
+            angles = np.pi * np.random.uniform(0, 2, (batch_size))
+        else:
+            angles = np.arange(-np.pi, np.pi, 2*np.pi/batch_size)
 
-        angles = np.pi * np.random.uniform(0, 2, (batch_size))
         x = np.cos(angles)
         y = np.sin(angles)
-        
         
         for trial_i in range(batch_size):
             if time_until_cue_range == None:
