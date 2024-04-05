@@ -607,6 +607,7 @@ def get_slow_manifold(net, task, T, from_t=300, batch_size=256, n_components=3, 
     pca.fit(invariant_manifold)
     traj_pca = pca.transform(invariant_manifold).reshape((batch_size,-1,n_components))
     recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
+    fxd_pnts = np.array([recurrence for recurrence in recurrences if len(recurrence)==1]).squeeze()
     
     traj_pca_flat = traj_pca.reshape((-1,n_components))
     # all_bin_locs = digitize_trajectories(invariant_manifold, nbins=nbins)
@@ -617,7 +618,7 @@ def get_slow_manifold(net, task, T, from_t=300, batch_size=256, n_components=3, 
     
     saddles = get_saddle_locations_from_theta(thetas, cs)
     
-    return saddles, pca, cs, cs_pca, recurrences, recurrences_pca, all_bin_locs_pca
+    return trajectories, saddles, pca, cs, cs_pca, fxd_pnts, recurrences, recurrences_pca, all_bin_locs_pca
 
 
 def get_saddle_locations_from_theta(thetas, cs, cutoff=0.005):
@@ -627,6 +628,38 @@ def get_saddle_locations_from_theta(thetas, cs, cutoff=0.005):
     idx = np.where(thetas_jump>cutoff)[0];
     saddles = cs((th_s[idx]+th_s[idx-1])/2.);
 
+    return saddles
+
+
+def get_saddles_from_simulated_trajectories(net, fxd_pnts, pca, cs):
+    thetas_saddles = []
+    fxd_pnts_u, idx = np.unique(np.round(fxd_pnts), axis=0, return_index=True); 
+    fxd_pnts_u = fxd_pnts[idx,:];
+    fxd_pnts_u_pca = pca.transform(fxd_pnts_u)
+    thetas_fxd = np.arctan2(fxd_pnts_u_pca[:,1],fxd_pnts_u_pca[:,0]);
+    thetas_fxd = np.sort(thetas_fxd)
+    thetas_fxd_u, idx = np.unique(np.round(thetas_fxd,2), axis=0, return_index=True);
+    thetas_fxd = thetas_fxd[idx]
+    fxd_pnts_u = fxd_pnts_u[idx,:]
+    for i in range(1, thetas_fxd.shape[0]):
+        theta_step = -(thetas_fxd[i]- thetas_fxd[i-1])/100
+        xs = np.arange(thetas_fxd[i]+25*theta_step, thetas_fxd[i-1]-25*theta_step, theta_step)
+        
+        starting_points = cs(xs)
+        input_zero = torch.from_numpy(np.zeros((starting_points.shape[0], 10000, 3))).float()
+        output, trajectories_from_slow = net(input_zero, return_dynamics=True, h_init=starting_points);
+        output = output.detach().numpy();
+        trajectories_from_slow = trajectories_from_slow.detach().numpy()
+        thetas_final = np.arctan2(trajectories_from_slow[:,-1,1],trajectories_from_slow[:,-1,0]);
+        thetas_fj = thetas_final[1:]-thetas_final[:-1]; 
+        idx = np.argmax(thetas_fj)
+        theta_saddle = xs[idx]
+        
+        thetas_saddles.append(theta_saddle)
+        print(theta_saddle, thetas_fxd[i]+5*theta_step, thetas_fxd[i-1]-5*theta_step)
+    thetas_saddles.append(np.pi)
+    saddles = cs(thetas_saddles)
+    
     return saddles
 
 # def get_uniformly_spaced_points_from_manifold(invariant_manifold, npoints):
