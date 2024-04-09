@@ -705,9 +705,10 @@ def plot_recs_ring_3d(recurrences, recurrences_pca, cmap, norm, ax=None):
     return ax
 
 
-def plot_points_ring_3d(points, wo, pca, ax=None):
+def plot_points_ring_3d(points, wo, pca, marker_style, markercolor='r', ax=None, zorder=0):
     cmap = plt.get_cmap('hsv')
     norm = mpl.colors.Normalize(-np.pi, np.pi)
+
     if ax == None:
         fig = plt.figure()
         ax = fig.add_subplot(111, projection="3d")
@@ -715,8 +716,18 @@ def plot_points_ring_3d(points, wo, pca, ax=None):
         output = np.dot(point, wo)
         output_angle = np.arctan2(output[...,1], output[...,0])
         point_pca = pca.transform(point.reshape((1,-1)))
-        ax.scatter(point_pca[0][0], point_pca[0][1], point_pca[0][2],
-                s=25, zorder=50, facecolors='w', edgecolors=cmap(norm(output_angle)))
+        if markercolor=='ring':
+            color=cmap(norm(output_angle))
+        else:
+            color=markercolor
+        if marker_style == "full":
+            ax.scatter(point_pca[0][0], point_pca[0][1], point_pca[0][2],
+                    s=25, zorder=zorder, facecolors=color, edgecolors=color)
+        else:
+            facecolors = 'w'
+            ax.scatter(point_pca[0][0], point_pca[0][1], point_pca[0][2],
+                    s=25, zorder=zorder, facecolors=facecolors, edgecolors=color)
+        
         
         
 def plot_binned_ring_3d(all_bin_locs, ax=None):
@@ -730,7 +741,7 @@ def plot_binned_ring_3d(all_bin_locs, ax=None):
     ax = set_3daxes(ax)
     return ax
 
-def plot_recs_3d_ring(wo, recurrences, recurrences_pca, cmap, norm, ax=None):
+def plot_recs_3d_ring(recurrences, recurrences_pca, wo, cmap, norm, ax=None):
     
     
     if ax == None:
@@ -765,30 +776,32 @@ def plot_recs_3d_ring(wo, recurrences, recurrences_pca, cmap, norm, ax=None):
     
     return ax
 
-def plot_slow_manifold_ring_3d(saddles, recurrences, recurrences_pca, all_bin_locs_pca, wo, pca, exp_name):
+def plot_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, exp_name,
+                               proj_2d_color='r'):
     cmap = plt.get_cmap('hsv')
     norm = mpl.colors.Normalize(-np.pi, np.pi)
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d", computed_zorder=False)
     ax.view_init(elev=45., azim=45)
-    plot_points_ring_3d(saddles, wo, pca, ax)
-    plot_recs_3d_ring(wo, recurrences, recurrences_pca, cmap, norm, ax=ax)
+    plot_points_ring_3d(fxd_pnts, wo, pca, marker_style='full', markercolor='ring', ax=ax, zorder=100)
+    plot_points_ring_3d(saddles, wo, pca, marker_style='', markercolor='ring', ax=ax, zorder=50)
+    # plot_recs_3d_ring(recurrences, recurrences_pca, wo, cmap, norm, ax=ax)
 
     ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
                 marker='.', s=.1, color='k', zorder=-100, alpha=.9)    
     
     ax.scatter(1.5*np.min(all_bin_locs_pca[:,0])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
-                 marker='.', s=.1, color='red', zorder=-200, alpha=.9)
+                 marker='.', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
     ax.scatter(all_bin_locs_pca[:,0], 1.5*np.min(all_bin_locs_pca[:,1])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,2],
-                 marker='.', s=.1, color='red', zorder=-200, alpha=.9)
+                 marker='.', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
     ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], 1.5*np.min(all_bin_locs_pca[:,2])*np.ones_like(all_bin_locs_pca[:,2]),
-                 marker='*', s=.1, color='red', zorder=-200, alpha=.9)
-    fxd_pnts = np.array([recurrence for recurrence in recurrences if len(recurrence)==1]).squeeze()
+                 marker='*', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
+    # fxd_pnts = np.array([recurrence for recurrence in recurrences if len(recurrence)==1]).squeeze()
     for axis in range(3):
         value = 1.5*np.min(all_bin_locs_pca[:,axis])
-        scatter_projection_3d(wo, fxd_pnts, axis, value, cmap, norm, marker_style='full', ax=ax)
-        scatter_projection_3d(wo, saddles, axis, value, cmap, norm, marker_style='', ax=ax)
+        scatter_projection_3d(fxd_pnts, wo, pca, axis, value, cmap, norm, marker_style='full', markercolor=proj_2d_color, ax=ax)
+        scatter_projection_3d(saddles, wo, pca, axis, value, cmap, norm, marker_style='full', markercolor=proj_2d_color, ax=ax)
     ax.set_xticks([])
     ax.set_yticks([])
     ax.set_zticks([])
@@ -797,9 +810,57 @@ def plot_slow_manifold_ring_3d(saddles, recurrences, recurrences_pca, all_bin_lo
     ax.set_zlabel("PC3", rotation=90); ax.zaxis.labelpad=-15
     plt.savefig(parent_dir+'/experiments/'+exp_name+'/slow_manifold_3d2d.pdf', bbox_inches="tight")
      
-    # ax = set_3daxes(ax)             
+    # ax = set_3daxes(ax)         
+
+
+def plot_two_rings():    
     
-def scatter_projection_3d(wo, points, axis, value, cmap, norm, marker_style, ax=None):
+    main_exp_name='center_out/variable_N200_T500/tanh/'
+    exp_i=0
+    net, wi, wrec, wo, brec, h0, oth, training_kwargs = load_all(main_exp_name, exp_i, which='post'); 
+    T=1e5; dt=.1; from_t=300; task = center_out_reaching_task(T=T, dt=dt, time_until_cue_range=[250, 251], angles_random=False);
+    input, target, mask, output, trajectories = simulate_rnn(net, task, T, batch_size)
+    T=int(1e5); dt=.1; from_t=300; task = center_out_reaching_task(T=T, dt=dt, time_until_cue_range=[T, T+1], angles_random=False);
+    input_w, target_w, mask_w, output_w, trajectories_w = simulate_rnn(net, task, T, batch_size)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d", computed_zorder=False)
+    ax.view_init(elev=-90., azim=0, roll=0)
+    from_t = 150
+    to_t = 300
+    invariant_manifold = trajectories_w[:,from_t:to_t,:].reshape((-1,n_rec))
+    traj_pca_flat = pca.transform(invariant_manifold).reshape((-1,n_components))
+    ax.scatter(traj_pca_flat[:,0], traj_pca_flat[:,1], traj_pca_flat[:,2],
+                marker='.', s=.1, color='r', zorder=-100, alpha=.9);
+    from_t = 300
+    to_t = 1500
+    invariant_manifold = trajectories_w[:,from_t:to_t,:].reshape((-1,n_rec))
+    traj_pca_flat = pca.transform(invariant_manifold).reshape((-1,n_components))
+    ax.scatter(traj_pca_flat[:,0], traj_pca_flat[:,1], traj_pca_flat[:,2],
+                marker='.', s=.1, color='k', zorder=-100, alpha=.4);
+
+    from_t = 1000
+    to_t = 1200
+    invariant_manifold = trajectories[:,from_t:to_t,:].reshape((-1,n_rec))
+    traj_pca_flat = pca.transform(invariant_manifold).reshape((-1,n_components))
+    ax.scatter(traj_pca_flat[:,0], traj_pca_flat[:,1], traj_pca_flat[:,2],
+                marker='.', s=.1, color='b', zorder=-100, alpha=.9); 
+    ax.xaxis.pane.fill = False
+    ax.yaxis.pane.fill = False
+    ax.zaxis.pane.fill = False
+    ax.xaxis.pane.set_edgecolor('w')
+    ax.yaxis.pane.set_edgecolor('w')
+    ax.zaxis.pane.set_edgecolor('w')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_xlabel("PC1")
+    ax.set_ylabel("PC2")
+    ax.set_zlabel("PC3", rotation=90); ax.zaxis.labelpad=-15
+    plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/2rings_3d_top.pdf', bbox_inches="tight")
+
+    
+def scatter_projection_3d(points, wo, pca, axis, value, cmap, norm, marker_style, markercolor='r', ax=None):
     
     if marker_style == "full":
         facecolors = None
@@ -813,26 +874,22 @@ def scatter_projection_3d(wo, points, axis, value, cmap, norm, marker_style, ax=
         output = np.dot(point, wo)
         output_angle = np.arctan2(output[...,1], output[...,0])
         point_pca = pca.transform(point.reshape((1,-1)))
+        
+        if markercolor=='ring':
+            color=cmap(norm(output_angle))
+        else:
+            color=markercolor
 
         if axis==0:
             ax.scatter(value, point_pca[0][1], point_pca[0][2],
-                    s=25, zorder=-150,
-                    color=cmap(norm(output_angle)),
-                    facecolors=facecolors,
-                    edgecolors=cmap(norm(output_angle)))
+                    s=25, zorder=-150, color=color, facecolors=facecolors, edgecolors=color)
             
         elif axis==1:
             ax.scatter(point_pca[0][0], value, point_pca[0][2],
-                    s=25, zorder=-150,
-                    color=cmap(norm(output_angle)),
-                    facecolors=facecolors,
-                    edgecolors=cmap(norm(output_angle)))
+                    s=25, zorder=-150, color=color, facecolors=facecolors, edgecolors=color)
         else:
             ax.scatter(point_pca[0][0], point_pca[0][1], value,
-                    s=25, zorder=-150,
-                    color=cmap(norm(output_angle)),
-                    facecolors=facecolors,
-                        edgecolors=cmap(norm(output_angle)))
+                    s=25, zorder=-150, color=color, facecolors=facecolors, edgecolors=color)
     
         
 def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
@@ -2144,8 +2201,8 @@ def load_all(exp_name, exp_i, which='post'):
     
     
 
-# if False:
-if __name__ == "__main__":
+if False:
+# if __name__ == "__main__":
 
     model_names=['lstm', 'low','high', 'ortho', 'qpta']
     mean_colors = ['k', 'r',  'darkorange', 'g', 'b']
