@@ -79,17 +79,17 @@ Animals gather information about their surroundings through sensory modalities s
 
 Dynamical systems approaches in the context of neural computation and information processing aim to understand the behavior of neural systems by modeling them as sets of differential equations. In this framework, the state of a neural system is described by a set of variables, typically representing the activity levels of individual neurons or neural populations. These variables evolve over time according to the dynamics specified by the differential equations. 
 
-One of the central concepts in dynamical systems theory is the notion of fixed points, which are states of the system where the dynamics remain unchanged over time. Stable fixed points are indeed a discrete set of internal states where the system's dynamics stabilize. Networks with a continuum of fixed points, known as continuous attractors \citep{khona2022}, have been proposed as models for representing continuous variables such as spatial locations \citep{samsonovich1997, stringer2002placecells, yang2022}, head direction \citep{stringer2002headdirection, hulse2020, turner2017, turner2020neuroanatomical, vafidis2022, kim2019generation} or motor commands \citep{stringer2003}.
+One of the central concepts in dynamical systems theory is the notion of fixed points, which are states of the system where the dynamics remain unchanged over time. Stable fixed points are indeed a discrete set of internal states where the system's dynamics stabilize. Networks with a continuum of fixed points, known as continuous attractors \citep{khona2022}, have been proposed as models for representing continuous variables such as spatial locations \citep{samsonovich1997, stringer2002placecells, yang2022, wimmer2014}, head direction \citep{stringer2002headdirection, hulse2020, turner2017, turner2020neuroanatomical, vafidis2022, kim2019generation} or motor commands \citep{stringer2003}.
 
-Working memory involves the temporary storage and manipulation of information over short time scales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, which provides a framework for understanding memory. This persistent activity is robust to external distractions and noise, ensuring the stability of the working memory representation.
+Working memory involves the temporary storage and manipulation of information over short time scales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, e.g. integrating angular velocity to update the head direction representation, which provides a framework for understanding memory \citep{barak2014, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022}. This persistent activity is robust to external distractions and noise, ensuring the stability of the working memory representation \citep{panichello2019, koulakov2002} in biological networks, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019}.
 
 In a simple decision-making task such as choosing between two options, differential equations could describe the dynamics of neural populations associated with each option. The firing rates of neurons representing each option evolve over time based on sensory inputs, internal biases, and interactions between decision-related brain regions. The decision in such networks is determined by the neural population that reaches a threshold level of activity first or by comparing the dynamics of competing neural populations \citep{wong2007, wong2008}.
 
 
-To understand how artificial neural networks compute and generate behaviors, accessing the underlying neural states and reverse engineering their temporal evolution is crucial. This approach, applied to Recurrent Neural Networks (RNNs), involves task-based modeling, where RNNs are trained to mimic cognitive functions observed in the brain \citep{darshan2020, barak2017recurrent}. By modeling large-scale neural recordings directly, this method unveils the computational principles underlying brain regions' operations and their relation to RNN dynamics. This compact approach provides insights into neural computation, aiding the development of biologically inspired artificial intelligence systems.
+To understand how artificial neural networks compute and generate behaviors, accessing the underlying neural states and reverse engineering their temporal evolution is crucial. This approach, applied to Recurrent Neural Networks (RNNs), can be appliead to task-based modeling, where RNNs are trained to mimic cognitive functions observed in the brain \citep{darshan2022, barak2017recurrent}. This method can give insight into the possible computational principles underlying brain regions' operations. This analysis is challenging for large networks because of their black-box nature \citep{lipton2018, erasmus2021}.
 
 
-One method for reverse engineering neural dynamics, fixed point analysis, simplifies complex global features of neural activity by examining stable fixed points \citep{sussillo2014}. However, it's limited to systems with a finite set of stable fixed points. Recently, limit cycles have been explored, showing promise in understanding RNN dynamics \citep{pals2014}. Slow manifolds, capturing multi-scale dynamics, also hold potential. Integrating insights from limit cycles and slow manifolds into computational models could offer a more comprehensive framework for studying neural computation.
+One method for reverse engineering neural dynamics, fixed point analysis, simplifies complex global features of neural activity by examining stable fixed points \citep{sussillo2013blackbox, sussillo2014, beer2018, maheswaranathan2019universality, driscoll2022}. However, it's limited to systems with a finite set of stable fixed points. Recently, limit cycles have been explored, showing promise in understanding RNN dynamics \citep{pals2024}. Slow manifolds, capturing multi-scale dynamics, also hold potential. Integrating insights from limit cycles and slow manifolds into computational models could offer a more comprehensive framework for studying neural computation.
 
 
 
@@ -106,6 +106,27 @@ One method for reverse engineering neural dynamics, fixed point analysis, simpli
 %The existing language used in theoretical neuroscience to describe neural computation is inadequate. We propose a new language specifically designed to articulate the complexities of working-memory type neural computation that can correctly describe the stability of the system yet provides an interpretable description of the computation. 
 
 
+
+\section{Objectives}
+The overarching objective of this project is to develop a more suitable mathematical language for understanding neural computation. In particular, we want a unifying framework to describe working memory type neural computation that encompasses the robustness properties of biological neural networks.
+
+\subsection*{Aim 1: Re-representing neural dynamics in a new language for neural computation}
+There exists no language that can describe neural computation for working memory and that  correctly captures the robustness of the brain for its implementation. With our proposed framework we attempt to answer the question what the underlying/fundamental dynamics/computations for working memory (specifically neural integration) are. For this, we create rigorous symbolic and visual languages to be able to describe the various ways the brain might implement working memory type computations. Our aim is to prove possible implementations of neural integration, along with other neural computations that relate to decision-making and navigation. This framework will enable us to gain a better understanding of the brain's remarkable information-processing ability necessary for the survival of an animal. 
+
+
+
+\subsection*{Aim 2: Reverse engineer, write code}
+The analysis proposed to describe the neural computation algorithm consists of three primary components. Firstly, identifying the recurrent sets of the system that represent the inputs. Secondly, describing how the input drives the network between these recurrent sets and implements the computation algorithm. Lastly, calculating the output mapping of the recurrent sets.
+These fully capture the implementation of any working memory type neural computation and can be used to compare the found strategy to solve a task possible between two arbitrary networks.
+
+
+
+\subsection*{Aim 3: }
+
+
+
+
+\section{Detailed description}
 
 
 
