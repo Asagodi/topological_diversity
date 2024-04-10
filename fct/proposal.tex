@@ -15,7 +15,7 @@
   doi=false,
   isbn=false,
   url=false,
-  natbib,     % <=======================================================
+  natbib,    
 ]{biblatex}
 \AtEveryBibitem{%
   \clearfield{pages}%
@@ -74,31 +74,32 @@
 {\textbf{\'Abel S\'agodi}}
 \end{center}
 
+\section*{Abstract}
+
+
+
 \section{State of the art}
 The neural system is a complex network consisting of units of limited capacity, neurons.
-As a whole it is capable of processing immediate sensory information and integrating it with short-term memory to produce essential survival behaviors such as perception, decision-making, and motor control.
+As a whole, it can process immediate sensory information and integrate it with short-term memory to produce essential survival behaviors such as perception, decision-making, and motor control.
 The challenge of understanding these cognitive processes at an algorithmic or information-processing level is one of the primary goals in computational and theoretical neuroscience.
-Such an investigation is pivotal for revealing the fundamental principles that govern neural function and for advancing our understanding of the neural basis of cognition and information processing in general.
+Such an investigation is pivotal for revealing the fundamental principles that govern neural function and advancing our understanding of the neural basis of cognition and information processing in general.
 
-To formally describe the algorithmic essence of information processing in the brain, the literature extensively employs concepts from dynamical systems theory.
-At the heart of current approaches lie the notions of ``stable fixed points'' which represent the brain's internal states that remain consistent over time, despite the presence of small perturbations.
-The (stable) fixed points are extremely useful since they can maintain discrete states in neural systems where each neuron tends to forget the past within a few hundred milliseconds.
+The literature extensively employs concepts from dynamical systems theory to formally describe the algorithmic essence of information processing in the brain.
+At the heart of current approaches lies the notions of ``stable fixed points,'' which represent the brain's internal states that remain consistent over time despite small perturbations.
+The (stable) fixed points are extremely useful since they can maintain discrete states in neural systems for arbitrarily long times, where each neuron tends to forget the past within a few hundred milliseconds.
+Networks with a continuum of fixed points, known as continuous attractors \citep{khona2022}, have been proposed as models for representing continuous variables such as spatial locations \citep{samsonovich1997, stringer2002placecells, yang2022, wimmer2014}, head direction \citep{stringer2002headdirection, hulse2020, turner2017, turner2020neuroanatomical, vafidis2022, kim2019generation} or motor commands \citep{stringer2003}.
 
-Animals gather information about their surroundings through sensory modalities such as vision, audition, olfaction, and touch. Neuroscientists study how the brain processes these sensory inputs to build representations of the environment. For instance, during spatial navigation, the brain combines visual landmarks, sounds, and scents to construct a cognitive map of the environment. Navigating efficiently involves decision-making, where animals assess different sensory cues, evaluate risks and rewards, and plan routes to enhance their survival chances. 
+%Animals gather information about their surroundings through sensory modalities such as vision, audition, olfaction, and touch. Neuroscientists study how the brain processes these sensory inputs to build representations of the environment. For instance, during spatial navigation, the brain combines visual landmarks, sounds, and scents to construct a cognitive map of the environment. Efficient navigation involves decision-making, where animals assess different sensory cues, evaluate risks and rewards, and plan routes to enhance their survival chances.
+%
+%Dynamical systems approaches in the context of neural computation and information processing aim to understand the behavior of neural systems by modeling them as sets of differential equations. In this framework, the state of a neural system is described by a set of variables, typically representing the activity levels of individual neurons or neural populations. These variables evolve over time according to the dynamics specified by the differential equations. 
 
-Dynamical systems approaches in the context of neural computation and information processing aim to understand the behavior of neural systems by modeling them as sets of differential equations. In this framework, the state of a neural system is described by a set of variables, typically representing the activity levels of individual neurons or neural populations. These variables evolve over time according to the dynamics specified by the differential equations. 
+Working memory involves the temporary storage and manipulation of information over short time scales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, e.g., integrating angular velocity to update the head direction representation, which provides a framework for understanding memory \citep{barak2014, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022}. This persistent activity is robust to external distractions and noise, ensuring the stability of the working memory representation \citep{panichello2019, koulakov2002} in biological networks, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019}.
+The function of working memory has been modeled involving neural populations representing options in decision-making tasks, where the decision is reached when one population reaches a threshold level of activity or by comparing the dynamics of competing populations \citep{wong2007, wong2008}.
 
-One of the central concepts in dynamical systems theory is the notion of fixed points, which are states of the system where the dynamics remain unchanged over time. Stable fixed points are indeed a discrete set of internal states where the system's dynamics stabilize. Networks with a continuum of fixed points, known as continuous attractors \citep{khona2022}, have been proposed as models for representing continuous variables such as spatial locations \citep{samsonovich1997, stringer2002placecells, yang2022, wimmer2014}, head direction \citep{stringer2002headdirection, hulse2020, turner2017, turner2020neuroanatomical, vafidis2022, kim2019generation} or motor commands \citep{stringer2003}.
-
-Working memory involves the temporary storage and manipulation of information over short time scales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, e.g. integrating angular velocity to update the head direction representation, which provides a framework for understanding memory \citep{barak2014, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022}. This persistent activity is robust to external distractions and noise, ensuring the stability of the working memory representation \citep{panichello2019, koulakov2002} in biological networks, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019}.
-
-In a simple decision-making task such as choosing between two options, differential equations could describe the dynamics of neural populations associated with each option. The firing rates of neurons representing each option evolve over time based on sensory inputs, internal biases, and interactions between decision-related brain regions. The decision in such networks is determined by the neural population that reaches a threshold level of activity first or by comparing the dynamics of competing neural populations \citep{wong2007, wong2008}.
-
-
-To understand how artificial neural networks compute and generate behaviors, accessing the underlying neural states and reverse engineering their temporal evolution is crucial. This approach, applied to Recurrent Neural Networks (RNNs), can be appliead to task-based modeling, where RNNs are trained to mimic cognitive functions observed in the brain \citep{darshan2022, barak2017recurrent}. This method can give insight into the possible computational principles underlying brain regions' operations. This analysis is challenging for large networks because of their black-box nature \citep{lipton2018, erasmus2021}.
+To understand how artificial neural networks compute and generate behaviors, accessing the underlying neural states and reverse engineering their temporal evolution is crucial. This approach can be applied to task-based modeling, where RNNs are trained to mimic cognitive functions observed in the brain \citep{darshan2022, barak2017recurrent}. This method can give insight into the possible computational principles underlying brain regions' operations. This analysis is challenging for large networks because of their black-box nature \citep{lipton2018, erasmus2021}.
 
 
-One method for reverse engineering neural dynamics, fixed point analysis, simplifies complex global features of neural activity by examining stable fixed points \citep{sussillo2013blackbox, sussillo2014, beer2018, maheswaranathan2019universality, driscoll2022}. However, it's limited to systems with a finite set of stable fixed points. Recently, limit cycles have been explored, showing promise in understanding RNN dynamics \citep{pals2024}. Slow manifolds, capturing multi-scale dynamics, also hold potential. Integrating insights from limit cycles and slow manifolds into computational models could offer a more comprehensive framework for studying neural computation.
+One method for reverse engineering neural dynamics, fixed point analysis, simplifies complex global features of neural activity by examining stable fixed points \citep{sussillo2013blackbox, sussillo2014, beer2018, maheswaranathan2019universality, driscoll2022}. However, it is limited to systems with a finite set of stable fixed points. Recently, limit cycles have been explored, showing promise in understanding RNN dynamics \citep{pals2024}. Slow manifolds, capturing multi-scale dynamics, also hold potential. Integrating insights from limit cycles and slow manifolds into computational models could offer a more comprehensive framework for studying neural computation.
 
 
 
