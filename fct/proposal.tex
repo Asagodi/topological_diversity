@@ -79,14 +79,14 @@ The neural system, comprised of interconnected neurons with limited capacity, or
 Working memory, crucial for temporary storage and manipulation of information, relies on (continuous) attractor network dynamics to sustain persistent neural activity, ensuring stability against distractions and noise. However, theoretical models often lack this robustness observed in biological networks.
 In this project, we propose a novel framework aimed at describing neural computation while capturing the robustness properties observed in biological networks. By extending existing reverse engineering approaches for neural dynamics, we aim to characterize how artificial neural networks compute and generate behaviors. This endeavor holds promise for advancing our understanding of neural function and information processing, bridging the gap between theoretical models and biological reality.
 
-
+\newpage
 \section{State of the art}
 The neural system is a complex network consisting of units of limited capacity, neurons.
 As a whole, it can process immediate sensory information and integrate it with short-term memory to produce essential survival behaviors such as perception, decision-making, and motor control.
 The challenge of understanding these cognitive processes at an algorithmic or information-processing level is one of the primary goals in computational and theoretical neuroscience.
 Such an investigation is pivotal for revealing the fundamental principles that govern neural function and advancing our understanding of the neural basis of cognition and information processing in general.
 
-The literature extensively employs concepts from dynamical systems theory to formally describe the algorithmic essence of information processing in the brain.
+The literature extensively employs concepts from dynamical systems theory to formally describe the algorithmic essence of information processing in the brain \citep{vyas2020computation}.
 At the heart of current approaches lies the notions of ``stable fixed points,'' which represent the brain's internal states that remain consistent over time despite small perturbations.
 The (stable) fixed points are extremely useful since they can maintain discrete states in neural systems for arbitrarily long times, where each neuron tends to forget the past within a few hundred milliseconds.
 Networks with a continuum of fixed points, known as continuous attractors \citep{khona2022}, have been proposed as models for representing continuous variables such as spatial locations \citep{samsonovich1997, stringer2002placecells, yang2022, wimmer2014}, head direction \citep{stringer2002headdirection, hulse2020, turner2017, turner2020neuroanatomical, vafidis2022, kim2019generation} or motor commands \citep{stringer2003}.
@@ -118,7 +118,7 @@ One method for reverse engineering neural dynamics, fixed point analysis, simpli
 %The existing language used in theoretical neuroscience to describe neural computation is inadequate. We propose a new language specifically designed to articulate the complexities of working-memory type neural computation that can correctly describe the stability of the system yet provides an interpretable description of the computation. 
 
 
-
+\newpage
 \section{Objectives}
 The overarching objective of this project is to develop a more suitable mathematical language for understanding neural computation. In particular, we want a unifying framework to describe working memory type neural computation that encompasses the robustness properties of biological neural networks.
 
@@ -135,6 +135,10 @@ These fully capture the implementation of any working memory type neural computa
 
 \subsection*{Aim 3: }
 
+We employ the developed analysis technique across various tasks, examining both Recurrent Neural Networks (RNNs) trained on the tasks and Neural ODEs (NODEs) fitted to neural activity recorded from animals trained on the same tasks \citep{zhao2016, pandarinath2018inferring}. Our analysis spans several tasks, including the delayed match-to-category task,
+ random target task,
+  and context-dependent sensory integration task.
+   Through this comprehensive approach, we aim to gain insights into the neural dynamics underlying these diverse cognitive processes, shedding light on both the computational mechanisms employed by artificial neural networks and the neural substrates utilized by biological organisms during task performance.
 
 
 

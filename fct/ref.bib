@@ -17,6 +17,16 @@
   year      = {2017},
 }
 
+@article{vyas2020computation,
+  title={Computation through neural population dynamics},
+  author={Vyas, Saurabh and Golub, Matthew D and Sussillo, David and Shenoy, Krishna V},
+  journal={Annual review of neuroscience},
+  volume={43},
+  pages={249--275},
+  year={2020},
+  publisher={Annual Reviews}
+}
+
 
 %reverse engineering
 @article{marom2009,
@@ -115,6 +125,17 @@
   publisher={Cold Spring Harbor Laboratory}
 }
 
+@article{pals2024,
+  title={Trained recurrent neural networks develop phase-locked limit cycles in a working memory task},
+  author={Pals, Matthijs and Macke, Jakob H and Barak, Omri},
+  journal={PLOS Computational Biology},
+  volume={20},
+  number={2},
+  pages={e1011852},
+  year={2024},
+  publisher={Public Library of Science San Francisco, CA USA}
+}
+
 
 %persistence
 @article{barak2007,
@@ -165,7 +186,16 @@
   publisher={Nature Publishing Group UK London}
 }
 
-
+@article{seeholzer2019,
+  title={Stability of working memory in continuous attractor networks under the control of short-term plasticity},
+  author={Seeholzer, Alexander and Deger, Moritz and Gerstner, Wulfram},
+  journal={PLoS computational biology},
+  volume={15},
+  number={4},
+  pages={e1006928},
+  year={2019},
+  publisher={Public Library of Science San Francisco, CA USA}
+}
 
 %CAs
 @article{stringer2002headdirection,
@@ -255,6 +285,40 @@
   pages={775--782},
   year={2002},
   publisher={Nature Publishing Group US New York}
+}
+
+@article{renart2003,
+  title    = "Robust spatial working memory through homeostatic synaptic
+              scaling in heterogeneous cortical networks",
+  author   = "Renart, Alfonso and Song, Pengcheng and Wang, Xiao-Jing",
+  abstract = "The concept of bell-shaped persistent neural activity represents
+              a cornerstone of the theory for the internal representation of
+              analog quantities, such as spatial location or head direction.
+              Previous models, however, relied on the unrealistic assumption of
+              network homogeneity. We investigate this issue in a network model
+              where fine tuning of parameters is destroyed by heterogeneities
+              in cellular and synaptic properties. Heterogeneities result in
+              the loss of stored spatial information in a few seconds. Accurate
+              encoding is recovered when a homeostatic mechanism scales the
+              excitatory synapses to each cell to compensate for the
+              heterogeneity in cellular excitability and synaptic inputs.
+              Moreover, the more realistic model produces a wide diversity of
+              tuning curves, as commonly observed in recordings from prefrontal
+              neurons. We conclude that recurrent attractor networks in
+              conjunction with appropriate homeostatic mechanisms provide a
+              robust, biologically plausible theoretical framework for
+              understanding the neural circuit basis of spatial working memory.",
+  journal  = "Neuron",
+  volume   =  38,
+  number   =  3,
+  pages    = "473--485",
+  month    =  may,
+  year     =  2003,
+  url      = "http://dx.doi.org/10.1016/s0896-6273(03)00255-1",
+  language = "en",
+  issn     = "0896-6273",
+  pmid     = "12741993",
+  doi      = "10.1016/s0896-6273(03)00255-1"
 }
 
 @article{wong2007,
@@ -412,6 +476,18 @@
   publisher={Frontiers}
 }
 
+%working memory
+@article{wimmer2014,
+  title={Bump attractor dynamics in prefrontal cortex explains behavioral precision in spatial working memory},
+  author={Wimmer, Klaus and Nykamp, Duane Q and Constantinidis, Christos and Compte, Albert},
+  journal={Nature neuroscience},
+  volume={17},
+  number={3},
+  pages={431--439},
+  year={2014},
+  publisher={Nature Publishing Group US New York}
+}
+
 %interpretability
 @article{lipton2018,
   title={The mythos of model interpretability: In machine learning, the concept of interpretability is both important and slippery},
@@ -486,4 +562,72 @@
   pdf = 	 {https://proceedings.mlr.press/v162/rame22a/rame22a.pdf},
   url = 	 {https://proceedings.mlr.press/v162/rame22a.html},
   abstract = 	 {Learning robust models that generalize well under changes in the data distribution is critical for real-world applications. To this end, there has been a growing surge of interest to learn simultaneously from multiple training domains - while enforcing different types of invariance across those domains. Yet, all existing approaches fail to show systematic benefits under controlled evaluation protocols. In this paper, we introduce a new regularization - named Fishr - that enforces domain invariance in the space of the gradients of the loss: specifically, the domain-level variances of gradients are matched across training domains. Our approach is based on the close relations between the gradient covariance, the Fisher Information and the Hessian of the loss: in particular, we show that Fishr eventually aligns the domain-level loss landscapes locally around the final weights. Extensive experiments demonstrate the effectiveness of Fishr for out-of-distribution generalization. Notably, Fishr improves the state of the art on the DomainBed benchmark and performs consistently better than Empirical Risk Minimization. Our code is available at https://github.com/alexrame/fishr.}
+}
+
+
+
+%fitting
+@InProceedings{zhao2016,
+  author        = {Zhao, Yuan and Park, Il Memming},
+  title         = {Interpretable Nonlinear Dynamic Modeling of Neural Trajectories},
+  booktitle     = {Advances in Neural Information Processing Systems (NIPS)},
+  year          = {2016},
+  abstract      = {A central challenge in neuroscience is understanding how neural system
+implements computation through its dynamics. We propose a nonlinear
+time series model aimed at characterizing interpretable dynamics
+from neural trajectories. Our model assumes low-dimensional continuous
+dynamics in a finite volume. It incorporates a prior assumption about
+globally contractional dynamics to avoid overly enthusiastic extrapolation
+outside of the support of observed trajectories. We show that our
+model can recover qualitative features of the phase portrait such
+as attractors, slow points, and bifurcations, while also producing
+reliable long-term future predictions in a variety of dynamical models
+and in real neural data.},
+  archiveprefix = {arXiv},
+  eprint        = {1608.06546},
+  keywords      = {autoregressive, bifurcation, chaos, continuous-attractor, dynamics, neural-dynamics, nips, oscillation, tensorflow},
+  primaryclass  = {q-bio.QM},
+  youtube	= {https://www.youtube.com/watch?v=7oWRZRpaq_I},
+  url = {https://papers.nips.cc/paper/6543-interpretable-nonlinear-dynamic-modeling-of-neural-trajectories},
+}
+
+
+@article{zhao2017variational,
+  title={Variational latent gaussian process for recovering single-trial dynamics from population spike trains},
+  author={Zhao, Yuan and Park, Il Memming},
+  journal={Neural computation},
+  volume={29},
+  number={5},
+  pages={1293--1316},
+  year={2017},
+  publisher={MIT Press One Rogers Street, Cambridge, MA 02142-1209, USA journals-info~…}
+}
+
+@article{pandarinath2018inferring,
+  title={Inferring single-trial neural population dynamics using sequential auto-encoders},
+  author={Pandarinath, Chethan and O’Shea, Daniel J and Collins, Jasmine and Jozefowicz, Rafal and Stavisky, Sergey D and Kao, Jonathan C and Trautmann, Eric M and Kaufman, Matthew T and Ryu, Stephen I and Hochberg, Leigh R and others},
+  journal={Nature methods},
+  volume={15},
+  number={10},
+  pages={805--815},
+  year={2018},
+  publisher={Nature Publishing Group US New York}
+}
+
+@article{pagan2022,
+  title={A new theoretical framework jointly explains behavioral and neural variability across subjects performing flexible decision-making},
+  author={Pagan, Marino and Tang, Vincent D and Aoi, Mikio C and Pillow, Jonathan W and Mante, Valerio and Sussillo, David and Brody, Carlos D},
+  journal={bioRxiv},
+  pages={2022--11},
+  year={2022},
+  publisher={Cold Spring Harbor Laboratory}
+}
+
+@inproceedings{zoltowski2020general,
+  title={A general recurrent state space framework for modeling neural dynamics during decision-making},
+  author={Zoltowski, David and Pillow, Jonathan and Linderman, Scott},
+  booktitle={International Conference on Machine Learning},
+  pages={11680--11691},
+  year={2020},
+  organization={PMLR}
 }
