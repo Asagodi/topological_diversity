@@ -77,13 +77,13 @@
 \section*{Abstract}
 The neural system, comprised of interconnected neurons with limited capacity, orchestrates essential cognitive processes such as perception, decision-making, and motor control by integrating sensory information with short-term memory. Understanding these processes at an algorithmic level is pivotal for unraveling the fundamental principles governing neural function. Dynamical systems theory, particularly the concept of stable fixed points, provides a formal framework for describing information processing in the brain. Continuous attractors, networks with a continuum of stable fixed points, have emerged as models for representing continuous variables like spatial locations, head direction, and motor commands. 
 Working memory, crucial for temporary storage and manipulation of information, relies on (continuous) attractor network dynamics to sustain persistent neural activity, ensuring stability against distractions and noise. However, theoretical models often lack this robustness observed in biological networks.
-In this project, we propose a novel framework aimed at describing neural computation while capturing the robustness properties observed in biological networks. By extending existing reverse engineering approaches for neural dynamics, we aim to characterize how artificial neural networks compute and generate behaviors. This endeavor holds promise for advancing our understanding of neural function and information processing, bridging the gap between theoretical models and biological reality.
+In this project, we propose a novel framework aimed at describing neural computation while capturing the robustness properties observed in biological networks. By extending existing reverse engineering approaches for neural dynamics, we will characterize how artificial neural networks compute and generate behaviors and compare it to neural dynamics in animals. This endeavor holds promise for advancing our understanding of neural function and information processing, bridging the gap between theoretical models and biological reality.
 
 \newpage
 \section{State of the art}
 The neural system is a complex network consisting of units of limited capacity, neurons.
 As a whole, it can process immediate sensory information and integrate it with short-term memory to produce essential survival behaviors such as perception, decision-making, and motor control.
-The challenge of understanding these cognitive processes at an algorithmic or information-processing level is one of the primary goals in computational and theoretical neuroscience.
+The challenge of understanding these cognitive processes at an algorithmic or information-processing level is one of the primary goals in computational and theoretical neuroscience \citep{zoltowski2020general, pagan2022, whiteway2019, dyer2023simplest}.
 Such an investigation is pivotal for revealing the fundamental principles that govern neural function and advancing our understanding of the neural basis of cognition and information processing in general.
 
 The literature extensively employs concepts from dynamical systems theory to formally describe the algorithmic essence of information processing in the brain \citep{vyas2020computation}.
@@ -96,7 +96,7 @@ Networks with a continuum of fixed points, known as continuous attractors \citep
 %Dynamical systems approaches in the context of neural computation and information processing aim to understand the behavior of neural systems by modeling them as sets of differential equations. In this framework, the state of a neural system is described by a set of variables, typically representing the activity levels of individual neurons or neural populations. These variables evolve over time according to the dynamics specified by the differential equations. 
 
 Working memory involves the temporary storage and manipulation of information over short time scales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, e.g., integrating angular velocity to update the head direction representation, which provides a framework for understanding memory \citep{barak2014, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022}. This persistent activity is robust to external distractions and noise, ensuring the stability of the working memory representation \citep{panichello2019, koulakov2002} in biological networks, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019}.
-The function of working memory has been modeled involving neural populations representing options in decision-making tasks, where the decision is reached when one population reaches a threshold level of activity or by comparing the dynamics of competing populations \citep{wong2007, wong2008}.
+The function of working memory has been modeled involving neural populations representing options in decision-making tasks, where the decision is reached when one population reaches a threshold level of activity or by comparing the dynamics of competing populations \citep{wong2007, wong2008, hocker2024}.
 
 To understand how artificial neural networks compute and generate behaviors, accessing the underlying neural states and reverse engineering their temporal evolution is crucial. This approach can be applied to task-based modeling, where RNNs are trained to mimic cognitive functions observed in the brain \citep{darshan2022, barak2017recurrent}. This method can give insight into the possible computational principles underlying brain regions' operations. This analysis is challenging for large networks because of their black-box nature \citep{lipton2018, erasmus2021}.
 
@@ -133,19 +133,18 @@ These fully capture the implementation of any working memory type neural computa
 
 
 
-\subsection*{Aim 3: }
-
+\subsection*{Aim 3: Comparison of trained RNNs and neural activity from trained animals}
 We employ the developed analysis technique across various tasks, examining both Recurrent Neural Networks (RNNs) trained on the tasks and Neural ODEs (NODEs) fitted to neural activity recorded from animals trained on the same tasks \citep{zhao2016, pandarinath2018inferring}. Our analysis spans several tasks, including the delayed match-to-category task,
- random target task,
+ memory guided saccade task,
   and context-dependent sensory integration task.
    Through this comprehensive approach, we aim to gain insights into the neural dynamics underlying these diverse cognitive processes, shedding light on both the computational mechanisms employed by artificial neural networks and the neural substrates utilized by biological organisms during task performance.
 
 
-
+\newpage
 \section{Detailed description}
 
 
-
+\newpage
 \printbibliography
 
 \end{document}
