@@ -97,10 +97,10 @@ Networks with a continuum of fixed points, known as continuous attractors \citep
 %
 %Dynamical systems approaches in the context of neural computation and information processing aim to understand the behavior of neural systems by modeling them as sets of differential equations. In this framework, the state of a neural system is described by a set of variables, typically representing the activity levels of individual neurons or neural populations. These variables evolve over time according to the dynamics specified by the differential equations. 
 
-Working memory involves the temporary storage and manipulation of information over short time scales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, e.g., integrating angular velocity to update the head direction representation \citep{barak2013, barak2014, durstewitz2000, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022, cueva2021a, cueva2021b}. This persistent activity is robust to noise, ensuring the stability of the working memory representation \citep{panichello2019, koulakov2002} in biological networks, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019, machens2008}.
-The function of working memory has been modeled involving neural populations representing options in decision-making tasks, where the decision is reached when one population reaches a threshold level of activity or by comparing the dynamics of competing populations \citep{wong2007, wong2008, hocker2024}.
+Working memory involves the temporary storage and manipulation of information over short time scales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, e.g., integrating angular velocity to update the head direction representation \citep{barak2013, barak2014, durstewitz2000, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022, cueva2021a, cueva2021b}. This persistent activity is robust to noise, ensuring the stability of the working memory representation \citep{koulakov2002} in biological networks \citep{gallego2020}, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019, machens2008}.
+The function of working memory has been modeled involving neural populations representing options in decision-making tasks, where the decision is reached when one population reaches a threshold level of activity or by comparing the dynamics of competing populations \citep{wong2007, wong2008, hocker2024, esnaola2022flexible}.
 
-To understand how artificial neural networks compute and generate behaviors, accessing the underlying neural states and reverse engineering their temporal evolution is crucial. This approach can be applied to task-based modeling, where RNNs are trained to mimic cognitive functions observed in the brain \citep{darshan2022, barak2017recurrent, durstewitz2023reconstructing}. This method can give insight into the possible computational principles underlying brain regions' operations. This analysis is challenging for large networks because of their black-box nature \citep{lipton2018, erasmus2021}.
+To understand how artificial neural networks compute and generate behaviors, accessing the underlying neural states and reverse engineering their temporal evolution is crucial. This approach can be applied to task-based modeling, where RNNs are trained to mimic cognitive functions observed in the brain \citep{darshan2022, barak2017recurrent, durstewitz2023reconstructing, yang2019task, yang2019multiple, yang2020artificial, jarne2023b, song2016}. This method can give insight into the possible computational principles underlying brain regions' operations. This analysis is challenging for large networks because of their black-box nature \citep{lipton2018, erasmus2021}.
 
 
 One method for reverse engineering neural dynamics, fixed point analysis, simplifies complex global features of neural activity by examining stable fixed points \citep{sussillo2013blackbox, sussillo2014, beer2018, maheswaranathan2019universality, driscoll2022, mante2013context}. However, it is limited to systems with a finite set of stable fixed points. Recently, limit cycles have been explored, showing promise in understanding RNN dynamics \citep{pals2024}. Slow manifolds, capturing multi-scale dynamics, also hold potential. Integrating insights from limit cycles and slow manifolds into computational models could offer a more comprehensive framework for studying neural computation.
@@ -125,22 +125,17 @@ One method for reverse engineering neural dynamics, fixed point analysis, simpli
 The overarching objective of this project is to develop a more suitable mathematical language for understanding neural computation. In particular, we want a unifying framework to describe working memory type neural computation that encompasses the robustness properties of biological neural networks.
 
 \subsection*{Aim 1: Developing a language for robust neural computation}
-The research goal is to develop a language that contains appropriate structures for describing computation in dynamical systems models that accurately reflect the robustness of function in biological networks.
-We propose a framework that focuses relies on describing memory in terms of slow manifolds \citep{ghazizadeh2021slow} and robust asymptotic dynamics \citep{casey1996}.
-These structures provide a description of the computation at a wide range of timescales and allow for coarsening via nested attractors \citep{braun2010}.
+Theoretical neuroscientists today face a challenge - the lack of a  framework that accurately reflects the robustness of biological neural networks while being easily interpretable \citep{lillicrap2019}.
+We propose a framework that relies on describing memory in terms of slow manifolds \citep{ghazizadeh2021slow} and robust asymptotic dynamics \citep{casey1996}.
+These structures provide a description of the computation at a wide range of timescales \citep{jaeger2023timescales} and allow for coarsening via nested attractors \citep{braun2010}.
 We prove that these structures are robust to noise in the parameters \citep{Park2023a} and that they provide a general way for approximating continuous attractors.
 This framework will allow us to describe the various ways the brain might implement working memory-type computation with a biological level of resilience.
 %Finally, we propose a coarsening of the description through an equivalence via the output mapping.
 
 
 \subsection*{Aim 2: Describing the implemented neural computation through recurrent sets}
-The analysis proposed to describe the neural computation consists of three primary components. Firstly, we identify the recurrent sets and slow manifolds of the system that represent that correspond to meaningful input sequences or outputs, i.e., we implement a follow the attractor rule. Secondly, we describe how the input drives the network between these recurrent sets and implements the computation algorithm. Lastly, based on the output mapping of the recurrent sets, we extract the semantic meaning.
-These fully capture the implementation of any working memory type neural computation and can be used to compare the found strategy to solve a task possible between two arbitrary networks.
-
-Other approaches:
-\citep{turner2021charting, turner2023}
-\citep{casey1996}
-\citep{valente2022extracting}
+This language should be applicable to trained RNNs. We will extract the implemented computation through three primary components of analysis. Firstly, we identify the recurrent sets and slow manifolds of the system that represent that correspond to meaningful input sequences or outputs, i.e., we implement a follow the attractor rule. Secondly, we describe how the input drives the network between these recurrent sets and implements the computation algorithm. Lastly, based on the output mapping of the recurrent sets, we extract the semantic meaning.
+This analysis is much more broadly applicable than existing approaches \citep{sussillo2013blackbox, sussillo2014, beer2018, maheswaranathan2019universality, driscoll2022, mante2013context, turner2021charting, turner2023, casey1996, valente2022extracting}.
 
 \subsection*{Aim 3: Comparison of trained RNNs and neural activity from trained animals}
 We employ the developed analysis technique across various tasks, examining both Recurrent Neural Networks (RNNs) trained on the tasks and Neural ODEs (NODEs) fitted to neural activity recorded from animals trained on the same tasks \citep{zhao2016, pandarinath2018inferring, kim2021inferring}.
@@ -149,10 +144,77 @@ We employ the developed analysis technique across various tasks, examining both 
   and context-dependent sensory integration task \citep{mante2013context}.
    Through this comprehensive approach, we aim to gain insights into the neural dynamics underlying these diverse cognitive processes, shedding light on both the computational mechanisms employed by artificial neural networks and the neural substrates utilized by biological organisms during task performance.
 
+%DSR%
+%
 
 \newpage
 \section{Detailed description}
+\subsection*{Aim 1}
 
+Aim 1.1: 
+
+The scope of the covered neural computation
+
+Constraints for the language
+
+
+Robustness
+
+Levels of abstraction
+On the highest level of abstraction of the dynamics of the system, we will still refer to the biologically irrelevant continuous attractors to explain brain function, but in this new framework these will be connected to the biologically relevant approximations the brain actually might use.
+
+
+Timesacles
+ A further consideration for this approximation is how constraints on the time window or time scale used to assess the correspondence in the implemented computation in terms of the input-output relationship contributes to these different kinds of approximation
+
+Sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021}.
+
+
+S-type \citep{panichello2019, burak2012}
+
+Theory \citep{beer1995ctrnn, beer1995interaction, beer1995computational, beer2006, beer2023, jaeger2021, jaeger2023theory}
+\citep{levenstein2023}
+
+
+Robustness 
+\citep{mastrogiuseppe2019}
+
+
+
+Encoding \citep{goudar2018}
+
+Long-term
+\citep{soo2023}
+
+
+
+
+There are various approximations that the brain might use to approximate such structural instability of theoretical models. For example, a line attractor can be approximated with fixed points [12] or a slow flow, between stable and unstable fixed point \citep{haviv2019, pollock2020}.
+
+
+Deliverable:  
+
+\subsection*{Aim 2}
+
+
+
+Output mapping 
+the same output is issued by different activity patterns in different movements \citep{athalye2021}
+
+
+
+Deliverable:  Open source analysis tools for automated model simplification
+
+
+\subsection*{Aim 3}
+
+Gradient based learning in RNNs \citep{farrell2022}
+
+
+DRS \citep{schmidt2019}
+
+
+Deliverable:  
 
 \newpage
 \printbibliography
