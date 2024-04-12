@@ -90,7 +90,7 @@ Such an investigation is pivotal for revealing the fundamental principles that g
 
 The literature extensively employs concepts from dynamical systems theory to formally describe the algorithmic essence of information processing in the brain \citep{vyas2020computation}.
 At the heart of current approaches lies the notions of ``stable fixed points,'' which represent the brain's internal states that remain consistent over time despite small perturbations.
-The (stable) fixed points are extremely useful since they can maintain discrete states in neural systems for arbitrarily long times, where each neuron tends to forget the past within a few hundred milliseconds.
+The (stable) fixed points are extremely useful since they can maintain discrete states in neural systems for arbitrarily long times, where each neuron tends to forget the past within a few hundred milliseconds. % for timescales of seconds with neurons and synapse transmission operating mostly on time scales of tens of milliseconds and shorter
 Networks with a continuum of fixed points, known as continuous attractors \citep{fung2010, khona2022, wu2008, wu2016}, have been proposed as models for representing continuous variables such as spatial locations \citep{samsonovich1997, stringer2002placecells, yang2022, wimmer2014, guanella2007model, gardner2022toroidal}, head direction \citep{stringer2002headdirection, hulse2020, turner2017, turner2020neuroanatomical, vafidis2022, kim2019generation}, motor commands \citep{stringer2003} and for the representation of other internal states \citep{nair2023, branco2016}.
 
 %Animals gather information about their surroundings through sensory modalities such as vision, audition, olfaction, and touch. Neuroscientists study how the brain processes these sensory inputs to build representations of the environment. For instance, during spatial navigation, the brain combines visual landmarks, sounds, and scents to construct a cognitive map of the environment. Efficient navigation involves decision-making, where animals assess different sensory cues, evaluate risks and rewards, and plan routes to enhance their survival chances.
@@ -127,14 +127,14 @@ The overarching objective of this project is to develop a more suitable mathemat
 \subsection*{Aim 1: Developing a language for robust neural computation}
 Theoretical neuroscientists today face a challenge - the lack of a  framework that accurately reflects the robustness of biological neural networks while being easily interpretable \citep{lillicrap2019}.
 We propose a framework that relies on describing memory in terms of slow manifolds \citep{ghazizadeh2021slow} and robust asymptotic dynamics \citep{casey1996}.
-These structures provide a description of the computation at a wide range of timescales \citep{jaeger2023timescales} and allow for coarsening via nested attractors \citep{braun2010}.
+These structures provide a description of the memories and their decay at a range of timescales \citep{jaeger2023timescales} and allow for coarsening (via the nesting of attractors) \citep{braun2010}.
 We prove that these structures are robust to noise in the parameters \citep{Park2023a} and that they provide a general way for approximating continuous attractors.
 This framework will allow us to describe the various ways the brain might implement working memory-type computation with a biological level of resilience.
 %Finally, we propose a coarsening of the description through an equivalence via the output mapping.
 
 
 \subsection*{Aim 2: Describing the implemented neural computation through recurrent sets}
-This language should be applicable to trained RNNs. We will extract the implemented computation through three primary components of analysis. Firstly, we identify the recurrent sets and slow manifolds of the system that represent that correspond to meaningful input sequences or outputs, i.e., we implement a follow the attractor rule. Secondly, we describe how the input drives the network between these recurrent sets and implements the computation algorithm. Lastly, based on the output mapping of the recurrent sets, we extract the semantic meaning.
+Designed models for neural computation are naturally easy to frame in the above language, but for trained RNNs or fitted models to neural data, the mechanism of the computation needs to be extracted. We will extract the implemented computation through three primary components of analysis. Firstly, we identify the recurrent sets and slow manifolds of the system that represent that correspond to meaningful input sequences or outputs, i.e., we implement a follow the attractor rule. Secondly, we describe how the input drives the network between these recurrent sets and implements the computation algorithm. Lastly, based on the output mapping of the recurrent sets, we extract the semantic meaning.
 This analysis is much more broadly applicable than existing approaches \citep{sussillo2013blackbox, sussillo2014, beer2018, maheswaranathan2019universality, driscoll2022, mante2013context, turner2021charting, turner2023, casey1996, valente2022extracting}.
 
 \subsection*{Aim 3: Comparison of trained RNNs and neural activity from trained animals}
@@ -147,63 +147,97 @@ We employ the developed analysis technique across various tasks, examining both 
 %DSR%
 %
 
+Training
+\citep{schuessler2020}
+
 \newpage
 \section{Detailed description}
 \subsection*{Aim 1}
+%We propose a framework that relies on describing memory in terms of slow manifolds \citep{ghazizadeh2021slow} and robust asymptotic dynamics \citep{casey1996}.
+%These structures provide a description of the memories and their decay at a range of timescales \citep{jaeger2023timescales} and allow for coarsening (via nesting attractors) \citep{braun2010}.
+%We prove that these structures are robust to noise in the parameters \citep{Park2023a} and that they provide a general way for approximating continuous attractors.
+%This framework will allow us to describe the various ways the brain might implement working memory-type computation with a biological level of resilience.
 
-Aim 1.1: 
+\subsubsection*{Aim 1.1: We formulate a general framework for memory in neural networks}
+%Constraints for the language
 
-The scope of the covered neural computation
+We develop a framework for memory components in neural networks.
+Learning long-term dependencies with gradient descent is difficult, because of negative Lyapunov exponents \citep{bengio1994learning, orvieto2023b}.
+%\citep{soo2023}
+The only two ways of maintaining a memory for arbitrarily long intervals are continuous attractors and quasi-periodic toroidal attractors \citep{Park2023a}.
+We will focus on continuous attractors. %why?
 
-Constraints for the language
+The memory in biological networks is robust to minimal levels of both S- and D-type noise \citep{Park2023a}.
+S-type or ``fast noise'', is caused by noisy components as the stochasticity of neuronal spiking, and is characterized by perturbations to the state \citep{panichello2019, burak2012}.
+This is problematic for structures such as saddle nodes, as an arbitrary small perturbation can lead to .
+D-type or``frozen noise'', is caused by continually changing synaptic weights, and is characterized by perturbations to the eqations that describe the dynamics \citep{seeholzer2019, laje2013}.
+In particular for CANNs, D-type noise is problematic, as it makes the state drift away from its initial position in a directed manner, destroying the ability to represent a continuum of states.
 
 
-Robustness
-
-Levels of abstraction
+%Levels of abstraction
 On the highest level of abstraction of the dynamics of the system, we will still refer to the biologically irrelevant continuous attractors to explain brain function, but in this new framework these will be connected to the biologically relevant approximations the brain actually might use.
-
-
-Timesacles
- A further consideration for this approximation is how constraints on the time window or time scale used to assess the correspondence in the implemented computation in terms of the input-output relationship contributes to these different kinds of approximation
-
-Sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021}.
-
-
-S-type \citep{panichello2019, burak2012}
-
-Theory \citep{beer1995ctrnn, beer1995interaction, beer1995computational, beer2006, beer2023, jaeger2021, jaeger2023theory}
-\citep{levenstein2023}
-
-
-Robustness 
-\citep{mastrogiuseppe2019}
-
-
-
-Encoding \citep{goudar2018}
-
-Long-term
-\citep{soo2023}
+We prove that all hyperbolic continuous attractors are surrounded by dynamical systems that have a slow invariant manifold that is diffeomorphic to the attractor. This implies that for example normally hyperbolic ring attractors are surrounded in the space of dynamical systems by systems with an attractive slow invariant manifold that is composed on stable and saddle nodes and connecting orbits between them.
+%There are various approximations that the brain might use to approximate such structural instability of theoretical models. For example, a line attractor can be approximated with fixed points  or a slow flow, between stable and unstable fixed point \citep{haviv2019, pollock2020}.
 
 
 
 
-There are various approximations that the brain might use to approximate such structural instability of theoretical models. For example, a line attractor can be approximated with fixed points [12] or a slow flow, between stable and unstable fixed point \citep{haviv2019, pollock2020}.
+%Robustness ananlysis
+%Projection of dynamics onto the attractor manifold \citep{seeholzer2019}
+%
+%Sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021}.
+%Short-term facilitation and depression on noise-induced memory degradation in one-dimensional continuous attractor models \citep{seeholzer2019}
 
 
-Deliverable:  
+
+\subsubsection*{Aim 1.2: Analysis of robustness properties of continuous attractors}
+ We analyze the following models of ring attractors: \citep{pollock2020, barak2021mapping, beiran2021}.
+We assess their robustness in the following ways:
+the shortest distance to a perturbation that destroys the attractive slow invariant manifold,
+the probability of a fixed size perturbation that destroyes the continuous attractor,
+the amount of mainained memories on the destroyed continuous attractor,
+the average increase in speed as a function of the perturbation size.
+
+
+
+Deliverable: benchmark for robustness of models of neural integration
+
+
+
 
 \subsection*{Aim 2}
 
+%
+%The scope of the covered neural computation
+%
+%Examples:
+%Neural integration
+%Decision making
+The role of modeling \citep{levenstein2023}
+Theory \citep{beer1995ctrnn, beer1995interaction, beer1995computational, beer2006, beer2023, jaeger2021, jaeger2023theory}
 
+%Encoding, past
+ \citep{goudar2018}
+
+%Decoding, future
+Furthermore, as it is important to consider that they may have different computational properties in other contexts, we will determine how the RNN maps these sets onto the outputs.
 
 Output mapping 
-the same output is issued by different activity patterns in different movements \citep{athalye2021}
+the same output is issued by different activity patterns in different movements \citep{athalye2023}
 
+
+%Interpretability
+This provides interpretability, as we can  coarsen the memory states.
+
+%Timescales
+ A further consideration for this approximation is how constraints on the time window or time scale used to assess the correspondence in the implemented computation in terms of the input-output relationship contributes to these different kinds of approximation
 
 
 Deliverable:  Open source analysis tools for automated model simplification
+
+
+
+% Universality of Linear Recurrences Followed by Nonlinear Projection \cite{orvieto2023a}
 
 
 \subsection*{Aim 3}

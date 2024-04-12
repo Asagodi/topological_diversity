@@ -297,6 +297,18 @@
   publisher={Public Library of Science San Francisco, CA USA}
 }
 
+@article{laje2013,
+  title={Robust timing and motor patterns by taming chaos in recurrent neural networks},
+  author={Laje, Rodrigo and Buonomano, Dean V},
+  journal={Nature neuroscience},
+  volume={16},
+  number={7},
+  pages={925--933},
+  year={2013},
+  publisher={Nature Publishing Group},
+  doi={10.1038/nn.3415}
+}
+
 %robustness
 @inproceedings{ribeiro2020,
   title={Beyond exploding and vanishing gradients: Analysing {RNN} training using attractors and smoothness},
@@ -490,6 +502,18 @@
   pages={178--193. e15},
   year={2023},
   publisher={Elsevier}
+}
+
+%ring
+@article{barak2021mapping,
+  title={Mapping low-dimensional dynamics to high-dimensional neural activity: A derivation of the ring model from the neural engineering framework},
+  author={Barak, Omri and Romani, Sandro},
+  journal={Neural Computation},
+  volume={33},
+  number={3},
+  pages={827--852},
+  year={2021},
+  publisher={MIT Press}
 }
 
 %slow
@@ -916,32 +940,38 @@
   year={2019}
 }
 
-
-%training and generalization
-@InProceedings{rame2022fishr,
-  title = 	 {Fishr: Invariant Gradient Variances for Out-of-Distribution Generalization},
-  author =       {Rame, Alexandre and Dancette, Corentin and Cord, Matthieu},
-  booktitle = 	 {Proceedings of the 39th International Conference on Machine Learning},
-  pages = 	 {18347--18377},
-  year = 	 {2022},
-  editor = 	 {Chaudhuri, Kamalika and Jegelka, Stefanie and Song, Le and Szepesvari, Csaba and Niu, Gang and Sabato, Sivan},
-  volume = 	 {162},
-  series = 	 {Proceedings of Machine Learning Research},
-  month = 	 {17--23 Jul},
-  publisher =    {PMLR},
-  pdf = 	 {https://proceedings.mlr.press/v162/rame22a/rame22a.pdf},
-  url = 	 {https://proceedings.mlr.press/v162/rame22a.html},
-  abstract = 	 {Learning robust models that generalize well under changes in the data distribution is critical for real-world applications. To this end, there has been a growing surge of interest to learn simultaneously from multiple training domains - while enforcing different types of invariance across those domains. Yet, all existing approaches fail to show systematic benefits under controlled evaluation protocols. In this paper, we introduce a new regularization - named Fishr - that enforces domain invariance in the space of the gradients of the loss: specifically, the domain-level variances of gradients are matched across training domains. Our approach is based on the close relations between the gradient covariance, the Fisher Information and the Hessian of the loss: in particular, we show that Fishr eventually aligns the domain-level loss landscapes locally around the final weights. Extensive experiments demonstrate the effectiveness of Fishr for out-of-distribution generalization. Notably, Fishr improves the state of the art on the DomainBed benchmark and performs consistently better than Empirical Risk Minimization. Our code is available at https://github.com/alexrame/fishr.}
+%long-term
+@article{bengio1994learning,
+  title={Learning long-term dependencies with gradient descent is difficult},
+  author={Bengio, Yoshua and Simard, Patrice and Frasconi, Paolo},
+  journal={IEEE transactions on neural networks},
+  volume={5},
+  number={2},
+  pages={157--166},
+  year={1994},
+  publisher={IEEE}
 }
 
-
-%long-term
 @article{soo2023,
   title={Training biologically plausible recurrent neural networks on cognitive tasks with long-term dependencies},
   author={Soo, Wayne WM and Goudar, Vishwa and Wang, Xiao-Jing},
   journal={bioRxiv},
   year={2023},
   publisher={Cold Spring Harbor Laboratory Preprints}
+}
+
+@article{orvieto2023a,
+  title={On the Universality of Linear Recurrences Followed by Nonlinear Projections},
+  author={Orvieto, Antonio and De, Soham and Gulcehre, Caglar and Pascanu, Razvan and Smith, Samuel L},
+  journal={arXiv preprint arXiv:2307.11888},
+  year={2023}
+}
+
+@article{orvieto2023b,
+  title={Resurrecting recurrent neural networks for long sequences},
+  author={Orvieto, Antonio and Smith, Samuel L and Gu, Albert and Fernando, Anushan and Gulcehre, Caglar and Pascanu, Razvan and De, Soham},
+  journal={arXiv preprint arXiv:2303.06349},
+  year={2023}
 }
 
 
@@ -1173,4 +1203,38 @@ and in real neural data.},
   pages={2962--2976},
   year={2023},
   publisher={Elsevier}
+}
+
+
+%designing
+@article{pollock2020,
+  title={Engineering recurrent neural networks from task-relevant manifolds and dynamics},
+  author={Pollock, Eli and Jazayeri, Mehrdad},
+  journal={PLoS computational biology},
+  volume={16},
+  number={8},
+  pages={e1008128},
+  year={2020},
+  publisher={Public Library of Science San Francisco, CA USA}
+}
+
+@article{beiran2021,
+  title={Shaping dynamics with multiple populations in low-rank recurrent networks},
+  author={Beiran, Manuel and Dubreuil, Alexis and Valente, Adrian and Mastrogiuseppe, Francesca and Ostojic, Srdjan},
+  journal={Neural Computation},
+  volume={33},
+  number={6},
+  pages={1572--1615},
+  year={2021},
+  publisher={MIT Press}
+}
+
+%training
+@article{schuessler2020,
+  title={The interplay between randomness and structure during learning in {RNNs}},
+  author={Schuessler, Friedrich and Mastrogiuseppe, Francesca and Dubreuil, Alexis and Ostojic, Srdjan and Barak, Omri},
+  journal={Advances in neural information processing systems},
+  volume={33},
+  pages={13352--13362},
+  year={2020}
 }
