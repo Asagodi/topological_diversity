@@ -144,11 +144,7 @@ We employ the developed analysis technique across various tasks, examining both 
   and context-dependent sensory integration task \citep{mante2013context}.
    Through this comprehensive approach, we aim to gain insights into the neural dynamics underlying these diverse cognitive processes, shedding light on both the computational mechanisms employed by artificial neural networks and the neural substrates utilized by biological organisms during task performance.
 
-%DSR%
-%
 
-Training
-\citep{schuessler2020}
 
 \newpage
 \section{Detailed description}
@@ -170,7 +166,7 @@ We will focus on continuous attractors. %why?
 The memory in biological networks is robust to minimal levels of both S- and D-type noise \citep{Park2023a}.
 S-type or ``fast noise'', is caused by noisy components as the stochasticity of neuronal spiking, and is characterized by perturbations to the state \citep{panichello2019, burak2012}.
 This is problematic for structures such as saddle nodes, as an arbitrary small perturbation can lead to .
-D-type or``frozen noise'', is caused by continually changing synaptic weights, and is characterized by perturbations to the eqations that describe the dynamics \citep{seeholzer2019, laje2013}.
+D-type or``frozen noise'', is caused by continually changing synaptic weights \citep{flesch2023continual}, and is characterized by perturbations to the eqations that describe the dynamics \citep{seeholzer2019, laje2013, flesch2022}.
 In particular for CANNs, D-type noise is problematic, as it makes the state drift away from its initial position in a directed manner, destroying the ability to represent a continuum of states.
 
 
@@ -191,7 +187,7 @@ We prove that all hyperbolic continuous attractors are surrounded by dynamical s
 
 
 \subsubsection*{Aim 1.2: Analysis of robustness properties of continuous attractors}
- We analyze the following models of ring attractors: \citep{pollock2020, barak2021mapping, beiran2021}.
+ We analyze the following models of ring attractors: \citep{pollock2020, barak2021mapping, beiran2021, noorman2022}.
 We assess their robustness in the following ways:
 the shortest distance to a perturbation that destroys the attractive slow invariant manifold,
 the probability of a fixed size perturbation that destroyes the continuous attractor,
@@ -200,52 +196,64 @@ the average increase in speed as a function of the perturbation size.
 
 
 
+
+
 Deliverable: benchmark for robustness of models of neural integration
 
 
 
 
+
+
+
 \subsection*{Aim 2}
+The scope of the covered neural computation involves working memory type computation with a long-term component. Examples encompass neural integration, evidence accumulation, and decision making.
+ What kinds of dynamical behavior a given network exhibit  has previously been investigated  for small systems \citep{beer1995ctrnn, beer1995interaction, beer1995computational, beer2006, beer2023}. % and Jaeger \citep{jaeger2021, jaeger2023theory} have been explored thus far.
+ 
 
-%
-%The scope of the covered neural computation
-%
-%Examples:
-%Neural integration
-%Decision making
-The role of modeling \citep{levenstein2023}
-Theory \citep{beer1995ctrnn, beer1995interaction, beer1995computational, beer2006, beer2023, jaeger2021, jaeger2023theory}
-
+We will extract the implemented computation, defined as an input-output mapping, through three primary components of analysis.
 %Encoding, past
- \citep{goudar2018}
-
+we identify the recurrent sets and slow manifolds of the system that represent that correspond to meaningful input sequences or outputs \citep{goudar2018}. This approach is a generalization of the ``follow the fixed point rule'' and we call it the ``follow the attractor rule''. We implement this by the computation of the Morse decomposition of a network from the numerically integrated trajectories relevant for the task \citep{mischaikow1999, arai2009database}.
 %Decoding, future
-Furthermore, as it is important to consider that they may have different computational properties in other contexts, we will determine how the RNN maps these sets onto the outputs.
-
-Output mapping 
-the same output is issued by different activity patterns in different movements \citep{athalye2023}
-
-
-%Interpretability
-This provides interpretability, as we can  coarsen the memory states.
-
+Secondly, we describe how the input drives the network between these recurrent sets by calculating the basins of attraction and determining the $\omega$-limit cycles for the autonomous dynamics after a sequence of inputs with the network initialized at a recurrent set. We do this at different timescales by separating the system into a slow and a fast components, which allows us to construct slow manifolds as well \citep{jones1995, kuehn2015}.
 %Timescales
- A further consideration for this approximation is how constraints on the time window or time scale used to assess the correspondence in the implemented computation in terms of the input-output relationship contributes to these different kinds of approximation
+ We deterime how constraints on the time window or time scale used to assess the correspondence in the implemented computation in terms of the input-output relationship contributes to these different kinds of approximation.
+ 
+
+Lastly, based on the output mapping of the recurrent sets, we extract the behavioral-semantic meaning, by idenitfying the output mapping of all the recurrent sets and slow manifolds. Furthermore the same output can elicited by different activity patterns in different behaviors or contexts and we therefore group recurrent sets according to a metric in the output space \citep{athalye2023, myers2022}.
+ %Interpretability
+This  allows for coarsening of the the representation of the implemented computation via merging of attractors \citep{braun2010}.
+This provides interpretability, as we can coarsen the memory states to a suitable simplicity.
 
 
-Deliverable:  Open source analysis tools for automated model simplification
+
+Deliverable: Open-source analysis tools for automated model identification and simplification.
 
 
 
-% Universality of Linear Recurrences Followed by Nonlinear Projection \cite{orvieto2023a}
+
+Universality of Linear Recurrences Followed by Nonlinear Projection \cite{orvieto2023a}
+CTRNNs \citep{funahashi1993approximation}
+
+
+
 
 
 \subsection*{Aim 3}
 
+
+
 Gradient based learning in RNNs \citep{farrell2022}
 
-
+%DSR
 DRS \citep{schmidt2019}
+
+Training RNNs
+\citep{schuessler2020}
+
+Comparisons
+The role of modeling \citep{levenstein2023}
+ \citep{ostrow2024beyond}
 
 
 Deliverable:  
