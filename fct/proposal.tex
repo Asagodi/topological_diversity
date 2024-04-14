@@ -207,23 +207,23 @@ Deliverable: benchmark for robustness of models of neural integration
 
 
 \subsection*{Aim 2}
-The scope of the covered neural computation involves working memory type computation with a long-term component. Examples encompass neural integration, evidence accumulation, and decision making.
- What kinds of dynamical behavior a given network exhibit  has previously been investigated  for small systems \citep{beer1995ctrnn, beer1995interaction, beer1995computational, beer2006, beer2023}. % and Jaeger \citep{jaeger2021, jaeger2023theory} have been explored thus far.
- 
+The scope of the covered neural computation involves working memory type computation with a long-term component. Examples encompass neural integration, evidence accumulation, and decision-making.
+What kinds of dynamical behavior a given network exhibits was analyzed for small systems \citep{beer1995ctrnn, beer1995interaction, beer1995computational, beer2006, beer2023}. % and Jaeger \citep{jaeger2021, jaeger2023theory} have been explored thus far.
 
-We will extract the implemented computation, defined as an input-output mapping, through three primary components of analysis.
+
+We will extract the implemented computation, defined as an input-output mapping, through three primary analysis components.
 %Encoding, past
-we identify the recurrent sets and slow manifolds of the system that represent that correspond to meaningful input sequences or outputs \citep{goudar2018}. This approach is a generalization of the ``follow the fixed point rule'' and we call it the ``follow the attractor rule''. We implement this by the computation of the Morse decomposition of a network from the numerically integrated trajectories relevant for the task \citep{mischaikow1999, arai2009database}.
+we identify the system's recurrent sets and slow manifolds that correspond to meaningful input sequences or outputs \citep{goudar2018}. This approach is a generalization of the ``follow the fixed point rule'' and we call it the ``follow the attractor rule''. We implement this by computing the Morse decomposition of a network from the numerically integrated trajectories relevant to the task \citep{mischaikow1999, arai2009database}.
 %Decoding, future
-Secondly, we describe how the input drives the network between these recurrent sets by calculating the basins of attraction and determining the $\omega$-limit cycles for the autonomous dynamics after a sequence of inputs with the network initialized at a recurrent set. We do this at different timescales by separating the system into a slow and a fast components, which allows us to construct slow manifolds as well \citep{jones1995, kuehn2015}.
+Secondly, we describe how the input drives the network between these recurrent sets by calculating the basins of attraction and determining the $\omega$-limit cycles for the autonomous dynamics after a sequence of inputs with the network initialized at a recurrent set. We do this at different timescales by separating the system into slow and fast components, which allows us to construct slow manifolds as well \citep{jones1995, kuehn2015}.
 %Timescales
- We deterime how constraints on the time window or time scale used to assess the correspondence in the implemented computation in terms of the input-output relationship contributes to these different kinds of approximation.
- 
+We determine how constraints on the time window or time scale used to assess the correspondence in the implemented computation in terms of the input-output relationship contribute to these different kinds of approximation.
 
-Lastly, based on the output mapping of the recurrent sets, we extract the behavioral-semantic meaning, by idenitfying the output mapping of all the recurrent sets and slow manifolds. Furthermore the same output can elicited by different activity patterns in different behaviors or contexts and we therefore group recurrent sets according to a metric in the output space \citep{athalye2023, myers2022}.
- %Interpretability
-This  allows for coarsening of the the representation of the implemented computation via merging of attractors \citep{braun2010}.
-This provides interpretability, as we can coarsen the memory states to a suitable simplicity.
+
+Lastly, based on the output mapping of the recurrent sets, we extract the behavioral-semantic meaning by identifying the output mapping of all the recurrent sets and slow manifolds. Furthermore, the same output can elicited by different activity patterns in different behaviors or contexts, and we, therefore, group recurrent sets according to a metric in the output space \citep{athalye2023, myers2022}.
+%Interpretability
+Timescale and grouping through the output mapping allow for the coarsening of representation of the implemented computation via the merging of attractors \citep{braun2010}.
+The coarsening provides interpretability, as we can coarsen the memory states to a suitable simplicity.
 
 
 
@@ -232,8 +232,8 @@ Deliverable: Open-source analysis tools for automated model identification and s
 
 
 
-Universality of Linear Recurrences Followed by Nonlinear Projection \cite{orvieto2023a}
-CTRNNs \citep{funahashi1993approximation}
+%Universality of Linear Recurrences Followed by Nonlinear Projection \cite{orvieto2023a}
+%CTRNNs \citep{funahashi1993approximation}
 
 
 
