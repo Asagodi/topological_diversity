@@ -139,8 +139,9 @@ This analysis is much more broadly applicable than existing approaches \citep{su
 
 \subsection*{Aim 3: Comparison of trained RNNs and neural activity from trained animals}
 We employ the developed analysis technique across various tasks, examining both Recurrent Neural Networks (RNNs) trained on the tasks and Neural ODEs (NODEs) fitted to neural activity recorded from animals trained on the same tasks \citep{zhao2016, pandarinath2018inferring, kim2021inferring}.
- Our analysis spans several tasks, including the delayed match-to-category task \citep{chaisangmongkon2017computing},
- memory guided saccade task \citep{wimmer2014},
+ Our analysis spans several tasks, including the Poisson clicks task \citep{brunton2013rats},
+  the delayed match-to-category task \citep{chaisangmongkon2017computing},
+  memory guided saccade task \citep{wimmer2014},
   and context-dependent sensory integration task \citep{mante2013context}.
    Through this comprehensive approach, we aim to gain insights into the neural dynamics underlying these diverse cognitive processes, shedding light on both the computational mechanisms employed by artificial neural networks and the neural substrates utilized by biological organisms during task performance.
 
@@ -181,7 +182,7 @@ We prove that all hyperbolic continuous attractors are surrounded by dynamical s
 %Robustness ananlysis
 %Projection of dynamics onto the attractor manifold \citep{seeholzer2019}
 %
-%Sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021}.
+Sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021, kozachkov2022a, seeholzer2019}.
 %Short-term facilitation and depression on noise-induced memory degradation in one-dimensional continuous attractor models \citep{seeholzer2019}
 
 
@@ -215,16 +216,16 @@ We will extract the implemented computation, defined as an input-output mapping,
 %Encoding, past
 we identify the system's recurrent sets and slow manifolds that correspond to meaningful input sequences or outputs \citep{goudar2018}. This approach is a generalization of the ``follow the fixed point rule'' and we call it the ``follow the attractor rule''. We implement this by computing the Morse decomposition of a network from the numerically integrated trajectories relevant to the task \citep{mischaikow1999, arai2009database}.
 %Decoding, future
-Secondly, we describe how the input drives the network between these recurrent sets by calculating the basins of attraction and determining the $\omega$-limit cycles for the autonomous dynamics after a sequence of inputs with the network initialized at a recurrent set. We do this at different timescales by separating the system into slow and fast components, which allows us to construct slow manifolds as well \citep{jones1995, kuehn2015}.
+Secondly, we describe how the input drives the network between these recurrent sets by calculating the basins of attraction and determining the $\omega$-limit cycles for the autonomous dynamics after a sequence of inputs with the network initialized at a recurrent set. We do this at different timescales by separating the system into slow and fast components, which allows us to construct slow manifolds as well \citep{jones1995, kuehn2015, casey1996}.
 %Timescales
 We determine how constraints on the time window or time scale used to assess the correspondence in the implemented computation in terms of the input-output relationship contribute to these different kinds of approximation.
 
 
 Lastly, based on the output mapping of the recurrent sets, we extract the behavioral-semantic meaning by identifying the output mapping of all the recurrent sets and slow manifolds. Furthermore, the same output can elicited by different activity patterns in different behaviors or contexts, and we, therefore, group recurrent sets according to a metric in the output space \citep{athalye2023, myers2022}.
-%Interpretability
 Timescale and grouping through the output mapping allow for the coarsening of representation of the implemented computation via the merging of attractors \citep{braun2010}.
 The coarsening provides interpretability, as we can coarsen the memory states to a suitable simplicity.
 
+%comparison
 
 
 Deliverable: Open-source analysis tools for automated model identification and simplification.
@@ -241,19 +242,45 @@ Deliverable: Open-source analysis tools for automated model identification and s
 
 \subsection*{Aim 3}
 
+By comparing trained RNNs on various tasks and neural dynamics, we can gain insight into the neural implementations of integration and decision making. If you're interested in understanding these processes better, exploring this approach could be a valuable use of your time.
 
 
-Gradient based learning in RNNs \citep{farrell2022}
 
-%DSR
-DRS \citep{schmidt2019}
+\subsubsection{Aim 3.1: training RNNs on analogous tasks.}
+We analyze RNNs trained with the backpropagation through time \citep{farrell2022, schuessler2020}.
+We use, i.e., mean-squared error loss for the memory-guided saccade task and cross-entropy for the Poisson clicks task.
+We give extra attention to the long-term aspect of memory maintenance, which we enforce through gradient flossing \citep{engelken2023b} and equilibrium propagation \citep{laborieux2023}.
 
-Training RNNs
-\citep{schuessler2020}
 
-Comparisons
+
+
+
+\subsubsection{Aim 3.2: Fitting dynamical systems to neural recordings.}
+
+%Datasets.
+We use the following datasets:
+rat brain motor cortex (Poisson clicks and context-dependent decision),
+rhesus monkeys (memory-guided saccade),
+Macaque monkeys (delayed match-to-category task).
+
+ 
+
+%Methods
+We compare different methods to fit dynamical systems to neural data \citep{zhao2016}:
+ Neural ODEs (NODEs) fitted \citep{kim2021inferring},
+ seq-VAEs \citep{pandarinath2018inferring},
+dynamical systems reconsttruction \citep{schmidt2019}.
+
+
+
+
+
+%Comparisons
+\subsubsection{Aim 3.3: Identifying mechanisms of neural computation}
 The role of modeling \citep{levenstein2023}
- \citep{ostrow2024beyond}
+We will use two different comparisons to identify similarities and differences between trained and fitted models. One will be based on the Morse-Conley decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009}. The other will be based on topological conjugacy \citep{ostrow2024beyond}.
+We identify the best corresponding RNN for each task and dataset as an explanation of how the brain implements different kinds of decision-making.
+ 
 
 
 Deliverable:  
