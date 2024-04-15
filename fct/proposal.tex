@@ -128,7 +128,7 @@ The overarching objective of this project is to develop a more suitable mathemat
 Theoretical neuroscientists today face a challenge - the lack of a  framework that accurately reflects the robustness of biological neural networks while being easily interpretable \citep{lillicrap2019}.
 We propose a framework that relies on describing memory in terms of slow manifolds \citep{ghazizadeh2021slow} and robust asymptotic dynamics \citep{casey1996}.
 These structures provide a description of the memories and their decay at a range of timescales \citep{jaeger2023timescales} and allow for coarsening (via the nesting of attractors) \citep{braun2010}.
-We prove that these structures are robust to noise in the parameters \citep{Park2023a} and that they provide a general way for approximating continuous attractors.
+We prove that these structures are robust to noise in the parameters \citep{Park2023a} and that they provide a general way for approximating continuous attractors \citep{inagaki2019}.
 This framework will allow us to describe the various ways the brain might implement working memory-type computation with a biological level of resilience.
 %Finally, we propose a coarsening of the description through an equivalence via the output mapping.
 
@@ -173,7 +173,7 @@ In particular for CANNs, D-type noise is problematic, as it makes the state drif
 
 %Levels of abstraction
 On the highest level of abstraction of the dynamics of the system, we will still refer to the biologically irrelevant continuous attractors to explain brain function, but in this new framework these will be connected to the biologically relevant approximations the brain actually might use.
-We prove that all hyperbolic continuous attractors are surrounded by dynamical systems that have a slow invariant manifold that is diffeomorphic to the attractor. This implies that for example normally hyperbolic ring attractors are surrounded in the space of dynamical systems by systems with an attractive slow invariant manifold that is composed on stable and saddle nodes and connecting orbits between them and that such attractors have sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021, kozachkov2022a, seeholzer2019}.
+We prove that all hyperbolic continuous attractors are surrounded by dynamical systems that have a slow invariant manifold that is diffeomorphic to the attractor. This implies that for example normally hyperbolic ring attractors are surrounded in the space of dynamical systems by systems with an attractive slow invariant manifold that is composed of stable and saddle nodes and connecting orbits between them  and that such attractors have sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021, kozachkov2022a, seeholzer2019}.
 %There are various approximations that the brain might use to approximate such structural instability of theoretical models. For example, a line attractor can be approximated with fixed points  or a slow flow, between stable and unstable fixed point \citep{haviv2019, pollock2020}.
 
 
@@ -274,7 +274,7 @@ dynamical systems reconsttruction \citep{schmidt2019}.
 
 %Comparisons
 \subsubsection*{Aim 3.3: Identifying mechanisms of neural computation}
-We aim to identify the underlying mechanisms of neural computation by comparing trained RNNs with fitted models based on neural recordings.  One will be based on the Morse-Conley decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009}. The other will be based on topological conjugacy \citep{ostrow2024beyond}.
+We aim to identify the underlying mechanisms of neural computation by comparing trained RNNs with fitted models based on neural recordings.  One will be based on the Morse-Conley decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009, kaczynski2004computational}. The other will be based on topological conjugacy \citep{ostrow2024beyond}.
 We identify the best corresponding RNN for each task and dataset as an explanation of how the brain implements different kinds of decision-making \citep{levenstein2023}.
  
 
