@@ -97,8 +97,8 @@ Networks with a continuum of fixed points, known as continuous attractors \citep
 %
 %Dynamical systems approaches in the context of neural computation and information processing aim to understand the behavior of neural systems by modeling them as sets of differential equations. In this framework, the state of a neural system is described by a set of variables, typically representing the activity levels of individual neurons or neural populations. These variables evolve over time according to the dynamics specified by the differential equations. 
 
-Working memory involves the temporary storage and manipulation of information over short time scales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, e.g., integrating angular velocity to update the head direction representation \citep{barak2013, barak2014, durstewitz2000, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022, cueva2021a, cueva2021b}. This persistent activity is robust to noise, ensuring the stability of the working memory representation \citep{koulakov2002} in biological networks \citep{gallego2020}, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019, machens2008}.
-The function of working memory has been modeled involving neural populations representing options in decision-making tasks, where the decision is reached when one population reaches a threshold level of activity or by comparing the dynamics of competing populations \citep{wong2007, wong2008, hocker2024, esnaola2022flexible}.
+Working memory involves the temporary storage and manipulation of information over short time scales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, e.g., integrating angular velocity to update the head direction representation \citep{barak2013, barak2014, durstewitz2000, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022, cueva2021a, cueva2021b}. Neural function is robust to noise \citep{faisal2008}, ensuring the stability of the working memory representation \citep{koulakov2002} in biological networks \citep{gallego2020}, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019, machens2008}.
+The function of working memory has been modeled involving neural populations representing options in decision-making tasks \citep{gold2007neural}, where the decision is reached when one population reaches a threshold level of activity or by comparing the dynamics of competing populations \citep{wong2007, wong2008, hocker2024, esnaola2022flexible}.
 
 To understand how artificial neural networks compute and generate behaviors, accessing the underlying neural states and reverse engineering their temporal evolution is crucial. This approach can be applied to task-based modeling, where RNNs are trained to mimic cognitive functions observed in the brain \citep{darshan2022, barak2017recurrent, durstewitz2023reconstructing, yang2019task, yang2019multiple, yang2020artificial, jarne2023b, song2016}. This method can give insight into the possible computational principles underlying brain regions' operations. This analysis is challenging for large networks because of their black-box nature \citep{lipton2018, erasmus2021}.
 
@@ -246,7 +246,7 @@ By comparing trained RNNs on various tasks and neural dynamics, we can gain insi
 
 
 
-\subsubsection{Aim 3.1: training RNNs on analogous tasks.}
+\subsubsection*{Aim 3.1: training RNNs on analogous tasks.}
 We analyze RNNs trained with the backpropagation through time \citep{farrell2022, schuessler2020}.
 We use, i.e., mean-squared error loss for the memory-guided saccade task and cross-entropy for the Poisson clicks task.
 We give extra attention to the long-term aspect of memory maintenance, which we enforce through gradient flossing \citep{engelken2023b} and equilibrium propagation \citep{laborieux2023}.
@@ -255,13 +255,10 @@ We give extra attention to the long-term aspect of memory maintenance, which we 
 
 
 
-\subsubsection{Aim 3.2: Fitting dynamical systems to neural recordings.}
+\subsubsection*{Aim 3.2: Fitting dynamical systems to neural recordings.}
 
 %Datasets.
-We use the following datasets:
-rat brain motor cortex (Poisson clicks and context-dependent decision),
-rhesus monkeys (memory-guided saccade),
-Macaque monkeys (delayed match-to-category task).
+For this aim, we leverage various datasets, including recordings from the rat brain motor cortex (for tasks like Poisson clicks and context-dependent decision-making) and data from experiments with rhesus and Macaque monkeys (for tasks like memory-guided saccades and delayed match-to-category tasks).
 
  
 
@@ -276,14 +273,13 @@ dynamical systems reconsttruction \citep{schmidt2019}.
 
 
 %Comparisons
-\subsubsection{Aim 3.3: Identifying mechanisms of neural computation}
-The role of modeling \citep{levenstein2023}
-We will use two different comparisons to identify similarities and differences between trained and fitted models. One will be based on the Morse-Conley decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009}. The other will be based on topological conjugacy \citep{ostrow2024beyond}.
-We identify the best corresponding RNN for each task and dataset as an explanation of how the brain implements different kinds of decision-making.
+\subsubsection*{Aim 3.3: Identifying mechanisms of neural computation}
+We aim to identify the underlying mechanisms of neural computation by comparing trained RNNs with fitted models based on neural recordings.  One will be based on the Morse-Conley decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009}. The other will be based on topological conjugacy \citep{ostrow2024beyond}.
+We identify the best corresponding RNN for each task and dataset as an explanation of how the brain implements different kinds of decision-making \citep{levenstein2023}.
  
 
 
-Deliverable:  
+Deliverable:  Comprehensive insights into the neural implementations of integration and decision-making, derived from the analysis of trained RNNs on analogous tasks and fitting dynamical systems to neural recordings.
 
 \newpage
 \printbibliography
