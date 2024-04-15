@@ -91,7 +91,7 @@ Such an investigation is pivotal for revealing the fundamental principles that g
 The literature extensively employs concepts from dynamical systems theory to formally describe the algorithmic essence of information processing in the brain \citep{vyas2020computation}.
 At the heart of current approaches lies the notions of ``stable fixed points,'' which represent the brain's internal states that remain consistent over time despite small perturbations.
 The (stable) fixed points are extremely useful since they can maintain discrete states in neural systems for arbitrarily long times, where each neuron tends to forget the past within a few hundred milliseconds. % for timescales of seconds with neurons and synapse transmission operating mostly on time scales of tens of milliseconds and shorter
-Networks with a continuum of fixed points, known as continuous attractors \citep{fung2010, khona2022, wu2008, wu2016}, have been proposed as models for representing continuous variables such as spatial locations \citep{samsonovich1997, stringer2002placecells, yang2022, wimmer2014, guanella2007model, gardner2022toroidal}, head direction \citep{stringer2002headdirection, hulse2020, turner2017, turner2020neuroanatomical, vafidis2022, kim2019generation}, motor commands \citep{stringer2003} and for the representation of other internal states \citep{nair2023, branco2016}.
+Networks with a continuum of fixed points, known as continuous attractors \citep{fung2010, khona2022, wu2008, wu2016}, have been proposed as models for representing continuous variables such as spatial locations \citep{samsonovich1997, stringer2002placecells, yang2022, wimmer2014, guanella2007model, gardner2022toroidal}, head direction \citep{stringer2002headdirection, hulse2020, turner2017, turner2020neuroanatomical, vafidis2022, kim2019generation}, motor commands \citep{stringer2003} and for the representation of other internal states \citep{nair2023, branco2016, seung2000stability}.
 
 %Animals gather information about their surroundings through sensory modalities such as vision, audition, olfaction, and touch. Neuroscientists study how the brain processes these sensory inputs to build representations of the environment. For instance, during spatial navigation, the brain combines visual landmarks, sounds, and scents to construct a cognitive map of the environment. Efficient navigation involves decision-making, where animals assess different sensory cues, evaluate risks and rewards, and plan routes to enhance their survival chances.
 %
@@ -173,7 +173,7 @@ In particular for CANNs, D-type noise is problematic, as it makes the state drif
 
 %Levels of abstraction
 On the highest level of abstraction of the dynamics of the system, we will still refer to the biologically irrelevant continuous attractors to explain brain function, but in this new framework these will be connected to the biologically relevant approximations the brain actually might use.
-We prove that all hyperbolic continuous attractors are surrounded by dynamical systems that have a slow invariant manifold that is diffeomorphic to the attractor. This implies that for example normally hyperbolic ring attractors are surrounded in the space of dynamical systems by systems with an attractive slow invariant manifold that is composed on stable and saddle nodes and connecting orbits between them.
+We prove that all hyperbolic continuous attractors are surrounded by dynamical systems that have a slow invariant manifold that is diffeomorphic to the attractor. This implies that for example normally hyperbolic ring attractors are surrounded in the space of dynamical systems by systems with an attractive slow invariant manifold that is composed on stable and saddle nodes and connecting orbits between them and that such attractors have sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021, kozachkov2022a, seeholzer2019}.
 %There are various approximations that the brain might use to approximate such structural instability of theoretical models. For example, a line attractor can be approximated with fixed points  or a slow flow, between stable and unstable fixed point \citep{haviv2019, pollock2020}.
 
 
@@ -182,7 +182,7 @@ We prove that all hyperbolic continuous attractors are surrounded by dynamical s
 %Robustness ananlysis
 %Projection of dynamics onto the attractor manifold \citep{seeholzer2019}
 %
-Sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021, kozachkov2022a, seeholzer2019}.
+
 %Short-term facilitation and depression on noise-induced memory degradation in one-dimensional continuous attractor models \citep{seeholzer2019}
 
 
@@ -214,7 +214,7 @@ What kinds of dynamical behavior a given network exhibits was analyzed for small
 
 We will extract the implemented computation, defined as an input-output mapping, through three primary analysis components.
 %Encoding, past
-we identify the system's recurrent sets and slow manifolds that correspond to meaningful input sequences or outputs \citep{goudar2018}. This approach is a generalization of the ``follow the fixed point rule'' and we call it the ``follow the attractor rule''. We implement this by computing the Morse decomposition of a network from the numerically integrated trajectories relevant to the task \citep{mischaikow1999, arai2009database}.
+Firstly, we identify the system's recurrent sets and slow manifolds that correspond to meaningful input sequences or outputs \citep{goudar2018}. This approach is a generalization of the ``follow the fixed point rule'' and we call it the ``follow the attractor rule''. We implement this by computing the Morse decomposition of a network from the numerically integrated trajectories relevant to the task \citep{mischaikow1999, arai2009database}.
 %Decoding, future
 Secondly, we describe how the input drives the network between these recurrent sets by calculating the basins of attraction and determining the $\omega$-limit cycles for the autonomous dynamics after a sequence of inputs with the network initialized at a recurrent set. We do this at different timescales by separating the system into slow and fast components, which allows us to construct slow manifolds as well \citep{jones1995, kuehn2015, casey1996}.
 %Timescales
@@ -225,8 +225,8 @@ Lastly, based on the output mapping of the recurrent sets, we extract the behavi
 Timescale and grouping through the output mapping allow for the coarsening of representation of the implemented computation via the merging of attractors \citep{braun2010}.
 The coarsening provides interpretability, as we can coarsen the memory states to a suitable simplicity.
 
-%comparison
-
+%
+We test our analysis method on hand-desinged attractor networks.
 
 Deliverable: Open-source analysis tools for automated model identification and simplification.
 
