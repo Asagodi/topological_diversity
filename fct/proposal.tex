@@ -68,7 +68,9 @@
 
 \begin{center}
 %\LARGE{\textbf{A for infinite horizon neural computation}}
-\LARGE{\bf An infinite-horizon language for neural computation}
+%\LARGE{\bf An infinite-horizon language for neural computation}
+%\LARGE{\bf   From Continuous Attractors to Multi-Scale Behavior}
+\LARGE{\bf   Understanding Neural Networks Through Multi-Time Scale Analysis of Attractor Dynamics}
 \end{center}
 \begin{center}
 {\textbf{\'Abel S\'agodi}}
@@ -78,8 +80,6 @@
 The neural system, comprised of interconnected neurons with limited capacity, orchestrates essential cognitive processes such as perception, decision-making, and motor control by integrating sensory information with short-term memory. Understanding these processes at an algorithmic level is pivotal for unraveling the fundamental principles governing neural function. Dynamical systems theory, particularly the concept of stable fixed points, provides a formal framework for describing information processing in the brain. Continuous attractors, networks with a continuum of fixed points, have emerged as models for representing continuous variables like spatial locations, head direction, and motor commands. 
 Working memory, crucial for temporary storage and manipulation of information, relies on (continuous) attractor network dynamics to sustain persistent neural activity, ensuring stability against distractions and noise. However, theoretical models often lack this robustness observed in biological networks.
 In this project, we propose a novel framework aimed at describing neural computation while capturing the robustness properties observed in biological networks. By extending existing reverse engineering approaches for neural dynamics, we will characterize how artificial neural networks compute and generate behaviors and compare it to neural dynamics in animals. This endeavor holds promise for advancing our understanding of neural function and information processing, bridging the gap between theoretical models and biological reality.
-
-Animals have 
 
 \newpage
 \section{State of the art}
@@ -99,7 +99,7 @@ Networks with a continuum of fixed points, known as continuous attractors \citep
 
 Working memory involves the temporary storage and manipulation of information over behaviorally relevant timescales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, e.g., integrating angular velocity to update the head direction representation \citep{barak2013, barak2014, durstewitz2000, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022, cueva2021a, cueva2021b}.
 % Neural function is robust to noise \citep{faisal2008}, ensuring the stability of the working memory representation \citep{koulakov2002} in biological networks \citep{gallego2020}, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019, machens2008}.
-Neural function exhibits robust persistence, despite the theoretical fragility of proposed models like continuous attractors in the face of D-type noise, which should theoretically cause them to vanish instantly.
+Neural function exhibits robust persistence, despite the theoretical fragility of proposed models like continuous attractors, which should theoretically cause them to vanish instantly.
  This discrepancy between biological neural networks and theoretical models poses a challenge for accurately capturing the dynamics of working memory and other cognitive processes in computational frameworks.
 The function of working memory has been modeled involving neural populations representing options in decision-making tasks \citep{gold2007neural}, where the decision is reached when one population reaches a threshold level of activity or by comparing the dynamics of competing populations \citep{wong2007, wong2008, hocker2024, esnaola2022flexible}.
 
@@ -175,6 +175,7 @@ We employ the developed analysis technique across various tasks, examining both 
 
 \newpage
 \section{Detailed description}
+%TODO:  point out planned tasks and describe the respective timeline
 \subsection*{Aim 1}
 %We propose a framework that relies on describing memory in terms of slow manifolds \citep{ghazizadeh2021slow} and robust asymptotic dynamics \citep{casey1996}.
 %These structures provide a description of the memories and their decay at a range of timescales \citep{jaeger2023timescales} and allow for coarsening (via nesting attractors) \citep{braun2010}.
@@ -184,10 +185,7 @@ We employ the developed analysis technique across various tasks, examining both 
 \subsubsection*{Aim 1.1: We formulate a general framework for memory in neural networks}
 %Constraints for the language
 
-Do animals really employ continuous attractors for maintaining their head direction?
-
-
-
+%Do animals really employ continuous attractors for maintaining their head direction?
 
 The memory in biological networks is robust to minimal levels of both S- and D-type noise \citep{Park2023a}.
 S-type or ``fast noise'', is caused by noisy components as the stochasticity of neuronal spiking, and is characterized by perturbations to the state \citep{panichello2019, burak2012}.
@@ -197,14 +195,23 @@ In particular for CANNs, D-type noise is problematic, as it makes the state drif
 
 % Continuous attractors, despite their theoretical fragility in the face of D-type noise which should cause them to disappear instantly, demonstrate enduring practical behavior.
 
-%  Our objective is to establish a theoretical framework that leverages the simplicity and intuitiveness of continuous attractors as an idealized abstraction of the slow manifolds in their neighborhood.
+
 %
 
 %   By adjusting the speed or time constant of the neural dynamics, we aim to uncover these approximate attractors.
 
 %    Through the analysis of artificial neural networks that provide approximate solutions to working memory tasks, we intend to demonstrate how continuous attractors could be feasibly implemented in the noisy biological brain.
 %Levels of abstraction
-On the highest level of abstraction of the dynamics of the system, we will still refer to the biologically irrelevant continuous attractors to explain brain function, but in this new framework these will be connected to the biologically relevant approximations the brain actually might use.
+Our objective is to establish a theoretical framework that leverages the simplicity and intuitiveness of continuous attractors as an idealized abstraction of the slow manifolds locally.
+%On the highest level of abstraction of the dynamics of the system, we will  refer to the biologically irrelevant continuous attractors to explain brain function, but in this new framework these will be connected to the biologically relevant approximations the brain actually might use.
+We identify the parts of the neural space where the network stays inside for all future time (invariant sets).
+A chain recurrent set is a set of points in the neural space such that for any two points in the set, you can find a (noisy) trajectory from one point to the other and back that stays entirely within the set, regardless of how much time it takes.
+Slow manifold: network changes very slowly
+Asymptotic behavior: network converges to these states
+E.g. two rings, one is a recurrent set
+Fast: attractive towards recurrent set
+slow manifold
+%Figure? 
 We prove that all hyperbolic continuous attractors are surrounded by dynamical systems that have a slow invariant manifold that is diffeomorphic to the attractor. This implies that for example normally hyperbolic ring attractors are surrounded in the space of dynamical systems by systems with an attractive slow invariant manifold that is composed of stable and saddle nodes and connecting orbits between them  and that such attractors have sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021, kozachkov2022a, seeholzer2019}.
 %There are various approximations that the brain might use to approximate such structural instability of theoretical models. For example, a line attractor can be approximated with fixed points  or a slow flow, between stable and unstable fixed point \citep{haviv2019, pollock2020}.
 
