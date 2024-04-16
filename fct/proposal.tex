@@ -83,13 +83,13 @@ Animals have
 
 \newpage
 \section{State of the art}
-The neural system is a complex network consisting of units of limited capacity, neurons.
-As a whole, it can process immediate sensory information and integrate it with short-term memory to produce essential survival behaviors such as perception, decision-making, and motor control.
+%The neural system is a complex network consisting of units of limited capacity, neurons.
+The brain can process immediate sensory information and integrate it with short-term memory to produce essential survival behaviors such as decision-making.
 The challenge of understanding these cognitive processes at an algorithmic or information-processing level is one of the primary goals in computational and theoretical neuroscience \citep{zoltowski2020general, pagan2022, whiteway2019, dyer2023simplest}.
-Such an investigation is pivotal for revealing the fundamental principles that govern neural function and advancing our understanding of the neural basis of cognition and information processing in general.
+%Such an investigation is pivotal for revealing the fundamental principles that govern neural function and advancing our understanding of the neural basis of cognition and information processing in general.
 
 The literature extensively employs concepts from dynamical systems theory to formally describe the algorithmic essence of information processing in the brain \citep{vyas2020computation}.
-At the heart of current approaches lies the notions of ``stable fixed points',' which represent the brain's internal states that remain consistent over time despite small perturbations.
+At the heart of current approaches lies the notions of ``stable fixed points'', which represent the brain's internal states that remain consistent over time despite small perturbations.
 The (stable) fixed points are extremely useful since they can maintain discrete states in neural systems for arbitrarily long times, where each neuron tends to forget the past within a few hundred milliseconds. % for timescales of seconds with neurons and synapse transmission operating mostly on time scales of tens of milliseconds and shorter
 Networks with a continuum of fixed points, known as continuous attractors \citep{fung2010, khona2022, wu2008, wu2016}, have been proposed as models for representing continuous variables such as spatial locations \citep{samsonovich1997, stringer2002placecells, yang2022, wimmer2014, guanella2007model, gardner2022toroidal}, head direction \citep{stringer2002headdirection, hulse2020, turner2017, turner2020neuroanatomical, vafidis2022, kim2019generation}, motor commands \citep{stringer2003} and for the representation of other internal states \citep{nair2023, branco2016, seung2000stability}.
 
@@ -98,12 +98,9 @@ Networks with a continuum of fixed points, known as continuous attractors \citep
 %Dynamical systems approaches in the context of neural computation and information processing aim to understand the behavior of neural systems by modeling them as sets of differential equations. In this framework, the state of a neural system is described by a set of variables, typically representing the activity levels of individual neurons or neural populations. These variables evolve over time according to the dynamics specified by the differential equations. 
 
 Working memory involves the temporary storage and manipulation of information over behaviorally relevant timescales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, e.g., integrating angular velocity to update the head direction representation \citep{barak2013, barak2014, durstewitz2000, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022, cueva2021a, cueva2021b}.
- Neural function is robust to noise \citep{faisal2008}, ensuring the stability of the working memory representation \citep{koulakov2002} in biological networks \citep{gallego2020}, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019, machens2008}.
-
- For example, in tasks such as updating the representation of head direction by integrating angular velocity, the stability of neural activity is crucial for preserving the accuracy of the representation.
- 
- On the other hand, many theoretical models of neural computation, such as those used in artificial intelligence and computational neuroscience, often lack this robustness to noise. This discrepancy between biological neural networks and theoretical models poses a challenge for accurately capturing the dynamics of working memory and other cognitive processes in computational frameworks.
-
+% Neural function is robust to noise \citep{faisal2008}, ensuring the stability of the working memory representation \citep{koulakov2002} in biological networks \citep{gallego2020}, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019, machens2008}.
+Neural function exhibits robust persistence, despite the theoretical fragility of proposed models like continuous attractors in the face of D-type noise, which should theoretically cause them to vanish instantly.
+ This discrepancy between biological neural networks and theoretical models poses a challenge for accurately capturing the dynamics of working memory and other cognitive processes in computational frameworks.
 The function of working memory has been modeled involving neural populations representing options in decision-making tasks \citep{gold2007neural}, where the decision is reached when one population reaches a threshold level of activity or by comparing the dynamics of competing populations \citep{wong2007, wong2008, hocker2024, esnaola2022flexible}.
 
 To understand how artificial neural networks compute and generate behaviors, accessing the underlying neural states and reverse engineering their temporal evolution is crucial. This approach can be applied to task-based modeling, where RNNs are trained to mimic cognitive functions observed in the brain \citep{darshan2022, barak2017recurrent, durstewitz2023reconstructing, yang2019task, yang2019multiple, yang2020artificial, jarne2023b, song2016}. This method can give insight into the possible computational principles underlying behavior. This analysis is challenging for large networks because of their black-box nature \citep{lipton2018, erasmus2021}.
@@ -134,8 +131,8 @@ The goal of this research is to enhance our analytical toolbox for understanding
 We will focus on global descriptions of attractor dynamics, robustness, and fast-slow time scale decompositions for memory-like tasks.
 
 \subsection*{Aim 1: Rescuing Continuous Attractors}
-Do animals really employ continuous attractors for maintaining their head direction?
- Continuous attractors, despite their theoretical fragility in the face of D-type noise which should cause them to disappear instantly, demonstrate enduring practical behavior.
+Do animals really employ continuous attractors for representing continuous variable, such as maintaining head direction?
+ The head direction representation demonstrates enduring practical behavior in animals, despite the theoretical fragility in the face of D-type noise of proposed models such as continuous attractors, which should cause them to disappear instantly.
   Our objective is to establish a theoretical framework that leverages the simplicity and intuitiveness of continuous attractors as an idealized abstraction of the slow manifolds in their neighborhood.
    By adjusting the speed or time constant of the neural dynamics, we aim to uncover these approximate attractors.
     Through the analysis of artificial neural networks that provide approximate solutions to working memory tasks, we intend to demonstrate how continuous attractors could be feasibly implemented in the noisy biological brain.
@@ -146,7 +143,7 @@ Our goal is to simplify this solution space through the use of fast-slow decompo
 We will develop methods to categorize the mechanism, evaluate their robustness, and determining their effectiveness in simulation environments.
 Moreover, through repeated coarse-graining, both temporally and spatially, we can build a hierarchy of descriptions with varying complexity that approximates the neural dynamics.
 
-\subsection*{Aim 3: Deciphering Working Memory Mechanisms from Population Activity in Trained Animals}
+\subsection*{Aim 3: Deciphering working memory mechanisms from population activity in trained animals}
 Building on the tools and methodologies developed in the previous aims, we will analyze neural recordings from animals performing working memory tasks.
 We will employ established machine learning techniques to infer a low-dimensional, nonlinear dynamical system from this neural data.
 The resulting neural dynamics is not immediately interpretable due to spurious features that might be capturing irrelevant idiosynchracies of the noisy data.
@@ -187,11 +184,10 @@ We employ the developed analysis technique across various tasks, examining both 
 \subsubsection*{Aim 1.1: We formulate a general framework for memory in neural networks}
 %Constraints for the language
 
-We develop a framework for memory components in neural networks.
-Learning long-term dependencies with gradient descent is difficult, because of negative Lyapunov exponents \citep{bengio1994learning, orvieto2023b}.
-%\citep{soo2023}
-The only two ways of maintaining a memory for arbitrarily long intervals are continuous attractors and quasi-periodic toroidal attractors \citep{Park2023a}.
-We will focus on continuous attractors. %why?
+Do animals really employ continuous attractors for maintaining their head direction?
+
+
+
 
 The memory in biological networks is robust to minimal levels of both S- and D-type noise \citep{Park2023a}.
 S-type or ``fast noise'', is caused by noisy components as the stochasticity of neuronal spiking, and is characterized by perturbations to the state \citep{panichello2019, burak2012}.
@@ -199,7 +195,14 @@ This is problematic for structures such as saddle nodes, as an arbitrary small p
 D-type or  ``frozen noise'', is caused by continually changing synaptic weights \citep{flesch2023continual}, and is characterized by perturbations to the eqations that describe the dynamics \citep{seeholzer2019, laje2013, flesch2022}.
 In particular for CANNs, D-type noise is problematic, as it makes the state drift away from its initial position in a directed manner, destroying the ability to represent a continuum of states.
 
+% Continuous attractors, despite their theoretical fragility in the face of D-type noise which should cause them to disappear instantly, demonstrate enduring practical behavior.
 
+%  Our objective is to establish a theoretical framework that leverages the simplicity and intuitiveness of continuous attractors as an idealized abstraction of the slow manifolds in their neighborhood.
+%
+
+%   By adjusting the speed or time constant of the neural dynamics, we aim to uncover these approximate attractors.
+
+%    Through the analysis of artificial neural networks that provide approximate solutions to working memory tasks, we intend to demonstrate how continuous attractors could be feasibly implemented in the noisy biological brain.
 %Levels of abstraction
 On the highest level of abstraction of the dynamics of the system, we will still refer to the biologically irrelevant continuous attractors to explain brain function, but in this new framework these will be connected to the biologically relevant approximations the brain actually might use.
 We prove that all hyperbolic continuous attractors are surrounded by dynamical systems that have a slow invariant manifold that is diffeomorphic to the attractor. This implies that for example normally hyperbolic ring attractors are surrounded in the space of dynamical systems by systems with an attractive slow invariant manifold that is composed of stable and saddle nodes and connecting orbits between them  and that such attractors have sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021, kozachkov2022a, seeholzer2019}.
