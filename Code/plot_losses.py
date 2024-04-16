@@ -777,7 +777,7 @@ def plot_recs_3d_ring(recurrences, recurrences_pca, wo, cmap, norm, ax=None):
     return ax
 
 def plot_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, exp_name,
-                               proj_2d_color='r'):
+                               proj_2d_color='lightgrey'):
     cmap = plt.get_cmap('hsv')
     norm = mpl.colors.Normalize(-np.pi, np.pi)
 
@@ -813,37 +813,48 @@ def plot_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, exp
     # ax = set_3daxes(ax)         
 
 
-def plot_two_rings():    
+def plot_two_rings(net, batch_size=256):    
     
-    main_exp_name='center_out/variable_N200_T500/tanh/'
-    exp_i=0
-    net, wi, wrec, wo, brec, h0, oth, training_kwargs = load_all(main_exp_name, exp_i, which='post'); 
+    # main_exp_name='center_out/variable_N200_T500/tanh/'
+    # exp_i=0
+    # net, wi, wrec, wo, brec, h0, oth, training_kwargs = load_all(main_exp_name, exp_i, which='post'); 
+
     T=1e5; dt=.1; from_t=300; task = center_out_reaching_task(T=T, dt=dt, time_until_cue_range=[250, 251], angles_random=False);
     input, target, mask, output, trajectories = simulate_rnn(net, task, T, batch_size)
     T=int(1e5); dt=.1; from_t=300; task = center_out_reaching_task(T=T, dt=dt, time_until_cue_range=[T, T+1], angles_random=False);
     input_w, target_w, mask_w, output_w, trajectories_w = simulate_rnn(net, task, T, batch_size)
+    n_rec = net.dims[1]
+    n_components=10
+    pca = PCA(n_components=n_components)
+    invariant_manifold = trajectories[:,:,:].reshape((-1,n_rec))
+    pca.fit(invariant_manifold)
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d", computed_zorder=False)
-    ax.view_init(elev=-90., azim=0, roll=0)
+
     from_t = 150
     to_t = 300
     invariant_manifold = trajectories_w[:,from_t:to_t,:].reshape((-1,n_rec))
-    traj_pca_flat = pca.transform(invariant_manifold).reshape((-1,n_components))
-    ax.scatter(traj_pca_flat[:,0], traj_pca_flat[:,1], traj_pca_flat[:,2],
-                marker='.', s=.1, color='r', zorder=-100, alpha=.9);
+    traj_pca_flat_1st = pca.transform(invariant_manifold).reshape((-1,n_components))
+
     from_t = 300
     to_t = 1500
     invariant_manifold = trajectories_w[:,from_t:to_t,:].reshape((-1,n_rec))
-    traj_pca_flat = pca.transform(invariant_manifold).reshape((-1,n_components))
-    ax.scatter(traj_pca_flat[:,0], traj_pca_flat[:,1], traj_pca_flat[:,2],
-                marker='.', s=.1, color='k', zorder=-100, alpha=.4);
+    traj_pca_flat_conn = pca.transform(invariant_manifold).reshape((-1,n_components))
+
 
     from_t = 1000
     to_t = 1200
     invariant_manifold = trajectories[:,from_t:to_t,:].reshape((-1,n_rec))
-    traj_pca_flat = pca.transform(invariant_manifold).reshape((-1,n_components))
-    ax.scatter(traj_pca_flat[:,0], traj_pca_flat[:,1], traj_pca_flat[:,2],
+    traj_pca_flat_2nd = pca.transform(invariant_manifold).reshape((-1,n_components))
+    
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d", computed_zorder=False)
+    ax.view_init(elev=-90., azim=0, roll=0)
+    ax.scatter(traj_pca_flat_1st[:,0], traj_pca_flat_1st[:,1], traj_pca_flat_1st[:,2],
+                marker='.', s=.1, color='r', zorder=-100, alpha=.9);
+    ax.scatter(traj_pca_flat_conn[:,0], traj_pca_flat_conn[:,1], traj_pca_flat_conn[:,2],
+                marker='.', s=.1, color='k', zorder=-100, alpha=.4);
+    ax.scatter(traj_pca_flat_2nd[:,0], traj_pca_flat_2nd[:,1], traj_pca_flat_2nd[:,2],
                 marker='.', s=.1, color='b', zorder=-100, alpha=.9); 
     ax.xaxis.pane.fill = False
     ax.yaxis.pane.fill = False
@@ -1200,7 +1211,7 @@ def recttanh_jacobian_point(W,b,tau,x):
 def get_hidden_trajs(net, T=128, input_length=10, input_type='constant', 
                      num_of_inputs=51, input_range=(-3,3), 
                      pca_from_to=(0,None), n_components=10, 
-                     dt_task=1, random_angle_init=False, task=None,
+                     dt_task=1, angle_init=False, task=None,
                      input=None, target=None):
     
     pca_after_t, pca_before_t = pca_from_to
@@ -1221,7 +1232,7 @@ def get_hidden_trajs(net, T=128, input_length=10, input_type='constant',
         
         #random init
         outputs_1d = np.cumsum(input, axis=1)*dt_task
-        if random_angle_init:
+        if angle_init == 'random':
             random_angles = np.random.uniform(-np.pi, np.pi, size=num_of_inputs).astype('f')
             outputs_1d += random_angles[:, np.newaxis, np.newaxis]
         target = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1).reshape((num_of_inputs, T, output_size))
@@ -1951,7 +1962,7 @@ def load_net(exp_name, exp_i, which):
 
 def plot_learning_trajectory(exp_name, exp_i, T=256, num_of_inputs=11, xylims=[-1.5,1.5],
                              input_length=128, input_type='constant', input_range = (-.5, .5),     
-                             random_angle_init=False, task=None,
+                             angle_init=False, task=None,
                              slowpointmethod= 'L-BFGS-B', set_cmap=None):
 
     params_folder = parent_dir+'/experiments/' + exp_name +'/'
@@ -1994,7 +2005,7 @@ def plot_learning_trajectory(exp_name, exp_i, T=256, num_of_inputs=11, xylims=[-
                                                                                         num_of_inputs=num_of_inputs,
                                                                                         input_range=input_range,
                                                                                         input_type=input_type,
-                                                                                        random_angle_init=random_angle_init, 
+                                                                                        angle_init=angle_init, 
                                                                                         task=task, 
                                                                                         input=input,
                                                                                         target=target)
@@ -2082,9 +2093,9 @@ def tuning_curves(trajectories, target, nbins=100, plot_fig=False):
         fig.show()
         plt.close()
         
-    return tunings
+    return bins, tunings
 
-def plot_centered_tuning(trajectories, tunings=None, target=None, nbins=10, window_size=1):
+def plot_centered_tuning(trajectories, tunings=None, target=None, nbins=10, window_size=1, exp_name=None):
     """
     Plot centered tuning curves from generated trajectories on angular integration task.
 
@@ -2107,11 +2118,11 @@ def plot_centered_tuning(trajectories, tunings=None, target=None, nbins=10, wind
 
     """
     #assert average_k > 0
-    folder = parent_dir+'/experiments/'+main_exp_name+'/'+model_name+'tuning_folder'
+    folder = parent_dir+'/experiments/'+exp_name+'tuning_folder'
     makedirs(folder)
 
     if not np.any(tunings):
-        tunings = tuning_curves(trajectories[:,:input_length,:], target[:,:input_length,:], nbins=nbins, plot_fig=False)
+        tunings = tuning_curves(trajectories[:,:,:], target[:,:,:], nbins=nbins, plot_fig=False)
     bins = np.arange(-np.pi, np.pi, np.pi/int(nbins/2))
 
     fig, ax = plt.subplots(1, 1, figsize=(5, 3));
@@ -2163,7 +2174,7 @@ def load_all(exp_name, exp_i, which='post'):
 #     net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
     
 #     task =  angularintegration_task(T=training_kwargs['T'], dt=training_kwargs['dt_task'], sparsity=training_kwargs['task_sparsity'], 
-#                                     last_mses=training_kwargs['last_mses'], random_angle_init=training_kwargs['random_angle_init'],
+#                                     last_mses=training_kwargs['last_mses'], angle_init=training_kwargs['angle_init'],
 #                                     max_input=.5)
     
 #     # set_cmap = cmx.get_cmap("gray")
@@ -2220,7 +2231,7 @@ if False:
     T = 128*32  
     input_length = int(128)*2
     num_of_inputs = 111
-    random_angle_init = True
+    angle_init = 'random'
     input_range = (-.2, .2)   
 
     plot_from_to = (T-1*input_length,T)
@@ -2268,7 +2279,7 @@ if False:
         wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder)
 
         task =  angularintegration_task(T=input_length*training_kwargs['dt_task'], dt=training_kwargs['dt_task'], sparsity=1, length_scale=1,
-                                        last_mses=training_kwargs['last_mses'], random_angle_init=random_angle_init, max_input=.5)
+                                        last_mses=training_kwargs['last_mses'], angle_init=angle_init, max_input=.5)
         
         trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
                                                                                             T=T, input_length=input_length, 
@@ -2276,7 +2287,7 @@ if False:
                                                                                             num_of_inputs=num_of_inputs,
                                                                                             input_range=input_range,
                                                                                             input_type=input_type,
-                                                                                            random_angle_init=random_angle_init, 
+                                                                                            angle_init=angle_init, 
                                                                                             task=task,
                                                                                             input=input,
                                                                                             target=target)
@@ -2332,7 +2343,7 @@ if False:
         #                                                                                     num_of_inputs=num_of_inputs,
         #                                                                                     input_range=input_range, 
         #                                                                                     input_type=input_type,
-        #                                                                                     random_angle_init=random_angle_init,
+        #                                                                                     angle_init=angle_init,
         #                                                                                     task=task,
         #                                                                                     input=input,
         #                                                                                     target=target)
@@ -2442,7 +2453,7 @@ if False:
                                                                                             num_of_inputs=num_of_inputs,
                                                                                             input_range=input_range,
                                                                                             input_type=input_type,
-                                                                                            random_angle_init=random_angle_init, 
+                                                                                            angle_init=angle_init, 
                                                                                             task=task,
                                                                                             input=input,
                                                                                             target=target)
@@ -2462,7 +2473,7 @@ if False:
                                                                                             num_of_inputs=num_of_inputs,
                                                                                             input_range=input_range,
                                                                                             input_type=input_type,
-                                                                                            random_angle_init=random_angle_init, 
+                                                                                            angle_init=angle_init, 
                                                                                             task=task,
                                                                                             input=input,
                                                                                             target=target)
@@ -2479,7 +2490,7 @@ if False:
                                                                                             num_of_inputs=num_of_inputs,
                                                                                             input_range=input_range,
                                                                                             input_type=input_type,
-                                                                                            random_angle_init=random_angle_init, 
+                                                                                            angle_init=angle_init, 
                                                                                             task=task,
                                                                                             input=input,
                                                                                             target=target)
