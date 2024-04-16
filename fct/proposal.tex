@@ -203,16 +203,30 @@ In particular for CANNs, D-type noise is problematic, as it makes the state drif
 %    Through the analysis of artificial neural networks that provide approximate solutions to working memory tasks, we intend to demonstrate how continuous attractors could be feasibly implemented in the noisy biological brain.
 %Levels of abstraction
 Our objective is to establish a theoretical framework that leverages the simplicity and intuitiveness of continuous attractors as an idealized abstraction of the slow manifolds locally.
+We define "invariant sets" as regions within the neural space where the network consistently resides over time.
+ Within these sets, we encounter "recurrent sets," comprising points in the neural space where any two points can be connected by a trajectory that remains entirely within the set, irrespective of the duration of the journey or the presence of noise.
+Fast dynamics drive rapid system evolution, guiding it towards the recurrent set.
+ Slow manifolds, within the context of neural networks, denote components where the system changes very slowly over time.
+Lastly, we identify the asymptotic behavior, referring to the states that the network ultimately converges to, regardless of its initial state.
+We show that in this framework, a continuous attractor can be approximated by different compositions of a slow manifold and either a suitable recurrent or an invariant set.
+
+%two rings, one of which represents a recurrent set.
+
 %On the highest level of abstraction of the dynamics of the system, we will  refer to the biologically irrelevant continuous attractors to explain brain function, but in this new framework these will be connected to the biologically relevant approximations the brain actually might use.
-We identify the parts of the neural space where the network stays inside for all future time (invariant sets).
-A chain recurrent set is a set of points in the neural space such that for any two points in the set, you can find a (noisy) trajectory from one point to the other and back that stays entirely within the set, regardless of how much time it takes.
-Slow manifold: network changes very slowly
-Asymptotic behavior: network converges to these states
-E.g. two rings, one is a recurrent set
-Fast: attractive towards recurrent set
-slow manifold
+%We identify the parts of the neural space where the network stays inside for all future time (invariant sets).
+%Slow manifolds in the context of neural networks refer to the aspects or components of the network that change or evolve very slowly over time.
+%Asymptotic behavior: network converges to these states
+% asymptotic behavior means that no matter where the network starts, over time, it will end up in a certain state or group of states
+% in a neural network, asymptotic behavior refers to the network's tendency to evolve towards certain states over time, regardless of its initial state.
+% fast dynamics refer to the components of the system that change or evolve quickly over time, these quick changes in the system are guiding it towards the recurrent set.
+
+
+
+
+
+
 %Figure? 
-We prove that all hyperbolic continuous attractors are surrounded by dynamical systems that have a slow invariant manifold that is diffeomorphic to the attractor. This implies that for example normally hyperbolic ring attractors are surrounded in the space of dynamical systems by systems with an attractive slow invariant manifold that is composed of stable and saddle nodes and connecting orbits between them  and that such attractors have sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021, kozachkov2022a, seeholzer2019}.
+Furthermore, we prove that all hyperbolic continuous attractors are surrounded by dynamical systems that have a slow invariant manifold that is diffeomorphic to the attractor. This implies that for example normally hyperbolic ring attractors are surrounded in the space of dynamical systems by systems with an attractive slow invariant manifold that is composed of stable and saddle nodes and connecting orbits between them  and that such attractors have sufficient robustness to allow for homeostasis \citep{oleary2018homeostasis, niemeyer2021, kozachkov2022a, seeholzer2019}.
 %There are various approximations that the brain might use to approximate such structural instability of theoretical models. For example, a line attractor can be approximated with fixed points  or a slow flow, between stable and unstable fixed point \citep{haviv2019, pollock2020}.
 
 
@@ -233,8 +247,6 @@ the shortest distance to a perturbation that destroys the attractive slow invari
 the probability of a fixed size perturbation that destroyes the continuous attractor,
 the amount of mainained memories on the destroyed continuous attractor,
 the average increase in speed as a function of the perturbation size.
-
-
 
 
 
