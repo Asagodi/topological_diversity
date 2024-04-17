@@ -108,8 +108,8 @@ Networks with a continuum of fixed points, known as continuous attractors \citep
 
 Working memory involves the temporary storage and manipulation of information over behaviorally relevant timescales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory, e.g., integrating angular velocity to update the head direction representation \citep{barak2013, barak2014, durstewitz2000, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022, cueva2021a, cueva2021b}.
 % Neural function is robust to noise \citep{faisal2008}, ensuring the stability of the working memory representation \citep{koulakov2002} in biological networks \citep{gallego2020}, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019, machens2008}.
-Neural function exhibits robust persistence, despite the theoretical fragility of proposed models like continuous attractors, which should theoretically cause them to vanish instantly.
- This discrepancy between biological neural networks and theoretical models poses a challenge for accurately capturing the dynamics of working memory and other cognitive processes in computational frameworks.
+Neural function exhibits robust persistence \citep{gallego2020}, despite the theoretical fragility of proposed models like continuous attractors, which should theoretically cause them to vanish instantly \citep{seung1996, renart2003}.
+ This discrepancy between biological neural networks and theoretical models poses a challenge for accurately capturing the dynamics of working memory and other cognitive processes in computational frameworks \citep{calaim2022geometry, renart2003, seeholzer2019, machens2008}.
 The function of working memory has been modeled involving neural populations representing options in decision-making tasks \citep{gold2007neural}, where the decision is reached when one population reaches a threshold level of activity or by comparing the dynamics of competing populations \citep{wong2007, wong2008, hocker2024, esnaola2022flexible}.
 
 To understand how artificial neural networks compute and generate behaviors, accessing the underlying neural states and reverse engineering their temporal evolution is crucial. This approach can be applied to task-based modeling, where RNNs are trained to mimic cognitive functions observed in the brain \citep{darshan2022, barak2017recurrent, durstewitz2023reconstructing, yang2019task, yang2019multiple, yang2020artificial, jarne2023b, song2016}. This method can give insight into the possible computational principles underlying behavior. This analysis is challenging for large networks because of their black-box nature \citep{lipton2018, erasmus2021}.
@@ -214,11 +214,6 @@ Fast dynamics drive the system towards the invariant set, while in some cases an
 We show that in this framework, a continuous attractor can be approximated by different compositions of a slow manifold and either a recurrent or an invariant set with different time scales.
 
 
-
-
-
-
-
 %two rings, one of which represents a recurrent set.
 
 %On the highest level of abstraction of the dynamics of the system, we will  refer to the biologically irrelevant continuous attractors to explain brain function, but in this new framework these will be connected to the biologically relevant approximations the brain actually might use.
@@ -264,10 +259,10 @@ Deliverable: benchmark for robustness of models of neural integration
 Discovering the types of dynamical behavior that a network exhibits is crucial to understanding its functionality. The scope of the covered neural computation involves working memory type computation with a long-term component. Examples encompass neural integration, evidence accumulation, and decision-making.
 %Previously, an in-depth analysis of the behavior of small systems has been performed \citep{beer1995ctrnn, beer1995interaction, beer1995computational, beer2006, beer2023}. % and Jaeger \citep{jaeger2021, jaeger2023theory} have been explored thus far.
 
-\subsection*{Aim 2.1}
+\subsubsection*{Aim 2.1}
 We will extract the implemented computation, defined as an input-output mapping, through three primary analysis components.
 %Encoding, past
-Firstly, we identify the system's recurrent sets and slow manifolds that correspond to meaningful input sequences or outputs \citep{goudar2018}. This approach is a generalization of the ``follow the fixed point rule'' \citep{sussillo2013} and we call it the ``follow the attractor rule''.
+Firstly, we identify the system's recurrent sets and slow manifolds that correspond to meaningful input sequences or outputs \citep{goudar2018}. This approach is a generalization of the ``follow the fixed point rule'' \citep{sussillo2013blackbox} and we call it the ``follow the attractor rule''.
 We implement this by computing the Morse decomposition of a network from the numerically integrated trajectories relevant to the task \citep{mischaikow1999, arai2009database}.
 %Decoding, future
 Secondly, we describe how the input drives the network between these recurrent sets and slow manifolds by calculating the basins of attraction and determining the asymptotic dynamics for the autonomous dynamics after a sequence of inputs with the network initialized at a recurrent set. 
@@ -278,26 +273,26 @@ Secondly, we describe how the input drives the network between these recurrent s
 
 Lastly, based on the output mapping of the recurrent sets, we extract the behavioral-semantic meaning by identifying the output mapping of all the recurrent sets and slow manifolds. Furthermore, the same output can elicited by different activity patterns in different behaviors or contexts, and we, therefore, group recurrent sets according to a metric in the output space \citep{athalye2023, myers2022}.
 Timescale and grouping through the output mapping allow for the coarsening of representation of the implemented computation via the merging of attractors \citep{braun2010}.
-The coarsening provides interpretability, as we can coarsen the memory states to a suitable simplicity.
+The coarsening provides interpretability, as we can coarsen the memory states to a suitable simplicity for human understanding.
 
 %
-\subsection*{Aim 2.2: training RNNs on working memory tasks}
+\subsubsection*{Aim 2.2: training RNNs on working memory tasks}
 
-We test our analysis method on hand-desinged attractor networks.
+We test our analysis method on hand-desinged attractor networks, such as different approximations of a ring attractors.
 %
-Furthermore, we analyze RNNs trained with backpropagation through time on the  Poisson clicks, context-dependent decision-making,  memory-guided saccades and delayed match-to-category tasks \citep{farrell2022, schuessler2020}.
+Furthermore, we analyze RNNs trained with backpropagation through time on the Poisson clicks (Figure 5), context-dependent decision-making, angular velocity integration task (Figure 6), memory-guided saccades  and delayed match-to-category tasks \citep{farrell2022, schuessler2020}.
 We use mean-squared error loss for the matching tasks and cross-entropy for the decision-making tasks.
 We enforce long-term  memory maintenance through gradient flossing \citep{engelken2023b} and equilibrium propagation \citep{laborieux2023}.
 
-
+%angular velocity integration task? (Figure 6)
 
 Deliverable: Open-source analysis tools for automated model identification and simplification.
 
 
-
-Fig.~\ref{fig:angular_task}
-
-Fig.~\ref{fig:slowmanifolds}
+%
+%Fig.~\ref{fig:angular_task}
+%
+%Fig.~\ref{fig:slowmanifolds}
 
 
 %Universality of Linear Recurrences Followed by Nonlinear Projection \cite{orvieto2023a}
@@ -330,7 +325,9 @@ dynamical systems reconsttruction \citep{schmidt2019} throught the Neural Latent
 
 %Comparisons
 \subsubsection*{Aim 3.2: Identifying mechanisms of neural computation}
-We aim to identify the underlying mechanisms of neural computation by comparing trained RNNs with fitted models based on neural recordings.  One will be based on the Morse-Conley decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009database, kaczynski2004computational}. The other will be based on topological conjugacy \citep{ostrow2024beyond}.
+We aim to identify the underlying mechanisms of neural computation by comparing trained RNNs from Aim 2 with fitted models of neural dynamics.
+ One comparison we will develop will be based on the Morse-Conley decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009database, kaczynski2004computational}.
+ The other comparison will be based on topological conjugacy \citep{ostrow2024beyond}.
 We identify the best corresponding RNN for each task and dataset as an explanation of how the brain implements different kinds of decision-making \citep{levenstein2023}.
  
 
