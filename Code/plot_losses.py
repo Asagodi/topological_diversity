@@ -539,18 +539,20 @@ def plot_all_trajs_model(main_exp_name, model_name, T=128, which='post', hidden_
             
 def get_params_exp(params_folder, exp_i=0, which='post'):
     
-    exp_list = glob.glob(params_folder + "/result*")
+    exp_list = glob.glob(params_folder + "/res*")
     exp = exp_list[exp_i]
     params_path = glob.glob(params_folder + '/param*.yml')[0]
     training_kwargs = yaml.safe_load(Path(params_path).read_text())
     with open(exp, 'rb') as handle:
         result = pickle.load(handle)
-    
-    try:
-        losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
         
-    except:
-        losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = result
+        
+        if len(result) == 9:
+            losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
+        elif len(result) == 8:
+            losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = result
+        elif len(result) == 7:
+            losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = result
 
 
     if len(weights_last) == 6:
@@ -834,28 +836,37 @@ def plot_two_rings(net, batch_size=256):
     to_t = 300
     invariant_manifold = trajectories_w[:,from_t:to_t,:].reshape((-1,n_rec))
     traj_pca_flat_1st = pca.transform(invariant_manifold).reshape((-1,n_components))
+    traj_pca_1st = pca.transform(invariant_manifold).reshape((batch_size,-1,n_components))
 
     from_t = 300
     to_t = 1500
     invariant_manifold = trajectories_w[:,from_t:to_t,:].reshape((-1,n_rec))
     traj_pca_flat_conn = pca.transform(invariant_manifold).reshape((-1,n_components))
-
+    traj_pca_conn = pca.transform(invariant_manifold).reshape((batch_size,-1,n_components))
 
     from_t = 1000
     to_t = 1200
     invariant_manifold = trajectories[:,from_t:to_t,:].reshape((-1,n_rec))
     traj_pca_flat_2nd = pca.transform(invariant_manifold).reshape((-1,n_components))
-    
+    traj_pca_2nd = pca.transform(invariant_manifold).reshape((batch_size,-1,n_components))
+
     
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d", computed_zorder=False)
     ax.view_init(elev=-90., azim=0, roll=0)
-    ax.scatter(traj_pca_flat_1st[:,0], traj_pca_flat_1st[:,1], traj_pca_flat_1st[:,2],
-                marker='.', s=.1, color='r', zorder=-100, alpha=.9);
-    ax.scatter(traj_pca_flat_conn[:,0], traj_pca_flat_conn[:,1], traj_pca_flat_conn[:,2],
-                marker='.', s=.1, color='k', zorder=-100, alpha=.4);
-    ax.scatter(traj_pca_flat_2nd[:,0], traj_pca_flat_2nd[:,1], traj_pca_flat_2nd[:,2],
-                marker='.', s=.1, color='b', zorder=-100, alpha=.9); 
+    for i in range(batch_size):
+        ax.plot(traj_pca_1st[i,:,0], traj_pca_1st[i,:,1], traj_pca_1st[i,:,2],
+                    marker='.', color='r', zorder=100, alpha=.9);
+        ax.plot(traj_pca_conn[i,:,0], traj_pca_conn[i,:,1], traj_pca_conn[i,:,2],
+                    marker='.', color='k', zorder=0, alpha=.9);
+        ax.plot(traj_pca_2nd[i,:,0], traj_pca_2nd[i,:,1], traj_pca_2nd[i,:,2],
+                    marker='.', color='b', zorder=-100, alpha=.9);
+    # ax.scatter(traj_pca_flat_1st[:,0], traj_pca_flat_1st[:,1], traj_pca_flat_1st[:,2],
+    #             marker='.', s=.1, color='r', zorder=100, alpha=.9);
+    # ax.scatter(traj_pca_flat_conn[:,0], traj_pca_flat_conn[:,1], traj_pca_flat_conn[:,2],
+    #             marker='.', s=.1, color='k', zorder=0, alpha=.4);
+    # ax.scatter(traj_pca_flat_2nd[:,0], traj_pca_flat_2nd[:,1], traj_pca_flat_2nd[:,2],
+    #             marker='.', s=.1, color='b', zorder=-100, alpha=.9); 
     ax.xaxis.pane.fill = False
     ax.yaxis.pane.fill = False
     ax.zaxis.pane.fill = False
