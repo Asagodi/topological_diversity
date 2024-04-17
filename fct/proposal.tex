@@ -250,7 +250,7 @@ the shortest distance to a perturbation that destroys the attractive slow invari
 the probability of a fixed size perturbation that destroyes the continuous attractor,
 the amount of maintained memories on the destroyed continuous attractor and
 the average increase in speed as a function of the perturbation size.
-This analysis releis on identification of the possible perturbations of a ring attractor (an example is shown for \citep{noorman2022} in Figure 4).
+This analysis relies on the identification of the possible perturbations of a ring attractor (an example is shown for \citep{noorman2022} in Figure 4).
 
 
 
@@ -268,6 +268,10 @@ By analyzing the dynamical behavior of a network, we gain a deeper understanding
  We limit our analysis to working memory type computation with a long-term component. Examples include  neural integration, evidence accumulation, and decision-making.
 %Previously, an in-depth analysis of the behavior of small systems has been performed \citep{beer1995ctrnn, beer1995interaction, beer1995computational, beer2006, beer2023}. % and Jaeger \citep{jaeger2021, jaeger2023theory} have been explored thus far.
 
+
+\noindent
+Deliverable: Open-source analysis tools for automated model identification and simplification
+
 \subsubsection*{Aim 2.1: Reverse engineering and coarse-graining neural computation on different timescales}
 We will extract the algorithm, defined as an input-output mapping, through three primary analysis components.
 %Encoding, past
@@ -282,21 +286,23 @@ This approach is a generalization of the ``follow the fixed point rule'' \citep{
 
 
 Lastly, based on the output mapping of the recurrent sets, we extract the behavioral-semantic meaning by identifying the output mapping of all the recurrent sets and slow manifolds. Furthermore, the same output can elicited by different activity patterns in different behaviors or contexts, and we, therefore, group recurrent sets according to a metric in the output space \citep{athalye2023, myers2022}.
-Timescale and grouping through the output mapping allow for the coarsening of the representation of the implemented computation via the merging of attractors \citep{braun2010}.
-The coarsening provides interpretability, as we can coarsen the memory states to a suitable simplicity for human understanding.
+Timescale and grouping through the output mapping allow for the coarsening of the representation of the algorithm via the merging of attractors \citep{braun2010}.
+The coarsening provides interpretability, as we can flexibly coarsen the memory states to a suitable simplicity for human understanding.
 
 %
 \subsubsection*{Aim 2.2: Analysisng trained RNNs on working memory tasks}
 
 We test our analysis method on hand-desinged attractor networks, such as different approximations of ring attractors.
+The analysis of hand-designed attractor networks should accurately identify key dynamical features such as stable fixed points and slow manifolds.
 %
 Furthermore, we analyze RNNs trained with backpropagation through time on the Poisson clicks (Figure 5), context-dependent decision-making, angular velocity integration task (Figure 6), memory-guided saccades  and delayed match-to-category tasks \citep{farrell2022, schuessler2020}.
 We use mean-squared error loss for the matching tasks and cross-entropy for the decision-making tasks to train the networks.
 We enforce long-term  memory maintenance through gradient flossing \citep{engelken2023b} and equilibrium propagation \citep{laborieux2023}.
+The analysis should enhance the interpretability of the network's functionality by coarsening and should allow us to group RNNs together in a manageable number of groups that solve the task in the same way.
 
 %angular velocity integration task? (Figure 6)
 
-Deliverable: Open-source analysis tools for automated model identification and simplification.
+
 
 
 %
@@ -315,33 +321,40 @@ Deliverable: Open-source analysis tools for automated model identification and s
 
 \subsection*{Aim 3}
 
-By comparing trained RNNs on various tasks and neural dynamics, we can gain insight into the neural implementations of integration and decision making. If you're interested in understanding these processes better, exploring this approach could be a valuable use of your time.
+By comparing trained RNNs on various tasks and the biological neural dynamics, we gain insight into the neural implementations of integration and decision making.
 
-%\subsubsection*{Aim 3.1: training RNNs on analogous tasks.}
+
+\noindent
+Deliverable:  Comprehensive insights into the neural implementations of integration and decision-making, derived from the analysis of trained RNNs on analogous tasks and fitting dynamical systems to neural recordings.
 
 \subsubsection*{Aim 3.1: Fitting dynamical systems to neural recordings.}
 
 %Datasets.
-For this aim, we leverage various datasets, including recordings from the rat  motor cortex (for the Poisson clicks and context-dependent decision-making tasks) and data from experiments with macaques (for the memory-guided saccades and delayed match-to-category tasks).
+For this aim, we will utilize various datasets of animals performing simple tasks that could potentially have interpretable neural explanations.
+We will use recordings from the rat motor cortex for the Poisson clicks and context-dependent decision-making tasks and data from macaques for the memory-guided saccades and delayed match-to-category tasks.
 %
 %Methods
-We compare different methods to fit dynamical systems to neural data \citep{Zhao2016d}:
- Neural ODEs (NODEs) fitted \citep{kim2021inferring},
- seq-VAEs \citep{pandarinath2018inferring},
-dynamical systems reconsttruction \citep{schmidt2019} throught the Neural Latents Benchmark \citep{pei2021neural}.
-
-
+We fit dynamical systems to neural data \citep{Zhao2016d} with two different methods
+ Neural ODEs \citep{kim2021inferring} and 
+ seq-VAEs \citep{pandarinath2018inferring}.
+%dynamical systems reconstruction \citep{schmidt2019}. % through the Neural Latents Benchmark \citep{pei2021neural}.
+By fitting dynamical systems to neural recordings, we aim to elucidate how neurons integrate sensory information and make decisions, providing valuable insights into the neural basis of cognitive functions.
+We will then decipher how the neural dynamics might produce the behavior in the task by extracting meaningful information about how these networks process information and perform computations related to working memory tasks with the analysis developed in Aim 2. 
+In particular, we hope to identify different timescales relevant for the tasks under consideration.
 
 %Comparisons
 \subsubsection*{Aim 3.2: Identifying mechanisms of neural computation}
-We aim to identify the underlying mechanisms of neural computation by comparing trained RNNs from Aim 2 with fitted models of neural dynamics.
+
+
+Moreover, comparing the dynamics of trained RNNs from Aim 2 with those observed in biological neural recordings allows us to validate the effectiveness of our computational models in capturing essential aspects of neural computation.
+%We aim to identify the underlying mechanisms of neural computation by comparing trained RNNs from Aim 2 with fitted models of neural dynamics.
  One comparison we will develop will be based on the Morse-Conley decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009database, kaczynski2004computational}.
  The other comparison will be based on topological conjugacy \citep{ostrow2024beyond}.
 We identify the best corresponding RNN for each task and dataset as an explanation of how the brain implements different kinds of decision-making \citep{levenstein2023}.
  
 
 
-Deliverable:  Comprehensive insights into the neural implementations of integration and decision-making, derived from the analysis of trained RNNs on analogous tasks and fitting dynamical systems to neural recordings.
+
 
 \newpage
 \printbibliography
