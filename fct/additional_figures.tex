@@ -9,6 +9,7 @@
 \usepackage{caption}
 \usepackage{float}
 \usepackage{bm}
+\usepackage{xr-hyper}
 \usepackage{hyperref}
 \pdfminorversion=6
 
@@ -119,13 +120,28 @@ The non-trivial activity of this network is limited to the (non-negative) first 
     \label{fig:slowmanifolds}
 \end{figure}
 
+
+\newpage
+\section{Noorman ring attractor}
+\begin{figure}[tbhp]
+     \centering
+  \includegraphics[width=\textwidth]{both_rings}
+       \caption{Characterization of bifurcations of two ring attractors. 
+       (A)       Perturbations to the ring attractor \citep{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs)  up to $2N$ (stable and saddle points are paired). 
+       (B) Perturbations to a simple implementation of a ring attractor lead to bifurcations that all leave the invariant manifold intact.
+       }
+         \label{fig:both_rings}
+\end{figure}
+
+
+
 \newpage
 \section{Tasks}
 \subsection{The auditory clicks task}
 \begin{figure}[H]
     \centering
     \includegraphics{figures/task_pi_v1.pdf}
-    \caption{\textbf{The auditory clicks task and a simple neural network implementation of an accumulator for this task.}
+    \caption{The auditory clicks task and a simple neural network implementation of an accumulator for this task.
     (Upper part, adapted from [18].) % 
     The sequence of events in each trial is as follows. 
     After light onset rats place their nose into the port and fixate their nose there until the light is turned off. 

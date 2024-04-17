@@ -206,10 +206,10 @@ In particular for continuous attractor networks, D-type noise is problematic, as
 
 %Levels of abstraction
 Our goal is to create a theoretical framework that takes advantage of the straightforward and intuitive nature of continuous attractors as an idealized abstraction of the slow manifolds locally.
-We identify memory components of the system as "recurrent sets", which are composed of points where any two points can be connected by a trajectory that remains entirely within the set, irrespective of the presence of noise.
+We identify memory components of the system as ``recurrent sets", which are composed of points where any two points can be connected by a trajectory that remains entirely within the set, irrespective of the presence of noise.
 Slow manifolds denote components where the system changes very slowly over time, which form the main backbone of the approximation.
 Lastly, we describe the asymptotic behavior, referring to the states and behaviors that the network ultimately converges to that gives insight into the very long-term behavior.
-All of these structures are inside an "invariant set", regions within the neural space where the network consistently resides over time.
+All of these structures are inside an ``invariant set", regions within the neural space where the network consistently resides over time.
 Fast dynamics drive the system towards the invariant set, while in some cases an intermediate speed can be observed between two slow manifolds.
 We show that in this framework, a continuous attractor can be approximated by different compositions of a slow manifold and either a recurrent or an invariant set with different time scales.
 
@@ -241,7 +241,7 @@ This implies that for example normally hyperbolic ring attractors are surrounded
 
 %Robustness ananlysis
 \subsubsection*{Aim 1.2: Analysis of robustness properties of continuous attractors}
- We analyze the following models of ring attractors: \citep{pollock2020, barak2021mapping, beiran2021, noorman2022}.
+ We analyze the following models of ring attractors (Figure 4): \citep{pollock2020, barak2021mapping, beiran2021, noorman2022}.
 We assess their robustness numerically with the following robustness measures:
 the shortest distance to a perturbation that destroys the attractive slow invariant manifold,
 the probability of a fixed size perturbation that destroyes the continuous attractor,
@@ -267,7 +267,8 @@ Discovering the types of dynamical behavior that a network exhibits is crucial t
 \subsection*{Aim 2.1}
 We will extract the implemented computation, defined as an input-output mapping, through three primary analysis components.
 %Encoding, past
-Firstly, we identify the system's recurrent sets and slow manifolds that correspond to meaningful input sequences or outputs \citep{goudar2018}. This approach is a generalization of the ``follow the fixed point rule'' and we call it the ``follow the attractor rule''. We implement this by computing the Morse decomposition of a network from the numerically integrated trajectories relevant to the task \citep{mischaikow1999, arai2009database}.
+Firstly, we identify the system's recurrent sets and slow manifolds that correspond to meaningful input sequences or outputs \citep{goudar2018}. This approach is a generalization of the ``follow the fixed point rule'' \citep{sussillo2013} and we call it the ``follow the attractor rule''.
+We implement this by computing the Morse decomposition of a network from the numerically integrated trajectories relevant to the task \citep{mischaikow1999, arai2009database}.
 %Decoding, future
 Secondly, we describe how the input drives the network between these recurrent sets and slow manifolds by calculating the basins of attraction and determining the asymptotic dynamics for the autonomous dynamics after a sequence of inputs with the network initialized at a recurrent set. 
 %We do this at different timescales by separating the system into slow and fast components, which allows us to construct slow manifolds as well \citep{jones1995, kuehn2015, casey1996}.
@@ -283,10 +284,10 @@ The coarsening provides interpretability, as we can coarsen the memory states to
 \subsection*{Aim 2.2: training RNNs on working memory tasks}
 
 We test our analysis method on hand-desinged attractor networks.
-
-We analyze RNNs trained with backpropagation through time \citep{farrell2022, schuessler2020}.
-We use mean-squared error loss for the memory-guided saccade task and cross-entropy for the Poisson clicks task.
-We enforce  long-term  memory maintenance through gradient flossing \citep{engelken2023b} and equilibrium propagation \citep{laborieux2023}.
+%
+Furthermore, we analyze RNNs trained with backpropagation through time on the  Poisson clicks, context-dependent decision-making,  memory-guided saccades and delayed match-to-category tasks \citep{farrell2022, schuessler2020}.
+We use mean-squared error loss for the matching tasks and cross-entropy for the decision-making tasks.
+We enforce long-term  memory maintenance through gradient flossing \citep{engelken2023b} and equilibrium propagation \citep{laborieux2023}.
 
 
 
