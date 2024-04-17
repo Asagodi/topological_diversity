@@ -334,9 +334,9 @@ For this aim, we will utilize various datasets of animals performing simple task
 We will use recordings from the rat motor cortex for the Poisson clicks and context-dependent decision-making tasks and data from macaques for the memory-guided saccades and delayed match-to-category tasks.
 %
 %Methods
-We fit dynamical systems to neural data \citep{Zhao2016d} with two different methods
+We fit dynamical systems to neural data \citep{Zhao2016d} with two different methods:
  Neural ODEs \citep{kim2021inferring} and 
- seq-VAEs \citep{pandarinath2018inferring}.
+ seq-VAEs \citep{pandarinath2018inferring}, as they have both proven to be successfull at capturing neural dynamics.
 %dynamical systems reconstruction \citep{schmidt2019}. % through the Neural Latents Benchmark \citep{pei2021neural}.
 By fitting dynamical systems to neural recordings, we aim to elucidate how neurons integrate sensory information and make decisions, providing valuable insights into the neural basis of cognitive functions.
 We will then decipher how the neural dynamics might produce the behavior in the task by extracting meaningful information about how these networks process information and perform computations related to working memory tasks with the analysis developed in Aim 2. 
@@ -344,12 +344,10 @@ In particular, we hope to identify different timescales relevant for the tasks u
 
 %Comparisons
 \subsubsection*{Aim 3.2: Identifying mechanisms of neural computation}
-
-
+We will compare the different neural dynamics with our method to establish underlying or shared principles of working memory mechanisms.
 Moreover, comparing the dynamics of trained RNNs from Aim 2 with those observed in biological neural recordings allows us to validate the effectiveness of our computational models in capturing essential aspects of neural computation.
 %We aim to identify the underlying mechanisms of neural computation by comparing trained RNNs from Aim 2 with fitted models of neural dynamics.
- One comparison we will develop will be based on the Morse-Conley decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009database, kaczynski2004computational}.
- The other comparison will be based on topological conjugacy \citep{ostrow2024beyond}.
+ The comparison we will develop will be based on the Morse decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009database, kaczynski2004computational}.
 We identify the best corresponding RNN for each task and dataset as an explanation of how the brain implements different kinds of decision-making \citep{levenstein2023}.
  
 
