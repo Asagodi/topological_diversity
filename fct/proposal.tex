@@ -76,52 +76,72 @@
 %\LARGE{\textbf{A for infinite horizon neural computation}}
 %\LARGE{\bf An infinite-horizon language for neural computation}
 %\LARGE{\bf   From Continuous Attractors to Multi-Scale Behavior}
-\LARGE{\bf  Interpretable and robust neural computations for simple behaviors relying on working memory}
+\LARGE{\bf  Interpretable and robust neural computation for simple behaviors relying on working memory}
 \end{center}
 \begin{center}
 {\textbf{\'Abel S\'agodi}}
 \end{center}
 
 \section*{Abstract}
+Developing models to understand how the brain processes information and executes behavior is a fundamental goal of computational neuroscience.
+ Natural animal behavior, such as navigation without sensory cues, suggests the presence of robust internal representations of environmental variables.
+  However, theoretical models often do not capture this observed robustness, and achieving a comprehensive account of biologically plausible models remains challenging. 
+We propose a new approach, which involves analyzing the robustness of continuous attractors in neural networks and develop a theoretical framework to approximate them.
+ Additionally, we will create an interpretable hierarchical ontology of multi-scale behavior by reverse engineering neural computation on different spatial and time scales.
+  Finally, we plan to decipher working memory mechanisms from population activity in trained animals by fitting dynamical systems to neural recordings and matching them with trained recurrent neural networks.
+   Through our analysis, we aim to provide interpretable, denoised, and biologically relevant mechanisms for working memory.
 
-The neural system, comprised of interconnected neurons with limited capacity, orchestrates essential cognitive processes such as perception, decision-making, and motor control by integrating sensory information with short-term memory.
-Understanding these processes at an algorithmic level is pivotal for unraveling the fundamental principles governing neural function.
-Dynamical systems theory, particularly the concept of stable fixed points, provides a formal framework for describing information processing in the brain.
-Continuous attractors, networks with a continuum of fixed points, have emerged as models for representing continuous variables like spatial locations, head direction, and motor commands. 
-Working memory, crucial for temporary storage and manipulation of information, relies on (continuous) attractor network dynamics to sustain persistent neural activity, ensuring stability against distractions and noise.
-However, theoretical models often lack this robustness observed in biological networks.
-In this project, we propose a novel framework aimed at describing neural computation while capturing the robustness properties observed in biological networks. By extending existing reverse engineering approaches for neural dynamics, we will characterize how artificial neural networks compute and generate behaviors and compare it to neural dynamics in animals. This endeavor holds promise for advancing our understanding of neural function and information processing, bridging the gap between theoretical models and biological reality.
+%The neural system, comprised of interconnected neurons with limited capacity, orchestrates essential cognitive processes such as perception, decision-making, and motor control by integrating sensory information with short-term memory.
+%Understanding these processes at an algorithmic level is pivotal for unraveling the fundamental principles governing neural function.
+%Dynamical systems theory, particularly the concept of stable fixed points, provides a formal framework for describing information processing in the brain.
+%Continuous attractors, a continuum of fixed points, have emerged as models for representing continuous variables like spatial location and head direction. 
+%Working memory, crucial for temporary storage and manipulation of information, relies on (continuous) attractor network dynamics to sustain persistent neural activity, ensuring stability against distractions and noise.
+%However, theoretical models often lack this robustness observed in biological networks.
+%In this project, we propose a novel framework aimed at describing neural computation while capturing the robustness properties observed in biological networks. By extending existing reverse engineering approaches for neural dynamics, we will characterize how artificial neural networks compute and generate behaviors and compare it to neural dynamics in animals. This endeavor holds promise for advancing our understanding of neural function and information processing, bridging the gap between theoretical models and biological reality.
 
 \newpage
 \section{State of the art}
 
 The brain can process immediate sensory information and integrate it with short-term memory to produce essential survival behaviors such as decision-making.
-The challenge of understanding these cognitive processes at an algorithmic or information-processing level is one of the primary goals in computational and theoretical neuroscience \citep{zoltowski2020general, pagan2022, whiteway2019, dyer2023simplest}.
+The challenge of understanding these cognitive processes at an algorithmic or information-processing level is one of the primary goals in computational and theoretical neuroscience \citep{dyer2023simplest}. %pagan2022, zoltowski2020general, whiteway2019,
 
 The literature extensively employs concepts from dynamical systems theory to formally describe the algorithmic essence of information processing in the brain \citep{vyas2020computation}.
-At the heart of current approaches lies the notions of ``stable fixed points'' \citep{sussillo2013blackbox, sussillo2014, beer2018, maheswaranathan2019universality, driscoll2022, mante2013context}, which represent the brain's internal states that remain consistent over time despite small perturbations.
-The (stable) fixed points are extremely useful since they can maintain discrete states in neural systems for arbitrarily long times, where each neuron tends to forget the past within a few hundred milliseconds. % for timescales of seconds with neurons and synapse transmission operating mostly on time scales of tens of milliseconds and shorter
-Networks with a continuum of fixed points, known as continuous attractors \citep{fung2010, khona2022, wu2008, wu2016}, have been proposed as models for representing continuous variables such as spatial locations \citep{samsonovich1997, stringer2002placecells, yang2022, wimmer2014, guanella2007model, gardner2022toroidal}, head direction \citep{stringer2002headdirection, hulse2020, turner2017, turner2020neuroanatomical, vafidis2022, kim2019generation}, motor commands \citep{stringer2003} and for the representation of other internal states \citep{nair2023, branco2016, seung2000stability}.
+At the heart of current approaches lies the notions of ``stable fixed points'' \citep{sussillo2013blackbox, mante2013context} , %sussillo2014, beer2018, maheswaranathan2019universality, driscoll2022, mante2013context},
+ which represent the brain's internal states that remain consistent over time despite small perturbations.
+The (stable) fixed points are extremely useful since they can maintain discrete states in neural systems for arbitrarily long times, while individual neurons tend to forget the past within a few hundred milliseconds. % for timescales of seconds with neurons and synapse transmission operating mostly on time scales of tens of milliseconds and shorter
+Networks with a continuum of fixed points, known as continuous attractors \citep{khona2022}, %\citep{fung2010, khona2022, wu2008, wu2016},
+ have been proposed as models for representing continuous variables such as spatial location \citep{stringer2002placecells}, % \citep{samsonovich1997, stringer2002placecells, yang2022, wimmer2014, gardner2022toroidal},
+  head direction \citep{kim2019generation}, %\citep{stringer2002headdirection, hulse2020, turner2017, turner2020neuroanatomical, vafidis2022, kim2019generation},
+  motor commands \citep{stringer2003} and  internal states such as aggression \citep{nair2023}.
 
-Working memory involves the temporary storage and manipulation of information over behaviorally relevant timescales. The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory \citep{koulakov2002}, e.g., integrating angular velocity to update the head direction representation \citep{barak2013, barak2014, durstewitz2000, wolpert1995, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022, cueva2021a, cueva2021b}.
+Working memory involves the temporary storage and manipulation of information over behaviorally relevant timescales.
+The dynamics of an attractor network sustain persistent neural activity, maintaining the representation of the stored information in working memory \citep{koulakov2002}, e.g., integrating angular velocity to update the internal representation of head direction \citep{noorman2022}. %barak2014, goncalves2014, burak2009, goldman2007, aksay2007, noorman2022, cueva2021a, cueva2021b, wolpert1995}.
 %The function of working memory has been modeled via neural populations representing options in decision-making tasks \citep{gold2007neural}, where the decision is reached when one population reaches a threshold level of activity \citep{wong2007, wong2008, hocker2024, esnaola2022flexible}.
 
 %noise and robustness
 % Neural function is robust to noise \citep{faisal2008}, ensuring the stability of the working memory representation \citep{koulakov2002} in biological networks \citep{gallego2020}, yet this robustness is lacking in many theoretical models \citep{renart2003, seeholzer2019, machens2008}.
-Neural function, such as the head direction representation, is very robust despite the constantly changing biological substrate, i.e., continually changing synaptic connections \citep{gallego2020, kim2019generation, flesch2023continual}.
-On the other hand, for theoretical models such as continuous attractor networks noise in the synapses connections is problematic, as it destroys the continuum of fixed points even the smallest level of noise and is referred to as the ``fine-tuning problem'' (Figure 1) \citep{seung1996, renart2003}.
-This discrepancy between biological neural networks and theoretical models poses a challenge for accurately capturing the dynamics of working memory and related cognitive processes via modeling \citep{calaim2022geometry, renart2003, seeholzer2019, machens2008}.
+The natural behavior of animals, including their ability to navigate without sensory cues, implies the presence of a robust internal representation of key variables such as location and head direction.
+This robustness is achieved despite the constantly changing synaptic connections \citep{shimizu2021}. %\citep{gallego2020, kim2019generation, flesch2023continual}.
+On the other hand, for theoretical models such as continuous attractor networks, even the smallest amount of changes in the synaptic connections are problematic, as it destroys the continuum of fixed points -- this is referred to as the ``fine-tuning problem'' (Figure 1) \citep{seung1996, renart2003}.
+This discrepancy between biological neural networks and theoretical models highlights a mismatch and thus poses a challenge for modeling working memory and related cognitive processes \citep{renart2003, seeholzer2019}. % \citep{calaim2022geometry, renart2003, seeholzer2019, machens2008}.
 %GAP + proposal
 
-Recurrent Neural Networks (RNNs) models of continuous attractors are inspired by neurobiological findings of continuous attractor networks in the brain, particularly in areas involved in spatial cognition, such as the hippocampus and the entorhinal cortex.
-These models are increasingly popular in computational neuroscience for their ability to model neural dynamics, allowing researchers to explore hypotheses about neural function and behavior by training them on relevant tasks \citep{darshan2022, barak2017recurrent, durstewitz2023reconstructing, yang2019task, yang2019multiple, yang2020artificial, jarne2023b, song2016}. %task based
+
+A major class of theoretical models can be formulated as Recurrent Neural Networks (RNNs), which are increasingly popular in computational neuroscience for their ability to model neural dynamics, allowing researchers to explore hypotheses about neural function and behavior by training them on relevant tasks \citep{barak2017recurrent}. %\citep{darshan2022, barak2017recurrent, durstewitz2023reconstructing, yang2019task, yang2019multiple, yang2020artificial, jarne2023b, song2016}. %task based
+%
+% models of continuous attractors are inspired by neurobiological findings of continuous attractor networks in the brain, particularly in areas involved in spatial cognition, such as the hippocampus and the entorhinal cortex \citep{stringer2002placecells}.
+%
 The vast array of possible solutions in RNNs for any desired task or behavior can be challenging to comprehend \citep{lipton2018}.
 Current reverse engineering methods cannot accurately reflect the multi-scale nature of RNNs because they capture only one time scale, focusing either on slow points \citep{sussillo2013blackbox}, limit cycles (non-constant, periodic behavior) \citep{pals2024, Zhao2016d} or slow manifolds \citep{ghazizadeh2021slow}.
 %%
-%
 %GAP
-Through an analysis of approximate solutions to working memory tasks, we intend to demonstrate how continuous attractors could be feasibly implemented in the noisy biological brain.
-We propose a new language specifically designed to articulate the complexities of working-memory type neural computation that can correctly describe the stability of the system yet provides an interpretable description of the computation. 
+%Therefore, there this poses a challenge to obtain 
+%Therefore, we need a new framework that encapsulates 
+%Therefore, we need a new framework that can identify neural algorithms that have been overlooked in previous approaches. 
+Therefore, we need a new approach that decomposes the solutions into interpretable components  and moreover, provide simplifications with varying degrees of complexity that correspond to multiple spatial and temporal time scales.
+%proposal
+Through an analysis of approximate solutions to working memory tasks, this approach should be able to provide deeper insight into how the brain might implement continuous attractors.
+We propose a new framework, specifically designed to articulate the complexities of working-memory type neural computation that can correctly reflect the robustness of the system yet provides an interpretable description of the computation. 
 
 
 %To understand how artificial neural networks compute and generate behaviors, accessing the underlying neural states and reverse engineering their temporal evolution is crucial. This approach can be applied to task-based modeling, where RNNs are trained to mimic cognitive functions observed in the brain \citep{darshan2022, barak2017recurrent, durstewitz2023reconstructing, yang2019task, yang2019multiple , yang2020artificial, jarne2023b, song2016}. This method can give insight into the possible computational principles underlying behavior. This analysis is challenging for large networks because of their black-box nature \citep{lipton2018, erasmus2021}.
@@ -146,12 +166,12 @@ We propose a new language specifically designed to articulate the complexities o
 %In particular, we want a unifying framework to describe working memory type neural computation that encompasses the robustness properties of biological neural networks.
 
 The goal of this research is to enhance our analytical toolbox for understanding the dynamical systems that drive meaningful behavior in both biological and artificial neural networks.
-We will focus on global descriptions of attractor dynamics, robustness, and fast-slow time scale decompositions involving working memory tasks.
+% We will focus on global descriptions of attractor dynamics, robustness, and fast-slow time scale decompositions involving working memory tasks.
 
-\subsection*{Aim 1: Rescuing Continuous Attractors}
+\subsection*{Aim 1: Rescuing continuous attractors}
 Do animals really employ continuous attractors for representing continuous variables, such as maintaining an internal representation of the head direction?
 Our objective is to leverage the simplicity and intuitiveness of continuous attractors as an idealized abstraction of the slow manifolds.
-By adjusting the speed or time constant of the neural dynamics, we will systematically uncover these approximate attractors.
+By adjusting the speed or time constant of the neural dynamics, we will systematically uncover approximate attractors.
 Through the analysis of RNNs that provide approximate solutions to working memory tasks, we will demonstrate how continuous attractors could be feasibly implemented in the noisy biological brain.
 
 \subsection*{Aim 2: An interpretable hierarchical ontology of multi-scale behavior}
@@ -162,12 +182,16 @@ Moreover, through repeated coarse-graining, both temporally and spatially, we ca
 
 \subsection*{Aim 3: Deciphering working memory mechanisms from population activity in trained animals}
 Building on the tools and methodologies developed in the previous aims, we will analyze neural recordings from animals performing tasks with a working memory component.
-We will employ established machine learning techniques to infer a low-dimensional, nonlinear dynamical system from  neural data.
-The inferred neural dynamics is not immediately interpretable due to spurious features that might be capturing irrelevant idiosynchracies of the noisy data and requires the analysis of introduced in Aim 2. %and what we have is suitable
-We will compare theoretical models and trained RNNs with our multi-scale interpretation of the data-driven dynamical systems model.
+We will employ established machine learning techniques to infer a low-dimensional, nonlinear dynamical system from neural data.
+The inferred neural dynamics are often not immediately interpretable due to spurious features that might be capturing irrelevant idiosynchracies of the noisy data. 
+% and requires the analysis. %and what we have is suitable
+%We identify working memory mechanisms by analysing theoretical models and trained RNNs with our multi-scale interpretation of the data-driven dynamicals models.
+The multi-scale analysis of the data-driven neural dynamics models provides a denoised, interpretable set of potential mechanisms, which can be used to corroborate or falsify the hypotheses provided by task trained RNNs. 
+%Among the many hypotheses of working memory mechanisms identified through task trained RNN analysis, we will falsify ones that are less matching the data-driven neural dynamics models.
+%and validate
+
 
 %\newpage
-%
 %\subsection*{Aim 1: Developing a language for robust neural computation}
 %Theoretical neuroscientists today face a challenge - the lack of a  framework that accurately reflects the robustness of biological neural networks while being easily interpretable \citep{lillicrap2019}.
 %We propose a framework that relies on describing memory in terms of slow manifolds \citep{ghazizadeh2021slow} and robust asymptotic dynamics \citep{casey1996}.
@@ -194,13 +218,13 @@ We will compare theoretical models and trained RNNs with our multi-scale interpr
 \section{Detailed description}
 %TODO:  point out planned tasks and describe the respective timeline
 \subsection*{Aim 1}
-We propose a framework that relies on describing memory in terms of slow manifolds \citep{ghazizadeh2021slow}. % and robust asymptotic dynamics \citep{casey1996}.
+We propose a framework that relies on approximate continuous attractors, known as slow manifolds \citep{ghazizadeh2021slow}. % and robust asymptotic dynamics \citep{casey1996}.
 %These structures provide a description of the memories and their decay at a range of timescales \citep{jaeger2023timescales} and allow for coarsening (via nesting attractors) \citep{braun2010}.
 %We prove that these structures are robust to noise in the parameters \citep{Park2023a} and that they provide a general way for approximating continuous attractors.
-This framework will allow us to describe the various ways the brain might implement working memory with a biological level of resilience.
+This framework will allow us to describe the various ways the brain might implement working memory with a biological level of robustness.
 
 \noindent
-Deliverable: benchmark for robustness of models of neural integration
+Deliverable: theory of approximations of continuous attractors and their possible biological implementation 
 
 \subsubsection*{Aim 1.1: Unveiling the robustness of continuous attractors in recurrent neural networks}
 %Do animals really employ continuous attractors for maintaining their head direction?
@@ -246,7 +270,7 @@ Understanding how continuous attractors respond to these perturbations provides 
 Therefore, we analyze the following models of ring attractors: \citep{pollock2020, barak2021mapping, beiran2021, noorman2022}.
 We assess their robustness numerically with the following robustness measures:
 the shortest distance to a perturbation that destroys the attractive slow invariant manifold,
-the probability of a fixed size perturbation that destroyes the continuous attractor,
+the probability of a fixed size perturbation that destroys the continuous attractor,
 the amount of maintained memories on the destroyed continuous attractor and
 the average increase in speed as a function of the perturbation size.
 This analysis relies on the identification of the possible perturbations of a ring attractor (an example is shown for \citep{noorman2022} in Figure 4).
@@ -269,13 +293,14 @@ By analyzing the dynamical behavior of a network, we gain a deeper understanding
 
 
 \noindent
-Deliverable: Open-source analysis tools for automated model identification and simplification
+Deliverable: Open-source software for automated attractor dynamics identification, coarse-graining and visualisation
+
 
 \subsubsection*{Aim 2.1: Reverse engineering and coarse-graining neural computation on different timescales}
 We will extract the algorithm, defined as an input-output mapping, through three primary analysis components.
 %Encoding, past
-Firstly, we identify the system's recurrent sets and slow manifolds that correspond to meaningful input sequences or outputs \citep{goudar2018}. 
-We achieve this by computing the Morse decomposition from the numerically integrated trajectories relevant to the task \citep{mischaikow1999, arai2009database}.
+Firstly, we identify the system's recurrent sets and slow manifolds that correspond to meaningful input sequences or outputs.  %\citep{goudar2018}. 
+We achieve this by computing the Morse decomposition from the numerically integrated trajectories relevant to the task \citep{arai2009database}.
 %Decoding, future
 Secondly, we describe how the input drives the network between attractors by estimating the basins of attraction and which areas are reached after a sequence of inputs with the network initialized at an attractor. 
 This approach is a generalization of the ``follow the fixed point rule'' \citep{sussillo2013blackbox} and we call it the ``follow the attractor rule''.
@@ -284,8 +309,8 @@ This approach is a generalization of the ``follow the fixed point rule'' \citep{
 %We determine how constraints on the time window or time scale used to assess the correspondence in the implemented computation in terms of the input-output relationship contribute to these different kinds of approximation.
 
 
-Lastly, based on the output mapping of the recurrent sets, we extract the behavioral-semantic meaning by identifying the output mapping of all the recurrent sets and slow manifolds. Furthermore, the same output can elicited by different activity patterns in different behaviors or contexts, and we, therefore, group recurrent sets according to a metric in the output space \citep{athalye2023, myers2022}.
-Timescale and grouping through the output mapping allow for the coarsening of the representation of the algorithm via the merging of attractors \citep{braun2010}.
+Lastly, based on the output mapping of the recurrent sets, we extract the behavioral-semantic meaning by identifying the output mapping of all the recurrent sets and slow manifolds. Furthermore, the same output can elicited by different activity patterns in different behaviors or contexts, and we, therefore, group recurrent sets according to a metric in the output space \citep{myers2022}. %athalye2023
+Timescale and grouping through the output mapping allow for the coarsening of the representation of the algorithm via the merging of attractors. % \citep{braun2010}.
 The coarsening provides interpretability, as we can flexibly coarsen the memory states to a suitable simplicity for human understanding.
 
 %
@@ -294,9 +319,9 @@ The coarsening provides interpretability, as we can flexibly coarsen the memory 
 We test our analysis method on hand-desinged attractor networks, such as different approximations of ring attractors.
 The analysis of hand-designed attractor networks should accurately identify key dynamical features such as stable fixed points and slow manifolds.
 %
-Furthermore, we analyze RNNs trained with backpropagation through time on the Poisson clicks (Figure 5), context-dependent decision-making, angular velocity integration task (Figure 6), memory-guided saccades  and delayed match-to-category tasks \citep{farrell2022, schuessler2020}.
+Furthermore, we analyze RNNs trained with backpropagation through time on the Poisson clicks (Figure 5), context-dependent decision-making, angular velocity integration (Figure 6), memory-guided saccades  and delayed match-to-category tasks \citep{schuessler2020}. %farrell2022
 We use mean-squared error loss for the matching tasks and cross-entropy for the decision-making tasks to train the networks.
-We enforce long-term  memory maintenance through gradient flossing \citep{engelken2023b} and equilibrium propagation \citep{laborieux2023}.
+%We enforce long-term  memory maintenance through gradient flossing \citep{engelken2023b} and equilibrium propagation \citep{laborieux2023}.
 The analysis should enhance the interpretability of the network's functionality by coarsening and should allow us to group RNNs together in a manageable number of groups that solve the task in the same way.
 
 %angular velocity integration task? (Figure 6)
@@ -324,16 +349,15 @@ By comparing trained RNNs on various tasks and the biological neural dynamics, w
 
 
 \noindent
-Deliverable:  Comprehensive insights into the neural implementations of integration and decision-making, derived from the analysis of trained RNNs on analogous tasks and fitting dynamical systems to neural recordings.
+Deliverable: For each animal dataset a possible mechanism for an aspect of working memory and underlying principles of working memory common in multiple datasets
 
 \subsubsection*{Aim 3.1: Fitting dynamical systems to neural recordings.}
-
 %Datasets.
 For this aim, we will utilize various datasets of animals performing simple tasks that could potentially have interpretable neural explanations and which have pairwise overlapping components so that we can uncover common computational principles.
-We will use recordings from the rat motor cortex for the Poisson clicks and context-dependent decision-making tasks and data from macaques for the memory-guided saccades and delayed match-to-category tasks.
+We will use recordings from the rat motor cortex for the Poisson clicks \citep{brunton2013rats} and context-dependent decision-making tasks \citep{mante2013context} and data from macaques for the memory-guided saccades \citep{wimmer2014} and delayed match-to-category tasks.
 %
 %Methods
-We fit dynamical systems to neural data \citep{Zhao2016d} with two different methods:
+We fit dynamical systems to neural data with two different methods:
  Neural ODEs \citep{kim2021inferring} and 
  seq-VAEs \citep{pandarinath2018inferring}, as they have both proven to be successfull at capturing neural dynamics.
 %dynamical systems reconstruction \citep{schmidt2019}. % through the Neural Latents Benchmark \citep{pei2021neural}.
@@ -346,8 +370,8 @@ In particular, we hope to identify different timescales relevant for the tasks u
 We will compare the different neural dynamics with our method to establish underlying or shared principles of working memory mechanisms in different tasks.
 Moreover, comparing the dynamics of trained RNNs from Aim 2 with those observed in biological neural recordings allows us to validate the effectiveness of our computational models in capturing essential aspects of neural computation.
 %We aim to identify the underlying mechanisms of neural computation by comparing trained RNNs from Aim 2 with fitted models of neural dynamics.
- The comparison we will develop will be based on the Morse decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009database, kaczynski2004computational}.
-We identify the best corresponding RNN for each task and dataset as an explanation of how the brain implements working memory mechanisms \citep{levenstein2023}.
+ The comparison we will develop will be based on the Morse decomposition that identifies correspondece of the topological structure of recurrent sets and connecting orbits \citep{arai2009database}.
+We identify the best corresponding RNN for each task and dataset as an explanation of how the brain implements working memory mechanisms. % \citep{levenstein2023}.
  
 %less prone to misinterpretation?
 
