@@ -678,6 +678,9 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         
             optimizer.zero_grad()
             output, trajectories = net(input, h_init=h_init, return_dynamics=True, target=target)
+            
+            #apply mask after output
+            
             if np.any(_mask-1):
                 _mask = torch.from_numpy(_mask)
                 mask = _mask.to(device=device).float() 
