@@ -13,9 +13,7 @@ from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 from warnings import warn
 import time
-
-
-
+import pickle
         
 def mse_loss_masked(output, target, mask):
     """
@@ -105,7 +103,8 @@ class RectifiedTanh(nn.Module):
 class RNN(nn.Module):
     def __init__(self, dims, noise_std=0., dt=0.5, 
                  nonlinearity='tanh', readout_nonlinearity='id',
-                 g=None, g_in=1, wi_init=None, wrec_init=None, wo_init=None, brec_init=None, h0_init=None, oth_init=None,
+                 g=None, g_in=1, wi_init=None, wrec_init=None, wo_init=None, brec_init=None,
+                 h0_init=None, hidden_initial_variance=0., oth_init=None,
                  train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True, save_inputs=False,
                  ML_RNN=True, map_output_to_hidden=False, input_nonlinearity=None):
         """
@@ -134,6 +133,7 @@ class RNN(nn.Module):
         self.hidden_size = hidden_size
         self.output_size = output_size
         self.noise_std = noise_std
+        self.hidden_initial_variance = hidden_initial_variance
         self.dt = dt
         self.train_wi = train_wi
         self.train_wo = train_wo
@@ -250,7 +250,7 @@ class RNN(nn.Module):
             else:
                 if type(h0_init) == np.ndarray:
                     h0_init = torch.from_numpy(h0_init)
-                self.h0.copy_(h0_init)
+                    self.h0.copy_(h0_init)
                 
         if map_output_to_hidden:
             self.h0.requires_grad = False
@@ -279,7 +279,7 @@ class RNN(nn.Module):
         batch_size = input.shape[0]
         seq_len = input.shape[1]
 
-        if self.map_output_to_hidden:
+        if self.map_output_to_hidden and target != None:
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
             h_init_torch.requires_grad = False
             h_init_torch = target[:,0,:].matmul(self.output_to_hidden)
@@ -287,8 +287,14 @@ class RNN(nn.Module):
             with torch.no_grad():
                 h = h_init_torch#.copy_(h_init_torch)
                 
+        elif h_init == 'random':
+            # hidden_initial_variance==0...
+            h = torch.normal(mean=0, std=self.hidden_initial_variance, size=(1, batch_size, self.hidden_size)).to(self.wrec.device)
+
+                
         elif h_init is None:
             h = self.h0
+            
         else:
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
             h_init_torch.requires_grad = False
@@ -510,14 +516,43 @@ class GRU(nn.Module):
         x = self.linear(out)
         return x    
 
+def get_weights_during(net, wis=None, wrecs=None, wos=None, brecs=None, h0s=None, oths=None):
 
+    # Final weights
+    wi_last = net.wi.cpu().detach().numpy().copy()
+    wrec_last = net.wrec.cpu().detach().numpy().copy()
+    wo_last = net.wo.cpu().detach().numpy().copy()
+    brec_last = net.brec.cpu().detach().numpy().copy()
+    h0_last = net.h0.cpu().detach().numpy().copy()
+    weights_last = [wi_last, wrec_last, wo_last, brec_last, h0_last]
+    if net.map_output_to_hidden:
+        oth_last = net.output_to_hidden.cpu().detach().numpy()
+        weights_last = [wi_last, wrec_last, wo_last, brec_last, h0_last, oth_last]
+    
+    # Weights throughout training: 
+    weights_train = {}
+    if net.train_wi:
+        weights_train["wi"] = wis
+    if net.train_wrec:
+        weights_train["wrec"] = wrecs
+    if net.train_wo:
+        weights_train["wo"] = wos
+    if net.train_brec:
+        weights_train["brec"] = brecs
+    if net.train_h0:
+        weights_train["h0"] = h0s
+    if net.map_output_to_hidden:
+        weights_train["oths"] = oths
+        
+    return weights_train, weights_last
 
-def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False, record_step=1, h_init=None,
+def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False, record_step=1,
+          h_init=None, hidden_initial_variance=0,
           loss_function='mse_loss_masked', final_loss=True, last_mses=None, act_reg_lambda=0.,
           optimizer='sgd', momentum=0, weight_decay=.0, adam_betas=(0.9, 0.999), adam_eps=1e-8, #optimizers 
           scheduler=None, scheduler_step_size=100, scheduler_gamma=0.3, 
           stop_patience=10, stop_min_delta=0, 
-          verbose=True):
+          verbose=True, experiment_folder=None):
     """
     Train a network
     :param net: nn.Module
@@ -599,6 +634,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         h0s = np.zeros((n_rec_epochs, dim_rec), dtype=np.float32)
     if net.map_output_to_hidden:
         oths = np.zeros((n_rec_epochs, dim_out, dim_rec), dtype=np.float32)
+    else: 
+        oths=None
     if net.save_inputs:
         _input, _target, _mask = task(batch_size)
         all_inputs = np.zeros((n_rec_epochs, batch_size, _input.shape[1], dim_in), dtype=np.float32)
@@ -647,8 +684,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                 loss = loss_function(output, target, mask)
             else: 
                 # print(output)
-                loss = loss_function(output.view(-1), target.view(-1))
-
+                # loss = loss_function(output.view(-1), target.view(-1))
+                loss = loss_function(output[:,-1,:], target[:,-1,:])
                 # print("L", loss)
                 # loss = loss_function(output[...,0], target[...,0])
                 # loss += loss_function(output[...,1], target[...,1])
@@ -663,12 +700,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                         
             act_reg = 0.
             if act_reg_lambda != 0.: 
-                act_reg += torch.mean(torch.linalg.norm(trajectories[:,:,:], dim=(1,2)))
-                # for t_id in range(trajectories.shape[1]):  #all states through time
-                #     h = trajectories[:,t_id,:]
-                #     h.detach()
-                #     act_reg += torch.mean(torch.linalg.vector_norm(h, dim=1))
-                act_reg /= trajectories.shape[1]
+                act_reg += torch.mean(torch.linalg.norm(trajectories, dim=2))
+                # act_reg /= trajectories.shape[1]
                 loss += act_reg_lambda*act_reg
             
             # Gradient descent
@@ -728,6 +761,14 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                 print("epoch %d / %d:  loss=%.6f, run.loss=%.6f, val.loss=%.6f \n" % (i+1, n_epochs, losses[i], np.mean(losses[:i]), validation_loss))
             else:
                 print("epoch %d / %d:  loss=%.6f, run.loss=%.6f \n" % (i+1, n_epochs, losses[i], np.mean(losses[:i])))
+                
+        if i % record_step == 0 and i!=0: 
+            gradient_norms = np.sqrt(gradient_norm_sqs)
+            weights_train, weights_last = get_weights_during(net, wis, wrecs, wos, brecs, h0s, oths)            
+            res = [losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs]
+
+            with open(experiment_folder + '/res_weights.pickle', 'wb') as handle:
+                pickle.dump(res, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
     if verbose:
         print("\nDone. Training took %.1f sec." % (time.time() - time0))
@@ -735,31 +776,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
     # Obtain gradient norm
     gradient_norms = np.sqrt(gradient_norm_sqs)
     
-    # Final weights
-    wi_last = net.wi.cpu().detach().numpy().copy()
-    wrec_last = net.wrec.cpu().detach().numpy().copy()
-    wo_last = net.wo.cpu().detach().numpy().copy()
-    brec_last = net.brec.cpu().detach().numpy().copy()
-    h0_last = net.h0.cpu().detach().numpy().copy()
-    weights_last = [wi_last, wrec_last, wo_last, brec_last, h0_last]
-    if net.map_output_to_hidden:
-        oth_last = net.output_to_hidden.cpu().detach().numpy()
-        weights_last = [wi_last, wrec_last, wo_last, brec_last, h0_last, oth_last]
-    
-    # Weights throughout training: 
-    weights_train = {}
-    if net.train_wi:
-        weights_train["wi"] = wis
-    if net.train_wrec:
-        weights_train["wrec"] = wrecs
-    if net.train_wo:
-        weights_train["wo"] = wos
-    if net.train_brec:
-        weights_train["brec"] = brecs
-    if net.train_h0:
-        weights_train["h0"] = h0s
-    if net.map_output_to_hidden:
-        weights_train["oths"] = oths
+    weights_train, weights_last = get_weights_during(net, wis, wrecs, wos, brecs, h0s, oths)
     
     res = [losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs]
     if net.save_inputs:
