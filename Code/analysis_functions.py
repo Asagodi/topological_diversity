@@ -561,13 +561,13 @@ def get_cubic_spline_ring(thetas, invariant_manifold):
     return cs    
 
 def simulate_rnn(net, task, T, batch_size = 256):
-    
 
     input, target, mask = task(batch_size); input = torch.from_numpy(input).float();
     output, trajectories = net(input, return_dynamics=True); 
     output = output.detach().numpy();
     trajectories = trajectories.detach().numpy()
     return input, target, mask, output, trajectories
+
 
 from sklearn.decomposition import PCA
 from scipy.spatial.distance import cdist
@@ -803,6 +803,46 @@ def get_invman_3fps(W, b, tau, eps_=0.001):
     for i, fxd_pnt in enumerate(fixed_point_list):
         plt.plot(fxd_pnt[0], fxd_pnt[1], 'rx');
 
+
+
+#Fixed point finder
+def get_fps_fpf():
+    main_exp_name='center_out/N200_T500_noisy_hinitlast/tanh/'
+    from plot_losses import *; from analysis_functions import *
+    import sys
+    sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder"); 
+    from FixedPointFinderTorch import *
+    from plot_utils import plot_fps
+    folder = parent_dir+"/experiments/" + main_exp_name
+
+    sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder")
+    exp_i=0
+    which = 'post'
+    net, wi, wrec, wo, brec, h0, oth, training_kwargs = load_all(main_exp_name, exp_i, which=which);
+    net.noise_std = 0
+    rnn = nn.RNN(net.dims[0], net.dims[1], batch_first=True)  # batch_first parameter 
+    with torch.no_grad():
+        rnn.weight_ih_l0 = nn.Parameter(torch.from_numpy(wi.T))  # input-to-hidden weights
+        rnn.weight_hh_l0 = nn.Parameter(torch.from_numpy(wrec))# hidden-to-hidden weights
+        rnn.bias_ih_l0 = nn.Parameter(torch.from_numpy(brec))
+        rnn.bias_hh_l0.fill_(0.)
+
+
+    batch_size =  2**10
+    np.random.seed(100);
+    initial_states = np.random.uniform(-1,1, (batch_size, net.dims[1]));  #(n, n_states) numpy array, where n is the number of initializations and n_states is the dimensionality of the RNN state;
+    T=1e4; dt=.1; batch_size=128;
+    task = center_out_reaching_task(T=T, dt=dt, time_until_cue_range=[50, 51], angles_random=False);
+    input, target, mask, output, trajectories = simulate_rnn(net, task, T, batch_size)
+    #initial_states = trajectories[:,500,:]
+    inputs = np.zeros((1,3))#1, n_inputs) where n_inputs is an int specifying the depth of the inputs expected by your_rnn_cell
+    fpf = FixedPointFinderTorch(rnn);
+    fps = fpf.find_fixed_points(initial_states, inputs)
+    fig = plot_fps(fps[1]); fig.savefig(folder+'/fpf.pdf', bbox_inches="tight")
+
+    from_t = 0
+    invariant_manifold = trajectories[:,from_t:,:]
+    fig = plot_fps(fps[1], state_traj=invariant_manifold); fig.savefig(folder+'/fpf_traj.pdf', bbox_inches="tight")
 
 #MORSE
 def get_connection_matrix(fixed_point_cubes, RCs, cds_full):
