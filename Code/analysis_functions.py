@@ -804,15 +804,15 @@ def get_invman_3fps(W, b, tau, eps_=0.001):
         plt.plot(fxd_pnt[0], fxd_pnt[1], 'rx');
 
 
-
+sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder"); 
+from FixedPointFinderTorch import *
+from plot_utils import plot_fps
 #Fixed point finder
 def get_fps_fpf():
     main_exp_name='center_out/N200_T500_noisy_hinitlast/tanh/'
-    from plot_losses import *; from analysis_functions import *
+    #from plot_losses import *; from analysis_functions import *
     import sys
-    sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder"); 
-    from FixedPointFinderTorch import *
-    from plot_utils import plot_fps
+
     folder = parent_dir+"/experiments/" + main_exp_name
 
     sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder")
