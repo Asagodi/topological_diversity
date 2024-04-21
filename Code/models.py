@@ -291,7 +291,6 @@ class RNN(nn.Module):
             # hidden_initial_variance==0...
             h = torch.normal(mean=0, std=self.hidden_initial_variance, size=(1, batch_size, self.hidden_size)).to(self.wrec.device)
 
-                
         elif h_init is None:
             h = self.h0
             
@@ -299,8 +298,13 @@ class RNN(nn.Module):
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
             h_init_torch.requires_grad = False
             # Initialize parameters
+
             with torch.no_grad():
-                h = h_init_torch.copy_(torch.from_numpy(h_init))
+                if type(h_init) == np.ndarray:
+                    h = h_init_torch.copy_(torch.from_numpy(h_init))
+                else:
+                    h = h_init_torch.copy_(h_init)
+
                 
         noise = torch.randn(batch_size, seq_len, self.hidden_size, device=self.wrec.device)
         output = torch.zeros(batch_size, seq_len, self.output_size, device=self.wrec.device)
@@ -578,6 +582,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         device = torch.device('cpu')
     net.to(device=device)
     
+    h_init_type = h_init
+    
     # Optimizer
     optimizer = get_optimizer(net, optimizer, learning_rate, weight_decay, momentum, adam_betas, adam_eps)
     
@@ -667,6 +673,10 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
         
         if not data:
             # Generate batch
+            if  i!=0 and h_init_type=='prev_last':
+                h_init=trajectories[:,-1,:]
+            elif h_init_type=='prev_last':
+                h_init='random'
             _input, _target, _mask = task(batch_size)
 
             # Convert training data to pytorch tensors
@@ -680,6 +690,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             output, trajectories = net(input, h_init=h_init, return_dynamics=True, target=target)
             
             #apply mask after output
+            
             
             if np.any(_mask-1):
                 _mask = torch.from_numpy(_mask)
