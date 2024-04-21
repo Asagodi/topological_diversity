@@ -35,6 +35,8 @@ import matplotlib.cm as cmx
 
 from plot_losses import get_hidden_trajs, plot_output_trajectory
 
+
+
 def ReLU(x):
     return np.where(x<0,0,x)
 
@@ -54,9 +56,9 @@ def get_theory_weights(N):
 def relu_ode(t,x,W,b,tau, mlrnn=True):
 
     if mlrnn:
-        return (-x + np.max(np.dot(W,x)+b,0))/tau
+        return (-x + ReLU(np.dot(W,x)+b))/tau
     else:
-        return (-x + np.dot(W,np.max(x,0))+b)/tau
+        return (-x + np.dot(W,ReLU(x))+b)/tau
 
 def sigmoid_ode(t,x,W):
     return sigmoid(np.dot(W,x)) - x 
@@ -64,6 +66,27 @@ def sigmoid_ode(t,x,W):
 def tanh_ode(t,x,W):
     return np.tanh(np.dot(W,x)) - x 
 
+
+def lax_ode(t,x):
+    #two crossing line attractors
+    xy = x[0]*x[1]
+    gxy = g_lax(x[0],x[1])
+    x1 = gxy[0]*xy
+    x2 = gxy[1]*xy
+    return [x1,x2]
+
+def g_lax(x,y):
+    if x>0 and y>0:
+        return [1,1]
+    elif x>0 and y<0:
+        return [-1,1]
+    elif x<0 and y>0:
+        return [1,-1]
+    elif x<0 and y<0:
+        return [1,1]
+    else:
+        return [0,0]
+        
 
 #Noorman ring
 
