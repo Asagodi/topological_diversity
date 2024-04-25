@@ -546,7 +546,6 @@ def get_params_exp(params_folder, exp_i=0, which='post'):
     with open(exp, 'rb') as handle:
         result = pickle.load(handle)
         
-        
         if len(result) == 9:
             losses, validation_losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs = result
         elif len(result) == 8:
@@ -562,8 +561,8 @@ def get_params_exp(params_folder, exp_i=0, which='post'):
             wi, wrec, wo, brec, h0, oth = weights_init
             
         else:
-            return weights_train["wi"][which], weights_train["wrec"][which], weights_train["wo"][which], weights_train["brec"][which], weights_train["h0"][which], weights_train["oths"][which], training_kwargs
-        return wi, wrec, wo, brec, h0, oth, training_kwargs
+            return weights_train["wi"][which], weights_train["wrec"][which], weights_train["wo"][which], weights_train["brec"][which], weights_train["h0"][which], weights_train["oths"][which], training_kwargs, losses
+        return wi, wrec, wo, brec, h0, oth, training_kwargs, losses
 
     else:
         if which=='post':
@@ -571,9 +570,9 @@ def get_params_exp(params_folder, exp_i=0, which='post'):
         elif which=='pre':
             wi, wrec, wo, brec, h0 = weights_init
         else:
-            return weights_train["wi"][which], weights_train["wrec"][which], weights_train["wo"][which], weights_train["brec"][which], weights_train["h0"][which], None,  training_kwargs
+            return weights_train["wi"][which], weights_train["wrec"][which], weights_train["wo"][which], weights_train["brec"][which], weights_train["h0"][which], None,  training_kwargs, losses
 
-        return wi, wrec, wo, brec, h0, None, training_kwargs
+        return wi, wrec, wo, brec, h0, None, training_kwargs, losses
 
     
         
@@ -691,7 +690,7 @@ def plot_recs_ring_3d(recurrences, recurrences_pca, cmap, norm, ax=None):
             lc.set_array(output_angle)
     
             # Plot the line segments in 3D
-            ax.add_collection3d(lc, zorder=1000)
+            ax.add_collection3d(lc)
     
         else:
         # for t, point in enumerate(recurrence):
@@ -763,7 +762,7 @@ def plot_recs_3d_ring(recurrences, recurrences_pca, wo, cmap, norm, ax=None):
             lc.set_array(output_angle)
             
             # Plot the line segments in 3D
-            ax.add_collection3d(lc, zorder=1000)
+            ax.add_collection3d(lc)
         
         else:
         # for t, point in enumerate(recurrence):
@@ -778,8 +777,11 @@ def plot_recs_3d_ring(recurrences, recurrences_pca, wo, cmap, norm, ax=None):
     
     return ax
 
-def plot_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, exp_name,
-                               proj_2d_color='lightgrey'):
+def plot_slow_manifold_ring_3d(saddles, fxd_pnts, wo, pca, exp_name,
+                               all_bin_locs_pca=None,
+                               recurrences=[], recurrences_pca=[],
+                               trajectories=[],
+                               proj_2d_color='lightgrey', figname_postfix=''):
     cmap = plt.get_cmap('hsv')
     norm = mpl.colors.Normalize(-np.pi, np.pi)
 
@@ -788,18 +790,65 @@ def plot_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, exp
     ax.view_init(elev=45., azim=45)
     plot_points_ring_3d(fxd_pnts, wo, pca, marker_style='full', markercolor='ring', ax=ax, zorder=100)
     plot_points_ring_3d(saddles, wo, pca, marker_style='', markercolor='ring', ax=ax, zorder=50)
-    # plot_recs_3d_ring(recurrences, recurrences_pca, wo, cmap, norm, ax=ax)
+    plot_recs_3d_ring(recurrences, recurrences_pca, wo, cmap, norm, ax=ax)  
 
-    ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
-                marker='.', s=.1, color='k', zorder=-100, alpha=.9)    
+    for traj in trajectories:
+        ax.plot(traj[:,0], traj[:,1], traj[:,2], 'k', alpha=0.1, zorder=-1000)
     
-    ax.scatter(1.5*np.min(all_bin_locs_pca[:,0])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
-                 marker='.', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
-    ax.scatter(all_bin_locs_pca[:,0], 1.5*np.min(all_bin_locs_pca[:,1])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,2],
-                 marker='.', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
-    ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], 1.5*np.min(all_bin_locs_pca[:,2])*np.ones_like(all_bin_locs_pca[:,2]),
-                 marker='*', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
-    # fxd_pnts = np.array([recurrence for recurrence in recurrences if len(recurrence)==1]).squeeze()
+    if np.any(all_bin_locs_pca!=None):
+        ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
+                    marker='.', s=.1, color='k', zorder=-100, alpha=.9)
+        
+        ax.scatter(1.5*np.min(all_bin_locs_pca[:,0])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
+                      marker='.', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
+        ax.scatter(all_bin_locs_pca[:,0], 1.5*np.min(all_bin_locs_pca[:,1])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,2],
+                      marker='.', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
+        ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], 1.5*np.min(all_bin_locs_pca[:,2])*np.ones_like(all_bin_locs_pca[:,2]),
+                      marker='*', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
+    
+    if np.any(trajectories!=[]):
+        for traj in trajectories:
+            ax.plot(1.5*np.min(trajectories[:,0])*np.ones_like(traj[:,0]), traj[:,1], traj[:,2], 'k', alpha=0.1, zorder=-2000)
+
+            ax.plot(traj[:,0], 1.5*np.min(trajectories[:,1])*np.ones_like(traj[:,1]), traj[:,2], 'k', alpha=0.1, zorder=-2000)
+
+            ax.plot(traj[:,0], traj[:,1], 1.5*np.min(trajectories[:,2])*np.ones_like(traj[:,2]), 'k', alpha=0.1, zorder=-2000)
+    
+    for axis in range(3):
+        if trajectories!=[]:
+            value = 1.5*np.min(trajectories[:,axis])
+        else:
+            value = 1.5*np.min(all_bin_locs_pca[:,axis])
+
+        scatter_projection_3d(fxd_pnts, wo, pca, axis, value, cmap, norm, marker_style='full', markercolor=proj_2d_color, ax=ax)
+        scatter_projection_3d(saddles, wo, pca, axis, value, cmap, norm, marker_style='full', markercolor=proj_2d_color, ax=ax)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_xlabel("PC1")
+    ax.set_ylabel("PC2")
+    ax.set_zlabel("PC3", rotation=90); ax.zaxis.labelpad=-15
+    plt.savefig(parent_dir+'/experiments/'+exp_name+f'/slow_manifold_3d2d_{figname_postfix}.pdf', bbox_inches="tight")
+    # ax = set_3daxes(ax)         
+
+
+def video_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, exp_name,
+                               recurrences=[], recurrences_pca=[],
+                               trajectories=[],
+                               proj_2d_color='lightgrey', figname_postfix=''):
+    cmap = plt.get_cmap('hsv')
+    norm = mpl.colors.Normalize(-np.pi, np.pi)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d", computed_zorder=False)
+    ax.view_init(elev=45., azim=45)
+    plot_points_ring_3d(fxd_pnts, wo, pca, marker_style='full', markercolor='ring', ax=ax, zorder=100)
+    plot_points_ring_3d(saddles, wo, pca, marker_style='', markercolor='ring', ax=ax, zorder=50)
+    plot_recs_3d_ring(recurrences, recurrences_pca, wo, cmap, norm, ax=ax)  
+
+    for traj in trajectories:
+        ax.plot(traj[:,0], traj[:,1], traj[:,2], 'k', alpha=0.1, zorder=-1000)
+    
     for axis in range(3):
         value = 1.5*np.min(all_bin_locs_pca[:,axis])
         scatter_projection_3d(fxd_pnts, wo, pca, axis, value, cmap, norm, marker_style='full', markercolor=proj_2d_color, ax=ax)
@@ -810,10 +859,7 @@ def plot_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, exp
     ax.set_xlabel("PC1")
     ax.set_ylabel("PC2")
     ax.set_zlabel("PC3", rotation=90); ax.zaxis.labelpad=-15
-    plt.savefig(parent_dir+'/experiments/'+exp_name+'/slow_manifold_3d2d.pdf', bbox_inches="tight")
-     
-    # ax = set_3daxes(ax)         
-
+    plt.savefig(parent_dir+'/experiments/'+exp_name+f'/slow_manifold_3d2d_{figname_postfix}.pdf', bbox_inches="tight")
 
 def plot_two_rings(net, batch_size=256):    
     
@@ -830,7 +876,6 @@ def plot_two_rings(net, batch_size=256):
     pca = PCA(n_components=n_components)
     invariant_manifold = trajectories[:,:,:].reshape((-1,n_rec))
     pca.fit(invariant_manifold)
-
 
     from_t = 150
     to_t = 300
@@ -861,12 +906,6 @@ def plot_two_rings(net, batch_size=256):
                     marker='.', color='k', zorder=0, alpha=.9);
         ax.plot(traj_pca_2nd[i,:,0], traj_pca_2nd[i,:,1], traj_pca_2nd[i,:,2],
                     marker='.', color='b', zorder=-100, alpha=.9);
-    # ax.scatter(traj_pca_flat_1st[:,0], traj_pca_flat_1st[:,1], traj_pca_flat_1st[:,2],
-    #             marker='.', s=.1, color='r', zorder=100, alpha=.9);
-    # ax.scatter(traj_pca_flat_conn[:,0], traj_pca_flat_conn[:,1], traj_pca_flat_conn[:,2],
-    #             marker='.', s=.1, color='k', zorder=0, alpha=.4);
-    # ax.scatter(traj_pca_flat_2nd[:,0], traj_pca_flat_2nd[:,1], traj_pca_flat_2nd[:,2],
-    #             marker='.', s=.1, color='b', zorder=-100, alpha=.9); 
     ax.xaxis.pane.fill = False
     ax.yaxis.pane.fill = False
     ax.zaxis.pane.fill = False
@@ -1246,6 +1285,11 @@ def get_hidden_trajs(net, T=128, input_length=10, input_type='constant',
         if angle_init == 'random':
             random_angles = np.random.uniform(-np.pi, np.pi, size=num_of_inputs).astype('f')
             outputs_1d += random_angles[:, np.newaxis, np.newaxis]
+            
+        if angle_init == 'uniform':
+            angles = np.arange(-np.pi, np.pi, 2*np.pi/num_of_inputs)
+            outputs_1d += angles[:, np.newaxis, np.newaxis]
+
         target = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1).reshape((num_of_inputs, T, output_size))
 
     elif input_type == 'training': 
@@ -1944,9 +1988,9 @@ def load_net(exp_name, exp_i, which):
     params_folder = parent_dir+'/experiments/' + exp_name +'/'
 
     try:
-        wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder, exp_i, which)
+        wi, wrec, wo, brec, h0, oth, training_kwargs, losses = get_params_exp(params_folder, exp_i, which)
     except:
-        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i, which)
+        wi, wrec, wo, brec, h0, training_kwargs, losses = get_params_exp(params_folder, exp_i, which)
         oth = None
         
     try:
@@ -1960,10 +2004,17 @@ def load_net(exp_name, exp_i, which):
     except:
         training_kwargs['input_nonlinearity'] = None
         
+    try:
+        h0 = training_kwargs['h_init']
+    except:
+        0
+        
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
-    net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
+    net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'],
+              g=training_kwargs['rnn_init_gain'],
               nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-              wi_init=wi, wrec_init=wrec, wo_init=wo, brec_init=brec, h0_init=h0, oth_init=oth,
+              wi_init=wi, wrec_init=wrec, wo_init=wo, brec_init=brec,
+              h0_init=h0, oth_init=oth,
               ML_RNN=training_kwargs['ml_rnn'], map_output_to_hidden=training_kwargs['map_output_to_hidden'],
               input_nonlinearity=training_kwargs['input_nonlinearity'])
     
@@ -2099,10 +2150,13 @@ def tuning_curves(trajectories, target, nbins=100, plot_fig=False):
         tunings[i-1] = np.mean(trajectories[np.where(d_angles==i)], axis=0)
         
     if plot_fig:
-        fig, ax = plt.subplots(1, 1, figsize=(3, 3));
+        fig, ax = plt.subplots(1, 1, figsize=(5, 3));
         ax.plot(bins, tunings)
+        ax.set_xlabel("Angle")
+        ax.set_ylabel("Average activity") 
+        ax.set_xticks([-np.pi,np.pi], [r'$-\pi$', r'$\pi$'])
         fig.show()
-        plt.close()
+        # plt.close()
         
     return bins, tunings
 
@@ -2133,7 +2187,7 @@ def plot_centered_tuning(trajectories, tunings=None, target=None, nbins=10, wind
     makedirs(folder)
 
     if not np.any(tunings):
-        tunings = tuning_curves(trajectories[:,:,:], target[:,:,:], nbins=nbins, plot_fig=False)
+        bins, tunings = tuning_curves(trajectories, target, nbins=nbins, plot_fig=False)
     bins = np.arange(-np.pi, np.pi, np.pi/int(nbins/2))
 
     fig, ax = plt.subplots(1, 1, figsize=(5, 3));
@@ -2144,12 +2198,12 @@ def plot_centered_tuning(trajectories, tunings=None, target=None, nbins=10, wind
         ax.set_xlabel("Angle")
         ax.set_ylabel("Average activity") 
         ax.set_xticks([-np.pi,np.pi], [r'$-\pi$', r'$\pi$'])
-        plt.savefig(folder+f'/tuning_{exp_i}.pdf', bbox_inches="tight")
-        plt.close()
+        plt.savefig(folder+'/tuning.pdf', bbox_inches="tight")
+        # plt.close()
             
     else:
         for i in range(trajectories.shape[-1]):
-            ax.plot(bins, np.roll(tunings[:,i], -np.argmax(tunings[:,i])+int(nbins/2)))
+            # ax.plot(bins, np.roll(tunings[:,i], -np.argmax(tunings[:,i])+int(nbins/2)))
     
             arr = tunings[:,i]
             num_sequences = len(arr) - window_size + 1
@@ -2158,25 +2212,23 @@ def plot_centered_tuning(trajectories, tunings=None, target=None, nbins=10, wind
             averages = np.zeros(num_sequences)
     
             # Calculate averages for each overlapping sequence
+            window_shift = int(window_size/2)
             for j in range(num_sequences):
-                averages[j] = np.mean(arr[j:j+window_size])
+                averages[j] = np.mean(arr[j-window_shift:j+window_shift])
                 
             ax.plot(bins, np.roll(tunings[:,i], -np.argmax(averages)-int(window_size/2)+int(nbins/2)))
         ax.set_xlabel("Angle")
         ax.set_ylabel("Average activity")    
         ax.set_xticks([-np.pi,np.pi], [r'$-\pi$', r'$\pi$'])
-        plt.savefig(folder+f'/tuning_centered_{exp_i}.pdf', bbox_inches="tight")
-        plt.close()
+        plt.savefig(folder+'/tuning_centered.pdf', bbox_inches="tight")
+        # plt.close()
         
         
 def load_all(exp_name, exp_i, which='post'):
     folder = parent_dir+"/experiments/" + exp_name
-    exp_list = glob.glob(folder + "/result*")    
-    # exp = exp_list[exp_i]
-    wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(folder, exp_i, which)
+    wi, wrec, wo, brec, h0, oth, training_kwargs, losses = get_params_exp(folder, exp_i, which)
     net, _ = load_net(exp_name, exp_i, which)
-
-    return net, wi, wrec, wo, brec, h0, oth, training_kwargs
+    return net, wi, wrec, wo, brec, h0, oth, training_kwargs, losses
 
 # if __name__ == "__main__":
 #     main_exp_name='angular_integration/recttanh_N100_T128/'
@@ -2244,12 +2296,12 @@ if False:
     num_of_inputs = 111
     angle_init = 'random'
     input_range = (-.2, .2)   
+    input_type = 'constant'
 
     plot_from_to = (T-1*input_length,T)
     pca_from_to = (0,input_length)
     slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
     
-    input_type = 'constant'
     cmap = cmx.get_cmap("tab10")
     cmap = cmx.get_cmap("coolwarm")
 
