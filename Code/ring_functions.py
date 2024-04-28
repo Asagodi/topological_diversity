@@ -50,21 +50,17 @@ def get_theory_weights(N):
     W = scipy.linalg.circulant(row)
     return W
 
-# def relu_ode(t,x,W, b=0):
-#     return ReLU(np.dot(W,x)+b) - x 
-
 def relu_ode(t,x,W,b,tau, mlrnn=True):
-
     if mlrnn:
         return (-x + ReLU(np.dot(W,x)+b))/tau
     else:
         return (-x + np.dot(W,ReLU(x))+b)/tau
 
-def sigmoid_ode(t,x,W):
-    return sigmoid(np.dot(W,x)) - x 
+def sigmoid_ode(t,x,W,b,tau):
+    return (-x+sigmoid(np.dot(W,x)+b))/tau
 
-def tanh_ode(t,x,W):
-    return np.tanh(np.dot(W,x)) - x 
+def tanh_ode(t,x,W,b,tau):
+    return (-x+np.tanh(np.dot(W,x)+b))/tau
 
 
 def lax_ode(t,x):
@@ -77,7 +73,7 @@ def lax_ode(t,x):
 
 def g_lax(x,y):
     if x>0 and y>0:
-        return [1,1]
+        return [-1,-1]
     elif x>0 and y<0:
         return [-1,1]
     elif x<0 and y>0:
@@ -584,20 +580,20 @@ def ode_lowrank(t, x, Sigma):
 def ring_nef(N, j0, j1):
     "Barak 2021"
     x = np.arange(0,N,1)
-    row = np.cos(2*np.pi*x/N)
+    row = np.cos(-2*np.pi*x/N-np.pi)
     W = j0 + j1*scipy.linalg.circulant(row)
     
     return W
 
 
-def simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=501):
+def simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=501, tau=1):
     
     N = W.shape[0]
     if not np.any(y0):
-        y0 = np.random.uniform(0,1,N)
+        y0 = np.random.uniform(0,10,N)
     t = np.linspace(0, maxT, tsteps)
     sol = solve_ivp(relu_ode, y0=y0,  t_span=[0,maxT],
-                    args=tuple([W, -np.cos(I_e)]),
+                    args=tuple([W, I_e, tau]),
                     dense_output=True)
     return sol.sol(t)
 
@@ -642,9 +638,10 @@ def get_noormanring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
     
     input_range=(-1.,1.)
     T = 500
-    res = get_hidden_trajs(net, T=T, dt_task=dt, input_length=T, 
-                         num_of_inputs=num_of_inputs, input_range=input_range,
-                         input_type='constant', random_angle_init=False, task=None)
+    #TODO: update to current def
+    # res = get_hidden_trajs(net, T=T, dt_task=dt, input_length=T, 
+    #                      num_of_inputs=num_of_inputs, input_range=input_range,
+    #                      input_type='constant', random_angle_init=False, task=None)
     
     trajectories, traj_pca, h0_pca, input, target, output, input_proj, pca, explained_variance = res
     xylims=[-1.5,1.5]
@@ -656,4 +653,17 @@ def get_noormanring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
     
     
 if __name__ == "__main__": 
-    get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
+    # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
+    
+    N = 10
+    j0 = 0
+    j1 = 3
+    W = ring_nef(N, j0, j1)
+    I_e = 2
+    tsteps=501
+    traj = simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=tsteps)
+    
+    batch_size = 100
+    new_sols = np.zeros((batch_size, tsteps, N))
+    for i in range(batch_size):
+        new_sols[i,:] = simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=tsteps).T#[:,-1]
