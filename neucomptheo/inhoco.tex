@@ -93,6 +93,7 @@ Consequences for what can be an implementation of a (inho) computation.
 
 \section*{Open questions}
 
+Readout \citep{myers2022}
 Output mapping: What can we say when $g$ is nonlinear?
 - if monotonous: separability of boas is still required (?)
 
@@ -112,7 +113,7 @@ Similar: \citep{casey1996}
 1142-1143:
 or the sake of understanding the results in this paper, one can think of attractors rather than $\epsilon$-pseudoattractors since it follows from the definition that the existence of an $\epsilon$-pseudoattractor will imply the existence of an attractor for the noiseless system, and if the noiseless system's attractor is sufficiently robust (as attracting fixed points, in particular, generally are) then there will be a corresponding $\epsilon$-pseudoattractorfor sufficiently low levels of noise.
 
-Intuitively, an $\epsilon$-pseudoattractor is just a very robust attractor, and corresponds to an oscillation or a steady state of the system that is robust in the sense that a slightly perturbed system will settle to one of these asymptotic behaviors that is stable in the sense that once the system has been perturbed into one of these behaviors the ambient noise in the system will not be sufficient to kick the system out of that behavior [though changing the input to the system will often do so (and will necessarily do so in RNNs performing certain types of computation which we will describe)].
+Intuitively, an $\epsilon$-pseudoattractor is just a very robust attractor, and corresponds to an oscillation or a steady state of the system that is robust in the sense that a slightly perturbed system will settle to one of these asymptotic behaviors that is stable in the sense that once the system has been perturbed into one of these behaviors the ambient noise in the system will not be sufficient to kick the system out of that behavior [though changing the input to the system will often do so (and will necessarily do so in RNNs performing certain types of computation which we will describe).
 
 
 
@@ -137,6 +138,8 @@ We define the implemented (neural) computation as an input-output mapping for ti
 o(t) = \varphi(\{u(t)\}_{t\in T})
 \end{equation}
 where $o(t)$ is the target output for each time point $t\in T$ and the input  $u:\reals_{+}\to \reals^{m}$  is a Lebesgue measurable essentially bounded external input.
+
+Causal + continuous \citep{lanthaler2023}
 
 Internal dynamics is a non-autonomous ODE, driven by input $u(t)$:
 \begin{align}
@@ -447,7 +450,7 @@ Let $\{M_1, \dots, M_n\}$ be any finite ordered collection of invariant sets wit
 \begin{definition}[$\epsilon$-pseudoattractor]
 A subset of $\mathcal{R}_\epsilon(f)$, $\mathcal{A}$, is an$\epsilon$-pseudoattractor or behavior if
 \begin{enumerate}
-\item  it is a subset of $\mathcal{R}_\epsilon(f)$ having a dense $\epsilon$-pseudo-orbit that is maximal in the sense that there is no s that is dense in a set            $\mathcal{B}$ of which  $\mathcal{A}$ is a proper subset, and
+\item  it is a subset of $\mathcal{R}_\epsilon(f)$ having a dense $\epsilon$-pseudo-orbit that is maximal in the sense that there is no s that is dense in a set  $\mathcal{B}$ of which  $\mathcal{A}$ is a proper subset, and
 \item  $\mathcal{A}$ is a proper subset the $\epsilon$-pseudobasin of attraction, which is the set of all points whose $\epsilon$-pseudo-orbits are eventually contained in  $\mathcal{A}$, and is denoted $\rho(A)$.
 \end{enumerate}
 \end{definition}
@@ -479,7 +482,8 @@ For both deterministic and non-deterministic FSMs, it is conventional to allow  
 
 
 \begin{remark}
-A finite-state machine has the same computational power as a Turing machine that is restricted such that its head may only perform "read" operations, and always has to move from left to right. That is, each formal language accepted by a finite-state machine is accepted by such a kind of restricted Turing machine, and vice versa.
+A finite-state machine has the same computational power as a Turing machine that is restricted such that its head may only perform ``read" operations, and always has to move from left to right.
+ That is, each formal language accepted by a finite-state machine is accepted by such a kind of restricted Turing machine, and vice versa.
 \end{remark}
 
 
