@@ -16,6 +16,7 @@ import math
 import scipy
 from scipy.integrate import odeint, DOP853, solve_ivp
 from matplotlib.ticker import MaxNLocator
+from sklearn.decomposition import PCA
 
 import sklearn
 import sklearn.decomposition
@@ -857,6 +858,62 @@ def sim_burak(N, extinp, inh, R, umax, dtinv,
     S = scipy.ravel(S)
     return activities
 
+
+
+def perturb_and_simulate(W, b,nonlin=tanh_ode, tau=10, maxT=100000, tsteps=100001, Nsim=100, n_components=10,
+    ):
+    
+    N=W.shape[0]
+    t = np.linspace(0, maxT, tsteps)
+    sols = np.zeros((Nsim, t.shape[0], N))
+    for i in range(Nsim):
+        y0 = np.random.uniform(0,1,N)
+    
+        sol = solve_ivp(tanh_ode, y0=y0,  t_span=[0,maxT],
+                        args=tuple([W, b, tau]),
+                        dense_output=True)
+    
+        trajectories = sol.sol(t)
+        sols[i,...] = trajectories.T
+        
+    pca = PCA(n_components=n_components)
+    invariant_manifold = sols[:,-4:,:].reshape((-1,N))
+    pca.fit(invariant_manifold)
+    invariant_manifold = sols[:,-4:,:].reshape((-1,N))
+    sols_pca = pca.transform(invariant_manifold).reshape((Nsim,-1,n_components))
+    output_angle = np.arctan2(sols_pca[...,1], sols_pca[...,0])
+    thetas = np.ravel(output_angle)
+    idx = np.argsort(thetas)
+    thetas_sorted = thetas[idx]
+    thetas_sorted[-1] = np.pi
+    vals = sols[:,-1,:].reshape((Nsim,N))[idx]
+    vals[-1] = vals[0]
+    cs = scipy.interpolate.CubicSpline(thetas_sorted, vals, bc_type='periodic')
+    xs = np.arange(-np.pi, np.pi, np.pi/Nsim*2);
+    ring_points=cs(xs)
+    xs = np.arange(-np.pi, np.pi, np.pi/1000)
+    csxapca=pca.transform(cs(xs))
+    for j in range(25):
+        print("Simulation ", j)
+        np.random.seed(1000+j); epsilon=0.001; Wepsilon = W+epsilon*np.random.normal(0,1,((N,N)))
+        
+        sols_pert = np.zeros((Nsim, t.shape[0], N))
+        for i in range(Nsim):
+            y0 = ring_points[i,:]
+        
+            sol = solve_ivp(nonlin, y0=y0,  t_span=[0,maxT], args=tuple([Wepsilon, b, tau]),
+                            dense_output=True)
+        
+            trajectories = sol.sol(t)
+            sols_pert[i,...] = trajectories.T
+        sols_pert_pca = pca.transform(sols_pert[:,::1000,:].reshape((-1,N))).reshape((Nsim,-1,n_components))
+        
+        fig, ax = plt.subplots(1, 1, figsize=(3, 3));
+        plt.scatter(csxapca[:,0], csxapca[:,1], s=.1);
+        plt.scatter(sols_pert_pca[:,-1,0], sols_pert_pca[:,-1,1])
+        for i in range(Nsim):
+            plt.plot(sols_pert_pca[i,:,0], sols_pert_pca[i,:,1], 'k',alpha=.1)
+        plt.show()
 
     
 if __name__ == "__main__": 
