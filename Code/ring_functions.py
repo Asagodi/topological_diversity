@@ -40,8 +40,8 @@ from plot_losses import get_hidden_trajs, plot_output_trajectory
 def ReLU(x):
     return np.where(x<0,0,x)
 
-def sigmoid(x):
-    return 1/(1+np.exp(-x))
+def sigmoid(x,g=1):
+    return 1/(1+np.exp(-g*x))
 
 def get_theory_weights(N):
     #𝑤𝑖𝑗~ cos(𝜃𝑖 − 𝜃𝑗 )
@@ -56,8 +56,8 @@ def relu_ode(t,x,W,b,tau, mlrnn=True):
     else:
         return (-x + np.dot(W,ReLU(x))+b)/tau
 
-def sigmoid_ode(t,x,W,b,tau):
-    return (-x+sigmoid(np.dot(W,x)+b))/tau
+def sigmoid_ode(t,x,W,b,tau,g=1):
+    return (-x+sigmoid(np.dot(W,x)+b,g=g))/tau
 
 def tanh_ode(t,x,W,b,tau):
     return (-x+np.tanh(np.dot(W,x)+b))/tau
@@ -652,6 +652,213 @@ def get_noormanring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
                                cmap=cmap)
     
     
+def make_gaussian_connection_matrix(N, sigma):
+    #GOODRIDGE et al
+    #Modeling Attractor Deformation in the Rodent Head-Direction System
+    x = np.arange(-N/2,N/2,1)*2*np.pi/N
+    x = np.arange(-180,180,180/(1/2*N))
+
+    row = np.exp(-x**2/sigma**2)
+    W = scipy.linalg.circulant(row)
+    return W
+    
+    
+def make_connection_matrix(N, W0, R, ell):
+    #construct a connection matrix as in Couey 2013
+    theta = np.zeros([N])
+    theta[0:N:2] = 0
+    theta[1:N:2] = 1
+    # theta[2:N:4] = 2
+    # theta[3:N:4] = 3
+
+    theta = 0.5*np.pi*theta
+#    theta = arange(N)*2.*pi/float(N) - pi
+    theta = scipy.ravel(theta)
+    xes = np.zeros(N)
+    for x in range(N):
+      xes[x] = x
+    
+    Wgen = np.zeros([N,N], dtype=bool)
+    for x in range(N):
+      xdiff = abs(xes-x-ell*np.cos(theta))
+      xdiff = np.minimum(xdiff, N-xdiff)
+      Wgen[xdiff<R,x] = 1
+    W = np.zeros([N,N])
+    W[Wgen>0.7] = -W0
+    return W, theta
+
+def sim_dyn_one_d_wo(N, extinp, inh, R, dtinv,
+              tau, time, ell, alpha, data, dt):
+    W, theta = make_connection_matrix(N, inh, R, ell)
+    W = scipy.sparse.csc_matrix(W)
+    S = np.zeros(N)
+    for i in range(N):
+      if(np.random.rand()<0.5):
+        S[i] = np.random.rand()  
+    activities = np.zeros([N,time])
+    #Stemp = np.zeros(N)
+    vs = []
+    thetas = []
+    angle_i = 0
+    for t in range(0, time, 1):
+        if t % 25 == 0 and angle_i+1 < len(data): 
+            theta_t = data[angle_i] #- data[angle_i-1] + .5*pi
+            v = np.abs(data[angle_i-1]  - data[angle_i+1])
+            if v > np.pi:
+                v = 2*np.pi - v
+            v *= 40
+            angle_i += 1 
+            vs.append(v)
+            thetas.append(np.cos(theta_t - theta))
+        S = S + 1./(dtinv+tau) * (-S + np.maximum(0., extinp+S*W + alpha * v * np.cos(theta_t - theta)))
+        S[S<0.00001] = 0.
+        activities[:,t] = S
+    return activities, vs, thetas
+
+def sim_dyn_one_d(N, extinp, inh, R, dtinv,
+              tau, time, ell, alpha, data, dt):
+    """perform simulation as in Couey 2013
+    N: number of neurons
+    extinp: external input
+    inh: inhibitory connection strength
+    R: radius of inhibitory connections
+    dtinv: inverse of step size
+    tau: 
+    time: to perform the simulation
+    ell: shift of neuron preference for direction
+    alpha: coupling to head direction
+    data: positions: posx, posy
+    dt: timestep size to calculate head direction and velocity 
+    """
+    W, theta = make_connection_matrix(N, inh, R, ell)
+    W = sparse.csc_matrix(W)
+#    posx = data[0]
+#    posy = data[1]
+
+    S = zeros(N)
+    for i in range(N):
+      if(rand()<0.5):
+        S[i] = rand()
+        
+    activities = zeros([N,time])
+    Stemp = zeros(N)
+    vs = []
+    thetas = []
+    angle_i = 0
+    
+    FFMpegWriter = animation.writers['ffmpeg']
+    writer = FFMpegWriter(fps=15, metadata=dict(title=''))
+    fig = plt.figure(2)
+    with writer.saving(fig, 'mav2.mp4', 300):
+        for t in range(0, time, 1):
+        ##use if animal position is given:
+#        if t % 100 == 0 and t + 500 < time:
+#            tn = t / 5
+#            v = 10*np.sqrt((posy[tn+50]-posy[tn-50])**2 + (posx[tn+50]-posx[tn-50])**2)
+#            theta_t = arctan2( posy[tn+dt]-posy[tn-dt], posx[tn+dt]-posx[tn-dt]) + 0.5*pi*theta
+            
+            ##use if animal head direction is given:
+            if t % 25 == 0 and angle_i+1 < len(data): 
+                theta_t = data[angle_i] #- data[angle_i-1] + .5*pi
+                v = np.abs(data[angle_i-1]  - data[angle_i+1])
+                if v > pi:
+                    v = 2*pi - v
+                v *= 40
+                angle_i += 1 
+                vs.append(v)
+                thetas.append(cos(theta_t - theta))
+    
+            S = S + 1./(dtinv+tau) * (-S + maximum(0., extinp+S*W + alpha * v * cos(theta_t - theta)))
+            S[S<0.00001] = 0.
+            activities[:,t] = S
+#            if (10*t) % (time) == 0:
+#                print("Process:" + str(100*t/time) + '%')
+#            
+            if(t<5000 and mod(t,10)==0):
+                plt.clf()
+                ax = plt.subplot(2,2,1)
+                ax.plot(S, '-')
+#                plt.plot([ni, ni], [min(S),max(S)], '-', color='red')
+#                plt.ylabel('neural activity')
+#                plt.xlabel('neurons')
+                ax = fig.add_subplot(2,2,2)
+                ang=theta_t
+                x0 = cos(ang)*0.5
+                y0 = sin(ang)*0.5
+                ax.plot([0,x0], [0,y0])
+                ax.axis([-0.5, 0.5, -0.5, 0.5])
+                writer.grab_frame()
+                plt.xlabel('heading direction')
+    return activities, vs, thetas
+
+
+def make_burak_1d(N, inh, R, ell, lambda_net):
+    theta = np.zeros([N])
+    theta[0:N:2] = 0
+    theta[1:N:2] = 2
+    theta = 0.5*np.pi*theta
+    theta = scipy.ravel(theta)
+    
+    beta = 3./(lambda_net**2)
+    gamma = 1.05*beta
+    W = np.zeros([N,N])
+    for x in range(N):
+        for y in range(N):
+            xdiff = abs(x-y-ell*np.cos(theta[y]))
+#            print(x, y, xdiff)
+            W[x, y] = np.exp(-gamma*xdiff) - np.exp(-beta*xdiff)
+#            print(W[x, y])
+#
+    return W, theta
+
+def make_burak(n, inh, R, ell, lambda_net=13, a=1):
+    N = n**2
+    submatrix = np.array([[0, 1], [2, 3]])*0.5*np.pi
+    theta = np.kron(np.ones((N//2, N//2)), submatrix)
+    theta = np.ravel(theta)
+    
+    beta = 3./(lambda_net**2)
+    gamma = 1.05*beta
+    W = np.zeros([N,N])
+    for i in range(N):
+        for j in range(N):
+            x_i = np.array([i%n,i//n])
+            x_j = np.array([j%n,j//n])
+            xdiff = x_i-x_j-ell*np.cos(theta[j])
+#            print(x, y, xdiff)
+            W[i, j] = a*np.exp(-gamma*np.linalg.norm(xdiff)) - np.exp(-beta*np.linalg.norm(xdiff))
+#            print(W[x, y])
+#
+    return W, theta
+
+def sim_burak(N, extinp, inh, R, umax, dtinv,
+              tau, time, ell, alpha, lambda_net):
+    W, theta = make_burak(N, inh, R, ell, lambda_net)
+    W = scipy.sparse.csc_matrix(W)
+
+    S = np.zeros(N)
+    ## generate random activity (doesn't matter much)
+    for i in range(N):
+      if(np.random.rand()<0.5):
+        S[i] = np.random.rand()
+        
+    activities = np.zeros([N,time])
+    #Stemp = np.zeros(N)
+    for t in range(0, time, 1):
+        v = .0
+        if t % 10000 == 0:
+            theta_t = 0.5*np.pi*np.random.choice([0])
+#            print(theta_t,  alpha * v* cos(theta_t - theta))
+        S = S + 1./(dtinv+tau) * (-S + np.maximum(0., extinp+S*W + alpha * v * np.cos(theta_t - theta)))
+        S[S<0.00001] = 0.
+        activities[:,t] = S
+        if 10*t % time == 0:
+            print("Process:" + str(100*t/time) + '%')
+    S = scipy.ravel(S)
+    return activities
+
+
+    
 if __name__ == "__main__": 
     # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
     
@@ -659,7 +866,7 @@ if __name__ == "__main__":
     j0 = 0
     j1 = 3
     W = ring_nef(N, j0, j1)
-    I_e = 2
+    I_e = -1
     tsteps=501
     traj = simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=tsteps)
     
