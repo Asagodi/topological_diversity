@@ -887,6 +887,7 @@ def random_rank_r_matrix(N, r):
 
 def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
                          maxT=1000, tsteps=1001, Nsim=100, n_components=10):
+    folder = "C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/wt_pert"
     colors = colors=np.array(['k', 'r', 'g'])
     N=W.shape[0]
     t = np.linspace(0, maxT, tsteps)
@@ -960,6 +961,10 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
         for i in range(Nsim):
             plt.plot(sols_pert_pca[i,:,0]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), sols_pert_pca[i,:,1]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), 'k',alpha=1)
         ax.set_axis_off()
+        ax.set_xlim([-1.1,1.1])
+        ax.set_ylim([-1.1,1.1])
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None)
+        fig.savefig(folder+f"/ring_pert_eps{epsilon:.10f}.png")
         plt.show()
     
     return Nfxd_pnts
