@@ -859,6 +859,31 @@ def sim_burak(N, extinp, inh, R, umax, dtinv,
     return activities
 
 
+def random_rank_1_matrix(N):
+    m, n = N, N
+    
+    # Generate two random vectors
+    v1 = np.random.rand(m)
+    v2 = np.random.rand(n)
+    
+    # Compute the outer product of the two vectors
+    matrix = np.outer(v1, v2)
+    return matrix
+
+def random_rank_r_matrix(N, r):
+    if r > N:
+        raise ValueError("Argument 'r' must not be smaller than 'N'")
+    m, n = N, N
+    
+    # Generate two random matrices
+    A = np.random.rand(m, r)
+    B = np.random.rand(r, n)
+
+    # Compute the matrix product of the two matrices
+    matrix = np.dot(A, B)
+    
+    return matrix
+
 
 def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
                          maxT=1000, tsteps=1001, Nsim=100, n_components=10):
@@ -879,7 +904,7 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
     pca = PCA(n_components=n_components)
     invariant_manifold = sols[:,-4:,:].reshape((-1,N))
     pca.fit(invariant_manifold)
-    invariant_manifold = sols[:,-4:,:].reshape((-1,N))
+    invariant_manifold = sols[:,-1,:].reshape((-1,N))
     sols_pca = pca.transform(invariant_manifold).reshape((Nsim,-1,n_components))
     output_angle = np.arctan2(sols_pca[...,1], sols_pca[...,0])
     thetas = np.ravel(output_angle)
@@ -899,7 +924,7 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
         
         #for non-persistence bifurcation:
             #second positive eigenvalue?
-        #epsilon=.000002*200+.01*j; Wepsilon = W+epsilon*np.random.normal(0,1,((N,N)))
+        #np.random.seed(20000+20); epsilon=.000002*200+.01*j; Wepsilon = W+epsilon*np.random.normal(0,1,((N,N)))
         
         sols_pert = np.zeros((Nsim, t.shape[0], N))
         for i in range(Nsim):
