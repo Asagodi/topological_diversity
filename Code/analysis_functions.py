@@ -843,6 +843,11 @@ def get_fps_fpf():
     from_t = 0
     invariant_manifold = trajectories[:,from_t:,:]
     fig = plot_fps(fps[1], state_traj=invariant_manifold); fig.savefig(folder+'/fpf_traj.pdf', bbox_inches="tight")
+    
+    
+def is_nonnormal(A):
+    A_star = A.conj().T
+    return not np.allclose(np.dot(A, A_star), np.dot(A_star, A))
 
 #MORSE
 def get_connection_matrix(fixed_point_cubes, RCs, cds_full):
