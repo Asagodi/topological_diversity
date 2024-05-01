@@ -654,7 +654,7 @@ def get_noormanring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
     
     
 def make_gaussian_connection_matrix(N, sigma):
-    #GOODRIDGE et al
+    #GOODRIDGE et al 
     #Modeling Attractor Deformation in the Rodent Head-Direction System
     x = np.arange(-N/2,N/2,1)*2*np.pi/N
     x = np.arange(-180,180,180/(1/2*N))
@@ -860,9 +860,9 @@ def sim_burak(N, extinp, inh, R, umax, dtinv,
 
 
 
-def perturb_and_simulate(W, b,nonlin=tanh_ode, tau=10, maxT=100000, tsteps=100001, Nsim=100, n_components=10,
-    ):
-    
+def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
+                         maxT=1000, tsteps=1001, Nsim=100, n_components=10):
+    colors = colors=np.array(['k', 'r', 'g'])
     N=W.shape[0]
     t = np.linspace(0, maxT, tsteps)
     sols = np.zeros((Nsim, t.shape[0], N))
@@ -889,13 +889,17 @@ def perturb_and_simulate(W, b,nonlin=tanh_ode, tau=10, maxT=100000, tsteps=10000
     vals = sols[:,-1,:].reshape((Nsim,N))[idx]
     vals[-1] = vals[0]
     cs = scipy.interpolate.CubicSpline(thetas_sorted, vals, bc_type='periodic')
-    xs = np.arange(-np.pi, np.pi, np.pi/Nsim*2);
-    ring_points=cs(xs)
+    thetas_init = np.arange(-np.pi, np.pi, np.pi/Nsim*2);
+    ring_points=cs(thetas_init)
     xs = np.arange(-np.pi, np.pi, np.pi/1000)
     csxapca=pca.transform(cs(xs))
+    Nfxd_pnt_list = []
     for j in range(25):
-        print("Simulation ", j)
         np.random.seed(1000+j); epsilon=0.001; Wepsilon = W+epsilon*np.random.normal(0,1,((N,N)))
+        
+        #for non-persistence bifurcation:
+            #second positive eigenvalue?
+        #epsilon=.000002*200+.01*j; Wepsilon = W+epsilon*np.random.normal(0,1,((N,N)))
         
         sols_pert = np.zeros((Nsim, t.shape[0], N))
         for i in range(Nsim):
@@ -906,14 +910,36 @@ def perturb_and_simulate(W, b,nonlin=tanh_ode, tau=10, maxT=100000, tsteps=10000
         
             trajectories = sol.sol(t)
             sols_pert[i,...] = trajectories.T
-        sols_pert_pca = pca.transform(sols_pert[:,::1000,:].reshape((-1,N))).reshape((Nsim,-1,n_components))
+        sols_pert_pca = pca.transform(sols_pert[:,:,:].reshape((-1,N))).reshape((Nsim,-1,n_components))
+        
+        thetas = np.arctan2(sols_pert_pca[:,:,1], sols_pert_pca[:,:,0]);
+        theta_unwrapped = np.unwrap(thetas, period=2*np.pi);
+        theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0);
+        arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
+        idx=[i for i, t in enumerate(zip(arr, arr[1:])) if t[0] != t[1]]; 
+        stabilities=-arr[idx].astype(int)
+        fxd_pnt_thetas = thetas_init[idx]
+        fxd_pnts = np.array([np.cos(fxd_pnt_thetas), np.sin(fxd_pnt_thetas)]).T
+        if fxd_pnts.shape[0]%2==1:
+            fxd_pnts=np.vstack([fxd_pnts,[-1,0]])
+            stabilities=np.append(stabilities, -np.sum(stabilities))
+            
+        Nfxd_pnts = fxd_pnts.shape[0]
+        Nfxd_pnt_list.append(Nfxd_pnts)
+        print("Simulation ", j, " number of fixed points: ", Nfxd_pnts)
         
         fig, ax = plt.subplots(1, 1, figsize=(3, 3));
-        plt.scatter(csxapca[:,0], csxapca[:,1], s=.1);
-        plt.scatter(sols_pert_pca[:,-1,0], sols_pert_pca[:,-1,1])
+        plt.scatter(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1), s=.1);
+        plt.scatter(fxd_pnts[:,0], fxd_pnts[:,1], color=colors[stabilities], zorder=1000)
+        
         for i in range(Nsim):
-            plt.plot(sols_pert_pca[i,:,0], sols_pert_pca[i,:,1], 'k',alpha=.1)
+            plt.plot(sols_pert_pca[i,:,0]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), sols_pert_pca[i,:,1]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), 'k',alpha=1)
+        ax.set_axis_off()
         plt.show()
+    
+    return Nfxd_pnts
+
+
 
     
 if __name__ == "__main__": 
