@@ -192,7 +192,6 @@ def noorman_fixed_points(W_sym, c_ff):
         
         #check true fixed point
         negativity_condition = True
-        # print(r, [item for item in range(N) if item not in r])
         for i in r:
             if fixed_point[i] <= 0:
                 negativity_condition = False
@@ -920,9 +919,17 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
     xs = np.arange(-np.pi, np.pi, np.pi/1000)
     csxapca=pca.transform(cs(xs))
     Nfxd_pnt_list = []
+    perf_list = []
+    eps_list = []
+    Wpert_list = []
+    perf = 1
     for j in range(25):
-        np.random.seed(1000+j); epsilon=0.001; Wepsilon = W+epsilon*np.random.normal(0,1,((N,N)))
-        
+        if perf==0:
+            break
+        np.random.seed(1000+j); epsilon=0.001; 
+        Wpert = W+epsilon*np.random.normal(0,1,((N,N)))
+        eps_list.append(epsilon)
+        Wpert_list.append(Wpert)
         #for non-persistence bifurcation:
             #second positive eigenvalue?
         #np.random.seed(20000+20); epsilon=.000002*200+.01*j; Wepsilon = W+epsilon*np.random.normal(0,1,((N,N)))
@@ -931,7 +938,7 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
         for i in range(Nsim):
             y0 = ring_points[i,:]
         
-            sol = solve_ivp(nonlin, y0=y0,  t_span=[0,maxT], args=tuple([Wepsilon, b, tau]),
+            sol = solve_ivp(nonlin, y0=y0,  t_span=[0,maxT], args=tuple([Wpert, b, tau]),
                             dense_output=True)
         
             trajectories = sol.sol(t)
@@ -952,8 +959,18 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
             
         Nfxd_pnts = fxd_pnts.shape[0]
         Nfxd_pnt_list.append(Nfxd_pnts)
-        print("Simulation ", j, " number of fixed points: ", Nfxd_pnts)
         
+        boas = []
+        for i in range(0,Nfxd_pnts,2):
+            boa = (fxd_pnt_thetas[i+1]-fxd_pnt_thetas[i-1])% (2*np.pi)
+            boas.append(boa/np.pi/2)
+        if Nfxd_pnts>2:
+            perf = -np.sum([boa*np.log(boa) for boa in boas])
+        else:
+            perf=0
+        perf_list.append(perf)
+        
+        print("Simulation ", j, " number of fixed points: ", Nfxd_pnts, "Perf:", perf)        
         fig, ax = plt.subplots(1, 1, figsize=(3, 3));
         plt.scatter(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1), s=.1);
         plt.scatter(fxd_pnts[:,0], fxd_pnts[:,1], color=colors[stabilities], zorder=1000)
