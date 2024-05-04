@@ -986,9 +986,13 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
     
     return Nfxd_pnts
 
-
-
-def make_low_rank_ring(Si=2, rho=1.6, g=2.1, N = 4000):
+sys.path.append("C:/Users/abel_/Documents/Lab/Software/LowRank/6_ContinuousAttractor")
+import fct_mf as mf
+import fct_simulations as sim
+import fct_facilities as fac
+import fct_integrals as integ
+import time as tm
+def make_low_rank_ring(Si=2, rho=1.6, g=2.1, N=4000):
     #ostojic, mastrogiuseppe
     R = g * sim.GetBulk (N)
 
@@ -1007,7 +1011,126 @@ def make_low_rank_ring(Si=2, rho=1.6, g=2.1, N = 4000):
     
     M = ( np.outer( m1 , n1 ) + np.outer( m2 , n2 ) ) / N
     J = R+M
-    return J
+    return J, n1, n2
+
+def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
+    folder = 'C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/ostojic/N100_si2_rho1.9_g0_100samples/'
+    makedirs(folder)
+    stab_colors = ['k', 'r', 'g']
+    Nfxpnts_list=[]
+    np.random.seed(1111)
+    for simi in range(Nsims,24):
+        0
+        J, n1, n2 = make_low_rank_ring(Si=Si, rho=rho, g=g, N=N)
+
+    for simi in range(24,Nsims):
+
+        ### Set parameters
+        ParVec = [rho, Si]
+        
+        #### #### #### #### #### #### #### #### #### #### #### #### #### #### #    ### #### #### #### #### #### 
+        ### Compute DMF prediction
+        # Stationary solution
+        K1, K2, delta0_s = mf.SolveStatic ( [5., 5., 5.], g, ParVec )
+        ic_0 = [ K1, K2, 1.*delta0_s, 0.5*delta0_s] 
+        
+        # Chaotic solution
+        K1, K2, delta0_c, deltainf_c = mf.SolveChaotic ( ic_0, g, ParVec )
+        radius_attractor = np.sqrt( K1**2 + K2**2 )
+        
+        J, n1, n2 = make_low_rank_ring(Si=Si, rho=rho, g=g, N=N)
+        
+        #### #### #### #### #### #### #### #### #### #### #### #### #### #### #    ### #### #### #### #### #### 
+        # Simulation
+        
+        T = 5        # Total time of integration, expressed in time constants o    f single units
+        deltat = 0.1
+        t = np.linspace( 0, T, int(T/deltat) )
+        
+        Ntrials = 256*16
+        Nsample = N
+        
+        x = np.linspace(0, 10, int(Ntrials))
+    
+        K1_sim = np.zeros (( Ntrials, len(t) ))
+        K2_sim = np.zeros (( Ntrials, len(t) ))
+        Z_sample = np.zeros (( Ntrials, len(t), Nsample ))
+        for j in range(Ntrials):
+    
+            Z = sim.SimulateActivity ( t, sim.GetGaussianVector( 0, 1, N), J, I    =0 )
+    
+            Z_sample[j,:,:] = Z[:, 0:Nsample]
+            K1_sim[j,:] = np.dot(np.tanh(Z), n1) / N
+            K2_sim[j,:] = np.dot(np.tanh(Z), n2) / N
+        
+        
+        T = 200     
+        deltat = 0.1
+        t = np.linspace( 0, T, int(T/deltat) )  
+        K1_sim_long = np.zeros (( Ntrials, len(t) ))
+        K2_sim_long = np.zeros (( Ntrials, len(t) ))
+        Z_sample_long = np.zeros (( Ntrials, len(t), Nsample ))  
+        for j in range(Ntrials):
+        
+            Z = sim.SimulateActivity ( t, Z_sample[j,-1,:], J, I=0 )
+            Z_sample_long[j,:,:] = Z[:, 0:Nsample]
+            K1_sim_long[j,:] = np.dot(np.tanh(Z), n1) / N
+            K2_sim_long[j,:] = np.dot(np.tanh(Z), n2) / N
+        
+        thetas = np.arctan2(K1_sim_long[:,:], K2_sim_long[:,:]);
+        sorted_indices=np.argsort(thetas[:,0]);
+        
+        thetas_sorted = thetas[sorted_indices,:]
+        theta_unwrapped = np.unwrap(thetas_sorted, period=2*np.pi);
+        theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0); 
+        arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
+        
+        fxd_pnt_idx=np.array([i for i, t in enumerate(zip(arr, arr[1:])) if t[0] != t[1]]);
+        if fxd_pnt_idx.shape[0]>1:
+            fxd_pnts = np.array([K1_sim_long[sorted_indices,0][fxd_pnt_idx+1], K2_sim_long[sorted_indices,0][fxd_pnt_idx+1]]).T
+            stabilities=-arr[fxd_pnt_idx].astype(int)
+            Nfxpnts = fxd_pnts.shape[0]
+            Nfxpnts_list.append(Nfxpnts)
+        else:
+            Nfxpnts = 0
+            fxd_pnts = np.empy()
+        print("Simulation #: ", simi, "#fps: ", Nfxpnts)
+        
+        fg = plt.figure(figsize=(3,3))
+        ax0 = plt.axes(frameon=True)
+        
+        x = np.linspace(0, 10, int(1e3))
+        
+        plt.plot(radius_attractor*np.cos(x), radius_attractor*np.sin(x), color = '0.8', linewidth = 3.5)
+        
+        for j in range(Ntrials):
+        
+            plt.plot(K1_sim_long[j,:], K2_sim_long[j,:], color='b')  # Trajectory
+       # plt.plot(K1_sim_long[j,0], K2_sim_long[j,0], 'o', color = '0' )  # In    itial condition
+            #plt.plot(K1_sim_long[j,-1], K2_sim_long[j,-1], 'o', color = 'g' )  #     Final condition
+            
+        for i,fp in enumerate(fxd_pnts):
+            plt.scatter(fp[0], fp[1],color=stab_colors[stabilities[i]], zorder=1000    )
+        
+        ax0.spines['top'].set_visible(False)
+        ax0.spines['right'].set_visible(False)
+        ax0.yaxis.set_ticks_position('left')
+        ax0.xaxis.set_ticks_position('bottom')
+        plt.locator_params(nbins=5)
+        
+        #plt.xlim(-0.8, 0.8)
+        #plt.ylim(-0.8, 0.8)
+        
+        plt.xticks([-0.8, 0, 0.8])
+        plt.yticks([-0.8, 0, 0.8])
+        
+        plt.ylabel(r'$m^{(2)}$')
+        plt.xlabel(r'$m^{(1)}$')
+        #plt.legend(loc=2)
+        now=tm.time()
+        plt.savefig(folder+f'plane_m1m2_{Nfxpnts}fp_{int(now)}.pdf', bbox_inches='tight')
+        plt.show()
+    return Nfxpnts_list
 
     
 if __name__ == "__main__": 
