@@ -988,6 +988,27 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
 
 
 
+def make_low_rank_ring(Si=2, rho=1.6, g=2.1, N = 4000):
+    #ostojic, mastrogiuseppe
+    R = g * sim.GetBulk (N)
+
+    y1 = sim.GetGaussianVector( 0, 1, N) # Unit vectors required for the ran    k-two structure (see Methods)
+    y2 = sim.GetGaussianVector( 0, 1, N)
+    
+    x1 = sim.GetGaussianVector( 0, 1, N)
+    x2 = sim.GetGaussianVector( 0, 1, N)
+    x3 = sim.GetGaussianVector( 0, 1, N)
+    x4 = sim.GetGaussianVector( 0, 1, N)
+    
+    m1 = np.sqrt(Si**2 - rho**2)*x1 + rho*y1
+    m2 = np.sqrt(Si**2 - rho**2)*x2 + rho*y2
+    n1 = np.sqrt(Si**2 - rho**2)*x3 + rho*y1
+    n2 = np.sqrt(Si**2 - rho**2)*x4 + rho*y2
+    
+    M = ( np.outer( m1 , n1 ) + np.outer( m2 , n2 ) ) / N
+    J = R+M
+    return J
+
     
 if __name__ == "__main__": 
     # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
