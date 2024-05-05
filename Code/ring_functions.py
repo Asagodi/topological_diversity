@@ -1013,17 +1013,18 @@ def make_low_rank_ring(Si=2, rho=1.6, g=2.1, N=4000):
     J = R+M
     return J, n1, n2
 
+
+def makedirs(dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
 def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
-    folder = 'C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/ostojic/N100_si2_rho1.9_g0_100samples/'
+    folder = f'C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/ostojic/N{N}_si{Si}_rho{rho}_g{g}/'
     makedirs(folder)
     stab_colors = ['k', 'r', 'g']
     Nfxpnts_list=[]
     np.random.seed(1111)
-    for simi in range(Nsims,24):
-        0
-        J, n1, n2 = make_low_rank_ring(Si=Si, rho=rho, g=g, N=N)
-
-    for simi in range(24,Nsims):
+    for simi in range(Nsims):
 
         ### Set parameters
         ParVec = [rho, Si]
@@ -1047,7 +1048,7 @@ def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
         deltat = 0.1
         t = np.linspace( 0, T, int(T/deltat) )
         
-        Ntrials = 256*16
+        Ntrials = 256*32
         Nsample = N
         
         x = np.linspace(0, 10, int(Ntrials))
@@ -1064,7 +1065,7 @@ def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
             K2_sim[j,:] = np.dot(np.tanh(Z), n2) / N
         
         
-        T = 200     
+        T = 20     
         deltat = 0.1
         t = np.linspace( 0, T, int(T/deltat) )  
         K1_sim_long = np.zeros (( Ntrials, len(t) ))
@@ -1093,7 +1094,7 @@ def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
             Nfxpnts_list.append(Nfxpnts)
         else:
             Nfxpnts = 0
-            fxd_pnts = np.empy()
+            fxd_pnts = np.empty((0))
         print("Simulation #: ", simi, "#fps: ", Nfxpnts)
         
         fg = plt.figure(figsize=(3,3))
@@ -1104,12 +1105,14 @@ def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
         plt.plot(radius_attractor*np.cos(x), radius_attractor*np.sin(x), color = '0.8', linewidth = 3.5)
         
         for j in range(Ntrials):
-        
+            #plt.plot(K1_sim[j,:], K2_sim[j,:], color='b')  # Trajectory
             plt.plot(K1_sim_long[j,:], K2_sim_long[j,:], color='b')  # Trajectory
        # plt.plot(K1_sim_long[j,0], K2_sim_long[j,0], 'o', color = '0' )  # In    itial condition
             #plt.plot(K1_sim_long[j,-1], K2_sim_long[j,-1], 'o', color = 'g' )  #     Final condition
             
         for i,fp in enumerate(fxd_pnts):
+            if Nfxpnts==0:
+                break
             plt.scatter(fp[0], fp[1],color=stab_colors[stabilities[i]], zorder=1000    )
         
         ax0.spines['top'].set_visible(False)
