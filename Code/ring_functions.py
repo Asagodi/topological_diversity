@@ -1018,12 +1018,14 @@ def makedirs(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
-def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
+def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000):
     folder = f'C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/ostojic/N{N}_si{Si}_rho{rho}_g{g}/'
     makedirs(folder)
     stab_colors = ['k', 'r', 'g']
     Nfxpnts_list=[]
     np.random.seed(1111)
+    Nsample = N
+
     for simi in range(Nsims):
 
         ### Set parameters
@@ -1047,17 +1049,15 @@ def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
         T = 5        # Total time of integration, expressed in time constants o    f single units
         deltat = 0.1
         t = np.linspace( 0, T, int(T/deltat) )
-        
-        Ntrials = 256*2
-        Nsample = N
-        
         x = np.linspace(0, 10, int(Ntrials))
+
+        
+        
     
         K1_sim = np.zeros (( Ntrials, len(t) ))
         K2_sim = np.zeros (( Ntrials, len(t) ))
         Z_sample = np.zeros (( Ntrials, len(t), Nsample ))
-        for j in range(Ntrials):
-    
+        for j in range(Ntrials):    
             Z = sim.SimulateActivity ( t, sim.GetGaussianVector( 0, 1, N), J, I    =0 )
     
             Z_sample[j,:,:] = Z[:, 0:Nsample]
@@ -1071,7 +1071,6 @@ def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
         K2_sim_long = np.zeros (( Ntrials, len(t) ))
         Z_sample_long = np.zeros (( Ntrials, len(t), Nsample ))  
         for j in range(Ntrials):
-        
             Z = sim.SimulateActivity ( t, Z_sample[j,-1,:], J, I=0 )
             Z_sample_long[j,:,:] = Z[:, 0:Nsample]
             K1_sim_long[j,:] = np.dot(np.tanh(Z), n1) / N
@@ -1134,6 +1133,17 @@ def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
         plt.show()
     return Nfxpnts_list
 
+
+
+def make_biswas_ring(w1, w4):
+    assert w1<1 and w1>0.5, "w1>1 or w1<0.5"
+    # assert w4<f(w1)
+    w2=1-2*w1**2
+    w3=w1*(4*w1**2-3)
+    row = np.array([0, w1, w2, w3, w4, w3, w2, w1])
+    W = scipy.linalg.circulant(row) 
+    return W 
+    
     
 if __name__ == "__main__": 
     # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
