@@ -1048,7 +1048,7 @@ def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
         deltat = 0.1
         t = np.linspace( 0, T, int(T/deltat) )
         
-        Ntrials = 256*32
+        Ntrials = 256*2
         Nsample = N
         
         x = np.linspace(0, 10, int(Ntrials))
@@ -1063,7 +1063,6 @@ def simulate_low_rank_ring(Nsims=100, Si=2, rho=1.6, g=2.1, N=4000):
             Z_sample[j,:,:] = Z[:, 0:Nsample]
             K1_sim[j,:] = np.dot(np.tanh(Z), n1) / N
             K2_sim[j,:] = np.dot(np.tanh(Z), n2) / N
-        
         
         T = 20     
         deltat = 0.1
