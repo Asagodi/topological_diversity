@@ -35,7 +35,7 @@ import matplotlib.colors as mplcolors
 import matplotlib.cm as cmx
 
 from plot_losses import get_hidden_trajs, plot_output_trajectory
-
+from odes import *
 
 
 def ReLU(x):
@@ -1050,21 +1050,33 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
         deltat = 0.1
         t = np.linspace( 0, T, int(T/deltat) )
         x = np.linspace(0, 10, int(Ntrials))
-
+        x = np.linspace(0, 10, int(1e3))
         
-        
-    
+        fg = plt.figure(figsize=(3,3))
+        ax0 = plt.axes(frameon=True)
         K1_sim = np.zeros (( Ntrials, len(t) ))
         K2_sim = np.zeros (( Ntrials, len(t) ))
         Z_sample = np.zeros (( Ntrials, len(t), Nsample ))
+        jumps = []
         for j in range(Ntrials):    
             Z = sim.SimulateActivity ( t, sim.GetGaussianVector( 0, 1, N), J, I    =0 )
-    
             Z_sample[j,:,:] = Z[:, 0:Nsample]
             K1_sim[j,:] = np.dot(np.tanh(Z), n1) / N
             K2_sim[j,:] = np.dot(np.tanh(Z), n2) / N
-        
-        T = 20     
+            
+            thetas = np.arctan2(K1_sim[j,-19:], K2_sim[j,-19:]);
+            sorted_indices=np.argsort(thetas);
+            thetas_sorted = thetas[sorted_indices]
+            theta_unwrapped = np.unwrap(thetas_sorted, period=2*np.pi);
+            theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0); 
+            plt.plot(theta_unwrapped)
+            # print(theta_unwrapped)|
+            index, value = find_biggest_acceleration(theta_unwrapped)
+            jumps.append(value)
+
+        jidx = np.argsort(jumps)
+
+        T = 1
         deltat = 0.1
         t = np.linspace( 0, T, int(T/deltat) )  
         K1_sim_long = np.zeros (( Ntrials, len(t) ))
@@ -1078,17 +1090,18 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
         
         thetas = np.arctan2(K1_sim_long[:,:], K2_sim_long[:,:]);
         sorted_indices=np.argsort(thetas[:,0]);
-        
         thetas_sorted = thetas[sorted_indices,:]
         theta_unwrapped = np.unwrap(thetas_sorted, period=2*np.pi);
         theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0); 
         arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
         
+        
         fxd_pnt_idx=np.array([i for i, t in enumerate(zip(arr, arr[1:])) if t[0] != t[1]]);
         if fxd_pnt_idx.shape[0]>1:
-            fxd_pnts = np.array([K1_sim_long[sorted_indices,0][fxd_pnt_idx+1], K2_sim_long[sorted_indices,0][fxd_pnt_idx+1]]).T
+            fxd_pnts_reduced = np.array([K1_sim_long[sorted_indices,0][fxd_pnt_idx+1], K2_sim_long[sorted_indices,0][fxd_pnt_idx+1]]).T
+            fxd_pnts_full = np.array([Z_sample_long[sorted_indices,0,:][fxd_pnt_idx+1,:]]).squeeze()
             stabilities=-arr[fxd_pnt_idx].astype(int)
-            Nfxpnts = fxd_pnts.shape[0]
+            Nfxpnts = fxd_pnts_reduced.shape[0]
             Nfxpnts_list.append(Nfxpnts)
         else:
             Nfxpnts = 0
@@ -1097,18 +1110,37 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
         
         fg = plt.figure(figsize=(3,3))
         ax0 = plt.axes(frameon=True)
+
+        T = 100000
+        for fp in fxd_pnts_full:
+            jacobian = compute_jacobian(fp, J)
+            eigenvalues, eigenvectors = np.linalg.eig(jacobian)
+            if np.max(np.real(eigenvalues)) > 0 :
+                idx = np.argmax(np.real(eigenvalues))
+                unstable = eigenvectors.T[idx]
+                fp-unstable
+                for sign in [-1,1]:
+                    print(fp+sign*unstable)
+                    Z = sim.SimulateActivity ( t, np.real(fp+sign*unstable), J, I=0 )
+                    K1 = np.dot(np.tanh(Z), n1) / N
+                    K2 = np.dot(np.tanh(Z), n2) / N
+                    plt.plot(K1, K2, color='b')  # Trajectory
+                
         
-        x = np.linspace(0, 10, int(1e3))
+
         
         plt.plot(radius_attractor*np.cos(x), radius_attractor*np.sin(x), color = '0.8', linewidth = 3.5)
         
+        for j in range(5):
+            plt.plot(K1_sim[jidx,:][j,:], K2_sim[jidx,:][j,:], color='k', alpha=1)  # Trajectory
+
         for j in range(Ntrials):
-            #plt.plot(K1_sim[j,:], K2_sim[j,:], color='b')  # Trajectory
+            plt.plot(K1_sim[j,:], K2_sim[j,:], color='orange', alpha=.1)  # Trajectory
             plt.plot(K1_sim_long[j,:], K2_sim_long[j,:], color='b')  # Trajectory
        # plt.plot(K1_sim_long[j,0], K2_sim_long[j,0], 'o', color = '0' )  # In    itial condition
             #plt.plot(K1_sim_long[j,-1], K2_sim_long[j,-1], 'o', color = 'g' )  #     Final condition
             
-        for i,fp in enumerate(fxd_pnts):
+        for i,fp in enumerate(fxd_pnts_reduced):
             if Nfxpnts==0:
                 break
             plt.scatter(fp[0], fp[1],color=stab_colors[stabilities[i]], zorder=1000    )
