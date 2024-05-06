@@ -26,7 +26,7 @@
 \usepackage{xr-hyper}
 
 \DeclareGraphicsExtensions{.pdf,.png,.jpg,.mps,.eps,.ps}
-\graphicspath{{../figures/}}
+\graphicspath{{../figures/}, {../figures/inv_man/}}
 
 \newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
 \newcounter{ct}
@@ -313,7 +313,12 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 
 \section{Experiments}
 
-\subsection{Angular integration networks}\label{sec:hd}
+\subsection{Line attractors}
+
+
+
+\subsection{Ring attractors}\label{sec:ras}
+\subsubsection{Angular integration networks}\label{sec:hd}
 For circular variables such as the goal-direction or head-direction needed for spatial navigation in 2D, the temporal integration and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology).
 Continuous attractor models of the head-direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a ring-like structure~\citep{zhang1996,Noorman2022,ajabi2023}.
 Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
@@ -1514,6 +1519,20 @@ x^*_i<0 \text{   for  	 } i\in\sigma.
 \newpage
 \subsection{Low-rank}\label{sec:supp:lowrank}
 \citep{mastrogiuseppe2018}
+
+$N=10,100,1000$
+$\Sigma=2$
+$\rho=1.9$
+$g=0, 0.1$
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{N100_si2_rho1.9_g0_fp4.8.12}
+\caption{Your caption here}
+\label{fig:my_label}
+\end{figure}
+
 
 \newpage
 \subsection{Biswas}\label{sec:supp:biswas}
