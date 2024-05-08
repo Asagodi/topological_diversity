@@ -6,26 +6,26 @@
 \usepackage{thmtools, mathtools, mathrsfs}
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{forloop}
-\usepackage{stmaryrd}
 %\usepackage{natbib}
 %\setcitestyle{square, comma, numbers,sort&compress, super}
 \usepackage{subcaption}
 \usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{pifont} 				%xmark
 \usepackage{caption}
 \usepackage{float}
-\usepackage{pifont}
 \usepackage{bm}
-\usepackage{tikz}
-\usepackage{tikz-cd}
+%\usepackage{tikz}
+%\usepackage{tikz-cd}
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
-\usepackage{hyperref}       % hyperlinks
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}       % hyperlinks
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
-\usepackage{xr-hyper}
+%\usepackage{xr-hyper}
 
-\DeclareGraphicsExtensions{.pdf,.png,.jpg,.mps,.eps,.ps}
+\DeclareGraphicsExtensions{.png,.pdf,.jpg,.mps,.eps,.ps}
 \graphicspath{{../figures/}, {../figures/inv_man/}}
 
 \newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
@@ -105,8 +105,8 @@ Attractors are essential theoretical components in recurrent networks for memory
 However, the continuous attractors essential for continuous-valued memory suffer from severe structural instability---infinitesimal changes in the parameters typically destroy the continuous attractor.
 This fragility poses a problem in biological neural networks, as they are constantly subjected to perturbations caused by noise.
 To address the issue of how animals robustly store continuous variables, we use Fenichel's persistence theorem from dynamical systems theory.
-Our theory shows  that normally hyperbolic continuous attractors are robust to perturbations. 
-This has the implication that attractive slow manifolds are general approximations of continuous attractors and are the only ones for linear decoders.
+This theory shows that normally hyperbolic continuous attractors are robust to perturbations. 
+We derive that attractive slow manifolds are universal as approximations of continuous attractors.
 In simple line and ring attractors, we verify that all perturbations preserve the invariant manifold and demonstrate the principle numerically in various ring attractor systems.
 Finally, we show in trained RNNs that they all approximate continuous attractors as slow manifolds and characterize the dynamics through a fast-slow decomposition.
 \end{abstract}
@@ -123,30 +123,46 @@ This robustness is achieved despite the constantly changing synaptic connections
 
 
 %par2: proposals how this might happen
-%CA
-Continuous attractors are prevalent in theoretical neuroscience as tools to model neural representation and computation ranging from internal representations of head direction \citep{Skaggs1995, goodridge2000} and eye positions \citep{seung1996} to perceptual decision-making and working memory dependent on continuous variables~\cite{Khona2022}.
-%QPTA
-
-
-%par3: problems with CAs
-For continuous attractor networks, even the smallest amount of changes in the synaptic connections are problematic, as it destroys the continuum of fixed points -- this is referred to as the ``fine-tuning problem'' (Figure 1) \citep{seung1996, Renart2003}.
-This discrepancy between biological neural networks and theoretical models highlights a mismatch and thus poses a challenge for modeling working memory and related cognitive processes \citep{Renart2003, seeholzer2019}.
-
-%The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}, even if biologically plausible asymmetric connections are used to construct them \citep{darshan2022}.
-
-%However, as we will show, not all RNN implementations of continuous attractors behave similarly in their brittleness.
 
 %Recurrent neural networks (RNNs) can process sequential observations and model temporal dependencies of arbitrary length.
 %At the same time, they are fundamentally limited by their finite-sized hidden states which form the only channel between the past and the future.
-%To store information over a long period of time, as many difficult tasks demand, RNNs can learn or be designed to have ``persistent memory''.
-%When the information of interest is continuous-valued, a natural solution is to use continuous attractors.
+To store information over a long period of time, as many difficult tasks demand, Recurrent neural networks (RNNs) can learn or be designed to have ``persistent memory''.
+Cotninuous attractors are the ideal solution to the problem of how to hold continuous valued variables.
+When the information of interest is continuous-valued, a natural solution is to use continuous attractors.
+%CA
+This made them prevalent in theoretical neuroscience and they have been extensively used as tools to model neural representation and computation ranging from internal representations of head direction \citep{Skaggs1995, goodridge2000} and eye positions \citep{seung1996} to perceptual decision-making and working memory dependent on continuous variables~\cite{Khona2022}.
+%QPTA
+
+
+Continuous attractors are biologically plausible, theoretically elegant, consistent with neural recordings, and avoids the asymptotic exploding and vanishing gradient problem~\cite{Park2023a}.
+As a conceptual tool in computational and theoretical neuroscience, continuous attractors are widely used when working memory of continuous values is needed~\cite{Dayan2001,Burak2009,Khona2022}.
+When used to accumulate stimuli, continuous attractors are also called neural integrators that are hypothesized to be the underlying computation for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
+Neural representation of continuous values have been observed as persistent activity in the prefrontal cortex of primates, ellipsoid body of the fly, and hypothalamus~\cite{Romo1999,Noorman2022,Nair2023}.
+A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} and finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:hd}.
+
+%However, the so-called ``fine-tuning problem'' describing the theoretical and practical brittleness of continuous attractors has long been recognized \citep{seung1998,Park2023a}.
+
+%par3: problems with CAs
+Learning generally induces stochasticity in parameters, while spontaneous synaptic fluctuations are present in biological neuronal networks (Sec.~\ref{sec:imp:neuroscience}).
+For continuous attractor networks, even the smallest amount of changes in the synaptic connections are problematic, as it destroys the continuum of fixed points -- this is referred to as the ``fine-tuning problem'' (Figure 1) \citep{seung1996, Renart2003}.
+Since biological neural systems have constantly fluctuating synaptic weights~\cite{shimizu2021}, this has been a big puzzle in the field.
+There have been efforts and remedies to lessen the degradation for particular implementations, often focusing on keeping the short-term behavior close to the continuous attractor case~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022}.
+This discrepancy between biological neural networks and theoretical models highlights a mismatch and thus poses a challenge for modeling working memory and related cognitive processes \citep{Renart2003, seeholzer2019}.
+This seemingly makes continuous attractors impractical and hence irrelenvant to be used as a memory of continuous valued variables.
+However, as we will show, not all RNN implementations of continuous attractors behave similarly in their brittleness.
+
+
+%The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}, even if biologically plausible asymmetric connections are used to construct them \citep{darshan2022}.
+
+
+
 
 
 %par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
 %Fig1
 
-%We found that in the space of RNNs, some have neighbourhoods with highly undesirable exploding gradients.
-%We will describe some continuous attractors which have such neighbourhoods.
+%We found that in the space of RNNs, some have neighbourhoods with highly undesirable exploding gradients. 
+We will describe the bifurcation space of some continuous attractors.  
 Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
 \begin{align}\label{eq:TLN}
     \dot{\vx} = -\vx + \left[ \vW \vx + \vb \right]_{+}
@@ -166,12 +182,20 @@ When $d=2$, we can build a line continuous attractor as follows.
 %
 %The second kind of continuous attractor is created through negative feedback.
 By choosing $\vW = [0, -1; -1, 0]$ and $\vb = [1; 1]$, we get $\dot{\vx} = 0$ on the $x_1 = -x_2 + 1$ line segment in the first quadrant as the continuous attractor.
-We refer to it as the \textbf{bounded line attractor (BLA)}.
+We refer to it as the \emph{bounded line attractor (BLA)}.
 Again, linearization on the attractor shows two eigenvalues, $0$ and $-2$, and perturbations again cause the null eigenvalue to be non-zero and the line attractor disappears.
 However, surprisingly, the bifurcations are  qualitatively different.
 It either bifurcates into a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stable fixed points separated with a saddle node in between (Fig.~\ref{fig:lara_bifurcations}A bottom).
 Neither of these two cases show a divergent flow, but rather consists of one or two basins of attraction.
 %It implies only vanishing gradients for this system and \textbf{exploding gradients will not be present for an arbitrarily long time}.
+
+%Ring attractor
+We further analyzed a simple (non-biological) system that has a ring attractor, defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
+This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$.
+We investigate bifurcations caused by parametric and bump perturbations of the ring invariant manifold (see Sec.~\ref{sec:supp:ring_perturbations}), which is bounded and boundaryless.
+All perturbations maintain the topological structure of the invariant manifold (Fig.~\ref{fig:bio_rings}).
+
+This type of behavior (an invariant ring manifold with fixed points on it) has been observed in finite dimensional low-rank attractors \citep{mastrogiuseppe2018, beiran2021}.
 
 %\begin{figure}[tbhp]
 %  \centering
@@ -197,10 +221,7 @@ Neither of these two cases show a divergent flow, but rather consists of one or 
 \end{figure}
 
 
-Learning generally induces stochasticity in parameters, while spontaneous synaptic fluctuations are present in biological neuronal networks (Sec.~\ref{sec:imp:neuroscience}).
-
 Is this only true for ReLU parameterized RNNs, or does it generalize?
-
 
 
 In this paper, we lay out a new theory of general continuous-valued memory to answer the following questions:
@@ -208,18 +229,23 @@ In this paper, we lay out a new theory of general continuous-valued memory to an
 %    \item Can we avoid exploding gradients under parameter perturbation?
     \item Do we need to worry about the brittleness of the continuous attractor solutions in practice?
     \item How can biological networks approximate the representation of continuous variables?
+%    \item 
 \end{enumerate}
 Our theory provides answers to both questions under mild assumptions in an architecture agnostic manner.
-Using Fenichel's invariant manifold theorem, we derive a sufficient condition for RNNs implementing continuous attractors to remain free of exploding gradients.
-Moreover, even after a bifurcation, these RNNs still approximately behave like the original continuous attractor (for a while).
+%Using Fenichel's invariant manifold theorem, we derive a sufficient condition for RNNs implementing continuous attractors to remain free of exploding gradients.
+%Moreover, even after a bifurcation, these RNNs still approximately behave like the original continuous attractor (for a while).
+Using Fenichel's invariant manifold theorem, we derive a universality statement for the bifurcation landscape for one dimensional continuous attractors.
+We verify our theoretical insights with numerical experiments.
 
 
 
 
 
 
-\section{Theory of gracefully degrading continuous attractors}\label{sec:theory}
-In this section, we apply invariant manifold theory to RNNs and translate the results for the machine learning and theoretical neuroscience audience. Our emphasis in this paper centers on investigating the distinctive properties of continuous attractors that prove essential for specific tasks, with a deliberate exclusion of considerations related to learning chaotic dynamics.
+%\section{Theory of gracefully degrading continuous attractors}\label{sec:theory}
+\section{Theory of continuous attractors approximations}\label{sec:theory}
+In this section, we apply invariant manifold theory to RNNs and translate the results for the machine learning and theoretical neuroscience audience.
+Our emphasis in this paper centers on investigating the distinctive properties of continuous attractors that prove essential for specific tasks, with a deliberate exclusion of considerations related to learning chaotic dynamics.
 
 
 
@@ -241,7 +267,7 @@ Equivalently, for the ODE, $\dot{\vx} = \vf(\vx)$, the variational system is of 
 
 \begin{figure}[bthp]
   \centering
-  \includegraphics[width=0.5\textwidth]{FenichelThm.pdf}
+  \includegraphics[width=0.5\textwidth]{FenichelThm}
   \caption{
     Fenichel's invariant manifold theorem applied to compact continuous attractor guarantees the flow on the slow manifold is locally invariant and continues to be attractive.
     The dashed line is a trajectory ``trapped'' in the slow manifold (locally invariant).
@@ -266,17 +292,18 @@ However, the local invariance implies that trajectories remain within the manifo
 Furthermore, the non-zero flow on the slow manifold is slow and given in the $\epsilon \to 0$ limit as $\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)$ where $\tau = \epsilon t$ is a rescaled time and $c^\epsilon(\cdot)$ parameterizes the $l$ dimensional slow manifold.
 In addition, the stable manifold of $\manifold_0$ is similarly approximately persistent~\cite{Jones1995}, allowing the manifold $\manifold_\epsilon$ to remain attractive.
 
-These conditions are met  for the BLA example in Fig.~\ref{fig:ublabla}B (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form). As a technical note, for the theory apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting \cite{simpson2018}, which is also the case for the BLA.
+These conditions are met  for the examples in Fig.~\ref{fig:ublabla} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
+ As a technical note, for the theory apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting \cite{simpson2018}, which is also the case for the BLA.
 %applicability of Fenichel’s invariant manifold theorem on continuous piecewise linear (PWL) dynamical systems.
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points, and overall still attractive.
-On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence. %extension: 
-Importantly, the ``slow'' flow on the perturbed system is not bounded.
+%On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence. %extension: 
+%Importantly, the ``slow'' flow on the perturbed system is not bounded.
 
 % the compact case is that you have that the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
 
-In practice, the sufficient conditions for RNNs implementing continuous attractors to have this graceful breakdown (like BLA but not UBLA) is for the continuous attractor manifold to be of finite dimension throughout, connected, and bounded.
-However, in systems with an invariant manifold with dimension at least three, it is possible that a slow manifold with chaotic dynamics is created through a perturbation.
-This would have as consequence that the perturbed system acquires positive Lyapunov exponents (corresponding to the chaotic orbit), which then can still lead to exploding gradients albeit with very slow flow that has little practical consequence in finite time experiments.
+%In practice, the sufficient conditions for RNNs implementing continuous attractors to have this graceful breakdown (like BLA but not UBLA) is for the continuous attractor manifold to be of finite dimension throughout, connected, and bounded.
+%However, in systems with an invariant manifold with dimension at least three, it is possible that a slow manifold with chaotic dynamics is created through a perturbation.
+%This would have as consequence that the perturbed system acquires positive Lyapunov exponents (corresponding to the chaotic orbit), which then can still lead to exploding gradients albeit with very slow flow that has little practical consequence in finite time experiments.
 %The probability of such a bifurcation is low.
 
 
@@ -301,16 +328,19 @@ This would have as consequence that the perturbed system acquires positive Lyapu
 %for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
 
 
-\subsection{Implications for Neuroscience}\label{sec:imp:neuroscience}
-Continuous attractors are biologically plausible, theoretically elegant, consistent with neural recordings, and avoids the asymptotic exploding and vanishing gradient problem~\cite{Park2023a}.
-As a conceptual tool in computational and theoretical neuroscience, continuous attractors are widely used when working memory of continuous values is needed~\cite{Dayan2001,Burak2009,Khona2022}.
-When used to accumulate stimulus, continuous attractors are also called neural integrators that are hypothesized to be the underlying computation for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
-Neural representation of continuous values have been observed as persistent activity in the prefrontal cortex of primates, ellipsoid body of the fly, and hypothalamus~\cite{Romo1999,Noorman2022,Nair2023}.
-A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} and finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:hd}.
+\subsection{}\label{sec:}
 
-However, the so-called ``fine-tuning problem'' describing the theoretical and practical brittleness of continuous attractors has long been recognized \citep{seung1998,Park2023a}.
-Since biological neural systems have constantly fluctuating synaptic weights~\cite{shimizu2021}, this has been a big puzzle in the field.
-There have been efforts and remedies to lessen the degradation for particular implementations, often focusing on keeping the short-term behavior close to the continuous attractor case~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022}.
+
+The theory implies that systems in the neighbourhood of a CAN in the space of dynamical systems all share the same topology for the attractive persistent invariant manifold.
+For a 1 dimensional attractor this implies that the stability structure of the invariant manifold is either 
+(1)  composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits 
+or (2) a limit cycle.
+%saddle node with homoclinic orbit: with noise equivalent to a limit cycle
+For 2 dimensional attractors  stable fixed points and saddle nodes can coexist with limit cycles.
+
+
+\subsection{Implications for Neuroscience}\label{sec:imp:neuroscience}
+
 
 Our theory shows that not all continuous attractors are born equal, and there are gracefully degrading continuous attractors.
 In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
@@ -321,6 +351,13 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 %Given an $d$-dimensional continuous attractor manifold embedded within a recurrent dynamics of $n$-dimensions, it supports persistent continuous memory of $d$-dimension.
 %There are $d$ zero Lyapunov exponents corresponding to the perturbations tangent to the manifold, coinciding with the memory representation, and $(n-d)$ negative Lyapunov exponents that expresses the attractive nature.
 %In theory, the topology of the manifold can be arbitrary, ideally matching the desired structure of the target variables.
+
+
+
+
+
+
+
 
 \section{Experiments}
 
@@ -335,11 +372,7 @@ Continuous attractor models of the head-direction representation suggest that th
 Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 We demonstrate the consequences of the Persistence Theorem in two models with a continuous ring attractor.
 
-The first model we analyzed is a simple (non-biological) system that has a ring attractor we analysed is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
-This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$. We investigate bifurcations caused by parametric and bump perturbations of the ring invariant manifold (see Sec.~\ref{sec:supp:ring_perturbations}), which is bounded and boundaryless.
-All perturbations maintain the invariant manifold (Fig.~\ref{fig:bio_rings}).
-
-Second, we investigated perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
+Firstly, we investigated perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
 As this continuous ring attractor is bounded its invariant manifold persists and, hence, no divergent orbits are created under small perturbations to this system. 
 Furthermore, because the ring attractor is boundaryless it is both forward and backward invariant, i.e. hence it is invariant and trajectories never leave the persistent invariant manifold~\citep{wiggins1994}.
 This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec \ref{sec:supp:headdirection}).
@@ -909,7 +942,7 @@ We hypothesise that the negative effect of exploding gradients shows only for lo
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{maintenance_h0_less.pdf}
+  \includegraphics[width=\textwidth]{maintenance_h0_less}
   \caption{
   Comparing three continuous attractor solutions on the click integration task of $T=100$ time steps.
 (A) MSE distribution during learning with different learning rates.
@@ -1260,7 +1293,7 @@ C2 & \xmark 		& only Eq\ref{eq:condition2.1} or \ref{eq:condition2.2}  	 & \cmar
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{bla_parameter_space.pdf}
+  \includegraphics[width=\textwidth]{bla_parameter_space}
   \caption{A slice of the parameter space of the BLA for a fixed $\epsilon_{11}$ and $\epsilon_{12}$. %The different bifurcations can be found 
   }
   \label{fig:blaparameterspace}
@@ -1339,7 +1372,7 @@ For the SGD, the last output of the network after $T$ steps was taken to calcula
 
 \begin{figure}[thbp]
   \centering
-  \includegraphics[width=\textwidth]{maintenance_T100.pdf}
+  \includegraphics[width=\textwidth]{maintenance_T100}
   \caption{
   Comparing three continuous attractor solutions to the click integration task for a length of $T=100$ time steps.
   (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps. Averages (thick lines) over 10 simulations (thin lines) are shown for each network.
@@ -1354,7 +1387,7 @@ For the SGD, the last output of the network after $T$ steps was taken to calcula
 
 \begin{figure}[thbp]
   \centering
-  \includegraphics[width=\textwidth]{maintenance_T1000.pdf}
+  \includegraphics[width=\textwidth]{maintenance_T1000}
   \caption{
   Comparing three continuous attractor solutions to the click integration task for a length of $T=1000$ time steps.
   (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps.
