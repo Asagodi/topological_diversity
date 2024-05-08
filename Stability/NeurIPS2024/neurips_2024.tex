@@ -155,34 +155,45 @@ where $\vx \in \reals^d$ is the hidden state of the network, $\vb$ is the bias, 
 In discrete time, this corresponds to a ReLU RNN (see Sec.~\ref{sec:rnn:integration}).
 The non-trivial activity of this network is limited to the (non-negative) first quadrant.
 
-When $d=2$, we can build two kinds of continuous attractors.
-First, through positive feedback, $\vW = [0, 1; 1, 0]$ and no bias $\vb = \mathbf{0}$, we can create a continuous attractor, i.e., $\dot{\vx} = 0$ on the $x_1 = x_2 \geq 0$ half-line, and surrounding attractive flow (Fig.~\ref{fig:ublabla}A left).
-We refer to it as an \textbf{unbounded line attractor (UBLA)}.
-For any point on the line attractor, linearization results in eigenvalues $0$ and $-2$, corresponding to the zero flow and attractive flow respectively.
-When $\vW$ is perturbed, the null eigenvalue can easily become non-zero and the continuous line attractor disappears.
-If it becomes negative, the system bifurcates to a stable fixed point at the origin (Fig.~\ref{fig:ublabla}A bottom).
-However, if it becomes positive (Fig.~\ref{fig:ublabla}A top), \emph{the resulting flow diverges to infinity along the diagonal}.
-Corresponding to the divergent flow, the backpropagating gradient over time exponentially grows in magnitude, thus rendering gradient descent impractical without truncation in time.
-
-The second kind of continuous attractor is created through negative feedback.
+When $d=2$, we can build a line continuous attractor as follows.
+%First, through positive feedback, $\vW = [0, 1; 1, 0]$ and no bias $\vb = \mathbf{0}$, we can create a continuous attractor, i.e., $\dot{\vx} = 0$ on the $x_1 = x_2 \geq 0$ half-line, and surrounding attractive flow (Fig.~\ref{fig:ublabla}A left).
+%We refer to it as an \textbf{unbounded line attractor (UBLA)}.
+%For any point on the line attractor, linearization results in eigenvalues $0$ and $-2$, corresponding to the zero flow and attractive flow respectively.
+%When $\vW$ is perturbed, the null eigenvalue can easily become non-zero and the continuous line attractor disappears.
+%If it becomes negative, the system bifurcates to a stable fixed point at the origin (Fig.~\ref{fig:ublabla}A bottom).
+%However, if it becomes positive (Fig.~\ref{fig:ublabla}A top), \emph{the resulting flow diverges to infinity along the diagonal}.
+%Corresponding to the divergent flow, the backpropagating gradient over time exponentially grows in magnitude, thus rendering gradient descent impractical without truncation in time.
+%
+%The second kind of continuous attractor is created through negative feedback.
 By choosing $\vW = [0, -1; -1, 0]$ and $\vb = [1; 1]$, we get $\dot{\vx} = 0$ on the $x_1 = -x_2 + 1$ line segment in the first quadrant as the continuous attractor.
 We refer to it as the \textbf{bounded line attractor (BLA)}.
 Again, linearization on the attractor shows two eigenvalues, $0$ and $-2$, and perturbations again cause the null eigenvalue to be non-zero and the line attractor disappears.
 However, surprisingly, the bifurcations are  qualitatively different.
-It either bifurcates into a single stable fixed point (Fig.~\ref{fig:ublabla}B top) or two stable fixed points separated with a saddle node in between (Fig.~\ref{fig:ublabla}B bottom).
+It either bifurcates into a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stable fixed points separated with a saddle node in between (Fig.~\ref{fig:lara_bifurcations}A bottom).
 Neither of these two cases show a divergent flow, but rather consists of one or two basins of attraction.
-It implies only vanishing gradients for this system and \textbf{exploding gradients will not be present for an arbitrarily long time}.
+%It implies only vanishing gradients for this system and \textbf{exploding gradients will not be present for an arbitrarily long time}.
+
+%\begin{figure}[tbhp]
+%  \centering
+%  \includegraphics[width=\textwidth]{UBLABLA}
+%  \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
+%  %Motivating case study of the two systems implementing the same computation but one near exploding gradients.
+%    Phase portraits for unbounded and bounded linear attractors~\eqref{eq:TLN}.
+%    Under perturbation of parameters, each of them can bifurcate to one of the two potential systems without the continuous line attractor.
+%    Note that the parameters for the UBLA are near a diverging system associated with exploding gradient behavior.
+%}
+%  \label{fig:ublabla}
+%\end{figure}
 
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=\textwidth]{UBLABLA}
+  \includegraphics[width=\textwidth]{lara_bifurcations}
   \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
-  %Motivating case study of the two systems implementing the same computation but one near exploding gradients.
-    Phase portraits for unbounded and bounded linear attractors~\eqref{eq:TLN}.
-    Under perturbation of parameters, each of them can bifurcate to one of the two potential systems without the continuous line attractor.
-    Note that the parameters for the UBLA are near a diverging system associated with exploding gradient behavior.
+  Some of the structure seems to remain, there is an invariant manifold that is topologically equivalent to the original continuous attractor.
+    Phase portraits for the bounded line attractor ~\eqref{eq:TLN} and the simple ring attractor.
+    Under perturbation of parameters, each of them bifurcates to systems without the continuous attractor.
 }
-  \label{fig:ublabla}
+  \label{fig:lara_bifurcations}
 \end{figure}
 
 
@@ -326,7 +337,7 @@ We demonstrate the consequences of the Persistence Theorem in two models with a 
 
 The first model we analyzed is a simple (non-biological) system that has a ring attractor we analysed is defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
 This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$. We investigate bifurcations caused by parametric and bump perturbations of the ring invariant manifold (see Sec.~\ref{sec:supp:ring_perturbations}), which is bounded and boundaryless.
-All perturbations maintain the invariant manifold (Fig.~\ref{fig:both_rings}B).
+All perturbations maintain the invariant manifold (Fig.~\ref{fig:bio_rings}).
 
 Second, we investigated perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
 As this continuous ring attractor is bounded its invariant manifold persists and, hence, no divergent orbits are created under small perturbations to this system. 
@@ -336,16 +347,16 @@ For sufficiently strong local excitation (given by the parameter $J_E$) and broa
 
 \begin{figure}[tbhp]
      \centering
-  \includegraphics[width=\textwidth]{both_rings}
+  \includegraphics[width=\textwidth]{bio_rings}
        \caption{Characterization of bifurcations of two ring attractors. 
        (A)       Perturbations to the ring attractor \citep{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs)  up to $2N$ (stable and saddle points are paired). 
        (B) Perturbations to a simple implementation of a ring attractor lead to bifurcations that all leave the invariant manifold intact.
        }
-         \label{fig:both_rings}
+         \label{fig:bio_rings}
 \end{figure}
 
 We evaluate the effect of parametric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\iidsample\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E= 4$ and $J_I=-2.4$ by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
-We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:both_rings}A).
+We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:bio_rings}A).
 As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
 The probability of each type of bifurcation was numerically estimated.
 There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\ref{fig:meaure_zero_perturbations}).
@@ -370,7 +381,13 @@ For a one dimensional system this will either be fixed points or limit cycles.
 
 \subsection{Unpacking slow manifolds} %from trained RNNs
 
-
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[width=\textwidth]{centerout_decomposition}
+  \caption{s
+}
+  \label{fig:centerout_decomp}
+\end{figure}
 
 
 \section{Discussion}
@@ -1528,6 +1545,12 @@ The networks consisted of $N$ firing rate units with a sigmoid inputoutput trans
 where $x_i(t)$ is the total input current to unit $i$,
 $ J_{ij} = g\chi_{ij} + P_{ij}$ is the connectivity matrix, 
 $\phi(x) = tanh(x)$ is the current-to-rate transfer function, and $I_i$ is the external, feedforward input to unit $i$.
+
+This far we focused on unit-rank connectivity structure, but our framework can be directly extended to higher-rank structure. A more general structured component of rank $r\ll N$ can be written as a superposition of $r$ independent unit-rank terms 
+\begin{equation}
+P_{ij} = \frac{m^{(1)}_i n^{(1)}_j}{N} + \dots + \frac{m^{(r)}_i n^{(r)}_j}{N},
+\end{equation} and is in principle characterized by $2r$ vectors $m^{(k)}$ and $n^{(k)}$.
+$g\chi$ is considered unknown except for its statistics (mean 0, variance $g^2/N$).
 
 $N=10,100,1000$
 $\Sigma=2$
