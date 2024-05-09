@@ -51,17 +51,8 @@ def get_theory_weights(N):
     W = scipy.linalg.circulant(row)
     return W
 
-def relu_ode(t,x,W,b,tau, mlrnn=True):
-    if mlrnn:
-        return (-x + ReLU(np.dot(W,x)+b))/tau
-    else:
-        return (-x + np.dot(W,ReLU(x))+b)/tau
-
 def sigmoid_ode(t,x,W,b,tau,g=1):
     return (-x+sigmoid(np.dot(W,x)+b,g=g))/tau
-
-def tanh_ode(t,x,W,b,tau):
-    return (-x+np.tanh(np.dot(W,x)+b))/tau
 
 
 def lax_ode(t,x):
@@ -84,6 +75,38 @@ def g_lax(x,y):
     else:
         return [0,0]
         
+    
+    
+def simulate_network(W, b, nonlinearity_ode=relu_ode, y0=None, maxT=25, tsteps=501, tau=1):
+    
+    N = W.shape[0]
+    if not np.any(y0):
+        y0 = np.random.uniform(0,1,N)
+    t = np.linspace(0, maxT, tsteps)
+    sol = solve_ivp(nonlinearity_ode, y0=y0,  t_span=[0,maxT],
+                    args=tuple([W, b, tau]),
+                    dense_output=True)
+    return sol.sol(t)
+
+
+def simulate_network_ntimes(Nsims, W, b, nonlinearity_ode=relu_ode, mlrnn=True,
+                            y0s=None, y0_dist="uniform", #todo: y0_dist=
+                            maxT=25, tsteps=501, tau=1):
+    t = np.linspace(0, maxT, tsteps)
+    N = W.shape[0]
+    sols = np.zeros((Nsims, tsteps, N))
+    for ni in range(Nsims):
+        if not np.any(y0s):
+            if y0_dist=='uniform':
+                y0 = np.random.uniform(0,1,N)
+            else:
+                y0 = np.random.normal(0,1,N)
+
+        sol = solve_ivp(nonlinearity_ode, y0=y0,  t_span=[0,maxT],
+                        args=tuple([W, b, tau, mlrnn]),
+                        dense_output=True)
+        sols[ni,...] = sol.sol(t).T.copy()
+    return sols
 
 #Noorman ring
 
@@ -260,8 +283,8 @@ def get_bumps_along_oneside_ring(N, m, corners, step_size=0.1):
 
 def get_all_bumps(N, bumps):
     all_bumps = []
-    for bump_i in range(bumps.shape[1]):
-        for support_j in range(N):
+    for support_j in range(N):
+        for bump_i in range(bumps.shape[1]):
             all_bumps.append(np.roll(bumps[:,bump_i], support_j))
     all_bumps = np.array(all_bumps)
     return all_bumps
@@ -597,6 +620,8 @@ def simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=501, tau=1):
                     dense_output=True)
     return sol.sol(t)
 
+
+
 # row = sol.sol(t)[:,-1]; sols = scipy.linalg.circulant(row)
 # for i in range(N):
 #     new_sols[i,:] = simulate_nefring(W, I_e, y0=sols[i,:], maxT=25, tsteps=501)[:,-1]
@@ -652,16 +677,7 @@ def get_noormanring_rnn(N, je=4, ji=-2.4, c_ff=1, dt=1, internal_noise_std=0):
                                cmap=cmap)
     
     
-def make_gaussian_connection_matrix(N, sigma):
-    #GOODRIDGE et al 
-    #Modeling Attractor Deformation in the Rodent Head-Direction System
-    x = np.arange(-N/2,N/2,1)*2*np.pi/N
-    x = np.arange(-180,180,180/(1/2*N))
 
-    row = np.exp(-x**2/sigma**2)
-    W = scipy.linalg.circulant(row)
-    return W
-    
     
 def make_connection_matrix(N, W0, R, ell):
     #construct a connection matrix as in Couey 2013
@@ -884,17 +900,68 @@ def random_rank_r_matrix(N, r):
     return matrix
 
 
+def make_gaussian_connection_matrix(N, sigma):
+    #GOODRIDGE et al 
+    #Modeling Attractor Deformation in the Rodent Head-Direction System
+    x = np.arange(-N/2,N/2,1)*2*np.pi/N
+    x = np.arange(-180,180,180/(1/2*N))
+    row = np.exp(-x**2/sigma**2)
+    W = scipy.linalg.circulant(row)
+    return W
+
+
+# N=10; W = make_gaussian_connection_matrix(N, sigma=28.5); W*=-1; b=1
+# N=6; W = make_gaussian_connection_matrix(N, sigma=28.5); W*=-1; b=.1
+# maxT = 10000
+# tsteps = maxT+1
+# t = np.linspace(0, maxT, tsteps)
+# sols = np.zeros((Nsim, t.shape[0], N))
+# for i in range(Nsim):
+#     y0 = np.random.uniform(-1,1,N)
+
+#     sol = solve_ivp(tanh_ode, y0=y0,  t_span=[0,maxT],
+#                     args=tuple([W, b, tau]),
+#                     dense_output=True)
+
+#     trajectories = sol.sol(t)
+#     sols[i,...] = trajectories.T
+# plt.plot(sols[:,-1,:].T)
+# velocity = np.abs(np.diff(sols, axis=1))
+# speed = np.linalg.norm(velocity, axis=2)
+# idx = np.argmin(speed[:,-1])
+# x = np.arange(0, 1, 1/step_size)
+# n_xs = x.shape[0]
+# bumps = np.zeros((n_xs, N))
+# for i, x_i in enumerate(x):
+#     for j in range(N):
+#         bumps[i,j] = (1-x_i)*sols[idx,-1,j] + x_i*np.roll(sols[idx,-1,:],1)[j]
+    
+# for i in range(N):
+#     plt.plot(bumps[i,:])
+    
+# all_bumps = []
+# for bump_i in range(bumps.shape[0]):
+#     for support_j in range(N):
+#         all_bumps.append(np.roll(bumps[bump_i,:], support_j))
+# all_bumps = np.array(all_bumps)
+
+
 def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
-                         maxT=1000, tsteps=1001, Nsim=100, n_components=10):
-    folder = "C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/wt_pert"
-    colors = colors=np.array(['k', 'r', 'g'])
+                         Ntrials=100,
+                         maxT=1000, tsteps=1001, 
+                         Nsim=100, n_components=2,
+                         y0s=None,
+                         seed=1000,
+                         folder = "C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/pert"
+):
+    colors = colors=np.array(['k', 'orange', 'g'])
     N=W.shape[0]
     t = np.linspace(0, maxT, tsteps)
-    sols = np.zeros((Nsim, t.shape[0], N))
-    for i in range(Nsim):
+    sols = np.zeros((Ntrials, t.shape[0], N))
+    for i in range(Ntrials):
         y0 = np.random.uniform(0,1,N)
     
-        sol = solve_ivp(tanh_ode, y0=y0,  t_span=[0,maxT],
+        sol = solve_ivp(nonlin, y0=y0,  t_span=[0,maxT],
                         args=tuple([W, b, tau]),
                         dense_output=True)
     
@@ -905,16 +972,16 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
     invariant_manifold = sols[:,-4:,:].reshape((-1,N))
     pca.fit(invariant_manifold)
     invariant_manifold = sols[:,-1,:].reshape((-1,N))
-    sols_pca = pca.transform(invariant_manifold).reshape((Nsim,-1,n_components))
+    sols_pca = pca.transform(invariant_manifold).reshape((Ntrials,-1,n_components))
     output_angle = np.arctan2(sols_pca[...,1], sols_pca[...,0])
     thetas = np.ravel(output_angle)
     idx = np.argsort(thetas)
     thetas_sorted = thetas[idx]
     thetas_sorted[-1] = np.pi
-    vals = sols[:,-1,:].reshape((Nsim,N))[idx]
+    vals = sols[:,-1,:].reshape((Ntrials,N))[idx]
     vals[-1] = vals[0]
     cs = scipy.interpolate.CubicSpline(thetas_sorted, vals, bc_type='periodic')
-    thetas_init = np.arange(-np.pi, np.pi, np.pi/Nsim*2);
+    thetas_init = np.arange(-np.pi, np.pi, np.pi/Ntrials*2);
     ring_points=cs(thetas_init)
     xs = np.arange(-np.pi, np.pi, np.pi/1000)
     csxapca=pca.transform(cs(xs))
@@ -922,30 +989,44 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
     perf_list = []
     eps_list = []
     Wpert_list = []
+    fxd_pnt_thetas_list=[]
+    stabilist=[]
     perf = 1
-    for j in range(25):
+    if y0s is None:
+        Ntrials = ring_points.shape[0]
+    else:
+        Ntrials = y0s.shape[0]
+    np.random.seed(seed); 
+    
+    Wepsilon=random_rank_r_matrix(N, r) #np.random.normal(0,1,((N,N)))
+
+    for j in range(0, Nsim):
         if perf==0:
             break
-        np.random.seed(1000+j); epsilon=0.001; 
-        Wpert = W+epsilon*np.random.normal(0,1,((N,N)))
+        epsilon=1e-3*j; 
+        Wpert = W+epsilon*Wepsilon
+        # Wpert = W+epsilon*random_rank_1_matrix(N)
         eps_list.append(epsilon)
         Wpert_list.append(Wpert)
         #for non-persistence bifurcation:
             #second positive eigenvalue?
         #np.random.seed(20000+20); epsilon=.000002*200+.01*j; Wepsilon = W+epsilon*np.random.normal(0,1,((N,N)))
         
-        sols_pert = np.zeros((Nsim, t.shape[0], N))
-        for i in range(Nsim):
-            y0 = ring_points[i,:]
+        sols_pert = np.zeros((Ntrials, t.shape[0], N))
+        for i in range(Ntrials):
+            if y0s is None:
+                y0 = ring_points[i,:]
+            else:
+                y0 = y0s[i,:]
         
             sol = solve_ivp(nonlin, y0=y0,  t_span=[0,maxT], args=tuple([Wpert, b, tau]),
                             dense_output=True)
         
             trajectories = sol.sol(t)
             sols_pert[i,...] = trajectories.T
-        sols_pert_pca = pca.transform(sols_pert[:,:,:].reshape((-1,N))).reshape((Nsim,-1,n_components))
+        sols_pert_pca = pca.transform(sols_pert[:,:,:].reshape((-1,N))).reshape((Ntrials,-1,n_components))
         
-        thetas = np.arctan2(sols_pert_pca[:,:,1], sols_pert_pca[:,:,0]);
+        thetas = np.arctan2(sols_pert_pca[:,10,1], sols_pert_pca[:,10,0]);
         theta_unwrapped = np.unwrap(thetas, period=2*np.pi);
         theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0);
         arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
@@ -956,9 +1037,13 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
         if fxd_pnts.shape[0]%2==1:
             fxd_pnts=np.vstack([fxd_pnts,[-1,0]])
             stabilities=np.append(stabilities, -np.sum(stabilities))
+            fxd_pnt_thetas = np.append(fxd_pnt_thetas, 4)
             
         Nfxd_pnts = fxd_pnts.shape[0]
         Nfxd_pnt_list.append(Nfxd_pnts)
+        fxd_pnt_thetas_list.append(fxd_pnt_thetas)
+        stabilist.append(stabilities)
+        print(Nfxd_pnts)
         
         boas = []
         for i in range(0,Nfxd_pnts,2):
@@ -970,21 +1055,26 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
             perf=0
         perf_list.append(perf)
         
-        print("Simulation ", j, " number of fixed points: ", Nfxd_pnts, "Perf:", perf)        
-        fig, ax = plt.subplots(1, 1, figsize=(3, 3));
-        plt.scatter(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1), s=.1);
+        print("Simulation ", j, " number of fixed points: ", Nfxd_pnts, "Perf:", np.round(perf,3))        
+        fig, ax = plt.subplots(1, 1, figsize=(1.4, 1.4));
+        # plt.scatter(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1), s=.1);
+        plt.plot(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1));
+
         plt.scatter(fxd_pnts[:,0], fxd_pnts[:,1], color=colors[stabilities], zorder=1000)
         
-        for i in range(Nsim):
-            plt.plot(sols_pert_pca[i,:,0]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), sols_pert_pca[i,:,1]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), 'k',alpha=1)
+        for i in range(Ntrials):
+            plt.plot(sols_pert_pca[i,:,0]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1),
+                     sols_pert_pca[i,:,1]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), 'k',alpha=.1)
+        #     plt.plot(sols_pert_pca[i,-1,0]/np.linalg.norm(sols_pert_pca[i,-1,:],axis=0),
+        #              sols_pert_pca[i,-1,1]/np.linalg.norm(sols_pert_pca[i,-1,:],axis=0), '.k', alpha=1)
         ax.set_axis_off()
         ax.set_xlim([-1.1,1.1])
         ax.set_ylim([-1.1,1.1])
         fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None)
-        fig.savefig(folder+f"/ring_pert_eps{epsilon:.10f}.png")
+        fig.savefig(folder+f"/ring_pert_eps{epsilon:.10f}_Nfp{Nfxd_pnts}.pdf")
         plt.show()
     
-    return Nfxd_pnts
+    return Nfxd_pnt_list, perf_list, fxd_pnt_thetas_list, Wpert_list, eps_list
 
 sys.path.append("C:/Users/abel_/Documents/Lab/Software/LowRank/6_ContinuousAttractor")
 import fct_mf as mf
@@ -1025,25 +1115,22 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
     Nfxpnts_list=[]
     np.random.seed(1111)
     Nsample = N
+    
+    ### Set parameters
+    ParVec = [rho, Si]
+    ### Compute DMF prediction
+    # Stationary solution
+    K1, K2, delta0_s = mf.SolveStatic ( [5., 5., 5.], g, ParVec )
+    ic_0 = [ K1, K2, 1.*delta0_s, 0.5*delta0_s] 
+    
+    # Chaotic solution
+    K1, K2, delta0_c, deltainf_c = mf.SolveChaotic ( ic_0, g, ParVec )
+    radius_attractor = np.sqrt( K1**2 + K2**2 )
 
     for simi in range(Nsims):
-
-        ### Set parameters
-        ParVec = [rho, Si]
-        
-        #### #### #### #### #### #### #### #### #### #### #### #### #### #### #    ### #### #### #### #### #### 
-        ### Compute DMF prediction
-        # Stationary solution
-        K1, K2, delta0_s = mf.SolveStatic ( [5., 5., 5.], g, ParVec )
-        ic_0 = [ K1, K2, 1.*delta0_s, 0.5*delta0_s] 
-        
-        # Chaotic solution
-        K1, K2, delta0_c, deltainf_c = mf.SolveChaotic ( ic_0, g, ParVec )
-        radius_attractor = np.sqrt( K1**2 + K2**2 )
-        
+        #Sample connection matrix
         J, n1, n2 = make_low_rank_ring(Si=Si, rho=rho, g=g, N=N)
         
-        #### #### #### #### #### #### #### #### #### #### #### #### #### #### #    ### #### #### #### #### #### 
         # Simulation
         
         T = 5        # Total time of integration, expressed in time constants o    f single units
@@ -1058,6 +1145,7 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
         K2_sim = np.zeros (( Ntrials, len(t) ))
         Z_sample = np.zeros (( Ntrials, len(t), Nsample ))
         jumps = []
+        speed_min_index_list = []
         for j in range(Ntrials):    
             Z = sim.SimulateActivity ( t, sim.GetGaussianVector( 0, 1, N), J, I    =0 )
             Z_sample[j,:,:] = Z[:, 0:Nsample]
@@ -1069,13 +1157,31 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
             thetas_sorted = thetas[sorted_indices]
             theta_unwrapped = np.unwrap(thetas_sorted, period=2*np.pi);
             theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0); 
-            plt.plot(theta_unwrapped)
+            K = np.array([K1_sim[j,:], K2_sim[j,:]]).T
+            # print(K.shape)
+            velocity = np.abs(np.diff(K, axis=0))
+            speed = np.linalg.norm(velocity, axis=1)
+            value = np.max(speed[-1])
+            plt.plot(velocity)
             # print(theta_unwrapped)|
-            index, value = find_biggest_acceleration(theta_unwrapped)
+            # index, value = find_biggest_acceleration(theta_unwrapped)
             jumps.append(value)
-
-        jidx = np.argsort(jumps)
-
+            index, _ = find_first_local_minimum(speed)
+            speed_min_index_list.append(index)
+        
+        speed_min_index_list = np.array(speed_min_index_list)
+        jidx = np.argsort(jumps)[::-1]
+        
+        fg = plt.figure(figsize=(3,3))
+        ax0 = plt.axes(frameon=True)
+        for j in range(5):
+            # plt.plot(K1_sim[jidx,:][j,:], K2_sim[jidx,:][j,:], color='k', alpha=1)  # Trajectory
+            K = np.array([K1_sim[jidx,:][j,:], K2_sim[jidx,:][j,:]]).T
+            velocity = np.diff(K, axis=0)
+            speed = np.linalg.norm(velocity, axis=1)
+            plt.plot(speed)
+            
+            
         T = 1
         deltat = 0.1
         t = np.linspace( 0, T, int(T/deltat) )  
@@ -1127,12 +1233,14 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
                     plt.plot(K1, K2, color='b')  # Trajectory
                 
         
-
+        for j in range(Nfxpnts*2):
+            print(speed_min_index_list[jidx])
+            plt.plot(K1_sim[jidx,:][j,speed_min_index_list[jidx][j]:],
+                     K2_sim[jidx,:][j,speed_min_index_list[jidx][j]:],
+                     color='k', alpha=1)  # Trajectory
         
         plt.plot(radius_attractor*np.cos(x), radius_attractor*np.sin(x), color = '0.8', linewidth = 3.5)
-        
-        for j in range(5):
-            plt.plot(K1_sim[jidx,:][j,:], K2_sim[jidx,:][j,:], color='k', alpha=1)  # Trajectory
+
 
         for j in range(Ntrials):
             plt.plot(K1_sim[j,:], K2_sim[j,:], color='orange', alpha=.1)  # Trajectory
@@ -1177,18 +1285,18 @@ def make_biswas_ring(w1, w4):
     return W 
     
     
-if __name__ == "__main__": 
-    # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
+# if __name__ == "__main__": 
+#     # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
     
-    N = 10
-    j0 = 0
-    j1 = 3
-    W = ring_nef(N, j0, j1)
-    I_e = -1
-    tsteps=501
-    traj = simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=tsteps)
+#     N = 10
+#     j0 = 0
+#     j1 = 3
+#     W = ring_nef(N, j0, j1)
+#     I_e = -1
+#     tsteps=501
+#     traj = simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=tsteps)
     
-    batch_size = 100
-    new_sols = np.zeros((batch_size, tsteps, N))
-    for i in range(batch_size):
-        new_sols[i,:] = simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=tsteps).T#[:,-1]
+#     batch_size = 100
+#     new_sols = np.zeros((batch_size, tsteps, N))
+#     for i in range(batch_size):
+#         new_sols[i,:] = simulate_nefring(W, I_e, y0=None, maxT=25, tsteps=tsteps).T#[:,-1]
