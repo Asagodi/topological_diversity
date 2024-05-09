@@ -164,6 +164,29 @@ However, as we will show, not all RNN implementations of continuous attractors b
 %par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
 %Fig1
 
+%\begin{figure}[tbhp]
+%  \centering
+%  \includegraphics[width=\textwidth]{UBLABLA}
+%  \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
+%  %Motivating case study of the two systems implementing the same computation but one near exploding gradients.
+%    Phase portraits for unbounded and bounded line attractors~\eqref{eq:TLN}.
+%    Under perturbation of parameters, each of them can bifurcate to one of the two potential systems without the continuous line attractor.
+%    Note that the parameters for the UBLA are near a diverging system associated with exploding gradient behavior.
+%}
+%  \label{fig:ublabla}
+%\end{figure}
+
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[width=\textwidth]{lara_bifurcations}
+  \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
+  Some of the structure seems to remain, there is an invariant manifold that is topologically equivalent to the original continuous attractor.
+    Phase portraits for the bounded line attractor ~\eqref{eq:TLN} and the simple ring attractor.
+    Under perturbation of parameters, each of them bifurcates to systems without the continuous attractor.
+}
+  \label{fig:lara_bifurcations}
+\end{figure}
+
 %We found that in the space of RNNs, some have neighbourhoods with highly undesirable exploding gradients. 
 We will describe the bifurcation space of some continuous attractors.  
 Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
@@ -203,28 +226,7 @@ This phenomenon has been previously noted, wherein a continuous attractor is app
 %``a manifold of stable fixed points'' \citep{Seung2000}.
 An invariant ring manifold with fixed points on it has been observed in finite dimensional low-rank attractors which converge to a ring attractor in the infinite unit limit \citep{mastrogiuseppe2018, beiran2021}.
 
-%\begin{figure}[tbhp]
-%  \centering
-%  \includegraphics[width=\textwidth]{UBLABLA}
-%  \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
-%  %Motivating case study of the two systems implementing the same computation but one near exploding gradients.
-%    Phase portraits for unbounded and bounded line attractors~\eqref{eq:TLN}.
-%    Under perturbation of parameters, each of them can bifurcate to one of the two potential systems without the continuous line attractor.
-%    Note that the parameters for the UBLA are near a diverging system associated with exploding gradient behavior.
-%}
-%  \label{fig:ublabla}
-%\end{figure}
 
-\begin{figure}[tbhp]
-  \centering
-  \includegraphics[width=\textwidth]{lara_bifurcations}
-  \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
-  Some of the structure seems to remain, there is an invariant manifold that is topologically equivalent to the original continuous attractor.
-    Phase portraits for the bounded line attractor ~\eqref{eq:TLN} and the simple ring attractor.
-    Under perturbation of parameters, each of them bifurcates to systems without the continuous attractor.
-}
-  \label{fig:lara_bifurcations}
-\end{figure}
 
 
 %Is this only true for ReLU parameterized RNNs, or does it generalize?
