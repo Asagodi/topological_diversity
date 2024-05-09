@@ -947,7 +947,7 @@ def make_gaussian_connection_matrix(N, sigma):
 
 
 def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
-                         rank=1,
+                         rank=1, epsilon_step=1e-3,
                          Ntrials=100,
                          maxT=1000, tsteps=1001, 
                          Nsim=100, n_components=2,
@@ -1008,7 +1008,7 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
     for j in range(0, Nsim):
         if perf==0:
             break
-        epsilon=1e-3*j; 
+        epsilon=epsilon_step*j; 
         Wpert = W+epsilon*Wepsilon
         # Wpert = W+epsilon*random_rank_1_matrix(N)
         eps_list.append(epsilon)
@@ -1046,7 +1046,7 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
         Nfxd_pnt_list.append(Nfxd_pnts)
         fxd_pnt_thetas_list.append(fxd_pnt_thetas)
         stabilist.append(stabilities)
-        print(Nfxd_pnts)
+        # print(Nfxd_pnts)
         
         boas = []
         for i in range(0,Nfxd_pnts,2):
@@ -1084,12 +1084,19 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
 
 # fig, ax = plt.subplots(1, 1, figsize=(4, 3)); ax.plot(eps_list, perf_list); plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0)); ax.set_xlabel(r"$\epsilon$"); ax.set_ylabel("memory capacity");fig.savefig(folder+f"/performance.pdf", bbox_inches="tight")
 
-def N_perturb(W, b, Npert, nonlin=tanh_ode, tau=10, Ntrials=100, maxT=1000, tsteps=1001, Nsim=100, n_components=2, theta_t=10,):
+def N_perturb(W, b, Npert, rank, epsilon_step=1e-3, 
+              nonlin=tanh_ode, tau=10,
+              Ntrials=100, maxT=1000, tsteps=1001, Nsim=100, n_components=2, theta_t=10):
     # folder = "C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/pert"
-    for pert_i in range(Npert):
-        Nfxd_pnt_list, perf_list, fxd_pnt_thetas_list, Wpert_list, eps_list = perturb_and_simulate(W, b,
+    all_lists = []
+    for pert_i in tqdm(range(Npert)):
+        # print(pert_i)
+        Nfxd_pnt_list, perf_list, fxd_pnt_thetas_list, Wpert_list, eps_list = perturb_and_simulate(W, b, epsilon_step=epsilon_step,
                              nonlin=nonlin, tau=tau,
-                             rank=rank, seed=1000*pert_i, folder=folder)
+                             Ntrials=Ntrials, maxT=maxT, tsteps=tsteps, Nsim=Nsim, theta_t=theta_t,
+                             rank=rank, seed=1000*pert_i+1000, folder=folder, plot=True)
+        all_lists.append([Nfxd_pnt_list, perf_list, fxd_pnt_thetas_list, Wpert_list, eps_list])
+    return all_lists
 
 
 
@@ -1178,8 +1185,8 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
             theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0); 
             K = np.array([K1_sim[j,:], K2_sim[j,:]]).T
             # print(K.shape)
-            velocity = np.abs(np.diff(rs, axis=0))
-            speed = np.linalg.norm(velocity, axis=0)
+            velocity = np.abs(np.diff(K, axis=0))
+            speed = np.linalg.norm(velocity, axis=1)
             value = np.max(speed[-1])
             plt.plot(velocity)
             # print(theta_unwrapped)|
@@ -1199,6 +1206,8 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
             velocity = np.diff(K, axis=0)
             speed = np.linalg.norm(velocity, axis=1)
             rs = np.hypot(K1_sim[j,:], K2_sim[j,:]);
+            speed = np.linalg.norm(rs, axis=0)
+
             plt.plot(rs)
             
             
