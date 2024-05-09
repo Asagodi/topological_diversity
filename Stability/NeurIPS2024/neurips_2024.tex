@@ -374,6 +374,13 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 
 
 \subsection{Line attractors}
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[width=\textwidth]{las}
+  \caption{Slow manifolds of line attractors
+}
+  \label{fig:las}
+\end{figure}
 
 
 
@@ -426,6 +433,7 @@ For a one dimensional system this will either be fixed points or limit cycles.
 
 \subsubsection{Unpacking the slow manifolds in trained RNNs} %from trained RNNs
 
+%Fig 4
 \begin{figure}[tbhp]
   \centering
   \includegraphics[width=\textwidth]{centerout_decomposition}
@@ -437,6 +445,16 @@ For a one dimensional system this will either be fixed points or limit cycles.
 
 \subsection{Sensitivity of continuous attractors to perturbations}
 We will show that there are differences at how well approximations perform at different timescales.
+
+
+%Fig 5
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[width=\textwidth]{performance}
+  \caption{Performance
+}
+  \label{fig:performance}
+\end{figure}
 
 
 \section{Discussion}
@@ -1170,7 +1188,7 @@ We enumerate all possibilities for the dynamics of a ReLU activation network wit
 First of all, note that there can be no limit cycle or chaotic orbits.
 
 Now, we look at the different possible systems with fixed points.
-There can be at most three fixed points \citep[Corollary 5.3]{morrisonDiversityEmergentDynamics2022}.
+There can be at most three fixed points \citep[Corollary 5.3]{morrison2024diversity}.
 There has to be at least one fixed point, because the bias is non-zero.
 
 %1 fixed point
