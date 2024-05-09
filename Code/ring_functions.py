@@ -947,13 +947,17 @@ def make_gaussian_connection_matrix(N, sigma):
 
 
 def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
+                         rank=1,
                          Ntrials=100,
                          maxT=1000, tsteps=1001, 
                          Nsim=100, n_components=2,
                          y0s=None,
                          seed=1000,
+                         theta_t=10,
+                         plot=False,
                          folder = "C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/pert"
 ):
+    
     colors = colors=np.array(['k', 'orange', 'g'])
     N=W.shape[0]
     t = np.linspace(0, maxT, tsteps)
@@ -998,8 +1002,9 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
         Ntrials = y0s.shape[0]
     np.random.seed(seed); 
     
-    Wepsilon=random_rank_r_matrix(N, r) #np.random.normal(0,1,((N,N)))
+    Wepsilon=random_rank_r_matrix(N, rank) #np.random.normal(0,1,((N,N)))
 
+    t = np.linspace(0, theta_t, theta_t+1)
     for j in range(0, Nsim):
         if perf==0:
             break
@@ -1019,14 +1024,12 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
             else:
                 y0 = y0s[i,:]
         
-            sol = solve_ivp(nonlin, y0=y0,  t_span=[0,maxT], args=tuple([Wpert, b, tau]),
-                            dense_output=True)
-        
+            sol = solve_ivp(nonlin, y0=y0,  t_span=[0,theta_t], args=tuple([Wpert, b, tau]), dense_output=True)
             trajectories = sol.sol(t)
             sols_pert[i,...] = trajectories.T
         sols_pert_pca = pca.transform(sols_pert[:,:,:].reshape((-1,N))).reshape((Ntrials,-1,n_components))
         
-        thetas = np.arctan2(sols_pert_pca[:,10,1], sols_pert_pca[:,10,0]);
+        thetas = np.arctan2(sols_pert_pca[:,:theta_t,1], sols_pert_pca[:,:theta_t,0]);
         theta_unwrapped = np.unwrap(thetas, period=2*np.pi);
         theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0);
         arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
@@ -1056,25 +1059,39 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
         perf_list.append(perf)
         
         print("Simulation ", j, " number of fixed points: ", Nfxd_pnts, "Perf:", np.round(perf,3))        
-        fig, ax = plt.subplots(1, 1, figsize=(1.4, 1.4));
-        # plt.scatter(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1), s=.1);
-        plt.plot(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1));
-
-        plt.scatter(fxd_pnts[:,0], fxd_pnts[:,1], color=colors[stabilities], zorder=1000)
         
-        for i in range(Ntrials):
-            plt.plot(sols_pert_pca[i,:,0]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1),
-                     sols_pert_pca[i,:,1]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), 'k',alpha=.1)
-        #     plt.plot(sols_pert_pca[i,-1,0]/np.linalg.norm(sols_pert_pca[i,-1,:],axis=0),
-        #              sols_pert_pca[i,-1,1]/np.linalg.norm(sols_pert_pca[i,-1,:],axis=0), '.k', alpha=1)
-        ax.set_axis_off()
-        ax.set_xlim([-1.1,1.1])
-        ax.set_ylim([-1.1,1.1])
-        fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None)
-        fig.savefig(folder+f"/ring_pert_eps{epsilon:.10f}_Nfp{Nfxd_pnts}.pdf")
-        plt.show()
+        if plot:
+            makedirs(folder)
+            fig, ax = plt.subplots(1, 1, figsize=(1.4, 1.4));
+            # plt.scatter(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1), s=.1);
+            plt.plot(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1));
+    
+            plt.scatter(fxd_pnts[:,0], fxd_pnts[:,1], color=colors[stabilities], zorder=1000)
+            
+            for i in range(Ntrials):
+                plt.plot(sols_pert_pca[i,:,0]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1),
+                         sols_pert_pca[i,:,1]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), 'k',alpha=.1)
+            #     plt.plot(sols_pert_pca[i,-1,0]/np.linalg.norm(sols_pert_pca[i,-1,:],axis=0),
+            #              sols_pert_pca[i,-1,1]/np.linalg.norm(sols_pert_pca[i,-1,:],axis=0), '.k', alpha=1)
+            ax.set_axis_off()
+            ax.set_xlim([-1.1,1.1])
+            ax.set_ylim([-1.1,1.1])
+            fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None)
+            fig.savefig(folder+f"/ring_pert_eps{epsilon:.10f}_Nfp{Nfxd_pnts}.pdf")
+            plt.show()
     
     return Nfxd_pnt_list, perf_list, fxd_pnt_thetas_list, Wpert_list, eps_list
+
+# fig, ax = plt.subplots(1, 1, figsize=(4, 3)); ax.plot(eps_list, perf_list); plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0)); ax.set_xlabel(r"$\epsilon$"); ax.set_ylabel("memory capacity");fig.savefig(folder+f"/performance.pdf", bbox_inches="tight")
+
+def N_perturb(W, b, Npert, nonlin=tanh_ode, tau=10, Ntrials=100, maxT=1000, tsteps=1001, Nsim=100, n_components=2, theta_t=10,):
+    # folder = "C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/pert"
+    for pert_i in range(Npert):
+        Nfxd_pnt_list, perf_list, fxd_pnt_thetas_list, Wpert_list, eps_list = perturb_and_simulate(W, b,
+                             nonlin=nonlin, tau=tau,
+                             rank=rank, seed=1000*pert_i, folder=folder)
+
+
 
 sys.path.append("C:/Users/abel_/Documents/Lab/Software/LowRank/6_ContinuousAttractor")
 import fct_mf as mf
@@ -1152,15 +1169,17 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
             K1_sim[j,:] = np.dot(np.tanh(Z), n1) / N
             K2_sim[j,:] = np.dot(np.tanh(Z), n2) / N
             
-            thetas = np.arctan2(K1_sim[j,-19:], K2_sim[j,-19:]);
+            thetas = np.arctan2(K2_sim[j,-19:], K1_sim[j,-19:]);
+            rs = np.hypot(K1_sim[j,-19:], K2_sim[j,-19:]);
+
             sorted_indices=np.argsort(thetas);
             thetas_sorted = thetas[sorted_indices]
             theta_unwrapped = np.unwrap(thetas_sorted, period=2*np.pi);
             theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0); 
             K = np.array([K1_sim[j,:], K2_sim[j,:]]).T
             # print(K.shape)
-            velocity = np.abs(np.diff(K, axis=0))
-            speed = np.linalg.norm(velocity, axis=1)
+            velocity = np.abs(np.diff(rs, axis=0))
+            speed = np.linalg.norm(velocity, axis=0)
             value = np.max(speed[-1])
             plt.plot(velocity)
             # print(theta_unwrapped)|
@@ -1174,15 +1193,16 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
         
         fg = plt.figure(figsize=(3,3))
         ax0 = plt.axes(frameon=True)
-        for j in range(5):
+        for j in range(Ntrials):
             # plt.plot(K1_sim[jidx,:][j,:], K2_sim[jidx,:][j,:], color='k', alpha=1)  # Trajectory
             K = np.array([K1_sim[jidx,:][j,:], K2_sim[jidx,:][j,:]]).T
             velocity = np.diff(K, axis=0)
             speed = np.linalg.norm(velocity, axis=1)
-            plt.plot(speed)
+            rs = np.hypot(K1_sim[j,:], K2_sim[j,:]);
+            plt.plot(rs)
             
             
-        T = 1
+        T = 50
         deltat = 0.1
         t = np.linspace( 0, T, int(T/deltat) )  
         K1_sim_long = np.zeros (( Ntrials, len(t) ))
@@ -1214,37 +1234,42 @@ def simulate_low_rank_ring(Nsims=100, Ntrials=128, Si=2, rho=1.6, g=2.1, N=4000)
             fxd_pnts = np.empty((0))
         print("Simulation #: ", simi, "#fps: ", Nfxpnts)
         
+
+        
         fg = plt.figure(figsize=(3,3))
         ax0 = plt.axes(frameon=True)
 
-        T = 100000
-        for fp in fxd_pnts_full:
-            jacobian = compute_jacobian(fp, J)
-            eigenvalues, eigenvectors = np.linalg.eig(jacobian)
-            if np.max(np.real(eigenvalues)) > 0 :
-                idx = np.argmax(np.real(eigenvalues))
-                unstable = eigenvectors.T[idx]
-                fp-unstable
-                for sign in [-1,1]:
-                    print(fp+sign*unstable)
-                    Z = sim.SimulateActivity ( t, np.real(fp+sign*unstable), J, I=0 )
-                    K1 = np.dot(np.tanh(Z), n1) / N
-                    K2 = np.dot(np.tanh(Z), n2) / N
-                    plt.plot(K1, K2, color='b')  # Trajectory
+        # T = 10
+        # for fp in fxd_pnts_full:
+        #     jacobian = compute_jacobian(fp, J)
+        #     eigenvalues, eigenvectors = np.linalg.eig(jacobian)
+        #     if np.max(np.real(eigenvalues)) > 0 :
+        #         idx = np.argmax(np.real(eigenvalues))
+        #         unstable = eigenvectors.T[idx]
+        #         fp-unstable
+        #         for sign in [-1,1]:
+        #             # print(fp+sign*unstable)
+        #             Z = sim.SimulateActivity ( t, np.real(fp+sign*unstable), J, I=0 )
+        #             K1 = np.dot(np.tanh(Z), n1) / N
+        #             K2 = np.dot(np.tanh(Z), n2) / N
+        #             plt.plot(K1, K2, color='b')  # Trajectory
                 
         
-        for j in range(Nfxpnts*2):
-            print(speed_min_index_list[jidx])
-            plt.plot(K1_sim[jidx,:][j,speed_min_index_list[jidx][j]:],
-                     K2_sim[jidx,:][j,speed_min_index_list[jidx][j]:],
-                     color='k', alpha=1)  # Trajectory
+        # for j in range(Nfxpnts*2):
+        #     # print(speed_min_index_list[jidx])
+        #     plt.plot(K1_sim[jidx,:][j,speed_min_index_list[jidx][j]:],
+        #              K2_sim[jidx,:][j,speed_min_index_list[jidx][j]:],
+        #              color='k', alpha=1)  # Trajectory
         
         plt.plot(radius_attractor*np.cos(x), radius_attractor*np.sin(x), color = '0.8', linewidth = 3.5)
 
-
+        sorted_indices = np.append(sorted_indices, sorted_indices[0])
         for j in range(Ntrials):
             plt.plot(K1_sim[j,:], K2_sim[j,:], color='orange', alpha=.1)  # Trajectory
-            plt.plot(K1_sim_long[j,:], K2_sim_long[j,:], color='b')  # Trajectory
+            # plt.plot(K1_sim_long[j,:], K2_sim_long[j,:], color='b')  # Trajectory
+            plt.plot(K1_sim_long[sorted_indices,0], K2_sim_long[sorted_indices,0], color='b')  # Trajectory
+
+            
        # plt.plot(K1_sim_long[j,0], K2_sim_long[j,0], 'o', color = '0' )  # In    itial condition
             #plt.plot(K1_sim_long[j,-1], K2_sim_long[j,-1], 'o', color = 'g' )  #     Final condition
             
