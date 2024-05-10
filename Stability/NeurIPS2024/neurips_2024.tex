@@ -423,7 +423,21 @@ For a one dimensional system this will either be fixed points or limit cycles.
 
 \subsection{Unpacking the slow manifolds in trained RNNs} %from trained RNNs
 
-
+\begin{equation}
+  \begin{aligned}
+	\vx_t &= \sigma(\win \vI_t + \vW \vx_{t-1} + \vb) \label{eq:RNN:discrete}\\
+	\vy_t &= \wout \vx_t + \bout
+  \end{aligned}
+\end{equation}
+where $\vx_t \in \reals^d$ is the hidden state, $\vI_t \in \reals^K$ is the input,
+$\sigma: \reals \to \reals$ an activation function which acts on each of the hidden dimension, and
+$\vW, \vb, \win, \wout, \bout$ are parameters.
+Assuming an Euler integration with unit time step, the discrete-time RNN of \eqref{eq:RNN:discrete} corresponds to the ODE:
+\begin{align}
+    \dot{\vx} &= -\vx + \sigma(\win \vI + \vW \vx + \vb). \label{eq:RNN:continuous}
+\end{align}
+%
+We consider systems with the ReLU, tanh, rectified tanh and sigmoid activation functions.
 
 %Fig 4
 \begin{figure}[tbhp]
@@ -431,6 +445,8 @@ For a one dimensional system this will either be fixed points or limit cycles.
   \includegraphics[width=\textwidth]{fastslow_decomposition}
   \caption{Slow manifold approximation of different trained networks on the memory guided saccade and angular velocity integration tasks.
   All solutions involve a slow manifold with the same topology as the relevant variable in the task.
+  The different solutions are different in their asymptotic dynamics.
+  The most often found solution is of the type \emph{fixed point ring manifold}.
 }
   \label{fig:fastslow_decomp}
 \end{figure}
