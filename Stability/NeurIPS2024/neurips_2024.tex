@@ -19,6 +19,7 @@
 %\usepackage{tikz-cd}
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}       % hyperlinks
+\hypersetup{breaklinks=true}
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
@@ -118,48 +119,32 @@ Finally, we show in trained RNNs that they all approximate continuous attractors
 %The natural behavior of animals, including their ability to navigate without sensory cues, implies the presence of a robust internal representation of key variables such as location and head direction.
 %This robustness is achieved despite the constantly changing synaptic connections \citep{shimizu2021}. %\citep{gallego2020, kim2019generation, flesch2023continual}.
 
-Animal behavior often showcases remarkable abilities to navigate and interact with their environment, even in the absence of sensory cues.
-For instance, rodents demonstrate impressive spatial memory and navigation skills within intricate maze environments, indicating a robust internal representation of space.
-The computation through dynamics (CTD) framework provides a theoretical lens through which we can understand how complex behaviors, such as animal navigation, emerge from the dynamics of neural systems \citep{vyas2020}.
-In the context of animal navigation, the CTD framework suggests that the brain processes sensory information and generates behavioral outputs through neural dynamics.
-Within this framework, the internal representations of key variables like location and head direction emerge from the dynamics of neural activity.
 
 
-
-%par2: proposals how this might happen
 
 %Recurrent neural networks (RNNs) can process sequential observations and model temporal dependencies of arbitrary length.
 %At the same time, they are fundamentally limited by their finite-sized hidden states which form the only channel between the past and the future.
-Continuous attractors are the ideal solution to the problem of how to hold continuous valued variables.
-This made them prevalent in theoretical neuroscience and they have been extensively used as tools to model neural representation and computation ranging from internal representations of head direction \citep{Skaggs1995, goodridge2000} and eye positions \citep{seung1996} to perceptual decision-making and working memory dependent on continuous variables~\cite{Khona2022}.
+%Continuous attractors are the ideal solution to the problem of how to hold continuous valued variables.
+%This made them prevalent in theoretical neuroscience and they have been extensively used as tools to model neural representation and computation ranging from internal representations of head direction \citep{Skaggs1995, goodridge2000} and eye positions \citep{seung1996} to perceptual decision-making and working memory dependent on continuous variables~\cite{Khona2022}.
 
-%problem better intro
-%intro in 2nd paragraph
-
-
+Animal behavior showcases remarkable abilities to navigate and interact with the environment, even without sensory cues, as seen in rodents' spatial memory skills.
+The Computation through Dynamics (CTD) framework assumes that the brain processes sensory information and generates behavior through neural dynamics, including representations of continuous-valued variables like space and direction. \citep{vyas2020}.
+Continuous attractors are the ideal solution to the problem of how to hold continuous valued variables~\cite{Dayan2001,Burak2009,Khona2022}.
 Continuous attractors are biologically plausible, theoretically elegant, consistent with neural recordings, and avoids the asymptotic exploding and vanishing gradient problem~\cite{Park2023a}.
-As a conceptual tool in computational and theoretical neuroscience, continuous attractors are widely used when working memory of continuous values is needed~\cite{Dayan2001,Burak2009,Khona2022}.
 When used to accumulate stimuli, continuous attractors are also called neural integrators that are hypothesized to be the underlying computation for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
 Neural representation of continuous values have been observed as persistent activity in the prefrontal cortex of primates, ellipsoid body of the fly, and hypothalamus~\cite{Romo1999,Noorman2022,Nair2023}.
-A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} and finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:hd}.
+A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} or finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:hd}.
 
-%However, the so-called ``fine-tuning problem'' describing the theoretical and practical brittleness of continuous attractors has long been recognized \citep{seung1998,Park2023a}.
 
 %par3: problems with CAs
+However, despite their utility, continuous attractors face significant challenges, particularly regarding synaptic plasticity.
 Learning generally induces stochasticity in parameters, while spontaneous synaptic fluctuations are present in biological neuronal networks (Sec.~\ref{sec:imp:neuroscience}).
-For continuous attractor networks, even the smallest amount of changes in the synaptic connections are problematic, as it destroys the continuum of fixed points -- this is referred to as the ``fine-tuning problem''  \citep{seung1996, Renart2003}.
+For continuous attractor networks, even the smallest amount of changes in the synaptic connections are problematic, as it destroys the continuum of fixed points -- this is referred to as the ``fine-tuning problem''  \citep{seung1996, Renart2003, Park2023a}.
 Since biological neural systems have constantly fluctuating synaptic weights~\cite{shimizu2021}, this has been a big puzzle in the field.
 There have been efforts and remedies to lessen the degradation for particular implementations, often focusing on keeping the short-term behavior close to the continuous attractor case~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022}.
 This discrepancy between biological neural networks and theoretical models highlights a mismatch and thus poses a challenge for modeling working memory and related cognitive processes \citep{Renart2003, seeholzer2019}.
 \textbf{This seemingly makes continuous attractors impractical and hence irrelenvant to be used as a memory of continuous valued variables.}
-However, as we will show, not all RNN implementations of continuous attractors behave similarly in their brittleness.
-
-
-
-%The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}, even if biologically plausible asymmetric connections are used to construct them \citep{darshan2022}.
-
-
-
+Nevertheless, as we will show, not all RNN implementations of continuous attractors behave similarly in their brittleness, yet all approximations of continuous attractors can be characterized as slow manifolds.
 
 
 %par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
@@ -169,8 +154,9 @@ However, as we will show, not all RNN implementations of continuous attractors b
   \includegraphics[width=\textwidth]{lara_bifurcations}
   \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
   Some of the structure seems to remain, there is an invariant manifold that is topologically equivalent to the original continuous attractor.
-    Phase portraits for the bounded line attractor ~\eqref{eq:TLN} and the simple ring attractor.
+    (A) Phase portraits for the bounded line attractor (Eq.~\eqref{eq:TLN}).
     Under perturbation of parameters, each of them bifurcates to systems without the continuous attractor.
+    (B) The low-rank ring attractor approximation (Sec.~\eqref{sec:supp:lowrank}).
 }
   \label{fig:lara_bifurcations}
 \end{figure}
@@ -264,15 +250,15 @@ We need the flow normal to the manifold to be hyperbolic, that is \emph{normally
 More specifically, for continuous attractors, the real part of the eigenvalues of $\nabla_\vz \vh$ will be negative, representing sufficiently strong attractive flow toward the manifold.
 Equivalently, for the ODE, $\dot{\vx} = \vf(\vx)$, the variational system is of constant rank, and has exactly $(d-l)$ eigenvalues with negative real parts and $l$ eigenvalues with zero real parts everywhere along the continuous attractor.
 
-%\begin{figure}[bthp]
-%  \centering
-%  \includegraphics[width=0.5\textwidth]{FenichelThm}
-%  \caption{
-%    Fenichel's invariant manifold theorem applied to compact continuous attractor guarantees the flow on the slow manifold is locally invariant and continues to be attractive.
-%    The dashed line is a trajectory ``trapped'' in the slow manifold (locally invariant).
-%  }
-%  \label{fig:fenichel}
-%\end{figure}
+\begin{figure}[bthp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{FenichelThm}
+  \caption{
+    Fenichel's invariant manifold theorem applied to compact continuous attractor guarantees the flow on the slow manifold is locally invariant and continues to be attractive.
+    The dashed line is a trajectory ``trapped'' in the slow manifold (locally invariant).
+  }
+  \label{fig:fenichel}
+\end{figure}
 
 When $\epsilon > 0$, the continuous attractor bifurcates away.
 What can we say about the fate of the perturbed system?
@@ -365,14 +351,14 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 
 
 
-\subsection{Line attractors}
-\begin{figure}[tbhp]
-  \centering
-  \includegraphics[width=\textwidth]{las}
-  \caption{Slow manifolds of line attractors
-}
-  \label{fig:las}
-\end{figure}
+%\subsection{Line attractors}
+%\begin{figure}[tbhp]
+%  \centering
+%  \includegraphics[width=\textwidth]{las}
+%  \caption{Slow manifolds of line attractors
+%}
+%  \label{fig:las}
+%\end{figure}
 
 
 
