@@ -1,9 +1,9 @@
 \documentclass{article} % For LaTeX2e
-\usepackage{neurips_2024,times}
+\usepackage{neurips_2024}
 \pdfminorversion=6
-\usepackage[utf8]{inputenc}
-\usepackage{amssymb, amsmath, amsthm}
-\usepackage{thmtools, mathtools, mathrsfs}
+%\usepackage[utf8]{inputenc}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{thmtools,mathtools,mathrsfs}
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{forloop}
 %\usepackage{natbib}
@@ -99,19 +99,18 @@
     
 %TLDR
 
-
 \maketitle
 
 \begin{abstract}
 Continuous attractors offer a unique solution for storing continuous-values in recurrent system states indefinitely.
-%to the problem of maintaining a memory of continuous-valued variables for arbitrarily long intervals.
 Unfortunately, the continuous attractors suffer from severe structural instability in general---they are destroyed by most infinitesimal changes of the dynamical law.
 This fragility limits their utility especially in biological systems as their recurrent dynamics are subject to constant perturbations.
 We observe that the bifircations from continuous attractors of theoretical models display various structurally stable dynamical structures with associated generalization characteristics.
 Although their asymptotic behavior of memory are categorically distinct, their finite time behavior are similar and degreade gracefully.
 Fast-slow decomposition analysis uncovers the persistent manifold that survives the seemingly destructive bifurcation.
 Moreover, the recurrent neural networks trained on analog memory tasks display approximate continuous attractors with predictable slow manifolds and topologies.
-Therefore, continuous attractors are functionally robust and remain useful as a universal analogy for understanding analog memory.
+Therefore, continuous attractors are \emph{functionally robust} and remain useful as a universal analogy for understanding analog memory.
+% to the problem of maintaining a memory of continuous-valued variables for arbitrarily long intervals.
 % poses a problem in biological neural networks, as they are constantly subjected to perturbations caused by noise.
 % Ultimately, our theory is not about solving the fine-tuning problem. It's about realizing that it is not a problem.
 % To address the issue of how animals robustly store continuous variables, we use Fenichel's persistence theorem from dynamical systems theory.
@@ -123,37 +122,52 @@ Therefore, continuous attractors are functionally robust and remain useful as a 
 
 
 \section{Introduction}
+Biological systems exhibit robust behaviors that requires neural information processing of analog variables such as intensity, direction, distance, and time intervals.
+Virtually all models of working memory for continuous-valued information rely on persistent internal representations.
+The continuous attractor structure in their recurrent dynamics are pivotal due to their ability to maintain activity patterns indefinitely through the neural population states~\cite{vyas2020,Dayan2001,Khona2022}.
+They are hypothesized as the neural mechanism for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
+Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,Noorman2022,Nair2023}.
 
 %par1: animals can represent CVs
 %The natural behavior of animals, including their ability to navigate without sensory cues, implies the presence of a robust internal representation of key variables such as location and head direction.
 %This robustness is achieved despite the constantly changing synaptic connections \citep{shimizu2021}. %\citep{gallego2020, kim2019generation, flesch2023continual}.
-
-
-
 
 %Recurrent neural networks (RNNs) can process sequential observations and model temporal dependencies of arbitrary length.
 %At the same time, they are fundamentally limited by their finite-sized hidden states which form the only channel between the past and the future.
 %Continuous attractors are the ideal solution to the problem of how to hold continuous valued variables.
 %This made them prevalent in theoretical neuroscience and they have been extensively used as tools to model neural representation and computation ranging from internal representations of head direction \citep{Skaggs1995, goodridge2000} and eye positions \citep{seung1996} to perceptual decision-making and working memory dependent on continuous variables~\cite{Khona2022}.
 
-Animal behavior showcases remarkable abilities to navigate and interact with the environment, even without sensory cues, as seen in rodents' spatial memory skills.
-The Computation through Dynamics (CTD) framework assumes that the brain processes sensory information and generates behavior through neural dynamics, including representations of continuous-valued variables like space and direction. \citep{vyas2020}.
-Continuous attractors are the ideal solution to the problem of how to hold continuous valued variables~\cite{Dayan2001,Burak2009,Khona2022}.
-Continuous attractors are biologically plausible, theoretically elegant, consistent with neural recordings, and avoids the asymptotic exploding and vanishing gradient problem~\cite{Park2023a}.
-When used to accumulate stimuli, continuous attractors are also called neural integrators that are hypothesized to be the underlying computation for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
-Neural representation of continuous values have been observed as persistent activity in the prefrontal cortex of primates, ellipsoid body of the fly, and hypothalamus~\cite{Romo1999,Noorman2022,Nair2023}.
-A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} or finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:ras}.
+% Animal behavior showcases remarkable abilities to navigate and interact with the environment, even without sensory cues, as seen in rodents' spatial memory skills.
+% The Computation through Dynamics (CTD) framework assumes that the brain processes sensory information and generates behavior through neural dynamics, including representations of continuous-valued variables like space and direction~\cite{vyas2020}.
+% Continuous attractors are the ideal solution to the problem of how to hold continuous valued variables~\cite{Dayan2001,Burak2009,Khona2022}.
+% Continuous attractors are biologically plausible, theoretically elegant, consistent with neural recordings, and avoids the asymptotic exploding and vanishing gradient problem~\cite{Park2023a}.
+% When used to accumulate stimuli, continuous attractors are also called neural integrators that are hypothesized to be the underlying computation for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
+% Neural representation of continuous values have been observed as persistent activity in the prefrontal cortex of primates, ellipsoid body of the fly, and hypothalamus~\cite{Romo1999,Noorman2022,Nair2023}.
+% A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} or finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:ras}.
 
 
 %par3: problems with CAs
-However, despite their utility, continuous attractors face significant challenges, particularly regarding synaptic plasticity.
-Learning generally induces stochasticity in parameters, while spontaneous synaptic fluctuations are present in biological neuronal networks (Sec.~\ref{sec:imp:neuroscience}).
-For continuous attractor networks, even the smallest amount of changes in the synaptic connections are problematic, as it destroys the continuum of fixed points -- this is referred to as the ``fine-tuning problem''  \citep{seung1996, Renart2003, Park2023a}.
-Since biological neural systems have constantly fluctuating synaptic weights~\cite{shimizu2021}, this has been a big puzzle in the field.
-There have been efforts and remedies to lessen the degradation for particular implementations, often focusing on keeping the short-term behavior close to the continuous attractor case~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022}.
-This discrepancy between biological neural networks and theoretical models highlights a mismatch and thus poses a challenge for modeling working memory and related cognitive processes \citep{Renart2003, seeholzer2019}.
-\textbf{This seemingly makes continuous attractors impractical and hence irrelenvant to be used as a memory of continuous valued variables.}
-Nevertheless, as we will show, not all implementations of continuous attractors behave similarly in their brittleness, yet all approximations of continuous attractors can be characterized as slow manifolds.
+Despite their widespread adoption as models of analog memory, continuous attractors are brittle mathematical objects, posing significant challenges.
+Even the smallest arbitrary change in recurrent dynamics can be problematic, destroying the continuum of fixed points essential for continuous-valued working memory.
+In biological neural networks, this vulnerability is well-known and often referred to as the ``fine-tuning problem''~\cite{seung1996,Renart2003,Park2023a}.
+There are two primary sources of perturbations acting as noise in recurrent networks:
+(1) the stochastic nature of online learning signals that act on synaptic plasticity, and
+(2) observed spontaneous fluctuations in synaptic weights~\cite{Fusi2007-yg,shimizu2021}.
+Thus, additional mechanisms are necessary to compensate for the degradation for particular implementations, often focusing on keeping the short-term behavior close to the continuous attractor case~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022}.
+However, we lack the theoretical basis for clinging to the brittle concept of continuous attractors for understanding biological working memory.
+% However, the reliance on the fragile concept of continuous attractors lacks a robust theoretical foundation, raising concerns about its practical utility. % <-- chat's suggestion :P
+
+In this study, we explore the bifurcations from continuous attractors in theoretical models,
+which reveal various structurally stable dynamical structures in the vicinity.
+The distinct topology of these dynamics implies qualitatively different behavior in the asymptotic limit of time, and thus a corresponding pattern of error in temporal generalization.
+By assuming normal hyperbolicity, we will separate the time scales to obtain fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within.
+We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects the different topologies as \textbf{approximate continuous attractors}.
+We further analyze task-trained artificial recurrent neural networks to reveal a ``universal motif'' of analog memory with various potential topologies.
+
+%This discrepancy between biological neural networks and theoretical models highlights a mismatch and thus poses a challenge for modeling working memory and related cognitive processes \citep{Renart2003, seeholzer2019}.
+%\textbf{This seemingly makes continuous attractors impractical and hence irrelenvant to be used as a memory of continuous valued variables.}
+%Nevertheless, as we will show, not all implementations of continuous attractors behave similarly in their brittleness, yet all approximations of continuous attractors can be characterized as slow manifolds.
+%A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} or finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:ras}.
 
 
 %par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
