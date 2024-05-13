@@ -621,6 +621,43 @@ def get_slow_manifold(net, task, T, from_t=300, batch_size=256, n_components=3, 
     return trajectories, saddles, pca, cs, cs_pca, fxd_pnts, recurrences, recurrences_pca, all_bin_locs_pca
 
 
+def get_slow_w(net, task, T, from_t=300, batch_size=256, n_components=3, nbins=100):
+    n_rec = net.dims[1]
+    input, target, mask, output, trajectories = simulate_rnn(net, task, T, batch_size)
+
+    pca = PCA(n_components=n_components)
+    invariant_manifold = trajectories[:,from_t:,:].reshape((-1,n_rec))
+    pca.fit(invariant_manifold)
+    traj_pca = pca.transform(invariant_manifold).reshape((batch_size,-1,n_components))
+    recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
+    fxd_pnts = np.array([recurrence for recurrence in recurrences if len(recurrence)==1]).reshape((-1,n_rec))    
+    
+    traj_pca_flat = traj_pca.reshape((-1,n_components))
+    # all_bin_locs = digitize_trajectories(invariant_manifold, nbins=nbins)
+    thetas = np.arctan2(traj_pca_flat[:,1],traj_pca_flat[:,0]);
+    cs = get_cubic_spline_ring(thetas, invariant_manifold)
+    cs_pca = get_cubic_spline_ring(thetas, traj_pca_flat)
+    
+    thetas = np.arctan2(traj_pca[:,60:,1], traj_pca[:,60:,0]);
+    theta_unwrapped = np.unwrap(thetas, period=2*np.pi);
+    theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0);
+    arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
+    idx=[i for i, t in enumerate(zip(arr, arr[1:])) if t[0] != t[1]]; 
+    stabilities=-arr[idx].astype(int)
+    fxd_pnt_thetas = thetas_init[idx]
+    fxd_pnts = cs(fxd_pnt_thetas)
+    stab_idx = np.where(stabilities==-1); saddle_idx = np.where(stabilities==1)
+    
+    xs = np.arange(-np.pi, np.pi, np.pi/41)
+    xs = np.append(xs, -np.pi)
+    csxapca=cs_pca(xs); csxapca=csxapca.reshape((1,-1,csxapca.shape[-1]))
+    
+    plot_slow_manifold_ring_3d(fxd_pnts[saddle_idx], fxd_pnts[stab_idx], wo, pca, main_exp_name,
+
+                                   trajectories=csxapca, traj_alpha=1., proj_mult_val=2., 
+                                   proj_2d_color='lightgrey', figname_postfix=f'exp{exp_i}')
+
+
 def get_saddle_locations_from_theta(thetas, cs, cutoff=0.005):
     thetas_unique, idx_unique = np.unique(thetas, return_index=True);
     th_s = np.sort(thetas_unique)
