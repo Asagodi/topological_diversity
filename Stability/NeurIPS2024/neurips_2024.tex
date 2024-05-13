@@ -307,7 +307,11 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark 
 %On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence. %extension: 
 %Importantly, the ``slow'' flow on the perturbed system is not bounded.
 
-% the compact case is that you have that the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
+
+
+%Given an $d$-dimensional continuous attractor manifold embedded within a recurrent dynamics of $n$-dimensions, it supports persistent continuous memory of $d$-dimension.
+%There are $d$ zero Lyapunov exponents corresponding to the perturbations tangent to the manifold, coinciding with the memory representation, and $(n-d)$ negative Lyapunov exponents that expresses the attractive nature.
+%In theory, the topology of the manifold can be arbitrary, ideally matching the desired structure of the target variables.
 
 %In practice, the sufficient conditions for RNNs implementing continuous attractors to have this graceful breakdown (like BLA but not UBLA) is for the continuous attractor manifold to be of finite dimension throughout, connected, and bounded.
 %However, in systems with an invariant manifold with dimension at least three, it is possible that a slow manifold with chaotic dynamics is created through a perturbation.
@@ -338,7 +342,7 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark 
 
 \subsection{The structure of the bifurcated attractor}\label{sec:attractor_bif}
 %distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
-The theory implies that systems in the neighbourhood of a CAN in the space of dynamical systems all share the same topology for the attractive persistent invariant manifold.
+The theory implies that systems in the neighbourhood of a continuous attractor in the space of dynamical systems all share the same topology for the attractive persistent invariant manifold.
 For a 1 dimensional attractor this implies that the stability structure of the invariant manifold is either 
 (1)  composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits 
 or (2) a limit cycle.
@@ -346,7 +350,10 @@ or (2) a limit cycle.
 For 2 dimensional attractors  stable fixed points and saddle nodes can coexist with limit cycles.
 For higher dimensional, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
 For all dimensions, there will the an attractive invariant manifold with the same topological structure and dimension as the original continuous attractor.
+% the compact case: the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
 
+
+%We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects the different topologies as \textbf{approximate continuous attractors}.
 
 %generalization
 \subsection{Generalization properties of continuous attractor approximations}\label{sec:generalization}
@@ -355,22 +362,20 @@ The two possible approximations of a ring attractor have hence very different ge
 The limit cycle approximation will have fading memory, while the possible memory states of the other approximation is determined by the number and placement of stable fixed points.
 
 
+%uniform bound
+%infinite norm
 
-
-
-
-
-\subsection{Implications for Neuroscience}\label{sec:imp:neuroscience}
 
 Our theory shows that not all continuous attractors are born equal, and there are gracefully degrading continuous attractors.
 In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
-Animal behavior is finite time in nature and the longer the temporal distance the harder it is to learn in general.
+Animal behavior is finite time in nature and the longer the temporal distance the harder it is to learn temporal dependencies in general.
+
+\subsection{Implications for Neuroscience}\label{sec:imp:neuroscience}
+
 The conditions are favorable in the recurrent neuronal networks: (1) mutual inhibition is widely present and evidence points to inhibition dominated dynamics,
 (2) the neural state space is bounded due to physiological constraints, namely by a non-negative firing rate below and a maximum firing rate above.
 
-%Given an $d$-dimensional continuous attractor manifold embedded within a recurrent dynamics of $n$-dimensions, it supports persistent continuous memory of $d$-dimension.
-%There are $d$ zero Lyapunov exponents corresponding to the perturbations tangent to the manifold, coinciding with the memory representation, and $(n-d)$ negative Lyapunov exponents that expresses the attractive nature.
-%In theory, the topology of the manifold can be arbitrary, ideally matching the desired structure of the target variables.
+
 
 
 
@@ -384,20 +389,37 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 
 \section{Fast-slow decomposition} %from trained RNNs
 \subsection{Unpacking the slow manifolds in trained RNNs} %from trained RNNs
- separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within
+% separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within
+%intro:
+%-goal: to identify the solution type of a trained RNN + understand it's performance/errors/generalization/closeness to a CA
+%-how through a fast-slow decomposition, based on the assumption that there is normal hyperbolicity in the system 
+In this section, we delineate a novel approach to dissecting the dynamics of recurrent neural networks (RNNs) by segregating time scales to delineate the rapid flow normal to the "ghost" continuous attractor, also known as the slow manifold, and the sluggish flow within.
+ Our objective is twofold: firstly, to ascertain the solution type of a trained RNN, and secondly, to gain insights into its performance, error patterns, generalization capabilities, and proximity to a continuous attractor.
+ Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
+
+
+
+
+
+
+
+
+
+\subsection{Training}
 \begin{equation}
   \begin{aligned}
-	\vx_t &= \sigma(\win \vI_t + \vW \vx_{t-1} + \vb) \label{eq:RNN:discrete}\\
+	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) +  \sigma \eta(t)\label{eq:RNN:discrete}\\
 	\vy_t &= \wout \vx_t + \bout
   \end{aligned}
 \end{equation}
 where $\vx_t \in \reals^d$ is the hidden state, $\vI_t \in \reals^K$ is the input,
-$\sigma\colon \reals \to \reals$ an activation function which acts on each of the hidden dimension, and
+$f\colon \reals \to \reals$ an activation function which acts on each of the hidden dimension, 
+where $\eta (t)$, is white noise, and
 $\vW, \vb, \win, \wout, \bout$ are parameters.
 Assuming an Euler integration with unit time step, the discrete-time RNN of \eqref{eq:RNN:discrete} corresponds to the ODE:
 \begin{align}
-    \dot{\vx} &= -\vx + \sigma(\win \vI + \vW \vx + \vb). \label{eq:RNN:continuous}
+    \dot{\vx} &= -\vx + f(\win \vI + \vW \vx + \vb). \label{eq:RNN:continuous}
 \end{align}
 %
 We consider systems with the ReLU, tanh, rectified tanh and sigmoid activation functions.
