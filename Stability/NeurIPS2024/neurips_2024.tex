@@ -105,8 +105,8 @@
 Continuous attractors offer a unique solution for storing continuous-values in recurrent system states indefinitely.
 Unfortunately, the continuous attractors suffer from severe structural instability in general---they are destroyed by most infinitesimal changes of the dynamical law.
 This fragility limits their utility especially in biological systems as their recurrent dynamics are subject to constant perturbations.
-We observe that the bifircations from continuous attractors of theoretical models display various structurally stable dynamical structures with associated generalization characteristics.
-Although their asymptotic behavior of memory are categorically distinct, their finite time behavior are similar and degreade gracefully.
+We observe that the bifurcations from continuous attractors of theoretical models display various structurally stable dynamical structures with associated generalization characteristics.
+Although their asymptotic behavior of memory are categorically distinct, their finite time behavior are similar and degrade gracefully.
 Fast-slow decomposition analysis uncovers the persistent manifold that survives the seemingly destructive bifurcation.
 Moreover, the recurrent neural networks trained on analog memory tasks display approximate continuous attractors with predicted slow manifold structures.
 Therefore, continuous attractors are \emph{functionally robust} and remain useful as a universal analogy for understanding analog memory.
@@ -122,8 +122,8 @@ Therefore, continuous attractors are \emph{functionally robust} and remain usefu
 
 
 \section{Introduction}
-Biological systems exhibit robust behaviors that requires neural information processing of analog variables such as intensity, direction, distance, and time intervals.
-Virtually all models of working memory for continuous-valued information rely on persistent internal representations.
+Biological systems exhibit robust behaviors that require neural information processing of analog variables such as intensity, direction, and distance.
+Virtually all neural models of working memory for continuous-valued information rely on persistent internal representations.
 The continuous attractor structure in their recurrent dynamics are pivotal due to their ability to maintain activity patterns indefinitely through the neural population states~\cite{vyas2020,Dayan2001,Khona2022}.
 They are hypothesized as the neural mechanism for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
 Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,Noorman2022,Nair2023}.
@@ -149,7 +149,7 @@ Observations of persistent neural activity across many brain areas, organisms, a
 %par3: problems with CAs
 Despite their widespread adoption as models of analog memory, continuous attractors are brittle mathematical objects, posing significant challenges.
 Even the smallest arbitrary change in recurrent dynamics can be problematic, destroying the continuum of fixed points essential for continuous-valued working memory.
-In biological neural networks, this vulnerability is well-known and often referred to as the ``fine-tuning problem''~\cite{seung1996,Renart2003,Park2023a}.
+In neuroscience, this vulnerability is well-known and often referred to as the ``fine-tuning problem''~\cite{seung1996,Renart2003,Park2023a}.
 There are two primary sources of perturbations acting as noise in recurrent networks:
 (1) the stochastic nature of online learning signals that act on synaptic plasticity, and
 (2) observed spontaneous fluctuations in synaptic weights~\cite{Fusi2007-yg,shimizu2021}.
