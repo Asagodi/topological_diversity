@@ -1104,10 +1104,9 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
         #     break
         if same_Nfp_t > patience:
             break
-        else: 
-            if prev_Nfp!=Nfxd_pnts:
+        if j>2: 
+            if Nfxd_pnts!=Nfxd_pnt_list[-2] and perf!=perf_list[-2]:
                 same_Nfp_t=0
-                prev_Nfp=Nfxd_pnts
             else:
                 same_Nfp_t+=1
         
@@ -1139,7 +1138,7 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
 from tqdm import tqdm
 def N_perturb(W, b, Npert, rank, epsilon_step=1e-3, 
               nonlin=tanh_ode, tau=10, y0s=None,
-              Ntrials=100, maxT=1000, tsteps=1001, Nsim=100, n_components=2, theta_t=10,
+              Ntrials=100, maxT=1000, tsteps=1001, Nsim=100, n_components=2, theta_t=10, patience=50,
               folder=None):
     # folder = "C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/pert"
     all_lists = []
@@ -1147,7 +1146,7 @@ def N_perturb(W, b, Npert, rank, epsilon_step=1e-3,
         # print(pert_i)
         Nfxd_pnt_list, perf_list, fxd_pnt_thetas_list, Wpert_list, eps_list = perturb_and_simulate(W, b, epsilon_step=epsilon_step,
                              nonlin=nonlin, tau=tau, y0s=y0s,
-                             Ntrials=Ntrials, maxT=maxT, tsteps=tsteps, Nsim=Nsim, theta_t=theta_t,
+                             Ntrials=Ntrials, maxT=maxT, tsteps=tsteps, Nsim=Nsim, theta_t=theta_t, patience=patience,
                              rank=rank, seed=1000*pert_i+1000, folder=folder, plot=False)
         all_lists.append([Nfxd_pnt_list, perf_list, fxd_pnt_thetas_list, Wpert_list, eps_list])
     return all_lists
