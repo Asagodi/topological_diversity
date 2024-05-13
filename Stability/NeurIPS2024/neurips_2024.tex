@@ -399,7 +399,9 @@ In this section, we delineate a novel approach to dissecting the dynamics of rec
 
 
 
-
+We will assess performance at two different time-scales, very-long or asymptotic and a shorter one.
+For the asymptotic time-scale the asymptotic behavior of the system dominates.
+For a one dimensional system this will either be fixed points or limit cycles.
 
 
 
@@ -424,6 +426,9 @@ Assuming an Euler integration with unit time step, the discrete-time RNN of \eqr
 %
 We consider systems with the ReLU, tanh, rectified tanh and sigmoid activation functions.
 
+
+
+\subsection{Mapping out the found topologies}
 %Fig 4
 \begin{figure}[tbhp]
   \centering
@@ -431,7 +436,8 @@ We consider systems with the ReLU, tanh, rectified tanh and sigmoid activation f
   \caption{Slow manifold approximation of different trained networks on the memory guided saccade and angular velocity integration tasks.
   All solutions involve a slow manifold with the same topology as the relevant variable in the task.
   The different solutions are different in their asymptotic dynamics.
-  The most often found solution is of the type \emph{fixed point ring manifold}.
+  The most often found solution is of the type \emph{fixed point ring manifold} (A and B).
+  Less commonly found topologies are slow limit cycles (C) and a slow torus (D).
 }
   \label{fig:fastslow_decomp}
 \end{figure}
@@ -439,8 +445,6 @@ We consider systems with the ReLU, tanh, rectified tanh and sigmoid activation f
 
 
   Fig.~\ref{fig:fastslow_decomp}
-
-
 
 
 %\subsection{Line attractors}
@@ -502,9 +506,7 @@ Only the plane persist as a slow manifold.
 %uniform bound approximation
 
 
-We will assess performance at two different time-scales, very-long or asymptotic and a shorter one.
-For the asymptotic time-scale the asymptotic behavior of the system dominates.
-For a one dimensional system this will either be fixed points or limit cycles.
+
 
 
 
@@ -524,11 +526,14 @@ We will show that there are differences at how well approximations perform at di
 
 
   Fig.~\ref{fig:performance}
+  
+  \citep{seeholzer2017efficient}
+  \citep{goodridge2000}
 
 
 \section{Discussion}
 The attractive manifold of equilibria in continuous attractor networks provides two key functions continuous memory and propagation of gradient through time.
-Although the corresponding configurations are measure zero, we showed that the when the invariant manifold theorem holds, the finite time behavior of the trajectories and the gradient through time only slowly breakdown.
+Although the corresponding configurations are measure zero, we showed that  when the invariant manifold theorem holds, the finite time behavior of the trajectories and the gradient through time only slowly break down.
 We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in 5 example systems.
 There were surprisingly diverse bifurcations which provide additional insights to vanishing and exploding gradient regimes that the network visits in the presence of stochasticity in synapses and learning signals.
 In particular, we showed that some RNNs are devoid of bifurcations that lead to exploding gradients with non-zero measure.
@@ -1655,6 +1660,9 @@ x^*_i<0 \text{   for  	 } i\in\sigma.
 \end{figure}
 
 
+\subsubsection{Measure zero co-dimension $N$ bifurcation}
+The limit cycle is the only bifurcation that we found that can be achieved on only a measure zero set of parameter values around the parameter for the continuous attractor.
+
 \newpage
 \subsubsection{Independence of norm of perturbation on bifurcation}
 
@@ -1705,8 +1713,8 @@ $g=0, 0.1$
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{N100_si2_rho1.9_g0_fp4.8.12}
-\caption{Your caption here}
-\label{fig:my_label}
+\caption{}
+\label{fig:low_rank_examples}
 \end{figure}
 
 
