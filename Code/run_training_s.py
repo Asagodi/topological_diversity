@@ -195,7 +195,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         result, res_dict = train(net, task=task, data=data, n_epochs=training_kwargs['n_epochs'],
               batch_size=training_kwargs['batch_size'], learning_rate=training_kwargs['learning_rate'],
               clip_gradient=training_kwargs['clip_gradient'], cuda=training_kwargs['cuda'], 
-              h_init=training_kwargs['h_init'], hidden_initial_variance=training_kwargs['hidden_initial_variance'],
+              h_init=training_kwargs['h0_init'], hidden_initial_variance=training_kwargs['hidden_initial_variance'],
               loss_function=training_kwargs['loss_function'], act_reg_lambda=training_kwargs['act_reg_lambda'],
               optimizer=training_kwargs['optimizer'], momentum=training_kwargs['adam_momentum'], weight_decay=training_kwargs['weight_decay'],
               adam_betas=(training_kwargs['adam_beta1'],training_kwargs['adam_beta2']), adam_eps=1e-8, #optimizers 
@@ -400,7 +400,7 @@ if __name__ == "__main__":
     main_exp_name = 'center_out' #poisson_clicks_task' # angular_integration'
     # main_exp_name = 'poisson_clicks' #poisson_clicks_task' # angular_integration'
 
-    sub_exp_name = 'variable_N50_T500_noisy_actreg/tanh'    
+    sub_exp_name = 'variable_N100_T250_Tr100/sigmoid'    
 
     model_i, model_name = 2, ''
 
@@ -414,27 +414,27 @@ if __name__ == "__main__":
     training_kwargs['input_length'] = 25
     training_kwargs['angle_init'] = False
     training_kwargs['map_output_to_hidden'] = False
-    training_kwargs['T'] = 5000 # 12.8*2
+    training_kwargs['T'] = 2500 # 12.8*2
     training_kwargs['last_mses'] = False
-    training_kwargs['time_until_cue_range']=[5, 10]
+    training_kwargs['time_until_cue_range']=[50, 200]
     training_kwargs['N_in'] = 3
     training_kwargs['N_out'] = 2
     training_kwargs['b_a'] = 5
 
-    training_kwargs['nonlinearity'] = 'tanh'
+    training_kwargs['nonlinearity'] = 'sigmoid'
     training_kwargs['input_nonlinearity'] = 'recurrent'
     training_kwargs['readout_nonlinearity'] = 'id'
     # training_kwargs['ml_rnn'] = False
     training_kwargs['noise_std'] = 1e-3
     training_kwargs['task_noise_sigma'] = 0 #1e-1
-    training_kwargs['act_reg_lambda'] = 1e-3    
-    training_kwargs['h_init'] = 'random'
+    training_kwargs['act_reg_lambda'] = 0 #1e-3    
+    training_kwargs['h0_init'] = 'random'
     training_kwargs['hidden_initial_variance'] = 1e-2
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
     training_kwargs['N_rec'] = 50
-    training_kwargs['batch_size'] = 128
+    training_kwargs['batch_size'] = 32
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
     training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
@@ -459,7 +459,7 @@ if __name__ == "__main__":
     training_kwargs['trained_exp_i'] = 0
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
-                                                          model_name=model_name, trials=1, training_kwargs=training_kwargs)
+                                                          model_name=model_name, trials=100, training_kwargs=training_kwargs)
 
     
     # param_grid = {'initialization_type': ['qpta'],
