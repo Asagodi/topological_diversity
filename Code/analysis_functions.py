@@ -560,7 +560,7 @@ def get_cubic_spline_ring(thetas, invariant_manifold):
     
     return cs    
 
-def simulate_rnn(net, task, T, batch_size = 256):
+def simulate_rnn(net, task, T, h_init, batch_size = 256):
 
     input, target, mask = task(batch_size); input = torch.from_numpy(input).float();
     output, trajectories = net(input, return_dynamics=True); 
@@ -607,7 +607,7 @@ def get_slow_manifold(net, task, T, from_t=300, batch_size=256, n_components=3, 
     pca.fit(invariant_manifold)
     traj_pca = pca.transform(invariant_manifold).reshape((batch_size,-1,n_components))
     recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
-    fxd_pnts = np.array([recurrence for recurrence in recurrences if len(recurrence)==1]).squeeze()
+    fxd_pnts = np.array([recurrence for recurrence in recurrences if len(recurrence)==1]).reshape((-1,n_rec))    
     
     traj_pca_flat = traj_pca.reshape((-1,n_components))
     # all_bin_locs = digitize_trajectories(invariant_manifold, nbins=nbins)
@@ -802,20 +802,28 @@ def get_invman_3fps(W, b, tau, eps_=0.001):
     plt.quiver(fixed_point_list[2][0], fixed_point_list[2][1], eigenvectors[1,0], eigenvectors[1,1]);
     for i, fxd_pnt in enumerate(fixed_point_list):
         plt.plot(fxd_pnt[0], fxd_pnt[1], 'rx');
+        
+        
+        
+def fast_slow_decomposition(main_exp_name, exp_i, which='post'):
+    main_exp_name='center_out/N200_T500_noisy_hinitlast/tanh/'
+    folder = parent_dir+"/experiments/" + main_exp_name
+    net, wi, wrec, wo, brec, h0, oth, training_kwargs, losses = load_all(main_exp_name, exp_i=exp_i, which=which);
+    net.noise_std = 0
+    # plt.plot(losses[:np.argmin(losses)]); plt.yscale('log'); plt.xlabel("Epoch"); plt.ylabel("Loss");
+    
+    
 
 
 sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder"); 
 from FixedPointFinderTorch import *
 from plot_utils import plot_fps
+    #from plot_losses import *; from analysis_functions import *
+
 #Fixed point finder
 def get_fps_fpf():
     main_exp_name='center_out/N200_T500_noisy_hinitlast/tanh/'
-    #from plot_losses import *; from analysis_functions import *
-    import sys
-
     folder = parent_dir+"/experiments/" + main_exp_name
-
-    sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder")
     exp_i=0
     which = 'post'
     net, wi, wrec, wo, brec, h0, oth, training_kwargs = load_all(main_exp_name, exp_i, which=which);
