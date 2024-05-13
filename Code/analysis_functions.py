@@ -563,7 +563,7 @@ def get_cubic_spline_ring(thetas, invariant_manifold):
 def simulate_rnn(net, task, T, h_init, batch_size = 256):
 
     input, target, mask = task(batch_size); input = torch.from_numpy(input).float();
-    output, trajectories = net(input, return_dynamics=True); 
+    output, trajectories = net(input, return_dynamics=True, h_init=h_init); 
     output = output.detach().numpy();
     trajectories = trajectories.detach().numpy()
     return input, target, mask, output, trajectories
