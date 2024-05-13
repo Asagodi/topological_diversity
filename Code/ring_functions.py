@@ -987,6 +987,7 @@ def run_init(W, b, nonlin=tanh_ode, maxT=1000, tsteps=1001,  tau=10, Ntrials=100
     csxapca=pca.transform(cs(xs))
 
     return ring_points, thetas_init, pca, csxapca
+
     
 
 def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
