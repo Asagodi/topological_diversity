@@ -597,10 +597,10 @@ def find_periodic_orbits(traj, traj_pca, limcyctol=1e-2, mindtol=1e-10):
 
     return recurrences, recurrences_pca
 
-def get_slow_manifold(net, task, T, from_t=300, batch_size=256, n_components=3, nbins=1000):
+def get_slow_manifold(net, task, T, h_init='random', from_t=300, batch_size=256, n_components=3, nbins=1000):
     n_rec = net.dims[1]
     
-    input, target, mask, output, trajectories = simulate_rnn(net, task, T, batch_size)
+    input, target, mask, output, trajectories = simulate_rnn(net, task, T, h_init, batch_size)
     
     pca = PCA(n_components=n_components)
     invariant_manifold = trajectories[:,from_t:,:].reshape((-1,n_rec))
@@ -621,9 +621,9 @@ def get_slow_manifold(net, task, T, from_t=300, batch_size=256, n_components=3, 
     return trajectories, saddles, pca, cs, cs_pca, fxd_pnts, recurrences, recurrences_pca, all_bin_locs_pca
 
 
-def get_slow_w(net, task, T, from_t=300, batch_size=256, n_components=3, nbins=100):
+def get_slow_w(net, task, T, h_init='random', from_t=300, batch_size=256, n_components=3, nbins=100):
     n_rec = net.dims[1]
-    input, target, mask, output, trajectories = simulate_rnn(net, task, T, batch_size)
+    input, target, mask, output, trajectories = simulate_rnn(net, task, T, h_init, batch_size)
 
     pca = PCA(n_components=n_components)
     invariant_manifold = trajectories[:,from_t:,:].reshape((-1,n_rec))
