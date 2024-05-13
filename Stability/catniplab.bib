@@ -1,5 +1,100 @@
-@unpublished{Stone2023b,
-  title         = "Spectral learning of Bernoulli linear dynamical systems
+@INPROCEEDINGS{Jeon2024a,
+    author = {Hyungju Jeon and Matthew Dowling and Il Memming Park},
+    title = {Closed-loop active sensing for nonlinear system identification in attractor dynamics disorders},
+    note = {ECBS2024 oral presentation}
+}
+
+@InProceedings{Dowling2024a,
+    author    = {Matthew Dowling and Yuan Zhao and Il Memming Park},
+    title     = {XFADS: Predicting single-trial cued behavior solely from preparatory activity},
+    booktitle = {Computational and Systems Neuroscience ({COSYNE})},
+    year      = {2024},
+}
+
+@InProceedings{Park2024a,
+    author    = {Il Memming Park},
+    title     = {Persistent activity bump on a ring without a continuous ring attractor},
+    booktitle = {Computational and Systems Neuroscience ({COSYNE})},
+    year      = {2024},
+}
+
+@INPROCEEDINGS{Vermani2023b,
+    author = {Ayesha Vermani and Il Memming Park and Josue Nassar},
+    title = {Leveraging Generative Models for Unsupervised Alignment of Neural Time Series Data},
+    booktitle     = {International Conference on Learning Representations (ICLR)},
+    year      = {2024},
+    url = {https://openreview.net/forum?id=9zhHVyLY4K},
+}
+
+@INPROCEEDINGS{Stone2023c,
+  author        = "Stone, Iris and Sagiv, Yotam and Park, Il Memming and Pillow, Jonathan",
+  title = "Spectral learning of {B}ernoulli linear dynamical systems models",
+  booktitle = {Bernstein Conference},
+  doi = "10.12751/nncn.bc2023.288",
+  url = {https://abstracts.g-node.org/conference/BC23/abstracts#/uuid/9067fd8a-f2c4-4535-a686-8fe99c653492},
+  year = 2023,
+  poster_no = "IV 108",
+}
+
+@INPROCEEDINGS{Vermani2023a,
+  author        = "Vermani, Ayesha and Nassar, Josue and Park, Il Memming",
+  title = "Aligning high-dimensional neural recordings for data efficient inference of dynamics and prediction",
+  booktitle = {Bernstein Conference},
+  doi = "10.12751/nncn.bc2023.291",
+  url = {https://abstracts.g-node.org/conference/BC23/abstracts#/uuid/9c78d90e-d9e2-4ac6-9c41-e00328c57426},
+  year = 2023,
+  poster_no = "IV 111",
+}
+
+@INPROCEEDINGS{Park2023b,
+  author        = "Park, Il Memming and S{\'a}godi, {\'A}bel and Sok{\'o}{\l},
+                   Piotr Aleksander",
+  title = "Persistent learning signals without continuous attractors",
+  booktitle = {Bernstein Conference},
+  doi = "10.12751/nncn.bc2023.348",
+  url = {https://abstracts.g-node.org/conference/BC23/abstracts#/uuid/ecbf6440-d119-4cbc-8324-665e7cefe8d6},
+  year = 2023,
+  poster_no = "IV 302",
+}
+
+@UNPUBLISHED{Park2023a,
+  title         = "Persistent learning signals and working memory without
+                   continuous attractors",
+  author        = "Park, Il Memming and S{\'a}godi, {\'A}bel and Sok{\'o}{\l},
+                   Piotr Aleksander",
+  abstract      = "Neural dynamical systems with stable attractor structures,
+                   such as point attractors and continuous attractors, are
+                   hypothesized to underlie meaningful temporal behavior that
+                   requires working memory. However, working memory may not
+                   support useful learning signals necessary to adapt to
+                   changes in the temporal structure of the environment. We
+                   show that in addition to the continuous attractors that are
+                   widely implicated, periodic and quasi-periodic attractors
+                   can also support learning arbitrarily long temporal
+                   relationships. Unlike the continuous attractors that suffer
+                   from the fine-tuning problem, the less explored
+                   quasi-periodic attractors are uniquely qualified for
+                   learning to produce temporally structured behavior. Our
+                   theory has broad implications for the design of artificial
+                   learning systems and makes predictions about observable
+                   signatures of biological neural dynamics that can support
+                   temporal dependence learning and working memory. Based on
+                   our theory, we developed a new initialization scheme for
+                   artificial recurrent neural networks that outperforms
+                   standard methods for tasks that require learning temporal
+                   dynamics. Moreover, we propose a robust recurrent memory
+                   mechanism for integrating and maintaining head direction
+                   without a ring attractor.",
+  month         =  aug,
+  year          =  2023,
+  archivePrefix = "arXiv",
+  eprint        = "2308.12585",
+  primaryClass  = "q-bio.NC",
+  arxivid       = "2308.12585"
+}
+
+@article{Stone2023b,
+  title         = "Spectral learning of {B}ernoulli linear dynamical systems
                    models for decision-making",
   author        = "Stone, Iris R and Sagiv, Yotam and Park, Il Memming and
                    Pillow, Jonathan W",
@@ -24,19 +119,34 @@
                    provides substantial benefits to real world settings by
                    analyzing data from mice performing a sensory
                    decision-making task.",
-  month         =  mar,
-  year          =  2023,
+  journal       = "Transactions on Machine Learning Research",
+  code          = "https://github.com/irisstone/bestLDS",
+  issn          = {2835-8856},
+  month         = Jul,
+  year          = 2023,
   archivePrefix = "arXiv",
   eprint        = "2303.02060",
   primaryClass  = "stat.ML",
+  url           = {https://openreview.net/forum?id=giw2vcAhiH},
   arxivid       = "2303.02060"
 }
 
 @InProceedings{Stone2023a,
     author    = {Iris Stone and Yotam Sagiv and Il Memming Park and Jonathan W. Pillow},
-    title     = {Spectral learning of Bernoulli latent dynamical system models for decision-making},
+    title     = {Spectral learning of {B}ernoulli latent dynamical system models for decision-making},
     booktitle = {Computational and Systems Neuroscience ({COSYNE})},
     year      = {2023},
+}
+
+@PhdThesis{Sokol2023b,
+  author   = {Piotr Sok{\'o}{\l}},
+  school   = {Stony Brook University},
+  title    = {Geometry of learning and representation in neural networks},
+  year     = {2023},
+  month    = may,
+  abstract = {Advances in artificial neural networks and computational neuroscience highlight perti- nent properties of latent representations, such as their dimensionality and topology, and how the two relate to overall performance on behavioral tasks, learning, and generalization.
+We develop mathematical approaches that focus on learnability and robustness to adversarial perturbations as essential properties of latent representations. In Chapters 1 and 2, we propose a theory that specifies the conditions that allow neural models to learn through backpropagation. Dually, it has significant implications that shed light on representations in the brain. Interestingly, by requiring that backpropagating gradients neither explode nor vanish, we can recover equivalent conditions under which neural representations can faithfully represent continuous variables.
+In Chapter 3 we analyze the relationship between the dimensionality of neural repre- sentations and their robustness to adversarial perturbations. This highlights an interesting tradeoff between efficacy, dimensionality, and robustness. This tradeoff is equally salient for models of biological computation and artificial neural networks.},
 }
 
 @InProceedings{Sokol2023a,
@@ -87,7 +197,10 @@
   title     = {Linear time {GP}s for inferring latent trajectories from neural spike trains},
   year      = {2023},
   month     = Jul,
-  note      = {(accepted)},
+  arxivid       = "2306.01802",
+  archiveprefix = {arXiv},
+  eprint        = {2306.01802},
+  primaryclass  = {q-bio.NC},
   abstract  = {Latent Gaussian process (GP) models are widely used in neuroscience to uncover hidden state evolutions from sequential observations, mainly in neural activity recordings. While latent GP models provide a principled and powerful solution in theory, the intractable posterior in non-conjugate settings necessitates approximate inference schemes, which may lack scalability. In this work, we propose cvHM, a general inference framework for latent GP models leveraging Hida-Matérn kernels and conjugate computation variational inference (CVI). With cvHM, we are able to perform variational inference of latent neural trajectories with linear time complexity for arbitrary likelihoods. The reparameterization of stationary kernels using Hida-Matérn GPs helps us connect the latent variable models that encode prior assumptions through dynamical systems to those that encode trajectory assumptions through GPs. In contrast to previous work, we use bidirectional information filtering, leading to a more concise implementation. Furthermore, we employ the Whittle approximate likelihood to achieve highly efficient hyperparameter learning.},
   url       = {https://openreview.net/forum?id=1hWB5XEUMa},
 }
@@ -107,6 +220,21 @@
   year      = {2023},
   abstract  = {Latent variable models have become instrumental in computational neuroscience for reasoning about neural computation.  This has fostered the development of powerful offline algorithms for extracting latent neural trajectories from neural recordings.  However, despite the potential of real-time alternatives to give immediate feedback to experimentalists, and enhance experimental design, they have received markedly less attention.  In this work, we introduce the exponential family variational Kalman filter (eVKF), an online recursive Bayesian method aimed at inferring latent trajectories while simultaneously learning the dynamical system generating them.  eVKF works for arbitrary likelihoods and utilizes the constant base measure exponential family to model the latent state stochasticity. We derive a closed-form variational analog to the predict step of the Kalman filter which leads to a provably tighter bound on the ELBO compared to another online variational method. We validate our method on synthetic and real-world data, and, notably, show that it achieves competitive performance.},
   url       = {https://openreview.net/forum?id=M_MvkWgQSt},
+  arxivid       = "2305.11278",
+  archiveprefix = {arXiv},
+  eprint        = {2305.11278},
+  primaryclass  = {stat.ML},
+}
+
+@MastersThesis{Arora2023a,
+  author   = {Tushar Arora},
+  school   = {Stony Brook University},
+  title    = {Exploring the expressive power of latent variable models},
+  year     = {2023},
+  month    = may,
+  abstract = {Advancements in neural recording technologies has allowed us to collect high di- mensional observations by recording thousands of neurons at the same time. How- ever, experimental evidence has shown that high dimensional neural activity may be confined to a manifold of much lower dimension [16, 26, 11, 51, 61]. This phenomenon has been observed for example in context dependent decision making tasks [42, 37], and delay modulated tasks [11]. Latent variable models (LVMs) are powerful models used to recover the low dimensional dynamics. Some popular variants of LVMs are factor analysis, state space models (SSM), principal component analysis (static SSM), etc. We will be concentrating on non-linear SSMs which are expressive enough to capture complex dynamics while remaining interpretable.
+Inferring dynamics from temporal data is integral to many applications in machine learning and neuroscience, but the complexity and expressive power of the dynamics model can vary. In Machine Learning applications, sequence models for language and video use large recurrent networks where the complexity of the dynamics model is tied to the dimensionality of the states and the number of the recurrent units. In these models increasing the state space and number of units helps increase the expressive power. Meanwhile for neuroscience applications, increasing the dimensionality of state space and recurrent units is not desired as the end goal is to understand the dynamics and the topological properties. Given the postulate that computations underlying high dimensional observations live on a low dimensional manifold, it is detrimental to have a large state space dimension. When using these methods, ideally we should be able to keep the dimensionality of the latent variables/hidden variables/factors low.
+In this work we show that (1) prediction measures for goodness of learned dynamics model is more informative quantification and should be the standard measure for testing generative models; (2) using dynamics model that decouple expressive power from state space dimensionality makes model selection easier, produce better long term predictions, and we claim it makes the model more interpretable.},
 }
 
 @Article{Zhao2019a,
