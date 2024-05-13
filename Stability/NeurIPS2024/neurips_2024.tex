@@ -370,17 +370,15 @@ Our theory shows that not all continuous attractors are born equal, and there ar
 In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
 Animal behavior is finite time in nature and the longer the temporal distance the harder it is to learn temporal dependencies in general.
 
+
+
+
+
+
 \subsection{Implications for Neuroscience}\label{sec:imp:neuroscience}
 
 The conditions are favorable in the recurrent neuronal networks: (1) mutual inhibition is widely present and evidence points to inhibition dominated dynamics,
 (2) the neural state space is bounded due to physiological constraints, namely by a non-negative firing rate below and a maximum firing rate above.
-
-
-
-
-
-
-
 
 
 
@@ -394,7 +392,7 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 %-goal: to identify the solution type of a trained RNN + understand it's performance/errors/generalization/closeness to a CA
 %-how through a fast-slow decomposition, based on the assumption that there is normal hyperbolicity in the system 
 In this section, we delineate a novel approach to dissecting the dynamics of recurrent neural networks (RNNs) by segregating time scales to delineate the rapid flow normal to the "ghost" continuous attractor, also known as the slow manifold, and the sluggish flow within.
- Our objective is twofold: firstly, to ascertain the solution type of a trained RNN, and secondly, to gain insights into its performance, error patterns, generalization capabilities, and proximity to a continuous attractor.
+We aim, to identify the solution type of a trained RNN, and through this, to gain insights into its performance, error patterns, generalization capabilities, and proximity to a continuous attractor.
  Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
 
@@ -445,16 +443,9 @@ We consider systems with the ReLU, tanh, rectified tanh and sigmoid activation f
 
 
   Fig.~\ref{fig:fastslow_decomp}
-
-
-%\subsection{Line attractors}
-%\begin{figure}[tbhp]
-%  \centering
-%  \includegraphics[width=\textwidth]{las}
-%  \caption{Slow manifolds of line attractors
-%}
-%  \label{fig:las}
-%\end{figure}
+  
+ 
+ 
 
 
 \section{Experiments}
@@ -527,8 +518,8 @@ We will show that there are differences at how well approximations perform at di
 
   Fig.~\ref{fig:performance}
   
-  \citep{seeholzer2017efficient}
-  \citep{goodridge2000}
+  \citep{seeholzer2017efficient} %tanh
+  \citep{goodridge2000}		%sigmoid
 
 
 \section{Discussion}
