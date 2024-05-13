@@ -105,8 +105,8 @@
 Continuous attractors offer a unique solution for storing continuous-values in recurrent system states indefinitely.
 Unfortunately, the continuous attractors suffer from severe structural instability in general---they are destroyed by most infinitesimal changes of the dynamical law.
 This fragility limits their utility especially in biological systems as their recurrent dynamics are subject to constant perturbations.
-We observe that the bifurcations from continuous attractors of theoretical models display various structurally stable dynamical structures with associated generalization characteristics.
-Although their asymptotic behavior of memory are categorically distinct, their finite time behavior are similar and degrade gracefully.
+We observe that the bifurcations from continuous attractors in theoretical models display various structurally stable dynamical structures, each with their associated generalization characteristics.
+Although their asymptotic behaviors of memory are categorically distinct, their finite time behaviors are similar and degrade gracefully.
 Fast-slow decomposition analysis uncovers the persistent manifold that survives the seemingly destructive bifurcation.
 Moreover, the recurrent neural networks trained on analog memory tasks display approximate continuous attractors with predicted slow manifold structures.
 Therefore, continuous attractors are \emph{functionally robust} and remain useful as a universal analogy for understanding analog memory.
@@ -127,6 +127,7 @@ Virtually all neural models of working memory for continuous-valued information 
 The continuous attractor structure in their recurrent dynamics are pivotal due to their ability to maintain activity patterns indefinitely through the neural population states~\cite{vyas2020,Dayan2001,Khona2022}.
 They are hypothesized as the neural mechanism for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
 Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,Noorman2022,Nair2023}.
+%and anatomy?
 
 %par1: animals can represent CVs
 %The natural behavior of animals, including their ability to navigate without sensory cues, implies the presence of a robust internal representation of key variables such as location and head direction.
@@ -159,7 +160,7 @@ However, we lack the theoretical basis for clinging to the brittle concept of co
 
 In this study, we explore the bifurcations from continuous attractors in theoretical models,
 which reveal various structurally stable dynamical structures in the vicinity.
-The distinct topology of these dynamics implies qualitatively different behavior in the asymptotic limit of time, and thus a corresponding pattern of error in temporal generalization.
+The distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time, and thus a corresponding pattern of error in temporal generalization.
 By assuming normal hyperbolicity, we will separate the time scales to obtain fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within.
 We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects the different topologies as \textbf{approximate continuous attractors}.
 We further analyze task-trained artificial recurrent neural networks to reveal a ``universal motif'' of analog memory with various potential topologies.
@@ -234,8 +235,8 @@ In this paper, we lay out a new theory of general continuous-valued memory to an
 Our theory provides answers to both questions under mild assumptions in an architecture agnostic manner.
 %Using Fenichel's invariant manifold theorem, we derive a sufficient condition for RNNs implementing continuous attractors to remain free of exploding gradients.
 %Moreover, even after a bifurcation, these RNNs still approximately behave like the original continuous attractor (for a while).
-Using Fenichel's invariant manifold theorem, we derive a universality statement for the bifurcation landscape for one dimensional continuous attractors.
-the universality statement asserts that the behavior of one-dimensional continuous attractors can be effectively described by slow ring manifolds.
+Using Fenichel's invariant manifold theorem, we derive a universality statement for the bifurcation landscape for one dimensional continuous attractors:
+ the behavior of one-dimensional continuous attractors can be effectively described by slow ring manifolds.
  These manifolds can either take the form of collections of stable fixed points and saddle points with connecting orbits or that of a limit cycle. 
  This characterization provides a fundamental understanding of a continuous attractors bifurcation landscape.
 %what is uni statement?
