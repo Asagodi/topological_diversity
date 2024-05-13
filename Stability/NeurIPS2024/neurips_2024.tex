@@ -337,7 +337,7 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark 
 
 
 \subsection{The structure of the bifurcated attractor}\label{sec:attractor_bif}
-
+%distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
 The theory implies that systems in the neighbourhood of a CAN in the space of dynamical systems all share the same topology for the attractive persistent invariant manifold.
 For a 1 dimensional attractor this implies that the stability structure of the invariant manifold is either 
 (1)  composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits 
@@ -350,6 +350,7 @@ For all dimensions, there will the an attractive invariant manifold with the sam
 
 %generalization
 \subsection{Generalization properties of continuous attractor approximations}\label{sec:generalization}
+%, and thus a corresponding pattern of error in temporal generalization
 The two possible approximations of a ring attractor have hence very different generalization properties.
 The limit cycle approximation will have fading memory, while the possible memory states of the other approximation is determined by the number and placement of stable fixed points.
 
@@ -378,7 +379,46 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 
 
 
-\section{Experiments}
+
+
+
+\section{Fast-slow decomposition} %from trained RNNs
+\subsection{Unpacking the slow manifolds in trained RNNs} %from trained RNNs
+ separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within
+
+\begin{equation}
+  \begin{aligned}
+	\vx_t &= \sigma(\win \vI_t + \vW \vx_{t-1} + \vb) \label{eq:RNN:discrete}\\
+	\vy_t &= \wout \vx_t + \bout
+  \end{aligned}
+\end{equation}
+where $\vx_t \in \reals^d$ is the hidden state, $\vI_t \in \reals^K$ is the input,
+$\sigma\colon \reals \to \reals$ an activation function which acts on each of the hidden dimension, and
+$\vW, \vb, \win, \wout, \bout$ are parameters.
+Assuming an Euler integration with unit time step, the discrete-time RNN of \eqref{eq:RNN:discrete} corresponds to the ODE:
+\begin{align}
+    \dot{\vx} &= -\vx + \sigma(\win \vI + \vW \vx + \vb). \label{eq:RNN:continuous}
+\end{align}
+%
+We consider systems with the ReLU, tanh, rectified tanh and sigmoid activation functions.
+
+%Fig 4
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[width=\textwidth]{fastslow_decomposition}
+  \caption{Slow manifold approximation of different trained networks on the memory guided saccade and angular velocity integration tasks.
+  All solutions involve a slow manifold with the same topology as the relevant variable in the task.
+  The different solutions are different in their asymptotic dynamics.
+  The most often found solution is of the type \emph{fixed point ring manifold}.
+}
+  \label{fig:fastslow_decomp}
+\end{figure}
+
+
+
+  Fig.~\ref{fig:fastslow_decomp}
+
+
 
 
 %\subsection{Line attractors}
@@ -391,7 +431,7 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 %\end{figure}
 
 
-
+\section{Experiments}
 \subsection{Ring attractors}\label{sec:ras}
 %\subsubsection{Angular integration networks}\label{sec:hd}
 For circular variables such as the goal-direction or head-direction needed for spatial navigation in 2D, the temporal integration and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology).
@@ -445,39 +485,7 @@ For the asymptotic time-scale the asymptotic behavior of the system dominates.
 For a one dimensional system this will either be fixed points or limit cycles.
 
 
-\subsection{Unpacking the slow manifolds in trained RNNs} %from trained RNNs
 
-\begin{equation}
-  \begin{aligned}
-	\vx_t &= \sigma(\win \vI_t + \vW \vx_{t-1} + \vb) \label{eq:RNN:discrete}\\
-	\vy_t &= \wout \vx_t + \bout
-  \end{aligned}
-\end{equation}
-where $\vx_t \in \reals^d$ is the hidden state, $\vI_t \in \reals^K$ is the input,
-$\sigma: \reals \to \reals$ an activation function which acts on each of the hidden dimension, and
-$\vW, \vb, \win, \wout, \bout$ are parameters.
-Assuming an Euler integration with unit time step, the discrete-time RNN of \eqref{eq:RNN:discrete} corresponds to the ODE:
-\begin{align}
-    \dot{\vx} &= -\vx + \sigma(\win \vI + \vW \vx + \vb). \label{eq:RNN:continuous}
-\end{align}
-%
-We consider systems with the ReLU, tanh, rectified tanh and sigmoid activation functions.
-
-%Fig 4
-\begin{figure}[tbhp]
-  \centering
-  \includegraphics[width=\textwidth]{fastslow_decomposition}
-  \caption{Slow manifold approximation of different trained networks on the memory guided saccade and angular velocity integration tasks.
-  All solutions involve a slow manifold with the same topology as the relevant variable in the task.
-  The different solutions are different in their asymptotic dynamics.
-  The most often found solution is of the type \emph{fixed point ring manifold}.
-}
-  \label{fig:fastslow_decomp}
-\end{figure}
-
-
-
-  Fig.~\ref{fig:fastslow_decomp}
 
 \subsection{Sensitivity of continuous attractors to perturbations}
 We will show that there are differences at how well approximations perform at different timescales.
