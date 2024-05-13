@@ -900,8 +900,8 @@ def random_rank_r_matrix(N, r):
     return matrix
 
 
-def make_gaussian_connection_matrix(N, sigma):
-    #GOODRIDGE et al 
+def make_gaussian_connection_matrix_goodridge(N, sigma):
+    #GOODRIDGE et al  2000
     #Modeling Attractor Deformation in the Rodent Head-Direction System
     x = np.arange(-N/2,N/2,1)*2*np.pi/N
     x = np.arange(-180,180,180/(1/2*N))
@@ -909,6 +909,15 @@ def make_gaussian_connection_matrix(N, sigma):
     W = scipy.linalg.circulant(row)
     return W
 
+
+def make_gaussian_connection_matrix_compte(N, sigma, jmin, jplus):
+    #Compte et al  2000
+    #Synaptic Mechanisms and Network Dynamics Underlying Spatial Working Memory in a Cortical Network Model
+    x = np.arange(-N/2,N/2,1)*2*np.pi/N
+    x = np.arange(-180,180,180/(1/2*N))
+    row = jmin + (jplus-jmin)*np.exp(-x**2/(2*sigma**2))
+    W = scipy.linalg.circulant(row)
+    return W
 
 # N=10; W = make_gaussian_connection_matrix(N, sigma=28.5); W*=-1; b=1
 # N=6; W = make_gaussian_connection_matrix(N, sigma=28.5); W*=-1; b=.1
@@ -946,29 +955,16 @@ def make_gaussian_connection_matrix(N, sigma):
 # all_bumps = np.array(all_bumps)
 
 
-def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
-                         rank=1, epsilon_step=1e-3,
-                         Ntrials=100,
-                         maxT=1000, tsteps=1001, 
-                         Nsim=100, n_components=2,
-                         y0s=None,
-                         seed=1000,
-                         theta_t=10,
-                         plot=False,
-                         folder = "C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/pert"
-):
-    
-    colors = colors=np.array(['k', 'orange', 'g'])
+def run_init(W, b, nonlin=tanh_ode, maxT=1000, tsteps=1001,  tau=10, Ntrials=100, n_components=2):
     N=W.shape[0]
     t = np.linspace(0, maxT, tsteps)
-    sols = np.zeros((Ntrials, t.shape[0], N))
+    sols = np.zeros((Ntrials, tsteps, N))
     for i in range(Ntrials):
         y0 = np.random.uniform(0,1,N)
     
         sol = solve_ivp(nonlin, y0=y0,  t_span=[0,maxT],
                         args=tuple([W, b, tau]),
                         dense_output=True)
-    
         trajectories = sol.sol(t)
         sols[i,...] = trajectories.T
         
@@ -989,6 +985,28 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
     ring_points=cs(thetas_init)
     xs = np.arange(-np.pi, np.pi, np.pi/1000)
     csxapca=pca.transform(cs(xs))
+
+    return ring_points, thetas_init, pca, csxapca
+    
+
+def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
+                         rank=1, epsilon_step=1e-3,
+                         Ntrials=100,
+                         maxT=1000, tsteps=1001, 
+                         Nsim=100, n_components=2,
+                         y0s=None,
+                         seed=1000,
+                         theta_t=10,
+                         patience=50,
+                         plot=False,
+                         folder=None
+):
+    
+    assert folder is not None, "Provide 'folder' to save figure"
+    # folder="C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/pert"
+    colors = colors=np.array(['k', 'orange', 'g'])
+    N=W.shape[0]
+    t = np.linspace(0, maxT, tsteps)
     Nfxd_pnt_list = []
     perf_list = []
     eps_list = []
@@ -997,15 +1015,32 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
     stabilist=[]
     perf = 1
     if y0s is None:
-        Ntrials = ring_points.shape[0]
+        ring_points, thetas_init, pca, csxapca = run_init(W, b, nonlin=nonlin, tau=tau, maxT=maxT, tsteps=tsteps,
+                                                          Ntrials=Ntrials, n_components=n_components)
     else:
         Ntrials = y0s.shape[0]
+        pca = PCA(n_components=n_components)
+        sols_pca = pca.fit_transform(y0s.reshape((-1,N)))
+        thetas_init = np.arctan2(sols_pca[:,1], sols_pca[:,0]);
+        thetas = np.ravel(thetas_init)
+        idx = np.argsort(thetas)
+        thetas_sorted = thetas[idx]
+        thetas_sorted[-1] = np.pi
+        vals = y0s[idx]
+        vals[-1] = vals[0]
+        cs = scipy.interpolate.CubicSpline(thetas_sorted, vals, bc_type='periodic')
+        thetas_init = np.arange(-np.pi, np.pi, np.pi/Ntrials*2);
+        ring_points=cs(thetas_init)
+        xs = np.arange(-np.pi, np.pi, np.pi/1000)
+        csxapca=pca.transform(cs(xs))
+        
     np.random.seed(seed); 
-    
     Wepsilon=random_rank_r_matrix(N, rank) #np.random.normal(0,1,((N,N)))
     Wepsilon*=np.linalg.norm(Wepsilon)
 
-    t = np.linspace(0, theta_t, theta_t+1)
+    t = np.linspace(0, theta_t, theta_t+11)
+    same_Nfp_t=0
+    prev_Nfp=12
     for j in range(0, Nsim):
         if perf==0:
             break
@@ -1024,19 +1059,17 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
                 y0 = ring_points[i,:]
             else:
                 y0 = y0s[i,:]
-        
+
             sol = solve_ivp(nonlin, y0=y0,  t_span=[0,theta_t], args=tuple([Wpert, b, tau]), dense_output=True)
             trajectories = sol.sol(t)
             sols_pert[i,...] = trajectories.T
-        sols_pert_pca = pca.transform(sols_pert[:,:,:].reshape((-1,N))).reshape((Ntrials,-1,n_components))
+        sols_pert_pca = pca.transform(sols_pert.reshape((-1,N))).reshape((Ntrials,-1,n_components))
         
         pca2 = PCA(n_components=n_components)
-        pca2.fit(sols_pert[:,25:,:].reshape((-1,N)))
+        pca2.fit(sols_pert[:,:,:].reshape((-1,N)))
         dim=1-np.sum(pca2.explained_variance_ratio_[:2])
-
-        # np.cumsum(pca2.explained_variance_ratio_)
         
-        thetas = np.arctan2(sols_pert_pca[:,:theta_t,1], sols_pert_pca[:,:theta_t,0]);
+        thetas = np.arctan2(sols_pert_pca[:,:,1], sols_pert_pca[:,:,0]);
         theta_unwrapped = np.unwrap(thetas, period=2*np.pi);
         theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0);
         arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
@@ -1065,9 +1098,17 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
             perf=0
         perf_list.append(perf)
         
-        print("Simulation ", j, " #fps: ", Nfxd_pnts, "Perf:", np.round(perf,3), "D: ", dim)
-        if dim<0.01 or dim>0.05 or Nfxd_pnts>12:
+        # print("Simulation ", j, " #fps: ", Nfxd_pnts, "Perf:", np.round(perf,3), "D: ", dim)
+        # if dim<0.01 or dim>0.05 or Nfxd_pnts>12:
+        #     break
+        if same_Nfp_t > patience:
             break
+        else: 
+            if prev_Nfp!=Nfxd_pnts:
+                same_Nfp_t=0
+                prev_Nfp=Nfxd_pnts
+            else:
+                same_Nfp_t+=1
         
         if plot:
             makedirs(folder)
@@ -1078,7 +1119,7 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
             plt.scatter(fxd_pnts[:,0], fxd_pnts[:,1], color=colors[stabilities], zorder=1000)
             
             for i in range(Ntrials):
-                plt.plot(sols_pert_pca[i,25:,0]/2, sols_pert_pca[i,25:,1]/2, 'k',alpha=.1)
+                plt.plot(sols_pert_pca[i,:,0]/2, sols_pert_pca[i,:,1]/2, 'k',alpha=.1)
                 plt.plot(sols_pert_pca[i,:,0]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1),
                          sols_pert_pca[i,:,1]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), 'k',alpha=.1)
             #     plt.plot(sols_pert_pca[i,-1,0]/np.linalg.norm(sols_pert_pca[i,-1,:],axis=0),
@@ -1094,9 +1135,11 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
 
 # fig, ax = plt.subplots(1, 1, figsize=(4, 3)); ax.plot(eps_list, perf_list); plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0)); ax.set_xlabel(r"$\epsilon$"); ax.set_ylabel("memory capacity");fig.savefig(folder+f"/performance.pdf", bbox_inches="tight")
 
+from tqdm import tqdm
 def N_perturb(W, b, Npert, rank, epsilon_step=1e-3, 
               nonlin=tanh_ode, tau=10, y0s=None,
-              Ntrials=100, maxT=1000, tsteps=1001, Nsim=100, n_components=2, theta_t=10):
+              Ntrials=100, maxT=1000, tsteps=1001, Nsim=100, n_components=2, theta_t=10,
+              folder=None):
     # folder = "C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/pert"
     all_lists = []
     for pert_i in tqdm(range(Npert)):
@@ -1104,7 +1147,7 @@ def N_perturb(W, b, Npert, rank, epsilon_step=1e-3,
         Nfxd_pnt_list, perf_list, fxd_pnt_thetas_list, Wpert_list, eps_list = perturb_and_simulate(W, b, epsilon_step=epsilon_step,
                              nonlin=nonlin, tau=tau, y0s=y0s,
                              Ntrials=Ntrials, maxT=maxT, tsteps=tsteps, Nsim=Nsim, theta_t=theta_t,
-                             rank=rank, seed=1000*pert_i+1000, folder=folder, plot=True)
+                             rank=rank, seed=1000*pert_i+1000, folder=folder, plot=False)
         all_lists.append([Nfxd_pnt_list, perf_list, fxd_pnt_thetas_list, Wpert_list, eps_list])
     return all_lists
 
