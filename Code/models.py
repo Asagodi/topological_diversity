@@ -170,8 +170,7 @@ class RNN(nn.Module):
         elif nonlinearity == 'softplus':
             softplus_scale = 1 # Note that scale 1 is quite far from relu
             self.nonlinearity = lambda x: torch.log(1. + torch.exp(softplus_scale * x)) / softplus_scale
-        elif nonlinearity == 'sigmoid':
-            self.nonlinearity = lambda x: 1 / (1 + torch.exp(-x))
+
         elif type(nonlinearity) == str:
             raise NotImplementedError("Nonlinearity not yet implemented.")
         else:
