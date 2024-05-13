@@ -406,7 +406,7 @@ For a one dimensional system this will either be fixed points or limit cycles.
 
 
 
-\subsection{Training}
+\subsection{Model Architectures and Training Procedure}
 \begin{equation}
   \begin{aligned}
 	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) +  \sigma \eta(t)\label{eq:RNN:discrete}\\
@@ -421,10 +421,19 @@ Assuming an Euler integration with unit time step, the discrete-time RNN of \eqr
 \begin{align}
     \dot{\vx} &= -\vx + f(\win \vI + \vW \vx + \vb). \label{eq:RNN:continuous}
 \end{align}
-%
-We consider systems with the ReLU, tanh, rectified tanh and sigmoid activation functions.
+
+We trained networks for every combination of the following parameters:
+ ReLU, tanh, rectified tanh and sigmoid activation functions, 
+ number of units/neurons (64, 128, 256)
+ 
+
+%All networks were trained using stochastic gradient descent with momentum \citep for 5,000 iterations with a batch size of 32.
+
+We trained vanilla RNNs with a ReLU or tanh nonlinearity for the recurrent layer and a linear output layer on the memory guided saccade and the angular velocity integration tasks.
+ All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  with a batch size of 32. % and training was run until no decrease in the loss occurred for 100 epochs
 
 
+\subsection{Tasks}
 
 \subsection{Mapping out the found topologies}
 %Fig 4
@@ -445,7 +454,10 @@ We consider systems with the ReLU, tanh, rectified tanh and sigmoid activation f
   Fig.~\ref{fig:fastslow_decomp}
   
  
- 
+We find the slow manifold by integrating the autonomous dynamics and we select the parts of  the trajectory that have speed slower than a threshold.
+We construct the one dimensional invariant manifold by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig~\ref{fastslow_decomp}A and B).
+Fintally, we find the stable fixed points through a threshold on 
+
 
 
 \section{Experiments}
