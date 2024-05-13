@@ -424,16 +424,14 @@ Assuming an Euler integration with unit time step, the discrete-time RNN of \eqr
 
 We trained networks for every combination of the following parameters:
  ReLU, tanh, rectified tanh and sigmoid activation functions, 
- number of units/neurons (64, 128, 256)
- 
-
-%All networks were trained using stochastic gradient descent with momentum \citep for 5,000 iterations with a batch size of 32.
-
-We trained vanilla RNNs with a ReLU or tanh nonlinearity for the recurrent layer and a linear output layer on the memory guided saccade and the angular velocity integration tasks.
- All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  with a batch size of 32. % and training was run until no decrease in the loss occurred for 100 epochs
+ number of units/neurons (64, 128, 256), and
+ activity regularization.
+%
+ All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  for 5,000 iterations with a batch size of 32. % and training was run until no decrease in the loss occurred for 100 epochs
 
 
 \subsection{Tasks}
+memory guided saccade and the angular velocity integration tasks.
 
 \subsection{Mapping out the found topologies}
 %Fig 4
