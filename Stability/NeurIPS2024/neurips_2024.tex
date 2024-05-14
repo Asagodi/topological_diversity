@@ -391,6 +391,7 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 %intro:
 %-goal: to identify the solution type of a trained RNN + understand it's performance/errors/generalization/closeness to a CA
 %-how through a fast-slow decomposition, based on the assumption that there is normal hyperbolicity in the system 
+NNs are universal approximators of dynamical systems \citep{doya1993}, can we 
 In this section, we delineate a novel approach to dissecting the dynamics of recurrent neural networks (RNNs) by segregating time scales to delineate the rapid flow normal to the "ghost" continuous attractor, also known as the slow manifold, and the sluggish flow within.
 We aim, to identify the solution type of a trained RNN, and through this, to gain insights into its performance, error patterns, generalization capabilities, and proximity to a continuous attractor.
  Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
@@ -422,6 +423,14 @@ Assuming an Euler integration with unit time step, the discrete-time RNN of \eqr
     \dot{\vx} &= -\vx + f(\win \vI + \vW \vx + \vb). \label{eq:RNN:continuous}
 \end{align}
 
+The loss $L$ to be minimized was computed by time-averaging the squared errors between the network output $y(t)$ and the target output $\hat y(t)$.
+\begin{equation}\label{eq:loss}
+L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}
+\end{equation}
+with $i$  the index of the output units and $t$  the index for time.
+ We implemented a mask, $m_{i,t}$, for modulating the loss with respect to certain time intervals.
+
+
 We trained networks for every combination of the following parameters:
  ReLU, tanh, rectified tanh and sigmoid activation functions, 
  number of units/neurons (64, 128, 256), and
@@ -444,18 +453,34 @@ memory guided saccade and the angular velocity integration tasks.
   The most often found solution is of the type \emph{fixed point ring manifold} (A and B).
   Less commonly found topologies are slow limit cycles (C) and a slow torus (D).
 }
-  \label{fig:fastslow_decomp}
+  \label{fig:fastslow_decomposition}
 \end{figure}
 
-
-
-  Fig.~\ref{fig:fastslow_decomp}
   
  
 We find the slow manifold by integrating the autonomous dynamics and we select the parts of  the trajectory that have speed slower than a threshold.
-We construct the one dimensional invariant manifold by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig~\ref{fastslow_decomp}A and B).
-Fintally, we find the stable fixed points through a threshold on 
+We construct the one dimensional invariant manifold by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
+Finally, we find the stable fixed points through a threshold on the 
 
+
+
+\subsection{Universality}
+
+Understanding the implemented computation in neural systems in terms of dynamical systems has a well-established practice \citep{seung1996, sompolinsky1988}.
+ Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis \citep{sussillo2013blackbox, sussillo2014, barak2013, driscoll2022, maheswaranathan2019universality, cueva2019headdirection, cueva2021continuous} and to compare those artificial networks to biological circuits \citep{mante2013context, remington2018flexible, ghazizadeh2021slow}.
+% 
+% 
+Previously, systematically the variability in network dynamics has been surveyed in vanilla RNNs \citep{sussillo2013blackbox, mante2013context, yang2019task, maheswaranathan2019universality,discoll2022}
+quantified variations in dynamical solutions over architecture and nonlinearity,
+% although \citep{orhan2019diverse} considers many issues concerning how RNNs may hold memory
+%comparing artificial network representations to neural data
+% 
+% 
+% 
+%The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
+% much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
+% 
+ 
 
 
 \section{Experiments}
@@ -526,8 +551,8 @@ We will show that there are differences at how well approximations perform at di
 \end{figure}
 
 
-  Fig.~\ref{fig:performance}
-  
+We measure how performance of different models for the representation of an angular variable drop as a function of perturbation size Fig.~\ref{fig:performance}.
+
   \citep{seeholzer2017efficient} %tanh
   \citep{goodridge2000}		%sigmoid
 
@@ -543,6 +568,11 @@ As the theory predicts, our numerical experiments demonstrate the properties of 
 However, after small perturbations, plain gradient descent typically converges to a non-continuous attractor solution, indicating that the homeostatic restoration of continuous attractor may be challenging.
 Based on our observations, we cannot conclude that continuous attractors solutions are universally brittle.
 Further research on finding continuous attractor networks that may allow restorative learning for larger perturbations in the parameter space is needed.
+
+
+%error-correcting
+Previous psychophysical, theoretical, and neurophysiological work has shown noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
+Discrete attractor dynamics can counteract this noise by pulling memories towards a few stable representations \citep{panichello2019}.
 
 % We have derived a general theory that describes the loss landscape of RNNs around continuous attractor solutions.
 % This theory implies that backpropagating gradient does not explode for systems near compact continuous attractors because of divergent dynamics.
@@ -1664,6 +1694,10 @@ x^*_i<0 \text{   for  	 } i\in\sigma.
 \subsubsection{Measure zero co-dimension $N$ bifurcation}
 The limit cycle is the only bifurcation that we found that can be achieved on only a measure zero set of parameter values around the parameter for the continuous attractor.
 
+
+
+
+
 \newpage
 \subsubsection{Independence of norm of perturbation on bifurcation}
 
@@ -1714,7 +1748,7 @@ $g=0, 0.1$
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{N100_si2_rho1.9_g0_fp4.8.12}
-\caption{}
+\caption{Some examples of networks dynamics.}
 \label{fig:low_rank_examples}
 \end{figure}
 
