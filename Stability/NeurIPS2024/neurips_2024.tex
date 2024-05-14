@@ -391,8 +391,8 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 %intro:
 %-goal: to identify the solution type of a trained RNN + understand it's performance/errors/generalization/closeness to a CA
 %-how through a fast-slow decomposition, based on the assumption that there is normal hyperbolicity in the system 
-NNs are universal approximators of dynamical systems \citep{doya1993}, can we 
-In this section, we delineate a novel approach to dissecting the dynamics of recurrent neural networks (RNNs) by segregating time scales to delineate the rapid flow normal to the "ghost" continuous attractor, also known as the slow manifold, and the sluggish flow within.
+Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors.
+In this section, we delineate a novel approach to dissecting the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the "ghost" continuous attractor, also known as the slow manifold, and the sluggish flow within.
 We aim, to identify the solution type of a trained RNN, and through this, to gain insights into its performance, error patterns, generalization capabilities, and proximity to a continuous attractor.
  Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
@@ -410,18 +410,19 @@ For a one dimensional system this will either be fixed points or limit cycles.
 \subsection{Model Architectures and Training Procedure}
 \begin{equation}
   \begin{aligned}
-	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) +  \sigma \eta(t)\label{eq:RNN:discrete}\\
+	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta \label{eq:RNN:discrete}\\
 	\vy_t &= \wout \vx_t + \bout
   \end{aligned}
 \end{equation}
 where $\vx_t \in \reals^d$ is the hidden state, $\vI_t \in \reals^K$ is the input,
 $f\colon \reals \to \reals$ an activation function which acts on each of the hidden dimension, 
-where $\eta (t)$, is white noise, and
+private noise variable, $\zeta$, and %$\zeta\sim \mathcal{N}(0, .001)$
 $\vW, \vb, \win, \wout, \bout$ are parameters.
 Assuming an Euler integration with unit time step, the discrete-time RNN of \eqref{eq:RNN:discrete} corresponds to the ODE:
 \begin{align}
-    \dot{\vx} &= -\vx + f(\win \vI + \vW \vx + \vb). \label{eq:RNN:continuous}
+    \dot{\vx} &= -\vx + f(\win \vI + \vW \vx + \vb) + \sigma \eta(t). \label{eq:RNN:continuous}
 \end{align}
+where  $\eta (t)$ is white noise.
 
 The loss $L$ to be minimized was computed by time-averaging the squared errors between the network output $y(t)$ and the target output $\hat y(t)$.
 \begin{equation}\label{eq:loss}
@@ -477,10 +478,13 @@ quantified variations in dynamical solutions over architecture and nonlinearity,
 % 
 % 
 % 
-%The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
-% much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
+The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
+ much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
 % 
  
+ 
+ Previously, it was observed that  fixed point analysis discussed here has one major limitations, including that the number of fixed points must be the same across networks that are being compared \citep{maheswaranathan2019universality}.
+ Our analysis overcomes this limitation.
 
 
 \section{Experiments}
