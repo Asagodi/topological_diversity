@@ -77,36 +77,7 @@ def g_lax(x,y):
         
     
     
-def simulate_network(W, b, nonlinearity_ode=relu_ode, y0=None, maxT=25, tsteps=501, tau=1):
-    
-    N = W.shape[0]
-    if not np.any(y0):
-        y0 = np.random.uniform(0,1,N)
-    t = np.linspace(0, maxT, tsteps)
-    sol = solve_ivp(nonlinearity_ode, y0=y0,  t_span=[0,maxT],
-                    args=tuple([W, b, tau]),
-                    dense_output=True)
-    return sol.sol(t)
 
-
-def simulate_network_ntimes(Nsims, W, b, nonlinearity_ode=relu_ode, mlrnn=True,
-                            y0s=None, y0_dist="uniform", #todo: y0_dist=
-                            maxT=25, tsteps=501, tau=1):
-    t = np.linspace(0, maxT, tsteps)
-    N = W.shape[0]
-    sols = np.zeros((Nsims, tsteps, N))
-    for ni in range(Nsims):
-        if not np.any(y0s):
-            if y0_dist=='uniform':
-                y0 = np.random.uniform(0,1,N)
-            else:
-                y0 = np.random.normal(0,1,N)
-
-        sol = solve_ivp(nonlinearity_ode, y0=y0,  t_span=[0,maxT],
-                        args=tuple([W, b, tau, mlrnn]),
-                        dense_output=True)
-        sols[ni,...] = sol.sol(t).T.copy()
-    return sols
 
 #Noorman ring
 
@@ -1382,6 +1353,43 @@ def make_biswas_ring(w1, w4):
     W = scipy.linalg.circulant(row) 
     return W 
     
+
+
+###########EMPJ
+import json
+folder='C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/martin/'
+with open(folder+'W_miracle.json', 'r') as f:
+    data = json.load(f)
+    W = np.array(data)
+with open(folder+'D_miracle.json', 'r') as f:
+    data = json.load(f)
+    D = np.array(data)
+    
+    
+def get_empj(W, D, Nsims=100):
+    
+    thetas_init = np.arange(-np.pi, np.pi, 2*np.pi/Nsims)
+    points_init_2d = np.array([np.cos(thetas_init), np.sin(thetas_init)])
+    points_init_2_random = points_init_2d+np.random.normal(0,.01,(2,Nsims))
+    points_init_nd_random = np.dot(D, points_init_2_random).T
+    trajectories = simulate_network_ntimes(Nsims, W.T, 0, nonlinearity_ode=tanh_ode, tau=0.05, maxT=200, tsteps=50001,
+                                           mlrnn=False, y0s=points_init_nd_random);
+    traj_2 = np.dot(trajectories, D)
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3))
+    for i in range(100):
+        plt.plot(traj_2[i, :,0], traj_2[i,:,1], 'k');
+        plt.plot(traj_2[i, 0,0], traj_2[i,0,1], '.r');
+        plt.plot(traj_2[i, -1,0], traj_2[i,-1,1], '.b');
+    plt.savefig(folder+'/miracle/on_manifold_multi.pdf', bbox_inches="tight")
+    
+    traj = simulate_network(W, 0, nonlinearity_ode=tanh_ode, y0=None, maxT=20, tsteps=5001, tau=1000);
+    traj_2 = np.dot(traj.T, D)
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
+    plt.plot(np.cos(np.append(thetas_init,np.pi)), np.sin(np.append(thetas_init,np.pi))); plt.xlim([-2,2]);
+    plt.plot(traj_2[:,0], traj_2[:,1], 'k'); plt.plot(traj_2[0,0], traj_2[0,1], '.r');plt.plot(traj_2[-1,0], traj_2[-1,1], '.b');
+    plt.ylim([-2,2]); plt.axis('off'); plt.savefig(folder+'/miracle/off_manifold_single.pdf', bbox_inches="tight")
+    
+
     
 # if __name__ == "__main__": 
 #     # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
