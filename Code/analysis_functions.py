@@ -638,6 +638,7 @@ def get_slow_w(net, task, T, h_init='random', from_t=300, batch_size=256, n_comp
     cs = get_cubic_spline_ring(thetas, invariant_manifold)
     cs_pca = get_cubic_spline_ring(thetas, traj_pca_flat)
     
+    thetas_init = np.arange(-np.pi, np.pi, np.pi/batch_size*2);
     thetas = np.arctan2(traj_pca[:,60:,1], traj_pca[:,60:,0]);
     theta_unwrapped = np.unwrap(thetas, period=2*np.pi);
     theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0);
@@ -653,9 +654,8 @@ def get_slow_w(net, task, T, h_init='random', from_t=300, batch_size=256, n_comp
     csxapca=cs_pca(xs); csxapca=csxapca.reshape((1,-1,csxapca.shape[-1]))
     
     plot_slow_manifold_ring_3d(fxd_pnts[saddle_idx], fxd_pnts[stab_idx], wo, pca, main_exp_name,
-
-                                   trajectories=csxapca, traj_alpha=1., proj_mult_val=2., 
-                                   proj_2d_color='lightgrey', figname_postfix=f'exp{exp_i}')
+                                    trajectories=csxapca, traj_alpha=1., proj_mult_val=2., 
+                                    proj_2d_color='lightgrey', figname_postfix=f'exp{exp_i}')
 
 
 def get_saddle_locations_from_theta(thetas, cs, cutoff=0.005):
@@ -849,6 +849,68 @@ def fast_slow_decomposition(main_exp_name, exp_i, which='post'):
     net.noise_std = 0
     # plt.plot(losses[:np.argmin(losses)]); plt.yscale('log'); plt.xlabel("Epoch"); plt.ylabel("Loss");
     
+    
+    
+
+    
+def vf_on_ring(trajectories, wo,  wrec, brec, cs, fxd_pnt_thetas, stabilities, method='closest', npoints=30, 
+               fig_folder=None, fig_ext=''):
+    
+    n_rec = wo.shape[0]
+    
+    if method=='spline':
+        xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
+        xs = np.append(xs, -np.pi)
+        csx=cs(xs);
+        fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
+        diff = np.zeros((csx.shape[0]))
+        for i in range(csx.shape[0]):
+            x,y=np.cos(xs[i]),np.sin(xs[i])
+            x,y=np.dot(wo.T,csx[i])
+            u,v=np.dot(wo.T, tanh_ode(0, csx[i], wrec, brec, tau=10))
+            plt.quiver(x,y,u,v)
+        for i,theta in enumerate(fxd_pnt_thetas):
+            x,y=np.cos(theta),np.sin(theta)
+            if stabilities[i]==1:
+                plt.plot(x,y,'.g')
+            else:
+                plt.plot(x,y,'.r')
+        plt.axis('off'); fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None);
+        if fig_folder:
+            plt.savefig(fig_folder+f'/vf_on_ring_{fig_ext}.pdf', bbox_inches="tight")
+    
+    elif method=='closest':
+        xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
+        xs = np.append(xs, -np.pi)
+        trajectories_flat = trajectories.reshape((-1,n_rec));
+        ys = np.dot(trajectories_flat.reshape((-1,n_rec)), wo)
+        circle_points = np.array([np.cos(xs), np.sin(xs)]).T
+        dists = cdist(circle_points.reshape((-1,2)), ys)
+        csx2 = []
+        for i in range(xs.shape[0]):
+            #print(i, np.argmin(dists[i,:]))
+            csx2.append(trajectories_flat[np.argmin(dists[i,:]),:])
+        csx2 = np.array(csx2)
+    
+        fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
+        diff = np.zeros((csx2.shape[0]))
+        for i in range(csx2.shape[0]):
+            x,y=np.cos(xs[i]),np.sin(xs[i])
+            x,y=np.dot(csx2[i], wo)
+            u,v=np.dot(wo.T, tanh_ode(0, csx2[i], wrec, brec, tau=10))
+            diff[i] = np.linalg.norm(np.array([u,v]))
+            plt.quiver(x,y,u,v)
+        for i,theta in enumerate(fxd_pnt_thetas):
+            x,y=np.cos(theta),np.sin(theta)
+            if stabilities[i]==1:
+                plt.plot(x,y,'.g')
+            else:
+                plt.plot(x,y,'.r')
+        plt.axis('off'); fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None);
+        if fig_folder:
+            plt.savefig(fig_folder+f'/vf_on_ring_closest_{fig_ext}.pdf', bbox_inches="tight")
+        
+    return diff
     
 
 
