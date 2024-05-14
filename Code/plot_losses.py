@@ -780,8 +780,9 @@ def plot_recs_3d_ring(recurrences, recurrences_pca, wo, cmap, norm, ax=None):
 def plot_slow_manifold_ring_3d(saddles, fxd_pnts, wo, pca, exp_name,
                                all_bin_locs_pca=None,
                                recurrences=[], recurrences_pca=[],
-                               trajectories=[],
+                               trajectories=[], traj_alpha=.1, proj_mult_val=1.5,
                                proj_2d_color='lightgrey', figname_postfix=''):
+    assert all_bin_locs_pca is not None or np.any(trajectories), "provide all_bin_locs_pca or trajectories"
     cmap = plt.get_cmap('hsv')
     norm = mpl.colors.Normalize(-np.pi, np.pi)
 
@@ -793,32 +794,33 @@ def plot_slow_manifold_ring_3d(saddles, fxd_pnts, wo, pca, exp_name,
     plot_recs_3d_ring(recurrences, recurrences_pca, wo, cmap, norm, ax=ax)  
 
     for traj in trajectories:
-        ax.plot(traj[:,0], traj[:,1], traj[:,2], 'k', alpha=0.1, zorder=-1000)
+        ax.plot(traj[:,0], traj[:,1], traj[:,2], 'k', alpha=traj_alpha, zorder=0)
     
     if np.any(all_bin_locs_pca!=None):
         ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
                     marker='.', s=.1, color='k', zorder=-100, alpha=.9)
         
-        ax.scatter(1.5*np.min(all_bin_locs_pca[:,0])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
+        ax.scatter(proj_mult_val*np.min(all_bin_locs_pca[:,0])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,1], all_bin_locs_pca[:,2],
                       marker='.', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
-        ax.scatter(all_bin_locs_pca[:,0], 1.5*np.min(all_bin_locs_pca[:,1])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,2],
+        ax.scatter(all_bin_locs_pca[:,0], proj_mult_val*np.min(all_bin_locs_pca[:,1])*np.ones_like(all_bin_locs_pca[:,2]), all_bin_locs_pca[:,2],
                       marker='.', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
-        ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], 1.5*np.min(all_bin_locs_pca[:,2])*np.ones_like(all_bin_locs_pca[:,2]),
+        ax.scatter(all_bin_locs_pca[:,0], all_bin_locs_pca[:,1], proj_mult_val*np.min(all_bin_locs_pca[:,2])*np.ones_like(all_bin_locs_pca[:,2]),
                       marker='*', s=.1, color=proj_2d_color, zorder=-200, alpha=.9)
     
-    if np.any(trajectories!=[]):
+    if np.any(trajectories):
         for traj in trajectories:
-            ax.plot(1.5*np.min(trajectories[:,0])*np.ones_like(traj[:,0]), traj[:,1], traj[:,2], 'k', alpha=0.1, zorder=-2000)
+            ax.plot(proj_mult_val*np.min(trajectories[:,:,0])*np.ones_like(traj[:,0]), traj[:,1], traj[:,2], 'k', alpha=0.1, zorder=-2000)
 
-            ax.plot(traj[:,0], 1.5*np.min(trajectories[:,1])*np.ones_like(traj[:,1]), traj[:,2], 'k', alpha=0.1, zorder=-2000)
+            ax.plot(traj[:,0], proj_mult_val*np.min(trajectories[:,:,1])*np.ones_like(traj[:,1]), traj[:,2], 'k', alpha=0.1, zorder=-2000)
 
-            ax.plot(traj[:,0], traj[:,1], 1.5*np.min(trajectories[:,2])*np.ones_like(traj[:,2]), 'k', alpha=0.1, zorder=-2000)
+            ax.plot(traj[:,0], traj[:,1], proj_mult_val*np.min(trajectories[:,:,2])*np.ones_like(traj[:,2]), 'k', alpha=0.1, zorder=-2000)
     
     for axis in range(3):
-        if trajectories!=[]:
-            value = 1.5*np.min(trajectories[:,axis])
+        if np.any(trajectories):
+            value = proj_mult_val*np.min(trajectories[:,:,axis])
+
         else:
-            value = 1.5*np.min(all_bin_locs_pca[:,axis])
+            value = proj_mult_val*np.min(all_bin_locs_pca[:,axis])
 
         scatter_projection_3d(fxd_pnts, wo, pca, axis, value, cmap, norm, marker_style='full', markercolor=proj_2d_color, ax=ax)
         scatter_projection_3d(saddles, wo, pca, axis, value, cmap, norm, marker_style='full', markercolor=proj_2d_color, ax=ax)
@@ -850,7 +852,7 @@ def video_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, ex
         ax.plot(traj[:,0], traj[:,1], traj[:,2], 'k', alpha=0.1, zorder=-1000)
     
     for axis in range(3):
-        value = 1.5*np.min(all_bin_locs_pca[:,axis])
+        value = proj_mult_val*np.min(all_bin_locs_pca[:,axis])
         scatter_projection_3d(fxd_pnts, wo, pca, axis, value, cmap, norm, marker_style='full', markercolor=proj_2d_color, ax=ax)
         scatter_projection_3d(saddles, wo, pca, axis, value, cmap, norm, marker_style='full', markercolor=proj_2d_color, ax=ax)
     ax.set_xticks([])
@@ -860,6 +862,29 @@ def video_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, ex
     ax.set_ylabel("PC2")
     ax.set_zlabel("PC3", rotation=90); ax.zaxis.labelpad=-15
     plt.savefig(parent_dir+'/experiments/'+exp_name+f'/slow_manifold_3d2d_{figname_postfix}.pdf', bbox_inches="tight")
+
+
+def plot_vf_on_ring_spline(wo, cs, npoints, fxd_pnt_thetas=[], stabilities=[]):
+    
+    xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
+    csx=cs(xs);
+    
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
+    for i in range(csx.shape[0]):
+        x,y=np.cos(xs[i]),np.sin(xs[i])
+        x,y=np.dot(wo.T,csx[i])
+        u,v=np.dot(wo.T, tanh_ode(0, csx[i], wrec, brec, tau=10))
+        plt.quiver(x,y,u,v)
+    if np.any(fxd_pnt_thetas):
+        for i,theta in enumerate(fxd_pnt_thetas):
+            x,y=np.cos(theta),np.sin(theta)
+            if stabilities[i]==1:
+                plt.plot(x,y,'.g')
+            else:
+                plt.plot(x,y,'.r')
+    plt.axis('off'); 
+    fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None);
+    plt.savefig(parent_dir+'/experiments/'+main_exp_name+f'/vf_on_ring_exp{exp_i}.pdf', bbox_inches="tight")
 
 def plot_two_rings(net, batch_size=256):    
     
@@ -920,6 +945,29 @@ def plot_two_rings(net, batch_size=256):
     ax.set_zlabel("PC3", rotation=90); ax.zaxis.labelpad=-15
     plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/2rings_3d_top.pdf', bbox_inches="tight")
 
+
+
+
+def plot_vf_diff_ring():
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d")
+    ax.view_init(elev=45., azim=45, roll=0)
+    x,y=np.dot(csx2, wo).T
+    x=np.cos(xs)
+    y=np.sin(xs)
+    ax.plot(x, y, diff)
+    ax.set_xticks([-1,1])
+    ax.set_yticks([-1,1])
+    for i,theta in enumerate(fxd_pnt_thetas):
+        x,y=np.cos(theta+np.pi/50),np.sin(theta+np.pi/50)
+        if stabilities[i]==1:
+            plt.plot(x,y,0,'.g')
+        else:
+            plt.plot(x,y,0,'.r')
+    #fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None);
+    plt.ticklabel_format(style='sci', axis='z', scilimits=(0,0))
+    ax.set_zlabel("", rotation=90); ax.zaxis.labelpad=-15
+    plt.savefig(parent_dir+'/experiments/'+main_exp_name+f'/difference_on_ring_closest_exp{exp_i}.pdf', bbox_inches="tight")
     
 def scatter_projection_3d(points, wo, pca, axis, value, cmap, norm, marker_style, markercolor='r', ax=None):
     
