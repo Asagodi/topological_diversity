@@ -79,7 +79,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
     
     timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
     if training_kwargs['fix_seed']:
-        seed = time.time()
+        seed = np.random.randint(time.time())
         np.random.seed(seed)
         torch.manual_seed(seed)
         training_kwargs['seed'] = seed
