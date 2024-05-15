@@ -1122,8 +1122,40 @@ def N_perturb(W, b, Npert, rank, epsilon_step=1e-3,
         all_lists.append([Nfxd_pnt_list, perf_list, fxd_pnt_thetas_list, Wpert_list, eps_list])
     return all_lists
 
+import pickle
+def plot_perfs(ax=None, xmax=.5):
+    
+    if not ax:
+        fig, ax = plt.subplots(1, 1, figsize=(4, 3));
+    folder = 'C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/N6/rank_2'
+    # with open(folder + '/all_lists.pickle', 'wb') as handle:
+        # pickle.dump(all_lists, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        
+        
+    with open(folder + '/all_lists.pickle', 'rb') as handle:
+        all_lists = pickle.load(handle)
+        
+    nsims = len(all_lists)
+    perf_lists = [all_lists[i][1] for i in range(nsims)]
+    eps_lists = [all_lists[i][4] for i in range(nsims)]
+    max_len = max(len(lst) for lst in perf_lists)
+    eps_list = np.arange(max_len)*eps_lists[0][1]
+    # Pad each sublist with zeros until it reaches the maximum length:
+    perf_array = np.array([lst + [0]*(max_len - len(lst)) for lst in perf_lists])
+        
+    mean_perf = np.mean(perf_array,axis=0)
+    var_perf = np.var(perf_array,axis=0)
+    
+    plt.plot(eps_list, mean_perf); plt.fill_between(eps_list, mean_perf-var_perf, mean_perf+var_perf, alpha=.5);
+    plt.xlabel(r"$\epsilon$"); plt.ylabel("Performance"); 
+    plt.xlim([0,xmax]);
+    
+    #fig.savefig(folder+f"/performance.pdf", bbox_inches="tight")
+    
+    return ax
 
 
+#############################LOW-RANK
 sys.path.append("C:/Users/abel_/Documents/Lab/Software/LowRank/6_ContinuousAttractor")
 import fct_mf as mf
 import fct_simulations as sim
@@ -1389,7 +1421,16 @@ def get_empj(W, D, Nsims=100):
     plt.plot(traj_2[:,0], traj_2[:,1], 'k'); plt.plot(traj_2[0,0], traj_2[0,1], '.r');plt.plot(traj_2[-1,0], traj_2[-1,1], '.b');
     plt.ylim([-2,2]); plt.axis('off'); plt.savefig(folder+'/miracle/off_manifold_single.pdf', bbox_inches="tight")
     
-
+def plot_weight_matrix(mat_to_plot, fig_name):
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3))
+    vmax = np.max(np.abs(mat_to_plot))
+    im = ax.imshow(mat_to_plot, cmap='seismic', vmin=-vmax, vmax=vmax)
+    plt.axis('off'); 
+    ax.set_position([0, 0, 1, 1]);
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    fig.colorbar(im, cax=cax)
+    plt.savefig(fig_name, bbox_inches="tight", pad_inches=0.01)
     
 # if __name__ == "__main__": 
 #     # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
