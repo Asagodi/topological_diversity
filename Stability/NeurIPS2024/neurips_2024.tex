@@ -498,8 +498,8 @@ Our methodology effectively addresses and overcomes this limitation.
 \subsection{Ring attractors}\label{sec:ras}
 %\subsubsection{Angular integration networks}\label{sec:hd}
 For circular variables such as the goal-direction or head-direction needed for spatial navigation in 2D, the temporal integration and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology).
-Continuous attractor models of the head-direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a ring-like structure~\citep{zhang1996,Noorman2022,ajabi2023}.
-Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
+Continuous attractor models of the head-direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a ring-like structure~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022}.
+%Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 We demonstrate the consequences of the Persistence Theorem in multiple models with a continuous ring attractor.
 
 Firstly, we investigated perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
@@ -902,7 +902,8 @@ IMPORTANT, please:
 
 \newpage
 \appendix
-\section*{Supplementary Material}
+%\section{Appendix / supplemental material}
+\section*{Supplemental Material}
 \setcounter{section}{0}
 \renewcommand{\thefigure}{S\arabic{figure}} % figure numbering for supplement
 \renewcommand{\thesection}{S\arabic{section}} % figure numbering for supplement
@@ -1544,7 +1545,14 @@ Inputs and outputs for an example trial on each task are shown in Supp.Fig.~\ref
 \paragraph{Memory guided saccade task}
 
 
+\begin{align}
+T_{stim} \sim \mathcal{U}(50, 500) 
+T_{response} \mathcal{U}(50, 500)
+\end{align}
+
+
 \paragraph{Angular velocity integration task}
+
 
 
 
@@ -1773,10 +1781,24 @@ The limit cycle is the only bifurcation that we found that can be achieved on on
 
 
 \newpage
-\subsection{Goodridge}\label{sec:supp:goodridge}
+\subsection{Gaussian}\label{sec:supp:goodridge}
+\citep{compte2000synaptic}
+\citep{seeholzer2017}
 \citep{goodridge2000}
 
-
+The functional form of $W$ is the sum of a constant term plus a Gaussian centered at $\theta_i - theta_j =0$:
+\begin{equation}
+W(\theta_i - \theta_j) = J^- + (J^+ - J^-) \exp\left[ -\frac{(\theta_i - \theta_j)^2}{2\sigma^2} \right],
+\end{equation}
+with the dimensionless parameter $J^-$ representing the strength of the weak crossdirectional connections, $J^+$ the strength of the stronger isodirectional connections,
+ and $\sigma$ the width of the connectivity footprint.
+ 
+ 
+ 
+ Similar:
+ \citep{samsonovich1997path}
+ 
+ 
 \newpage
 \subsection{Couey}\label{sec:supp:couey}
 \citep{couey2013}
@@ -1876,15 +1898,15 @@ The vector field (Fig. \ref{fig:asymptotic_analysis}C) suggests that the system 
 
 
 
-\appendix
-
-\section{Appendix / supplemental material}
 
 
-Optionally include supplemental material (complete proofs, additional experiments and plots) in appendix.
-All such materials \textbf{SHOULD be included in the main submission.}
-
-
+%\section{Appendix / supplemental material}
+%
+%
+%Optionally include supplemental material (complete proofs, additional experiments and plots) in appendix.
+%All such materials \textbf{SHOULD be included in the main submission.}
+%
+%
 
 
 \end{document}
