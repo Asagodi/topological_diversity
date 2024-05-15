@@ -416,7 +416,7 @@ For a one dimensional system this will either be fixed points or limit cycles.
 \end{equation}
 where $\vx_t \in \reals^d$ is the hidden state, $\vI_t \in \reals^K$ is the input,
 $f\colon \reals \to \reals$ an activation function which acts on each of the hidden dimension, 
-private noise variable, $\zeta$, and %$\zeta\sim \mathcal{N}(0, .001)$
+private noise variable $\zeta$, and %$\zeta\sim \mathcal{N}(0, .001)$
 $\vW, \vb, \win, \wout, \bout$ are parameters.
 Assuming an Euler integration with unit time step, the discrete-time RNN of \eqref{eq:RNN:discrete} corresponds to the ODE:
 \begin{align}
@@ -449,19 +449,27 @@ memory guided saccade and the angular velocity integration tasks.
   \centering
   \includegraphics[width=\textwidth]{fastslow_decomposition}
   \caption{Slow manifold approximation of different trained networks on the memory guided saccade and angular velocity integration tasks.
-  All solutions involve a slow manifold with the same topology as the relevant variable in the task.
-  The different solutions are different in their asymptotic dynamics.
-  The most often found solution is of the type \emph{fixed point ring manifold} (A and B).
-  Less commonly found topologies are slow limit cycles (C) and a slow torus (D).
+ (A) An example fixed point type solution to the memory guided saccade task.
+ (B) An example found solution to the angular velocity integration task.
+ (C) 
+ (D) An example slow torus type solution to the memory guided saccade task.
 }
   \label{fig:fastslow_decomposition}
 \end{figure}
 
+
+  All solutions involve a slow manifold with the same topology as the relevant variable in the task.
+  The different solutions are different in their asymptotic dynamics (Fig.~\ref{fig:fastslow_decomposition}).
+  The most often found solution is of the type \emph{fixed point ring manifold} (Fig.~\ref{fig:fastslow_decomposition}A and B).
+  Less commonly found topologies are slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
   
  
 We find the slow manifold by integrating the autonomous dynamics and we select the parts of  the trajectory that have speed slower than a threshold.
 We construct the one dimensional invariant manifold by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
-Finally, we find the stable fixed points through a threshold on the 
+%Finally, we find the stable fixed points through a threshold on the 
+Finally, we find the fixed points on the invariant ring by identifying regions where the direction of the flow flips.
+Stable fixed points are identified where the flow directions are both pointing towards this flip point, 
+while saddle nodes are identified wherethey are pointing away.
 
 
 
@@ -471,8 +479,7 @@ Understanding the implemented computation in neural systems in terms of dynamica
  Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis \citep{sussillo2013blackbox, sussillo2014, barak2013, driscoll2022, maheswaranathan2019universality, cueva2019headdirection, cueva2021continuous} and to compare those artificial networks to biological circuits \citep{mante2013context, remington2018flexible, ghazizadeh2021slow}.
 % 
 % 
-Previously, systematically the variability in network dynamics has been surveyed in vanilla RNNs \citep{sussillo2013blackbox, mante2013context, yang2019task, maheswaranathan2019universality,discoll2022}
-quantified variations in dynamical solutions over architecture and nonlinearity,
+Previously, systemat analysis of the variability in network dynamics has been surveyed in vanilla RNNs and  variations in dynamical solutions over architecture and nonlinearity have been quantified \citep{sussillo2013blackbox, mante2013context, yang2019task, maheswaranathan2019universality,driscoll2022}.
 % although \citep{orhan2019diverse} considers many issues concerning how RNNs may hold memory
 %comparing artificial network representations to neural data
 % 
@@ -505,9 +512,11 @@ This continuum of fixed points forms a one dimensional manifold homeomorphic to 
 \begin{figure}[tbhp]
      \centering
   \includegraphics[width=\textwidth]{bio_rings}
-       \caption{Characterization of bifurcations of two ring attractors. 
+       \caption{ Perturbations different implementation and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact.
        (A) Perturbations to the ring attractor \citep{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to $2N$ (stable and saddle points are paired). 
-       (B) Perturbations to a simple implementation of a ring attractor lead to bifurcations that all leave the invariant manifold intact.
+       (B)  Perturbations a low-rank approximation of a ring attractor \citep{mastrogiuseppe2018}.
+       (C)  Perturbations to a tanh approximation of a ring attractor \citep{seeholzer2017efficient}.
+       (D)  Perturbations to the EMPJ approximation of a ring attractor \citep{pollock2020}.
        }
          \label{fig:bio_rings}
 \end{figure}
@@ -549,8 +558,9 @@ We will show that there are differences at how well approximations perform at di
 \begin{figure}[tbhp]
   \centering
   \includegraphics[width=\textwidth]{performance}
-  \caption{Performance
-}
+  \caption{Degradation of performance across perturbation sizes.
+  (A) System behavior at the asymptotic time scales measured through memory capacity. 
+  (B) Finite time}
   \label{fig:performance}
 \end{figure}
 
