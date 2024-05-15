@@ -26,7 +26,7 @@ def relu_step_input(x, W, b, W_ih=None, I=None):
     res[res < 0] = 0
     return res
 
-def relu_ode(t,x,W,b,tau, mlrnn=True):
+def relu_ode(t,x,W,b,tau,mlrnn=True):
 
     if mlrnn:
         return (-x + ReLU(np.dot(W,x)+b))/tau
@@ -124,3 +124,15 @@ def tanh_jacobian_sequence(t,W,b,tau,x_solved, mlrnn=True):
     else:
         return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(x_solved[t])**2))/tau
 
+
+
+#########finding fixed points
+def newton_method(x0, system, jacobian, W, b, tau, mlrnn, tol=1e-6, max_iter=100):
+    # Implement the Newton method
+    x = x0
+    for _ in range(max_iter):
+        dx = np.linalg.solve(jacobian(W,b,tau,x,mlrnn), system(0,x,W,b,tau,mlrnn))
+        x -= dx
+        if np.linalg.norm(dx) < tol:
+            break
+    return x
