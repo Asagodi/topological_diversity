@@ -54,7 +54,7 @@
 \newcommand{\manifold}{\mathcal{M}}
 
 \DeclareMathOperator{\relu}{ReLU}
-
+\DeclareMathOperator{\basin}{Basin}
 \newcommand{\iidsample}{\stackrel{iid}{\sim}}
 
 \newcommand{\probP}{\text{I\kern-0.15em P}}
@@ -445,15 +445,15 @@ We trained networks for every combination of the following parameters:
 \subsection{Tasks}
 memory guided saccade and the angular velocity integration tasks.
 
-\subsection{Mapping out the found topologies}
+\subsection{Mapping out the found topologies}\label{sec:fastslowmethod}
 %Fig 4
 \begin{figure}[tbhp]
   \centering
   \includegraphics[width=\textwidth]{fastslow_decomposition}
   \caption{Slow manifold approximation of different trained networks on the memory guided saccade and angular velocity integration tasks.
- (A) An example fixed point type solution to the memory guided saccade task.
- (B) An example found solution to the angular velocity integration task.
- (C) 
+ (A) 
+ (B) An example fixed point type solution to the memory guided saccade task.
+ (C) An example found solution to the angular velocity integration task.
  (D) An example slow torus type solution to the memory guided saccade task.
 }
   \label{fig:fastslow_decomposition}
@@ -465,9 +465,10 @@ memory guided saccade and the angular velocity integration tasks.
   The most often found solution is of the type \emph{fixed point ring manifold} (Fig.~\ref{fig:fastslow_decomposition}A and B).
   Less commonly found topologies are slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
   
- 
-We find the slow manifold by integrating the autonomous dynamics and we select the parts of  the trajectory that have speed slower than a threshold.
-We construct the one dimensional invariant manifold by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
+ %method
+We find the slow manifold  by integrating the autonomous dynamics and we select the parts of  the trajectory that have speed slower than a threshold.
+We construct the one dimensional invariant manifold $\manifold$ by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
+Alternatively, we identify the the points along the trajectories that are the closest to set of point from the output space relevant to the task.
 %Finally, we find the stable fixed points through a threshold on the 
 Finally, we find the fixed points on the invariant ring by identifying regions where the direction of the flow flips.
 Stable fixed points are identified where the flow directions are both pointing towards this flip point, 
@@ -563,11 +564,31 @@ We will show that there are differences at how well approximations perform at di
   \label{fig:performance}
 \end{figure}
 
+%Networks
+%  \citep{seeholzer2017efficient} %tanh
+%  \citep{goodridge2000}		%sigmoid
 
 We measure how performance of different models for the representation of an angular variable drop as a function of perturbation size Fig.~\ref{fig:performance}.
 
-  \citep{seeholzer2017efficient} %tanh
-  \citep{goodridge2000}		%sigmoid
+
+%method
+We measure the error on the finite timescale as follows.
+
+
+
+We measure the error on the asymptotic timescale as follows.
+We identify the location of the fixed points as described in Sec.~\ref{sec:fastslowmethod}.
+We construct a probability distribution of what part of state space we end up in at infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
+Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution.
+ This step provides valuable insights into the network's ability to store information and how this ability degrades across different perturbations.
+
+\begin{equation}
+\basin(x^*) \coloneqq \{x\in \manifold| \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}
+\end{equation}•
+
+
+
+
 
 
 \section{Discussion}
