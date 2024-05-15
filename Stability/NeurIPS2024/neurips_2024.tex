@@ -298,9 +298,9 @@ Moreover, $\manifold_\epsilon$ has $\mathcal{O}(\epsilon)$ Hausdoff distance to 
 The manifold $\manifold_\epsilon$ is called the \emph{slow manifold} which is no longer necessarily a continuum of equilibria.
 However, the local invariance implies that trajectories remain within the manifold except potentially at the boundary.
 Furthermore, the non-zero flow on the slow manifold is slow and given in the $\epsilon \to 0$ limit as $\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)$ where $\tau = \epsilon t$ is a rescaled time and $c^\epsilon(\cdot)$ parameterizes the $l$ dimensional slow manifold.
-In addition, the stable manifold of $\manifold_0$ is similarly approximately persistent~\cite{Jones1995}, allowing the manifold $\manifold_\epsilon$ to remain attractive.
+In addition, the stable manifold of $\manifold_0$ is similarly  persistent~\cite{Jones1995}, implying the manifold $\manifold_\epsilon$ to remain attractive.
 
-These conditions are met  for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
+These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
  As a technical note, for the theory apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting \cite{simpson2018}, which is also the case for the BLA.
 %applicability of Fenichel’s invariant manifold theorem on continuous piecewise linear (PWL) dynamical systems.
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points, and overall still attractive.
@@ -398,12 +398,9 @@ In this section, we delineate a novel approach to dissecting the dynamics of RNN
 We aim, to identify the solution type of a trained RNN, and through this, to gain insights into its performance, error patterns, generalization capabilities, and proximity to a continuous attractor.
  Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
-
-
-We will assess performance at two different time-scales,  asymptotic and finite time.
-For the asymptotic time-scale the asymptotic behavior of the system dominates and we identify the network behavior through its $\omega$-limit sets.
-For a one dimensional system this will either be fixed points or a limit cycle.
-
+Through a series of experiments and analyses, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks
+Amidst the variability of solutions, we observe a type of universality that aligns closely with our theoretical framework.
+ This empirical evidence underscores the robustness and generalizability of our proposed theory of continuous memory.
 
 
 
@@ -442,10 +439,14 @@ We trained networks for every combination of the following parameters:
  All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  for 5,000 iterations with a batch size of 32. % and training was run until no decrease in the loss occurred for 100 epochs
 
 
-\subsection{Tasks}
-memory guided saccade and the angular velocity integration tasks.
+
 
 \subsection{Mapping out the found topologies}\label{sec:fastslowmethod}
+
+We want to investigate how networks might solve tasks.
+While previous studies have primarily focused on simple tasks that can be solved with fixed points, there remains a gap in comprehensively extracting the mechanisms underlying network implementations \citep{sussillo2013blackbox}.
+We address this gap by investigating the internal mechanisms of neural network solvers for tasks involving continuous variables. Building upon prior work, which has shown networks' capabilities on such tasks \citep{cueva2019headdirection, cueva2021continuous}.
+
 %Fig 4
 \begin{figure}[tbhp]
   \centering
@@ -468,7 +469,7 @@ memory guided saccade and the angular velocity integration tasks.
  %method
 We find the slow manifold  by integrating the autonomous dynamics and we select the parts of  the trajectory that have speed slower than a threshold.
 We construct the one dimensional invariant manifold $\manifold$ by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
-Alternatively, we identify the the points along the trajectories that are the closest to set of point from the output space relevant to the task.
+Alternatively, we identify the points along the trajectories that are the closest to set of point from the output space relevant to the task.
 %Finally, we find the stable fixed points through a threshold on the 
 Finally, we find the fixed points on the invariant ring by identifying regions where the direction of the flow flips.
 Stable fixed points are identified where the flow directions are both pointing towards this flip point, 
@@ -551,7 +552,11 @@ Only the plane persist as a slow manifold.
 
 \subsection{Sensitivity of continuous attractors to perturbations}
 
-We will show that there are differences at how well approximations perform at different timescales.
+%We will show that there are differences at how well approximations perform at different timescales.
+
+We will assess performance at two different time-scales,  asymptotic and finite time.
+For the asymptotic time-scale the asymptotic behavior of the system dominates and we identify the network behavior through its $\omega$-limit sets.
+For a one dimensional system this will either be fixed points or a limit cycle.
 
 
 %Fig 5
@@ -584,7 +589,7 @@ Finally, we characterize the memory capacity of the network through calculating 
 
 \begin{equation}
 \basin(x^*) \coloneqq \{x\in \manifold| \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}
-\end{equation}•
+\end{equation}
 
 
 
@@ -1528,6 +1533,20 @@ It is well-known that activation functions ($\sigma$ in  Eqs.~\ref{eq:RNN:discre
 Activation functions that are $C^r$ for $r\geq 1$ are the ones to which the Persistence Theorem applies. 
 The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistent invariant manifold.
 For situations where smoothness of the persistent invariant manifold is of importance, smoother activation functions might be preferable, such as the Exponential Linear Unit (ELU)\citep{clevert2015} or the Continuously Differentiable Exponential Linear Units (CELU) \citep{barron2017}.
+
+
+
+\newpage
+\section{Tasks}\label{sec:supp:tasks}
+Inputs and outputs for an example trial on each task are shown in Supp.Fig.~\ref{fig:supp:tasks}.
+
+
+\paragraph{Memory guided saccade task}
+
+
+\paragraph{Angular velocity integration task}
+
+
 
 \newpage
 \section{Internal and input noise and noise level matching}\label{sec:supp:matching}
