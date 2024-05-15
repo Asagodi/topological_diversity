@@ -378,6 +378,8 @@ Animal behavior is finite time in nature and the longer the temporal distance th
 
 
 \subsection{Infinite horizon computation in a bounded state space}\label{sec:inhoco}
+
+Both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions \citep{orhan2019diverse}.
 We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
 If a system is implementing such a computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set.
 
@@ -476,18 +478,17 @@ while saddle nodes are identified wherethey are pointing away.
 \subsection{Universality}
 
 Understanding the implemented computation in neural systems in terms of dynamical systems has a well-established practice \citep{seung1996, sompolinsky1988}.
- Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis \citep{sussillo2013blackbox, sussillo2014, barak2013, driscoll2022, maheswaranathan2019universality, cueva2019headdirection, cueva2021continuous} and to compare those artificial networks to biological circuits \citep{mante2013context, remington2018flexible, ghazizadeh2021slow}.
+ Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis \citep{sussillo2013blackbox, sussillo2014, barak2013, driscoll2022, maheswaranathan2019universality, cueva2019headdirection, cueva2021continuous} and to compare those artificial networks to biological circuits \citep{mante2013context, remington2018flexible, ghazizadeh2021slow}. 
 % 
 % 
-Previously, systemat analysis of the variability in network dynamics has been surveyed in vanilla RNNs and  variations in dynamical solutions over architecture and nonlinearity have been quantified \citep{sussillo2013blackbox, mante2013context, yang2019task, maheswaranathan2019universality,driscoll2022}.
-% although \citep{orhan2019diverse} considers many issues concerning how RNNs may hold memory: both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions
+Previously, systemat analysis of the variability in network dynamics has been surveyed in vanilla RNNs and  variations in dynamical solutions over architecture and nonlinearity have been quantified \citep{sussillo2013blackbox, mante2013context, yang2019task, maheswaranathan2019universality,driscoll2022}. Furthermore, the spectrum of  how RNNs may hold memory has been addressed \citep{orhan2019diverse}.
 %comparing artificial network representations to neural data
 The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
  much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
 % 
  
  
- Previously, it has been observed that  fixed point analysis  has as a major limitation,  that the number of fixed points must be the equal across compared networks  \citep{maheswaranathan2019universality}.
+ Previously, it has been observed that  fixed point analysis  has as a major limitation, namely, that the number of fixed points must be the equal across compared networks  \citep{maheswaranathan2019universality}.
 Our methodology effectively addresses and overcomes this limitation.
 
 
