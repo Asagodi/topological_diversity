@@ -79,7 +79,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
     
     timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
     if training_kwargs['fix_seed']:
-        seed = trial+1001
+        seed = time.time()
         np.random.seed(seed)
         torch.manual_seed(seed)
         training_kwargs['seed'] = seed
@@ -400,7 +400,7 @@ if __name__ == "__main__":
     main_exp_name = 'center_out' #poisson_clicks_task' # angular_integration'
     # main_exp_name = 'poisson_clicks' #poisson_clicks_task' # angular_integration'
 
-    sub_exp_name = 'variable_N100_T250_Tr100/sigmoid'    
+    sub_exp_name = 'variable_N64_T512_Tr100/tanh'    
 
     model_i, model_name = 2, ''
 
@@ -414,14 +414,14 @@ if __name__ == "__main__":
     training_kwargs['input_length'] = 25
     training_kwargs['angle_init'] = False
     training_kwargs['map_output_to_hidden'] = False
-    training_kwargs['T'] = 2500 # 12.8*2
+    training_kwargs['T'] = 5120 # 12.8*2
     training_kwargs['last_mses'] = False
-    training_kwargs['time_until_cue_range']=[50, 200]
+    training_kwargs['time_until_cue_range']=[50, 400]
     training_kwargs['N_in'] = 3
     training_kwargs['N_out'] = 2
     training_kwargs['b_a'] = 5
 
-    training_kwargs['nonlinearity'] = 'sigmoid'
+    training_kwargs['nonlinearity'] = 'tanh'
     training_kwargs['input_nonlinearity'] = 'recurrent'
     training_kwargs['readout_nonlinearity'] = 'id'
     # training_kwargs['ml_rnn'] = False
@@ -429,19 +429,19 @@ if __name__ == "__main__":
     training_kwargs['task_noise_sigma'] = 0 #1e-1
     training_kwargs['act_reg_lambda'] = 0 #1e-3    
     training_kwargs['h0_init'] = 'random'
-    training_kwargs['hidden_initial_variance'] = 1e-2
+    training_kwargs['hidden_initial_variance'] = 1e-3
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['N_rec'] = 50
-    training_kwargs['batch_size'] = 32
+    training_kwargs['N_rec'] = 128
+    training_kwargs['batch_size'] = 64
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
     training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
     training_kwargs['learning_rate'] = 1e-3
-    training_kwargs['n_epochs'] = 5000
-    training_kwargs['stop_patience'] = 500
+    training_kwargs['n_epochs'] = 20000
+    training_kwargs['stop_patience'] = 20000
     training_kwargs['stop_min_delta'] = 0
     training_kwargs['record_step'] = 10
     training_kwargs['dt_rnn'] = .1
