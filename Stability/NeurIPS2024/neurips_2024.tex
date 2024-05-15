@@ -342,6 +342,7 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark 
 
 \subsection{The structure of the bifurcated attractor}\label{sec:attractor_bif}
 %distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
+From the persistence theorem, we can describe the persistent manifold that survives the seemingly destructive bifurcations.
 The theory implies that systems in the neighbourhood of a continuous attractor in the space of dynamical systems all share the same topology for the attractive persistent invariant manifold.
 For a 1 dimensional attractor this implies that the stability structure of the invariant manifold is either 
 (1)  composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits 
@@ -352,15 +353,18 @@ For higher dimensional, there is the possibility of chaos emerging, but we conju
 For all dimensions, there will the an attractive invariant manifold with the same topological structure and dimension as the original continuous attractor.
 % the compact case: the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
 
+This allows us to  connect the different topologies as \textbf{approximate continuous attractors}.
 
-%We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects the different topologies as \textbf{approximate continuous attractors}.
 
 %generalization
 \subsection{Generalization properties of continuous attractor approximations}\label{sec:generalization}
 %, and thus a corresponding pattern of error in temporal generalization
-The two possible approximations of a ring attractor have hence very different generalization properties.
-The limit cycle approximation will have fading memory, while the possible memory states of the other approximation is determined by the number and placement of stable fixed points.
 
+
+
+The two  possible approximations of a ring attractor exhibit markedly distinct generalization characteristics.
+Approximating the system as a limit cycle results in memory that gradually diminishes over time.
+Conversely, the alternative approximation's memory states are contingent upon the quantity and positioning of stable fixed points within the system.
 
 %uniform bound
 %infinite norm
@@ -372,13 +376,9 @@ Animal behavior is finite time in nature and the longer the temporal distance th
 
 
 
-
-
-
-\subsection{Implications for Neuroscience}\label{sec:imp:neuroscience}
-
-The conditions are favorable in the recurrent neuronal networks: (1) mutual inhibition is widely present and evidence points to inhibition dominated dynamics,
-(2) the neural state space is bounded due to physiological constraints, namely by a non-negative firing rate below and a maximum firing rate above.
+\subsection{Infinite horizon computation in a bounded state space}\label{sec:inhoco}
+We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
+If a system is implementing such a computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set.
 
 
 
@@ -392,15 +392,15 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 %-goal: to identify the solution type of a trained RNN + understand it's performance/errors/generalization/closeness to a CA
 %-how through a fast-slow decomposition, based on the assumption that there is normal hyperbolicity in the system 
 Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors.
-In this section, we delineate a novel approach to dissecting the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the "ghost" continuous attractor, also known as the slow manifold, and the sluggish flow within.
+In this section, we delineate a novel approach to dissecting the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the "ghost" continuous attractor, also known as the slow manifold, and the slow flow within.
 We aim, to identify the solution type of a trained RNN, and through this, to gain insights into its performance, error patterns, generalization capabilities, and proximity to a continuous attractor.
  Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
 
 
-We will assess performance at two different time-scales, very-long or asymptotic and a shorter one.
-For the asymptotic time-scale the asymptotic behavior of the system dominates.
-For a one dimensional system this will either be fixed points or limit cycles.
+We will assess performance at two different time-scales,  asymptotic and finite time.
+For the asymptotic time-scale the asymptotic behavior of the system dominates and we identify the network behavior through its $\omega$-limit sets.
+For a one dimensional system this will either be fixed points or a limit cycle.
 
 
 
@@ -480,18 +480,15 @@ Understanding the implemented computation in neural systems in terms of dynamica
 % 
 % 
 Previously, systemat analysis of the variability in network dynamics has been surveyed in vanilla RNNs and  variations in dynamical solutions over architecture and nonlinearity have been quantified \citep{sussillo2013blackbox, mante2013context, yang2019task, maheswaranathan2019universality,driscoll2022}.
-% although \citep{orhan2019diverse} considers many issues concerning how RNNs may hold memory
+% although \citep{orhan2019diverse} considers many issues concerning how RNNs may hold memory: both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions
 %comparing artificial network representations to neural data
-% 
-% 
-% 
 The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
  much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
 % 
  
  
- Previously, it was observed that  fixed point analysis discussed here has one major limitations, including that the number of fixed points must be the same across networks that are being compared \citep{maheswaranathan2019universality}.
- Our analysis overcomes this limitation.
+ Previously, it has been observed that  fixed point analysis  has as a major limitation,  that the number of fixed points must be the equal across compared networks  \citep{maheswaranathan2019universality}.
+Our methodology effectively addresses and overcomes this limitation.
 
 
 \section{Experiments}
@@ -551,6 +548,7 @@ Only the plane persist as a slow manifold.
 
 
 \subsection{Sensitivity of continuous attractors to perturbations}
+
 We will show that there are differences at how well approximations perform at different timescales.
 
 
@@ -587,6 +585,15 @@ Further research on finding continuous attractor networks that may allow restora
 %error-correcting
 Previous psychophysical, theoretical, and neurophysiological work has shown noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
 Discrete attractor dynamics can counteract this noise by pulling memories towards a few stable representations \citep{panichello2019}.
+
+
+
+\subsection{Implications for Neuroscience}\label{sec:imp:neuroscience}
+
+The conditions are favorable in the recurrent neuronal networks: (1) mutual inhibition is widely present and evidence points to inhibition dominated dynamics,
+(2) the neural state space is bounded due to physiological constraints, namely by a non-negative firing rate below and a maximum firing rate above.
+
+
 
 % We have derived a general theory that describes the loss landscape of RNNs around continuous attractor solutions.
 % This theory implies that backpropagating gradient does not explode for systems near compact continuous attractors because of divergent dynamics.
