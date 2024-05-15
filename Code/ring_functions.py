@@ -962,7 +962,7 @@ def run_init(W, b, nonlin=tanh_ode, maxT=1000, tsteps=1001,  tau=10, Ntrials=100
     
 
 def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
-                         rank=1, epsilon_step=1e-3,
+                         rank=1, pert_type='rank', epsilon_step=1e-3,
                          Ntrials=100,
                          maxT=1000, tsteps=1001, 
                          Nsim=100, n_components=2,
@@ -976,7 +976,7 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
     
     assert folder is not None, "Provide 'folder' to save figure"
     # folder="C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/goodridge/pert"
-    colors = colors=np.array(['k', 'orange', 'g'])
+    colors = colors=np.array(['k', 'r', 'g'])
     N=W.shape[0]
     t = np.linspace(0, maxT, tsteps)
     Nfxd_pnt_list = []
@@ -1001,14 +1001,18 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
         vals = y0s[idx]
         vals[-1] = vals[0]
         cs = scipy.interpolate.CubicSpline(thetas_sorted, vals, bc_type='periodic')
+        print(vals.shape)
         thetas_init = np.arange(-np.pi, np.pi, np.pi/Ntrials*2);
         ring_points=cs(thetas_init)
         xs = np.arange(-np.pi, np.pi, np.pi/1000)
         csxapca=pca.transform(cs(xs))
         
     np.random.seed(seed); 
-    Wepsilon=random_rank_r_matrix(N, rank) #np.random.normal(0,1,((N,N)))
-    Wepsilon*=np.linalg.norm(Wepsilon)
+    if pert_type=='rank':
+        Wepsilon=random_rank_r_matrix(N, rank) 
+    else:
+        Wepsilon=np.random.normal(0,1,((N,N)))
+    # Wepsilon/=np.linalg.norm(Wepsilon)
 
     t = np.linspace(0, theta_t, theta_t+11)
     same_Nfp_t=0
@@ -1045,16 +1049,21 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
         theta_unwrapped = np.unwrap(thetas, period=2*np.pi);
         theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0);
         arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
-        idx=[i for i, t in enumerate(zip(arr, arr[1:])) if t[0] != t[1]]; 
+        idx=np.array([i for i, t in enumerate(zip(arr, arr[1:])) if t[0] != t[1]])
         stabilities=-arr[idx].astype(int)
         fxd_pnt_thetas = thetas_init[idx]
         fxd_pnts = np.array([np.cos(fxd_pnt_thetas), np.sin(fxd_pnt_thetas)]).T
+        # fxd_pnts_pca = sols_pert_pca[idx+1, 0, :]
+        fxd_pnts_pca = sols_pert_pca[idx+1, 0, :]
+
         if fxd_pnts.shape[0]%2==1:
             fxd_pnts=np.vstack([fxd_pnts,[-1,0]])
             stabilities=np.append(stabilities, -np.sum(stabilities))
-            fxd_pnt_thetas = np.append(fxd_pnt_thetas, 4)
+            fxd_pnt_thetas = np.append(fxd_pnt_thetas, 0)
+            fxd_pnts_pca=np.vstack([fxd_pnts_pca,pca.transform(cs(np.pi/3).reshape(1, -1))]) 
             
         Nfxd_pnts = fxd_pnts.shape[0]
+        print(Nfxd_pnts)
         Nfxd_pnt_list.append(Nfxd_pnts)
         fxd_pnt_thetas_list.append(fxd_pnt_thetas)
         stabilist.append(stabilities)
@@ -1085,19 +1094,24 @@ def perturb_and_simulate(W, b, nonlin=tanh_ode, tau=10,
             makedirs(folder)
             fig, ax = plt.subplots(1, 1, figsize=(1.4, 1.4));
             # plt.scatter(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1), s=.1);
-            plt.plot(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1));
+            # plt.plot(csxapca[:,0]/np.linalg.norm(csxapca,axis=1), csxapca[:,1]/np.linalg.norm(csxapca,axis=1));
     
-            plt.scatter(fxd_pnts[:,0], fxd_pnts[:,1], color=colors[stabilities], zorder=1000)
+            # plt.scatter(fxd_pnts[:,0], fxd_pnts[:,1], color=colors[stabilities], zorder=1000)
+            plt.scatter(fxd_pnts_pca[:,0], fxd_pnts_pca[:,1], color=colors[stabilities], zorder=1000)
             
-            for i in range(Ntrials):
-                plt.plot(sols_pert_pca[i,:,0]/2, sols_pert_pca[i,:,1]/2, 'k',alpha=.1)
-                plt.plot(sols_pert_pca[i,:,0]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1),
-                         sols_pert_pca[i,:,1]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), 'k',alpha=.1)
+            sols_pert_pca_ring = np.vstack([sols_pert_pca[:,-1,:], sols_pert_pca[0,-1,:]])
+            plt.plot(sols_pert_pca_ring[:,0], sols_pert_pca_ring[:,1], 'b', alpha=1)
+
+            # for i in range(Ntrials):
+            #     # plt.plot(sols_pert_pca[i,:,0], sols_pert_pca[i,:,1], 'k',alpha=.1)
+
+            #     plt.plot(sols_pert_pca[i,:,0]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1),
+            #              sols_pert_pca[i,:,1]/np.linalg.norm(sols_pert_pca[i,:,:],axis=1), 'k',alpha=.1)
             #     plt.plot(sols_pert_pca[i,-1,0]/np.linalg.norm(sols_pert_pca[i,-1,:],axis=0),
             #              sols_pert_pca[i,-1,1]/np.linalg.norm(sols_pert_pca[i,-1,:],axis=0), '.k', alpha=1)
             ax.set_axis_off()
-            ax.set_xlim([-1.1,1.1])
-            ax.set_ylim([-1.1,1.1])
+            # ax.set_xlim([-1.1,1.1])
+            # ax.set_ylim([-1.1,1.1])
             fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None)
             fig.savefig(folder+f"/ring_pert_eps{epsilon:.10f}_Nfp{Nfxd_pnts}.pdf")
             plt.show()
@@ -1388,14 +1402,14 @@ def make_biswas_ring(w1, w4):
 
 
 ###########EMPJ
-import json
-folder='C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/martin/'
-with open(folder+'W_miracle.json', 'r') as f:
-    data = json.load(f)
-    W = np.array(data)
-with open(folder+'D_miracle.json', 'r') as f:
-    data = json.load(f)
-    D = np.array(data)
+# import json
+# folder='C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/martin/'
+# with open(folder+'W_miracle.json', 'r') as f:
+#     data = json.load(f)
+#     W = np.array(data)
+# with open(folder+'D_miracle.json', 'r') as f:
+#     data = json.load(f)
+#     D = np.array(data)
     
     
 def get_empj(W, D, Nsims=100):
@@ -1431,6 +1445,26 @@ def plot_weight_matrix(mat_to_plot, fig_name):
     cax = divider.append_axes("right", size="5%", pad=0.05)
     fig.colorbar(im, cax=cax)
     plt.savefig(fig_name, bbox_inches="tight", pad_inches=0.01)
+    
+def find_fixed_points_newton():
+    
+    thetas_init = np.arange(-np.pi, np.pi, 2*np.pi/10000);
+    points_init_2d = np.array([np.cos(thetas_init), np.sin(thetas_init)]);
+    points_init_nd = np.dot(D, points_init_2d).T;
+    xstars = [];
+    eigenvalues_list=[]
+    stabilist=[]
+    for x0 in points_init_nd:
+            xstar = newton_method(x0, tanh_ode, tanh_jacobian, W.T, 0, tau, mlrnn=False, tol=1e-9, max_iter=1000)
+            J=tanh_jacobian(W.T,0,tau,xstar)
+            eigenvalues, eigenvectors = np.linalg.eig(J)
+            xstars.append(xstar)
+            eigenvalues_list.append(eigenvalues)
+            if np.all(eigenvalues<0):
+                stabilist.append(-1)
+            else:
+                stabilist.append(1)
+    xstars_2 = np.dot(np.array(xstars), D)
     
 # if __name__ == "__main__": 
 #     # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
