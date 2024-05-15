@@ -1550,10 +1550,15 @@ T_{stim} \sim \mathcal{U}(50, 500)
 T_{response} \mathcal{U}(50, 500)
 \end{align}
 
+Mask:
+$m_{i,t}$
 
 \paragraph{Angular velocity integration task}
 
-
+Velocity at every timestep %(assumed to be 100 ms)
+ is sampled from as a Gaussian Process for smooth movement trajectories, consistent with the observed animal behavior in flies and rodents.
+ 
+ %These parameters are set to roughly match the angular velocity distribution of the rat and fly (Stackman & Taube, 1998; Sharp et al., 2001; Bender & Dickinson, 2006; Raudies & Hasselmo, 2012).
 
 
 \newpage
