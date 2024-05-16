@@ -957,6 +957,76 @@ def plot_angle_error():
     #ax.legend(bbox_to_anchor=(0.5, -0.15), loc='upper center', ncol=4, borderaxespad=0.)
     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     fig.savefig(folder+"/angle_error.pdf", bbox_inches="tight");
+    
+
+def plot_angle_error_msg(ax=None):
+    main_exp_name='center_out/variable_N100_T250_Tr100/relu/'
+    folder = parent_dir+"/experiments/" + main_exp_name
+    which = 'post'
+    net, wi, wrec, wo, brec, h0, oth, training_kwargs, losses = load_all(main_exp_name, exp_i, which=which);
+
+    colors = ['b', 'orange', 'g', 'purple', 'k']
+    if not ax:
+        fig, ax = plt.subplots(1, 1, figsize=(5, 3));
+    t1_pos = 0 
+    time_until_input = 5
+    cue_duration = 5
+    time_until_measured_response = 5
+    time_after_response = 0
+    add_t = time_until_measured_response+time_after_response
+    min_time_until_cue = 50
+    T1 = training_kwargs['time_until_cue_range'][0]
+    T = T1*5
+    dt=.1
+    tstep=100
+    timepoints=int(T*dt)#-15-min_time_until_cue
+    batch_size=128;
+    
+    tstep = int(training_kwargs['T']*training_kwargs['dt_rnn']//10)
+    all_angle_errors_relu = np.zeros((100, timepoints//tstep))
+    for exp_i in tqdm(range(100)):
+
+        net, wi, wrec, wo, brec, h0, oth, training_kwargs, losses = load_all(main_exp_name, exp_i, which=which);
+        net.noise_std = 0
+        net.map_output_to_hidden=False
+        np.random.seed(100)
+        tstep = int(training_kwargs['T']*training_kwargs['dt_rnn']//10)
+        print(exp_i, tstep)
+        
+        task = center_out_reaching_task(T=T+150+min_time_until_cue*10, dt=dt, time_until_cue_range=[T, T+1], angles_random=False);
+        input, target, mask, output, trajectories_full = simulate_rnn_with_task(net, task, T, h_init='random', batch_size=batch_size)
+        #ax.plot(output[...,0].T, output[...,1].T)
+        target = input[:,time_until_input,:]
+        target_angle = np.arctan2(target[:,1], target[:,0]);
+        angle_errors = np.zeros((timepoints//tstep))
+        for t in range(15,timepoints+15,tstep):
+            #
+            #print(t//tstep)
+            input = np.zeros((batch_size,cue_duration+add_t,3))
+            input[:,:cue_duration,2]=1.
+            h_init = trajectories_full[:,min_time_until_cue+t,:]
+            output, trajectories = simulate_rnn_with_input(net, input, h_init=h_init)
+            #ax.plot(output[:,-1,0].T, output[:,-1,1].T, 'b')
+            #ax.plot(target[:,0].T, target[:,1].T, 'r')
+            output_angle = np.arctan2(output[:,-1,1], output[:,-1,0]);
+            
+            angle_error = np.abs(output_angle - target_angle)
+            angle_error[np.where(angle_error>np.pi)] = 2*np.pi-angle_error[np.where(angle_error>np.pi)]
+            mean_error = np.mean(angle_error,axis=0)
+            angle_errors[(t-15)//tstep] = mean_error
+            t1_pos=np.min([t1_pos,np.min(mean_error)])
+        all_angle_errors_relu[exp_i,:] = angle_errors.copy()
+        
+        label = int(training_kwargs['T']*training_kwargs['dt_rnn'])
+        #f"N{training_kwargs['N_rec']}_{training_kwargs['nonlinearity']}"
+        ax.plot(np.arange(15+min_time_until_cue,int(T*dt)+15+min_time_until_cue,tstep), angle_errors, color=colors[0], zorder=1000, label=label)
+    T1 = training_kwargs['time_until_cue_range'][1]
+    ax.axvline(T1, linestyle='--', color='r')
+    ax.text(T1*1.15, .08, r'$T_1$',color='r')
+    ax.set_xticks(np.range(0,5*T1,T1),[0]+[f'$T_{i}' for i in range(5)])
+    ax.set_ylabel("angle error");
+    #ax.legend(title="trained on max. interval", bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+    return 
 
 
 sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder"); 
