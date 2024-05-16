@@ -85,7 +85,10 @@ def relu_jacobian(W,b,tau,x):
 def tanh_jacobian(W,b,tau,x,mlrnn=True):
     #b is unused, but there for consistency with relu jac
     if mlrnn:
-        return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(x)**2))/tau
+        #return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(np.dot(W,x)+b)**2))/tau
+        dtanh = 1 - np.tanh(np.dot(W, x) + b) ** 2
+        df_dx = -np.eye(len(x))/tau + (np.dot(np.diag(dtanh), W))/tau
+        return df_dx
     else:
         return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(x)**2))/tau
 
