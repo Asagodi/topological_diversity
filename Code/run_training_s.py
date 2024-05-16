@@ -401,7 +401,7 @@ if __name__ == "__main__":
     main_exp_name = 'center_out' #poisson_clicks_task' # angular_integration'
     # main_exp_name = 'poisson_clicks' #poisson_clicks_task' # angular_integration'
 
-    sub_exp_name = 'variable_N128_T512_Tr100/tanh'    
+    sub_exp_name = 'variable_N100_T250_Tr100/tanh'    
 
     model_i, model_name = 2, ''
 
@@ -415,9 +415,9 @@ if __name__ == "__main__":
     training_kwargs['input_length'] = 25
     training_kwargs['random_angle_init'] = True
     training_kwargs['map_output_to_hidden'] = False
-    training_kwargs['T'] = 5120 # 12.8*2
+    training_kwargs['T'] = 2500 # 12.8*2
     training_kwargs['last_mses'] = False
-    training_kwargs['time_until_cue_range']=[50, 400]
+    training_kwargs['time_until_cue_range']=[50, 200]
     training_kwargs['N_in'] = 3
     training_kwargs['N_out'] = 2
     training_kwargs['b_a'] = 5
@@ -427,7 +427,7 @@ if __name__ == "__main__":
     training_kwargs['readout_nonlinearity'] = 'id'
     # training_kwargs['ml_rnn'] = False
     training_kwargs['sparsity'] = 'variable'
-    training_kwargs['noise_std'] = 0.01
+    training_kwargs['noise_std'] =  0.001
     training_kwargs['task_noise_sigma'] = 0 #1e-1
     training_kwargs['act_reg_lambda'] = 0 #1e-3    
     training_kwargs['h0_init'] = 'random'
@@ -435,13 +435,13 @@ if __name__ == "__main__":
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['N_rec'] = 128
+    training_kwargs['N_rec'] = 100
     training_kwargs['batch_size'] = 64
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
     training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
-    training_kwargs['learning_rate'] = 1e-2
+    training_kwargs['learning_rate'] = 0.001
     training_kwargs['n_epochs'] = 5000
     training_kwargs['stop_patience'] = 5000
     training_kwargs['stop_min_delta'] = 0
