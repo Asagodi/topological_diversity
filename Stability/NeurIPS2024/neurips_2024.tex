@@ -394,13 +394,14 @@ If a system is implementing such a computation, on a compact domain, the state w
 %-goal: to identify the solution type of a trained RNN + understand it's performance/errors/generalization/closeness to a CA
 %-how through a fast-slow decomposition, based on the assumption that there is normal hyperbolicity in the system 
 Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors.
-In this section, we dissecting the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the "ghost" continuous attractor, also known as the slow manifold, and the slow flow within.
-We aim to identify the solution type of a trained RNN, and through this, to gain insights into its performance, error patterns, generalization capabilities, and proximity to a continuous attractor.
+In this section, we dissecting the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the ``ghost" continuous attractor, also known as the slow manifold, and the slow flow within.
+We aim to identify the solution type of a trained RNN, and through this, to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
  Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
-Through a series of experiments and analyses, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks
-Amidst the variability of solutions, we observe a type of universality that aligns closely with our theoretical framework.
- This empirical evidence underscores the robustness and generalizability of our proposed theory of continuous memory.
+Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
+Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
+This empirical evidenc strongly corroborates our proposed theory of continuous memory. 
+
 
 
 
