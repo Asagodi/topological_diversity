@@ -1000,8 +1000,6 @@ def plot_angle_error_msg(ax=None):
         target_angle = np.arctan2(target[:,1], target[:,0]);
         angle_errors = np.zeros((timepoints//tstep))
         for t in range(15,timepoints+15,tstep):
-            #
-            #print(t//tstep)
             input = np.zeros((batch_size,cue_duration+add_t,3))
             input[:,:cue_duration,2]=1.
             h_init = trajectories_full[:,min_time_until_cue+t,:]
