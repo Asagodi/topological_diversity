@@ -37,7 +37,7 @@ def makedirs(dirname):
         os.makedirs(dirname)
 
 def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None,
-             input_length=0, task_noise_sigma=0., final_loss=False, angle_init=False, max_input=None,
+             input_length=0, task_noise_sigma=0., final_loss=False, random_angle_init=True, max_input=None,
              cue_output_durations=[5,5,75,5,5], time_until_cue_range=None):
     
     if task_name == 'eyeblink':
@@ -45,7 +45,7 @@ def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsit
 
     elif task_name == 'angular_integration':
         task =  angularintegration_task(T=T, dt=dt, sparsity=sparsity,
-                                        last_mses=last_mses, angle_init=angle_init)
+                                        last_mses=last_mses, random_angle_init=random_angle_init)
         
     elif task_name == 'poisson_clicks_task':
         task =  poisson_clicks_task(T=T, dt=dt, cue_output_durations=cue_output_durations) #[10,5,10,5,10]
@@ -108,9 +108,10 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         # task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'],
         #                 sparsity=training_kwargs['task_sparsity'], last_mses=training_kwargs['last_mses'])
         
-        task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'], input_length=training_kwargs['input_length'],
-                        sparsity=training_kwargs['task_noise_sigma'], last_mses=training_kwargs['last_mses'],
-                        angle_init=training_kwargs['angle_init'], max_input=training_kwargs['max_input'], 
+        task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'],
+                        input_length=training_kwargs['input_length'], sparsity=training_kwargs['sparsity'],
+                        task_noise_sigma=training_kwargs['task_noise_sigma'], last_mses=training_kwargs['last_mses'],
+                        random_angle_init=training_kwargs['random_angle_init'], max_input=training_kwargs['max_input'], 
                         time_until_cue_range=training_kwargs['time_until_cue_range'])
 
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
@@ -400,7 +401,7 @@ if __name__ == "__main__":
     main_exp_name = 'center_out' #poisson_clicks_task' # angular_integration'
     # main_exp_name = 'poisson_clicks' #poisson_clicks_task' # angular_integration'
 
-    sub_exp_name = 'variable_N64_T512_Tr100/tanh'    
+    sub_exp_name = 'variable_N128_T512_Tr100/tanh'    
 
     model_i, model_name = 2, ''
 
@@ -412,7 +413,7 @@ if __name__ == "__main__":
     # training_kwargs['task'] = 'poisson_clicks_task'
     training_kwargs['max_input'] = None
     training_kwargs['input_length'] = 25
-    training_kwargs['angle_init'] = False
+    training_kwargs['random_angle_init'] = True
     training_kwargs['map_output_to_hidden'] = False
     training_kwargs['T'] = 5120 # 12.8*2
     training_kwargs['last_mses'] = False
@@ -425,7 +426,8 @@ if __name__ == "__main__":
     training_kwargs['input_nonlinearity'] = 'recurrent'
     training_kwargs['readout_nonlinearity'] = 'id'
     # training_kwargs['ml_rnn'] = False
-    training_kwargs['noise_std'] = 1e-3
+    training_kwargs['sparsity'] = 'variable'
+    training_kwargs['noise_std'] = 0.01
     training_kwargs['task_noise_sigma'] = 0 #1e-1
     training_kwargs['act_reg_lambda'] = 0 #1e-3    
     training_kwargs['h0_init'] = 'random'
@@ -439,9 +441,9 @@ if __name__ == "__main__":
     training_kwargs['drouput'] = .0
     training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
-    training_kwargs['learning_rate'] = 1e-3
-    training_kwargs['n_epochs'] = 20000
-    training_kwargs['stop_patience'] = 20000
+    training_kwargs['learning_rate'] = 1e-4
+    training_kwargs['n_epochs'] = 5000
+    training_kwargs['stop_patience'] = 5000
     training_kwargs['stop_min_delta'] = 0
     training_kwargs['record_step'] = 10
     training_kwargs['dt_rnn'] = .1
@@ -459,7 +461,7 @@ if __name__ == "__main__":
     training_kwargs['trained_exp_i'] = 0
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
-                                                          model_name=model_name, trials=100, training_kwargs=training_kwargs)
+                                                          model_name=model_name, trials=7, training_kwargs=training_kwargs)
 
     
     # param_grid = {'initialization_type': ['qpta'],
