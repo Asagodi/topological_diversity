@@ -394,8 +394,8 @@ If a system is implementing such a computation, on a compact domain, the state w
 %-goal: to identify the solution type of a trained RNN + understand it's performance/errors/generalization/closeness to a CA
 %-how through a fast-slow decomposition, based on the assumption that there is normal hyperbolicity in the system 
 Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors.
-In this section, we delineate a novel approach to dissecting the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the "ghost" continuous attractor, also known as the slow manifold, and the slow flow within.
-We aim, to identify the solution type of a trained RNN, and through this, to gain insights into its performance, error patterns, generalization capabilities, and proximity to a continuous attractor.
+In this section, we dissecting the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the "ghost" continuous attractor, also known as the slow manifold, and the slow flow within.
+We aim to identify the solution type of a trained RNN, and through this, to gain insights into its performance, error patterns, generalization capabilities, and proximity to a continuous attractor.
  Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
 Through a series of experiments and analyses, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks
@@ -497,14 +497,19 @@ Our methodology effectively addresses and overcomes this limitation.
 \section{Experiments}
 \subsection{Ring attractors}\label{sec:ras}
 %\subsubsection{Angular integration networks}\label{sec:hd}
-For circular variables such as the goal-direction or head-direction needed for spatial navigation in 2D, the temporal integration and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology) \citep{kim2019generation, turner2017angular, turner2020neuroanatomical,hulse2020mechanisms}.
+For circular variables such as the goal-direction (e.g. for home navigation in bees \citep{frisch1993dance}) %home navigation + dance in bees: the angle of the waggle phase relative to gravity reflects the angle of the food source relative to the sun
+%duration of the waggle phse reflects the distance to the food source from the hive
+or head-direction, the temporal integration and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology) \citep{kim2019generation, turner2017angular, turner2020neuroanatomical,hulse2020mechanisms}.
 Continuous attractor models of the head-direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a ring-like structure~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous}.
 %Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 We demonstrate the consequences of the Persistence Theorem in multiple models with a continuous ring attractor.
 
-Firstly, we investigated perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
+%for all ring attractors:
 As this continuous ring attractor is bounded its invariant manifold persists and, hence, no divergent orbits are created under small perturbations to this system. 
-Furthermore, because the ring attractor is boundaryless it is both forward and backward invariant, i.e. hence it is invariant and trajectories never leave the persistent invariant manifold~\citep{wiggins1994}.
+Furthermore, because the ring attractor is boundaryless %it is both forward and backward invariant, i.e. hence
+the persistent manifold is invariant ~\citep{wiggins1994}.
+
+Firstly, we investigated perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
 This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec.~\ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. 
 This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
