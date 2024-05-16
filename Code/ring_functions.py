@@ -1447,6 +1447,7 @@ def plot_weight_matrix(mat_to_plot, fig_name):
     plt.savefig(fig_name, bbox_inches="tight", pad_inches=0.01)
     
     
+    
 def newton_method(x0, system, jacobian, W, b, tau, mlrnn, tol=1e-6, max_iter=100):
     # Implement the Newton method
     x = x0
@@ -1455,8 +1456,8 @@ def newton_method(x0, system, jacobian, W, b, tau, mlrnn, tol=1e-6, max_iter=100
         x -= dx
         if np.linalg.norm(dx) < tol:
             break
-    return x    
-
+    return x
+    
 def find_fixed_points_newton(W, b, wo, 
                              rnn_ode=tanh_ode, rnn_jacobian=tanh_jacobian, mlrnn=True,
                              npoints=1000, max_iter=1000, tol=1e-9):
