@@ -849,14 +849,24 @@ def fast_slow_decomposition(main_exp_name, exp_i, which='post'):
     net.noise_std = 0
     # plt.plot(losses[:np.argmin(losses)]); plt.yscale('log'); plt.xlabel("Epoch"); plt.ylabel("Loss");
     
+     
+def get_manifold_from_closest_projections(trajectories, wo, npoints=30):
+    n_rec = wo.shape[0]
+    xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
+    xs = np.append(xs, -np.pi)
+    trajectories_flat = trajectories.reshape((-1,n_rec));
+    ys = np.dot(trajectories_flat.reshape((-1,n_rec)), wo)
+    circle_points = np.array([np.cos(xs), np.sin(xs)]).T
+    dists = cdist(circle_points.reshape((-1,2)), ys)
+    csx2 = []
+    for i in range(xs.shape[0]):
+        csx2.append(trajectories_flat[np.argmin(dists[i,:]),:])
+    csx2 = np.array(csx2)
+    return csx2
     
-    
-
     
 def vf_on_ring(trajectories, wo,  wrec, brec, cs, fxd_pnt_thetas, stabilities, method='closest', npoints=30, 
                fig_folder=None, fig_ext=''):
-    
-    n_rec = wo.shape[0]
     
     if method=='spline':
         xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
@@ -880,17 +890,7 @@ def vf_on_ring(trajectories, wo,  wrec, brec, cs, fxd_pnt_thetas, stabilities, m
             plt.savefig(fig_folder+f'/vf_on_ring_{fig_ext}.pdf', bbox_inches="tight")
     
     elif method=='closest':
-        xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
-        xs = np.append(xs, -np.pi)
-        trajectories_flat = trajectories.reshape((-1,n_rec));
-        ys = np.dot(trajectories_flat.reshape((-1,n_rec)), wo)
-        circle_points = np.array([np.cos(xs), np.sin(xs)]).T
-        dists = cdist(circle_points.reshape((-1,2)), ys)
-        csx2 = []
-        for i in range(xs.shape[0]):
-            #print(i, np.argmin(dists[i,:]))
-            csx2.append(trajectories_flat[np.argmin(dists[i,:]),:])
-        csx2 = np.array(csx2)
+        csx2 = get_menifold_from_closest_projections(trajectories, wo,  wrec, brec, npoints=npoints)
     
         fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
         diff = np.zeros((csx2.shape[0]))
