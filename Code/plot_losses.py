@@ -127,6 +127,32 @@ def plot_io(ax, ax2, input, output, target):
 
     return ax, ax2
 
+def plot_losses_in_folder():
+    main_exp_name='center_out/variable_N100_T250_Tr100/tanh/'
+    folder = parent_dir+"/experiments/" + main_exp_name
+    which = 'post'
+    all_losses = np.empty((88,5000))
+    all_losses[:] = np.nan
+    fig, axs = plt.subplots(1, 2, figsize=(3, 3))
+    for exp_i in range(88):
+    #exp_i=10
+
+        net, wi, wrec, wo, brec, h0, oth, training_kwargs, losses = load_all(main_exp_name, exp_i, which=which);
+        all_losses[exp_i,:np.argmin(losses)] = losses[:np.argmin(losses)].copy()
+        axs[0].plot(losses[:np.argmin(losses)].copy(), 'b',  alpha=.01); 
+        #print(np.nanmin(losses), np.argmin(losses))
+    axs[0].plot(np.nanmean(all_losses,axis=0), 'b', zorder=1000)
+    last_non_nan_idx = np.argmax(np.isnan(all_losses), axis=1)
+    last_non_nan_idx = np.maximum(0, last_non_nan_idx - 1)
+    last_non_nan = all_losses[np.arange(all_losses.shape[0]), last_non_nan_idx]
+
+    bins = np.logspace(np.log10(np.min(last_non_nan)), np.log10(np.max(last_non_nan)), 20)
+    axs[1].hist(last_non_nan, bins=bins, orientation='horizontal')
+
+    axs[0].set_yscale('log'); axs[1].set_yscale('log')
+    axs[0].set_ylim([np.nanmin(all_losses), np.nanmax(all_losses)])
+    axs[1].set_ylim([np.nanmin(all_losses), np.nanmax(all_losses)])
+    axs[1].axis('off')
 
 def plot_losses_and_trajectories(plot_losses_or_trajectories='losses', main_exp_name='angular_integration', model_name='low_gain', sparsity=.1, task=None):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
@@ -835,6 +861,7 @@ def plot_slow_manifold_ring_3d(saddles, fxd_pnts, wo, pca, exp_name,
 
 
 def video_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, exp_name,
+                                proj_mult_val, 
                                recurrences=[], recurrences_pca=[],
                                trajectories=[],
                                proj_2d_color='lightgrey', figname_postfix=''):
