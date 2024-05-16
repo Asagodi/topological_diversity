@@ -154,8 +154,8 @@ In neuroscience, this vulnerability is well-known and often referred to as the `
 There are two primary sources of perturbations in the recurrent network dynamics:
 (1) the stochastic nature of online learning signals that act on synaptic plasticity, and
 (2) observed spontaneous fluctuations in synaptic weights~\cite{Fusi2007-yg,shimizu2021}.
-Thus, additional mechanisms are necessary to compensate for the degradation for particular implementations, through bringing the short-term behavior close to the continuous attractor case~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022}.
-However, we lack the theoretical basis for clinging to the brittle concept of continuous attractors for understanding biological working memory.
+Thus, additional mechanisms are necessary to compensate for the degradation in particular implementations, through bringing the short-term behavior close to that of a continuous attractor~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022}.
+However, we lack the theoretical basis for relying on the brittle concept of continuous attractors for understanding biological working memory.
 % However, the reliance on the fragile concept of continuous attractors lacks a robust theoretical foundation, raising concerns about its practical utility. % <-- chat's suggestion :P
 
 In this study, we explore the bifurcations from continuous attractors in theoretical models,
@@ -303,7 +303,7 @@ In addition, the stable manifold of $\manifold_0$ is similarly  persistent~\cite
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
  As a technical note, for the theory apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting \cite{simpson2018}, which is also the case for the BLA.
 %applicability of Fenichel’s invariant manifold theorem on continuous piecewise linear (PWL) dynamical systems.
-As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points, and overall still attractive.
+As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points, and is overall still attractive.
 %On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence. %extension: 
 %Importantly, the ``slow'' flow on the perturbed system is not bounded.
 
@@ -394,8 +394,7 @@ If a system is implementing such a computation, on a compact domain, the state w
 %-goal: to identify the solution type of a trained RNN + understand it's performance/errors/generalization/closeness to a CA
 %-how through a fast-slow decomposition, based on the assumption that there is normal hyperbolicity in the system 
 Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors.
-In this section, we dissecting the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the ``ghost" continuous attractor, also known as the slow manifold, and the slow flow within.
-We aim to identify the solution type of a trained RNN, and through this, to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
+We will identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
  Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
 Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
@@ -439,11 +438,11 @@ We trained networks for every combination of the following parameters:
 %
  All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  for 5,000 iterations with a batch size of 32. % and training was run until no decrease in the loss occurred for 100 epochs
 
-
+For the We trained our networks to estimate the agent’s current head direction by integrating angular velocity over time
 
 
 \subsection{Mapping out the found topologies}\label{sec:fastslowmethod}
-
+In this section, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the ``ghost" continuous attractor, also known as the slow manifold, and the slow flow within.
 We want to investigate how networks might solve tasks.
 While previous studies have primarily focused on simple tasks that can be solved with fixed points, there remains a gap in comprehensively extracting the mechanisms underlying network implementations \citep{sussillo2013blackbox}.
 We address this gap by investigating the internal mechanisms of neural network solvers for tasks involving continuous variables. Building upon prior work, which has shown networks' capabilities on such tasks \citep{cueva2019headdirection, cueva2021continuous}.
@@ -594,7 +593,7 @@ Finally, we characterize the memory capacity of the network through calculating 
  This step provides valuable insights into the network's ability to store information and how this ability degrades across different perturbations.
 
 \begin{equation}
-\basin(x^*) \coloneqq \{x\in \manifold| \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}
+\basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}
 \end{equation}
 
 
