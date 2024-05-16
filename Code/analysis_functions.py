@@ -565,7 +565,7 @@ def simulate_rnn_with_input(net, input, T, h_init, batch_size = 256):
     output, trajectories = net(input, return_dynamics=True, h_init=h_init); 
     output = output.detach().numpy();
     trajectories = trajectories.detach().numpy()
-    return input, output, trajectories
+    return output, trajectories
 
 def simulate_rnn_with_task(net, task, T, h_init, batch_size = 256):
 
