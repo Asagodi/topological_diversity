@@ -560,7 +560,7 @@ def get_cubic_spline_ring(thetas, invariant_manifold):
     
     return cs    
 
-def simulate_rnn_with_input(net, input, T, h_init, batch_size = 256):
+def simulate_rnn_with_input(net, input, h_init):
     input = torch.from_numpy(input).float();
     output, trajectories = net(input, return_dynamics=True, h_init=h_init); 
     output = output.detach().numpy();
@@ -570,10 +570,13 @@ def simulate_rnn_with_input(net, input, T, h_init, batch_size = 256):
 def simulate_rnn_with_task(net, task, T, h_init, batch_size = 256):
 
     input, target, mask = task(batch_size);
-    input = torch.from_numpy(input).float();
-    output, trajectories = net(input, return_dynamics=True, h_init=h_init); 
+    input_ = torch.from_numpy(input).float();
+    target = torch.from_numpy(target).float();
+    output, trajectories = net(input_, return_dynamics=True, h_init=h_init, target=target); 
+    
     output = output.detach().numpy();
     trajectories = trajectories.detach().numpy()
+    target = target.detach().numpy()
     return input, target, mask, output, trajectories
 
 
@@ -920,6 +923,40 @@ def vf_on_ring(trajectories, wo,  wrec, brec, cs, fxd_pnt_thetas, stabilities, m
         
     return diff
     
+
+
+#######angle error
+def plot_angle_error():
+    main_exp_name='angular_integration/test_angle_error/'
+    folder = parent_dir+"/experiments/" + main_exp_name
+    which = 'post'
+    fig, ax = plt.subplots(1, 1, figsize=(5, 3));
+    t1_pos = 0 
+    for exp_i in range(4):
+
+        net, wi, wrec, wo, brec, h0, oth, training_kwargs, losses = load_all(main_exp_name, exp_i, which=which);
+        net.noise_std = 0
+        np.random.seed(100)
+        T=8*training_kwargs['T']; dt=training_kwargs['dt_rnn']; batch_size=128;
+        task = angularintegration_task(T=T, dt=dt, sparsity=1, random_angle_init=False)
+        input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, h_init='random', batch_size=batch_size)
+        output_angle = np.arctan2(output[:,:,1], output[:,:,0]);
+        target_angle = np.arctan2(target[:,:,1], target[:,:,0]);
+        angle_error = np.abs(output_angle - target_angle)
+        angle_error[np.where(angle_error>np.pi)] = 2*np.pi-angle_error[np.where(angle_error>np.pi)]
+        mean_error = np.mean(angle_error,axis=0)
+        t1_pos=np.min([t1_pos,np.min(mean_error)])
+        plt.plot(mean_error, zorder=1000, label=f"N{training_kwargs['N_rec']}_{training_kwargs['nonlinearity']}")
+        T1 = training_kwargs['T']/training_kwargs['dt_task']
+
+        ax.axvline(T1, linestyle='--', color='r')
+        
+        ax.set_xlabel("$T$")
+        ax.set_ylabel("angle error");
+    ax.text(T1*.9, -0.1, r'$T_1$',color='r')
+    #ax.legend(bbox_to_anchor=(0.5, -0.15), loc='upper center', ncol=4, borderaxespad=0.)
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+    fig.savefig(folder+"/angle_error.pdf", bbox_inches="tight");
 
 
 sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder"); 
