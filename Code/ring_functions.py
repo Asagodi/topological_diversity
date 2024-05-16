@@ -1459,12 +1459,13 @@ def newton_method(x0, system, jacobian, W, b, tau, mlrnn, tol=1e-6, max_iter=100
     return x
     
 def find_fixed_points_newton(W, b, wo, 
-                             rnn_ode=tanh_ode, rnn_jacobian=tanh_jacobian, mlrnn=True,
-                             npoints=1000, max_iter=1000, tol=1e-9):
-    
-    thetas_init = np.arange(-np.pi, np.pi, 2*np.pi/npoints);
-    points_init_2d = np.array([np.cos(thetas_init), np.sin(thetas_init)]);
-    points_init_nd = np.dot(D, points_init_2d).T;
+                             tau=1, rnn_ode=tanh_ode, rnn_jacobian=tanh_jacobian, mlrnn=True,
+                             npoints=1000, points_init_nd=None,
+                             max_iter=1000, tol=1e-9):
+    if not np.any(points_init_nd):
+        thetas_init = np.arange(-np.pi, np.pi, 2*np.pi/npoints);
+        points_init_2d = np.array([np.cos(thetas_init), np.sin(thetas_init)]);
+        points_init_nd = np.dot(wo, points_init_2d).T;
     xstars = [];
     eigenvalues_list=[]
     stabilist=[]
