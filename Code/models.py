@@ -278,10 +278,13 @@ class RNN(nn.Module):
         :return: if return_dynamics=False, output tensor of shape (batch_size, #timesteps, output_dimension)
                  if return_dynamics=True, (output tensor, trajectories tensor of shape (batch_size, #timesteps, #hidden_units))
         """
+        
+        # assert not self.map_output_to_hidden or target
+        
         batch_size = input.shape[0]
         seq_len = input.shape[1]
 
-        if self.map_output_to_hidden and target != None:
+        if self.map_output_to_hidden:
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
             h_init_torch.requires_grad = False
             h_init_torch = target[:,0,:].matmul(self.output_to_hidden)
@@ -292,6 +295,7 @@ class RNN(nn.Module):
         elif h_init == 'random':
             # hidden_initial_variance==0...
             h = torch.normal(mean=0, std=self.hidden_initial_variance, size=(1, batch_size, self.hidden_size)).to(self.wrec.device)
+            self.h0.requires_grad = False
 
         elif h_init is None:
             h = self.h0
@@ -306,7 +310,6 @@ class RNN(nn.Module):
                     h = h_init_torch.copy_(torch.from_numpy(h_init))
                 else:
                     h = h_init_torch.copy_(h_init)
-
                 
         noise = torch.randn(batch_size, seq_len, self.hidden_size, device=self.wrec.device)
         output = torch.zeros(batch_size, seq_len, self.output_size, device=self.wrec.device)
