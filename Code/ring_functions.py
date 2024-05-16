@@ -1406,7 +1406,7 @@ def make_biswas_ring(w1, w4):
 # folder='C:/Users/abel_/Documents/Lab/Projects/topological_diversity/Stability/ring_perturbations/martin/'
 # with open(folder+'W_miracle.json', 'r') as f:
 #     data = json.load(f)
-#     W = np.array(data)
+#     W = np.array(data).T #need to transpose for consistency
 # with open(folder+'D_miracle.json', 'r') as f:
 #     data = json.load(f)
 #     D = np.array(data)
@@ -1446,17 +1446,30 @@ def plot_weight_matrix(mat_to_plot, fig_name):
     fig.colorbar(im, cax=cax)
     plt.savefig(fig_name, bbox_inches="tight", pad_inches=0.01)
     
-def find_fixed_points_newton():
     
-    thetas_init = np.arange(-np.pi, np.pi, 2*np.pi/10000);
+def newton_method(x0, system, jacobian, W, b, tau, mlrnn, tol=1e-6, max_iter=100):
+    # Implement the Newton method
+    x = x0
+    for _ in range(max_iter):
+        dx = np.linalg.solve(jacobian(W,b,tau,x,mlrnn), system(0,x,W,b,tau,mlrnn))
+        x -= dx
+        if np.linalg.norm(dx) < tol:
+            break
+    return x    
+
+def find_fixed_points_newton(W, b, wo, 
+                             rnn_ode=tanh_ode, rnn_jacobian=tanh_jacobian, mlrnn=True,
+                             npoints=1000, max_iter=1000, tol=1e-9):
+    
+    thetas_init = np.arange(-np.pi, np.pi, 2*np.pi/npoints);
     points_init_2d = np.array([np.cos(thetas_init), np.sin(thetas_init)]);
     points_init_nd = np.dot(D, points_init_2d).T;
     xstars = [];
     eigenvalues_list=[]
     stabilist=[]
     for x0 in points_init_nd:
-            xstar = newton_method(x0, tanh_ode, tanh_jacobian, W.T, 0, tau, mlrnn=False, tol=1e-9, max_iter=1000)
-            J=tanh_jacobian(W.T,0,tau,xstar)
+            xstar = newton_method(x0, rnn_ode, rnn_jacobian, W, b, tau, mlrnn=mlrnn, tol=tol, max_iter=max_iter)
+            J=rnn_jacobian(W,b,tau,xstar)
             eigenvalues, eigenvectors = np.linalg.eig(J)
             xstars.append(xstar)
             eigenvalues_list.append(eigenvalues)
@@ -1464,7 +1477,8 @@ def find_fixed_points_newton():
                 stabilist.append(-1)
             else:
                 stabilist.append(1)
-    xstars_2 = np.dot(np.array(xstars), D)
+    xstars_2 = np.dot(np.array(xstars), wo)
+    return xstars, xstars_2
     
 # if __name__ == "__main__": 
 #     # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
