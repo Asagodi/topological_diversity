@@ -441,7 +441,7 @@ if __name__ == "__main__":
     training_kwargs['drouput'] = .0
     training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
-    training_kwargs['learning_rate'] = 1e-4
+    training_kwargs['learning_rate'] = 1e-2
     training_kwargs['n_epochs'] = 5000
     training_kwargs['stop_patience'] = 5000
     training_kwargs['stop_min_delta'] = 0
