@@ -1449,7 +1449,26 @@ def plot_weight_matrix(mat_to_plot, fig_name):
     
     
 def newton_method(x0, system, jacobian, W, b, tau, mlrnn, tol=1e-6, max_iter=100):
-    # Implement the Newton method
+    """
+    Search for (approximate) fixed points with Newton-Raphson.
+    Parameters
+    ----------
+    x0 : starting point
+    system : ode of rnn
+    jacobian : jacobian of ode
+    W : connection matrix
+    b : bias
+    tau : time constant
+    mlrnn : Wf(x) or f(Wx)
+    tol : float, optional
+        tolerance level at which to stop the search. The default is 1e-6.
+    max_iter : int, optional
+        maximum number of iterations. The default is 100.
+
+    Returns
+    -------
+    x : fixed point / slow point.
+    """
     x = x0
     for _ in range(max_iter):
         dx = np.linalg.solve(jacobian(W,b,tau,x,mlrnn), system(0,x,W,b,tau,mlrnn))
