@@ -861,7 +861,7 @@ def plot_slow_manifold_ring_3d(saddles, fxd_pnts, wo, pca, exp_name,
 
 
 def video_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, exp_name,
-                                proj_mult_val, 
+                               proj_mult_val, 
                                recurrences=[], recurrences_pca=[],
                                trajectories=[],
                                proj_2d_color='lightgrey', figname_postfix=''):
