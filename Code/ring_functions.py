@@ -1489,15 +1489,17 @@ def find_fixed_points_newton(W, b, wo,
     eigenvalues_list=[]
     stabilist=[]
     for x0 in points_init_nd:
-            xstar = newton_method(x0, rnn_ode, rnn_jacobian, W, b, tau, mlrnn=mlrnn, tol=tol, max_iter=max_iter)
-            J=rnn_jacobian(W,b,tau,xstar)
-            eigenvalues, eigenvectors = np.linalg.eig(J)
-            xstars.append(xstar)
-            eigenvalues_list.append(eigenvalues)
-            if np.all(eigenvalues<0):
-                stabilist.append(-1)
-            else:
-                stabilist.append(1)
+        # print(x0)
+        xstar = newton_method(x0, rnn_ode, rnn_jacobian, W, b, tau, mlrnn=mlrnn, tol=tol, max_iter=max_iter)
+        # print(np.all(x0==xstar))
+        J=rnn_jacobian(W,b,tau,xstar)
+        eigenvalues, eigenvectors = np.linalg.eig(J)
+        xstars.append(xstar)
+        eigenvalues_list.append(eigenvalues)
+        if np.all(eigenvalues<0):
+            stabilist.append(-1)
+        else:
+            stabilist.append(1)
     xstars_2 = np.dot(np.array(xstars), wo)
     return xstars, xstars_2
     
