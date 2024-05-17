@@ -611,7 +611,7 @@ def find_periodic_orbits(traj, traj_pca, limcyctol=1e-2, mindtol=1e-10):
 def get_slow_manifold(net, task, T, h_init='random', from_t=300, batch_size=256, n_components=3, nbins=1000):
     n_rec = net.dims[1]
     
-    input, target, mask, output, trajectories = simulate_rnn(net, task, T, h_init, batch_size)
+    input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, h_init, batch_size)
     
     pca = PCA(n_components=n_components)
     invariant_manifold = trajectories[:,from_t:,:].reshape((-1,n_rec))
@@ -634,7 +634,7 @@ def get_slow_manifold(net, task, T, h_init='random', from_t=300, batch_size=256,
 
 def get_slow_w(net, task, T, h_init='random', from_t=300, batch_size=256, n_components=3, nbins=100):
     n_rec = net.dims[1]
-    input, target, mask, output, trajectories = simulate_rnn(net, task, T, h_init, batch_size)
+    input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, h_init, batch_size)
 
     pca = PCA(n_components=n_components)
     invariant_manifold = trajectories[:,from_t:,:].reshape((-1,n_rec))
@@ -664,9 +664,11 @@ def get_slow_w(net, task, T, h_init='random', from_t=300, batch_size=256, n_comp
     xs = np.append(xs, -np.pi)
     csxapca=cs_pca(xs); csxapca=csxapca.reshape((1,-1,csxapca.shape[-1]))
     
-    plot_slow_manifold_ring_3d(fxd_pnts[saddle_idx], fxd_pnts[stab_idx], wo, pca, main_exp_name,
-                                    trajectories=csxapca, traj_alpha=1., proj_mult_val=2., 
-                                    proj_2d_color='lightgrey', figname_postfix=f'exp{exp_i}')
+    # plot_slow_manifold_ring_3d(fxd_pnts[saddle_idx], fxd_pnts[stab_idx], wo, pca, main_exp_name,
+    #                                 trajectories=csxapca, traj_alpha=1., proj_mult_val=2., 
+    #                                 proj_2d_color='lightgrey', figname_postfix=f'exp{exp_i}')
+    
+    return trajectories, pca, cs, cs_pca, fxd_pnts, stabilities, recurrences, recurrences_pca
 
 
 def get_saddle_locations_from_theta(thetas, cs, cutoff=0.005):
@@ -965,7 +967,7 @@ def plot_angle_error_msg(ax=None):
     which = 'post'
     net, wi, wrec, wo, brec, h0, oth, training_kwargs, losses = load_all(main_exp_name, exp_i, which=which);
 
-    colors = ['b', 'orange', 'g', 'purple', 'k']
+    plot_colors = ['b', 'orange', 'g', 'purple', 'k']
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(5, 3));
     t1_pos = 0 
@@ -1017,7 +1019,7 @@ def plot_angle_error_msg(ax=None):
         
         label = int(training_kwargs['T']*training_kwargs['dt_rnn'])
         #f"N{training_kwargs['N_rec']}_{training_kwargs['nonlinearity']}"
-        ax.plot(np.arange(15+min_time_until_cue,int(T*dt)+15+min_time_until_cue,tstep), angle_errors, color=colors[0], zorder=1000, label=label)
+        ax.plot(np.arange(15+min_time_until_cue,int(T*dt)+15+min_time_until_cue,tstep), angle_errors, color=plot_colors[0], zorder=1000, label=label)
     T1 = training_kwargs['time_until_cue_range'][1]
     ax.axvline(T1, linestyle='--', color='r')
     ax.text(T1*1.15, .08, r'$T_1$',color='r')
