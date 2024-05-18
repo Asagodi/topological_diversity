@@ -567,7 +567,7 @@ def simulate_rnn_with_input(net, input, h_init):
     trajectories = trajectories.detach().numpy()
     return output, trajectories
 
-def simulate_rnn_with_task(net, task, T, h_init, batch_size = 256):
+def simulate_rnn_with_task(net, task, T, h_init, batch_size=256):
 
     input, target, mask = task(batch_size);
     input_ = torch.from_numpy(input).float();
@@ -616,7 +616,7 @@ def get_slow_manifold(net, task, T, h_init='random', from_t=300, batch_size=256,
     pca = PCA(n_components=n_components)
     invariant_manifold = trajectories[:,from_t:,:].reshape((-1,n_rec))
     pca.fit(invariant_manifold)
-    traj_pca = pca.transform(invariant_manifold).reshape((batch_size,-1,n_components))
+    traj_pca = pca.transform(trajectories.reshape((-1,n_rec))).reshape((batch_size,-1,n_components))
     recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
     fxd_pnts = np.array([recurrence for recurrence in recurrences if len(recurrence)==1]).reshape((-1,n_rec))    
     
@@ -742,6 +742,15 @@ def get_speed_and_acceleration(trajectory):
     speeds = np.array(speeds)
     accelerations = np.array(accelerations)
     return speeds, accelerations
+
+def get_speed_and_acceleration_batch(trajectories):
+    all_speeds = []
+    all_accs = []
+    for trajectory in trajectories:
+        speeds, accelerations = get_speed_and_acceleration(trajectory)
+        all_speeds.append(speeds)
+        all_accs.append(all_accs)
+    return np.array(all_speeds), np.array(all_accs)
 
 
 #identify slow manifolds
@@ -1028,6 +1037,71 @@ def plot_angle_error_msg(ax=None):
     #ax.legend(title="trained on max. interval", bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     return 
 
+
+
+def angle_error_folder():
+    main_exp_name='center_out/variable_N100_T250_Tr100/tanh/'
+    folder = parent_dir+"/experiments/" + main_exp_name
+    which = 'post'
+    colors = ['b', 'orange', 'g', 'purple', 'k']
+    fig, ax = plt.subplots(1, 1, figsize=(5, 3));
+    t1_pos = 0 
+    time_until_input = 5
+    cue_duration = 5
+    time_until_measured_response = 5
+    time_after_response = 0
+    add_t = time_until_measured_response+time_after_response
+    min_time_until_cue = 50
+    T = 2000*5
+    dt=.1
+    tstep=100
+    timepoints=int(T*dt)#-15-min_time_until_cue
+    batch_size=128;
+    tstep = int(training_kwargs['T']*training_kwargs['dt_rnn']//10)
+    all_angle_errors = np.zeros((100, timepoints//tstep))
+    for exp_i in tqdm(range(100)):
+
+        net, wi, wrec, wo, brec, h0, oth, training_kwargs, losses = load_all(main_exp_name, exp_i, which=which);
+        net.noise_std = 0
+        net.map_output_to_hidden=False
+        np.random.seed(100)
+        tstep = int(training_kwargs['T']*training_kwargs['dt_rnn']//10)
+        print(exp_i, tstep)
+        
+        task = center_out_reaching_task(T=T+150+min_time_until_cue*10, dt=dt, time_until_cue_range=[T, T+1], angles_random=False);
+        input, target, mask, output, trajectories_full = simulate_rnn_with_task(net, task, T, h_init='random', batch_size=batch_size)
+        #ax.plot(output[...,0].T, output[...,1].T)
+        target = input[:,time_until_input,:]
+        target_angle = np.arctan2(target[:,1], target[:,0]);
+        angle_errors = np.zeros((timepoints//tstep))
+        for t in range(15,timepoints+15,tstep):
+            #
+            #print(t//tstep)
+            input = np.zeros((batch_size,cue_duration+add_t,3))
+            input[:,:cue_duration,2]=1.
+            h_init = trajectories_full[:,min_time_until_cue+t,:]
+            output, trajectories = simulate_rnn_with_input(net, input, h_init=h_init)
+            #ax.plot(output[:,-1,0].T, output[:,-1,1].T, 'b')
+            #ax.plot(target[:,0].T, target[:,1].T, 'r')
+            output_angle = np.arctan2(output[:,-1,1], output[:,-1,0]);
+            
+            angle_error = np.abs(output_angle - target_angle)
+            angle_error[np.where(angle_error>np.pi)] = 2*np.pi-angle_error[np.where(angle_error>np.pi)]
+            mean_error = np.mean(angle_error,axis=0)
+            angle_errors[(t-15)//tstep] = mean_error
+            t1_pos=np.min([t1_pos,np.min(mean_error)])
+        all_angle_errors[exp_i,:] = angle_errors.copy()
+        
+        label = int(training_kwargs['T']*training_kwargs['dt_rnn'])
+        #f"N{training_kwargs['N_rec']}_{training_kwargs['nonlinearity']}"
+        ax.plot(np.arange(15+min_time_until_cue,int(T*dt)+15+min_time_until_cue,tstep), angle_errors, color=colors[0], zorder=1000, label=label)
+    T1 = training_kwargs['time_until_cue_range'][1]
+    ax.axvline(T1, linestyle='--', color='r')
+    ax.text(T1*1.15, .08, r'$T_1$',color='r')
+    ax.set_xticks([0,200,400,600,800,1000],[0, r'$T_1$', r'$2T_1$', r'$3T_1$', r'$4T_1$', r'$5T_1$'])
+    ax.set_ylabel("angle error");
+    #ax.legend(title="trained on max. interval", bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+    fig.savefig(folder+"/angle_error.pdf", bbox_inches="tight");
 
 sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder"); 
 from FixedPointFinderTorch import *
