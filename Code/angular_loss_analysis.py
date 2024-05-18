@@ -121,7 +121,8 @@ def angular_loss_noinput(net, angle_init, h_init, T, batch_size=128, dt=0.1, ran
     angle_error[np.where(angle_error>np.pi)] = 2*np.pi-angle_error[np.where(angle_error>np.pi)]
     mean_error = np.mean(angle_error,axis=0)
     max_error = np.max(angle_error,axis=0)
-    return mean_error, max_error
+    min_error = np.min(angle_error,axis=0)
+    return mean_error, max_error, min_error
 
 
 
@@ -135,3 +136,16 @@ def angle_analysis_on_net(net, input_or_task='input',
     xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(trajectories, net.wo.detach().numpy(), npoints=batch_size)
 
     net.map_output_to_hidden = False
+
+    T1 = result['training_kwargs']['T']/result['training_kwargs']['dt_rnn'];
+    T=int(20*T1)
+    task = angularintegration_task(T=T, dt=dt, sparsity=1, random_angle_init=False)
+    input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, h_init='random', batch_size=batch_size)
+    output_angle = np.arctan2(output[:,:,1], output[:,:,0]);
+    target_angle = np.arctan2(target[:,:,1], target[:,:,0]);
+    angle_error = np.abs(output_angle - target_angle)
+    angle_error[np.where(angle_error>np.pi)] = 2*np.pi-angle_error[np.where(angle_error>np.pi)]
+    
+
+
+    
