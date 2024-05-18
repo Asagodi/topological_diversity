@@ -241,9 +241,9 @@ Using Fenichel's invariant manifold theorem, we derive a universality statement 
  This characterization provides a fundamental understanding of a continuous attractors bifurcation landscape.
 %what is uni statement?
 We verify our theoretical insights with numerical experiments.
-We show that all approximations, whether it is trained RNNs or hand designed contintuous attractors, are all to be described as slow manifolds with the same topology as the original continuous attractor.
+We show that all approximations, whether it is trained RNNs or hand designed contintuous attractors, are all to be described as slow manifolds with the same topology as the original continuous attractor,
 %punchlines
-
+even though they differ from each other in terms of the topology of the dynamics (e.g. number of fixed points).
 
 
 
@@ -340,11 +340,14 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark 
 %for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
 
 
+
+
+
 \subsection{The structure of the bifurcated attractor}\label{sec:attractor_bif}
 %distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
 From the persistence theorem, we get a description of the persistent manifold that survives the seemingly destructive bifurcations.
 The theory implies that in the space of dynamical systems, all systems in the neighbourhood of a continuous attractor all share the same topology for the attractive persistent invariant manifold and that the flow on the manifold is slow.
-For a 1 dimensional attractor this implies that the stability structure of the invariant manifold is either 
+For a ring attractor this implies that the stability structure of the invariant manifold is either 
 (1)  composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits 
 or (2) a limit cycle.
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
@@ -375,12 +378,61 @@ Animal behavior is finite time in nature and the longer the temporal distance th
 
 
 
+\subsection{Ring attractors}\label{sec:ras}
+%\subsubsection{Angular integration networks}\label{sec:hd}
+For circular variables such as the goal-direction (e.g. for home navigation in bees \citep{frisch1993dance}) %home navigation + dance in bees: the angle of the waggle phase relative to gravity reflects the angle of the food source relative to the sun
+%duration of the waggle phse reflects the distance to the food source from the hive
+or head-direction, the temporal integration and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology) \citep{kim2019generation, turner2017angular, turner2020neuroanatomical,hulse2020mechanisms}.
+Continuous attractor models of the head-direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a ring-like structure~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous}.
+%Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 
-\subsection{Infinite horizon computation in a bounded state space}\label{sec:inhoco}
+We demonstrate the consequences of the Persistence Theorem in multiple models with a continuous ring attractor.
+As continuous ring attractor are bounded their invariant manifold persists and it remains attractive under small perturbations to this system ~\citep{wiggins1994}. 
+%Furthermore, because the ring attractor is boundaryless %it is both forward and backward invariant, i.e. hence
+%the persistent manifold is invariant ~\citep{wiggins1994}.
 
-Both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions \citep{orhan2019diverse}.
-We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
-If a system is implementing such a computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set.
+Firstly, we investigated perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
+This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec.~\ref{sec:supp:headdirection}).
+For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. 
+This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
+
+\begin{figure}[tbhp]
+     \centering
+  \includegraphics[width=\textwidth]{bio_rings}
+       \caption{ Perturbations different implementation and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact.
+       (A) Perturbations to the ring attractor \citep{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to $2N$ (stable and saddle points are paired). 
+       (B)  Perturbations a low-rank approximation of a ring attractor \citep{mastrogiuseppe2018}.
+       (C)  Perturbations to a tanh approximation of a ring attractor \citep{seeholzer2017efficient}.
+       (D)  Perturbations to the EMPJ approximation of a ring attractor \citep{pollock2020}.
+       }
+         \label{fig:bio_rings}
+\end{figure}
+
+We evaluate the effect of parametric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\iidsample\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E= 4$ and $J_I=-2.4$ by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
+We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:bio_rings}A).
+As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
+The probability of each type of bifurcation was numerically estimated.
+There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\ref{fig:meaure_zero_perturbations}).
+%The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
+
+
+%mastrogiuseppe, beiran, ostojic
+Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
+The Dynamical Mean Field (DMF) tell us that in the limit of infinite-size networks one can construct a ring attractor through a rank 2 network by choosing the overlap of the right- and left-connectivity vectors.
+However, in simulations of finite-size networks, the dynamics instead always converge on a small number of equilibrium spontaneous states located on the ring \citep{mastrogiuseppe2018}.
+Our theory explains this phenomenon as follows.
+We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix).
+This implies that the ring attractor network 
+For very small networks the ring structure is destroyed.
+Only the plane persist as a slow manifold.
+
+%how to show 
+%normal hyperbolicity index: speed normal/tangent to manifold
+%fenichel brakes down
+%uniform bound approximation
+
+
+
 
 
 
@@ -442,14 +494,16 @@ We trained networks for every combination of the following parameters:
 %
  All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  for 5,000 iterations with a batch size of 32. % and training was run until no decrease in the loss occurred for 100 epochs
 
-For the We trained our networks to estimate the agent’s current head direction by integrating angular velocity over time
+
 
 
 \subsection{Mapping out the found topologies}\label{sec:fastslowmethod}
 In this section, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the ``ghost" continuous attractor, also known as the slow manifold, and the slow flow within.
 We want to investigate how networks might solve tasks.
 While previous studies have primarily focused on simple tasks that can be solved with fixed points, there remains a gap in comprehensively extracting the mechanisms underlying network implementations \citep{sussillo2013blackbox}.
-We address this gap by investigating the internal mechanisms of neural network solvers for tasks involving continuous variables. Building upon prior work, which has shown networks' capabilities on such tasks \citep{cueva2019headdirection, cueva2021continuous}.
+We address this gap by investigating the internal mechanisms of neural network solvers for tasks involving continuous variables. Building upon prior work, which has shown networks' capabilities on such tasks, we trained RNNs to either
+(1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection, cueva2021continuous}
+and (2) perform a memory guided saccade task for a ring variable.
 
 %Fig 4
 \begin{figure}[tbhp]
@@ -499,62 +553,18 @@ Our methodology effectively addresses and overcomes this limitation.
 The universal structure of continuous attractor appriximations as slow invariant manifolds allows us to connect the different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:attractor_bif}).
 
 
-\section{Experiments}
-\subsection{Ring attractors}\label{sec:ras}
-%\subsubsection{Angular integration networks}\label{sec:hd}
-For circular variables such as the goal-direction (e.g. for home navigation in bees \citep{frisch1993dance}) %home navigation + dance in bees: the angle of the waggle phase relative to gravity reflects the angle of the food source relative to the sun
-%duration of the waggle phse reflects the distance to the food source from the hive
-or head-direction, the temporal integration and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology) \citep{kim2019generation, turner2017angular, turner2020neuroanatomical,hulse2020mechanisms}.
-Continuous attractor models of the head-direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a ring-like structure~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous}.
-%Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
-We demonstrate the consequences of the Persistence Theorem in multiple models with a continuous ring attractor.
 
-%for all ring attractors:
-As this continuous ring attractor is bounded its invariant manifold persists and, hence, no divergent orbits are created under small perturbations to this system. 
-Furthermore, because the ring attractor is boundaryless %it is both forward and backward invariant, i.e. hence
-the persistent manifold is invariant ~\citep{wiggins1994}.
+\subsection{Infinite horizon computation in a bounded state space}\label{sec:inhoco}
 
-Firstly, we investigated perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
-This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec.~\ref{sec:supp:headdirection}).
-For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. 
-This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
-
-\begin{figure}[tbhp]
-     \centering
-  \includegraphics[width=\textwidth]{bio_rings}
-       \caption{ Perturbations different implementation and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact.
-       (A) Perturbations to the ring attractor \citep{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to $2N$ (stable and saddle points are paired). 
-       (B)  Perturbations a low-rank approximation of a ring attractor \citep{mastrogiuseppe2018}.
-       (C)  Perturbations to a tanh approximation of a ring attractor \citep{seeholzer2017efficient}.
-       (D)  Perturbations to the EMPJ approximation of a ring attractor \citep{pollock2020}.
-       }
-         \label{fig:bio_rings}
-\end{figure}
-
-We evaluate the effect of parametric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\iidsample\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E= 4$ and $J_I=-2.4$ by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
-We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:bio_rings}A).
-As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
-The probability of each type of bifurcation was numerically estimated.
-There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\ref{fig:meaure_zero_perturbations}).
-%The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
+Both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions \citep{orhan2019diverse}.
+We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
+If a system is implementing such a computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set.
 
 
-%mastrogiuseppe, beiran, ostojic
-Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
-The Dynamical Mean Field (DMF) tell us that in the limit of infinite-size networks one can construct a ring attractor through a rank 2 network by choosing the overlap of the right- and left-connectivity vectors.
-However, in simulations of finite-size networks, the dynamics instead always converge on a small number of equilibrium spontaneous states located on the ring \citep{mastrogiuseppe2018}.
-Our theory explains this phenomenon as follows.
-We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix).
-This implies that the ring attractor network 
-For very small networks the ring structure is destroyed.
-Only the plane persist as a slow manifold.
-
-%how to show 
-%normal hyperbolicity index: speed normal/tangent to manifold
-%fenichel brakes down
-%uniform bound approximation
 
 
+
+\section{Loss of function}
 
 
 
@@ -607,16 +617,15 @@ Finally, we characterize the memory capacity of the network through calculating 
 
 
 \section{Discussion}
-The attractive manifold of equilibria in continuous attractor networks provides two key functions continuous memory and propagation of gradient through time.
-Although the corresponding configurations are measure zero, we showed that  when the invariant manifold theorem holds, the finite time behavior of the trajectories and the gradient through time only slowly break down.
-We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in 5 example systems.
-There were surprisingly diverse bifurcations which provide additional insights to vanishing and exploding gradient regimes that the network visits in the presence of stochasticity in synapses and learning signals.
-In particular, we showed that some RNNs are devoid of bifurcations that lead to exploding gradients with non-zero measure.
+The attractive manifold of equilibria in continuous attractor networks provide continuous memory.
+Although the corresponding configurations are measure zero, we showed that  when the invariant manifold theorem holds, the finite time behavior of the trajectories only slowly break down.
+We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in various example systems.
+There were surprisingly diverse bifurcations that the network visits in the presence of stochasticity in synapses and learning signals.
 
-As the theory predicts, our numerical experiments demonstrate the properties of loss landscape and gradient near the fine-tuned system.
-However, after small perturbations, plain gradient descent typically converges to a non-continuous attractor solution, indicating that the homeostatic restoration of continuous attractor may be challenging.
-Based on our observations, we cannot conclude that continuous attractors solutions are universally brittle.
-Further research on finding continuous attractor networks that may allow restorative learning for larger perturbations in the parameter space is needed.
+
+As the theory predicts, 
+
+
 
 
 %error-correcting
