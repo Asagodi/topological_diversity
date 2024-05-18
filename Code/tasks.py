@@ -424,7 +424,7 @@ def center_out_reaching_task(T, dt,
                              time_until_cue_range=[50, 75], angles_random=True):
     # cue_output_durations = [time_until_input, stim_duration, time_until_cue, cue_duration, time_until_measured_response]
     
-    input_length = int(T*dt)
+    input_length = int(T/dt)
     time_until_input, stim_duration, time_until_cue, cue_duration, time_until_measured_response = cue_output_durations
     
     def task(batch_size):
