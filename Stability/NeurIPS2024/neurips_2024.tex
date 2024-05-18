@@ -438,19 +438,11 @@ Only the plane persist as a slow manifold.
 
 
 
-\section{Fast-slow decomposition} %from trained RNNs
+\section{Continuous attractor approxiamtions} %from trained RNNs
 
 Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors.
 We will identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
  Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
- 
- 
- 
-\subsection{Unpacking the slow manifolds in trained RNNs} %from trained RNNs
-% separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within
-%intro:
-%-goal: to identify the solution type of a trained RNN + understand it's performance/errors/generalization/closeness to a CA
-%-how through a fast-slow decomposition, based on the assumption that there is normal hyperbolicity in the system 
 
 
 Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
@@ -495,9 +487,13 @@ We trained networks for every combination of the following parameters:
  All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  for 5,000 iterations with a batch size of 32. % and training was run until no decrease in the loss occurred for 100 epochs
 
 
+%\subsection{Fast-slow decomposition: Unpacking the slow manifolds in trained RNNs} %from trained RNNs
+% separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within
+%intro:
+%-goal: to identify the solution type of a trained RNN + understand it's performance/errors/generalization/closeness to a CA
+%-how through a fast-slow decomposition, based on the assumption that there is normal hyperbolicity in the system  
 
-
-\subsection{Mapping out the found topologies}\label{sec:fastslowmethod}
+\subsection{Variability in the topologies of the networks}\label{sec:fastslowmethod}
 In this section, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the ``ghost" continuous attractor, also known as the slow manifold, and the slow flow within.
 We want to investigate how networks might solve tasks.
 While previous studies have primarily focused on simple tasks that can be solved with fixed points, there remains a gap in comprehensively extracting the mechanisms underlying network implementations \citep{sussillo2013blackbox}.
