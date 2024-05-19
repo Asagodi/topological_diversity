@@ -445,6 +445,15 @@ For very small networks the ring structure is destroyed and only the plane persi
 Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors.
 We will identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
  Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
+ 
+ 
+ Understanding the implemented computation in neural systems in terms of dynamical systems has a well-established practice \citep{seung1996, sompolinsky1988}.
+ Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis \citep{sussillo2013blackbox, sussillo2014, barak2013, driscoll2022, maheswaranathan2019universality, cueva2019headdirection, cueva2021continuous} and to compare those artificial networks to biological circuits \citep{mante2013context, remington2018flexible, ghazizadeh2021slow}. 
+% 
+% 
+Previously, systemat analysis of the variability in network dynamics has been surveyed in vanilla RNNs and  variations in dynamical solutions over architecture and nonlinearity have been quantified \citep{sussillo2013blackbox, mante2013context, yang2019task, maheswaranathan2019universality,driscoll2022}. Furthermore, the spectrum of  how RNNs may hold memory has been addressed \citep{orhan2019diverse}.
+%comparing artificial network representations to neural data
+We therefore investigated to what extent training RNNs on a task uniquely determines the low-dimensional dynamics, independent of neural architectures.
 
 
 Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
@@ -548,12 +557,12 @@ while saddle nodes are identified wherethey are pointing away.
 
 \subsection{Universality}
 
-Understanding the implemented computation in neural systems in terms of dynamical systems has a well-established practice \citep{seung1996, sompolinsky1988}.
- Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis \citep{sussillo2013blackbox, sussillo2014, barak2013, driscoll2022, maheswaranathan2019universality, cueva2019headdirection, cueva2021continuous} and to compare those artificial networks to biological circuits \citep{mante2013context, remington2018flexible, ghazizadeh2021slow}. 
-% 
-% 
-Previously, systemat analysis of the variability in network dynamics has been surveyed in vanilla RNNs and  variations in dynamical solutions over architecture and nonlinearity have been quantified \citep{sussillo2013blackbox, mante2013context, yang2019task, maheswaranathan2019universality,driscoll2022}. Furthermore, the spectrum of  how RNNs may hold memory has been addressed \citep{orhan2019diverse}.
-%comparing artificial network representations to neural data
+%to what extent does training neural networks to solve simple tasks, prevalent in neuroscientific studies, uniquely determine the low-dimensional dynamics independent of neural architectures?
+%are the learned dynamics highly sensitive to different neural architectures?
+
+
+
+
 The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
  much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
 % 
