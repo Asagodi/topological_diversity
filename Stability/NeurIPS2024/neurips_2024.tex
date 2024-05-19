@@ -584,6 +584,8 @@ If a system is implementing such a computation, on a compact domain, the state w
 
 
 
+
+
 \section{Generlalization properties}
 
 Animals are trained on a task for finite time and it is therefore unclear that they learn the intended computation or just a finite time approximation of it.
@@ -661,18 +663,19 @@ There were surprisingly diverse bifurcations that the network visits in the pres
 As the theory predicts, 
 
 
+Training RNNs results in a great variety of solutions.
+ Nevertheless, within this variability, we can identify common structures.
 
 
 %error-correcting
 Previous psychophysical, theoretical, and neurophysiological work has shown noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
 Discrete attractor dynamics can counteract this noise by pulling memories towards a few stable representations \citep{panichello2019}.
+The found solutions might reflect the trade-off between robustness to noise and the ability to store continuous variables.
 
 
 
-
-In the current work, we did not impose any additional structural constraint on the RNNs during training.
-It is interesting to consider how structural constraints would affect the representation and computation in the trained RNNs.
-Future work should systematically explore this issue.
+In this study, we did not impose any additional structural constraints on the RNNs during training.
+It would be interesting to investigate how such constraints might affect the representation and computation in the trained RNNs.
 
 
 \subsection{Implications for Neuroscience}\label{sec:imp:neuroscience}
