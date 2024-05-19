@@ -168,7 +168,7 @@ def angular_loss_with_input():
     min_error = np.min(angle_error,axis=0)
 
 
-def angle_analysis_on_net(net, input_or_task='input',
+def angle_analysis_on_net(net, T, input_or_task='input',
                           batch_size=128,
                           dt=0.1, 
                           T_inv_man=1e2):
@@ -179,8 +179,8 @@ def angle_analysis_on_net(net, input_or_task='input',
 
     net.map_output_to_hidden = False
 
-    T1 = result['training_kwargs']['T']/result['training_kwargs']['dt_rnn'];
-    T=int(20*T1)
+    #T1 = result['training_kwargs']['T']/result['training_kwargs']['dt_rnn'];
+    #T=int(16*T1)
     task = angularintegration_task(T=T, dt=dt, sparsity=1, random_angle_init=False)
     input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, h_init='random', batch_size=batch_size)
     output_angle = np.arctan2(output[:,:,1], output[:,:,0]);
@@ -188,23 +188,30 @@ def angle_analysis_on_net(net, input_or_task='input',
     angle_error = np.abs(output_angle - target_angle)
     angle_error[np.where(angle_error>np.pi)] = 2*np.pi-angle_error[np.where(angle_error>np.pi)]
     
+    mean_error = np.mean(angle_error,axis=0)
+    max_error = np.max(angle_error,axis=0)
+    min_error = np.min(angle_error,axis=0)
 
-
+    eps_mean_int = np.cumsum(mean_error) / np.arange(mean_error.shape[0])
+    eps_plus_int = np.cumsum(max_error) / np.arange(mean_error.shape[0])
+    eps_min_int = np.cumsum(min_error) / np.arange(mean_error.shape[0])
     
     fig, ax = plt.subplots(1, 1, figsize=(5, 3));
-    plt.plot(max_error[:int(T/2)], color='r', label='$\epsilon^+$');
-    plt.plot(min_error[:int(T/2)], color='g', label='$\epsilon^-$');
-    plt.plot(mean_error[:int(T/2)], color='b', label='$\mathcal{L}(\delta t)$'); 
-    plt.plot(8.5*T1, max_error[-1], '.', color='r');
-    plt.plot(8.5*T1, min_error[-1], '.', color='g');
-    plt.plot(8.5*T1, mean_error[-1], '.', color='b');
-    
-    plt.legend(); plt.ylabel("loss"); plt.xlabel("t");
-    
+    plt.plot(eps_plus_int[:int(T/2)], color='r', label='$\epsilon^+$');
+    plt.plot(eps_min_int[:int(T/2)], color='g', label='$\epsilon^-$');
+    plt.plot(eps_mean_int[:int(T/2)], color='b', label='$\int_0^T\epsilon^{mean}(t)dt$'); 
+    plt.plot(8.5*T1, eps_plus_int[-1], '.', color='r');
+    plt.plot(8.5*T1, eps_min_int[-1], '.', color='g');
+    plt.plot(8.5*T1, eps_mean_int[-1], '.', color='b');
+
+    ax.plot(np.arange(0,int(T/2),1), np.arange(0,int(T/2),1)*max_error[0])
+    ax.set_ylim([-.1,1.2*np.pi/2.])
+
     T1 = result['training_kwargs']['T']/result['training_kwargs']['dt_rnn']
     ax.axvline(T1, linestyle='--', color='r')
-    ax.text(T1*1.15, .8, r'$T_1$',color='r')
-    ax.set_xticks(np.arange(0,9*T1,T1),[0]+[f'$T_{i}$' for i in range(1,9)])
+    #ax.text(T1*1.15, .8, r'$T_1$',color='r')
+    ax.set_xticks(np.arange(0,9*T1,T1),[0,'$T_1$']+[f'${i}T_1$' for i in range(2,9)])
+    plt.legend(); plt.ylabel("loss"); plt.xlabel("t");
     #fig.savefig(folder+"/angle_error.pdf", bbox_inches="tight");
     
     
