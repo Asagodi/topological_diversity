@@ -533,7 +533,8 @@ Less commonly found topologies include slow limit cycles (Fig.~\ref{fig:fastslow
  %method
 We find the slow manifold  by integrating the autonomous dynamics and we select the parts of the trajectory that have speed slower than a threshold.
 
-We assess the dimensionality of the manifold with 
+We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme}.
+
 
 
 We construct the one dimensional invariant manifold $\manifold$ by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
@@ -607,10 +608,13 @@ We measure how performance of different models for the representation of an angu
 
 
 %method
+\paragraph{Finite time}
+
 We measure the error on the finite timescale as follows.
 
 
 
+\paragraph{Asymptotic time}
 We measure the error on the asymptotic timescale as follows.
 We identify the location of the fixed points as described in Sec.~\ref{sec:fastslowmethod}.
 We construct a probability distribution of what part of state space we end up in at infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
@@ -623,6 +627,17 @@ Finally, we characterize the memory capacity of the network through calculating 
 
 
 \subsection{Different topologies have different generalization properties}
+
+
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[width=\textwidth]{loss}
+  \caption{
+  (A) Finite time
+  (B) Asymptotic time}
+  \label{fig:loss}
+\end{figure}
+
 
 
 
