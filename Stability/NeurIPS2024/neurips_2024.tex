@@ -531,7 +531,11 @@ Less commonly found topologies include slow limit cycles (Fig.~\ref{fig:fastslow
  These solutions are consistent with both  observations of uses of the usefullness of non-persistent for memory storage \citep{hirsch1995computing,Park2023a} and neuronal circuits underlying persistent representations despite time varying activity \citep{druckmann2012neuronal}.
   
  %method
-We find the slow manifold  by integrating the autonomous dynamics and we select the parts of  the trajectory that have speed slower than a threshold.
+We find the slow manifold  by integrating the autonomous dynamics and we select the parts of the trajectory that have speed slower than a threshold.
+
+We assess the dimensionality of the manifold with 
+
+
 We construct the one dimensional invariant manifold $\manifold$ by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
 Alternatively, we identify the points along the trajectories that are the closest to set of point from the output space relevant to the task.
 %Finally, we find the stable fixed points through a threshold on the 
@@ -638,6 +642,12 @@ As the theory predicts,
 Previous psychophysical, theoretical, and neurophysiological work has shown noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
 Discrete attractor dynamics can counteract this noise by pulling memories towards a few stable representations \citep{panichello2019}.
 
+
+
+
+In the current work, we did not impose any additional structural constraint on the RNNs during training.
+It is interesting to consider how structural constraints would affect the representation and computation in the trained RNNs.
+Future work should systematically explore this issue.
 
 
 \subsection{Implications for Neuroscience}\label{sec:imp:neuroscience}
