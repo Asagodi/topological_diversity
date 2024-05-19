@@ -25,11 +25,14 @@ import matplotlib.pyplot as plt
 from models import RNN 
 from analysis_functions import simulate_rnn_with_input, simulate_rnn_with_task
 from tasks import angularintegration_task, center_out_reaching_task
+from odes import tanh_ode
 
 # =============================================================================
 # TODO
 # =============================================================================
 #convergence of trajectories?
+
+
 
 def load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs):
 
@@ -50,7 +53,7 @@ def load_net(path, which='post'):
     # exp_list = glob.glob(folder + "/res*")
     # exp = exp_list[exp_i]
     with open(path, 'rb') as handle:
-        result = pickle.load(handle)
+        result = torch.load(handle, map_location=torch.device('cpu'))
     if which=='post':
         try:
             wi, wrec, wo, brec, oth, h0 = result['weights_last']
@@ -66,9 +69,15 @@ def load_net(path, which='post'):
             wi, wrec, wo, brec, h0 = result['weights_init']
     
     # h0 = h0[0,:]
-    net = load_net_from_weights(wi, wrec, wo, brec, h0, oth, result['training_kwargs'])
+    
+    with open(path + "/parameters.txt", 'rb') as f:
+        training_kwargs = pickle.load(f)
+        
+    net = load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs)
+    
 
-    return net, result
+
+    return net, result, training_kwargs
 
 
 def plot_losses(folder):
@@ -86,6 +95,38 @@ def plot_losses(folder):
 
 
 
+
+
+
+
+##########SPEED
+def get_speed_and_acceleration(trajectory):
+    speeds = []
+    accelerations = []
+    for t in range(trajectory.shape[0]-1):
+        speed = np.linalg.norm(trajectory[t+1, :]-trajectory[t, :])
+        speeds.append(speed)
+    for t in range(trajectory.shape[0]-2):
+        acceleration = speeds[t+1]-speeds[t]
+        accelerations.append(acceleration)
+    speeds = np.array(speeds)
+    accelerations = np.array(accelerations)
+    return speeds, accelerations
+
+def get_speed_and_acceleration_batch(trajectories):
+    all_speeds = []
+    all_accs = []
+    for trajectory in trajectories:
+        speeds, accelerations = get_speed_and_acceleration(trajectory)
+        all_speeds.append(speeds)
+        all_accs.append(accelerations)
+    return np.array(all_speeds), np.array(all_accs)
+
+
+
+
+
+##############ANGULAR
 def get_manifold_from_closest_projections(trajectories, wo, npoints=128):
     n_rec = wo.shape[0]
     xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
@@ -282,3 +323,57 @@ def angular_loss_msg(net, T, dt_rnn, dt_task, time_until_cue_range_min, time_unt
     eps_min_int = np.cumsum(min_error) / np.arange(1, mean_error.shape[0])
     
     return eps_min_int, eps_mean_int, eps_plus_int
+
+
+
+
+
+##########VFs
+def vf_on_ring(trajectories, wo,  wrec, brec, cs, fxd_pnt_thetas=None, stabilities=None, method='closest', npoints=128, 
+               fig_folder=None, fig_ext=''):
+    
+    if method=='spline':
+        xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
+        xs = np.append(xs, -np.pi)
+        csx=cs(xs);
+        fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
+        diff = np.zeros((csx.shape[0]))
+        
+        for i in range(csx.shape[0]):
+            x,y=np.cos(xs[i]),np.sin(xs[i])
+            x,y=np.dot(wo.T,csx[i])
+            u,v=np.dot(wo.T, tanh_ode(0, csx[i], wrec, brec, tau=10))
+            plt.quiver(x,y,u,v)
+        
+        for i,theta in enumerate(fxd_pnt_thetas):
+            x,y=np.cos(theta),np.sin(theta)
+            if stabilities[i]==1:
+                plt.plot(x,y,'.g')
+            else:
+                plt.plot(x,y,'.r')
+        plt.axis('off'); fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None);
+        if fig_folder:
+            plt.savefig(fig_folder+f'/vf_on_ring_{fig_ext}.pdf', bbox_inches="tight")
+    
+    elif method=='closest':
+        xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(trajectories, wo, npoints=npoints)
+    
+        fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
+        diff = np.zeros((csx2.shape[0]))
+        for i in range(csx2.shape[0]):
+            x,y=np.cos(xs[i]),np.sin(xs[i])
+            x,y=np.dot(csx2[i], wo)
+            u,v=np.dot(wo.T, tanh_ode(0, csx2[i], wrec, brec, tau=10))
+            diff[i] = np.linalg.norm(np.array([u,v]))
+            plt.quiver(x,y,u,v)
+        for i,theta in enumerate(fxd_pnt_thetas):
+            x,y=np.cos(theta),np.sin(theta)
+            if stabilities[i]==1:
+                plt.plot(x,y,'.g')
+            else:
+                plt.plot(x,y,'.r')
+        plt.axis('off'); fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None);
+        if fig_folder:
+            plt.savefig(fig_folder+f'/vf_on_ring_closest_{fig_ext}.pdf', bbox_inches="tight")
+        
+    return diff
