@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 
 from models import RNN 
 from analysis_functions import simulate_rnn_with_input, simulate_rnn_with_task
-from tasks import angularintegration_task
+from tasks import angularintegration_task, center_out_reaching_task
 
 # =============================================================================
 # TODO
@@ -45,10 +45,10 @@ def load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs):
     return net
 
 def load_net(path, which='post'):
-    #main_exp_name='center_out/act_reg_gui/'
-    #folder = parent_dir+"/experiments/" + main_exp_name
-    #exp_list = glob.glob(folder + "/res*")
-    #exp = exp_list[exp_i]
+    # main_exp_name='center_out/act_reg_gui/'
+    # folder = parent_dir+"/experiments/" + main_exp_name
+    # exp_list = glob.glob(folder + "/res*")
+    # exp = exp_list[exp_i]
     with open(path, 'rb') as handle:
         result = pickle.load(handle)
     if which=='post':
@@ -65,7 +65,7 @@ def load_net(path, which='post'):
             oth = None
             wi, wrec, wo, brec, h0 = result['weights_init']
     
-    h0 = h0[0,:]
+    # h0 = h0[0,:]
     net = load_net_from_weights(wi, wrec, wo, brec, h0, oth, result['training_kwargs'])
 
     return net, result
@@ -122,7 +122,7 @@ def angular_loss_angint(net, task, h_init, T, batch_size=128, dt=0.1, random_see
     return mean_error, max_error
 
 
-def angular_loss_noinput(net, angle_init, h_init, T, batch_size=128, dt=0.1, random_seed=100, noise_std=0.):
+def angular_loss_angvel_noinput(net, angle_init, h_init, T, batch_size=128, dt=0.1, random_seed=100, noise_std=0.):
     
     if h_init!='random':
         assert h_init.shape[0]==batch_size, "h_init must have same number of points as batch_size"
@@ -138,10 +138,15 @@ def angular_loss_noinput(net, angle_init, h_init, T, batch_size=128, dt=0.1, ran
     mean_error = np.mean(angle_error,axis=0)
     max_error = np.max(angle_error,axis=0)
     min_error = np.min(angle_error,axis=0)
-    return mean_error, max_error, min_error
+    
+    eps_mean_int = np.cumsum(mean_error) / np.arange(mean_error.shape[0])
+    eps_plus_int = np.cumsum(max_error) / np.arange(mean_error.shape[0])
+    eps_min_int = np.cumsum(min_error) / np.arange(mean_error.shape[0])
+    
+    return eps_min_int, eps_mean_int, eps_plus_int
 
 
-def angular_loss_with_input():
+def angular_loss_angvel_with_input():
     task = angularintegration_task(T=10, dt=dt, sparsity=1, random_angle_init=False)
     input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, 100, h_init='random', batch_size=batch_size)
     xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(trajectories, net.wo.detach().numpy(), npoints=batch_size)
@@ -158,7 +163,7 @@ def angular_loss_with_input():
     output, trajectories = simulate_rnn_with_input(net, input, h_init=csx2[:-1,:])
     outputs_1d = np.cumsum(input, axis=1)*result['training_kwargs']['dt_task']
     output_angle = np.arctan2(output[:,:,1], output[:,:,0]);
-    target_angle = xs[:-1][:, np.newaxis] + outputs_1d.squeeze()
+    target_angle = anlge_init[:, np.newaxis] + outputs_1d.squeeze()
     target_angle = (target_angle + np.pi) % (2 * np.pi) - np.pi
     angle_error = np.abs(output_angle - target_angle)
     angle_error[np.where(angle_error>np.pi)] = 2*np.pi-angle_error[np.where(angle_error>np.pi)]
@@ -166,13 +171,19 @@ def angular_loss_with_input():
     mean_error = np.mean(angle_error,axis=0)
     max_error = np.max(angle_error,axis=0)
     min_error = np.min(angle_error,axis=0)
+    
+    eps_mean_int = np.cumsum(mean_error) / np.arange(mean_error.shape[0])
+    eps_plus_int = np.cumsum(max_error) / np.arange(mean_error.shape[0])
+    eps_min_int = np.cumsum(min_error) / np.arange(mean_error.shape[0])
+    
+    return eps_min_int, eps_mean_int, eps_plus_int
 
 
 def angle_analysis_on_net(net, T, input_or_task='input',
                           batch_size=128,
                           dt=0.1, 
                           T_inv_man=1e2):
-    
+    np.random.seed(100)
     task = angularintegration_task(T=T_inv_man, dt=dt, sparsity=1, random_angle_init=False)
     input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T_inv_man, h_init='random', batch_size=batch_size)
     xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(trajectories, net.wo.detach().numpy(), npoints=batch_size)
@@ -181,6 +192,7 @@ def angle_analysis_on_net(net, T, input_or_task='input',
 
     #T1 = result['training_kwargs']['T']/result['training_kwargs']['dt_rnn'];
     #T=int(16*T1)
+    np.random.seed(100)
     task = angularintegration_task(T=T, dt=dt, sparsity=1, random_angle_init=False)
     input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, h_init='random', batch_size=batch_size)
     output_angle = np.arctan2(output[:,:,1], output[:,:,0]);
@@ -217,4 +229,54 @@ def angle_analysis_on_net(net, T, input_or_task='input',
     
     
     
+def angular_loss_msg(    batch_size=128):
+    t1_pos = 0 
+    time_until_input = 5
+    cue_duration = 5
+    min_time = time_until_input + cue_duration
+    time_until_measured_response = 5
+    time_after_response = 0
+    add_t = time_until_measured_response+time_after_response
+    T1 = training_kwargs['time_until_cue_range'][1]
+    min_time_until_cue = training_kwargs['time_until_cue_range'][0]
+    T = T1*5
+    dt=training_kwargs['dt_task']
+    tstep=100
+    timepoints=int(T*dt)#-15-min_time_until_cue
+    
+    tstep = int(training_kwargs['T']*training_kwargs['dt_rnn']//10)
 
+    net.noise_std = 0
+    net.map_output_to_hidden=False
+    np.random.seed(100)
+    
+    T_tot = T+150+min_time_until_cue*10
+    task = center_out_reaching_task(T=T_tot, dt=dt, time_until_cue_range=[T, T+1], angles_random=False);
+    input, target, mask, output, trajectories_full = simulate_rnn_with_task(net, task, T_tot, h_init='random', batch_size=batch_size)
+    target = input[:,time_until_input,:]
+    target_angle = np.arctan2(target[:,1], target[:,0]);
+    angle_errors = np.zeros((batch_size, (timepoints+min_time)//tstep))
+    for t in range(min_time,timepoints+min_time,tstep):
+        input = np.zeros((batch_size,cue_duration+add_t,3))
+        input[:,:cue_duration,2]=1.
+        h_init = trajectories_full[:,min_time_until_cue+t,:]
+        output, trajectories = simulate_rnn_with_input(net, input, h_init=h_init)
+        #ax.plot(output[:,-1,0].T, output[:,-1,1].T, 'b')
+        #ax.plot(target[:,0].T, target[:,1].T, 'r')
+        output_angle = np.arctan2(output[:,-1,1], output[:,-1,0]);
+        
+        angle_error = np.abs(output_angle - target_angle)
+        angle_error[np.where(angle_error>np.pi)] = 2*np.pi-angle_error[np.where(angle_error>np.pi)]
+        mean_error = np.mean(angle_error,axis=0)
+        angle_errors[:,(t-min_time)//tstep] = mean_error
+        t1_pos=np.min([t1_pos,np.min(mean_error)])
+
+    mean_error = np.mean(angle_errors,axis=0)
+    max_error = np.max(angle_errors,axis=0)
+    min_error = np.min(angle_errors,axis=0)
+    
+    eps_mean_int = np.cumsum(mean_error) / np.arange(mean_error.shape[0])
+    eps_plus_int = np.cumsum(max_error) / np.arange(mean_error.shape[0])
+    eps_min_int = np.cumsum(min_error) / np.arange(mean_error.shape[0])
+    
+    return eps_min_int, eps_mean_int, eps_plus_int
