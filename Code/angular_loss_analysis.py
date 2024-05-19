@@ -196,23 +196,23 @@ def angle_analysis_on_net(net, T, input_or_task='input',
     eps_plus_int = np.cumsum(max_error) / np.arange(mean_error.shape[0])
     eps_min_int = np.cumsum(min_error) / np.arange(mean_error.shape[0])
     
-    fig, ax = plt.subplots(1, 1, figsize=(5, 3));
-    plt.plot(eps_plus_int[:int(T/2)], color='r', label='$\epsilon^+$');
-    plt.plot(eps_min_int[:int(T/2)], color='g', label='$\epsilon^-$');
-    plt.plot(eps_mean_int[:int(T/2)], color='b', label='$\int_0^T\epsilon^{mean}(t)dt$'); 
-    plt.plot(8.5*T1, eps_plus_int[-1], '.', color='r');
-    plt.plot(8.5*T1, eps_min_int[-1], '.', color='g');
-    plt.plot(8.5*T1, eps_mean_int[-1], '.', color='b');
+    # fig, ax = plt.subplots(1, 1, figsize=(5, 3));
+    # plt.plot(eps_plus_int[:int(T/2)], color='r', label='$\epsilon^+$');
+    # plt.plot(eps_min_int[:int(T/2)], color='g', label='$\epsilon^-$');
+    # plt.plot(eps_mean_int[:int(T/2)], color='b', label='$\int_0^T\epsilon^{mean}(t)dt$'); 
+    # plt.plot(8.5*T1, eps_plus_int[-1], '.', color='r');
+    # plt.plot(8.5*T1, eps_min_int[-1], '.', color='g');
+    # plt.plot(8.5*T1, eps_mean_int[-1], '.', color='b');
 
-    ax.plot(np.arange(0,int(T/2),1), np.arange(0,int(T/2),1)*max_error[0])
-    ax.set_ylim([-.1,1.2*np.pi/2.])
+    # ax.plot(np.arange(0,int(T/2),1), np.arange(0,int(T/2),1)*max_error[0])
+    # ax.set_ylim([-.1,1.2*np.pi/2.])
 
-    T1 = result['training_kwargs']['T']/result['training_kwargs']['dt_rnn']
-    ax.axvline(T1, linestyle='--', color='r')
-    #ax.text(T1*1.15, .8, r'$T_1$',color='r')
-    ax.set_xticks(np.arange(0,9*T1,T1),[0,'$T_1$']+[f'${i}T_1$' for i in range(2,9)])
-    plt.legend(); plt.ylabel("loss"); plt.xlabel("t");
-    #fig.savefig(folder+"/angle_error.pdf", bbox_inches="tight");
+    # T1 = result['training_kwargs']['T']/result['training_kwargs']['dt_rnn']
+    # ax.axvline(T1, linestyle='--', color='r')
+    # #ax.text(T1*1.15, .8, r'$T_1$',color='r')
+    # ax.set_xticks(np.arange(0,9*T1,T1),[0,'$T_1$']+[f'${i}T_1$' for i in range(2,9)])
+    # plt.legend(); plt.ylabel("loss"); plt.xlabel("t");
+    # #fig.savefig(folder+"/angle_error.pdf", bbox_inches="tight");
     
     
     
