@@ -483,15 +483,16 @@ with $i$  the index of the output units and $t$  the index for time.
 
 
 We trained networks for every combination of the following parameters:
- ReLU, tanh, rectified tanh and sigmoid activation functions, 
+ ReLU, tanh and softplus activation functions, 
  number of units/neurons (64, 128, 256), and
- activity regularization.
+ activity regularization ($10^{-3}, 0, 10^{3}$).
 %
-All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  for 5,000 iterations with a batch size of 32. % and training was run until no decrease in the loss occurred for 100 epochs
+All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  for at most 5,000 iterations with a batch size of 256 and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
 
-To avoid overly complex solutions that don't generalize well, we penalized high activity using an L2 regularization on $x_t$.
-The hyperparameter selection criterion for regularization was the highest level of regularization that 
-We found the highest level regularization that
+To avoid overly complex solutions that do not generalize well for longer trials, we penalized high activity using an L2 regularization on $x_t$.
+%We trained networks with regularizer
+The hyperparameter selection criterion for regularization was the highest level of regularization that ...............
+We found the highest level regularization that ...............
 
 
 %\subsection{Fast-slow decomposition: Unpacking the slow manifolds in trained RNNs} %from trained RNNs
@@ -506,7 +507,7 @@ We want to investigate how networks might solve tasks.
 While previous studies have primarily focused on simple tasks that can be solved with fixed points, there remains a gap in comprehensively extracting the mechanisms underlying network implementations \citep{sussillo2013blackbox}.
 We address this gap by investigating the internal mechanisms of neural network solvers for tasks involving continuous variables. Building upon prior work, which has shown networks' capabilities on such tasks, we trained RNNs to either
 (1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection, cueva2021continuous}
-and (2) perform a memory guided saccade task for a ring variable.
+and (2) perform a memory guided saccade task for a ring variable \citep{wimmer2014}.
 
 %Fig 4
 \begin{figure}[tbhp]
@@ -1606,7 +1607,7 @@ $m_{i,t}$
 
 \paragraph{Angular velocity integration task}
 
-Velocity at every timestep %(assumed to be 100 ms)
+Velocity at every timestep %(of  to be 100 ms)
  is sampled from as a Gaussian Process for smooth movement trajectories, consistent with the observed animal behavior in flies and rodents.
  
  %These parameters are set to roughly match the angular velocity distribution of the rat and fly (Stackman & Taube, 1998; Sharp et al., 2001; Bender & Dickinson, 2006; Raudies & Hasselmo, 2012).
