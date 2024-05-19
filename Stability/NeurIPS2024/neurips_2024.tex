@@ -381,7 +381,7 @@ Animal behavior is finite time in nature and the longer the temporal distance th
 
 \subsection{Theoretical models of ring attractors}\label{sec:ras}
 %\subsubsection{Angular integration networks}\label{sec:hd}
-For circular variables such as the goal-direction (e.g. for home navigation and working memory for communication in bees \citep{frisch1993dance}) %home navigation + dance in bees: the angle of the waggle phase relative to gravity reflects the angle of the food source relative to the sun
+For circular variables such as the goal-direction (e.g. for home navigation and working memory for communication	 in bees \citep{frisch1993dance}) %home navigation + dance in bees: the angle of the waggle phase relative to gravity reflects the angle of the food source relative to the sun
 %duration of the waggle phse reflects the distance to the food source from the hive
 or head-direction, the temporal integration and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology) \citep{kim2019generation, turner2017angular, turner2020neuroanatomical,hulse2020mechanisms}.
 Continuous attractor models of the head-direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a ring-like structure~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous}.
@@ -1625,128 +1625,134 @@ Velocity at every timestep %(of  to be 100 ms)
  %These parameters are set to roughly match the angular velocity distribution of the rat and fly (Stackman & Taube, 1998; Sharp et al., 2001; Bender & Dickinson, 2006; Raudies & Hasselmo, 2012).
 
 
-\newpage
-\section{Internal and input noise and noise level matching}\label{sec:supp:matching}
-%Rationale: what is a universal measure of noise level
-%that is applicable to any dyn sys and makes comparisons of performance (under gradient descent) meaningful?
 
 
-We investigate the effects of two other types of noise on the learning of the parameters during gradient descent starting from the perfect solutions to the task.
-We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
-The second type of noise is injected into the input $x_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$.
-To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output $O_t^*$ (Eq.~\ref{eq:output}).
-The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$ for $t=1,\dots, T$ and $i=1,2$. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%noisy learning with irnn, ubla and bla
+%\newpage
+%\section{Internal and input noise and noise level matching}\label{sec:supp:matching}
+%%Rationale: what is a universal measure of noise level
+%%that is applicable to any dyn sys and makes comparisons of performance (under gradient descent) meaningful?
+%
+%
+%We investigate the effects of two other types of noise on the learning of the parameters during gradient descent starting from the perfect solutions to the task.
+%We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
+%The second type of noise is injected into the input $x_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$.
+%To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output $O_t^*$ (Eq.~\ref{eq:output}).
+%The third type of noise is injected into the hidden state $h_{i,t}+\epsilon_{i,t}$ with $\epsilon\sim\mathcal{N}(0,\sigma)$ for $t=1,\dots, T$ and $i=1,2$. 
+%
+%\begin{figure}[thbp]
+%     \centering
+%    \includegraphics[width=\textwidth]{matching_noise_3types_cont}
+%       \caption{For various values the loss was calculated for the three types of noise. The matched noise levels were chosen based on these curves.}
+%         \label{fig:matching_noise_3types_cont}
+%\end{figure}
+%
+%\newpage
+%\section{Continuous attractor solutions in click integration tasks with noise in the weights}
+%For the SGD, the last output of the network after $T$ steps was taken to calculate the loss based on the mean squared error (MSE) over a batch of 1024 trials. 
+%
+%\begin{figure}[thbp]
+%  \centering
+%  \includegraphics[width=\textwidth]{maintenance_T100}
+%  \caption{
+%  Comparing three continuous attractor solutions to the click integration task for a length of $T=100$ time steps.
+%  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps. Averages (thick lines) over 10 simulations (thin lines) are shown for each network.
+%  (B) Changes to the recurrent parameters (matrix and bias), without (upper) and with (lower) learning (with the optimal learning rates). iRNN converges to a different solution.
+% (C)  The distribution of the MSE for different learning rates. The dip in the MSE defines the optimal learning rate for each of the three neural integrators. 
+%    (D) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
+%  (E) Distribution of gradients shows bimodal distribution for UBLA. %Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates.
+%    (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
+%  }
+%  \label{fig:maintenance}
+%\end{figure}
+%
+%\begin{figure}[thbp]
+%  \centering
+%  \includegraphics[width=\textwidth]{maintenance_T1000}
+%  \caption{
+%  Comparing three continuous attractor solutions to the click integration task for a length of $T=1000$ time steps.
+%  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps.
+%  (B) Changes to the recurrent parameters (matrix and bias), without (upper) and with (lower) learning (with the optimal learning rates). iRNN converges to a different solution.
+% (C)  The distribution of the MSE for different learning rates. The dip in the MSE defines the optimal learning rate for each of the three neural integrators. 
+%    (D) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
+%  (E) Distribution of gradients shows bimodal distribution for UBLA.
+%    (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
+%  }
+%  \label{fig:maintenance:long}
+%\end{figure}
+%
+%\newpage
+%\section{Stability of the neural integrators for different learning rates}
+%
+%\begin{figure}[thbp]
+%     \centering
+%    \includegraphics[width=\textwidth]{all_lrs_vs_mses_f1}
+%       \caption{Distribution of MSE for the three noisy types for different learning rates.}
+%         \label{fig:all_lrs_vs_mses}
+%\end{figure}
+%
+%
+%\newpage
+%\section{Trajectories of the neural integrators in the recurrent network space}
+%
+%\begin{figure}[thbp]
+%     \centering
+%    \includegraphics[width=\textwidth]{wdn_mse_trajectories_F1}
+%       \caption{Trajectories of learning in parameter space relative to the initial recurrent parameters. The LAs follow a trajectory that is orthogonal to the initial parameters, but that yet decreases the MSE.}
+%         \label{fig:wdn_mse_trajectories_F1}
+%\end{figure}
+%
+%
+%\newpage
+%\section{Influence of the different noise types on the found solutions for the neural integrators}
+%
+%\begin{figure}[H]
+%     \centering
+%    \includegraphics[width=\textwidth]{allnoise_contours}
+%       \caption{Distribution of parameters for the three noise types for three noise levels. Because of relative scale of perturbation, iRNN is further away from the initial parameters with internal and input noise.
+%        Depending on the level of the noise it performs better or worse than the LAs.}
+%         \label{fig:interal_input_contours}
+%\end{figure}
+%
+%
+%\newpage
+%\section{Changes to the neural integrators during learning}\label{sec:supp:learning}
+%%Message: This is what happens to the different neural integrators during learning 
+%During learning, the various neural integrators undergo distinct changes. These alterations manifest differently depending on the specific integrator involved. Here are some examples of progresses of chaning slow manifold dynamics.
+%
+%\begin{figure}[H]
+%     \centering
+%    \includegraphics[width=\textwidth]{vfs_f100_gs1_optlrs}
+%       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. A gradient step is taken after every perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
+%         \label{fig:vfs1}
+%\end{figure}
+%
+%\begin{figure}[H]
+%     \centering
+%    \includegraphics[width=\textwidth]{vfs_f100_gs5_optlrs}
+%       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. A gradient step is taken after every 5 perturbations. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
+%         \label{fig:vfs5}
+%\end{figure}
+%
+%\begin{figure}[H]
+%     \centering
+%    \includegraphics[width=\textwidth]{vfs_f100_gs30_optlrs}
+%       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. 30 gradient steps are take after a single perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
+%         \label{fig:vfs30}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%     \centering
+%    \includegraphics[width=\textwidth]{speeds}
+%       \caption{Speed along the invariant manifold during learning. For the iRNN a slice (the diagonal) is shown.
+%       %UBLA has a lower
+%       }
+%         \label{fig:speeds}
+%\end{figure}
 
-\begin{figure}[thbp]
-     \centering
-    \includegraphics[width=\textwidth]{matching_noise_3types_cont}
-       \caption{For various values the loss was calculated for the three types of noise. The matched noise levels were chosen based on these curves.}
-         \label{fig:matching_noise_3types_cont}
-\end{figure}
-
-\newpage
-\section{Continuous attractor solutions in click integration tasks with noise in the weights}
-For the SGD, the last output of the network after $T$ steps was taken to calculate the loss based on the mean squared error (MSE) over a batch of 1024 trials. 
-
-\begin{figure}[thbp]
-  \centering
-  \includegraphics[width=\textwidth]{maintenance_T100}
-  \caption{
-  Comparing three continuous attractor solutions to the click integration task for a length of $T=100$ time steps.
-  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps. Averages (thick lines) over 10 simulations (thin lines) are shown for each network.
-  (B) Changes to the recurrent parameters (matrix and bias), without (upper) and with (lower) learning (with the optimal learning rates). iRNN converges to a different solution.
- (C)  The distribution of the MSE for different learning rates. The dip in the MSE defines the optimal learning rate for each of the three neural integrators. 
-    (D) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
-  (E) Distribution of gradients shows bimodal distribution for UBLA. %Gradient distributions for all noise levels and learning rates. For some noise levels a bimodal distribution can be seen for the LAs, but exploding gradients seem to be absent for iRNN for low learning rates.
-    (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
-  }
-  \label{fig:maintenance}
-\end{figure}
-
-\begin{figure}[thbp]
-  \centering
-  \includegraphics[width=\textwidth]{maintenance_T1000}
-  \caption{
-  Comparing three continuous attractor solutions to the click integration task for a length of $T=1000$ time steps.
-  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps.
-  (B) Changes to the recurrent parameters (matrix and bias), without (upper) and with (lower) learning (with the optimal learning rates). iRNN converges to a different solution.
- (C)  The distribution of the MSE for different learning rates. The dip in the MSE defines the optimal learning rate for each of the three neural integrators. 
-    (D) Single parameter perturbation showing exploding gradients for iRNN and UBLA.
-  (E) Distribution of gradients shows bimodal distribution for UBLA.
-    (F) Interleaved weight perturbations showing quick recovery for BLA and and slow for iRNN and UBLA.
-  }
-  \label{fig:maintenance:long}
-\end{figure}
-
-\newpage
-\section{Stability of the neural integrators for different learning rates}
-
-\begin{figure}[thbp]
-     \centering
-    \includegraphics[width=\textwidth]{all_lrs_vs_mses_f1}
-       \caption{Distribution of MSE for the three noisy types for different learning rates.}
-         \label{fig:all_lrs_vs_mses}
-\end{figure}
-
-
-\newpage
-\section{Trajectories of the neural integrators in the recurrent network space}
-
-\begin{figure}[thbp]
-     \centering
-    \includegraphics[width=\textwidth]{wdn_mse_trajectories_F1}
-       \caption{Trajectories of learning in parameter space relative to the initial recurrent parameters. The LAs follow a trajectory that is orthogonal to the initial parameters, but that yet decreases the MSE.}
-         \label{fig:wdn_mse_trajectories_F1}
-\end{figure}
-
-
-\newpage
-\section{Influence of the different noise types on the found solutions for the neural integrators}
-
-\begin{figure}[H]
-     \centering
-    \includegraphics[width=\textwidth]{allnoise_contours}
-       \caption{Distribution of parameters for the three noise types for three noise levels. Because of relative scale of perturbation, iRNN is further away from the initial parameters with internal and input noise.
-        Depending on the level of the noise it performs better or worse than the LAs.}
-         \label{fig:interal_input_contours}
-\end{figure}
-
-
-\newpage
-\section{Changes to the neural integrators during learning}\label{sec:supp:learning}
-%Message: This is what happens to the different neural integrators during learning 
-During learning, the various neural integrators undergo distinct changes. These alterations manifest differently depending on the specific integrator involved. Here are some examples of progresses of chaning slow manifold dynamics.
-
-\begin{figure}[H]
-     \centering
-    \includegraphics[width=\textwidth]{vfs_f100_gs1_optlrs}
-       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. A gradient step is taken after every perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
-         \label{fig:vfs1}
-\end{figure}
-
-\begin{figure}[H]
-     \centering
-    \includegraphics[width=\textwidth]{vfs_f100_gs5_optlrs}
-       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. A gradient step is taken after every 5 perturbations. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
-         \label{fig:vfs5}
-\end{figure}
-
-\begin{figure}[H]
-     \centering
-    \includegraphics[width=\textwidth]{vfs_f100_gs30_optlrs}
-       \caption{The dynamics of the recurrent part of the integrators across learning with some example orbits (blue lines), stable (green) and unstable (red) fixed points. 30 gradient steps are take after a single perturbation. Gradient steps 0, 1, 5, 10, 15, 20, 25 and 29 are shown. }
-         \label{fig:vfs30}
-\end{figure}
-
-
-\begin{figure}[H]
-     \centering
-    \includegraphics[width=\textwidth]{speeds}
-       \caption{Speed along the invariant manifold during learning. For the iRNN a slice (the diagonal) is shown.
-       %UBLA has a lower
-       }
-         \label{fig:speeds}
-\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %\section{Ring attractor}
 %
@@ -1914,21 +1920,21 @@ $g=0, 0.1$
 
 
 
-\newpage
-\section{Training RNNs on an integration task from scratch}
-
-We trained vanilla RNNs with a ReLU nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}. The network size varies between 50 and 200 units, initialized using a normal distribution for the parameters. Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 100 epochs. The task has 256 time steps for the training samples, and training was based on the mean squared error loss.
-
-\begin{figure}[tbhp]
-     \centering
-    \includegraphics[width=\textwidth]{line_attractor_like_solutions}
-       \caption{The two types of found solutions. A) A line attractor with hyperbolically stable fixed points at the end of the line. B) Saddle nodes at the ends of the line.
-}
-         \label{fig:line_att_sols}
-\end{figure}
-
-From an arbitrary initialization, we find that a line attractor-like structure often (8 out of 10 runs) emerged with hyperbolically stable fixed points (Fig.\ref{fig:line_att_sols}A) when trained on a longer version of the task. For shorter trial lengths, saddle nodes are more likely to emerge (6 out of 10 runs) at the ends of the line (Fig.~\ref{fig:line_att_sols}B), meaning that the resulting structure is not an attractor. 
-
+%\newpage
+%\section{Training RNNs on an integration task from scratch}
+%
+%We trained vanilla RNNs with a ReLU nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}. The network size varies between 50 and 200 units, initialized using a normal distribution for the parameters. Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 100 epochs. The task has 256 time steps for the training samples, and training was based on the mean squared error loss.
+%
+%\begin{figure}[tbhp]
+%     \centering
+%    \includegraphics[width=\textwidth]{line_attractor_like_solutions}
+%       \caption{The two types of found solutions. A) A line attractor with hyperbolically stable fixed points at the end of the line. B) Saddle nodes at the ends of the line.
+%}
+%         \label{fig:line_att_sols}
+%\end{figure}
+%
+%From an arbitrary initialization, we find that a line attractor-like structure often (8 out of 10 runs) emerged with hyperbolically stable fixed points (Fig.\ref{fig:line_att_sols}A) when trained on a longer version of the task. For shorter trial lengths, saddle nodes are more likely to emerge (6 out of 10 runs) at the ends of the line (Fig.~\ref{fig:line_att_sols}B), meaning that the resulting structure is not an attractor. 
+%
 
 
 
