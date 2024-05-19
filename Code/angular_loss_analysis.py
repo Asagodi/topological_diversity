@@ -16,10 +16,11 @@ def makedirs(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
         
-        
 from tqdm import tqdm
 import numpy as np
 from scipy.spatial.distance import cdist
+
+import matplotlib.pyplot as plt
 
 from models import RNN 
 from analysis_functions import simulate_rnn_with_input, simulate_rnn_with_task
@@ -68,6 +69,21 @@ def load_net(path, which='post'):
     net = load_net_from_weights(wi, wrec, wo, brec, h0, oth, result['training_kwargs'])
 
     return net, result
+
+
+def plot_losses(folder):
+    paths = glob.glob(folder + "/result*")
+    
+    fig, ax = plt.subplots(1, 1, figsize=(5, 3));
+    all_losses = np.empty((100,5000))
+    all_losses[:] = np.nan
+    for exp_i, path in tqdm(enumerate(paths)):
+        net, result = load_net(path)
+        losses = result['losses']
+        ax.plot(losses[:np.argmin(losses)], 'b', alpha=.05)
+        all_losses[exp_i, :np.argmin(losses)-1] = losses[:np.argmin(losses)-1]
+    ax.plot(np.nanmean(all_losses,axis=0), 'b', zorder=1000, label='tanh')
+
 
 
 def get_manifold_from_closest_projections(trajectories, wo, npoints=128):
@@ -192,3 +208,6 @@ def angle_analysis_on_net(net, input_or_task='input',
     #fig.savefig(folder+"/angle_error.pdf", bbox_inches="tight");
     
     
+    
+    
+
