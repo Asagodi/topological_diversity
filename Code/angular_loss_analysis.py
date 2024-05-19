@@ -229,7 +229,7 @@ def angle_analysis_on_net(net, T, input_or_task='input',
     
     
     
-def angular_loss_msg(    batch_size=128):
+def angular_loss_msg(net, T, dt_rnn, dt_task, time_until_cue_range_min, time_until_cue_range_max,   batch_size=128):
     t1_pos = 0 
     time_until_input = 5
     cue_duration = 5
@@ -237,14 +237,14 @@ def angular_loss_msg(    batch_size=128):
     time_until_measured_response = 5
     time_after_response = 0
     add_t = time_until_measured_response+time_after_response
-    T1 = training_kwargs['time_until_cue_range'][1]
-    min_time_until_cue = training_kwargs['time_until_cue_range'][0]
+    T1 = time_until_cue_range_max #training_kwargs['time_until_cue_range'][1]
+    min_time_until_cue = time_until_cue_range_min #training_kwargs['time_until_cue_range'][0]
     T = T1*5
-    dt=training_kwargs['dt_task']
+    dt=dt_task
     tstep=100
     timepoints=int(T*dt)#-15-min_time_until_cue
     
-    tstep = int(training_kwargs['T']*training_kwargs['dt_rnn']//10)
+    tstep = int(T*dt_rnn//10)
 
     net.noise_std = 0
     net.map_output_to_hidden=False
@@ -255,6 +255,8 @@ def angular_loss_msg(    batch_size=128):
     input, target, mask, output, trajectories_full = simulate_rnn_with_task(net, task, T_tot, h_init='random', batch_size=batch_size)
     target = input[:,time_until_input,:]
     target_angle = np.arctan2(target[:,1], target[:,0]);
+    target_angle = (target_angle + np.pi) % (2 * np.pi) - np.pi
+
     angle_errors = np.zeros((batch_size, (timepoints+min_time)//tstep))
     for t in range(min_time,timepoints+min_time,tstep):
         input = np.zeros((batch_size,cue_duration+add_t,3))
@@ -268,15 +270,15 @@ def angular_loss_msg(    batch_size=128):
         angle_error = np.abs(output_angle - target_angle)
         angle_error[np.where(angle_error>np.pi)] = 2*np.pi-angle_error[np.where(angle_error>np.pi)]
         mean_error = np.mean(angle_error,axis=0)
-        angle_errors[:,(t-min_time)//tstep] = mean_error
+        angle_errors[:,(t-min_time)//tstep] = angle_error
         t1_pos=np.min([t1_pos,np.min(mean_error)])
 
     mean_error = np.mean(angle_errors,axis=0)
     max_error = np.max(angle_errors,axis=0)
     min_error = np.min(angle_errors,axis=0)
     
-    eps_mean_int = np.cumsum(mean_error) / np.arange(mean_error.shape[0])
-    eps_plus_int = np.cumsum(max_error) / np.arange(mean_error.shape[0])
-    eps_min_int = np.cumsum(min_error) / np.arange(mean_error.shape[0])
+    eps_mean_int = np.cumsum(mean_error) / np.arange(1, mean_error.shape[0])
+    eps_plus_int = np.cumsum(max_error) / np.arange(1, mean_error.shape[0])
+    eps_min_int = np.cumsum(min_error) / np.arange(1, mean_error.shape[0])
     
     return eps_min_int, eps_mean_int, eps_plus_int
