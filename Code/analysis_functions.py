@@ -1,5 +1,6 @@
 import os, sys
 import glob
+import pickle
 current_dir = os.path.dirname(os.path.realpath('__file__'))
 def makedirs(dirname):
     if not os.path.exists(dirname):
@@ -20,7 +21,6 @@ from functools import partial
 import numpy as np
 import numpy.ma as ma
 from math import isclose
-import pickle
 import re
 import time
 from itertools import chain, combinations, permutations
@@ -35,6 +35,13 @@ import conley_functions as cf
 import networkx as nx
 import subprocess
 from tqdm import tqdm
+
+import skdim
+# functions = [skdim.id.CorrInt(), skdim.id.DANCo(), skdim.id.ESS(), skdim.id.Fishers(), skdim.id.KNN(), skdim.id.lPCA(), skdim.id.MADA(), skdim.id.MiND_ML(), skdim.id.MLE(), skdim.id.MOM(), skdim.id.TLE(), skdim.id.TwoNN()]
+# function_names = ["CorrInt", "DANCo", "ESS", "FisherS", "KNN", "lPCA", "MADA", "MiND_ML", "MLE", "MOM", "TLE", "TwoNN"]
+# for fi, function in enumerate(functions):
+    # dim=function.fit(trajectories[:,from_t:to_t,:].reshape((-1,trajectories.shape[-1]))).dimension_
+    # print(function_names[fi], ":", dim)
 
 
 # from psychrnn.tasks.perceptual_discrimination import PerceptualDiscrimination
