@@ -615,7 +615,7 @@ def find_periodic_orbits(traj, traj_pca, limcyctol=1e-2, mindtol=1e-10):
 
     return recurrences, recurrences_pca
 
-def get_slow_manifold(net, task, T, h_init='random', from_t=300, batch_size=256, n_components=3, nbins=1000):
+def get_slow_manifold(net, task, T, h_init='random', from_t=300, batch_size=256, n_components=3, nbins=100):
     n_rec = net.dims[1]
     
     input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, h_init, batch_size)
@@ -756,7 +756,7 @@ def get_speed_and_acceleration_batch(trajectories):
     for trajectory in trajectories:
         speeds, accelerations = get_speed_and_acceleration(trajectory)
         all_speeds.append(speeds)
-        all_accs.append(all_accs)
+        all_accs.append(accelerations)
     return np.array(all_speeds), np.array(all_accs)
 
 
@@ -919,7 +919,7 @@ def vf_on_ring(trajectories, wo,  wrec, brec, cs, fxd_pnt_thetas, stabilities, m
             plt.savefig(fig_folder+f'/vf_on_ring_{fig_ext}.pdf', bbox_inches="tight")
     
     elif method=='closest':
-        csx2 = get_menifold_from_closest_projections(trajectories, wo,  wrec, brec, npoints=npoints)
+        csx2 = get_manifold_from_closest_projections(trajectories, wo,  wrec, brec, npoints=npoints)
     
         fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
         diff = np.zeros((csx2.shape[0]))
