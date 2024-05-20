@@ -373,9 +373,9 @@ Conversely, the alternative approximation's memory states are contingent upon th
 %infinite norm
 %%%eqs from gui
 
-Our theory shows that not all continuous attractors are born equal, and there are gracefully degrading continuous attractors.
-In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
-Animal behavior is finite time in nature and the longer the temporal distance the harder it is to learn temporal dependencies in general.
+%Our theory shows that not all continuous attractors are born equal, and that there are gracefully degrading continuous attractors.
+%In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
+%Animal behavior is finite time in nature and the longer the temporal distance the harder it is to learn temporal dependencies in general.
 
 
 
@@ -451,7 +451,7 @@ We will identify the solution type of trained RNNs to gain insights into its per
  Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis \citep{sussillo2013blackbox, sussillo2014, barak2013, driscoll2022, maheswaranathan2019universality, cueva2019headdirection, cueva2021continuous} and to compare those artificial networks to biological circuits \citep{mante2013context, remington2018flexible, ghazizadeh2021slow}. 
 % 
 % 
-Previously, systemat analysis of the variability in network dynamics has been surveyed in vanilla RNNs and  variations in dynamical solutions over architecture and nonlinearity have been quantified \citep{sussillo2013blackbox, mante2013context, yang2019task, maheswaranathan2019universality,driscoll2022}. Furthermore, the spectrum of  how RNNs may hold memory has been addressed \citep{orhan2019diverse}.
+Previously, systematic analysis of the variability in network dynamics has been surveyed in vanilla RNNs and  variations in dynamical solutions over architecture and nonlinearity have been quantified \citep{sussillo2013blackbox, mante2013context, yang2019task, maheswaranathan2019universality,driscoll2022}. Furthermore, the spectrum of  how RNNs may hold memory has been addressed \citep{orhan2019diverse}.
 %comparing artificial network representations to neural data
 We therefore investigated to what extent training RNNs on a task uniquely determines the low-dimensional dynamics, independent of neural architectures.
 
@@ -541,12 +541,11 @@ Less commonly found topologies include slow limit cycles (Fig.~\ref{fig:fastslow
   
  %method
 We find the slow manifold  by integrating the autonomous dynamics and we select the parts of the trajectory that have speed slower than a threshold.
+%
+We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}.
 
-We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme}.
 
-
-
-We construct the one dimensional invariant manifold $\manifold$ by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
+In the cases that we identify a one dimensional invariant manifold $\manifold$, we parametrize it by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
 Alternatively, we identify the points along the trajectories that are the closest to set of point from the output space relevant to the task after convergence.
 %Finally, we find the stable fixed points through a threshold on the 
 Finally, we find the fixed points on the invariant ring by identifying regions where the direction of the flow flips.
@@ -559,9 +558,6 @@ while saddle nodes are identified wherethey are pointing away.
 
 %to what extent does training neural networks to solve simple tasks, prevalent in neuroscientific studies, uniquely determine the low-dimensional dynamics independent of neural architectures?
 %are the learned dynamics highly sensitive to different neural architectures?
-
-
-
 
 The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
  much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
@@ -602,21 +598,21 @@ For the asymptotic time-scale the asymptotic behavior of the system dominates an
 For a one dimensional system this will either be fixed points or a limit cycle.
 For a set of fixed points the maximal error is given by the maximal distance to the next fixed point while for a limit cycle this will always be $\pi$.
 
-%Fig 5
-\begin{figure}[tbhp]
-  \centering
-  \includegraphics[width=\textwidth]{performance}
-  \caption{Degradation of performance across perturbation sizes.
-  (A) System behavior at the asymptotic time scales measured through memory capacity. 
-  (B) Finite time}
-  \label{fig:performance}
-\end{figure}
+%%Fig 5
+%\begin{figure}[tbhp]
+%  \centering
+%  \includegraphics[width=\textwidth]{performance}
+%  \caption{Degradation of performance across perturbation sizes.
+%  (A) System behavior at the asymptotic time scales measured through memory capacity. 
+%  (B) Finite time}
+%  \label{fig:performance}
+%\end{figure}
 
 %Networks
 %  \citep{seeholzer2017efficient} %tanh
 %  \citep{goodridge2000}		%sigmoid
 
-We measure how performance of different models for the representation of an angular variable drop as a function of perturbation size Fig.~\ref{fig:performance}.
+%We measure how performance of different models for the representation of an angular variable drop as a function of perturbation size Fig.~\ref{fig:performance}.
 
 
 %method
@@ -725,29 +721,29 @@ The conditions are favorable in the recurrent neuronal networks: (1) mutual inhi
 \newpage
 \section*{NeurIPS Paper Checklist}
 
-%%% BEGIN INSTRUCTIONS %%%
-The checklist is designed to encourage best practices for responsible machine learning research, addressing issues of reproducibility, transparency, research ethics, and societal impact. Do not remove the checklist: {\bf The papers not including the checklist will be desk rejected.} The checklist should follow the references and precede the (optional) supplemental material.  The checklist does NOT count towards the page
-limit. 
-
-Please read the checklist guidelines carefully for information on how to answer these questions. For each question in the checklist:
-\begin{itemize}
-    \item You should answer \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item \answerNA{} means either that the question is Not Applicable for that particular paper or the relevant information is Not Available.
-    \item Please provide a short (1–2 sentence) justification right after your answer (even for NA). 
-   % \item {\bf The papers not including the checklist will be desk rejected.}
-\end{itemize}
-
-{\bf The checklist answers are an integral part of your paper submission.} They are visible to the reviewers, area chairs, senior area chairs, and ethics reviewers. You will be asked to also include it (after eventual revisions) with the final version of your paper, and its final version will be published with the paper.
-
-The reviewers of your paper will be asked to use the checklist as one of the factors in their evaluation. While "\answerYes{}" is generally preferable to "\answerNo{}", it is perfectly acceptable to answer "\answerNo{}" provided a proper justification is given (e.g., "error bars are not reported because it would be too computationally expensive" or "we were unable to find the license for the dataset we used"). In general, answering "\answerNo{}" or "\answerNA{}" is not grounds for rejection. While the questions are phrased in a binary way, we acknowledge that the true answer is often more nuanced, so please just use your best judgment and write a justification to elaborate. All supporting evidence can appear either in the main paper or the supplemental material, provided in appendix. If you answer \answerYes{} to a question, in the justification please point to the section(s) where related material for the question can be found.
-
-IMPORTANT, please:
-\begin{itemize}
-    \item {\bf Delete this instruction block, but keep the section heading ``NeurIPS paper checklist"},
-    \item  {\bf Keep the checklist subsection headings, questions/answers and guidelines below.}
-    \item {\bf Do not modify the questions and only use the provided macros for your answers}.
-\end{itemize} 
- 
+%%%% BEGIN INSTRUCTIONS %%%
+%The checklist is designed to encourage best practices for responsible machine learning research, addressing issues of reproducibility, transparency, research ethics, and societal impact. Do not remove the checklist: {\bf The papers not including the checklist will be desk rejected.} The checklist should follow the references and precede the (optional) supplemental material.  The checklist does NOT count towards the page
+%limit. 
+%
+%Please read the checklist guidelines carefully for information on how to answer these questions. For each question in the checklist:
+%\begin{itemize}
+%    \item You should answer \answerYes{}, \answerNo{}, or \answerNA{}.
+%    \item \answerNA{} means either that the question is Not Applicable for that particular paper or the relevant information is Not Available.
+%    \item Please provide a short (1–2 sentence) justification right after your answer (even for NA). 
+%   % \item {\bf The papers not including the checklist will be desk rejected.}
+%\end{itemize}
+%
+%{\bf The checklist answers are an integral part of your paper submission.} They are visible to the reviewers, area chairs, senior area chairs, and ethics reviewers. You will be asked to also include it (after eventual revisions) with the final version of your paper, and its final version will be published with the paper.
+%
+%The reviewers of your paper will be asked to use the checklist as one of the factors in their evaluation. While "\answerYes{}" is generally preferable to "\answerNo{}", it is perfectly acceptable to answer "\answerNo{}" provided a proper justification is given (e.g., "error bars are not reported because it would be too computationally expensive" or "we were unable to find the license for the dataset we used"). In general, answering "\answerNo{}" or "\answerNA{}" is not grounds for rejection. While the questions are phrased in a binary way, we acknowledge that the true answer is often more nuanced, so please just use your best judgment and write a justification to elaborate. All supporting evidence can appear either in the main paper or the supplemental material, provided in appendix. If you answer \answerYes{} to a question, in the justification please point to the section(s) where related material for the question can be found.
+%
+%IMPORTANT, please:
+%\begin{itemize}
+%    \item {\bf Delete this instruction block, but keep the section heading ``NeurIPS paper checklist"},
+%    \item  {\bf Keep the checklist subsection headings, questions/answers and guidelines below.}
+%    \item {\bf Do not modify the questions and only use the provided macros for your answers}.
+%\end{itemize} 
+% 
 
 %%% END INSTRUCTIONS %%%
 
@@ -1020,16 +1016,9 @@ The inputs push the input along the line attractor in two opposite directions, s
 \bout = 0.
 \end{equation}
 
-\subsubsection{Asymmetric loss landscape reflecting dynamics after bifurcation}\label{sec:asymmetricloss}
-To illustrate the effect of bifurcations from the continuous attractor solution, we take a 1-dimensional slice of the loss surface, see Fig.~\ref{fig:maintenance_h0}B.
-Specifically, we continuously vary one of the entries of the self-recurrent connection matrix: $    \vW_{1,1} \leftarrow \vW_{1,1} + \Delta$. % with $\Delta\in[-\tfrac{1}{10},\tfrac{1}{10}].$
-At any $\Delta \neq 0$, the continuous attractor disappears and the spontaneous dynamics of the networks show convergent and/or divergent behavior at exponential rates.
-Therefore, as the number of time steps in a trial increases, the error in the output also exponentially converge or diverge in a corresponding manner.
-As can be seen in Fig.~\ref{fig:maintenance_h0}B, for UBLA and iRNN, $\Delta > 0$  perturbations shows exponentially increasing loss and corresponds to an exploding gradient dynamical system.
-In all other cases, including all perturbations of BLA, leads to vanishing gradient, hence the loss is bounded.
-Note also the high curvature of the loss landscape around the optimal solution indicating that the slow manifold may only be maintained in a small neighborhood around the optimal solution, especially for the LAs.
 
-\subsubsection{Bifurcation probability and random perturbations of BLA}
+
+\subsection{Bifurcation probability and random perturbations of BLA}
 We consider all parametrized perturbations of the form $ \vW \leftarrow \vW + \vV$ for a random matrix $\vV\in \mathbb{R}^{2\times 2}$ to the BLA.
 The BLA can bifurcate in the following systems, characterized by their invariant sets: a system with single stable fixed point, a system with three fixed points (one unstable and two stable) and  a system with two fixed points (one stable and the other a half-stable node) and a system with a (rotated) line attractor. 
 Only the first two bifurcations (Fig.~\ref{fig:lara_bifurcations}A) can happen with nonzero chance for the type of random perturbations we consider.
@@ -1551,6 +1540,16 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %\end{pmatrix}, \
 %\bout = -\frac{\beta}{\alpha}.
 %\end{equation}
+
+%\subsubsection{Asymmetric loss landscape reflecting dynamics after bifurcation}\label{sec:asymmetricloss}
+%To illustrate the effect of bifurcations from the continuous attractor solution, we take a 1-dimensional slice of the loss surface, see Fig.~\ref{fig:maintenance_h0}B.
+%Specifically, we continuously vary one of the entries of the self-recurrent connection matrix: $    \vW_{1,1} \leftarrow \vW_{1,1} + \Delta$. % with $\Delta\in[-\tfrac{1}{10},\tfrac{1}{10}].$
+%At any $\Delta \neq 0$, the continuous attractor disappears and the spontaneous dynamics of the networks show convergent and/or divergent behavior at exponential rates.
+%Therefore, as the number of time steps in a trial increases, the error in the output also exponentially converge or diverge in a corresponding manner.
+%As can be seen in Fig.~\ref{fig:maintenance_h0}B, for UBLA and iRNN, $\Delta > 0$  perturbations shows exponentially increasing loss and corresponds to an exploding gradient dynamical system.
+%In all other cases, including all perturbations of BLA, leads to vanishing gradient, hence the loss is bounded.
+%Note also the high curvature of the loss landscape around the optimal solution indicating that the slow manifold may only be maintained in a small neighborhood around the optimal solution, especially for the LAs.
+
 %
 %\subsubsection{Maintaining a neural integrator}\label{sec:exp:maintaining}
 %The theory of persistent invariant manifolds for compact continuous attractors suggests that the BLA should have bounded gradients (unlike UBLA and iRNN) and hence it should be easier to maintain it in the presence of noise.
@@ -1833,7 +1832,7 @@ The limit cycle is the only bifurcation that we found that can be achieved on on
 \begin{figure}[tbhp]
      \centering
     \includegraphics[width=\textwidth]{noorman_ring_N6_pert_allfxdpnts_allnorms}
-       \caption{Rows show the bifurcations resulting from perturbations from the matrices with the same direction in Fig.~\ref{fig:both_rings}A but with different norms (columns). }
+       \caption{Rows show the bifurcations resulting from perturbations from the matrices with the same direction in Fig.~\ref{fig:bio_rings}A but with different norms (columns). }
          \label{fig:noorman_ring_allfxdpnts_allnorm}
 \end{figure}
 
@@ -1858,14 +1857,14 @@ with the dimensionless parameter $J^-$ representing the strength of the weak cro
  \citep{samsonovich1997path}
  \citep{redish1996coupled} %Equation 9,12
  
-\newpage
+
 \subsection{Couey}\label{sec:supp:couey}
 \citep{couey2013}
 
 \subsection{NEF}
 \citep{barak2021mapping}
 
-\newpage
+
 \subsection{Low-rank}\label{sec:supp:lowrank}
 
 
