@@ -197,16 +197,28 @@ However, interestingly, continuous attractors seemingly tend to bifurcate into i
 
 
 We will describe the bifurcation space of some continuous attractors.  
-\mpcomment{We need to justify why we are in this general ODE/RNN setting if we care about neuroscience.}
-Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
+Neurons exhibit complex dynamics that can be described by differential equations.
+The membrane potential of a neuron changes over time according to the input it receives and its intrinsic properties, which can be mathematically modeled using ODEs.
+%Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
+A common form of the ODE for the firing rate \( r(t) \) of a neuron is:
 \begin{align}\label{eq:TLN}
-    \dot{\vx} = -\vx + \left[ \vW \vx + \vb \right]_{+}
+\tau \frac{d r(t)}{d t} = -r(t) + F(I(t))
 \end{align}
-where $\vx \in \reals^d$ is the hidden state of the network, $\vb$ is the bias, and $[\cdot]_{+} = \max(0,\cdot)$ is the threshold nonlinearity per unit.
-In discrete time, this corresponds to a ReLU RNN (see Sec.~\ref{sec:rnn:integration}).
-The non-trivial activity of this network is limited to the (non-negative) first quadrant.
+where:
+ $\tau$ is the time constant of the neuron,
+ $-r(t)$ represents the decay of the firing rate over time,
+ $I(t)$ is the total input to the neuron at time \( t \) and
+ $F(I)$ is a non-linear function that converts the input \( I(t) \) into an output firing rate.
 
-When $d=2$, we can build a line continuous attractor as follows.
+
+%\begin{align}\label{eq:TLN}
+%    \dot{\vx} = -\vx + \left[ \vW \vx + \vb \right]_{+}
+%\end{align}
+%where $\vx \in \reals^d$ is the hidden state of the network, $\vb$ is the bias, and $[\cdot]_{+} = \max(0,\cdot)$ is the threshold nonlinearity per unit.
+%In discrete time, this corresponds to a ReLU RNN (see Sec.~\ref{sec:rnn:integration}).
+%The non-trivial activity of this network is limited to the (non-negative) first quadrant.
+
+When $d=2$ and $F(I)= \max(0,\cdot)$ is the threshold nonlinearity, we can build a line continuous attractor as follows.
 %First, through positive feedback, $\vW = [0, 1; 1, 0]$ and no bias $\vb = \mathbf{0}$, we can create a continuous attractor, i.e., $\dot{\vx} = 0$ on the $x_1 = x_2 \geq 0$ half-line, and surrounding attractive flow (Fig.~\ref{fig:ublabla}A left).
 %We refer to it as an \textbf{unbounded line attractor (UBLA)}.
 %For any point on the line attractor, linearization results in eigenvalues $0$ and $-2$, corresponding to the zero flow and attractive flow respectively.
@@ -231,7 +243,7 @@ Furthermore, an invariant ring manifold with fixed points on it has been observe
 We show some examples of such continuous attractor approximations in Fig.~ \ref{fig:lara_bifurcations}B.
 Similarly, this has been observed in ring attractors with a finite number of units \citep{Noorman2022}, see also Fig.\ref{fig:bio_rings}A.
 
-\mpcomment{Shall we move the other biologically relevant systems here?}
+
 
 \subsection{Theoretical models of ring attractors}\label{sec:ras}
 %\subsubsection{Angular integration networks}\label{sec:hd}
@@ -268,9 +280,11 @@ This continuum of fixed points forms a one dimensional manifold homeomorphic to 
 We evaluate the effect of parametric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\iidsample\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E= 4$ and $J_I=-2.4$ by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
 We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:bio_rings}A).
 As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
-The probability of each type of bifurcation was numerically estimated.
+The probability of each type of bifurcation was numerically estimated (See Sec.~\ref{sec:supp:}).
 There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\ref{fig:meaure_zero_perturbations}).
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
+
+To understand the underlying mechanism of these bifurcations, it is helpful to consider a well-established way to create a continuum of fixed points on a ring
 
 \mpcomment{transition missing}
 A well-established way to create a continuum of fixed points on a ring is to use a circulant matrix \citep{samsonovich1997path, seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
@@ -279,7 +293,7 @@ The infinite sized ring attractor network supports a stable “activity bump” 
 This can be accomplished with a connection matrix $W$ is a circular Gaussian function of $i-j$ \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
 For finite sized networks the dynamics is constrained to an attractive invariant ring, covered with $N$ stable fixed points for a networks of size $N$ (Fig.~\ref{fig:bio_rings}C).
 %
-Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is becuase they are nearby ring attractors as dynamical systems.
+Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is because they are nearby ring attractors as dynamical systems.
 
 \mpcomment{transition missing}
 %mastrogiuseppe, beiran, ostojic
@@ -1839,6 +1853,9 @@ and
 x^*_i<0 \text{   for  	 } i\in\sigma.
 \end{equation}
 
+We bruteforce check all possible supports to find all fixed points.
+We use the eigenvalues of the Jabobian to identify the stability of the found fixed points.
+
 
 \subsubsection{Measure zero co-dimension 1 bifurcations}
 
@@ -2082,6 +2099,7 @@ Notice further that since:
     \epsilon^-(t) &\geq t\epsilon^-(\delta t)
 \end{split}
 \end{equation}
+where 
 then 
 \begin{equation}
 \begin{split}
