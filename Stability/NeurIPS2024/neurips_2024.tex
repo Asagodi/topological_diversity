@@ -513,7 +513,8 @@ and (2) perform a memory guided saccade task for a ring variable \citep{wimmer20
   \centering
   \includegraphics[width=\textwidth]{fastslow_decomposition}
   \caption{Slow manifold approximation of different trained networks on the memory guided saccade and angular velocity integration tasks.
- (A) 
+ (A1) Example of a trajectory on the  angular velocity integration task.
+ (A2)  Example of a trajectory on the  memory guided saccade task.
  (B) An example fixed point type solution to the memory guided saccade task.
  (C) An example found solution to the angular velocity integration task.
  (D) An example slow torus type solution to the memory guided saccade task.
@@ -545,7 +546,7 @@ while saddle nodes are identified wherethey are pointing away.
 
 
 
-\subsection{Universality}
+\subsection{Universality amongst good solutions}
 
 %to what extent does training neural networks to solve simple tasks, prevalent in neuroscientific studies, uniquely determine the low-dimensional dynamics independent of neural architectures?
 %are the learned dynamics highly sensitive to different neural architectures?
@@ -566,7 +567,7 @@ The universal structure of continuous attractor appriximations as slow invariant
 Both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions \citep{orhan2019diverse}.
 We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
 If a system is implementing such a computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set.
-
+This implies that the only possible implementation of a continuous valued memory that can be decoded linearly is the (approximate) continuous attractor.
 
 
 
@@ -597,7 +598,7 @@ Conversely, the alternative approximation's memory states are contingent upon th
 %In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
 %Animal behavior is finite time in nature and the longer the temporal distance the harder it is to learn temporal dependencies in general.
 
-\subsection{Loss of function: Sensitivity of continuous attractors to perturbations}
+%\subsection{Loss of function: Sensitivity of continuous attractors to perturbations}
 
 %We will show that there are differences at how well approximations perform at different timescales.
 
@@ -623,23 +624,7 @@ For a set of fixed points the maximal error is given by the maximal distance to 
 %We measure how performance of different models for the representation of an angular variable drop as a function of perturbation size Fig.~\ref{fig:performance}.
 
 
-%method
-\paragraph{Finite time}
 
-We measure the error on the finite timescale as follows.
-
-
-
-\paragraph{Asymptotic time}
-We measure the error on the asymptotic timescale as follows.
-We identify the location of the fixed points as described in Sec.~\ref{sec:fastslowmethod}.
-We construct a probability distribution of what part of state space we end up in at infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
-Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution.
- This step provides valuable insights into the network's ability to store information and how this ability degrades across different perturbations.
-
-\begin{equation}
-\basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}
-\end{equation}
 
 
 \subsection{Different topologies have different generalization properties}
@@ -654,7 +639,22 @@ Finally, we characterize the memory capacity of the network through calculating 
   \label{fig:loss}
 \end{figure}
 
+%method
+\paragraph{Finite time}
 
+We measure the error on the finite timescale as follows.
+
+
+
+\paragraph{Asymptotic time}
+We measure the error on the asymptotic timescale as follows.
+We identify the location of the fixed points as described in Sec.~\ref{sec:fastslowmethod}.
+We construct a probability distribution of what part of state space we end up in at infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring:
+\begin{equation}
+\basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}.
+\end{equation}
+Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution.
+ This step provides valuable insights into the network's ability to store information and how this ability degrades across different perturbations.
 
 
 \section{Discussion}
