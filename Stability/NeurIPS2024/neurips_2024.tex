@@ -26,6 +26,9 @@
 \usepackage{microtype}      % microtypography
 %\usepackage{xr-hyper}
 
+\definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
+\newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
+
 \DeclareGraphicsExtensions{.pdf,.png,.jpg,.mps,.eps,.ps}
 \graphicspath{{../figures/}, {../figures/inv_man/}}
 
@@ -186,8 +189,10 @@ We further analyze task-trained artificial recurrent neural networks to reveal a
 \end{figure}
 %replace ring attractor with N approx
 
-%We found that in the space of RNNs, some have neighbourhoods with highly undesirable exploding gradients. 
+%We found that in the space of RNNs, some have neighbourhoods with highly undesirable exploding gradients.
+\mpcomment{We need a paragraph before jumping into this. Or maybe completely restructure this bit.}
 We will describe the bifurcation space of some continuous attractors.  
+\mpcomment{We need to justify why we are in this general ODE/RNN setting if we care about neuroscience.}
 Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
 \begin{align}\label{eq:TLN}
     \dot{\vx} = -\vx + \left[ \vW \vx + \vb \right]_{+}
@@ -221,7 +226,7 @@ Furthermore, an invariant ring manifold with fixed points on it has been observe
 We show some examples of such continuous attractor approximations in Fig.~ \ref{fig:lara_bifurcations}B.
 Similarly, this has been observed in ring attractors with a finite number of units \citep{Noorman2022}, see also Fig.\ref{fig:bio_rings}A.
 
-
+\mpcomment{Shall we move the other biologically relevant systems here?}
 
 %Is this only true for ReLU parameterized RNNs, or does it generalize?
 In this paper, we lay out a new theory of general continuous-valued memory to answer the following questions:
@@ -230,11 +235,12 @@ In this paper, we lay out a new theory of general continuous-valued memory to an
     \item Do we need to worry about the brittleness of the continuous attractor solutions in practice?
     \item Are continuous attractors useful as a model of how animals might represent continuous variables?
     %How can biological networks approximate the representation of continuous variables?
-%    \item 
 \end{enumerate}
+\mpcomment{These are good questions to be embedded in the text. Probably not as bullet points? Not sure.}
 Our theory provides answers to both questions under mild assumptions in an architecture agnostic manner.
 %Using Fenichel's invariant manifold theorem, we derive a sufficient condition for RNNs implementing continuous attractors to remain free of exploding gradients.
 %Moreover, even after a bifurcation, these RNNs still approximately behave like the original continuous attractor (for a while).
+
 Using Fenichel's invariant manifold theorem, we derive a universality statement for the bifurcation landscape for one dimensional continuous attractors:
  the behavior of one-dimensional continuous attractors can be effectively described by slow ring manifolds.
  These manifolds can either take the form of collections of stable fixed points and saddle points with connecting orbits or that of a limit cycle. 
@@ -252,11 +258,13 @@ even though they differ from each other in terms of the topology of the dynamics
 %\section{Theory of gracefully degrading continuous attractors}\label{sec:theory}
 \section{Theory of continuous attractor approximations}\label{sec:theory}
 In this section, we apply invariant manifold theory to RNNs and translate the results for the machine learning and theoretical neuroscience audience.
+\mpcomment{nope. not machine learning audience! right?}
 Our emphasis in this paper centers on investigating the distinctive properties of continuous attractors that prove essential for specific tasks, with a deliberate exclusion of considerations related to learning chaotic dynamics.
 
 
 
 \subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
+\mpcomment{probably keep it general, and not say RNN.}
 We start by formulating RNNs implementing a continuous attractor in continuous time: $\dot{\vx} = \vf(\vx)$.
 Let $l$ be the intrinsic dimension of the manifold of equilibria that defines the continuous attractor.
 We will reparameterize the dynamics around the manifold with coordinates $\vy \in \reals^l$ and the remaining ambient space with $\vz \in \reals^{d-l}$.
