@@ -19,6 +19,7 @@ def makedirs(dirname):
 from tqdm import tqdm
 import numpy as np
 from scipy.spatial.distance import cdist
+import scipy
 
 import matplotlib.pyplot as plt
 
@@ -47,7 +48,7 @@ def load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs):
               map_output_to_hidden=training_kwargs['map_output_to_hidden'], input_nonlinearity=training_kwargs['input_nonlinearity'])
     return net
 
-def load_net(path, which='post'):
+def load_net_path(path, which='post'):
     # main_exp_name='center_out/act_reg_gui/'
     # folder = parent_dir+"/experiments/" + main_exp_name
     # exp_list = glob.glob(folder + "/res*")
@@ -107,7 +108,7 @@ def get_speed_and_acceleration(trajectory):
         speed = np.linalg.norm(trajectory[t+1, :]-trajectory[t, :])
         speeds.append(speed)
     for t in range(trajectory.shape[0]-2):
-        acceleration = speeds[t+1]-speeds[t]
+        acceleration = np.abs(speeds[t+1]-speeds[t])
         accelerations.append(acceleration)
     speeds = np.array(speeds)
     accelerations = np.array(accelerations)
@@ -123,15 +124,22 @@ def get_speed_and_acceleration_batch(trajectories):
     return np.array(all_speeds), np.array(all_accs)
 
 
-
+def detect_slow_manifold(trajectories, subsample=100, tol=1e-4):
+    all_speeds, all_accs = get_speed_and_acceleration_batch(trajectories)
+    idx = np.argmax(all_speeds - all_speeds[:,-1][:,np.newaxis] < tol,axis=1)
+    inv_man = np.empty((0,trajectories.shape[-1]))
+    for i,index in enumerate(idx):
+        inv_man = np.vstack([inv_man, trajectories[i,index::subsample,:]])
+        
+    return inv_man
 
 
 ##############ANGULAR
-def get_manifold_from_closest_projections(trajectories, wo, npoints=128):
+def get_manifold_from_closest_projections(trajectories_flat, wo, npoints=128):
     n_rec = wo.shape[0]
     xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
     xs = np.append(xs, -np.pi)
-    trajectories_flat = trajectories.reshape((-1,n_rec));
+    #trajectories_flat = trajectories.reshape((-1,n_rec));
     ys = np.dot(trajectories_flat.reshape((-1,n_rec)), wo)
     circle_points = np.array([np.cos(xs), np.sin(xs)]).T
     dists = cdist(circle_points.reshape((-1,2)), ys)
@@ -270,7 +278,7 @@ def angle_analysis_on_net(net, T, input_or_task='input',
     
     
     
-def angular_loss_msg(net, T, dt_rnn, dt_task, time_until_cue_range_min, time_until_cue_range_max,   batch_size=128):
+def angular_loss_msg(net, cue_range, T1_multiple=16, dt=.1, batch_size=128):
     t1_pos = 0 
     time_until_input = 5
     cue_duration = 5
@@ -278,20 +286,20 @@ def angular_loss_msg(net, T, dt_rnn, dt_task, time_until_cue_range_min, time_unt
     time_until_measured_response = 5
     time_after_response = 0
     add_t = time_until_measured_response+time_after_response
+    time_until_cue_range_min, time_until_cue_range_max = cue_range
     T1 = time_until_cue_range_max #training_kwargs['time_until_cue_range'][1]
-    min_time_until_cue = time_until_cue_range_min #training_kwargs['time_until_cue_range'][0]
-    T = T1*5
-    dt=dt_task
-    tstep=100
-    timepoints=int(T*dt)#-15-min_time_until_cue
+    T = T1*T1_multiple
+    tstep=1
+    timepoints=int(T)#-15-min_time_until_cue
+    print(timepoints)
     
-    tstep = int(T*dt_rnn//10)
+    tstep = 1 #int(T*dt_rnn//10)
 
     net.noise_std = 0
     net.map_output_to_hidden=False
     np.random.seed(100)
     
-    T_tot = T+150+min_time_until_cue*10
+    T_tot = T/dt+min_time*10+10
     task = center_out_reaching_task(T=T_tot, dt=dt, time_until_cue_range=[T, T+1], angles_random=False);
     input, target, mask, output, trajectories_full = simulate_rnn_with_task(net, task, T_tot, h_init='random', batch_size=batch_size)
     target = input[:,time_until_input,:]
@@ -302,7 +310,7 @@ def angular_loss_msg(net, T, dt_rnn, dt_task, time_until_cue_range_min, time_unt
     for t in range(min_time,timepoints+min_time,tstep):
         input = np.zeros((batch_size,cue_duration+add_t,3))
         input[:,:cue_duration,2]=1.
-        h_init = trajectories_full[:,min_time_until_cue+t,:]
+        h_init = trajectories_full[:,t,:]
         output, trajectories = simulate_rnn_with_input(net, input, h_init=h_init)
         #ax.plot(output[:,-1,0].T, output[:,-1,1].T, 'b')
         #ax.plot(target[:,0].T, target[:,1].T, 'r')
@@ -318,9 +326,9 @@ def angular_loss_msg(net, T, dt_rnn, dt_task, time_until_cue_range_min, time_unt
     max_error = np.max(angle_errors,axis=0)
     min_error = np.min(angle_errors,axis=0)
     
-    eps_mean_int = np.cumsum(mean_error) / np.arange(1, mean_error.shape[0])
-    eps_plus_int = np.cumsum(max_error) / np.arange(1, mean_error.shape[0])
-    eps_min_int = np.cumsum(min_error) / np.arange(1, mean_error.shape[0])
+    eps_mean_int = np.cumsum(mean_error) / np.arange(1, mean_error.shape[0]+1)
+    eps_plus_int = np.cumsum(max_error) / np.arange(1, mean_error.shape[0]+1)
+    eps_min_int = np.cumsum(min_error) / np.arange(1, mean_error.shape[0]+1)
     
     return eps_min_int, eps_mean_int, eps_plus_int
 
@@ -329,51 +337,135 @@ def angular_loss_msg(net, T, dt_rnn, dt_task, time_until_cue_range_min, time_unt
 
 
 ##########VFs
-def vf_on_ring(trajectories, wo,  wrec, brec, cs, fxd_pnt_thetas=None, stabilities=None, method='closest', npoints=128, 
+def vf_on_ring(trajectories_flat, wo,  wrec, brec, cs, fxd_pnt_thetas=None, stabilities=None, method='closest', npoints=128, 
                fig_folder=None, fig_ext=''):
     
+    X = []
+    Y = []
+    U = []
+    V = []
     if method=='spline':
         xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
         xs = np.append(xs, -np.pi)
         csx=cs(xs);
-        fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
+        # fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
         diff = np.zeros((csx.shape[0]))
-        
+
         for i in range(csx.shape[0]):
             x,y=np.cos(xs[i]),np.sin(xs[i])
             x,y=np.dot(wo.T,csx[i])
             u,v=np.dot(wo.T, tanh_ode(0, csx[i], wrec, brec, tau=10))
-            plt.quiver(x,y,u,v)
-        
-        for i,theta in enumerate(fxd_pnt_thetas):
-            x,y=np.cos(theta),np.sin(theta)
-            if stabilities[i]==1:
-                plt.plot(x,y,'.g')
-            else:
-                plt.plot(x,y,'.r')
-        plt.axis('off'); fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None);
-        if fig_folder:
-            plt.savefig(fig_folder+f'/vf_on_ring_{fig_ext}.pdf', bbox_inches="tight")
+            diff[i] = np.linalg.norm(np.array([u,v]))
+
+            # plt.quiver(x,y,u,v)
+            X.append(x)
+            Y.append(y)
+            U.append(u)
+            V.append(v)
+
+        return diff, np.array(X), np.array(Y), np.array(U), np.array(V)
+        # for i,theta in enumerate(fxd_pnt_thetas):
+        #     x,y=np.cos(theta),np.sin(theta)
+        #     if stabilities[i]==1:
+        #         plt.plot(x,y,'.g')
+        #     else:
+        #         plt.plot(x,y,'.r')
+        # plt.axis('off'); fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None);
+        # if fig_folder:
+        #     plt.savefig(fig_folder+f'/vf_on_ring_{fig_ext}.pdf', bbox_inches="tight")
     
     elif method=='closest':
-        xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(trajectories, wo, npoints=npoints)
+        #trajectories_flat = trajectories.reshape((-1,trajectories[-1]));
+        xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(trajectories_flat, wo, npoints=npoints)
     
-        fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
         diff = np.zeros((csx2.shape[0]))
         for i in range(csx2.shape[0]):
             x,y=np.cos(xs[i]),np.sin(xs[i])
             x,y=np.dot(csx2[i], wo)
             u,v=np.dot(wo.T, tanh_ode(0, csx2[i], wrec, brec, tau=10))
             diff[i] = np.linalg.norm(np.array([u,v]))
-            plt.quiver(x,y,u,v)
+            #plt.quiver(x,y,u,v)
+            
+            X.append(x)
+            Y.append(y)
+            U.append(u)
+            V.append(v)
+
+        return diff, np.array(X), np.array(Y), np.array(U), np.array(V)
+        
+    return diff
+
+
+def plot_vf_on_ring(X,Y,U,V,fxd_pnt_thetas=None,stabilities=None,fig_folder=None,fig_ext=''):
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
+    for x,y,u,v in zip(X,Y,U,V):
+        plt.quiver(x,y,u,v)
+        
+    if fxd_pnt_thetas:
         for i,theta in enumerate(fxd_pnt_thetas):
             x,y=np.cos(theta),np.sin(theta)
             if stabilities[i]==1:
                 plt.plot(x,y,'.g')
             else:
                 plt.plot(x,y,'.r')
-        plt.axis('off'); fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None);
-        if fig_folder:
-            plt.savefig(fig_folder+f'/vf_on_ring_closest_{fig_ext}.pdf', bbox_inches="tight")
+    plt.axis('off'); fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None);
+    if fig_folder:
+        #     plt.savefig(fig_folder+f'/vf_on_ring_{fig_ext}.pdf', bbox_inches="tight")
+        plt.savefig(fig_folder+f'/vf_on_ring_closest_{fig_ext}.pdf', bbox_inches="tight")
         
-    return diff
+        
+def detect_fixed_points_from_flow_on_ring(trajectories_proj2, cs=None):
+    thetas = np.arctan2(trajectories_proj2[:,:,0], trajectories_proj2[:,:,1]);
+
+    thetas_init = thetas[:,0,:] #np.arange(-np.pi, np.pi, np.pi/batch_size*2);
+    theta_unwrapped = np.unwrap(thetas, period=2*np.pi);
+    theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0);
+    arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
+    idx=[i for i, t in enumerate(zip(arr, arr[1:])) if t[0] != t[1]]; 
+    stabilities=-arr[idx].astype(int)
+    fxd_pnt_thetas = thetas_init[idx]
+    stab_idx = np.where(stabilities==-1); 
+    saddle_idx = np.where(stabilities==1)
+
+    if cs:
+        fxd_pnts = cs(fxd_pnt_thetas)
+        return fxd_pnt_thetas, stabilities, stab_idx, saddle_idx, fxd_pnts
+    else:
+        return fxd_pnt_thetas, stabilities, stab_idx, saddle_idx
+        
+def get_cubic_spline_ring(thetas, invariant_manifold):
+
+    thetas_unique, idx_unique = np.unique(thetas, return_index=True);
+    idx_sorted = np.argsort(thetas_unique);
+    
+    invariant_manifold_unique = invariant_manifold[idx_unique,:];
+    invariant_manifold_sorted = invariant_manifold_unique[idx_sorted,:];
+    invariant_manifold_sorted[-1,:] = invariant_manifold_sorted[0,:];
+    cs = scipy.interpolate.CubicSpline(thetas_unique, invariant_manifold_sorted, bc_type='periodic')
+    
+    # smoothed = gaussian_filter1d(all_bin_locs_sorted, 20, axis=0, mode='wrap')
+    
+    return cs    
+        
+def inv_man_analysis(inv_man, wo, wrec, brec):
+    
+    inv_man_proj2 = np.dot(inv_man,wo)
+    #get angles from invariant manifold
+    inv_man_thetas = np.arctan2(inv_man_proj2[:,0], inv_man_proj2[:,1]);
+    #fit spline
+    cs = get_cubic_spline_ring(inv_man_thetas, inv_man)
+    
+    
+    #get vf
+    vf_diff_spline, X, Y, U, V = vf_on_ring(None, wo,  wrec, brec, cs, method='spline')
+    vf_diff_closest, X, Y, U, V = vf_on_ring(inv_man, wo,  wrec, brec, cs, method='closest')
+    
+    
+
+def analyse_net(net, task, batch_size=128, T=2e4, dt=.1):
+    wo = net.wo.detach().numpy()
+    # task = center_out_reaching_task(T=T, dt=dt, time_until_cue_range=[T, T+1], angles_random=False);
+    
+    input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, 'random', batch_size=batch_size)
+    
+    xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(trajectories, wo, npoints=batch_size);
