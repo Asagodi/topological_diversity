@@ -20,6 +20,9 @@ from tqdm import tqdm
 import numpy as np
 from scipy.spatial.distance import cdist
 import scipy
+import skdim
+from ripser import ripser
+from persim import plot_diagrams
 
 import matplotlib.pyplot as plt
 
@@ -80,6 +83,14 @@ def load_net_path(path, which='post'):
 
     return net, result, training_kwargs
 
+def get_weights_from_net(net):
+    wi = net.wi.detach().numpy()
+    wrec = net.wrec.detach().numpy()
+    brec = net.brec.detach().numpy()
+    wo = net.wo.detach().numpy()
+    oth = net.oth.detach().numpy()
+    return wo, wrec, brec, wi, oth
+
 
 def plot_losses(folder):
     paths = glob.glob(folder + "/result*")
@@ -100,38 +111,7 @@ def plot_losses(folder):
 
 
 
-##########SPEED
-def get_speed_and_acceleration(trajectory):
-    speeds = []
-    accelerations = []
-    for t in range(trajectory.shape[0]-1):
-        speed = np.linalg.norm(trajectory[t+1, :]-trajectory[t, :])
-        speeds.append(speed)
-    for t in range(trajectory.shape[0]-2):
-        acceleration = np.abs(speeds[t+1]-speeds[t])
-        accelerations.append(acceleration)
-    speeds = np.array(speeds)
-    accelerations = np.array(accelerations)
-    return speeds, accelerations
 
-def get_speed_and_acceleration_batch(trajectories):
-    all_speeds = []
-    all_accs = []
-    for trajectory in trajectories:
-        speeds, accelerations = get_speed_and_acceleration(trajectory)
-        all_speeds.append(speeds)
-        all_accs.append(accelerations)
-    return np.array(all_speeds), np.array(all_accs)
-
-
-def detect_slow_manifold(trajectories, subsample=100, tol=1e-4):
-    all_speeds, all_accs = get_speed_and_acceleration_batch(trajectories)
-    idx = np.argmax(all_speeds - all_speeds[:,-1][:,np.newaxis] < tol,axis=1)
-    inv_man = np.empty((0,trajectories.shape[-1]))
-    for i,index in enumerate(idx):
-        inv_man = np.vstack([inv_man, trajectories[i,index::subsample,:]])
-        
-    return inv_man
 
 
 ##############ANGULAR
@@ -309,7 +289,7 @@ def angular_loss_msg(net, cue_range, T1_multiple=16, dt=.1, batch_size=128):
     angle_errors = np.zeros((batch_size, (timepoints+min_time)//tstep))
     for t in range(min_time,timepoints+min_time,tstep):
         input = np.zeros((batch_size,cue_duration+add_t,3))
-        input[:,:cue_duration,2]=1.
+        input[:,:cue_duration+2,2]=1.
         h_init = trajectories_full[:,t,:]
         output, trajectories = simulate_rnn_with_input(net, input, h_init=h_init)
         #ax.plot(output[:,-1,0].T, output[:,-1,1].T, 'b')
@@ -333,7 +313,40 @@ def angular_loss_msg(net, cue_range, T1_multiple=16, dt=.1, batch_size=128):
     return eps_min_int, eps_mean_int, eps_plus_int
 
 
+##########SPEED
+def get_speed_and_acceleration(trajectory):
+    speeds = []
+    accelerations = []
+    for t in range(trajectory.shape[0]-1):
+        speed = np.linalg.norm(trajectory[t+1, :]-trajectory[t, :])
+        speeds.append(speed)
+    for t in range(trajectory.shape[0]-2):
+        acceleration = np.abs(speeds[t+1]-speeds[t])
+        accelerations.append(acceleration)
+    speeds = np.array(speeds)
+    accelerations = np.array(accelerations)
+    return speeds, accelerations
 
+def get_speed_and_acceleration_batch(trajectories):
+    all_speeds = []
+    all_accs = []
+    for trajectory in trajectories:
+        speeds, accelerations = get_speed_and_acceleration(trajectory)
+        all_speeds.append(speeds)
+        all_accs.append(accelerations)
+    return np.array(all_speeds), np.array(all_accs)
+
+
+
+###slow man
+def detect_slow_manifold(trajectories, subsample=100, tol=1e-4):
+    all_speeds, all_accs = get_speed_and_acceleration_batch(trajectories)
+    idx = np.argmax(all_speeds - all_speeds[:,-1][:,np.newaxis] < tol,axis=1)
+    inv_man = np.empty((0,trajectories.shape[-1]))
+    for i,index in enumerate(idx):
+        inv_man = np.vstack([inv_man, trajectories[i,index::subsample,:]])
+        
+    return inv_man
 
 
 ##########VFs
@@ -447,25 +460,40 @@ def get_cubic_spline_ring(thetas, invariant_manifold):
     
     return cs    
         
-def inv_man_analysis(inv_man, wo, wrec, brec):
+def inv_man_analysis(inv_man, wo, wrec, brec, cs):
     
-    inv_man_proj2 = np.dot(inv_man,wo)
-    #get angles from invariant manifold
-    inv_man_thetas = np.arctan2(inv_man_proj2[:,0], inv_man_proj2[:,1]);
-    #fit spline
-    cs = get_cubic_spline_ring(inv_man_thetas, inv_man)
-    
-    
-    #get vf
+    #get vfs
     vf_diff_spline, X, Y, U, V = vf_on_ring(None, wo,  wrec, brec, cs, method='spline')
-    vf_diff_closest, X, Y, U, V = vf_on_ring(inv_man, wo,  wrec, brec, cs, method='closest')
-    
-    
+    vf_diff_closest, X, Y, U, V = vf_on_ring(inv_man, wo,  wrec, brec, None, method='closest')
+    return vf_diff_spline, vf_diff_closest
+
+def get_dimension(inv_man, function=skdim.id.MOM()):
+    dim=function.fit(inv_man).dimension_
+    return dim
+
+def tda_trajectories(inv_man, maxdim=1, show=False):
+    diagrams = ripser(inv_man, maxdim=maxdim)['dgms']
+
+    if show:
+        plot_diagrams(diagrams, show=show)
+    return diagrams
 
 def analyse_net(net, task, batch_size=128, T=2e4, dt=.1):
-    wo = net.wo.detach().numpy()
+    wo, wrec, brec, wi, oth = get_weights_from_net(net)
     # task = center_out_reaching_task(T=T, dt=dt, time_until_cue_range=[T, T+1], angles_random=False);
     
     input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, 'random', batch_size=batch_size)
     
-    xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(trajectories, wo, npoints=batch_size);
+    inv_man = detect_slow_manifold(trajectories, subsample=100, tol=1e-4)
+    inv_man_proj2 = np.dot(inv_man, wo)
+    
+    inv_man_proj2 = np.dot(inv_man,wo)
+    #get angles from invariant manifold
+    inv_man_thetas = np.arctan2(inv_man_proj2[:,0], inv_man_proj2[:,1]);
+
+    #fit spline
+    cs = get_cubic_spline_ring(inv_man_thetas, inv_man)
+    
+    xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(inv_man, wo, npoints=batch_size);
+    
+    vf_diff_spline, vf_diff_closest = inv_man_analysis(inv_man, wo, wrec, brec, cs)
