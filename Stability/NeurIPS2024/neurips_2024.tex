@@ -26,7 +26,7 @@
 \usepackage{microtype}      % microtypography
 %\usepackage{xr-hyper}
 
-\DeclareGraphicsExtensions{.png,.pdf,.jpg,.mps,.eps,.ps}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.mps,.eps,.ps}
 \graphicspath{{../figures/}, {../figures/inv_man/}}
 
 \newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
@@ -384,7 +384,7 @@ Conversely, the alternative approximation's memory states are contingent upon th
 For circular variables such as the goal-direction (e.g. for home navigation and working memory for communication	 in bees \citep{frisch1993dance}) %home navigation + dance in bees: the angle of the waggle phase relative to gravity reflects the angle of the food source relative to the sun
 %duration of the waggle phse reflects the distance to the food source from the hive
 or head-direction, the temporal integration and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology) \citep{kim2019generation, turner2017angular, turner2020neuroanatomical,hulse2020mechanisms}.
-Continuous attractor models of the head-direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a ring-like structure~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous}.
+Continuous attractor models of the head-direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a ring-like structure~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous,knierim2012}.
 %Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 Other examples include
 integration of evidence for continuous perceptual judgments, e.g. a hunting predator that needs to compute the net direction of motion of a large group of prey \citep{esnaola2022flexible}.
@@ -395,7 +395,7 @@ As continuous ring attractor are bounded their invariant manifold persists and i
 %the persistent manifold is invariant ~\citep{wiggins1994}.
 
 Firstly, we investigated perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
-This model is composed of $N$ heading-tuned neurons  with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec.~\ref{sec:supp:headdirection}).
+This model is composed of $N$ heading-tuned neurons with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec.~\ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. 
 This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
 
@@ -418,13 +418,20 @@ The probability of each type of bifurcation was numerically estimated.
 There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\ref{fig:meaure_zero_perturbations}).
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 
+A well-established way to create a continuum of fixed points on a ring is to use a circulant matrix \citep{samsonovich1997path, seeholzer2017efficient,redish1996,goodridge2000,compte2000synaptic}.
+The ring attractor network supports a stable “activity bump” that moves around the ring in correspondence with changes in head direction.
+%The position of this bump encodes the head direction.
+for the bump attractor network the connection matrix $W$ is a circular Gaussian function of $i-j$.
+For finite sized networks the dynamics is constrained to an attractive invariant ring, covered with $N$ stable fixed points for a networks of size $N$ (Fig.~\ref{fig:bio_rings}C).
+%
+Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is becuase they are nearby ring attractors as dynamical systems.
 
 %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
 The Dynamical Mean Field (DMF) tells us that in the limit of infinite-size networks one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors.
 However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points located on a ring \citep{mastrogiuseppe2018}.
 Our theory explains this phenomenon as follows.
-We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix).
+We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
 %This implies that the ring attractor network 
 For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
 
