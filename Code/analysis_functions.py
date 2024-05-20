@@ -295,47 +295,57 @@ def find_analytic_fixed_points(W_hh, b, W_ih=None, I=None, tol=10**-4):
     return fixed_point_list, stabilist, unstabledimensions, eigenvalues_list
 
 
-def lu_step(x, W, b):
-    return x*W+b
+# def lu_step(x, W, b):
+#     return x*W+b
 
-def relu_step(x, W, b):
-    res = np.array(np.dot(W,x)+b)
-    res[res < 0] = 0
-    return res
+# def relu_step(x, W, b):
+#     res = np.array(np.dot(W,x)+b)
+#     res[res < 0] = 0
+#     return res
  
-def relu_step_input(x, W, b, W_ih=None, I=None):
-    if I:
-        res = np.array(np.dot(W,x) + b + np.dot(W_ih, I))
-    else:
-        res = np.array(np.dot(W,x) + b)
-    res[res < 0] = 0
-    return res
+# def relu_step_input(x, W, b, W_ih=None, I=None):
+#     if I:
+#         res = np.array(np.dot(W,x) + b + np.dot(W_ih, I))
+#     else:
+#         res = np.array(np.dot(W,x) + b)
+#     res[res < 0] = 0
+#     return res
 
 
 
-def tanh_ode(t,x,W,b,tau, mlrnn=True):
+# def tanh_ode(t,x,W,b,tau, mlrnn=True):
     
-    if mlrnn:
-        return (-x + np.tanh(np.dot(W,x)+b))/tau
-    else:
-        return (-x + np.dot(W,np.tanh(x))+b)/tau
+#     if mlrnn:
+#         return (-x + np.tanh(np.dot(W,x)+b))/tau
+#     else:
+#         return (-x + np.dot(W,np.tanh(x))+b)/tau
 
-#Jacobians
-#include versions for x_solved being from a (scipy) ode solver?
-def linear_jacobian(t,W,b,tau,x_solved):
-    return W/tau
+# #Jacobians
+# #include versions for x_solved being from a (scipy) ode solver?
+# def linear_jacobian(t,W,b,tau,x_solved):
+#     return W/tau
 
 
-def tanh_jacobian(t,W,b,tau,x_solved, mlrnn=True):
+# def tanh_jacobian(t,W,b,tau,x_solved, mlrnn=True):
     
-    if mlrnn:
-        return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(np.dot(W,x_solved[t])+b)**2))/tau
-    else:
-        return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(x_solved[t])**2))/tau
+#     if mlrnn:
+#         return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(np.dot(W,x_solved[t])+b)**2))/tau
+#     else:
+#         return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(x_solved[t])**2))/tau
 
-def relu_jacobian(t,W,b,tau,x_solved):
-    return (-np.eye(W.shape[0]) + np.multiply(W, np.where(np.dot(W,x_solved[t])+b>0,1,0)))/tau
+# def relu_jacobian(t,W,b,tau,x_solved):
+#     return (-np.eye(W.shape[0]) + np.multiply(W, np.where(np.dot(W,x_solved[t])+b>0,1,0)))/tau
 
+
+# def ReLU(x):
+#     return np.where(x<0,0,x)
+
+# def relu_ode(t,x,W,b,tau, mlrnn=True):
+
+#     if mlrnn:
+#         return (-x + ReLU(np.dot(W,x)+b))/tau
+#     else:
+#         return (-x + np.dot(W,ReLU(x))+b)/tau
 
 #To calculate Lyapunov Exponents
 def calculate_lyapunov_spectrum(act_fun,W,b,tau,x_solved,delta_t,from_t_step=0):
@@ -401,15 +411,7 @@ def participation_ratio(cov_mat_eigenvalues):
     pr = np.sum(cov_mat_eigenvalues)**2/np.sum(cov_mat_eigenvalues**2)
     return pr
 
-def ReLU(x):
-    return np.where(x<0,0,x)
 
-def relu_ode(t,x,W,b,tau, mlrnn=True):
-
-    if mlrnn:
-        return (-x + ReLU(np.dot(W,x)+b))/tau
-    else:
-        return (-x + np.dot(W,ReLU(x))+b)/tau
 
 def simulate_from_y0s(y0s, W, b, tau=1, 
                    maxT = 25, tsteps=501):
