@@ -584,15 +584,11 @@ We will investigate to what extent the networks have the intended memory necessa
 \subsection{Generalization properties of continuous attractor approximations}\label{sec:generalization}
 %, and thus a corresponding pattern of error in temporal generalization
 
-
-
 The two  possible approximations of a ring attractor exhibit markedly distinct generalization characteristics.
 Approximating the system as a limit cycle results in memory that gradually diminishes over time.
 Conversely, the alternative approximation's memory states are contingent upon the quantity and positioning of stable fixed points within the system.
 
-%uniform bound
-%infinite norm
-%%%eqs from gui
+
 
 %Our theory shows that not all continuous attractors are born equal, and that there are gracefully degrading continuous attractors.
 %In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
@@ -602,10 +598,7 @@ Conversely, the alternative approximation's memory states are contingent upon th
 
 %We will show that there are differences at how well approximations perform at different timescales.
 
-We will assess performance at two different time-scales,  asymptotic and finite time.
-For the asymptotic time-scale the asymptotic behavior of the system dominates and we identify the network behavior through its $\omega$-limit sets.
-For a one dimensional system this will either be fixed points or a limit cycle.
-For a set of fixed points the maximal error is given by the maximal distance to the next fixed point while for a limit cycle this will always be $\pi$.
+
 
 %%Fig 5
 %\begin{figure}[tbhp]
@@ -639,12 +632,17 @@ For a set of fixed points the maximal error is given by the maximal distance to 
   \label{fig:loss}
 \end{figure}
 
+
+We will assess performance at two different time-scales,  asymptotic and finite time.
+
 %method
 \paragraph{Finite time}
 
 We measure the error on the finite timescale as follows.
 
-
+%uniform bound
+%infinite norm
+%%%eqs from gui
 
 \paragraph{Asymptotic time}
 We measure the error on the asymptotic timescale as follows.
@@ -655,6 +653,12 @@ We construct a probability distribution of what part of state space we end up in
 \end{equation}
 Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution.
  This step provides valuable insights into the network's ability to store information and how this ability degrades across different perturbations.
+
+
+
+For the asymptotic time-scale the asymptotic behavior of the system dominates and we identify the network behavior through its $\omega$-limit sets.
+For a one dimensional system this will either be fixed points or a limit cycle.
+For a set of fixed points the maximal error is given by the maximal distance to the next fixed point while for a limit cycle this will always be $\pi$.
 
 
 \section{Discussion}
