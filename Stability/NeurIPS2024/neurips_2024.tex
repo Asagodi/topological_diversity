@@ -349,25 +349,20 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark 
 
 
 
-
-
 \subsection{The structure of the bifurcated attractor}\label{sec:attractor_bif}
 %distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
-From the persistence theorem, we get a description of the persistent manifold that survives the seemingly destructive bifurcations.
+From the persistence theorem \mpcomment{first mention in this form}, we get a description of the persistent manifold that survives the seemingly destructive bifurcations.
 The theory implies that in the space of dynamical systems, all systems in the neighbourhood of a continuous attractor all share the same topology for the attractive persistent invariant manifold and that the flow on the manifold is slow.
 For a ring attractor this implies that the stability structure of the invariant manifold is either 
 (1)  composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits 
 or (2) a limit cycle.
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 For 2 dimensional attractors  stable fixed points and saddle nodes can coexist with limit cycles.
-For example, for a torus the possible slow dynamics are described by 
-For higher dimensional, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
-For all dimensions, there will the an attractive invariant manifold with the same topological structure and dimension as the original continuous attractor.
+For example, for a torus the possible slow dynamics are described by \mpcomment{partial sentence}
+For higher dimensional \mpcomment{manifolds?}, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
+For all dimensions, there will be an attractive invariant manifold with the same topological structure and dimension as the original continuous attractor.
 % the compact case: the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
-
-
-
-
+\mpcomment{This subsection is very dry. Make it sound cool and also explain why these are important considerations in the context of neuroscience.}
 
 
 
@@ -410,6 +405,7 @@ The probability of each type of bifurcation was numerically estimated.
 There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\ref{fig:meaure_zero_perturbations}).
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 
+\mpcomment{transition missing}
 A well-established way to create a continuum of fixed points on a ring is to use a circulant matrix \citep{samsonovich1997path, seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
 The infinite sized ring attractor network supports a stable “activity bump” that can move around the ring in correspondence with changes in head direction.
 %The position of this bump encodes the head direction.
@@ -418,6 +414,7 @@ For finite sized networks the dynamics is constrained to an attractive invariant
 %
 Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is becuase they are nearby ring attractors as dynamical systems.
 
+\mpcomment{transition missing}
 %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
 The Dynamical Mean Field (DMF) tells us that in the limit of infinite-size networks one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors.
@@ -426,6 +423,8 @@ Our theory explains this phenomenon as follows.
 We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
 %This implies that the ring attractor network 
 For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
+
+\mpcomment{are we going to describe EMPJ here?}
 
 %how to show 
 %normal hyperbolicity index: speed normal/tangent to manifold
@@ -441,18 +440,20 @@ For very small networks the ring structure is destroyed and only the plane persi
 
 \section{Continuous attractor approximations} %from trained RNNs
 
-Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors.
+Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors. \mpcomment{I disagree that it is!! It is a universal approximators of bounded length sequence-to-sequence transformations, not dynamical systems. Guillermo?}
 We will identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
- Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
- 
- 
- Understanding the implemented computation in neural systems in terms of dynamical systems has a well-established practice \citep{seung1996, sompolinsky1988}.
- Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis \citep{sussillo2013blackbox, sussillo2014, barak2013, driscoll2022, maheswaranathan2019universality, cueva2019headdirection, cueva2021continuous} and to compare those artificial networks to biological circuits \citep{mante2013context, remington2018flexible, ghazizadeh2021slow}. 
+\mpcomment{what is a solution type?}
+Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
+
+
+Understanding the implemented computation in neural systems in terms of dynamical systems has a well-established practice \citep{seung1996, sompolinsky1988}.
+Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis \citep{sussillo2013blackbox, sussillo2014, barak2013, driscoll2022, maheswaranathan2019universality, cueva2019headdirection, cueva2021continuous} and to compare those artificial networks to biological circuits \citep{mante2013context, remington2018flexible, ghazizadeh2021slow}.
 % 
-% 
-Previously, systematic analysis of the variability in network dynamics has been surveyed in vanilla RNNs and  variations in dynamical solutions over architecture and nonlinearity have been quantified \citep{sussillo2013blackbox, mante2013context, yang2019task, maheswaranathan2019universality,driscoll2022}. Furthermore, the spectrum of  how RNNs may hold memory has been addressed \citep{orhan2019diverse}.
+Previously, systematic analysis of the variability in network dynamics has been surveyed in vanilla RNNs and  variations in dynamical solutions over architecture and nonlinearity have been quantified \citep{sussillo2013blackbox,mante2013context,yang2019task,maheswaranathan2019universality,driscoll2022}.
+Furthermore, the spectrum of  how RNNs may hold memory has been addressed \citep{orhan2019diverse}.
 %comparing artificial network representations to neural data
 We therefore investigated to what extent training RNNs on a task uniquely determines the low-dimensional dynamics, independent of neural architectures.
+\mpcomment{this works}
 
 
 Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
@@ -465,6 +466,7 @@ This empirical evidence strongly corroborates our proposed theory of continuous 
 
 
 \subsection{Model Architectures and Training Procedure}
+\mpcomment{you can't start a section with an equation.}
 \begin{equation}
   \begin{aligned}
 	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta \label{eq:RNN:discrete}\\
@@ -537,7 +539,7 @@ The most often found solution is of the type \emph{fixed point ring manifold} (F
   
    
 Less commonly found topologies include slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
- These solutions are consistent with both  observations of uses of the usefullness of non-persistent for memory storage \citep{hirsch1995computing,Park2023a} and neuronal circuits underlying persistent representations despite time varying activity \citep{druckmann2012neuronal}.
+ These solutions are consistent with both observations of uses of the usefulness of non-persistent \mpcomment{not clear} for memory storage \citep{hirsch1995computing,Park2023a} and neuronal circuits underlying persistent representations despite time varying activity \citep{druckmann2012neuronal}.
   
  %method
 We find the slow manifold  by integrating the autonomous dynamics and we select the parts of the trajectory that have speed slower than a threshold.
