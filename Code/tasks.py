@@ -125,7 +125,7 @@ def angularintegration_task_constant(T, dt, speed_range=[-1,1], sparsity=1, last
         elif sparsity:
             mask_input = np.random.random(size=(batch_size, input_length)) < 1-sparsity
         inputs_0 = np.random.uniform(low=speed_range[0], high=speed_range[1], size=batch_size)
-        inputs = inputs_0*np.ones((batch_size,input_length))
+        inputs = inputs_0.reshape(-1, 1) * np.ones((batch_size, input_length))
         if max_input:
             inputs = np.where(np.abs(inputs)>max_input, np.sign(inputs), inputs)
         if sparsity:
