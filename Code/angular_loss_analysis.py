@@ -180,9 +180,9 @@ def angular_loss_angvel_noinput(net, angle_init, h_init, T, batch_size=128, dt=0
     max_error = np.max(angle_error,axis=0)
     min_error = np.min(angle_error,axis=0)
     
-    eps_mean_int = np.cumsum(mean_error) / np.arange(mean_error.shape[0])
-    eps_plus_int = np.cumsum(max_error) / np.arange(mean_error.shape[0])
-    eps_min_int = np.cumsum(min_error) / np.arange(mean_error.shape[0])
+    eps_mean_int = np.cumsum(mean_error) / np.arange(1,mean_error.shape[0]+1)
+    eps_plus_int = np.cumsum(max_error) / np.arange(1,mean_error.shape[0]+1)
+    eps_min_int = np.cumsum(min_error) / np.arange(1,mean_error.shape[0]+1)
     
     return eps_min_int, eps_mean_int, eps_plus_int
 
@@ -552,6 +552,36 @@ def s_type_perturbations(net, h_init, timesteps, perturbations_per_h0=1, noise_s
     return output, trajectories, dist_to_inv_man
 
 
+def do_all_analysis(folder, batch_size=128, T1_multiple=16, speed_range=[0.05,0.05]):
+    
+    #main_exp_name='/angular_integration/T25_Mml_rnn_Stanh_N512_Ihighgain_R0/'
+    #folder = parent_dir+"/experiments/" + main_exp_name
+    
+    params_path = glob.glob(folder + '/param*.txt')[0]
+    with open(params_path, 'rb') as f:
+        training_kwargs = pickle.load(f)
+    T1 = training_kwargs['T']/training_kwargs['dt_task']
+    T=int(T1); dt=training_kwargs['dt_rnn'];
+    exp_list = glob.glob(folder + "/res*")
+    nexps = len(exp_list)
+    all_eps = np.empty((nexps,3,T))
+    for exp_i in range(len(exp_list)):
+        path = exp_list[exp_i]
+        net, result = load_net_path(path)
+        net.map_output_to_hidden = False
+        wi, wrec, brec, wo, oth = get_weights_from_net(net);
+        #training_kwargs = result['training_kwargs'] #
+
+        task = angularintegration_task_constant(T=T, dt=dt, speed_range=speed_range, sparsity=1, random_angle_init='equally_spaced');
+        input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, 'random', batch_size=batch_size)
+        xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(trajectories.reshape((-1,net.dims[1])), net.wo.detach().numpy(), npoints=batch_size);
+        #eps_min_int, eps_mean_int, eps_plus_int 
+        all_eps[exp_i] = angular_loss_angvel_noinput(net, xs, csx2, T*T1_multiple, batch_size=csx2.shape[0])
+        
+        
+    np.save(folder+'all_eps.npy', all_eps)
+
+##################
 def plot_losses_in_folder(folder):
     #main_exp_name='center_out/variable_N100_T250_Tr100/tanh/'
     #folder = parent_dir+"/experiments/" + main_exp_name
