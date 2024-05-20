@@ -87,15 +87,59 @@ def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, 
         if sparsity:
             inputs[mask_input] = 0.
         outputs_1d = np.cumsum(inputs, axis=1)*dt
-        if random_angle_init:
+        if random_angle_init=='equally_spaced':
+            outputs_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+        elif random_angle_init:
             random_angles = np.random.uniform(-np.pi, np.pi, size=batch_size)
             outputs_1d += random_angles[:, np.newaxis]
-            # outputs_0 = np.stack((np.cos(random_angles), np.sin(random_angles)), axis=-1)
-            # outputs = outputs + outputs_0[:, np.newaxis, :]
+
         outputs = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
 
         if last_mses:
-            print(last_mses)
+            fin_int = np.random.randint(1,last_mses,size=batch_size)
+            mask = np.zeros((batch_size, input_length, 2))
+            mask[np.arange(batch_size), -fin_int, :] = 1
+
+        else:
+            mask = np.ones((batch_size, input_length, 2))
+
+        return inputs.reshape((batch_size, input_length, 1)), outputs, mask
+    
+    return task
+
+def angularintegration_task_constant(T, dt, speed_range=[-1,1], sparsity=1, last_mses=False, random_angle_init=False, max_input=None):
+    """
+    Creates N_batch trials of the angular integration task with Guassian Process angular velocity inputs.
+    Inputs is angular velocity (postive: right, negative:left) and 
+    target output is sine and cosine of integrated angular velocity.
+    Returns inputs, outputs, mask
+    -------
+    """
+    input_length = int(T/dt)
+    
+    def task(batch_size):
+        
+        if sparsity =='variable':
+            sparsities = np.random.uniform(0, 2, batch_size)
+            mask_input = np.random.random(size=(batch_size, input_length))<1-sparsities[:,None]
+        elif sparsity:
+            mask_input = np.random.random(size=(batch_size, input_length)) < 1-sparsity
+        inputs_0 = np.random.uniform(low=speed_range[0], high=speed_range[1], size=batch_size)
+        inputs = inputs_0*np.ones((batch_size,input_length))
+        if max_input:
+            inputs = np.where(np.abs(inputs)>max_input, np.sign(inputs), inputs)
+        if sparsity:
+            inputs[mask_input] = 0.
+        outputs_1d = np.cumsum(inputs, axis=1)*dt
+        if random_angle_init=='equally_spaced':
+            outputs_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+        elif random_angle_init:
+            random_angles = np.random.uniform(-np.pi, np.pi, size=batch_size)
+            outputs_1d += random_angles[:, np.newaxis]
+
+        outputs = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
+
+        if last_mses:
             fin_int = np.random.randint(1,last_mses,size=batch_size)
             mask = np.zeros((batch_size, input_length, 2))
             mask[np.arange(batch_size), -fin_int, :] = 1
@@ -424,7 +468,7 @@ def center_out_reaching_task(T, dt,
                              time_until_cue_range=[50, 75], angles_random=True):
     # cue_output_durations = [time_until_input, stim_duration, time_until_cue, cue_duration, time_until_measured_response]
     
-    input_length = int(T/dt)
+    input_length = int(T*dt)
     time_until_input, stim_duration, time_until_cue, cue_duration, time_until_measured_response = cue_output_durations
     
     def task(batch_size):
