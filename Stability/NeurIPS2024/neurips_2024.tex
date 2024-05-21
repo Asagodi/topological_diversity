@@ -7,7 +7,7 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{forloop}
 %\usepackage{natbib}
-%\setcitestyle{square, comma, numbers,sort&compress, super}
+\setcitestyle{square,comma,numbers,sort&compress,super}
 \usepackage{subcaption}
 \usepackage{graphicx}
 \usepackage[dvipsnames]{xcolor}
@@ -105,10 +105,10 @@
 \maketitle
 
 \begin{abstract}
-Continuous attractors offer a unique solution for storing continuous-values in recurrent system states indefinitely.
+Continuous attractors offer a unique class of solutions for storing continuous-values in recurrent system states indefinitely.
 Unfortunately, the continuous attractors suffer from severe structural instability in general---they are destroyed by most infinitesimal changes of the dynamical law.
 This fragility limits their utility especially in biological systems as their recurrent dynamics are subject to constant perturbations.
-We observe that the bifurcations from continuous attractors in theoretical models display various structurally stable dynamical structures, each with their associated generalization characteristics.
+We observe that the bifurcations from continuous attractors in theoretical neuroscience models display various structurally stable forms, each with associated generalization characteristics.
 Although their asymptotic behaviors of memory are categorically distinct, their finite time behaviors are similar and degrade gracefully.
 Fast-slow decomposition analysis uncovers the persistent manifold that survives the seemingly destructive bifurcation.
 Moreover, the recurrent neural networks trained on analog memory tasks display approximate continuous attractors with predicted slow manifold structures.
@@ -126,8 +126,8 @@ Therefore, continuous attractors are \emph{functionally robust} and remain usefu
 
 \section{Introduction}
 Biological systems exhibit robust behaviors that require neural information processing of analog variables such as intensity, direction, and distance.
-Virtually all neural models of working memory for continuous-valued information rely on persistent internal representations.
-The continuous attractor structure in their recurrent dynamics are pivotal due to their ability to maintain activity patterns indefinitely through the neural population states~\cite{vyas2020,Dayan2001,Khona2022}.
+Virtually all neural models of working memory for continuous-valued information rely on persistent internal representations through recurrent dynamics.
+The continuous attractor structure in their recurrent dynamics has been a pivotal theoretical tool due to their ability to maintain activity patterns indefinitely through the neural population states~\cite{vyas2020,Dayan2001,Khona2022}.
 They are hypothesized as the neural mechanism for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
 Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,Noorman2022,Nair2023}.
 %and anatomy?
@@ -151,7 +151,7 @@ Observations of persistent neural activity across many brain areas, organisms, a
 
 
 %par3: problems with CAs
-Despite their widespread adoption as models of analog memory, continuous attractors are brittle mathematical objects, posing significant challenges.
+Despite their widespread adoption as models of analog memory, continuous attractors are brittle mathematical objects, posing significant doubts about their realism and hence suitability in accurately representing biological functions.
 Even the smallest arbitrary change in recurrent dynamics can be problematic, destroying the continuum of fixed points essential for continuous-valued working memory.
 In neuroscience, this vulnerability is well-known and often referred to as the ``fine-tuning problem''~\cite{seung1996,Renart2003,Park2023a}.
 There are two primary sources of perturbations in the recurrent network dynamics:
@@ -162,10 +162,11 @@ However, we lack the theoretical basis for relying on the brittle concept of con
 % However, the reliance on the fragile concept of continuous attractors lacks a robust theoretical foundation, raising concerns about its practical utility. % <-- chat's suggestion :P
 
 In this study, we explore the bifurcations from continuous attractors in theoretical models,
-which reveal various structurally stable dynamical structures in the vicinity.
+which reveal various structurally stable dynamics in its vicinity.
 The distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time, and thus a corresponding pattern of error in temporal generalization.
 By assuming normal hyperbolicity, we will separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within.
 We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects the different topologies as \textbf{approximate continuous attractors}.
+\mpcomment{revisit this later}
 We further analyze task-trained artificial recurrent neural networks to reveal a ``universal motif'' of analog memory with various potential topologies.
 
 %This discrepancy between biological neural networks and theoretical models highlights a mismatch and thus poses a challenge for modeling working memory and related cognitive processes \citep{Renart2003, seeholzer2019}.
@@ -279,7 +280,7 @@ This continuum of fixed points forms a one dimensional manifold homeomorphic to 
          \label{fig:bio_rings}
 \end{figure}
 
-We evaluate the effect of parametric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\iidsample\mathcal{N}(0,\frac{1}{100})$ on a network of size $N = 6$ with $J_E= 4$ and $J_I=-2.4$ by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
+We evaluate the effect of parametric perturbations of the form $ \vW \leftarrow \vW + \vV$ with $\vV_{i,j}\iidsample\mathcal{N}(0,\nicefrac{1}{100})$ on a network of size $N = 6$ with $J_E= 4$ and $J_I=-2.4$ by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
 We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:bio_rings}A).
 As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
 The probability of each type of bifurcation was numerically estimated (See Sec.~\ref{sec:supp:}).
