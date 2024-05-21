@@ -753,6 +753,25 @@ def plot_example_trajectories_msg(trajectories_proj2, xs, folder):
     plt.savefig(folder+'example_trials_2d.pdf', bbox_inches="tight");
 
 
+def max_angle(fxd_pnt_thetas):
+    dist_next = fxd_pnt_thetas-np.roll(fxd_pnt_thetas,1)
+    dist_next[np.where(dist_next>np.pi)] = 2*np.pi-dist_next[np.where(dist_next>np.pi)]
+    dist_next = (dist_next + np.pi) % (2 * np.pi) - np.pi
+
+    return np.max(dist_next)
+
+def boa(fxd_pnt_thetas):
+    nfps = fxd_pnt_thetas.shape[0]
+    boas = []
+    for i in range(0,nfps,2):
+        boa = (fxd_pnt_thetas[i+1]-fxd_pnt_thetas[i-1])% (2*np.pi)
+        boas.append(boa/np.pi/2)
+    if nfps>2:
+        perf = -np.sum([boa*np.log(boa) for boa in boas])
+    else:
+        perf=0
+    return perf
+
 def db(x):
     return 10*np.log10(x)
 
@@ -769,7 +788,7 @@ def analysis(folder, df, batch_size = 128, T=256, T1_multiple=16, auton_mult=4, 
         training_kwargs = result['training_kwargs']
         net.noise_std = 0
         wi, wrec, brec, wo, oth = get_weights_from_net(net)
-        mse, normalized_mse = test_network(net)
+        mse, mse_normalized = test_network(net)
         output, trajectories_0 = get_autonomous_dynamics(net, T=T, dt=.1, batch_size=batch_size)
         
         net.map_output_to_hidden = False
@@ -777,7 +796,7 @@ def analysis(folder, df, batch_size = 128, T=256, T1_multiple=16, auton_mult=4, 
         #inv_man_proj2 = np.dot(inv_man, wo)
         
         #dim = get_dimension(inv_man)
-        #print("MSE: ", mse, "dB: ", db(mse_normalized)) #, "D:", dim)
+        #print("MSE: ", mse, "dB: ", db(normalized_mse)) #, "D:", dim)
         xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(inv_man, wo, npoints=batch_size);
         plt.plot(csx2_proj2[:,0], csx2_proj2[:,1], '.')
         
@@ -789,12 +808,15 @@ def analysis(folder, df, batch_size = 128, T=256, T1_multiple=16, auton_mult=4, 
         fxd_pnt_thetas_traj, stabilities_traj, stab_idx, saddle_idx, fxd_pnts = detect_fixed_points_from_flow_on_ring(output, cs=cs)
         plt.plot(np.cos(fxd_pnt_thetas_traj), np.sin(fxd_pnt_thetas_traj), '.b')
         nfps_traj = fxd_pnt_thetas_traj.shape[0]
+        maxangle_traj = max_angle(fxd_pnt_thetas_traj)
+        boa_traj = boa(fxd_pnt_thetas_traj)
         
         output, trajectories = get_autonomous_dynamics_from_hinit(net, csx2, T=int(T/2))
         fxd_pnt_thetas_csx2, stabilities_csx2, stab_idx, saddle_idx, fxd_pnts = detect_fixed_points_from_flow_on_ring(output, cs=cs)
         plt.plot(np.cos(fxd_pnt_thetas_csx2), np.sin(fxd_pnt_thetas_csx2), '.r')
         nfps_csx2 = fxd_pnt_thetas_csx2.shape[0]
-        
+        maxangle_csx2 = max_angle(fxd_pnt_thetas_csx2)
+        boa_csx2 = boa(fxd_pnt_thetas_csx2)
         
         rnn_ode=get_rnn_ode(training_kwargs['nonlinearity'])
         vf_diff_spline, vf_diff_closest, U_spline, V_spline, U_closest, V_closest = vf_inv_man_analysis(inv_man, wo, wrec, brec, cs, rnn_ode=rnn_ode)
@@ -811,13 +833,17 @@ def analysis(folder, df, batch_size = 128, T=256, T1_multiple=16, auton_mult=4, 
         'T': T, 'N': N, 'I': I, 'S': S, 'R': R, 'M': M, 'clip_gradient':clip_gradient,
                     'trial': exp_i,
                     'mse': mse,
-                    'normalized_mse':normalized_mse,
+                    'mse_normalized':mse_normalized,
                     'nfps_traj': nfps_traj,
                     'nfps_csx2': nfps_csx2,
                     'stabilities_traj':stabilities_traj,
                     'stabilities_csx2':stabilities_csx2,
                     'fxd_pnt_thetas_traj':fxd_pnt_thetas_traj,
                     'fxd_pnt_thetas_csx2':fxd_pnt_thetas_csx2,
+                    'maxangle_traj':maxangle_traj,
+                    'maxangle_csx2':maxangle_csx2,
+                    'boa_traj':boa_traj,
+                    'boa_csx2':boa_csx2,
                     'vf_diff_closest':vf_diff_closest,
                      'vf_diff_spline':vf_diff_spline,
                      'vf_infty_closest':np.max(vf_diff_closest),
@@ -852,3 +878,10 @@ def all_analysis(folders):
         df = analysis(folder, df)
         
     return df
+
+
+
+    # nrecs=[64,256]; nonlins=['relu','tanh','recttanh'];
+
+    # folders = [parent_dir + f'/experiments/angular_integration_old/N{nrec}_T128_noisy/{nonlin}/' 
+    #            for nrec in nrecs for nonlin in nonlins]
