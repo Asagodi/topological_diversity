@@ -775,7 +775,7 @@ def boa(fxd_pnt_thetas):
 def db(x):
     return 10*np.log10(x)
 
-def analysis(folder, df, batch_size = 128, T=256, T1_multiple=16, auton_mult=4, input_strength=0.05, subsample=10, tol=1e-3):
+def analysis(folder, df, batch_size=128, T=256, T1_multiple=16, auton_mult=4, input_strength=0.05, subsample=10, tol=1e-3):
     #main_exp_name='/experiments/angular_integration_old/N64_T128_noisy/relu/';
     #folder=parent_dir+main_exp_name
     exp_list = glob.glob(folder + "/res*")
@@ -804,7 +804,7 @@ def analysis(folder, df, batch_size = 128, T=256, T1_multiple=16, auton_mult=4, 
         inv_man_thetas = np.arctan2(csx2_proj2[:,0], csx2_proj2[:,1]);
         cs = get_cubic_spline_ring(inv_man_thetas, csx2)
         
-        output, trajectories = get_autonomous_dynamics_from_hinit(net, trajectories_0[:,100,:], T=T*auton_mult)
+        output, trajectories = get_autonomous_dynamics_from_hinit(net, trajectories_0[:,100,:], T=int(T*auton_mult))
         fxd_pnt_thetas_traj, stabilities_traj, stab_idx, saddle_idx, fxd_pnts = detect_fixed_points_from_flow_on_ring(output, cs=cs)
         plt.plot(np.cos(fxd_pnt_thetas_traj), np.sin(fxd_pnt_thetas_traj), '.b')
         nfps_traj = fxd_pnt_thetas_traj.shape[0]
@@ -828,9 +828,9 @@ def analysis(folder, df, batch_size = 128, T=256, T1_multiple=16, auton_mult=4, 
         min_error_input, mean_error_input, max_error_input, eps_min_int_input, eps_mean_int_input, eps_plus_int_input = angular_loss_angvel_with_input(net, angle_init=xs, h_init=csx2, input=input)
         
         
-        T, N, I, S, R, M, clip_gradient = get_tr_par(training_kwargs)
+        T1, N, I, S, R, M, clip_gradient = get_tr_par(training_kwargs)
         df = df.append({'path':path,
-        'T': T, 'N': N, 'I': I, 'S': S, 'R': R, 'M': M, 'clip_gradient':clip_gradient,
+        'T': T1, 'N': N, 'I': I, 'S': S, 'R': R, 'M': M, 'clip_gradient':clip_gradient,
                     'trial': exp_i,
                     'mse': mse,
                     'mse_normalized':mse_normalized,
