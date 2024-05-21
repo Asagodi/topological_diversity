@@ -353,8 +353,8 @@ Our emphasis in this paper centers on investigating the distinctive properties o
 
 
 \subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
-\mpcomment{probably keep it general, and not say RNN.}
-We start by formulating RNNs implementing a continuous attractor in continuous time: $\dot{\vx} = \vf(\vx)$.
+
+We start by formulating an ODE implementing a continuous attractor in continuous time: $\dot{\vx} = \vf(\vx)$.
 Let $l$ be the intrinsic dimension of the manifold of equilibria that defines the continuous attractor.
 We will reparameterize the dynamics around the manifold with coordinates $\vy \in \reals^l$ and the remaining ambient space with $\vz \in \reals^{d-l}$.
 To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function $g$ and a bifurcation parameter $\epsilon \geq 0$, such that the following system is equivalent to the original ODE:
@@ -440,23 +440,29 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark 
 
 \subsection{The structure of the bifurcated attractor}\label{sec:attractor_bif}
 %distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
-From the persistence theorem \mpcomment{first mention in this form}, we get a description of the persistent manifold that survives the seemingly destructive bifurcations.
-The theory implies that in the space of dynamical systems, all systems in the neighbourhood of a continuous attractor all share the same topology for the attractive persistent invariant manifold and that the flow on the manifold is slow.
+
+
+Thanks to Fenichel's Invariant Manifold Theorem, we can understand how these persistent pathways, or manifolds, survive even when the system undergoes  bifurcations.
+Essentially, this theorem assures us that the underlying structure of continuous attractors remains intact, maintaining a consistent topology despite the changes.
+%The theory implies that in the space of dynamical systems, all systems in the neighbourhood of a continuous attractor all share the same topology for the attractive persistent invariant manifold and that the flow on the manifold is slow.
+
 For a ring attractor this implies that the stability structure of the invariant manifold is either 
 (1)  composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits 
 or (2) a limit cycle.
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 For 2 dimensional attractors  stable fixed points and saddle nodes can coexist with limit cycles.
-For example, for a torus the possible slow dynamics are described by \mpcomment{partial sentence}
-For higher dimensional \mpcomment{manifolds?}, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
-For all dimensions, there will be an attractive invariant manifold with the same topological structure and dimension as the original continuous attractor.
+In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states. For example, the dynamics on a torus — a doughnut-shaped attractor — can be described by Kolmogorov-Arnold-Moser (KAM) theory,
+For higher dimensional attractors, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
+
+No matter the dimension, the essential takeaway is that there will always be an attractive invariant manifold that mirrors the topology and dimension of the original continuous attractor. This means that, even with perturbations, neural states aren't drastically altered from where they would have been, maintaining a semblance of the original flow.
 % the compact case: the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
-\mpcomment{This subsection is very dry. Make it sound cool and also explain why these are important considerations in the context of neuroscience.}
+%\mpcomment{This subsection is very dry. Make it sound cool and also explain why these are important considerations in the context of neuroscience.}
 
 
 
 
-
+Understanding attractors and their bifurcation structure is crucial in neuroscience because they provide a blueprint for how neural activity can remain stable and robust even in the face of disruptions.
+ This resilience is fundamental for cognitive functions, learning, and memory. 
 
 
 
