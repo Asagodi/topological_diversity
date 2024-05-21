@@ -165,7 +165,7 @@ In this study, we explore the bifurcations from continuous attractors in theoret
 which reveal various structurally stable dynamics in its vicinity.
 The distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time, and thus a corresponding pattern of error in temporal generalization.
 By assuming normal hyperbolicity, we will separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within.
-We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects the different topologies as \textbf{approximate continuous attractors}.
+We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects different topologies as \textbf{approximate continuous attractors}.
 \mpcomment{revisit this later}
 We further analyze task-trained artificial recurrent neural networks to reveal a ``universal motif'' of analog memory with various potential topologies.
 
@@ -174,11 +174,18 @@ We further analyze task-trained artificial recurrent neural networks to reveal a
 %Nevertheless, as we will show, not all implementations of continuous attractors behave similarly in their brittleness, yet all approximations of continuous attractors can be characterized as slow manifolds.
 %A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} or finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:ras}.
 
-
-
 \section{A critique of pure continuous attractors}
 %par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
 %Fig1
+
+Ordinary differential equations (ODEs) are commonly used to describe the dynamical laws governing the temporal evolution of firing rates or latent population states\cite{vyas2020}.
+In this framework, neural systems are viewed as implementing the continuous time evolution of neural states to perform computations.
+We will consider a continuous attractor as a system that implements analog memory computation, persistently maintaining a particular representation as neural states over time.
+To define formally, let $\vx(t) \in \reals^d$ denote the neural state, and $\dot{\vx} = \vf(\vx)$ represent its dynamics.
+Let $\manifold$ be a bounded manifold.
+
+
+% The Computation through Dynamics (CTD) framework assumes that the brain processes sensory information and generates behavior through neural dynamics, including representations of continuous-valued variables like space and direction~\cite{vyas2020}.
 
 Continuous attractors are not only structurally unstable, they bifurcate almost certainly for an arbitrary perturbation.
 Examples abound.
@@ -197,7 +204,7 @@ However, interestingly, continuous attractors seemingly tend to bifurcate into i
 \end{figure}
 
 
-We will describe the bifurcation space of some continuous attractors.  
+We will describe the bifurcation space of some continuous attractors.
 Neurons exhibit complex dynamics that can be described by differential equations.
 The membrane potential of a neuron changes over time according to the input it receives and its intrinsic properties, which can be mathematically modeled using ODEs.
 %Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
@@ -352,7 +359,6 @@ Our emphasis in this paper centers on investigating the distinctive properties o
 
 \subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
 \mpcomment{probably keep it general, and not say RNN.}
-We start by formulating RNNs implementing a continuous attractor in continuous time: $\dot{\vx} = \vf(\vx)$.
 Let $l$ be the intrinsic dimension of the manifold of equilibria that defines the continuous attractor.
 We will reparameterize the dynamics around the manifold with coordinates $\vy \in \reals^l$ and the remaining ambient space with $\vz \in \reals^{d-l}$.
 To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function $g$ and a bifurcation parameter $\epsilon \geq 0$, such that the following system is equivalent to the original ODE:
@@ -590,7 +596,7 @@ The fixed point topologies show a lot of variation across networks (Fig.~\ref{fi
  
  Previously, it has been observed that  fixed point analysis  has as a major limitation, namely, that the number of fixed points must be the equal across compared networks  \citep{maheswaranathan2019universality}.
 Our methodology effectively addresses and overcomes this limitation.
-The universal structure of continuous attractor appriximations as slow invariant manifolds allows us to connect the different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:attractor_bif}).
+The universal structure of continuous attractor appriximations as slow invariant manifolds allows us to connect different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:attractor_bif}). \mpcomment{rephrase?}
 
 
 
@@ -2121,10 +2127,10 @@ Finally, if the error is uniform enough we can expect $\epsilon^{m}(t) \approx t
 \end{equation}
 
 \subsubsection{Within manifold case}
-Let's assume that we have managed the system $F_{\boldsymbol{\theta}}$ to be 'good', i.e. have a slow manifold $\mathcal{M} \in \mathbb{R}^N$ in bijection with $\mathcal{U}$, i.e. $f|_{\mathcal{M}}$ is not a mapping but a bijective function and:
+Let's assume that we have managed the system $F_{\boldsymbol{\theta}}$ to be 'good', i.e. have a slow manifold $\manifold \in \mathbb{R}^N$ in bijection with $\mathcal{U}$, i.e. $f|_{\manifold}$ is not a mapping but a bijective function and:
 
 \begin{equation}
-\forall \bm{x} \in \mathcal{M} \quad \dot{\bm{x}} = \epsilon_{\bm{\theta}}(\bm{x})\frac{\frac{\partial f}{\partial \alpha}(f^{-1}(\bm{x}))}{||\frac{\partial f}{\partial \alpha}(f^{-1}(\bm{x}))||}
+\forall \bm{x} \in \manifold \quad \dot{\bm{x}} = \epsilon_{\bm{\theta}}(\bm{x})\frac{\frac{\partial f}{\partial \alpha}(f^{-1}(\bm{x}))}{||\frac{\partial f}{\partial \alpha}(f^{-1}(\bm{x}))||}
 \end{equation}
 
 % In this case: 
