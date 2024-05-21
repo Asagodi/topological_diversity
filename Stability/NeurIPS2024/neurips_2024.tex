@@ -182,8 +182,9 @@ Ordinary differential equations (ODEs) are commonly used to describe the dynamic
 In this framework, neural systems are viewed as implementing the continuous time evolution of neural states to perform computations.
 We will consider a continuous attractor as a system that implements analog memory computation, persistently maintaining a particular representation as neural states over time.
 To define formally, let $\vx(t) \in \reals^d$ denote the neural state, and $\dot{\vx} = \vf(\vx)$ represent its dynamics.
-Let $\manifold$ be a bounded manifold.
-
+Let $\manifold \subset \reals^d$ be a manifold.
+We say $\manifold$ is a continuous attractor, if (1) every state on the manifold is a fixed point, $\forall \vx \in \manifold, \vf(\vx) = 0$, i.e., the flow is zero on the manifold, and (2) the fixed points are marginally stable tangent to the manifold and stable normal to the manifold.
+In other words, the continuous attractor is continuum of equilibrium points such that supports the neural state to stay put on the manifold.
 
 % The Computation through Dynamics (CTD) framework assumes that the brain processes sensory information and generates behavior through neural dynamics, including representations of continuous-valued variables like space and direction~\cite{vyas2020}.
 
