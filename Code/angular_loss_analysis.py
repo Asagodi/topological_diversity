@@ -204,10 +204,10 @@ def angular_loss_angvel_noinput(net, angle_init, h_init, T, batch_size=128, dt=0
     eps_plus_int = np.cumsum(max_error) / np.arange(1,mean_error.shape[0]+1)
     eps_min_int = np.cumsum(min_error) / np.arange(1,mean_error.shape[0]+1)
     
-    return eps_min_int, eps_mean_int, eps_plus_int
+    return min_error, mean_error, max_error, eps_min_int, eps_mean_int, eps_plus_int
 
 
-def angular_loss_angvel_with_input(net, angle_init, h_init, input, dt_task=.1):
+def angular_loss_angvel_with_input(net, angle_init, h_init, input, dt=0.1, random_seed=100):
     # task = angularintegration_task(T=10, dt=dt, sparsity=1, random_angle_init=False)
     # input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, 100, h_init='random', batch_size=batch_size)
     # xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(trajectories, net.wo.detach().numpy(), npoints=batch_size)
@@ -215,6 +215,8 @@ def angular_loss_angvel_with_input(net, angle_init, h_init, input, dt_task=.1):
     # T1 = result['training_kwargs']['T']/result['training_kwargs']['dt_rnn'];
     # T=int(16*T1)
     
+    np.random.seed(random_seed)
+
     output, trajectories = simulate_rnn_with_input(net, input, h_init=h_init)
 
     # anlge_init = xs[:-1]
@@ -222,7 +224,7 @@ def angular_loss_angvel_with_input(net, angle_init, h_init, input, dt_task=.1):
     # stim = np.linspace(-.1, .1, num=batch_size, endpoint=True)
     # input[:,:T,0] = np.repeat(stim,T).reshape((batch_size,T))
     output, trajectories = simulate_rnn_with_input(net, input, h_init=h_init)#h_init=csx2[:-1,:]
-    outputs_1d = np.cumsum(input, axis=1)*dt_task
+    outputs_1d = np.cumsum(input, axis=1)*dt
     output_angle = np.arctan2(output[:,:,1], output[:,:,0]);
     target_angle = angle_init[:, np.newaxis] + outputs_1d.squeeze()
     target_angle = (target_angle + np.pi) % (2 * np.pi) - np.pi
@@ -237,7 +239,7 @@ def angular_loss_angvel_with_input(net, angle_init, h_init, input, dt_task=.1):
     eps_plus_int = np.cumsum(max_error) / np.arange(mean_error.shape[0])
     eps_min_int = np.cumsum(min_error) / np.arange(mean_error.shape[0])
     
-    return eps_min_int, eps_mean_int, eps_plus_int
+    return min_error, mean_error, max_error, eps_min_int, eps_mean_int, eps_plus_int
 
 
 def angle_analysis_on_net(net, T, input_or_task='input',
@@ -754,15 +756,13 @@ def plot_example_trajectories_msg(trajectories_proj2, xs, folder):
 def db(x):
     return 10*np.log10(x)
 
-def analysis(folder, df):
-    main_exp_name='/experiments/angular_integration_old/N64_T128_noisy/relu/';
-    folder=parent_dir+main_exp_name
+def analysis(folder, df, batch_size = 128, T=256, T1_multiple=16, auton_mult=4, input_strength=0.05, subsample=10, tol=1e-3):
+    #main_exp_name='/experiments/angular_integration_old/N64_T128_noisy/relu/';
+    #folder=parent_dir+main_exp_name
     exp_list = glob.glob(folder + "/res*")
     nexps = len(exp_list)
-    batch_size = 128
-    T=256
-    #df = pd.DataFrame(columns=['path', 'T', 'N', 'I', 'S', 'R', 'M', 'trial', 'mse', 'normalized_mse', 'vf_diff_closest', 'vf_diff_spline', 'eps_min_0', 'eps_mean_0', 'eps_plus_0', 'eps_min_input', 'eps_mean_input', 'eps_plus_input', 'losses'])
-    for exp_i in range(10):
+    
+    for exp_i in range(nexps):
         path = exp_list[exp_i]
         print(path)        
         net, result = load_net_path(path)
@@ -773,35 +773,39 @@ def analysis(folder, df):
         output, trajectories_0 = get_autonomous_dynamics(net, T=T, dt=.1, batch_size=batch_size)
         
         net.map_output_to_hidden = False
-        inv_man = detect_slow_manifold(trajectories_0, subsample=10, tol=1e-3)
-        inv_man_proj2 = np.dot(inv_man, wo)
+        inv_man = detect_slow_manifold(trajectories_0, subsample=subsample, tol=tol)
+        #inv_man_proj2 = np.dot(inv_man, wo)
+        
         #dim = get_dimension(inv_man)
-        print("MSE: ", mse, "dB: ", db(mse_normalized)) #, "D:", dim)
-        xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(inv_man, wo, npoints=100);
+        #print("MSE: ", mse, "dB: ", db(mse_normalized)) #, "D:", dim)
+        xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(inv_man, wo, npoints=batch_size);
         plt.plot(csx2_proj2[:,0], csx2_proj2[:,1], '.')
         
         #fit spline
         inv_man_thetas = np.arctan2(csx2_proj2[:,0], csx2_proj2[:,1]);
         cs = get_cubic_spline_ring(inv_man_thetas, csx2)
         
-        output, trajectories = get_autonomous_dynamics_from_hinit(net, trajectories_0[:,100,:], T=128*8)
+        output, trajectories = get_autonomous_dynamics_from_hinit(net, trajectories_0[:,100,:], T=T*auton_mult)
         fxd_pnt_thetas_traj, stabilities_traj, stab_idx, saddle_idx, fxd_pnts = detect_fixed_points_from_flow_on_ring(output, cs=cs)
         plt.plot(np.cos(fxd_pnt_thetas_traj), np.sin(fxd_pnt_thetas_traj), '.b')
-        nfps_traj = fxd_pnt_thetas.shape[0]
+        nfps_traj = fxd_pnt_thetas_traj.shape[0]
         
-        output, trajectories = get_autonomous_dynamics_from_hinit(net, csx2, T=128)
+        output, trajectories = get_autonomous_dynamics_from_hinit(net, csx2, T=int(T/2))
         fxd_pnt_thetas_csx2, stabilities_csx2, stab_idx, saddle_idx, fxd_pnts = detect_fixed_points_from_flow_on_ring(output, cs=cs)
         plt.plot(np.cos(fxd_pnt_thetas_csx2), np.sin(fxd_pnt_thetas_csx2), '.r')
-        nfps_csx2 = fxd_pnt_thetas.shape[0]
+        nfps_csx2 = fxd_pnt_thetas_csx2.shape[0]
         
         
         rnn_ode=get_rnn_ode(training_kwargs['nonlinearity'])
         vf_diff_spline, vf_diff_closest, U_spline, V_spline, U_closest, V_closest = vf_inv_man_analysis(inv_man, wo, wrec, brec, cs, rnn_ode=rnn_ode)
         #vf_diff_points, X, Y, U, V = vf_on_ring(csx2, wo,  wrec, brec, None, method='points', rnn_ode=rnn_ode)
         
-        eps_min_0, eps_mean_0, eps_plus_0 = angular_loss_angvel_noinput(net, angle_init=xs, h_init=csx2, T=128, batch_size=128, dt=0.1, random_seed=100, noise_std=0.)
+        min_error_0, mean_error_0, max_error_0, eps_min_int_0, eps_mean_int_0, eps_plus_int_0 = angular_loss_angvel_noinput(net, angle_init=xs, h_init=csx2, T=T*T1_multiple, batch_size=batch_size, dt=0.1, random_seed=100, noise_std=0.)
 
-
+        input = input_strength*np.ones((csx2.shape[0], T*T1_multiple, net.dims[0]));
+        min_error_input, mean_error_input, max_error_input, eps_min_int_input, eps_mean_int_input, eps_plus_int_input = angular_loss_angvel_with_input(net, angle_init=xs, h_init=csx2, input=input)
+        
+        
         T, N, I, S, R, M, clip_gradient = get_tr_par(training_kwargs)
         df = df.append({'path':path,
         'T': T, 'N': N, 'I': I, 'S': S, 'R': R, 'M': M, 'clip_gradient':clip_gradient,
@@ -821,7 +825,30 @@ def analysis(folder, df):
                      'vf_closest':np.array([U_closest, V_closest]),
                      'vf_spline':np.array([U_spline, V_spline]),
                      'inv_man':inv_man,
-                      'eps_min_0':eps_min_0,
-                       'eps_mean_0':eps_mean_0,
-                        'eps_plus_0':eps_plus_0
+                      'min_error_0':min_error_0,
+                       'mean_error_0':mean_error_0,
+                        'max_error_0':max_error_0,
+                        'eps_min_int_0':eps_min_int_0,
+                        'eps_mean_int_input':eps_mean_int_input,
+                        'eps_plus_int_input':eps_plus_int_input,
+                        'min_error_input': min_error_input,
+                        'mean_error_input':mean_error_input,
+                        'max_error_input':max_error_input,
+                        'eps_min_int_input':eps_min_int_input,
+                        'eps_mean_int_input':eps_mean_int_input,
+                        'eps_plus_int_input':eps_plus_int_input
                         }, ignore_index=True)
+        
+    return df
+        
+        
+def all_analysis(folders):
+    df = pd.DataFrame(columns=['path', 'T', 'N', 'I', 'S', 'R', 'M', 'trial', 'mse',
+                               'normalized_mse', 'vf_diff_closest', 'vf_diff_spline',
+                               'eps_min_0', 'eps_mean_0', 'eps_plus_0',
+                               'eps_min_input', 'eps_mean_input', 'eps_plus_input', 'losses'])
+
+    for folder in folders:
+        df = analysis(folder, df)
+        
+    return df
