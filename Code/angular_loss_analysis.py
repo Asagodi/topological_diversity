@@ -532,7 +532,6 @@ def tda_trajectories(inv_man, maxdim=1, show=False):
         plot_diagrams(diagrams, show=show)
     return diagrams
 
-def distortion():
     
 
 def analyse_net(net, task, batch_size=128, T=2e4, dt=.1):
@@ -752,18 +751,77 @@ def plot_example_trajectories_msg(trajectories_proj2, xs, folder):
     plt.savefig(folder+'example_trials_2d.pdf', bbox_inches="tight");
 
 
-def plot_vf_ang_int():
-    
-    T=250; dt=.1; batch_size=2;
-    net.map_output_to_hidden = False
-    task = angularintegration_task_constant(T=T, dt=dt, speed_range=[0.01,0.01], sparsity=1, random_angle_init='equally_spaced');
-    input, target, mask, output, trajectories_0 = simulate_rnn_with_task(net, task, T, 'random', batch_size=batch_size)
-    wo = net.wo.detach().numpy();
+def db(x):
+    return 10*np.log10(x)
 
-    inv_man = detect_slow_manifold(trajectories_0, subsample=1, tol=1e-3)
-    inv_man_proj2 = np.dot(inv_man, wo)
-    xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(inv_man, wo, npoints=batch_size)
-    output, trajectories_1 = simulate_rnn_with_input(net, np.zeros((inv_man.shape[0],150,1)), inv_man)
+def analysis(folder, df):
+    main_exp_name='/experiments/angular_integration_old/N64_T128_noisy/relu/';
+    folder=parent_dir+main_exp_name
+    exp_list = glob.glob(folder + "/res*")
+    nexps = len(exp_list)
+    batch_size = 128
+    T=256
+    #df = pd.DataFrame(columns=['path', 'T', 'N', 'I', 'S', 'R', 'M', 'trial', 'mse', 'normalized_mse', 'vf_diff_closest', 'vf_diff_spline', 'eps_min_0', 'eps_mean_0', 'eps_plus_0', 'eps_min_input', 'eps_mean_input', 'eps_plus_input', 'losses'])
+    for exp_i in range(10):
+        path = exp_list[exp_i]
+        print(path)        
+        net, result = load_net_path(path)
+        training_kwargs = result['training_kwargs']
+        net.noise_std = 0
+        wi, wrec, brec, wo, oth = get_weights_from_net(net)
+        mse, normalized_mse = test_network(net)
+        output, trajectories_0 = get_autonomous_dynamics(net, T=T, dt=.1, batch_size=batch_size)
+        
+        net.map_output_to_hidden = False
+        inv_man = detect_slow_manifold(trajectories_0, subsample=10, tol=1e-3)
+        inv_man_proj2 = np.dot(inv_man, wo)
+        #dim = get_dimension(inv_man)
+        print("MSE: ", mse, "dB: ", db(mse_normalized)) #, "D:", dim)
+        xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(inv_man, wo, npoints=100);
+        plt.plot(csx2_proj2[:,0], csx2_proj2[:,1], '.')
+        
+        #fit spline
+        inv_man_thetas = np.arctan2(csx2_proj2[:,0], csx2_proj2[:,1]);
+        cs = get_cubic_spline_ring(inv_man_thetas, csx2)
+        
+        output, trajectories = get_autonomous_dynamics_from_hinit(net, trajectories_0[:,100,:], T=128*8)
+        fxd_pnt_thetas_traj, stabilities_traj, stab_idx, saddle_idx, fxd_pnts = detect_fixed_points_from_flow_on_ring(output, cs=cs)
+        plt.plot(np.cos(fxd_pnt_thetas_traj), np.sin(fxd_pnt_thetas_traj), '.b')
+        nfps_traj = fxd_pnt_thetas.shape[0]
+        
+        output, trajectories = get_autonomous_dynamics_from_hinit(net, csx2, T=128)
+        fxd_pnt_thetas_csx2, stabilities_csx2, stab_idx, saddle_idx, fxd_pnts = detect_fixed_points_from_flow_on_ring(output, cs=cs)
+        plt.plot(np.cos(fxd_pnt_thetas_csx2), np.sin(fxd_pnt_thetas_csx2), '.r')
+        nfps_csx2 = fxd_pnt_thetas.shape[0]
+        
+        
+        rnn_ode=get_rnn_ode(training_kwargs['nonlinearity'])
+        vf_diff_spline, vf_diff_closest, U_spline, V_spline, U_closest, V_closest = vf_inv_man_analysis(inv_man, wo, wrec, brec, cs, rnn_ode=rnn_ode)
+        #vf_diff_points, X, Y, U, V = vf_on_ring(csx2, wo,  wrec, brec, None, method='points', rnn_ode=rnn_ode)
+        
+        eps_min_0, eps_mean_0, eps_plus_0 = angular_loss_angvel_noinput(net, angle_init=xs, h_init=csx2, T=128, batch_size=128, dt=0.1, random_seed=100, noise_std=0.)
 
-    diff, X, Y, U, V = vf_on_ring(trajectories_1[:,-1,:], wo,  wrec, brec, None, rnn_ode=recttanh_ode, method='points')
-    plot_vf_on_ring(X,Y,U,V);
+
+        T, N, I, S, R, M, clip_gradient = get_tr_par(training_kwargs)
+        df = df.append({'path':path,
+        'T': T, 'N': N, 'I': I, 'S': S, 'R': R, 'M': M, 'clip_gradient':clip_gradient,
+                    'trial': exp_i,
+                    'mse': mse,
+                    'normalized_mse':normalized_mse,
+                    'nfps_traj': nfps_traj,
+                    'nfps_csx2': nfps_csx2,
+                    'stabilities_traj':stabilities_traj,
+                    'stabilities_csx2':stabilities_csx2,
+                    'fxd_pnt_thetas_traj':fxd_pnt_thetas_traj,
+                    'fxd_pnt_thetas_csx2':fxd_pnt_thetas_csx2,
+                    'vf_diff_closest':vf_diff_closest,
+                     'vf_diff_spline':vf_diff_spline,
+                     'vf_infty_closest':np.max(vf_diff_closest),
+                     'vf_infty_spline':np.max(vf_diff_spline),
+                     'vf_closest':np.array([U_closest, V_closest]),
+                     'vf_spline':np.array([U_spline, V_spline]),
+                     'inv_man':inv_man,
+                      'eps_min_0':eps_min_0,
+                       'eps_mean_0':eps_mean_0,
+                        'eps_plus_0':eps_plus_0
+                        }, ignore_index=True)
