@@ -174,7 +174,7 @@ We further analyze task-trained artificial recurrent neural networks to reveal a
 %Nevertheless, as we will show, not all implementations of continuous attractors behave similarly in their brittleness, yet all approximations of continuous attractors can be characterized as slow manifolds.
 %A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} or finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:ras}.
 
-\section{A critique of pure continuous attractors}
+\section{A critique of pure continuous attractors}\label{sec:cas}
 %par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
 %Fig1
 
@@ -264,13 +264,10 @@ Continuous attractor models of the head-direction representation suggest that th
 %Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 Other examples include
 integration of evidence for continuous perceptual judgments, e.g. a hunting predator that needs to compute the net direction of motion of a large group of prey \citep{esnaola2022flexible}.
+Similarly as with the line attractor, the ring attractor bifurcates for virtually every perturbation.
+Nevertheless, the bifurcated dynamics again follow a similar patter of the dynamics restricted to the state space around the original continuous attractor.
 
-We demonstrate the consequences of the Persistence Theorem in multiple models with a continuous ring attractor.
-As continuous ring attractor are bounded their invariant manifold persists and it remains attractive under small perturbations to this system ~\citep{wiggins1994}. 
-%Furthermore, because the ring attractor is boundaryless %it is both forward and backward invariant, i.e. hence
-%the persistent manifold is invariant ~\citep{wiggins1994}.
-
-Firstly, we investigated perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
+Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
 This model is composed of $N$ heading-tuned neurons with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec.~\ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. 
 This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
@@ -411,7 +408,10 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark 
 %On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence. %extension: 
 %Importantly, the ``slow'' flow on the perturbed system is not bounded.
 
-
+Fenichel's Invariant Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:}.
+As continuous ring attractor are bounded their invariant manifold persists and it remains attractive under small perturbations to this system ~\citep{wiggins1994}. 
+%Furthermore, because the ring attractor is boundaryless %it is both forward and backward invariant, i.e. hence
+%the persistent manifold is invariant ~\citep{wiggins1994}.
 
 %Given an $d$-dimensional continuous attractor manifold embedded within a recurrent dynamics of $n$-dimensions, it supports persistent continuous memory of $d$-dimension.
 %There are $d$ zero Lyapunov exponents corresponding to the perturbations tangent to the manifold, coinciding with the memory representation, and $(n-d)$ negative Lyapunov exponents that expresses the attractive nature.
