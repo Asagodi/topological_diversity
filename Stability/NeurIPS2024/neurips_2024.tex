@@ -624,8 +624,7 @@ while saddle nodes are identified wherethey are pointing away.
 
 The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
  much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
-% 
- 
+
  
  Previously, it has been observed that  fixed point analysis  has as a major limitation, namely, that the number of fixed points must be the equal across compared networks  \citep{maheswaranathan2019universality}.
 Our methodology effectively addresses and overcomes this limitation.
@@ -2102,9 +2101,12 @@ The vector field (Fig. \ref{fig:asymptotic_analysis}C) suggests that the system 
 \newpage
 
 \section{Bounding the loss}
+We formulate here a theory of continuous attractor approximations in terms of memory loss over time.
 
-$\boldsymbol{\alpha} \in \mathcal{U} \subset \mathbb{R}^D$ with distance $d(x,y): \mathcal{U} \times \mathcal{U} \rightarrow \mathbb{R}$. Then we have a dynamical system $\bm{x} \in \mathbb{R}^N$ with autonomous dynamics $\dot{ \bm{x}} = F_{\boldsymbol{\theta}} (\bm{x})$. There is an encoder mapping $f: \mathcal{U} \rightarrow \mathbb{R}^N$ such that the inverse of this encoder mapping is a function (although not necessarily injective): $f^{-1}: Im(f) \rightarrow \mathcal{U}$. Then, we define our memory loss in a time $T$ as:
-
+Let $\boldsymbol{\alpha} \in \mathcal{U} \subset \mathbb{R}^D$ with distance $d(x,y): \mathcal{U} \times \mathcal{U} \rightarrow \mathbb{R}$.
+Then we have a dynamical system $\bm{x} \in \mathbb{R}^N$ with autonomous dynamics $\dot{ \bm{x}} = F_{\boldsymbol{\theta}} (\bm{x})$. 
+Suppose that there is an encoder mapping $f: \mathcal{U} \rightarrow \mathbb{R}^N$ such that the inverse of this encoder mapping is a function (although not necessarily injective): $f^{-1}: Im(f) \rightarrow \mathcal{U}$. 
+Then, let us define a memory loss in a time $T$ as:
 \begin{equation}
     \mathcal{L}(T) = \frac{1}{|U|} \int_U  \frac{1}{|f(\bm{\alpha})|} \int_{f(\bm{\alpha})} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\bm{\alpha}),t),\bm{\alpha}) dt df(\bm{\alpha}) d\bm{\alpha}
 \end{equation}
