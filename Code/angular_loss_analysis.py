@@ -479,7 +479,15 @@ def plot_vf_on_ring(X,Y,U,V,fxd_pnt_thetas=None,stabilities=None,fig_folder=None
     if fig_folder:
         #     plt.savefig(fig_folder+f'/vf_on_ring_{fig_ext}.pdf', bbox_inches="tight")
         plt.savefig(fig_folder+f'/vf_on_ring_closest_{fig_ext}.pdf', bbox_inches="tight")
-        
+  
+def distortion(inv_man_points, wo):
+    inv_man_proj2 = np.dot(inv_man_points)
+    inv_man_thetas = np.arctan2(inv_man_proj2[:,0], inv_man_proj2[:,1])
+    proj_point_on_ring = np.array([np.cos(inv_man_thetas),np.sin(inv_man_thetas)])
+    dist = np.np.linalg.norm(inv_man_proj2 - proj_point_on_ring)
+    dist_mean = np.mean(dist)
+    return dist
+    
         
 def detect_fixed_points_from_flow_on_ring(trajectories_proj2, cs=None):
     thetas = np.arctan2(trajectories_proj2[:,:,0], trajectories_proj2[:,:,1]);
@@ -494,9 +502,14 @@ def detect_fixed_points_from_flow_on_ring(trajectories_proj2, cs=None):
     arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
     idx=[i for i, t in enumerate(zip(arr, arr[1:])) if t[0] != t[1]]; 
     stabilities=-arr[idx].astype(int)
+    
     fxd_pnt_thetas = thetas_init[idx]
     stab_idx = np.where(stabilities==-1); 
     saddle_idx = np.where(stabilities==1)
+    
+    if stabilities.shape[0]%2==1:
+        fxd_pnt_thetas=np.hstack([fxd_pnt_thetas,0])
+        stabilities=np.append(stabilities, -np.sum(stabilities))
 
     if cs:
         fxd_pnts = cs(fxd_pnt_thetas)
