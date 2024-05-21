@@ -198,7 +198,9 @@ However, interestingly, continuous attractors seemingly tend to bifurcate into i
   Some of the structure seems to remain, there is an invariant manifold that is topologically equivalent to the original continuous attractor.
     (A) Phase portraits for the bounded line attractor (Eq.~\eqref{eq:TLN}).
     Under perturbation of parameters, each of them bifurcates to systems without the continuous attractor.
-    (B) The low-rank ring attractor approximation (Sec.~\eqref{sec:supp:lowrank}).
+    (B) The low-rank ring attractor approximation (Sec.~\eqref{sec:supp:lowrank}). 
+    Different topologies exist for different realizations of a low-rank attractor with overlap between the left and right vectors, different number of fixed points (4, 8 or 12) or a limit cycle (left bottom).
+    Yet, they all share the existence of an ring invariant set.
 }
   \label{fig:lara_bifurcations}
 \end{figure}
@@ -226,7 +228,7 @@ where:
 %In discrete time, this corresponds to a ReLU RNN (see Sec.~\ref{sec:rnn:integration}).
 %The non-trivial activity of this network is limited to the (non-negative) first quadrant.
 
-When $d=2$ and $F(I)= \max(0,\cdot)$ is the threshold nonlinearity, we can build a line continuous attractor as follows.
+When $d=2$ and $F(\cdot)= \max(0,\cdot)$ is the threshold nonlinearity, we can build a line continuous attractor as follows.
 %First, through positive feedback, $\vW = [0, 1; 1, 0]$ and no bias $\vb = \mathbf{0}$, we can create a continuous attractor, i.e., $\dot{\vx} = 0$ on the $x_1 = x_2 \geq 0$ half-line, and surrounding attractive flow (Fig.~\ref{fig:ublabla}A left).
 %We refer to it as an \textbf{unbounded line attractor (UBLA)}.
 %For any point on the line attractor, linearization results in eigenvalues $0$ and $-2$, corresponding to the zero flow and attractive flow respectively.
@@ -292,10 +294,11 @@ The probability of each type of bifurcation was numerically estimated (See Sec.~
 There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\ref{fig:meaure_zero_perturbations}).
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 
-To understand the underlying mechanism of these bifurcations, it is helpful to consider a well-established way to create a continuum of fixed points on a ring
+%how can we understand the underlying mechanism of these bifurcations
 
-\mpcomment{transition missing}
-A well-established way to create a continuum of fixed points on a ring is to use a circulant matrix \citep{samsonovich1997path, seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
+%\mpcomment{transition missing}
+In modeling neural dynamics, ensuring biological plausibility is paramount.
+A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, a method consistent with its biological principles involves utilizing a circulant matrix \citep{samsonovich1997path, seeholzer2017efficient, redish1996coupled, goodridge2000, compte2000synaptic}.
 The infinite sized ring attractor network supports a stable “activity bump” that can move around the ring in correspondence with changes in head direction.
 %The position of this bump encodes the head direction.
 This can be accomplished with a connection matrix $W$ is a circular Gaussian function of $i-j$ \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
@@ -306,9 +309,9 @@ Furthermore, our theory indicates that the reason why networks of generic spikin
 \mpcomment{transition missing}
 %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
-The Dynamical Mean Field (DMF) tells us that in the limit of infinite-size networks one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors.
+The Dynamical Mean Field (DMF) tells us that in the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors.
 However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points located on a ring \citep{mastrogiuseppe2018}.
-Our theory explains this phenomenon as follows.
+Our theory explains this phenomenon as follows. %MOVE TO LATER
 We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
 %This implies that the ring attractor network 
 For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
@@ -358,7 +361,8 @@ Our emphasis in this paper centers on investigating the distinctive properties o
 
 
 \subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
-\mpcomment{probably keep it general, and not say RNN.}
+
+We start by formulating an ODE implementing a continuous attractor in continuous time: $\dot{\vx} = \vf(\vx)$.
 Let $l$ be the intrinsic dimension of the manifold of equilibria that defines the continuous attractor.
 We will reparameterize the dynamics around the manifold with coordinates $\vy \in \reals^l$ and the remaining ambient space with $\vz \in \reals^{d-l}$.
 To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function $g$ and a bifurcation parameter $\epsilon \geq 0$, such that the following system is equivalent to the original ODE:
@@ -443,25 +447,29 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark 
 
 
 \subsection{The structure of the bifurcated attractor}\label{sec:attractor_bif}
-%distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
-From the persistence theorem \mpcomment{first mention in this form}, we get a description of the persistent manifold that survives the seemingly destructive bifurcations.
-The theory implies that in the space of dynamical systems, all systems in the neighbourhood of a continuous attractor all share the same topology for the attractive persistent invariant manifold and that the flow on the manifold is slow.
+
+
+Thanks to Fenichel's Invariant Manifold Theorem, we can understand how these persistent pathways, or manifolds, survive even when the system undergoes  bifurcations.
+Essentially, this theorem assures us that the underlying structure of continuous attractors remains intact, maintaining a consistent topology despite the changes.
+%The theory implies that in the space of dynamical systems, all systems in the neighbourhood of a continuous attractor all share the same topology for the attractive persistent invariant manifold and that the flow on the manifold is slow.
+
 For a ring attractor this implies that the stability structure of the invariant manifold is either 
 (1)  composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits 
 or (2) a limit cycle.
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 For 2 dimensional attractors  stable fixed points and saddle nodes can coexist with limit cycles.
-For example, for a torus the possible slow dynamics are described by \mpcomment{partial sentence}
-For higher dimensional \mpcomment{manifolds?}, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
-For all dimensions, there will be an attractive invariant manifold with the same topological structure and dimension as the original continuous attractor.
+In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states. For example, the dynamics on a torus — a doughnut-shaped attractor — can be described by Kolmogorov-Arnold-Moser (KAM) theory,
+For higher dimensional attractors, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
+
+No matter the dimension, the essential takeaway is that there will always be an attractive invariant manifold that mirrors the topology and dimension of the original continuous attractor. This means that, even with perturbations, neural states aren't drastically altered from where they would have been, maintaining a semblance of the original flow.
 % the compact case: the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
-\mpcomment{This subsection is very dry. Make it sound cool and also explain why these are important considerations in the context of neuroscience.}
+%\mpcomment{This subsection is very dry. Make it sound cool and also explain why these are important considerations in the context of neuroscience.}
 
 
 
 
-
-
+Understanding attractors and their bifurcation structure is crucial in neuroscience because they provide a blueprint for how neural activity can remain stable and robust even in the face of disruptions.
+ This resilience is fundamental for cognitive functions, learning, and memory. 
 
 
 
@@ -613,6 +621,8 @@ This implies that the only possible implementation of a continuous valued memory
 
 
 \section{Generlalization properties}
+
+%distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
 
 Animals are trained on a task for finite time and it is therefore unclear that they learn the intended computation or just a finite time approximation of it.
 The same is the case for the trained networks.
