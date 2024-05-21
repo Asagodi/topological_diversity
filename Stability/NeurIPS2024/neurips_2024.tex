@@ -460,7 +460,8 @@ For a ring attractor this implies that the stability structure of the invariant 
 or (2) a limit cycle.
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 For 2 dimensional attractors  stable fixed points and saddle nodes can coexist with limit cycles.
-In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states. For example, the dynamics on a torus — a doughnut-shaped attractor — can be described by Kolmogorov-Arnold-Moser (KAM) theory.
+In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states.
+For example, the dynamics on a torus can be described by Kolmogorov-Arnold-Moser (KAM) theory.
 For higher dimensional attractors, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
 
 No matter the dimension, the essential takeaway is that there will always be an attractive invariant manifold that mirrors the topology and dimension of the original continuous attractor. This means that, even with perturbations, neural states aren't drastically altered from where they would have been, maintaining a semblance of the original flow.
@@ -503,14 +504,16 @@ This empirical evidence strongly corroborates our proposed theory of continuous 
 
 \subsection{Model Architectures and Training Procedure}
 We examined vanilla continuous-time RNNs for this work.
-The time discretized version of RNN network activity 
+The time discretized version of RNN network activity is
 \begin{equation}
   \begin{aligned}
 	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta \label{eq:RNN:discrete}\\
 	\vy_t &= \wout \vx_t + \bout
   \end{aligned}
 \end{equation}
-where $\vx_t \in \reals^d$ is the hidden state, $\vI_t \in \reals^K$ is the input,
+where $\vx_t \in \reals^d$ is the hidden state, 
+$\vy_t $ is the readout, 
+$\vI_t \in \reals^K$ is the input,
 $f\colon \reals \to \reals$ an activation function which acts on each of the hidden dimension, 
 private noise variable $\zeta$, and %$\zeta\sim \mathcal{N}(0, .001)$
 $\vW, \vb, \win, \wout, \bout$ are parameters.
@@ -2054,6 +2057,10 @@ The found solutions Fig.\ref{fig:angular_solutions}A-C all show bounded ring-lik
 The vector field (Fig. \ref{fig:asymptotic_analysis}C) suggests that the system exhibits input driven dynamics  corresponding to a limit cycle, which would mean that the invariant manifold of the input-driven dynamics is compact.
 %\include{iclr2024_supplementary.tex}
 
+
+
+
+\newpage
 
 \section{Bounding the loss}
 
