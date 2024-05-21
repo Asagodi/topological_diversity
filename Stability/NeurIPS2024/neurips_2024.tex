@@ -25,6 +25,7 @@
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
 %\usepackage{xr-hyper}
+\usepackage{enumitem}
 
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
 \newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
@@ -174,6 +175,7 @@ We further analyze task-trained artificial recurrent neural networks to reveal a
 %Nevertheless, as we will show, not all implementations of continuous attractors behave similarly in their brittleness, yet all approximations of continuous attractors can be characterized as slow manifolds.
 %A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} or finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:ras}.
 
+<<<<<<< HEAD
 \section{A critique of pure continuous attractors}\label{sec:cas}
 %par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
 %Fig1
@@ -191,6 +193,8 @@ Continuous attractors are not only structurally unstable, they bifurcate almost 
 Examples abound.
 However, interestingly, continuous attractors seemingly tend to bifurcate into invariant manifolds topologically equivalent to the original continuous attractor.
 
+
+\section{A critique of pure continuous attractors}\label{sec:critique}
 \begin{figure}[tbhp]
   \centering
   \includegraphics[width=\textwidth]{lara_bifurcations}
@@ -202,33 +206,50 @@ However, interestingly, continuous attractors seemingly tend to bifurcate into i
     Different topologies exist for different realizations of a low-rank attractor with overlap between the left and right vectors, different number of fixed points (4, 8 or 12) or a limit cycle (left bottom).
     Yet, they all share the existence of an ring invariant set.
 }
-  \label{fig:lara_bifurcations}
+\label{fig:lara_bifurcations}
 \end{figure}
 
+%par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
+%Fig1
 
-We will describe the bifurcation space of some continuous attractors.
-Neurons exhibit complex dynamics that can be described by differential equations.
-The membrane potential of a neuron changes over time according to the input it receives and its intrinsic properties, which can be mathematically modeled using ODEs.
-%Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
-A common form of the ODE for the firing rate \( r(t) \) of a neuron is:
+Ordinary differential equations (ODEs) are commonly used to describe the dynamical laws governing the temporal evolution of firing rates or latent population states\cite{vyas2020}.
+In this framework, neural systems are viewed as implementing the continuous time evolution of neural states to perform computations.
+We will consider a continuous attractor as a system that implements analog memory computation, persistently maintaining a particular representation as neural states over time.
+To define formally, let $\vx(t) \in \reals^d$ denote the neural state, and $\dot{\vx} = \vf(\vx)$ represent its dynamics.
+Let $\manifold \subset \reals^d$ be a manifold.
+We say $\manifold$ is a continuous attractor, if (1) every state on the manifold is a fixed point, $\forall \vx \in \manifold, \vf(\vx) = 0$, i.e., the flow is zero on the manifold, and (2) the fixed points are marginally stable tangent to the manifold and stable normal to the manifold.
+In other words, the continuous attractor is continuum of equilibrium points such that supports the neural state to stay put on the manifold.
+
+We can build a line continuous attractor as follows:
+%We will describe the bifurcation space of some continuous attractors.
+%Neurons exhibit complex dynamics that can be described by differential equations.
 \begin{align}\label{eq:TLN}
-\tau \frac{d r(t)}{d t} = -r(t) + F(I(t))
+    \dot{\vx} = -\vx + \left[ \vW \vx + \vb \right]_{+}
 \end{align}
-where:
- $\tau$ is the time constant of the neuron,
- $-r(t)$ represents the decay of the firing rate over time,
- $I(t)$ is the total input to the neuron at time \( t \) and
- $F(I)$ is a non-linear function that converts the input \( I(t) \) into an output firing rate.
-
-
-%\begin{align}\label{eq:TLN}
-%    \dot{\vx} = -\vx + \left[ \vW \vx + \vb \right]_{+}
-%\end{align}
-%where $\vx \in \reals^d$ is the hidden state of the network, $\vb$ is the bias, and $[\cdot]_{+} = \max(0,\cdot)$ is the threshold nonlinearity per unit.
+where $\vx \in \reals^d$ is the hidden state of the network, $\vb$ is the bias, and $[\cdot]_{+} = \max(0,\cdot)$ is the threshold nonlinearity per unit.
 %In discrete time, this corresponds to a ReLU RNN (see Sec.~\ref{sec:rnn:integration}).
 %The non-trivial activity of this network is limited to the (non-negative) first quadrant.
 
-When $d=2$ and $F(\cdot)= \max(0,\cdot)$ is the threshold nonlinearity, we can build a line continuous attractor as follows.
+%The membrane potential of a neuron changes over time according to the input it receives and its intrinsic properties, which can be mathematically modeled using ODEs.
+%Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
+%A common form of the ODE for the firing rate \( r(t) \) of a neuron is:
+%\begin{align}\label{eq:TLN2}
+%\tau \frac{d r(t)}{d t} = -r(t) + F(I(t))
+%\end{align}
+%where:
+%$\tau$ is the time constant of the neuron,
+%$-r(t)$ represents the decay of the firing rate over time,
+%$I(t)$ is the total input to the neuron at time \( t \) and
+%$F(I)$ is a non-linear function that converts the input \( I(t) \) into an output firing rate.
+
+% The Computation through Dynamics (CTD) framework assumes that the brain processes sensory information and generates behavior through neural dynamics, including representations of continuous-valued variables like space and direction~\cite{vyas2020}.
+
+Continuous attractors are not only structurally unstable, they bifurcate almost certainly for an arbitrary perturbation.
+Examples abound.
+However, interestingly, continuous attractors seemingly tend to bifurcate into invariant manifolds topologically equivalent to the original continuous attractor.
+
+
+%When $d=2$ and $F(\cdot)= \max(0,\cdot)$ is the threshold nonlinearity, we can build a line continuous attractor as follows.
 %First, through positive feedback, $\vW = [0, 1; 1, 0]$ and no bias $\vb = \mathbf{0}$, we can create a continuous attractor, i.e., $\dot{\vx} = 0$ on the $x_1 = x_2 \geq 0$ half-line, and surrounding attractive flow (Fig.~\ref{fig:ublabla}A left).
 %We refer to it as an \textbf{unbounded line attractor (UBLA)}.
 %For any point on the line attractor, linearization results in eigenvalues $0$ and $-2$, corresponding to the zero flow and attractive flow respectively.
@@ -712,6 +733,24 @@ For the asymptotic time-scale the asymptotic behavior of the system dominates an
 For a one dimensional system this will either be fixed points or a limit cycle.
 For a set of fixed points the maximal error is given by the maximal distance to the next fixed point while for a limit cycle this will always be $\pi$.
 
+\subsection{Converse Theory}\label{sec:converse}
+In Sec.~\ref{sec:ras}, we presented a theory of approximate solutions in the neighborhood of continuous attractors.
+When are approximate solutions to the analog working memory problem near a continuous attractor?
+We posit that there are four conditions:
+\begin{enumerate}[label=\textbf{(C\arabic*)}]
+\item approximate bijection between the neural activity and the memory content, \label{converse:bijection}
+\item the speed of drift of memory content is bounded, \label{converse:persistent}
+\item robustness against state (S-type) noise, and \label{converse:Stype}
+\item robustness against dynamical (D-type) noise \label{converse:Dtype}
+\end{enumerate}
+The correspondence implied by \ref{converse:bijection} translate to, the existence of a manifold in the neural activity space with the same topology as the memory content.
+The persistence \ref{converse:persistent} requires that the flow on the manifold is slow.
+The S-type robustness \ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
+Along with the D-type robustness \ref{converse:Dtype}, it implies the manifold is ``attractive'', and it is normally hyperbolic.
+Then, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added makes it a continuous attractor.
+For the RNN experiments, we added state-noise while training using stochastic gradient descent, satisfying \ref{converse:Stype} and \ref{converse:Dtype}.
+Although the stochastic optimization cannot lead to the continuous attractor solution, it gets to the neighborhood where there are approximate solutions.
+Note that effectively feedforward solutions~\citep{Goldman2009} do not satisfy \ref{converse:bijection}.
 
 \section{Discussion}
 The attractive manifold of equilibria in continuous attractor networks provide continuous memory.
