@@ -325,28 +325,25 @@ For finite sized networks the dynamics is constrained to an attractive invariant
 
 \ptitle{Low-rank ring attractor model} %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
-The Dynamical Mean Field (DMF) tells us that in the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors.
+Using dynamical mean field theory, in the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors. \mpcomment{add link to details}
 However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points located on a ring~\citep{mastrogiuseppe2018}.
 
 \ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
 Approximate ring attractors can be fit by constraining the connectivity so that the networks Jacobian satisfies certain necessary requirements for a ring attractor to exist (Sec.~\ref{sec:supp:empj}~\citep{pollock2020}).
 The fitted models through this method also contain an invariant ring manifold on which the dynamics contains stable and saddle fixed points.
 
-\subsection{Observations}
-\mpcomment{to extend the summary and provide outlook}
-\begin{enumerate}
-    \item biological models of ring attractors are brittle.
-    \item they bifurcate into many different topologies.
-    \item Are continuous attractors still useful as a model of how animals might represent continuous variables?
-    \item we observe ghost manifolds. Is it a universal phenomenon?
-\end{enumerate}
-We seek implementation-agnostic answers.
+\ptitle{Remark}
+In all example models of ring attractors, we verify that they suffer from the fine-tuning problem.
+We have observed ghost of the continuous attractors (either through bifurcation or from finite-size effects).
+Is it a universal phenomenon?
+Moreover, although the exact ring attractor was not implemented, they were approximate ring attractors in some sense.
+Are continuous attractors somehow still useful as a model of how animals might represent continuous variables?
+We will answer these questions in an implementation-agnostic manner.
 
-Our theory explains this phenomenon as follows. %MOVE TO LATER
-We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
-%This implies that the ring attractor network 
-For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
-
+% Our theory explains this phenomenon as follows. %MOVE TO LATER
+% We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
+% %This implies that the ring attractor network 
+% For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
 
 %\mpcomment{are we going to describe EMPJ here?}
 %how to show 
