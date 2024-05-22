@@ -27,9 +27,17 @@
 \usepackage{microtype}      % microtypography
 %\usepackage{xr-hyper}
 \usepackage{enumitem}
+
+ %% space saving tricks
 \usepackage{sidecap} % caption on the side SCfigure
 \sidecaptionvpos{figure}{c} % vertically align scfigure in sidecap
 \usepackage[compact]{titlesec}
+\setlength{\abovedisplayskip}{2pt}
+\setlength{\belowdisplayskip}{2pt}
+\AtBeginDocument{\setlength\abovedisplayskip{4pt}}
+\AtBeginDocument{\setlength\belowdisplayskip{4pt}}
+\titlespacing*{\section}{0pt}{1pt}{1pt}
+\titlespacing*{\subsection}{0pt}{1pt}{1pt}
 
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
 \newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
