@@ -477,7 +477,7 @@ As continuous ring attractor are bounded, their invariant manifold persists and 
 %While exploding gradients would prevent gradient descent to correct for deviations from the optima,
 %for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
 
-\subsection{Fast-Slow decomposition and the revival of continuous attractors}
+\subsection{Fast-Slow decomposition and the revival of continuous attractors}\label{sec:revival}
 Consider a behaviorally relevant time scale for analog working memory, for instance, 10 ms to 10 sec.
 If the dynamical system is orders of magnitude slower, for example, 1000 sec or longer, its effect is too slow to have a practical impact on the behavior that relies on the working memory mechanism.
 This clear gap in the fast and slow time scales can be recast as \emph{extended normal hyperbolicity} of the slow manifold by relaxing the zero real part to a separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
@@ -2164,9 +2164,8 @@ This vector field in the output space captures in what direction and how quickly
  
  There are some inconsistencies around saddle nodes, where the vectori field seems to point off of the manifold.	
  This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
-
-
-For the bound discussed in Sec.\ref{sec:app:bouding}, we calculate the uniform norm of the found vector field $\|f\|_\infty = \sup f(\alpha)$.
+%
+For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field $\|f\|_\infty = \sup f(\alpha)$ (see also Sec. \ref{sec:app:bouding}).
 
 %
 %
