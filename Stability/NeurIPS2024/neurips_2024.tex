@@ -793,7 +793,7 @@ The topological structure of the found solutions indeed implies how well a netwo
 
 %limitations
 We did not in detail describe the topology and dimensionality of the identified invariant manifolds.
-
+Altough for well-trained networks this seperation of timescale exists, the analysis methods are not guaranteed to work for systems without a fast-slow decomposition.
 
 %error-correcting
 Previous psychophysical, theoretical, and neurophysiological work has shown noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
@@ -886,8 +886,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 \item {\bf Claims}
     \item[] Question: Do the main claims made in the abstract and introduction accurately reflect the paper's contributions and scope?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerYes{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: The theoretical and experimental results match and we provide various examples that indicate that they generalize to other settings.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the abstract and introduction do not include the claims made in the paper.
@@ -898,8 +898,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 \item {\bf Limitations}
     \item[] Question: Does the paper discuss the limitations of the work performed by the authors?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerYes{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: We report on the limitations of the analysis in the discussion section.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper has no limitation while the answer No means that the paper has limitations, but those are not discussed in the paper. 
@@ -928,8 +928,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
     \item {\bf Experimental Result Reproducibility}
     \item[] Question: Does the paper fully disclose all the information needed to reproduce the main experimental results of the paper to the extent that it affects the main claims and/or conclusions of the paper (regardless of whether the code and data are provided or not)?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerYes{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: We report on all the analysis step decisions that might affect the results.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper does not include experiments.
@@ -948,8 +948,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 \item {\bf Open access to data and code}
     \item[] Question: Does the paper provide open access to the data and code, with sufficient instructions to faithfully reproduce the main experimental results, as described in supplemental material?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerNo{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: Although we do not provide open access to the data and code, we strive to make it available as soon as possible.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that paper does not include experiments requiring code.
@@ -965,8 +965,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 \item {\bf Experimental Setting/Details}
     \item[] Question: Does the paper specify all the training and test details (e.g., data splits, hyperparameters, how they were chosen, type of optimizer, etc.) necessary to understand the results?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerYes{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: These are reported in detail in the Supplemental.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper does not include experiments.
@@ -976,8 +976,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 \item {\bf Experiment Statistical Significance}
     \item[] Question: Does the paper report error bars suitably and correctly defined or other appropriate information about the statistical significance of the experiments?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerNA{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: We do not consider error bars in the paper.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper does not include experiments.
@@ -993,8 +993,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 \item {\bf Experiments Compute Resources}
     \item[] Question: For each experiment, does the paper provide sufficient information on the computer resources (type of compute workers, memory, time of execution) needed to reproduce the experiments?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerYes{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: Yes, we have reported the computer resources in the Supplemental.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper does not include experiments.
@@ -1006,7 +1006,7 @@ The found solutions might reflect the trade-off between robustness to noise and 
 \item {\bf Code Of Ethics}
     \item[] Question: Does the research conducted in the paper conform, in every respect, with the NeurIPS Code of Ethics \url{https://neurips.cc/public/EthicsGuidelines}?
     \item[] Answer: \answerYes{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Justification: We have read the NeurIPS Code of Ethics and make sure to preserve anonimity.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the authors have not reviewed the NeurIPS Code of Ethics.
@@ -1017,8 +1017,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 \item {\bf Broader Impacts}
     \item[] Question: Does the paper discuss both potential positive societal impacts and negative societal impacts of the work performed?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerNA{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: The paper is very theoretical and therefore, we do not expect any direct societal impact in the forseeable future.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that there is no societal impact of the work performed.
@@ -1031,8 +1031,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
     
 \item {\bf Safeguards}
     \item[] Question: Does the paper describe safeguards that have been put in place for responsible release of data or models that have a high risk for misuse (e.g., pretrained language models, image generators, or scraped datasets)?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerNA{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: We do not rely on any pretrained language models, image generators, or scraped datasets.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper poses no such risks.
@@ -1043,8 +1043,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 \item {\bf Licenses for existing assets}
     \item[] Question: Are the creators or original owners of assets (e.g., code, data, models), used in the paper, properly credited and are the license and terms of use explicitly mentioned and properly respected?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerYes{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: Yes, we rely on PyTorch and we cite it.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper does not use existing assets.
@@ -1059,8 +1059,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 \item {\bf New Assets}
     \item[] Question: Are new assets introduced in the paper well documented and is the documentation provided alongside the assets?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerNA{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: The paper does not release new assets.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper does not release new assets.
@@ -1071,8 +1071,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 \item {\bf Crowdsourcing and Research with Human Subjects}
     \item[] Question: For crowdsourcing experiments and research with human subjects, does the paper include the full text of instructions given to participants and screenshots, if applicable, as well as details about compensation (if any)? 
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerNA{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: The paper does not use any data from human subjects.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper does not involve crowdsourcing nor research with human subjects.
@@ -1082,8 +1082,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 \item {\bf Institutional Review Board (IRB) Approvals or Equivalent for Research with Human Subjects}
     \item[] Question: Does the paper describe potential risks incurred by study participants, whether such risks were disclosed to the subjects, and whether Institutional Review Board (IRB) approvals (or an equivalent approval/review based on the requirements of your country or institution) were obtained?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer:  \answerNA{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: The paper does not use any data from human subjects.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper does not involve crowdsourcing nor research with human subjects.
@@ -2128,14 +2128,14 @@ Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smoot
  
  \section{Training methods}
  
- We trained vanilla RNNs with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
+ We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
  The network size is 20 units, initialized using a normal distribution for the parameters.
   Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
    The task has 100 time steps for the training samples, and the mean squared error loss was used.
 The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
 
 The best learning rate was chosen from 5 initial runs for all networks.
-
+Training a single network took around 10 minutes on a CPU and occupied 10 percent of an 8GB RAM.
 
  \section{RNN analysis methods}
  
@@ -2144,7 +2144,8 @@ The best learning rate was chosen from 5 initial runs for all networks.
  
  \subsection{Fast-slow decomposition}
  We simulated 1024 trajectories without noise with inputs from the task and let the networks evolve for 16 times the task definition lengths.
- We took the cutoff to identify the slow manifold to be $10^{-3}$.	
+ We took the cutoff to identify the slow manifold to be $10^{-3}$ of the highest speed along each trajectory.
+ We believe that this gaurantees the identification of the slow manifold in a system that has a fast-slow decomposition.	
  We sampled 1024 points from these points to fit a periodic, cubic spline (black line in Fig.\ref{fig:fastslow_decomposition}).
  
  \subsection{Vector field on invariant manifold}\label{sec:supp:vf}
