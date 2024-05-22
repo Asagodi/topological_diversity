@@ -756,23 +756,25 @@ Note that effectively feedforward solutions~\citep{Goldman2009} do not satisfy \
 
 \section{Discussion}
 The attractive manifold of equilibria in continuous attractor networks provide continuous memory.
-Although the corresponding configurations are measure zero, we showed that  when the invariant manifold theorem holds, the finite time behavior of the trajectories only slowly break down.
+Although the corresponding configurations are measure zero, we showed that when the persistent manifold theorem holds, the finite time behavior of the trajectories only slowly break down.
 We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in various example systems.
 There were surprisingly diverse bifurcations that the network visits in the presence of stochasticity in synapses and learning signals.
-
+The fast-slow time scale analysis can reverse this process and bring all approximate continuous attractors into an equivalence class.
+This reinstates the continuous attractor as the fundamental theoretical mechanism that represents the collection of approximations.
+Unlike in most of dynamical systems theory where the asymptotic behavior and topology of stability structures are studied, we expend equal amount of focus on the effective finite time behavior and the analytical behavior of the ideal mathematical object.
 
 Training RNNs on tasks involving continuous variables results in a great variety of solutions.
 As the theory predicts, trained networks have an attractive ring invariant manifold.
- Nevertheless, within this variability, we can identify common structures.
+ Nevertheless, within this variety, we can identify common structures.
 The topological structure of the found solutions indeed implies how well a network can perform generalization for longer times.
 
 %limitations
 We did not in explicitly describe the topology and dimensionality of the identified invariant manifolds, yet the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
-Altough for well-trained networks this seperation of timescale exists, the analysis is not guaranteed to work for systems without a fast-slow decomposition.
+Although for well-trained networks this separation of timescale exists, the analysis is not guaranteed to work for systems without a fast-slow decomposition.
 
 %error-correcting
 Previous psychophysical, theoretical, and neurophysiological work has shown noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
-Discrete attractor dynamics can counteract this noise by pulling memories towards a few stable representations \citep{panichello2019}.
+Discrete attractor dynamics can counteract this noise by pulling memories towards a few stable representations~\citep{panichello2019}.
 The found solutions might reflect the trade-off between robustness to noise and the ability to store continuous variables.
 
 
