@@ -33,7 +33,7 @@
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
 \newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
 
-\DeclareGraphicsExtensions{.pdf,.png,.jpg,.mps,.eps,.ps}
+\DeclareGraphicsExtensions{.png,.pdf,.jpg,.mps,.eps,.ps}
 \graphicspath{{../figures/}, {../figures/inv_man/}}
 
 \newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
@@ -292,7 +292,7 @@ This continuum of fixed points forms a one dimensional manifold homeomorphic to 
 \begin{figure}[tbhp]
      \centering
   \includegraphics[width=\textwidth]{bio_rings}
-       \caption{ Perturbations different implementation and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact.
+       \caption{ Perturbations different implementation and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact. For each model, the network dynamics is constrained to a ring which in turn is populated by stable fixed points (green) and saddle nodes (red).
        (A) Perturbations to the ring attractor \citep{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to $2N$ (stable and saddle points are paired). 
        (B)  Perturbations a low-rank approximation of a ring attractor \citep{mastrogiuseppe2018}.
        (C)  Perturbations to a tanh approximation of a ring attractor \citep{seeholzer2017efficient}.
@@ -313,7 +313,7 @@ There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\
 %\mpcomment{transition missing}
 %In modeling neural dynamics, ensuring biological plausibility is paramount.
 \ptitle{Bump attractor model}
-A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, a method consistent with its biological principles involves utilizing a circulant matrix \citep{samsonovich1997path, seeholzer2017efficient, redish1996coupled, goodridge2000, compte2000synaptic}.
+A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, involves utilizing a circulant matrix as the connectivity matrix\citep{samsonovich1997path, seeholzer2017efficient, redish1996coupled, goodridge2000, compte2000synaptic}.
 The infinite sized ring attractor network supports a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
 %The position of this bump encodes the head direction.
 This can be accomplished with a connection matrix $W$ is a circular Gaussian function of $i-j$ \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
@@ -703,7 +703,7 @@ We tested all networks with a validation set and took a cutoff for the normalize
 
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=\textwidth]{angular_losses}
+  \includegraphics[width=\textwidth]{angular_losses2}
   \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
   (A)  
   (B)
@@ -2040,7 +2040,7 @@ The networks consisted of $N$ firing rate units with a sigmoid inputoutput trans
 \end{equation}
 where $x_i(t)$ is the total input current to unit $i$,
 $ J_{ij} = g\chi_{ij} + P_{ij}$ is the connectivity matrix, 
-$\phi(x) = tanh(x)$ is the current-to-rate transfer function, and $I_i$ is the external, feedforward input to unit $i$.
+$\phi(x) = \operatorname{tanh}(x)$ is the current-to-rate transfer function, and $I_i$ is the external, feedforward input to unit $i$.
 
 This far we focused on unit-rank connectivity structure, but our framework can be directly extended to higher-rank structure. A more general structured component of rank $r\ll N$ can be written as a superposition of $r$ independent unit-rank terms 
 \begin{equation}
