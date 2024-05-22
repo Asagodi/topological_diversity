@@ -418,7 +418,7 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark 
 %On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence. %extension: 
 %Importantly, the ``slow'' flow on the perturbed system is not bounded.
 
-Fenichel's Invariant Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:}.
+Fenichel's Invariant Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
 As continuous ring attractor are bounded their invariant manifold persists and it remains attractive under small perturbations to this system ~\citep{wiggins1994}. 
 %Furthermore, because the ring attractor is boundaryless %it is both forward and backward invariant, i.e. hence
 %the persistent manifold is invariant ~\citep{wiggins1994}.
@@ -645,7 +645,7 @@ We will investigate to what extent the networks have the intended memory necessa
 \subsection{Generalization properties of continuous attractor approximations}\label{sec:generalization}
 %, and thus a corresponding pattern of error in temporal generalization
 
-The two  possible approximations of a ring attractor exhibit markedly distinct generalization characteristics.
+The two  possible approximations of a ring attractor discussed in Sec.~\ref{sec:critique} exhibit markedly distinct generalization characteristics.
 Approximating the system as a limit cycle results in memory that gradually diminishes over time.
 Conversely, the alternative approximation's memory states are contingent upon the quantity and positioning of stable fixed points within the system.
 
@@ -681,14 +681,14 @@ Conversely, the alternative approximation's memory states are contingent upon th
 
 
 
-\subsection{Different topologies have different generalization properties}
+%\subsection{Different topologies have different generalization properties}
 
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=\textwidth]{loss}
-  \caption{
-  (A) Finite time
-  (B) Asymptotic time}
+  \includegraphics[width=\textwidth]{angular_losses}
+  \caption{The different measures for memory capacity reflect 
+  (A) 
+  (B) asymptotic time}
   \label{fig:angular_loss}
 \end{figure}
 
@@ -702,6 +702,9 @@ Conversely, the alternative approximation's memory states are contingent upon th
 \paragraph{Finite time}
 %We measure the error on the finite timescale as follows.
 
+All the trained networks can maintain memory of an angular variable, which implies that 
+
+
 
 
 %uniform bound
@@ -714,21 +717,23 @@ This loss is bounded by the uniform norm of the vector field on the invariant ma
 For a further elaboration of this bound, see Sec.Supp.~\ref{sec:app:bouding}.
 
 
+The mean accumulated error at the time at which the task was trained has a linear relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}), which is another indication that the network relies on a ring invariant manifold to implement the task.
+
 \paragraph{Asymptotic time}
-We measure the error on the asymptotic timescale as follows.
+
+For the asymptotic time-scale the asymptotic behavior of the system dominates and we identify the network behavior through its $\omega$-limit sets.
+For a one dimensional system this will either be fixed points or a limit cycle.
+For a set of fixed points the maximal error is given by the maximal distance to the next fixed point while for a limit cycle this will always be $\pi$.
 We identify the location of the fixed points as described in Sec.~\ref{sec:fastslowmethod}.
+
+
+Besides the maximal error that the network will make in the asymptotic limit, we can also characterize how many different angles the network would confuse in the asymptotic limit.
 We construct a probability distribution of what part of state space we end up in at infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring:
 \begin{equation}
 \basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}.
 \end{equation}
 Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution.
 
-
-
-
-For the asymptotic time-scale the asymptotic behavior of the system dominates and we identify the network behavior through its $\omega$-limit sets.
-For a one dimensional system this will either be fixed points or a limit cycle.
-For a set of fixed points the maximal error is given by the maximal distance to the next fixed point while for a limit cycle this will always be $\pi$.
 
 \subsection{Converse Theory}\label{sec:converse}
 In Sec.~\ref{sec:ras}, we presented a theory of approximate solutions in the neighborhood of continuous attractors.
@@ -2071,34 +2076,39 @@ Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smoot
 
 
  \section{RNN analysis methods}
+ 
+ %fast-slow
+ 
+ %
+ 
 
-\section{Training RNNs on an angular velocity integration task from scratch}
-
-
-
-
-
-
-\begin{figure}[tbhp]
-     \centering
-    \includegraphics[width=\textwidth]{analysis_small}
-       \caption{Analysis steps for the distillation of the implemented computation in a trained RNN. A) Input driven hidden trajectories for constant inputs of different magnitudes in the left (blue) and right (red) direction. B) Projection onto the output space of the attractors found by simulation until convergence to periodic solutions (color indicates the angular direction it maps to) with slow points found by minimizing the speed of the hidden (square) or output (cross) dynamics. Stability is indicated by green for stable, pink and red for saddles with 1 and 2 unstable dimensions, respectively. C) Effective input drive shown as average vector fields for the hidden dynamics projected onto the output space. Averages taken for a single constant input in left (blue) and right (red) directions.}
-         \label{fig:asymptotic_analysis}
-\end{figure}
-
-\begin{figure}[tbhp]
-     \centering
-    \includegraphics[width=\textwidth]{example_solutions}
-       \caption{A) A solution with a single limit cycle (light blue) that gets mapped onto a small subset of the output space. B) A solution with multiple limit cycles spread around the ring attractor. C) A solution with only fixed points spread around a ring like attractor with slow dynamics.}
-         \label{fig:angular_solutions}
-\end{figure}
+%\section{Training RNNs on an angular velocity integration task from scratch}
 
 
-For the angular velocity integration task, typical solutions have two limit cycles corresponding to the two directions of constant inputs. The autonomous dynamics can be characterized by an (approximate) line attractor with two (approximate) ring attractors at the ends. 
-The found solutions Fig.\ref{fig:angular_solutions}A-C all show bounded ring-like attractors. These solutions are all composed of two rings (Fig.\ref{fig:asymptotic_analysis}A) connected by an (approximate) line attractor.
 
-The vector field (Fig. \ref{fig:asymptotic_analysis}C) suggests that the system exhibits input driven dynamics  corresponding to a limit cycle, which would mean that the invariant manifold of the input-driven dynamics is compact.
-%\include{iclr2024_supplementary.tex}
+
+%
+%
+%\begin{figure}[tbhp]
+%     \centering
+%    \includegraphics[width=\textwidth]{analysis_small}
+%       \caption{Analysis steps for the distillation of the implemented computation in a trained RNN. A) Input driven hidden trajectories for constant inputs of different magnitudes in the left (blue) and right (red) direction. B) Projection onto the output space of the attractors found by simulation until convergence to periodic solutions (color indicates the angular direction it maps to) with slow points found by minimizing the speed of the hidden (square) or output (cross) dynamics. Stability is indicated by green for stable, pink and red for saddles with 1 and 2 unstable dimensions, respectively. C) Effective input drive shown as average vector fields for the hidden dynamics projected onto the output space. Averages taken for a single constant input in left (blue) and right (red) directions.}
+%         \label{fig:asymptotic_analysis}
+%\end{figure}
+%
+%\begin{figure}[tbhp]
+%     \centering
+%    \includegraphics[width=\textwidth]{example_solutions}
+%       \caption{A) A solution with a single limit cycle (light blue) that gets mapped onto a small subset of the output space. B) A solution with multiple limit cycles spread around the ring attractor. C) A solution with only fixed points spread around a ring like attractor with slow dynamics.}
+%         \label{fig:angular_solutions}
+%\end{figure}
+%
+%
+%For the angular velocity integration task, typical solutions have two limit cycles corresponding to the two directions of constant inputs. The autonomous dynamics can be characterized by an (approximate) line attractor with two (approximate) ring attractors at the ends. 
+%The found solutions Fig.\ref{fig:angular_solutions}A-C all show bounded ring-like attractors. These solutions are all composed of two rings (Fig.\ref{fig:asymptotic_analysis}A) connected by an (approximate) line attractor.
+%
+%The vector field (Fig. \ref{fig:asymptotic_analysis}C) suggests that the system exhibits input driven dynamics  corresponding to a limit cycle, which would mean that the invariant manifold of the input-driven dynamics is compact.
+%%\include{iclr2024_supplementary.tex}
 
 
 
@@ -2108,8 +2118,8 @@ The vector field (Fig. \ref{fig:asymptotic_analysis}C) suggests that the system 
 \section{Bounding the loss}\label{sec:app:bouding}
 We formulate here a theory of continuous attractor approximations in terms of memory loss over time.
 
-Let $\boldsymbol{\alpha} \in \mathcal{U} \subset \mathbb{R}^D$ with distance $d(x,y): \mathcal{U} \times \mathcal{U} \rightarrow \mathbb{R}$.
-Then we have a dynamical system $\bm{x} \in \mathbb{R}^N$ with autonomous dynamics $\dot{ \bm{x}} = F_{\boldsymbol{\theta}} (\bm{x})$. 
+Let $\mathcal{U}\subset \mathbb{R}^D$ be a subamifold and  with metric $d(x,y): \mathcal{U} \times \mathcal{U} \rightarrow \mathbb{R}$.
+%Then we have a dynamical system $\bm{x} \in \mathbb{R}^N$ with autonomous dynamics $\dot{ \bm{x}} = F_{\boldsymbol{\theta}} (\bm{x})$. 
 Suppose that there is an encoder mapping $f: \mathcal{U} \rightarrow \mathbb{R}^N$ such that the inverse of this encoder mapping is a function (although not necessarily injective): $f^{-1}: Im(f) \rightarrow \mathcal{U}$. 
 Then, let us define a memory loss in a time $T$ as:
 \begin{equation}
