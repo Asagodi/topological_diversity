@@ -28,7 +28,6 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 from models import RNN 
-from analysis_functions import simulate_rnn_with_input, simulate_rnn_with_task
 from tasks import angularintegration_task, angularintegration_task_constant, center_out_reaching_task
 from odes import tanh_ode, recttanh_ode, relu_ode
 
@@ -89,8 +88,6 @@ def get_rnn_ode(nonlinearity):
         return relu_ode
     elif nonlinearity == 'rect_tanh':
         return recttanh_ode
-    elif nonlinearity == 'softplus':
-        return softplus_ode
 
 def get_weights_from_net(net):
     wi = net.wi.detach().numpy()
@@ -111,7 +108,7 @@ def plot_losses(folder):
     all_losses = np.empty((100,5000))
     all_losses[:] = np.nan
     for exp_i, path in tqdm(enumerate(paths)):
-        net, result = load_net(path)
+        net, result = load_net_path(path)
         losses = result['losses']
         ax.plot(losses[:np.argmin(losses)], 'b', alpha=.05)
         all_losses[exp_i, :np.argmin(losses)-1] = losses[:np.argmin(losses)-1]
@@ -120,7 +117,23 @@ def plot_losses(folder):
 
 
 
+def simulate_rnn_with_input(net, input, h_init):
+    input = torch.from_numpy(input).float();
+    output, trajectories = net(input, return_dynamics=True, h_init=h_init); 
+    output = output.detach().numpy();
+    trajectories = trajectories.detach().numpy()
+    return output, trajectories
 
+def simulate_rnn_with_task(net, task, T, h_init, batch_size=256):
+
+    input, target, mask = task(batch_size);
+    input_ = torch.from_numpy(input).float();
+    target_ = torch.from_numpy(target).float();
+    output, trajectories = net(input_, return_dynamics=True, h_init=h_init, target=target_); 
+    
+    output = output.detach().numpy();
+    trajectories = trajectories.detach().numpy()
+    return input, target, mask, output, trajectories
 
 
 
@@ -486,7 +499,7 @@ def distortion(inv_man_points, wo):
     proj_point_on_ring = np.array([np.cos(inv_man_thetas),np.sin(inv_man_thetas)])
     dist = np.np.linalg.norm(inv_man_proj2 - proj_point_on_ring)
     dist_mean = np.mean(dist)
-    return dist
+    return dist, dist_mean
     
         
 def detect_fixed_points_from_flow_on_ring(trajectories_proj2, cs=None):
@@ -751,7 +764,26 @@ def plot_losses_in_folder(folder):
     axs[1].axis('off')
     
     
-
+def nonlinearity_to_marker_mapping(nonlinearity):
+    if nonlinearity=='rect_tanh':
+        return 'o'  # Circle marker
+    elif nonlinearity=='tanh':
+        return 's'  # Square marker
+    elif nonlinearity=='relu':
+        return '^'  # Triangle marker
+    
+def size_to_color_mapping(nrec):
+    if nrec==32:
+        return 'r'  
+    elif nrec==64:
+        return 'b' 
+    elif nrec==128:
+        return 'g' 
+    elif nrec==256:
+        return 'orange'
+    
+nrecs=[32,64,128,256]
+colors=[size_to_color_mapping(nrec) for nrec in nrecs]
 
 def plot_example_trajectories_msg(trajectories_proj2, xs, folder):
     
@@ -764,7 +796,49 @@ def plot_example_trajectories_msg(trajectories_proj2, xs, folder):
     plt.scatter(np.cos(xs), np.sin(xs), s=100, facecolors='none', edgecolors=cmap(norm(xs)))
     ax.axis('off')
     plt.savefig(folder+'example_trials_2d.pdf', bbox_inches="tight");
+    
+    
+def plot_spline_vs_nmse(df):
+    fig, ax = plt.subplots(1, 1, figsize=(5, 3));
+    #ax.plot(df2['vf_infty_spline'], db(df2['mse_normalized']),'x'); plt
+    ax.set_xscale('log'); ax.set_xlabel('$|f|_\infty$');ax.set_ylabel('NMSE (dB)'); 
+    plt.axhline(-20, color='red', linestyle='--')
+    ax = plt.gca()
+    for nonlinearity in df2['S'].unique():
+        subset = df2[df2['S'] == nonlinearity]
+        for nrec in df2['N'].unique(): 
+            subsubset = subset[subset['N']==nrec]
+            plt.scatter(subsubset['vf_infty_closest'], db(subsubset['mse_normalized']), color=size_to_color_mapping(nrec), marker=nonlinearity_to_marker_mapping(nonlinearity))
+        #plt.scatter(subset['vf_infty_spline'], db(subset['mse_normalized']), marker=nonlinearity_to_marker_mapping(nonlinearity), label=nonlinearity)
+    first_legend = plt.legend(title='Nonlinearity', loc='upper left')
+    lines = [Line2D([0], [0], color=c, linewidth=2, linestyle='-') for c in colors]
+    first_legend = plt.legend(lines, nrecs, title='Network Size', loc='lower right')
+    ax.add_artist(first_legend)
+    marker_legend = [Line2D([0], [0], color='black', marker=m, linestyle='') for m in markers]
+    plt.legend(marker_legend, df2['S'].unique(), title='nonlinearity', loc='upper right')
+    plt.savefig(figfolder+"/vfinftyclosest_nmse.pdf");
 
+
+def plot_vf_vs_meanangularerror():
+    for nonlinearity in df2['S'].unique():
+        subset = df_good[df_good['S']==nonlinearity]
+        
+        
+        
+        for nrec in df_good['N'].unique():
+            subsubset = subset[df_good['N']==nrec]
+            vf_infty = np.stack(subsubset['vf_infty_spline'].to_numpy())
+            mean_error_0 = np.stack(subsubset['mean_error_0'].to_numpy())
+            mean_error_0_infty = mean_error_0[:,128]
+            mean_error_0_infty = mean_error_0[:,-1]
+            marker=nonlinearity_to_marker_mapping(nonlinearity)
+            color=size_to_color_mapping(nrec)
+            plt.scatter(vf_infty,mean_error_0_infty,color=color,marker=marker)
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel('$|f|_\infty$')
+    plt.ylabel('mean angular error')
+    plt.savefig(figfolder+"/vfinftyspline_vs_meanangularerror.pdf");
 
 def max_angle(fxd_pnt_thetas):
     dist_next = fxd_pnt_thetas-np.roll(fxd_pnt_thetas,1)
@@ -787,6 +861,11 @@ def boa(fxd_pnt_thetas):
 
 def db(x):
     return 10*np.log10(x)
+
+
+# df_good = df2[db(df2['mse_normalized'])<-20]
+######mean_error_0 = np.stack(df2['mean_error_0'].to_numpy())
+
 
 def analysis(folder, df, batch_size=128, T=256, T1_multiple=16, auton_mult=4, input_strength=0.05, subsample=10, tol=1e-3):
     #main_exp_name='/experiments/angular_integration_old/N64_T128_noisy/relu/';
