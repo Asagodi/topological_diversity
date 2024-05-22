@@ -624,9 +624,11 @@ We find the slow manifold  by integrating the autonomous dynamics and we select 
 In the cases that we identify a one dimensional invariant manifold $\manifold$, we parametrize it by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
 Alternatively, we identify the points along the trajectories that are the closest to a set of point in the output space relevant to the task after convergence, i.e. on the unit ring.
 %Finally, we find the stable fixed points through a threshold on the 
-Finally, we find the fixed points on the invariant ring by identifying regions where the direction of the flow flips.
+Finally, we find the fixed points on the invariant ring by identifying regions where the direction of the flow flips for a dense set of points on the found invariant manifold.
+We assess the direction through projection onto the output mapping and calculating the angular flow.
 Stable fixed points are identified where the flow directions are both pointing towards this flip point, 
 while saddle nodes are identified wherethey are pointing away.
+We find that long integrated trajectories of the network converge to the found stable fixed points through this independent method.
 
 
 
