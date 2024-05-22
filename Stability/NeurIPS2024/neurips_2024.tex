@@ -434,14 +434,14 @@ Furthermore, the non-zero flow on the slow manifold is slow and given in the $\e
 In addition, the stable manifold of $\manifold_0$ is similarly  persistent~\cite{Jones1995}, implying the manifold $\manifold_\epsilon$ to remain attractive.
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
- As a technical note, for the theory apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting \cite{simpson2018}, which is also the case for the BLA.
+ As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting \cite{simpson2018}, which is also the case for the BLA.
 %applicability of Fenichel’s invariant manifold theorem on continuous piecewise linear (PWL) dynamical systems.
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points, and is overall still attractive.
 %On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence. %extension: 
 %Importantly, the ``slow'' flow on the perturbed system is not bounded.
 
 Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
-As continuous ring attractor are bounded their invariant manifold persists and it remains attractive under small perturbations to this system~\citep{wiggins1994}.
+As continuous ring attractor are bounded, their invariant manifold persists and it remains attractive under small perturbations to this system~\citep{wiggins1994}.
 %Furthermore, because the ring attractor is boundaryless %it is both forward and backward invariant, i.e. hence
 %the persistent manifold is invariant ~\citep{wiggins1994}.
 
@@ -1005,7 +1005,7 @@ The found solutions might reflect the trade-off between robustness to noise and 
     
 \item {\bf Code Of Ethics}
     \item[] Question: Does the research conducted in the paper conform, in every respect, with the NeurIPS Code of Ethics \url{https://neurips.cc/public/EthicsGuidelines}?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Answer: \answerYes{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
     \item[] Justification: \justificationTODO{}
     \item[] Guidelines:
     \begin{itemize}
@@ -2133,6 +2133,8 @@ Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smoot
   Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
    The task has 100 time steps for the training samples, and the mean squared error loss was used.
 The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
+
+The best learning rate was chosen from 5 initial runs for all networks.
 
 
  \section{RNN analysis methods}
