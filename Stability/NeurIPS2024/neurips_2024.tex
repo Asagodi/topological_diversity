@@ -176,24 +176,6 @@ We further analyze task-trained artificial recurrent neural networks to reveal a
 %A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} or finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:ras}.
 
 
-\section{A critique of pure continuous attractors}\label{sec:cas}
-%par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
-%Fig1
-
-Ordinary differential equations (ODEs) are commonly used to describe the dynamical laws governing the temporal evolution of firing rates or latent population states\cite{vyas2020}.
-In this framework, neural systems are viewed as implementing the continuous time evolution of neural states to perform computations.
-We will consider a continuous attractor as a system that implements analog memory computation, persistently maintaining a particular representation as neural states over time.
-To define formally, let $\vx(t) \in \reals^d$ denote the neural state, and $\dot{\vx} = \vf(\vx)$ represent its dynamics.
-Let $\manifold$ be a bounded manifold.
-
-
-% The Computation through Dynamics (CTD) framework assumes that the brain processes sensory information and generates behavior through neural dynamics, including representations of continuous-valued variables like space and direction~\cite{vyas2020}.
-
-Continuous attractors are not only structurally unstable, they bifurcate almost certainly for an arbitrary perturbation.
-Examples abound.
-However, interestingly, continuous attractors seemingly tend to bifurcate into invariant manifolds topologically equivalent to the original continuous attractor.
-
-
 \section{A critique of pure continuous attractors}\label{sec:critique}
 \begin{figure}[tbhp]
   \centering
