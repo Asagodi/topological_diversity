@@ -478,24 +478,25 @@ If the dynamical system is orders of magnitude slower, for example, 1000 sec or 
 This clear gap in the fast and slow time scales can be recast as \emph{extended normal hyperbolicity} of the slow manifold by relaxing the zero real part to a separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
 In other words, the attractive flow normal to the manifold needs to be uniformly faster than the flow on the manifold.
 
-By taking the limit of the slow flow to infinity, we achieve the reversal of the persistent manifold theorem.
-\begin{prop}[Revival of continuous attractor (informal)]
+By taking the limit of the slow flow on the manifold to arbitrarily long time constant (i.e., to zero flow), we achieve the reversal of the persistent manifold theorem.
+\begin{prop}[Revival of continuous attractor (informal)]\label{prop:revival}
 Let $\manifold_\epsilon$ be a connected, compact, slow manifold with extended normal hyperbolicity. % in the neighborhood of a continuous attractor.
 Let the uniform norm of the flow tangent to the manifold be $\eta$.
-There exist a perturbation with uniform norm at most $\eta$ that induces a bifurcation to a continuous attractor manifold.
+There exist a perturbation with uniform norm at most $\eta$ that induces a bifurcation to a continuous attractor manifold $\manifold_0$ diffeomorphic to $\manifold_\epsilon$.
 \end{prop}
 
-We can bound the memory performance on the short-time scale performance based on the uniform bound of the slow flow.
+The uniform norm of vector field on the manifold is a useful measure of distance from a continuous attractor.
+It can also be used to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
 Let $\vx_0 \in \manifold$, and $\phi = \vp\vert_\manifold$ be the flow restricted to the manifold.
+The average deviation from initial memory $\vx_0$ over time is bounded linearly.
 \begin{align}\label{eq:distance:ub}
 \frac{1}{\manifold}\int_\manifold
 %\frac{1}{T}\int_0^T
-\abs{\vx(t, \vx_0) - \vx_0}
+\abs{\vx(t, \vx_0) - \vx_0}\,
 %\dm{t}
 \dm{\vx_0}
-\leq t\,\uniformNorm{\phi}
+\leq t\uniformNorm{\phi}
 \end{align}
-\mpcomment{refer to later section on generalization performance?}
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
 It is expected that working memory tasks generalize to longer durations~\citep{Park2023a}.
