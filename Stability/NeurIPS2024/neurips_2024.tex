@@ -697,7 +697,7 @@ We will assess this capacity at two different time-scales:  asymptotic and finit
   \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
   (A) The average accumulated angular error versus the uniform norm on the vector field (left and right hand side of Eq.~\ref{eq:distance:ub}, respectively), shown for finite time ($T_1$ indicated with filled markers and at asymptotic time (with hollow markers).
   (B) The memory capacity versus the average accumulated angular error.
-  (C) The number of fixed points versus average accumulated angular error.
+  (C) The number of fixed points versus average accumulated angular error, with the average distance between neighbouring fixed points indicated in red.
   (D) The  average accumulated angular error over time for two selected networks, indicated with the blue and orange arrows in (C).
   (E) Distribution of network performance measured on a validation dataset measured as normalized MSE.
   }
@@ -768,8 +768,8 @@ As the theory predicts, trained networks have an attractive ring invariant manif
 The topological structure of the found solutions indeed implies how well a network can perform generalization for longer times.
 
 %limitations
-We did not explicitly describe the topology and dimensionality of the identified invariant manifolds, yet the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
-Although for well-trained networks this separation of timescale exists, the analysis is not guaranteed to work for systems without a fast-slow decomposition.
+We did not explicitly describe the topology and dimensionality of the identified invariant manifolds for all the networks, only for a representative set, yet the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
+Although for well-trained networks this separation of timescale exists, the analysis is not guaranteed to work for systems without a fast-slow decomposition.	
 
 %error-correcting
 Previous psychophysical, theoretical, and neurophysiological work has shown noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
