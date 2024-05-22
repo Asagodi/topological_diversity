@@ -491,35 +491,32 @@ Let $\vx_0 \in \manifold$, and $\phi = \vp\vert_\manifold$ be the flow restricte
 \dm{\vx_0}
 \leq t\,\uniformNorm{\phi}
 \end{align}
+\mpcomment{refer to later section on generalization performance?}
 
-\subsection{The structure of the bifurcated attractor}\label{sec:attractor_bif}
-
-Understanding attractors and their bifurcation structure is crucial in neuroscience because they provide a blueprint for how neural activity can remain stable and robust even in the face of disruptions.
-This resilience is fundamental for cognitive functions, learning, and memory. 
-
-
-Thanks to Fenichel's Persistent Manifold Theorem, we can understand how these persistent pathways, or manifolds, survive even when the system undergoes  bifurcations.
-Essentially, this theorem assures us that the underlying structure of continuous attractors remains intact, maintaining a consistent topology despite the changes.
+\subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
+It is expected that working memory tasks generalize to longer durations~\citep{Park2023a}.
+Long-time scale behavior of the slow manifold is dominated by the stability structure, i.e., the topology of the dynamics.
+Although we have seen numerous topologies in Sec.~\ref{sec:critique}, they are fundamentally limited, especially in low-dimensions.
+%Understanding attractors and their bifurcation structure is crucial in neuroscience because they provide a blueprint for how neural activity can remain stable and robust even in the face of disruptions.
+%This resilience is fundamental for cognitive functions, learning, and memory. 
+%Thanks to Fenichel's Persistent Manifold Theorem, we can understand how these persistent pathways, or manifolds, survive even when the system undergoes  bifurcations.
+%Essentially, this theorem assures us that the underlying structure of continuous attractors remains intact, maintaining a consistent topology despite the changes.
 %The theory implies that in the space of dynamical systems, all systems in the neighbourhood of a continuous attractor all share the same topology for the attractive persistent invariant manifold and that the flow on the manifold is slow.
 
-For a ring attractor this implies that the stability structure of the invariant manifold is either 
-(1)  composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits 
-or (2) a limit cycle.
+For a ring attractor this implies that the stability structure of the invariant manifold is either
+(1) composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits, or (2) a limit cycle.
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
-For 2 dimensional attractors  stable fixed points and saddle nodes can coexist with limit cycles.
+For 2 dimensional attractors stable fixed points and saddle nodes can coexist with limit cycles.
 In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states.
 For example, the dynamics on a torus can be described by Kolmogorov-Arnold-Moser (KAM) theory.
+\mpcomment{how does KAM help us?}
 For higher dimensional attractors, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
+\mpcomment{refer to later section on generalization performance?}
 
-No matter the dimension, the essential takeaway is that there will always be an attractive invariant manifold that mirrors the topology and dimension of the original continuous attractor. This means that, even with perturbations, neural states aren't drastically altered from where they would have been, maintaining a semblance of the original flow.
+%No matter the dimension, the essential takeaway is that there will always be an attractive invariant manifold that mirrors the topology and dimension of the original continuous attractor.
+%This means that, even with perturbations, neural states aren't drastically altered from where they would have been, maintaining a semblance of the original flow.
 % the compact case: the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
 %\mpcomment{This subsection is very dry. Make it sound cool and also explain why these are important considerations in the context of neuroscience.}
-
-
-
-
-
-
 
 
 \section{Continuous attractor approximations} %from trained RNNs
