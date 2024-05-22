@@ -196,21 +196,32 @@ We further analyze task-trained artificial recurrent neural networks to reveal a
 
 Ordinary differential equations (ODEs) are commonly used to describe the dynamical laws governing the temporal evolution of firing rates or latent population states\cite{vyas2020}.
 In this framework, neural systems are viewed as implementing the continuous time evolution of neural states to perform computations.
-We will consider a continuous attractor as a system that implements analog memory computation, persistently maintaining a particular representation as neural states over time.
-To define formally, let $\vx(t) \in \reals^d$ denote the neural state, and $\dot{\vx} = \vf(\vx)$ represent its dynamics.
+We will consider a continuous attractor as a system that implements analog memory computation: persistently maintaining a particular representation as neural states over time.
+To define it formally, let $\vx(t) \in \reals^d$ denote the neural state, and $\dot{\vx} = \vf(\vx)$ represent its dynamics.
 Let $\manifold \subset \reals^d$ be a manifold.
-We say $\manifold$ is a continuous attractor, if (1) every state on the manifold is a fixed point, $\forall \vx \in \manifold, \vf(\vx) = 0$, i.e., the flow is zero on the manifold, and (2) the fixed points are marginally stable tangent to the manifold and stable normal to the manifold.
-In other words, the continuous attractor is continuum of equilibrium points such that supports the neural state to stay put on the manifold.
+We say $\manifold$ is a continuous attractor, if (1) every state on the manifold is a fixed point, $\forall \vx \in \manifold, \vf(\vx) = 0$, and (2) the fixed points are marginally stable tangent to the manifold and stable normal to the manifold.
+In other words, the continuous attractor is continuum of equilibrium points such that the neural state near the manifold is attracted to it and on the manifold the state does not move.
 
-We can build a line continuous attractor as follows:
+For example, we can construct a line attractor (a continuous attractor with a line as the manifold) as follows:
 %We will describe the bifurcation space of some continuous attractors.
 %Neurons exhibit complex dynamics that can be described by differential equations.
 \begin{align}\label{eq:TLN}
     \dot{\vx} = -\vx + \left[ \vW \vx + \vb \right]_{+}
 \end{align}
-where $\vx \in \reals^d$ is the hidden state of the network, $\vb$ is the bias, and $[\cdot]_{+} = \max(0,\cdot)$ is the threshold nonlinearity per unit.
+where $\vW = [0, -1; -1, 0]$ and $\vb = [1; 1]$, and $[\cdot]_{+} = \max(0,\cdot)$ is the threshold nonlinearity per unit.
+%where $\vx \in \reals^2$, $\vb \in \reals^2$ is the bias, $\vW \in \reals^{2\times 2}$ is the recurrent weight, and $[\cdot]_{+} = \max(0,\cdot)$ is the threshold nonlinearity per unit.
 %In discrete time, this corresponds to a ReLU RNN (see Sec.~\ref{sec:rnn:integration}).
 %The non-trivial activity of this network is limited to the (non-negative) first quadrant.
+%The second kind of continuous attractor is created through negative feedback.
+We get $\dot{\vx} = 0$ on the $x_1 = -x_2 + 1$ line segment in the first quadrant as the manifold.
+%We refer to it as the \emph{bounded line attractor} (BLA).
+Linearization of the fixed points on the manifold exhibits two eigenvalues, $0$ and $-2$.
+
+%and perturbations cause the null eigenvalue to be non-zero and the line attractor disappears.
+%However, surprisingly, the bifurcations are qualitatively different.
+It either bifurcates into a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stable fixed points separated with a saddle node in between (Fig.~\ref{fig:lara_bifurcations}A bottom).
+%Neither of these two cases show a divergent flow, but rather consists of one or two basins of attraction.
+%It implies only vanishing gradients for this system and \textbf{exploding gradients will not be present for an arbitrarily long time}.
 
 %The membrane potential of a neuron changes over time according to the input it receives and its intrinsic properties, which can be mathematically modeled using ODEs.
 %Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
@@ -240,14 +251,6 @@ However, interestingly, continuous attractors seemingly tend to bifurcate into i
 %However, if it becomes positive (Fig.~\ref{fig:ublabla}A top), \emph{the resulting flow diverges to infinity along the diagonal}.
 %Corresponding to the divergent flow, the backpropagating gradient over time exponentially grows in magnitude, thus rendering gradient descent impractical without truncation in time.
 %
-%The second kind of continuous attractor is created through negative feedback.
-By choosing $\vW = [0, -1; -1, 0]$ and $\vb = [1; 1]$, we get $\dot{\vx} = 0$ on the $x_1 = -x_2 + 1$ line segment in the first quadrant as the continuous attractor.
-We refer to it as the \emph{bounded line attractor} (BLA).
-Linearization on the attractor shows two eigenvalues, $0$ and $-2$, and perturbations cause the null eigenvalue to be non-zero and the line attractor disappears.
-%However, surprisingly, the bifurcations are qualitatively different.
-It either bifurcates into a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stable fixed points separated with a saddle node in between (Fig.~\ref{fig:lara_bifurcations}A bottom).
-%Neither of these two cases show a divergent flow, but rather consists of one or two basins of attraction.
-%It implies only vanishing gradients for this system and \textbf{exploding gradients will not be present for an arbitrarily long time}.
 
 %any slight imperfections cause slow drift along the line This sort of approximate continuous attract or is what is found in real networks, including those trained by the learning
 This phenomenon, wherein a continuous attractor is approximated by a manifold within the state space along which the drift occurs at a very slow pace, has previously been commented on \citep{seung1997learning}.
