@@ -839,6 +839,37 @@ def plot_vf_vs_meanangularerror():
     plt.xlabel('$|f|_\infty$')
     plt.ylabel('mean angular error')
     plt.savefig(figfolder+"/vfinftyspline_vs_meanangularerror.pdf");
+    
+    
+def plot():
+    for nonlinearity in df2['S'].unique():
+        subset = df_good[df_good['S']==nonlinearity]
+        for nrec in df_good['N'].unique():
+            subsubset = subset[df_good['N']==nrec]
+            vf_infty = np.stack(subsubset['vf_infty_closest'].to_numpy())
+            mean_error_0 = np.stack(subsubset['mean_error_0'].to_numpy())
+            eps_mean_int = np.cumsum(mean_error_0,axis=1) / np.arange(1, mean_error_0.shape[1]+1)[None, :]
+            mean_error_0_t1 = eps_mean_int[:,128]
+            mean_error_0_infty = eps_mean_int[:,-1]
+            marker=nonlinearity_to_marker_mapping(nonlinearity)
+            color=size_to_color_mapping(nrec)
+            plt.scatter(vf_infty,mean_error_0_t1,color=color,marker=marker)
+            plt.scatter(vf_infty,mean_error_0_infty,color=color,marker=marker,facecolors='none', edgecolors=color)
+            #for i in range(vf_infty.shape[0]):
+             #   plt.plot([vf_infty[i],mean_error_0_t1[i]],[vf_infty[i],mean_error_0_infty[i]],color=color,marker=marker)
+            
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel('$|f|_\infty$')
+    plt.ylabel('mean angular error')
+    
+def plot_the_high_and_the_low():
+    row_lownfps = df2.iloc[np.where(df2['nfps_csx2']==6.)[0][0]]
+    mean_error_0 = row_lownfps['mean_error_0'][128:]
+    plt.plot(mean_error_0.T,color='b', alpha=.5)
+    row_highnfps = df2.iloc[np.where(df2['nfps_csx2']==40.)[0][0]]
+    mean_error_0 = row_highnfps['mean_error_0'][128:]
+    plt.plot(mean_error_0.T,color='orange', alpha=.5)
 
 def max_angle(fxd_pnt_thetas):
     dist_next = fxd_pnt_thetas-np.roll(fxd_pnt_thetas,1)
@@ -947,8 +978,8 @@ def analysis(folder, df, batch_size=128, T=256, T1_multiple=16, auton_mult=4, in
                        'mean_error_0':mean_error_0,
                         'max_error_0':max_error_0,
                         'eps_min_int_0':eps_min_int_0,
-                        'eps_mean_int_input':eps_mean_int_input,
-                        'eps_plus_int_input':eps_plus_int_input,
+                        'eps_mean_int_0':eps_mean_int_0,
+                        'eps_plus_int_0':eps_plus_int_0,
                         'min_error_input': min_error_input,
                         'mean_error_input':mean_error_input,
                         'max_error_input':max_error_input,
