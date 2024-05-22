@@ -58,6 +58,7 @@
 \newcommand{\reals}{\mathbb{R}}
 
 \newcommand{\manifold}{\mathcal{M}}
+\newcommand{\uniformNorm}[1]{\left\|#1\right\|_\infty} % uniform norm
 
 \DeclareMathOperator{\relu}{ReLU}
 \DeclareMathOperator{\basin}{Basin}
@@ -370,14 +371,18 @@ We seek implementation-agnostic answers.
 %\section{Theory of gracefully degrading continuous attractors}\label{sec:theory}
 \section{Theory of Approximate Continuous Attractors}\label{sec:theory}
 %In this section, we apply invariant manifold theory to RNNs and translate the results for the theoretical neuroscience audience.
-Our emphasis in this paper centers on investigating the distinctive properties of continuous attractors that prove essential for specific tasks, with a deliberate exclusion of considerations related to learning chaotic dynamics.
-
-\subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
-
-We start by formulating an ODE implementing a continuous attractor in continuous time: $\dot{\vx} = \vf(\vx)$.
+%Our emphasis in this paper centers on investigating the distinctive properties of continuous attractors that prove essential for specific tasks, with a deliberate exclusion of considerations related to learning chaotic dynamics.
+%\subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
+\subsection{Persistent Manifold Theorem}\label{sec:imt}
+%We start by formulating an ODE implementing a continuous attractor in continuous time: $\dot{\vx} = \vf(\vx)$.
 Let $l$ be the intrinsic dimension of the manifold of equilibria that defines the continuous attractor.
-We will reparameterize the dynamics around the manifold with coordinates $\vy \in \reals^l$ and the remaining ambient space with $\vz \in \reals^{d-l}$.
-To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function $g$ and a bifurcation parameter $\epsilon \geq 0$, such that the following system is equivalent to the original ODE:
+Given a perturbation to the ODE $\vp(\vx)$ that induces a bifurcation,
+\begin{align}\label{eq:perturbation:nonparam}
+	\dot{\vx} &= \vf(\vx) + \epsilon\,\vp(\vx)
+\end{align}
+where $\uniformNorm{\vp(\cdot)} = 1$ and $\epsilon > 0$ is the bifurcation parameter,
+we can reparameterize the dynamics around the manifold with coordinates $\vy \in \reals^l$ and the remaining ambient space with $\vz \in \reals^{d-l}$.
+To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function $g$, such that the following system is equivalent to the original ODE:
 \begin{align}\label{eq:fenichel:flow}
     \dot{\vy} &=           \epsilon  \vg(\vy, \vz, \epsilon) \qquad \text{(tangent)}\\
     \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}
@@ -385,9 +390,10 @@ To describe an arbitrary bifurcation of interest, we introduce a sufficiently sm
 where $\epsilon = 0$ gives the condition for the continuous attractor $\dot{\vy} = \mathbf{0}$.
 We denote the corresponding manifold of $l$ dimensions $\manifold_0 = \{(\vy,\vz) \mid \vh(\vy,\vz,0) = 0\}$.
 
-We need the flow normal to the manifold to be hyperbolic, that is \emph{normally hyperbolic}, meaning that the Jacobians $\nabla_\vz \vh$ evaluated on any point on the $\manifold_0$ has $d-l$ eigenvalues with their real part uniformly away from zero, and $\nabla_\vy \vg$ has $l$ eigenvalues with zero real parts.
+We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic, meaning that the Jacobians $\nabla_\vz \vh$ evaluated on any point on the $\manifold_0$ has $d-l$ eigenvalues with their real part uniformly away from zero, and $\nabla_\vy \vg$ has $l$ eigenvalues with zero real parts.
 More specifically, for continuous attractors, the real part of the eigenvalues of $\nabla_\vz \vh$ will be negative, representing sufficiently strong attractive flow toward the manifold.
-Equivalently, for the ODE, $\dot{\vx} = \vf(\vx)$, the variational system is of constant rank, and has exactly $(d-l)$ eigenvalues with negative real parts and $l$ eigenvalues with zero real parts everywhere along the continuous attractor.
+Equivalently, for the ODE, $\dot{\vx} = \vf(\vx)$, the variational system is of constant rank, and has exactly $(d-l)$ eigenvalues with negative real parts uniformly away from zero and $l$ eigenvalues with zero real parts everywhere along the continuous attractor.
+Informally, normal hyperbolicity guarantees that the perturbations changes the structure of the manifold before they can destroy the attractiveness of the manifold.
 
 \begin{SCfigure}[10][bthp]
   \centering
@@ -405,7 +411,7 @@ What can we say about the fate of the perturbed system?
 The continuous dependence theorem~\citep{Chicone2006} says that the trajectories will change continuously as a function of $\epsilon$ without a guarantee on how quickly they change.
 Moreover, the topological structure and the asymptotic behavior of trajectories change discontinuously due to the bifurcation.
 Surprisingly there is a strong connection in the geometry due to Fenichel's theorem~\cite{fenichel1971}.
-We informally present a special case due to~\cite{Jones1995}:
+We informally present a special case due to~\citet{Jones1995}:
 \begin{theorem}[Fenichel's Invariant Manifold Theorem]
 Let $\manifold_0$ be a connected, compact, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
 For a sufficiently small perturbation $\epsilon > 0$, there exists a manifold $\manifold_\epsilon$ diffeomorphic to $\manifold_0$ and locally invariant under the flow of \eqref{eq:fenichel:flow}.
