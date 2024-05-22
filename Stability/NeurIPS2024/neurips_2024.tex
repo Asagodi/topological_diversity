@@ -290,7 +290,7 @@ Nevertheless, the bifurcated dynamics again follow a similar pattern of the dyna
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
 \ptitle{Piecewise-linear ring attractor model of the central complex}
 Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{Noorman2022}.
-This model is composed of $N$ heading-tuned neurons with preferred headings $\theta_j \in \{\nicefrac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec.~\ref{sec:supp:headdirection}).
+This model is composed of $N$ heading-tuned neurons with preferred headings $\theta_j \in \{\nicefrac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Sec.~\ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction.
 This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle.
 
@@ -567,7 +567,7 @@ where $\dm{W}$ is Wiener process that models the intrinsic state noise in the br
 
 Building upon prior work, which has shown networks' capabilities on such tasks, we trained RNNs to either
 (1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection, cueva2021continuous}
-and (2) perform a memory guided saccade task for a ring variable \citep{wimmer2014} (details in Sec.Supp.~\ref{sec:supp:tasks}).
+and (2) perform a memory guided saccade task for a ring variable \citep{wimmer2014} (details in Sec.~\ref{sec:supp:tasks}).
 The loss $L$ to be minimized was computed by mean squared error (MSE) between the network output $y(t)$ and the target output $\hat y(t)$.
 \begin{equation}\label{eq:loss}
 L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}
@@ -726,7 +726,7 @@ The networks typically perform well on the timescale on which they have been tra
 %
 %uniform bound
 %infinite norm
-This loss is bounded by the uniform norm of the vector field  on the invariant manifold (Fig.~\ref{fig:angular_loss}A,  see Sec.Supp.~\ref{sec:supp:vf} and \ref{sec:app:bouding}).
+This loss is bounded by the uniform norm of the vector field  on the invariant manifold (Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and \ref{sec:app:bouding}).
 
 
 
@@ -740,7 +740,7 @@ We identify the location of the fixed points as described in Sec.~\ref{sec:fasts
 
 Besides the maximal error that the network will make in the asymptotic limit, we can also characterize how many different angles the network would confuse in the asymptotic limit.
 We construct a probability distribution of what part of state space we end up in at infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
-Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution (see Sec.Supp.~\ref{sec:supp:boa}).
+Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution (see Sec.~\ref{sec:supp:boa}).
 
 
 
@@ -2174,7 +2174,7 @@ This vector field in the output space captures in what direction and how quickly
  This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
 
 
-For the bound discussed in Supp.Sec.\ref{sec:app:bouding}, we calculate the uniform norm of the found vector field $\|f\|_\infty = \sup f(\alpha)$.
+For the bound discussed in Sec.\ref{sec:app:bouding}, we calculate the uniform norm of the found vector field $\|f\|_\infty = \sup f(\alpha)$.
 
 %
 %
