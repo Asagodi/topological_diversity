@@ -546,12 +546,12 @@ We trained 10 networks for every combination of the following parameters:
  number of units/neurons (32, 64, 128, 256).
 % , and activity regularization ($10^{-3}, 0, 1$).
 %
-All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  for at most 10,000 iterations with a batch size of 256 and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
+All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  for  5,000 iterations with a batch size of 64. % and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
 
-To avoid overly complex solutions that do not generalize well for longer trials, we penalized high activity using an L2 regularization on the hidden activity $x_t$.
-%We trained networks with regularizer
-The hyperparameter selection criterion for regularization was the highest level of regularization that ...............
-We found the highest level regularization that ...............
+%To avoid overly complex solutions that do not generalize well for longer trials, we penalized high activity using an L2 regularization on the hidden activity $x_t$.
+%%We trained networks with regularizer
+%The hyperparameter selection criterion for regularization was the highest level of regularization that ...............
+%We found the highest level regularization that ...............
 
 
 %\subsection{Fast-slow decomposition: Unpacking the slow manifolds in trained RNNs} %from trained RNNs
@@ -683,7 +683,6 @@ Conversely, the alternative approximation's memory states are contingent upon th
 
 \subsection{Different topologies have different generalization properties}
 
-
 \begin{figure}[tbhp]
   \centering
   \includegraphics[width=\textwidth]{loss}
@@ -694,16 +693,26 @@ Conversely, the alternative approximation's memory states are contingent upon th
 \end{figure}
 
 
-We will assess performance at two different time-scales,  asymptotic and finite time.
 
+ This step provides valuable insights into the network's ability to store information and how this ability degrades across different perturbations.
+ We want in particular to investigate the angular memory capacities of the trained networks.
+ We will assess this capacity at two different time-scales:  asymptotic and finite time.
+ 
 %method
 \paragraph{Finite time}
+%We measure the error on the finite timescale as follows.
 
-We measure the error on the finite timescale as follows.
+
 
 %uniform bound
 %infinite norm
-%%%eqs from gui
+\begin{equation}\label{eq:loss}
+    \mathcal{L}(T) = \frac{1}{|U|} \int_U  \frac{1}{|f(\bm{\alpha})|} \int_{f(\bm{\alpha})} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\bm{\alpha}),t),\bm{\alpha}) dt df(\bm{\alpha}) d\bm{\alpha}
+\end{equation}
+
+This loss is bounded by the uniform norm of the vector field on the invariant manifold.
+For a further elaboration of this bound, see Sec.Supp.~\ref{sec:app:bouding}.
+
 
 \paragraph{Asymptotic time}
 We measure the error on the asymptotic timescale as follows.
@@ -713,7 +722,7 @@ We construct a probability distribution of what part of state space we end up in
 \basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}.
 \end{equation}
 Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution.
- This step provides valuable insights into the network's ability to store information and how this ability degrades across different perturbations.
+
 
 
 
@@ -2096,7 +2105,7 @@ The vector field (Fig. \ref{fig:asymptotic_analysis}C) suggests that the system 
 
 \newpage
 
-\section{Bounding the loss}
+\section{Bounding the loss}\label{sec:app:bouding}
 We formulate here a theory of continuous attractor approximations in terms of memory loss over time.
 
 Let $\boldsymbol{\alpha} \in \mathcal{U} \subset \mathbb{R}^D$ with distance $d(x,y): \mathcal{U} \times \mathcal{U} \rightarrow \mathbb{R}$.
