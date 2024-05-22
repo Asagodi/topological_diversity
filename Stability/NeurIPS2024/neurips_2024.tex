@@ -173,7 +173,6 @@ which reveal various structurally stable dynamics in its vicinity.
 The distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time, and thus a corresponding pattern of error in temporal generalization.
 By assuming normal hyperbolicity, we will separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within.
 We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects different topologies as \textbf{approximate continuous attractors}.
-\mpcomment{revisit this later}
 We further analyze task-trained artificial recurrent neural networks to reveal a ``universal motif'' of analog memory with various potential topologies.
 
 %This discrepancy between biological neural networks and theoretical models highlights a mismatch and thus poses a challenge for modeling working memory and related cognitive processes \citep{Renart2003, seeholzer2019}.
@@ -190,8 +189,8 @@ We further analyze task-trained artificial recurrent neural networks to reveal a
   \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
   Some of the structure seems to remain, there is an invariant manifold that is topologically equivalent to the original continuous attractor.
     (A) Phase portraits for the bounded line attractor (Eq.~\eqref{eq:TLN}).
-    Under perturbation of parameters, each of them bifurcates to systems without the continuous attractor.
-    (B) The low-rank ring attractor approximation (Sec.~\eqref{sec:supp:lowrank}). 
+    Under perturbation of parameters, it bifurcates to systems without the continuous attractor.
+    (B) The low-rank ring attractor approximation (Sec.~\eqref{sec:supp:lowrank}).
     Different topologies exist for different realizations of a low-rank attractor with overlap between the left and right vectors, different number of fixed points (4, 8 or 12) or a limit cycle (left bottom).
     Yet, they all share the existence of an ring invariant set.
 }
@@ -203,7 +202,7 @@ We further analyze task-trained artificial recurrent neural networks to reveal a
 
 Ordinary differential equations (ODEs) are commonly used to describe the dynamical laws governing the temporal evolution of firing rates or latent population states\cite{vyas2020}.
 In this framework, neural systems are viewed as implementing the continuous time evolution of neural states to perform computations.
-We will consider a continuous attractor as a system that implements analog memory computation: persistently maintaining a particular representation as neural states over time.
+We will consider a continuous attractor as a mechanism that implements analog memory computation: carrying a particular memory representation over time.
 To define it formally, let $\vx(t) \in \reals^d$ denote the neural state, and $\dot{\vx} = \vf(\vx)$ represent its dynamics.
 Let $\manifold \subset \reals^d$ be a manifold.
 We say $\manifold$ is a continuous attractor, if (1) every state on the manifold is a fixed point, $\forall \vx \in \manifold, \vf(\vx) = 0$, and (2) the fixed points are marginally stable tangent to the manifold and stable normal to the manifold.
@@ -228,10 +227,11 @@ the $0$ eigenvalue allows the continuum of fixed points, while $-2$ makes the fl
 Small changes to the parameters $(\vb,\vW)$ perturbs the eigenvalues.
 Specifically, any perturbation to the $0$ eigenvalue destroys the continuous attractor as it bifurcates to either
 a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stable fixed points separated with a saddle node in between (Fig.~\ref{fig:lara_bifurcations}A bottom).
-However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifolds topologically equivalent to the original continuous attractor (note the slow speed).
-Furthermore, the flow field is not escaping the ghost manifold, i.e., it is an invariant manifold.
-This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented~\citep{seung1997learning,Mante2013-em}.
+However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifold topologically equivalent to the original continuous attractor (note the slow speed).
+Furthermore, the vector field is not escaping the ghost manifold, i.e., it is an invariant manifold.
+This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,Mante2013-em}.
 In general, continuous attractors are not only structurally unstable, they bifurcate almost certainly for an arbitrary perturbation.
+In the following, we focus on 1-dimensional ring attractors.
 
 %and perturbations cause the null eigenvalue to be non-zero and the line attractor disappears.
 %However, surprisingly, the bifurcations are qualitatively different.
@@ -287,7 +287,7 @@ Nevertheless, the bifurcated dynamics again follow a similar patter of the dynam
 \ptitle{Piecewise-linear ring attractor model of the central complex}
 Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{Noorman2022}.
 This model is composed of $N$ heading-tuned neurons with preferred headings $\theta_j \in \{\nicefrac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec.~\ref{sec:supp:headdirection}).
-For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. 
+For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction.
 This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle.
 
 \begin{figure}[tbhp]
@@ -314,22 +314,19 @@ There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\
 %\mpcomment{transition missing}
 %In modeling neural dynamics, ensuring biological plausibility is paramount.
 \ptitle{Bump attractor model}
-A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, involves utilizing a circulant matrix as the connectivity matrix\citep{samsonovich1997path, seeholzer2017efficient, redish1996coupled, goodridge2000, compte2000synaptic}.
-The infinite sized ring attractor network supports a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
+%A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, involves utilizing 
+%a circulant matrix as the connectivity matrix\citep{samsonovich1997path, seeholzer2017efficient, redish1996coupled, goodridge2000, compte2000synaptic}.
+The infinite sized ring attractor network can support a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
 %The position of this bump encodes the head direction.
 This can be accomplished with a connection matrix $W$ is a circular Gaussian function of $i-j$ \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
 For finite sized networks the dynamics is constrained to an attractive invariant ring, covered with $N$ stable fixed points for a networks of size $N$ (Fig.~\ref{fig:bio_rings}C).
 %
-Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is because they are nearby ring attractors as dynamical systems.
+%Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is because they are nearby ring attractors as dynamical systems.
 
 \ptitle{Low-rank ring attractor model} %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
 The Dynamical Mean Field (DMF) tells us that in the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors.
-However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points located on a ring \citep{mastrogiuseppe2018}.
-Our theory explains this phenomenon as follows. %MOVE TO LATER
-We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
-%This implies that the ring attractor network 
-For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
+However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points located on a ring~\citep{mastrogiuseppe2018}.
 
 \ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
 Approximate ring attractors can be fit by constraining the connectivity so that the networks Jacobian satisfies certain necessary requirements for a ring attractor to exist (Sec.~\ref{sec:supp:empj}~\citep{pollock2020}).
@@ -344,6 +341,12 @@ The fitted models through this method also contain an invariant ring manifold th
     \item we observe ghost manifolds. Is it a universal phenomenon?
 \end{enumerate}
 We seek implementation-agnostic answers.
+
+Our theory explains this phenomenon as follows. %MOVE TO LATER
+We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
+%This implies that the ring attractor network 
+For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
+
 
 %\mpcomment{are we going to describe EMPJ here?}
 %how to show 
