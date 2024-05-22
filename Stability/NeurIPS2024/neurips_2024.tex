@@ -514,7 +514,7 @@ This empirical evidence strongly corroborates our proposed theory of continuous 
 
 \subsection{Model Architectures and Training Procedure}
 We examined vanilla continuous-time RNNs for this work.
-The time discretized version of RNN network activity is
+The time discretized version of RNN network activity is given by
 \begin{equation}
   \begin{aligned}
 	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta \label{eq:RNN:discrete}\\
@@ -728,10 +728,10 @@ We identify the location of the fixed points as described in Sec.~\ref{sec:fasts
 
 
 Besides the maximal error that the network will make in the asymptotic limit, we can also characterize how many different angles the network would confuse in the asymptotic limit.
-We construct a probability distribution of what part of state space we end up in at infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring:
-\begin{equation}
-\basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}.
-\end{equation}
+We construct a probability distribution of what part of state space we end up in at infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
+%\begin{equation}
+%\basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}.
+%\end{equation}
 Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution.
 
 
