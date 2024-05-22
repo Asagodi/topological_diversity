@@ -544,11 +544,6 @@ Furthermore, the spectrum of how RNNs may hold memory has been addressed~\citep{
 %comparing artificial network representations to neural data
 We therefore investigated to what extent training RNNs on a task uniquely determines the low-dimensional dynamics, independent of neural architectures.
 
-\mpcomment{move the following to the end or conclusion}
-Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
-Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
-This empirical evidence strongly corroborates our proposed theory of continuous memory.
-
 \subsection{Model Architectures and Training Procedure}
 We examined vanilla continuous-time RNNs for this work.
 The time discretized version of RNN network activity is given by
@@ -570,7 +565,9 @@ Assuming an Euler integration with unit time step, the discrete-time RNN of \eqr
 \end{align}
 where $\dm{W}$ is Wiener process that models the intrinsic state noise in the brain.
 
-We trained RNNs on two tasks involving continuous variables: the angular velocity integration task and the memory guided saccade task (details in Sec.Supp.~\ref{sec:supp:tasks}).
+Building upon prior work, which has shown networks' capabilities on such tasks, we trained RNNs to either
+(1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection, cueva2021continuous}
+and (2) perform a memory guided saccade task for a ring variable \citep{wimmer2014} (details in Sec.Supp.~\ref{sec:supp:tasks}).
 The loss $L$ to be minimized was computed by mean squared error (MSE) between the network output $y(t)$ and the target output $\hat y(t)$.
 \begin{equation}\label{eq:loss}
 L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}
@@ -601,7 +598,7 @@ Among the networks, we only analyzed networks with normalized MSE less than -20 
 
 
  %method
-\subsection{Fast-slow decomposition}\label{sec:fastslowmethod}
+\subsection{Numerical Fast-Slow Decomposition}\label{sec:fastslowmethod}
 For each trained network, we find the slow manifold  by integrating the autonomous dynamics and we select the parts of the trajectory that have speed slower than a threshold.
 %
 %We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}.
@@ -616,12 +613,10 @@ We find that long integrated trajectories of the network converge to the found s
 
 
 \subsection{Variability in the topologies of the networks}\label{sec:topologies}
-In this section, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the ``ghost" continuous attractor, also known as the slow manifold, and the slow flow within.
+In this section, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the slow manifold, and the flow on the manifold.
 We want to investigate how networks might solve tasks.
-While previous studies have primarily focused on simple tasks that can be solved with fixed points, there remains a gap in comprehensively extracting the mechanisms underlying network implementations \citep{sussillo2013blackbox}.
-We address this gap by investigating the internal mechanisms of neural network solvers for tasks involving continuous variables. Building upon prior work, which has shown networks' capabilities on such tasks, we trained RNNs to either
-(1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection, cueva2021continuous}
-and (2) perform a memory guided saccade task for a ring variable \citep{wimmer2014}.
+While previous studies have primarily focused on simple tasks that can be solved with fixed points, there remains a gap in comprehensively extracting the mechanisms underlying network implementations~\citep{sussillo2013blackbox}.
+We address this gap by investigating the internal mechanisms of neural network solvers for tasks involving continuous variables.
 
 %Fig 4
 \begin{figure}[tbhp]
@@ -646,6 +641,11 @@ The most often found solution is of the type \emph{fixed point ring manifold} (F
 Less commonly found topologies include slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
  These solutions are consistent with both observations of the possibility of uasing non-constant dynamics for memory storage \citep{hirsch1995computing,Park2023a} and neuronal circuits underlying persistent representations despite time varying activity \citep{druckmann2012neuronal}.
   
+
+\mpcomment{move the following to the end or conclusion}
+Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
+Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
+This empirical evidence strongly corroborates our proposed theory of continuous memory.
 
 
 
