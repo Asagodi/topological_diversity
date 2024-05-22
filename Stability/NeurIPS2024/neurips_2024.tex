@@ -787,7 +787,8 @@ As the theory predicts, trained networks have an attractive ring invariant manif
  Nevertheless, within this variability, we can identify common structures.
 The topological structure of the found solutions indeed implies how well a network can perform generalization for longer times.
 
-
+%limitations
+We did not in detail describe the topology and dimensionality of the identified invariant manifolds.
 
 
 %error-correcting
@@ -2095,13 +2096,12 @@ On this embedded ring, we constraint the network to have evenly spaced fixed poi
 
 \paragraph{Memory guided saccade task}
 
-
+The total time length of the task was 512 steps.
+The time delay to the output cue was sampled from 
 \begin{align}
-T_{delay} \sim \mathcal{U}(50, 400) 
+T_{delay} \sim \mathcal{U}(50, 400).
 \end{align}
-
-Mask:
-$m_{i,t}=0$ for 5 time steps after the go cue.
+We applied a mask $m_{i,t}=0$ for 5 time steps ($T_{delay}+i$ for $i=0,\dots 4$) after the go cue.
 
 
 
@@ -2128,7 +2128,7 @@ Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smoot
  The network size is 20 units, initialized using a normal distribution for the parameters.
   Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
    The task has 100 time steps for the training samples, and the mean squared error loss was used.
-
+The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
 
 
  \section{RNN analysis methods}
@@ -2136,14 +2136,17 @@ Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smoot
  %fast-slow
  % inv man
  
- \subsection{}
+ \subsection{Fast-slow decomposition}
+ We simulated 1024 trajectories without noise with inputs from the task and let the networks evolve for 16 times the task definition lengths.
+ We took the cutoff to identify the slow manifold to be $10^{-3}$.	
+ We sampled 1024 points from these points to fit a periodic, cubic spline (black line in Fig.\ref{fig:fastslow_decomposition}).
  
  \subsection{Vector field on invariant manifold}\label{sec:supp:vf}
  
  We assess the vector field for the ODE (Eq.~ \ref{eq:RNN:continuous} without noise and input) on the found invariant manifold $\manifold$ by calculating it in the state space
  and then projecting it onto the output space:
  \begin{equation}
-\dot \alpha \wout f(\hat \alpha) %=: g(\alpha)
+\dot \alpha =  \wout f(\hat \alpha) %=: g(\alpha)
 \end{equation}
 for sampled points $\hat \alpha\in \manifold$.
 These points $\hat \alpha\in \manifold$ on the manifold are associated with the points on the ring through the mapping $\alpha = \wout\hat\alpha$.
