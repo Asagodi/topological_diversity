@@ -60,6 +60,7 @@
 
 \newcommand{\manifold}{\mathcal{M}}
 \newcommand{\uniformNorm}[1]{\left\|#1\right\|_\infty} % uniform norm
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 
 \DeclareMathOperator{\relu}{ReLU}
 \DeclareMathOperator{\basin}{Basin}
@@ -480,7 +481,16 @@ There exist a perturbation with uniform norm at most $\eta$ that induces a bifur
 \end{theorem}
 \mpcomment{can we actually make this a theorem?}
 
-We can derive a bound on the short-time scale performance based on the uniform bound.
+We can bound the memory performance on the short-time scale performance based on the uniform bound of the slow flow.
+Let $\vx_0 \in \manifold$, and $\phi = \vp\vert_\manifold$ be the flow restricted to the manifold.
+\begin{align}\label{eq:distance:ub}
+\frac{1}{\manifold}\int_\manifold
+%\frac{1}{T}\int_0^T
+\abs{\vx(t, \vx_0) - \vx_0}
+%\dm{t}
+\dm{\vx_0}
+\leq t\,\uniformNorm{\phi}
+\end{align}
 
 \subsection{The structure of the bifurcated attractor}\label{sec:attractor_bif}
 
