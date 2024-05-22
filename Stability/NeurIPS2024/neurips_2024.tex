@@ -2204,10 +2204,10 @@ Let $\mathcal{U}\subset \mathbb{R}^D$ be a subamifold and  with metric $d(x,y): 
 Suppose that there is an encoder mapping $f: \mathcal{U} \rightarrow \mathbb{R}^N$ such that the inverse of this encoder mapping is a function (although not necessarily injective): $f^{-1}: Im(f) \rightarrow \mathcal{U}$. 
 Then, let us define a memory loss in a time $T$ as:
 \begin{equation}
-    \mathcal{L}(T) = \frac{1}{|U|} \int_U  \frac{1}{|f(\bm{\alpha})|} \int_{f(\bm{\alpha})} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\bm{\alpha}),t),\bm{\alpha}) dt df(\bm{\alpha}) d\bm{\alpha}
+    \mathcal{L}(T) = \frac{1}{|\mathcal{U}|} \int_\mathcal{U}  \frac{1}{|f(\bm{\alpha})|} \int_{f(\bm{\alpha})} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\bm{\alpha}),t),\bm{\alpha}) dt df(\bm{\alpha}) d\bm{\alpha}
 \end{equation}
 
-If $D = 1 \Rightarrow \mathcal{U} = [a,b]$ (or open/closed combinations and/or $a = -\infty$ and/or $b = +\infty$):
+If $D = 1$, then without loss of generality we can take $\mathcal{U} = [a,b]$ (or open/closed combinations and/or $a = -\infty$ and/or $b = +\infty$):
 
 \begin{equation}
     \mathcal{L}(T) = \left(\lim_{a(,b) \rightarrow -\infty(,+\infty)}\right) \frac{1}{b - a} \int_a^b  \frac{1}{|f(\alpha)|} \int_{f(\alpha)} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\alpha),t)),\alpha) dt df(\alpha) d\alpha
