@@ -698,8 +698,9 @@ Conversely, the alternative approximation's memory states are contingent upon th
   \centering
   \includegraphics[width=\textwidth]{angular_losses}
   \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
-  (A) 
-  (B) }
+  (A)  
+  (B) 
+  }
   \label{fig:angular_loss}
 \end{figure}
 
@@ -727,7 +728,7 @@ This loss is bounded by the uniform norm of the vector field on the invariant ma
 For a further elaboration of this bound, see Sec.Supp.~\ref{sec:app:bouding}.
 
 
-
+Sec.Supp.~\ref{sec:supp:vf}
 
 
 
@@ -748,7 +749,8 @@ Finally, we characterize the memory capacity of the network through calculating 
 
 
 
-The mean accumulated error at the time at which the task was trained has a linear relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}A), which is another indication that the network relies on a ring invariant manifold to implement the task.
+The mean accumulated error at the time at which the task was trained has a linear relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}A).
+This is another indication that the networks rely on a ring invariant manifold to implement the task.
 
 %(Fig.~\ref{fig:angular_loss}A and B)
 
@@ -2097,13 +2099,31 @@ Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smoot
  \section{RNN analysis methods}
  
  %fast-slow
+ % inv man
  
- %
+ \subsection{}
  
+ \subsection{Vector field on invariant manifold}\label{sec:supp:vf}
+ 
+ We assess the vector field on the found invariant manifold $\manifold$ by calculating it in the state space
+ and then projecting it onto the output space:
+ \begin{equation}
+\wout f(\alpha)
+\end{equation}
+for sampled points $\alpha\in \manifold$.
+ 
+  
+ \begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=\textwidth]{vf_on_ring_closest_exp0}
+       \caption{The projected vector field on the found invariant manifold.}
+         \label{fig:vf_on_ring_closest_exp0}
+\end{figure}
+ 
+ 
+ The vector field (Fig. \ref{fig:vf_on_ring_closest_exp0}) suggests that the system
 
-%\section{Training RNNs on an angular velocity integration task from scratch}
-
-
+%i
 
 
 %
