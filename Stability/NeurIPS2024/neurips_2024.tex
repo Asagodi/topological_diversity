@@ -560,18 +560,18 @@ $\vI_t \in \reals^K$ is the input,
 $f\colon \reals \to \reals$ an activation function which acts on each of the hidden dimension, 
 private noise variable $\zeta\sim\mathcal{N}(0,\nicefrac{1}{100})$, and %$\zeta\sim \mathcal{N}(0, .001)$
 $\vW, \vb, \win, \wout, \bout$ are parameters.
-Assuming an Euler integration with unit time step, the discrete-time RNN of \eqref{eq:RNN:discrete} corresponds to the ODE:
+Assuming an Euler integration with unit time step, the discrete-time RNN of \eqref{eq:RNN:discrete} corresponds to the stochastic differential equation:
 \begin{align}
-    \dot{\vx} &= -\vx + f(\win \vI + \vW \vx + \vb) + \sigma \eta(t). \label{eq:RNN:continuous}
+    \dm{\vx} &= -\vx\dm{t} + f(\win \vI + \vW \vx + \vb)\dm{t} + \sigma \dm{W}. \label{eq:RNN:continuous}
 \end{align}
-where  $\eta (t)$ is white noise.
+where $\dm{W}$ is Wiener process that models the intrinsic state noise in the brain.
 
-The loss $L$ to be minimized was computed by time-averaging the squared errors between the network output $y(t)$ and the target output $\hat y(t)$.
+The loss $L$ to be minimized was computed by mean squared error (MSE) between the network output $y(t)$ and the target output $\hat y(t)$.
 \begin{equation}\label{eq:loss}
 L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}
 \end{equation}
-with $i$  the index of the output units and $t$  the index for time.
- We implemented a mask, $m_{i,t}$, for modulating the loss with respect to certain time intervals.
+with $i$ the index of the output units and $t$  the index for time.
+We implemented a mask, $m_{i,t}$, for modulating the loss with respect to certain time intervals.
 
 
 We trained 10 networks for every combination of the following parameters:
@@ -579,7 +579,8 @@ We trained 10 networks for every combination of the following parameters:
  number of units/neurons (32, 64, 128, 256).
 % , and activity regularization ($10^{-3}, 0, 1$).
 %
-All networks were trained using stochastic gradient descent with Adam with $\beta_1=0.9$ and $\beta_2=0.999$  for 5,000 iterations with a batch size of 64. % and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
+All networks were trained using ADAM with $\beta_1=0.9$ and $\beta_2=0.999$ for $5,000$ iterations with a batch size of 64. % and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
+Among the networks, we only analyzed networks with normalized MSE less than -20 dB (Fig.~\ref{}).
 
 %To avoid overly complex solutions that do not generalize well for longer trials, we penalized high activity using an L2 regularization on the hidden activity $x_t$.
 %%We trained networks with regularizer
@@ -595,7 +596,7 @@ All networks were trained using stochastic gradient descent with Adam with $\bet
 
 
  %method
- \subsection{Fast-slow decomposition}\label{sec:fastslowmethod}
+\subsection{Fast-slow decomposition}\label{sec:fastslowmethod}
 For each trained network, we find the slow manifold  by integrating the autonomous dynamics and we select the parts of the trajectory that have speed slower than a threshold.
 %
 %We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}.
