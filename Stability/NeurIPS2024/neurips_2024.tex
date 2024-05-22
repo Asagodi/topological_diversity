@@ -525,30 +525,24 @@ For example, the dynamics on a torus manifold can be described by Kolmogorov-Arn
 \section{Numerical Experiments on Task-optimized Recurrent Networks}\label{sec:experiments}
 % Continuous attractor approximations} %from trained RNNs
 
-Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors. \mpcomment{I disagree that it is!! It is a universal approximators of bounded length sequence-to-sequence transformations, not dynamical systems. Guillermo?}
-We will identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
-\mpcomment{what is a solution type?}
-Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
+While our theory describes the abundance of approximate continuous attractors in the vicinity of a continuous attractor, it does not imply that there are no approximate solutions away from continuous attractors.
+We use task-optimized recurrent neural networks (RNNs) as means to searching for plausible solutions for analog memory with ring topology.
+We will train a diverse set of RNNs, then identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
+%Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors. \mpcomment{I disagree that it is!! It is a universal approximators of bounded length sequence-to-sequence transformations, not dynamical systems. Guillermo?}
+%Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
-
-Understanding the implemented computation in neural systems in terms of dynamical systems has a well-established practice \citep{seung1996, sompolinsky1988}.
-Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis \citep{sussillo2013blackbox, sussillo2014, barak2013, driscoll2022, maheswaranathan2019universality, cueva2019headdirection, cueva2021continuous} and to compare those artificial networks to biological circuits \citep{mante2013context, remington2018flexible, ghazizadeh2021slow}.
+Understanding the implemented computation in neural systems in terms of dynamical systems has a well-established practice~\citep{seung1996,sompolinsky1988}.
+Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis~\citep{sussillo2013blackbox,sussillo2014,barak2013,driscoll2022,maheswaranathan2019universality,cueva2019headdirection,cueva2021continuous} and to compare those artificial networks to biological circuits~\citep{mante2013context,remington2018flexible,ghazizadeh2021slow}.
 % 
-Previously, systematic analysis of the variability in network dynamics has been surveyed in vanilla RNNs and  variations in dynamical solutions over architecture and nonlinearity have been quantified \citep{sussillo2013blackbox,mante2013context,yang2019task,maheswaranathan2019universality,driscoll2022}.
-Furthermore, the spectrum of  how RNNs may hold memory has been addressed \citep{orhan2019diverse}.
+Previously, systematic analysis of the variability in network dynamics has been surveyed in vanilla RNNs and variations in dynamical solutions over architecture and nonlinearity have been quantified~\citep{sussillo2013blackbox,mante2013context,yang2019task,maheswaranathan2019universality,driscoll2022}.
+Furthermore, the spectrum of how RNNs may hold memory has been addressed~\citep{orhan2019diverse}.
 %comparing artificial network representations to neural data
 We therefore investigated to what extent training RNNs on a task uniquely determines the low-dimensional dynamics, independent of neural architectures.
-\mpcomment{this works}
 
-
+\mpcomment{move the following to the end or conclusion}
 Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
 Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
-This empirical evidence strongly corroborates our proposed theory of continuous memory. 
-
-
-
-
-
+This empirical evidence strongly corroborates our proposed theory of continuous memory.
 
 \subsection{Model Architectures and Training Procedure}
 We examined vanilla continuous-time RNNs for this work.
