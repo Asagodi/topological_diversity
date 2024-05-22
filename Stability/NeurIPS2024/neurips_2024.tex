@@ -177,6 +177,7 @@ We further analyze task-trained artificial recurrent neural networks to reveal a
 
 
 \section{A critique of pure continuous attractors}\label{sec:critique}
+\subsection{Motivating example}\label{sec:motivating}
 \begin{figure}[tbhp]
   \centering
   \includegraphics[width=\textwidth]{lara_bifurcations}
@@ -244,7 +245,8 @@ a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stabl
 In general, continuous attractors are not only structurally unstable, they bifurcate almost certainly for an arbitrary perturbation.
 %Examples abound.
 However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifolds topologically equivalent to the original continuous attractor.
-
+Furthermore, the flow field is not escaping the ghost manifold, i.e., it is an invariant manifold in forward time.
+This phenomenon, wherein a continuous attractor is approximated by a manifold within the state space along which the drift occurs at a very slow pace, has previously been commented \citep{seung1997learning,Mante2013-em}.
 
 %When $d=2$ and $F(\cdot)= \max(0,\cdot)$ is the threshold nonlinearity, we can build a line continuous attractor as follows.
 %First, through positive feedback, $\vW = [0, 1; 1, 0]$ and no bias $\vb = \mathbf{0}$, we can create a continuous attractor, i.e., $\dot{\vx} = 0$ on the $x_1 = x_2 \geq 0$ half-line, and surrounding attractive flow (Fig.~\ref{fig:ublabla}A left).
@@ -255,32 +257,30 @@ However, interestingly, after bifurcation, continuous attractors seemingly tend 
 %However, if it becomes positive (Fig.~\ref{fig:ublabla}A top), \emph{the resulting flow diverges to infinity along the diagonal}.
 %Corresponding to the divergent flow, the backpropagating gradient over time exponentially grows in magnitude, thus rendering gradient descent impractical without truncation in time.
 %
-
 %any slight imperfections cause slow drift along the line This sort of approximate continuous attract or is what is found in real networks, including those trained by the learning
-This phenomenon, wherein a continuous attractor is approximated by a manifold within the state space along which the drift occurs at a very slow pace, has previously been commented by \citet{seung1997learning}.
 %``a manifold of stable fixed points'' \citep{Seung2000}.
-Furthermore, an invariant ring manifold with fixed points on it has been observed in finite dimensional low-rank attractors which converge to a ring attractor in the infinite unit limit~\citep{mastrogiuseppe2018,beiran2021}.
-We show some examples of such continuous attractor approximations in Fig.~\ref{fig:lara_bifurcations}B.
-Similarly, this has been observed in ring attractors with a finite number of units \citep{Noorman2022}, see also Fig.~\ref{fig:bio_rings}A.
-
-
 
 \subsection{Theoretical models of ring attractors}\label{sec:ras}
+% Furthermore, an invariant ring manifold with fixed points on it has been observed in finite dimensional low-rank attractors which converge to a ring attractor in the infinite unit limit~\citep{mastrogiuseppe2018,beiran2021}.
+% We show some examples of such continuous attractor approximations in Fig.~\ref{fig:lara_bifurcations}B.
+% Similarly, this has been observed in ring attractors with a finite number of units \citep{Noorman2022}, see also Fig.~\ref{fig:bio_rings}A.
+
 %\subsubsection{Angular integration networks}\label{sec:hd}
 For circular variables such as the goal-direction (e.g. for home navigation and working memory for communication	 in bees \citep{frisch1993dance}) %home navigation + dance in bees: the angle of the waggle phase relative to gravity reflects the angle of the food source relative to the sun
 %duration of the waggle phse reflects the distance to the food source from the hive
 or head-direction, the temporal integration and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology) \citep{kim2019generation, turner2017angular, turner2020neuroanatomical,hulse2020mechanisms,taube2007head}.
-Continuous attractor models of the head-direction representation suggest that the representation emerges from the interactions of recurrent connections among neurons that form a ring-like structure~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous,knierim2012}.
-%Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 Other examples include
 integration of evidence for continuous perceptual judgments, e.g. a hunting predator that needs to compute the net direction of motion of a large group of prey \citep{esnaola2022flexible}.
+In this section, we investigate the bifurcations of various implementations of continuous attractors.
+Continuous attractor network models of the head-direction is based on the interactions of neurons that (anatomically) form a ring-like overlapping neighbor connectivity~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous,knierim2012}.
+%Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 Similarly as with the line attractor, the ring attractor bifurcates for virtually every perturbation.
-Nevertheless, the bifurcated dynamics again follow a similar patter of the dynamics restricted to the state space around the original continuous attractor.
+Nevertheless, the bifurcated dynamics again follow a similar patter of the dynamics restricted to the ghost manifold around the original continuous attractor.
 
-Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruitflies~\citep{Noorman2022}.
-This model is composed of $N$ heading-tuned neurons with preferred headings $\theta_j \in \{\frac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec.~\ref{sec:supp:headdirection}).
+Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{Noorman2022}.
+This model is composed of $N$ heading-tuned neurons with preferred headings $\theta_j \in \{\nicefrac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec.~\ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. 
-This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle. 
+This continuum of fixed points forms a one dimensional manifold homeomorphic to the circle.
 
 \begin{figure}[tbhp]
      \centering
