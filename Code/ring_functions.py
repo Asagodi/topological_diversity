@@ -1411,6 +1411,12 @@ def make_biswas_ring(w1, w4):
 #     data = json.load(f)
 #     D = np.array(data)
     
+def get_fps():
+    xstars, xstars_2, stabilist = find_fixed_points_newton(W, 0, D, tau=10)
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3));
+    plt.scatter(xstars_2[:,0], xstars_2[:,1], color=colors[stabilist])
+    plt.plot(ys[:,0], ys[:,1], '-b')
+    plt.xlim([-1.2,1.2]);plt.ylim([-1.2,1.2]);plt.axis('off'); plt.savefig(figfolder+"/saddle_fps.pdf", bbox_inches="tight");
     
 def get_empj(W, D, Nsims=100):
     
@@ -1426,7 +1432,7 @@ def get_empj(W, D, Nsims=100):
         plt.plot(traj_2[i, :,0], traj_2[i,:,1], 'k');
         plt.plot(traj_2[i, 0,0], traj_2[i,0,1], '.r');
         plt.plot(traj_2[i, -1,0], traj_2[i,-1,1], '.b');
-    plt.savefig(folder+'/miracle/on_manifold_multi.pdf', bbox_inches="tight")
+    #plt.savefig(folder+'/miracle/on_manifold_multi.pdf', bbox_inches="tight")
     
     traj = simulate_network(W, 0, nonlinearity_ode=tanh_ode, y0=None, maxT=20, tsteps=5001, tau=1000);
     traj_2 = np.dot(traj.T, D)
@@ -1501,8 +1507,12 @@ def find_fixed_points_newton(W, b, wo,
         else:
             stabilist.append(1)
     xstars_2 = np.dot(np.array(xstars), wo)
-    return xstars, xstars_2
+    return xstars, xstars_2, stabilist
     
+
+# xstars, xstars_2 = find_fixed_points_newton(wrec, brec, wo, tau=10,
+ # rnn_ode=tanh_ode, rnn_jacobian=tanh_jacobian, mlrnn=True, points_init_nd=csx2, max_iter=1000, tol=1e-6)]
+
 # if __name__ == "__main__": 
 #     # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
     
