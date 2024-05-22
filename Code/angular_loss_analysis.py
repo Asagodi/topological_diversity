@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat May 18 17:44:55 2024
-
-@author: abel_
 """
 
 
@@ -26,15 +24,12 @@ from persim import plot_diagrams
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from matplotlib.lines import Line2D
 
 from models import RNN 
 from tasks import angularintegration_task, angularintegration_task_constant, center_out_reaching_task
 from odes import tanh_ode, recttanh_ode, relu_ode
 
-# =============================================================================
-# TODO
-# =============================================================================
-#convergence of trajectories?
 
 
 
@@ -52,7 +47,6 @@ def load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs):
     return net
 
 def load_net_path(path, which='post'):
-    # main_exp_name='center_out/act_reg_gui/'
     # folder = parent_dir+"/experiments/" + main_exp_name
     # exp_list = glob.glob(folder + "/res*")
     # exp = exp_list[exp_i]
@@ -866,23 +860,39 @@ def plot():
 def plot_the_high_and_the_low():
     fig, ax = plt.subplots(1, 1, figsize=(5, 3));
     
-    row_lownfps = df2.iloc[np.where(df2['nfps_csx2']==6.)[0][0]]
+    row_lownfps = df.iloc[np.where(df['nfps_csx2']==6.)[0][0]]
     mean_error_0 = row_lownfps['mean_error_0'][T1:int(T1*10)]
-    max_error_0 = row_lownfps['max_error_0'][T1:int(T1*10)]
+    #max_error_0 = row_lownfps['max_error_0'][T1:int(T1*10)]
     plt.plot(mean_error_0,color='b')
-    plt.plot(max_error_0,'--', color='b')
+    #plt.plot(max_error_0,'--', color='b')
     plt.plot(9.5*T1, mean_error_0[-1], '.', color='b');
-    row_highnfps = df2.iloc[np.where(df2['nfps_csx2']==40.)[0][0]]
+    #plt.plot(9.5*T1, max_error_0[-1], '.', color='b');
+    row_highnfps = df.iloc[np.where(df['nfps_csx2']==40.)[0][0]]
     mean_error_0 = row_highnfps['mean_error_0'][T1:int(T1*10)]
-    max_error_0 = row_highnfps['max_error_0'][T1:int(T1*10)]
+    #max_error_0 = row_highnfps['max_error_0'][T1:int(T1*10)]
     plt.plot(mean_error_0,color='orange')
-    plt.plot(max_error_0,'--', color='orange')
+    #plt.plot(max_error_0,'--', color='orange')
     plt.plot(9.5*T1, mean_error_0[-1], '.', color='orange');
+    
+    x = np.arange(T1,10.5*T1,T1/2.)
+    y = row_lownfps['vf_infty_closest']*x
+    plt.plot(x-T1,y,'--', color='orange')
+    y = row_highnfps['vf_infty_closest']*x
+    plt.plot(x-T1,y,'--', color='b')
     
     plt.xlabel("t")
     plt.ylabel("mean angular error")
-    ax.set_xticks(np.arange(0,10*T1,2*T1),['$T_1$']+[f'${i}T_1$' for i in range(2,10,2)])
-    plt.savefig(figfolder+"/meanangularerror_lowhigh.pdf");
+    ax.set_xticks(np.append(np.arange(0,10*T1,2*T1),9.5*T1),['$T_1$']+[f'${i}T_1$' for i in range(2,10,2)]+['$\infty$'])
+    
+    lines = [Line2D([0], [0], color=c, linewidth=2, linestyle='-') for c in ['b', 'orange']]
+    first_legend = plt.legend(lines, np.array(nrecs)[[0,2]], title='Network Size', loc='lower right')
+    ax.add_artist(first_legend)
+    
+    lines = [Line2D([0], [0], color='k', linewidth=2, linestyle=ls) for ls in ['-', '--']]
+    second_legend = plt.legend(lines, np.array(nrecs)[[0,2]], title='Network Size', loc='lower right')
+    plt.legend(lines, ['mean angular error',r'$\|\varphi\|_\infty$'], title='', loc='upper right')
+    
+    plt.savefig(figfolder+"/meanangularerror_lowhigh.pdf", bbox_inches="tight");
 
 def max_angle(fxd_pnt_thetas):
     dist_next = fxd_pnt_thetas-np.roll(fxd_pnt_thetas,1)
