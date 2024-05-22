@@ -525,7 +525,7 @@ where $\vx_t \in \reals^d$ is the hidden state,
 $\vy_t $ is the readout, 
 $\vI_t \in \reals^K$ is the input,
 $f\colon \reals \to \reals$ an activation function which acts on each of the hidden dimension, 
-private noise variable $\zeta$, and %$\zeta\sim \mathcal{N}(0, .001)$
+private noise variable $\zeta\sim\mathcal{N}(0,\nicefrac{1}{100})$, and %$\zeta\sim \mathcal{N}(0, .001)$
 $\vW, \vb, \win, \wout, \bout$ are parameters.
 Assuming an Euler integration with unit time step, the discrete-time RNN of \eqref{eq:RNN:discrete} corresponds to the ODE:
 \begin{align}
@@ -594,11 +594,9 @@ Less commonly found topologies include slow limit cycles (Fig.~\ref{fig:fastslow
  %method
 We find the slow manifold  by integrating the autonomous dynamics and we select the parts of the trajectory that have speed slower than a threshold.
 %
-We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}.
-
-
+%We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}.
 In the cases that we identify a one dimensional invariant manifold $\manifold$, we parametrize it by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
-Alternatively, we identify the points along the trajectories that are the closest to set of point from the output space relevant to the task after convergence.
+Alternatively, we identify the points along the trajectories that are the closest to a set of point in the output space relevant to the task after convergence, i.e. on the unit ring.
 %Finally, we find the stable fixed points through a threshold on the 
 Finally, we find the fixed points on the invariant ring by identifying regions where the direction of the flow flips.
 Stable fixed points are identified where the flow directions are both pointing towards this flip point, 
@@ -645,7 +643,7 @@ We will investigate to what extent the networks have the intended memory necessa
 \subsection{Generalization properties of continuous attractor approximations}\label{sec:generalization}
 %, and thus a corresponding pattern of error in temporal generalization
 
-The two  possible approximations of a ring attractor discussed in Sec.~\ref{sec:critique} exhibit markedly distinct generalization characteristics.
+The two possible approximations of a ring attractor discussed in Sec.~\ref{sec:critique} exhibit markedly distinct generalization characteristics.
 Approximating the system as a limit cycle results in memory that gradually diminishes over time.
 Conversely, the alternative approximation's memory states are contingent upon the quantity and positioning of stable fixed points within the system.
 
