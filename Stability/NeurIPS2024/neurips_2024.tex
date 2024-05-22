@@ -679,28 +679,6 @@ Conversely, the alternative approximation's memory states are contingent upon th
 %In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
 %Animal behavior is finite time in nature and the longer the temporal distance the harder it is to learn temporal dependencies in general.
 
-%\subsection{Loss of function: Sensitivity of continuous attractors to perturbations}
-
-%We will show that there are differences at how well approximations perform at different timescales.
-
-
-
-%%Fig 5
-%\begin{figure}[tbhp]
-%  \centering
-%  \includegraphics[width=\textwidth]{performance}
-%  \caption{Degradation of performance across perturbation sizes.
-%  (A) System behavior at the asymptotic time scales measured through memory capacity. 
-%  (B) Finite time}
-%  \label{fig:performance}
-%\end{figure}
-
-%Networks
-%  \citep{seeholzer2017efficient} %tanh
-%  \citep{goodridge2000}		%sigmoid
-
-%We measure how performance of different models for the representation of an angular variable drop as a function of perturbation size Fig.~\ref{fig:performance}.
-
 
 
 
@@ -751,9 +729,7 @@ We identify the location of the fixed points as described in Sec.~\ref{sec:fasts
 
 Besides the maximal error that the network will make in the asymptotic limit, we can also characterize how many different angles the network would confuse in the asymptotic limit.
 We construct a probability distribution of what part of state space we end up in at infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
-%\begin{equation}
-%\basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}.
-%\end{equation}
+
 Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution.
 
 
@@ -1978,13 +1954,12 @@ The limit cycle is the only bifurcation that we found that can be achieved on on
 
 
 
+\newpage
+\subsection{Ring attractor approximation with tanh neurons}\label{sec:supp:goodridge}
 
-\subsection{Gaussian}\label{sec:supp:goodridge}
-\citep{compte2000synaptic}
-\citep{seeholzer2017efficient}
-\citep{goodridge2000}
 
-The functional form of $W$ is the sum of a constant term plus a Gaussian centered at $\theta_i - theta_j =0$:
+We investigated the bifurcations around the approximate ring attractor constructed with a symmetric weight matrix for a tanh network  \citep{compte2000synaptic, seeholzer2017efficient}.
+The functional form of $W$ is the sum of a constant term plus a Gaussian centered at $\theta_i - \theta_j =0$:
 \begin{equation}
 W(\theta_i - \theta_j) = J^- + (J^+ - J^-) \exp\left[ -\frac{(\theta_i - \theta_j)^2}{2\sigma^2} \right],
 \end{equation}
@@ -1992,11 +1967,39 @@ with the dimensionless parameter $J^-$ representing the strength of the weak cro
  and $\sigma$ the width of the connectivity footprint.
  
  
+ Such ring attractor approximations are similar to the ones in \citep{goodridge2000, samsonovich1997path, redish1996coupled}. %Equation 9,12
  
- Similar:
- \citep{samsonovich1997path}
- \citep{redish1996coupled} %Equation 9,12
- 
+
+
+
+\subsubsection{Loss of function: Sensitivity of continuous attractors to perturbations}
+
+We will show that there are differences at how well approximations perform at different timescales.
+
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[width=\textwidth]{performance}
+  \caption{Degradation of performance across perturbation sizes.
+  (A) System behavior at the asymptotic time scales measured through memory capacity. }
+  \label{fig:performance}
+\end{figure}
+
+%Networks
+%  \citep{seeholzer2017efficient} %tanh
+%  \citep{goodridge2000}		%sigmoid
+
+We measure how performance of different models for the representation of an angular variable drop as a function of perturbation size Fig.~\ref{fig:performance} through the memory capacity metric.
+For each perturbation size, we sample a low rank (rank 1,2 or 3) random matrix with norm equal to that perturbation size.
+We determine the location of the fixed points as described in Sec.~\ref{sec:}
+and determine the basin of attraction
+\begin{equation}
+\basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}.
+\end{equation}
+through assesing the local flow direction for 1024 sample points in the found invariant manifold.
+This invariant manifold was found to be consistently close the the original invariant ring attractor.
+The initial ring had $2N$ fixed points ($N$ stable, $N$ saddle) on this invariant ring manifold.
+The memory capacity of this initial configuration is $N\log(N)$ for the $2N$ uniformly spaced fixed points.
+
 
 %\subsection{Couey}\label{sec:supp:couey}
 %\citep{couey2013}
