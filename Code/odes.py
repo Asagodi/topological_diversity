@@ -2,7 +2,7 @@
 """
 Created on Mon May  6 16:37:38 2024
 
-@author: abel_
+@author: 
 """
 import numpy as np
 from scipy.integrate import solve_ivp

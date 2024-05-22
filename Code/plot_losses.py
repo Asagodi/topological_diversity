@@ -2,7 +2,7 @@
 """
 Created on Fri Jul 28 18:58:02 2023
 
-@author: abel_
+@author: 
 """
 
 import glob
