@@ -224,6 +224,10 @@ the $0$ eigenvalue allows the continuum of fixed points, while $-2$ makes the fl
 Small changes to the parameters $(\vb,\vW)$ perturbs the eigenvalues.
 Specifically, any perturbation to the $0$ eigenvalue destroys the continuous attractor as it bifurcates to either
 a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stable fixed points separated with a saddle node in between (Fig.~\ref{fig:lara_bifurcations}A bottom).
+However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifolds topologically equivalent to the original continuous attractor (note the slow speed).
+Furthermore, the flow field is not escaping the ghost manifold, i.e., it is an invariant manifold.
+This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented~\citep{seung1997learning,Mante2013-em}.
+In general, continuous attractors are not only structurally unstable, they bifurcate almost certainly for an arbitrary perturbation.
 
 %and perturbations cause the null eigenvalue to be non-zero and the line attractor disappears.
 %However, surprisingly, the bifurcations are qualitatively different.
@@ -244,11 +248,7 @@ a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stabl
 
 % The Computation through Dynamics (CTD) framework assumes that the brain processes sensory information and generates behavior through neural dynamics, including representations of continuous-valued variables like space and direction~\cite{vyas2020}.
 
-In general, continuous attractors are not only structurally unstable, they bifurcate almost certainly for an arbitrary perturbation.
 %Examples abound.
-However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifolds topologically equivalent to the original continuous attractor.
-Furthermore, the flow field is not escaping the ghost manifold, i.e., it is an invariant manifold in forward time.
-This phenomenon, wherein a continuous attractor is approximated by a manifold within the state space along which the drift occurs at a very slow pace, has previously been commented \citep{seung1997learning,Mante2013-em}.
 
 %When $d=2$ and $F(\cdot)= \max(0,\cdot)$ is the threshold nonlinearity, we can build a line continuous attractor as follows.
 %First, through positive feedback, $\vW = [0, 1; 1, 0]$ and no bias $\vb = \mathbf{0}$, we can create a continuous attractor, i.e., $\dot{\vx} = 0$ on the $x_1 = x_2 \geq 0$ half-line, and surrounding attractive flow (Fig.~\ref{fig:ublabla}A left).
@@ -279,6 +279,8 @@ Continuous attractor network models of the head-direction is based on the intera
 Similarly as with the line attractor, the ring attractor bifurcates for virtually every perturbation.
 Nevertheless, the bifurcated dynamics again follow a similar patter of the dynamics restricted to the ghost manifold around the original continuous attractor.
 
+\newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
+\ptitle{Piecewise-linear ring attractor model of the central complex}
 Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{Noorman2022}.
 This model is composed of $N$ heading-tuned neurons with preferred headings $\theta_j \in \{\nicefrac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Supp. Sec.~\ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter $J_E$) and broad inhibition ($J_I$), this network will generate a stable bump of activity, one corresponding to each head direction. 
@@ -306,17 +308,17 @@ There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\
 %how can we understand the underlying mechanism of these bifurcations
 
 %\mpcomment{transition missing}
-In modeling neural dynamics, ensuring biological plausibility is paramount.
+%In modeling neural dynamics, ensuring biological plausibility is paramount.
+\ptitle{Bump attractor model}
 A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, a method consistent with its biological principles involves utilizing a circulant matrix \citep{samsonovich1997path, seeholzer2017efficient, redish1996coupled, goodridge2000, compte2000synaptic}.
-The infinite sized ring attractor network supports a stable “activity bump” that can move around the ring in correspondence with changes in head direction.
+The infinite sized ring attractor network supports a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
 %The position of this bump encodes the head direction.
 This can be accomplished with a connection matrix $W$ is a circular Gaussian function of $i-j$ \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
 For finite sized networks the dynamics is constrained to an attractive invariant ring, covered with $N$ stable fixed points for a networks of size $N$ (Fig.~\ref{fig:bio_rings}C).
 %
 Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is because they are nearby ring attractors as dynamical systems.
 
-\mpcomment{transition missing}
-%mastrogiuseppe, beiran, ostojic
+\ptitle{Low-rank ring attractor model} %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
 The Dynamical Mean Field (DMF) tells us that in the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors.
 However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points located on a ring \citep{mastrogiuseppe2018}.
@@ -325,48 +327,50 @@ We can think of the finite size realization as a small perturbation to the infin
 %This implies that the ring attractor network 
 For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
 
-\mpcomment{are we going to describe EMPJ here?}
+\subsection{Observations}
+\mpcomment{to extend the summary and provide outlook}
+\begin{enumerate}
+    \item biological models of ring attractors are brittle.
+    \item they bifurcate into many different topologies.
+    \item Are continuous attractors still useful as a model of how animals might represent continuous variables?
+    \item we observe ghost manifolds. Is it a universal phenomenon?
+\end{enumerate}
+We seek implementation-agnostic answers.
 
+%\mpcomment{are we going to describe EMPJ here?}
 %how to show 
 %normal hyperbolicity index: speed normal/tangent to manifold
 %fenichel brakes down
 %uniform bound approximation
-
-
-
 %Is this only true for ReLU parameterized RNNs, or does it generalize?
-In this paper, we lay out a new theory of general continuous-valued memory to answer the following questions:
-\begin{enumerate}
-%    \item Can we avoid exploding gradients under parameter perturbation?
-    \item Do we need to worry about the brittleness of the continuous attractor solutions in practice?
-    \item Are continuous attractors useful as a model of how animals might represent continuous variables?
-    %How can biological networks approximate the representation of continuous variables?
-\end{enumerate}
-\mpcomment{These are good questions to be embedded in the text. Probably not as bullet points? Not sure.}
-Our theory provides answers to both questions under mild assumptions in an architecture agnostic manner.
+
+%In this paper, we lay out a new theory of general continuous-valued memory to answer the following questions:
+%\begin{enumerate}
+%%    \item Can we avoid exploding gradients under parameter perturbation?
+%    \item Do we need to worry about the brittleness of the continuous attractor solutions in practice?
+%    \item Are continuous attractors useful as a model of how animals might represent continuous variables?
+%    %How can biological networks approximate the representation of continuous variables?
+%\end{enumerate}
+%\mpcomment{These are good questions to be embedded in the text. Probably not as bullet points? Not sure.}
+%Our theory provides answers to both questions under mild assumptions in an architecture agnostic manner.
 %Using Fenichel's invariant manifold theorem, we derive a sufficient condition for RNNs implementing continuous attractors to remain free of exploding gradients.
 %Moreover, even after a bifurcation, these RNNs still approximately behave like the original continuous attractor (for a while).
 
-Using Fenichel's invariant manifold theorem, we derive a universality statement for the bifurcation landscape for one dimensional continuous attractors:
- the behavior of one-dimensional continuous attractors can be effectively described by slow ring manifolds.
- These manifolds can either take the form of collections of stable fixed points and saddle points with connecting orbits or that of a limit cycle. 
- This characterization provides a fundamental understanding of a continuous attractors bifurcation landscape.
-%what is uni statement?
-We verify our theoretical insights with numerical experiments.
-We show that all approximations, whether it is trained RNNs or hand designed contintuous attractors, are all to be described as slow manifolds with the same topology as the original continuous attractor,
-%punchlines
-even though they differ from each other in terms of the topology of the dynamics (e.g. number of fixed points).
-
-
-
+%Using Fenichel's invariant manifold theorem, we derive a universality statement for the bifurcation landscape for one dimensional continuous attractors:
+% the behavior of one-dimensional continuous attractors can be effectively described by slow ring manifolds.
+% These manifolds can either take the form of collections of stable fixed points and saddle points with connecting orbits or that of a limit cycle. 
+% This characterization provides a fundamental understanding of a continuous attractors bifurcation landscape.
+%%what is uni statement?
+%We verify our theoretical insights with numerical experiments.
+%We show that all approximations, whether it is trained RNNs or hand designed contintuous attractors, are all to be described as slow manifolds with the same topology as the original continuous attractor,
+%%punchlines
+%even though they differ from each other in terms of the topology of the dynamics (e.g. number of fixed points).
 
 
 %\section{Theory of gracefully degrading continuous attractors}\label{sec:theory}
-\section{The theory of continuous attractor approximations}\label{sec:theory}
-In this section, we apply invariant manifold theory to RNNs and translate the results for the theoretical neuroscience audience.
+\section{Theory of Approximate Continuous Attractors}\label{sec:theory}
+%In this section, we apply invariant manifold theory to RNNs and translate the results for the theoretical neuroscience audience.
 Our emphasis in this paper centers on investigating the distinctive properties of continuous attractors that prove essential for specific tasks, with a deliberate exclusion of considerations related to learning chaotic dynamics.
-
-
 
 \subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
 
