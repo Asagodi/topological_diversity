@@ -864,12 +864,25 @@ def plot():
     plt.ylabel('mean angular error')
     
 def plot_the_high_and_the_low():
+    fig, ax = plt.subplots(1, 1, figsize=(5, 3));
+    
     row_lownfps = df2.iloc[np.where(df2['nfps_csx2']==6.)[0][0]]
-    mean_error_0 = row_lownfps['mean_error_0'][128:]
-    plt.plot(mean_error_0.T,color='b', alpha=.5)
+    mean_error_0 = row_lownfps['mean_error_0'][T1:int(T1*10)]
+    max_error_0 = row_lownfps['max_error_0'][T1:int(T1*10)]
+    plt.plot(mean_error_0,color='b')
+    plt.plot(max_error_0,'--', color='b')
+    plt.plot(9.5*T1, mean_error_0[-1], '.', color='b');
     row_highnfps = df2.iloc[np.where(df2['nfps_csx2']==40.)[0][0]]
-    mean_error_0 = row_highnfps['mean_error_0'][128:]
-    plt.plot(mean_error_0.T,color='orange', alpha=.5)
+    mean_error_0 = row_highnfps['mean_error_0'][T1:int(T1*10)]
+    max_error_0 = row_highnfps['max_error_0'][T1:int(T1*10)]
+    plt.plot(mean_error_0,color='orange')
+    plt.plot(max_error_0,'--', color='orange')
+    plt.plot(9.5*T1, mean_error_0[-1], '.', color='orange');
+    
+    plt.xlabel("t")
+    plt.ylabel("mean angular error")
+    ax.set_xticks(np.arange(0,10*T1,2*T1),['$T_1$']+[f'${i}T_1$' for i in range(2,10,2)])
+    plt.savefig(figfolder+"/meanangularerror_lowhigh.pdf");
 
 def max_angle(fxd_pnt_thetas):
     dist_next = fxd_pnt_thetas-np.roll(fxd_pnt_thetas,1)
