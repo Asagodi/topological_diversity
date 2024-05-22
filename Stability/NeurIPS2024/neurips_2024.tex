@@ -639,34 +639,26 @@ The most often found solution is of the type \emph{fixed point ring manifold} (F
 Less commonly found topologies include slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
 These solutions are consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing,Park2023a} and neuronal circuits underlying persistent representations despite time varying activity~\citep{druckmann2012neuronal}.
 
-\subsection{Universality amongst good solutions}
+\subsection{Universality Amongst Good Solutions}
 %to what extent does training neural networks to solve simple tasks, prevalent in neuroscientific studies, uniquely determine the low-dimensional dynamics independent of neural architectures?
 %are the learned dynamics highly sensitive to different neural architectures?
 
 The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
  much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
-
 Previously, it has been observed that  fixed point analysis  has as a major limitation, namely, that the number of fixed points must be the equal across compared networks  \citep{maheswaranathan2019universality}.
 Our methodology effectively addresses and overcomes this limitation.
-The universal structure of continuous attractor approximations as slow invariant manifolds allows us to connect different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:attractor_bif}). \mpcomment{rephrase?}
+The universal structure of continuous attractor approximations as slow invariant manifolds allows us to connect different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:attractor_bif}).
 
+% \subsection{Infinite horizon computation in a bounded state space}\label{sec:inhoco}
+% Both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions~\citep{orhan2019diverse}.
+% %We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
+% If a dynamical system is implementing a timing-independent (infinite horizon) computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set~\citep{conley1978}.
+% This implies that the only possible implementation of a continuous valued memory that can be decoded linearly is the (approximate) continuous attractor.
 
-\mpcomment{move the following to the end or conclusion}
-Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
-Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
-This empirical evidence strongly corroborates our proposed theory of continuous memory.
-
-
-%
-%
-\subsection{Infinite horizon computation in a bounded state space}\label{sec:inhoco}
-
-Both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions \citep{orhan2019diverse}.
-We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
-If a system is implementing such a computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set \citep{conley1978}.
-This implies that the only possible implementation of a continuous valued memory that can be decoded linearly is the (approximate) continuous attractor.
-
-
+% \mpcomment{move the following to the end or conclusion}
+% Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
+% Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
+% This empirical evidence strongly corroborates our proposed theory of continuous memory.
 
 
 
