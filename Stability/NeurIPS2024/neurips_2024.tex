@@ -683,7 +683,12 @@ Animals are trained on a task for finite time and it is therefore unclear that t
 The same is the case for the trained networks.
 We will investigate to what extent the networks have the intended memory necessary for the task or whether they implement it on the timescale on which they have been trained.
 
+%Our theory shows that not all continuous attractors are born equal, and that there are gracefully degrading continuous attractors.
+%In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
+%Animal behavior is finite time in nature and the longer the temporal distance the harder it is to learn temporal dependencies in general.
+
 %generalization
+%\subsection{Different topologies have different generalization properties}
 \subsection{Generalization properties of continuous attractor approximations}\label{sec:generalization}
 %, and thus a corresponding pattern of error in temporal generalization
 
@@ -691,19 +696,12 @@ The two possible approximations of a ring attractor discussed in Sec.~\ref{sec:c
 Approximating the system as a limit cycle results in memory that gradually diminishes over time.
 Conversely, the alternative approximation's memory states are contingent upon the quantity and positioning of stable fixed points within the system.
 We will in detail describe the generaralization properties of the trained networks on the angular velocity integration task.
-
-
-%Our theory shows that not all continuous attractors are born equal, and that there are gracefully degrading continuous attractors.
-%In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
-%Animal behavior is finite time in nature and the longer the temporal distance the harder it is to learn temporal dependencies in general.
-
-
-
-
-
-%\subsection{Different topologies have different generalization properties}
-
 We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20dB (Fig.~\ref{fig:angular_loss}C).
+
+Looking beyond the finite timescale provides valuable insights into the network's ability to store information.% and how this ability degrades across different perturbations.
+We want in particular to investigate the angular memory capacities of the trained networks.
+We will assess this capacity at two different time-scales:  asymptotic and finite time.
+
 
 \begin{figure}[tbhp]
   \centering
@@ -713,31 +711,26 @@ We tested all networks with a validation set and took a cutoff for the normalize
   (B) The memory capacity versus the average accumulated angular error.
   (C) The number of fixed points versus average accumulated angular error.
   (D) The  average accumulated angular error over time for two selected networks, indicated with the blue and orange arrows in (C).
-  (E) Average accumulated angular error over time for two networks that have comparable angular errors at $T_1$, but have vastly different generalization properties because they differ in the number of fixed points.
+  (E) Network performance.
   }
   \label{fig:angular_loss}
 \end{figure}
 
 
 
- This step provides valuable insights into the network's ability to store information and how this ability degrades across different perturbations.
- We want in particular to investigate the angular memory capacities of the trained networks.
- We will assess this capacity at two different time-scales:  asymptotic and finite time.
+
  
 %method
 \paragraph{Finite time}
 %We measure the error on the finite timescale as follows.
 
 Aside from the angular velocity integration component of the task, the trained networks learn to store amemory of an angular variable.
-
 We assess the performance of the network to store the memory of angle over time.
-The networks perform well on the timescale on which they have been trained $T_1=256$ time steps.
-
-
-
+The networks typically perform well on the timescale on which they have been trained $T_1=256$ time steps ( Fig.~\ref{fig:angular_loss}E).
+%
 %uniform bound
 %infinite norm
-This loss is bounded by the uniform norm of the vector field  on the invariant manifold (See Sec.Supp.~\ref{sec:supp:vf} and \ref{sec:app:bouding}).
+This loss is bounded by the uniform norm of the vector field  on the invariant manifold (Fig.~\ref{fig:angular_loss}A,  see Sec.Supp.~\ref{sec:supp:vf} and \ref{sec:app:bouding}).
 
 
 
@@ -758,8 +751,9 @@ Finally, we characterize the memory capacity of the network through calculating 
 The mean accumulated error at the time at which the task was trained has a linear relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}C).
 Furthermore, this error is bounded by the mean distance between stable and unstable fixed points (red dots in Fig.~\ref{fig:angular_loss}C).
 This is another indication that the networks rely on a ring invariant manifold to implement the task.
+Networks with different number of fixed points might have the same performance on the finite time scale ($T_1$), but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}D).
 
-%(Fig.~\ref{fig:angular_loss}A and B)
+
 
 
 \subsection{Converse Theory}\label{sec:converse}
@@ -803,8 +797,8 @@ The found solutions might reflect the trade-off between robustness to noise and 
 
 
 
-In this study, we did not impose any additional structural constraints on the RNNs during training.
-It would be interesting to investigate how such constraints might affect the representation and computation in the trained RNNs.
+%In this study, we did not impose any additional structural constraints on the RNNs during training.
+%It would be interesting to investigate how such constraints might affect the representation and computation in the trained RNNs.
 
 
 %\subsection{Implications for Neuroscience}\label{sec:imp:neuroscience}
