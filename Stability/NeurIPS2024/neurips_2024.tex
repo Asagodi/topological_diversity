@@ -220,7 +220,7 @@ where $\vW = [0, -1; -1, 0]$ and $\vb = [1; 1]$, and $[\cdot]_{+} = \max(0,\cdot
 %The non-trivial activity of this network is limited to the (non-negative) first quadrant.
 %The second kind of continuous attractor is created through negative feedback.
 We get $\dot{\vx} = 0$ on the $x_1 = -x_2 + 1$ line segment in the first quadrant as the manifold (Fig.~\ref{fig:lara_bifurcations}A,left; black line).
-%We refer to it as the \emph{bounded line attractor} (BLA).
+We refer to it as the \emph{bounded line attractor} (BLA).
 Linearization of the fixed points on the manifold exhibits two eigenvalues, $0$ and $-2$;
 the $0$ eigenvalue allows the continuum of fixed points, while $-2$ makes the flow normal to the manifold attractive (Fig.~\ref{fig:lara_bifurcations}A,left; flow field).
 
@@ -325,28 +325,25 @@ For finite sized networks the dynamics is constrained to an attractive invariant
 
 \ptitle{Low-rank ring attractor model} %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
-The Dynamical Mean Field (DMF) tells us that in the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors.
+Using dynamical mean field theory, in the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors. \mpcomment{add link to details}
 However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points located on a ring~\citep{mastrogiuseppe2018}.
 
 \ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
 Approximate ring attractors can be fit by constraining the connectivity so that the networks Jacobian satisfies certain necessary requirements for a ring attractor to exist (Sec.~\ref{sec:supp:empj}~\citep{pollock2020}).
 The fitted models through this method also contain an invariant ring manifold on which the dynamics contains stable and saddle fixed points.
 
-\subsection{Observations}
-\mpcomment{to extend the summary and provide outlook}
-\begin{enumerate}
-    \item biological models of ring attractors are brittle.
-    \item they bifurcate into many different topologies.
-    \item Are continuous attractors still useful as a model of how animals might represent continuous variables?
-    \item we observe ghost manifolds. Is it a universal phenomenon?
-\end{enumerate}
-We seek implementation-agnostic answers.
+\ptitle{Remark}
+In all example models of ring attractors, we verify that they suffer from the fine-tuning problem.
+We have observed ghost of the continuous attractors (either through bifurcation or from finite-size effects).
+Is it a universal phenomenon?
+Moreover, although the exact ring attractor was not implemented, they were approximate ring attractors in some sense.
+Are continuous attractors somehow still useful as a model of how animals might represent continuous variables?
+We will answer these questions in an implementation-agnostic manner.
 
-Our theory explains this phenomenon as follows. %MOVE TO LATER
-We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
-%This implies that the ring attractor network 
-For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
-
+% Our theory explains this phenomenon as follows. %MOVE TO LATER
+% We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
+% %This implies that the ring attractor network 
+% For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
 
 %\mpcomment{are we going to describe EMPJ here?}
 %how to show 
@@ -392,7 +389,7 @@ Given a perturbation to the ODE $\vp(\vx)$ that induces a bifurcation,
 \end{align}
 where $\uniformNorm{\vp(\cdot)} = 1$ and $\epsilon > 0$ is the bifurcation parameter,
 we can reparameterize the dynamics around the manifold with coordinates $\vy \in \reals^l$ and the remaining ambient space with $\vz \in \reals^{d-l}$.
-To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function $g$, such that the following system is equivalent to the original ODE:
+To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function $g$ and $h$, such that the following system is equivalent to the original ODE:
 \begin{align}\label{eq:fenichel:flow}
     \dot{\vy} &=           \epsilon  \vg(\vy, \vz, \epsilon) \qquad \text{(tangent)}\\
     \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}
@@ -433,7 +430,8 @@ However, the local invariance implies that trajectories remain within the manifo
 Furthermore, the non-zero flow on the slow manifold is slow and given in the $\epsilon \to 0$ limit as $\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)$ where $\tau = \epsilon t$ is a rescaled time and $c^\epsilon(\cdot)$ parameterizes the $l$ dimensional slow manifold.
 In addition, the stable manifold of $\manifold_0$ is similarly  persistent~\cite{Jones1995}, implying the manifold $\manifold_\epsilon$ to remain attractive.
 
-These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA to this form).
+
+These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA).
  As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting \cite{simpson2018}, which is also the case for the BLA.
 %applicability of Fenichel’s invariant manifold theorem on continuous piecewise linear (PWL) dynamical systems.
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points, and is overall still attractive.
@@ -476,56 +474,53 @@ As continuous ring attractor are bounded, their invariant manifold persists and 
 %for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
 
 \subsection{Fast-Slow decomposition and the revival of continuous attractors}
-Consider a behaviorally relevant time scale for analog working memory, say 10 ms to 10 sec range.
-If the flow is orders of magnitude slower, for example, 1000 sec or longer, its effect is too slow to have practical impact on the behavior that relies on the working memory mechanism.
-This clear gap in the fast and slow time scales can be recast as \emph{extended normal hyperbolicity} of the slow manifold by relaxing the zero real part to separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
-In other words, the attractive flow normal to the manifold is uniformly faster than the flow tangent to the manifold.
+Consider a behaviorally relevant time scale for analog working memory, for instance, 10 ms to 10 sec.
+If the dynamical system is orders of magnitude slower, for example, 1000 sec or longer, its effect is too slow to have a practical impact on the behavior that relies on the working memory mechanism.
+This clear gap in the fast and slow time scales can be recast as \emph{extended normal hyperbolicity} of the slow manifold by relaxing the zero real part to a separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
+In other words, the attractive flow normal to the manifold needs to be uniformly faster than the flow on the manifold.
 
-By taking the limit of the slow flow to infinity, we achieve the reversal of the persistent manifold theorem.
-\begin{theorem}[Revival of continuous attractor (informal)]
-Let $\manifold_\epsilon$ be a connected, compact, slow manifold with extended normal hyperbolicity in the neighborhood of a continuous attractor.
+By taking the limit of the slow flow on the manifold to arbitrarily long time constant (i.e., to zero flow), we achieve the reversal of the persistent manifold theorem.
+\begin{prop}[Revival of continuous attractor (informal)]\label{prop:revival}
+Let $\manifold_\epsilon$ be a connected, compact, slow manifold with extended normal hyperbolicity. % in the neighborhood of a continuous attractor.
 Let the uniform norm of the flow tangent to the manifold be $\eta$.
-There exist a perturbation with uniform norm at most $\eta$ that induces a bifurcation to revive the continuous attractor manifold.
-\end{theorem}
-\mpcomment{can we actually make this a theorem?}
+There exist a perturbation with uniform norm at most $\eta$ that induces a bifurcation to a continuous attractor manifold $\manifold_0$ diffeomorphic to $\manifold_\epsilon$.
+\end{prop}
 
-We can bound the memory performance on the short-time scale performance based on the uniform bound of the slow flow.
+The uniform norm of vector field on the manifold is a useful measure of distance from a continuous attractor.
+It can also be used to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
 Let $\vx_0 \in \manifold$, and $\phi = \vp\vert_\manifold$ be the flow restricted to the manifold.
+The average deviation from initial memory $\vx_0$ over time is bounded linearly
 \begin{align}\label{eq:distance:ub}
 \frac{1}{\manifold}\int_\manifold
 %\frac{1}{T}\int_0^T
-\abs{\vx(t, \vx_0) - \vx_0}
+\abs{\vx(t, \vx_0) - \vx_0}\,
 %\dm{t}
 \dm{\vx_0}
-\leq t\,\uniformNorm{\phi}
+\leq t\uniformNorm{\phi}
 \end{align}
-\mpcomment{refer to later section on generalization performance?}
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
-It is expected that working memory tasks generalize to longer durations~\citep{Park2023a}.
+While the uniform norm gives insights into short time scale behavior, we can expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
 Long-time scale behavior of the slow manifold is dominated by the stability structure, i.e., the topology of the dynamics.
-Although we have seen numerous topologies in Sec.~\ref{sec:critique}, they are fundamentally limited, especially in low-dimensions.
+Although we have seen numerous topologies in Sec.~\ref{sec:critique}, dynamical systems theory says that they are fundamentally limited, especially in low-dimensions.
 %Understanding attractors and their bifurcation structure is crucial in neuroscience because they provide a blueprint for how neural activity can remain stable and robust even in the face of disruptions.
 %This resilience is fundamental for cognitive functions, learning, and memory. 
 %Thanks to Fenichel's Persistent Manifold Theorem, we can understand how these persistent pathways, or manifolds, survive even when the system undergoes  bifurcations.
 %Essentially, this theorem assures us that the underlying structure of continuous attractors remains intact, maintaining a consistent topology despite the changes.
 %The theory implies that in the space of dynamical systems, all systems in the neighbourhood of a continuous attractor all share the same topology for the attractive persistent invariant manifold and that the flow on the manifold is slow.
-
 For a ring attractor this implies that the stability structure of the invariant manifold is either
 (1) composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits, or (2) a limit cycle.
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 For 2 dimensional attractors stable fixed points and saddle nodes can coexist with limit cycles.
 In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states.
-For example, the dynamics on a torus can be described by Kolmogorov-Arnold-Moser (KAM) theory.
-\mpcomment{how does KAM help us?}
-For higher dimensional attractors, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
-\mpcomment{refer to later section on generalization performance?}
+For example, the dynamics on a torus manifold can be described by Kolmogorov-Arnold-Moser (KAM) theory.
+%For higher dimensional attractors, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
+%\mpcomment{refer to later section on generalization performance?}
 
 %No matter the dimension, the essential takeaway is that there will always be an attractive invariant manifold that mirrors the topology and dimension of the original continuous attractor.
 %This means that, even with perturbations, neural states aren't drastically altered from where they would have been, maintaining a semblance of the original flow.
 % the compact case: the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
 %\mpcomment{This subsection is very dry. Make it sound cool and also explain why these are important considerations in the context of neuroscience.}
-
 
 \section{Continuous attractor approximations} %from trained RNNs
 
