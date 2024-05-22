@@ -701,7 +701,7 @@ Conversely, the alternative approximation's memory states are contingent upon th
   \caption{
   (A) Finite time
   (B) Asymptotic time}
-  \label{fig:loss}
+  \label{fig:angular_loss}
 \end{figure}
 
 
@@ -1965,11 +1965,11 @@ with the dimensionless parameter $J^-$ representing the strength of the weak cro
  \citep{redish1996coupled} %Equation 9,12
  
 
-\subsection{Couey}\label{sec:supp:couey}
-\citep{couey2013}
-
-\subsection{NEF}
-\citep{barak2021mapping}
+%\subsection{Couey}\label{sec:supp:couey}
+%\citep{couey2013}
+%
+%\subsection{NEF}
+%\citep{barak2021mapping}
 
 
 \subsection{Low-rank}\label{sec:supp:lowrank}
@@ -2038,25 +2038,37 @@ Inputs and outputs for an example trial on each task are shown in Supp.Fig.~\ref
 
 
 \begin{align}
-T_{stim} \sim \mathcal{U}(50, 500) 
-T_{response} \mathcal{U}(50, 500)
+T_{delay} \sim \mathcal{U}(50, 400) 
 \end{align}
 
 Mask:
-$m_{i,t}$
+$m_{i,t}=0$ for 5 time steps after the go cue.
+
+
 
 \paragraph{Angular velocity integration task}
-
-Velocity at every timestep %(of  to be 100 ms)
- is sampled from as a Gaussian Process for smooth movement trajectories, consistent with the observed animal behavior in flies and rodents.
+The input is an angular velocity and the target output is the sine and cosine of the integrated angular velocity.
+Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smooth movement trajectories, consistent with the observed animal behavior in flies and rodents.
+%These parameters are set to roughly match the angular velocity distribution of the rat and fly (Stackman & Taube, 1998; Sharp et al., 2001; Bender & Dickinson, 2006; Raudies & Hasselmo, 2012).
  
- %These parameters are set to roughly match the angular velocity distribution of the rat and fly (Stackman & Taube, 1998; Sharp et al., 2001; Bender & Dickinson, 2006; Raudies & Hasselmo, 2012).
+ 
+ \begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=0.75\textwidth]{task_fig}
+       \caption{Description of the tasks. A) The angular velocity integration task. B) The output of the angular velocity integration in the output space, color coded according to the integrated angle. An example of an input is shown with constant velocity and it is provided until one turn is completed.}
+         \label{fig:angular_task}
+\end{figure}
+
+ 
  
  
  
  \section{Training methods}
  
- We trained vanilla RNNs with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}. The network size is 20 units, initialized using a normal distribution for the parameters. Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 100 epochs. The task has 100 time steps for the training samples, and the mean squared error loss was used.
+ We trained vanilla RNNs with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
+ The network size is 20 units, initialized using a normal distribution for the parameters.
+  Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
+   The task has 100 time steps for the training samples, and the mean squared error loss was used.
 
 
 
@@ -2066,12 +2078,7 @@ Velocity at every timestep %(of  to be 100 ms)
 
 
 
-\begin{figure}[tbhp]
-     \centering
-    \includegraphics[width=0.75\textwidth]{task_fig}
-       \caption{Description of the tasks. A) The angular velocity integration task. B) The output of the angular velocity integration in the output space, color coded according to the integrated angle. An example of an input is shown with constant velocity and it is provided until one turn is completed.}
-         \label{fig:angular_task}
-\end{figure}
+
 
 
 \begin{figure}[tbhp]
