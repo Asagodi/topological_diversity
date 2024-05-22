@@ -8,7 +8,7 @@
 \usepackage{forloop}
 %\usepackage{natbib}
 \setcitestyle{square,comma,numbers,sort&compress,super}
-\usepackage{subcaption}
+%\usepackage{subcaption}
 \usepackage{graphicx}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{pifont} 				%xmark
@@ -26,6 +26,8 @@
 \usepackage{microtype}      % microtypography
 %\usepackage{xr-hyper}
 \usepackage{enumitem}
+\usepackage{sidecap} % caption on the side SCfigure
+\sidecaptionvpos{figure}{c} % vertically align scfigure in sidecap
 
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
 \newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
@@ -383,7 +385,7 @@ We need the flow normal to the manifold to be hyperbolic, that is \emph{normally
 More specifically, for continuous attractors, the real part of the eigenvalues of $\nabla_\vz \vh$ will be negative, representing sufficiently strong attractive flow toward the manifold.
 Equivalently, for the ODE, $\dot{\vx} = \vf(\vx)$, the variational system is of constant rank, and has exactly $(d-l)$ eigenvalues with negative real parts and $l$ eigenvalues with zero real parts everywhere along the continuous attractor.
 
-\begin{figure}[bthp]
+\begin{SCfigure}[10][bthp]
   \centering
   \includegraphics[width=0.5\textwidth]{FenichelThm}
   \caption{
@@ -392,7 +394,7 @@ Equivalently, for the ODE, $\dot{\vx} = \vf(\vx)$, the variational system is of 
     %mention topology?
   }
   \label{fig:fenichel}
-\end{figure}
+\end{SCfigure}
 
 When $\epsilon > 0$, the continuous attractor bifurcates away.
 What can we say about the fate of the perturbed system?
