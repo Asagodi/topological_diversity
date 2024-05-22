@@ -696,7 +696,10 @@ Conversely, the alternative approximation's memory states are contingent upon th
   \includegraphics[width=\textwidth]{angular_losses}
   \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
   (A)  
-  (B) 
+  (B)
+  (C)
+  (D)
+  (E) Mean angular error over time for two networks that have comparable angular errors at $T_1$, but have vastly different generalization properties because they differ in the number of fixed points.
   }
   \label{fig:angular_loss}
 \end{figure}
@@ -712,6 +715,9 @@ Conversely, the alternative approximation's memory states are contingent upon th
 %We measure the error on the finite timescale as follows.
 
 Aside from the angular velocity integration component of the task, the trained networks learn to store amemory of an angular variable.
+
+We assess the performance of the network to store the memory of angle over time.
+The networks perform well on the timescale on which they have been trained $T_1=256$ time steps.
 
 
 
