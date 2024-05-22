@@ -725,11 +725,7 @@ Aside from the angular velocity integration component of the task, the trained n
     \mathcal{L}(T) = \frac{1}{|U|} \int_U  \frac{1}{|f(\bm{\alpha})|} \int_{f(\bm{\alpha})} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\bm{\alpha}),t),\bm{\alpha}) dt df(\bm{\alpha}) d\bm{\alpha}
 \end{equation}
 
-This loss is bounded by the uniform norm of the vector field on the invariant manifold.
-For a further elaboration of this bound, see Sec.Supp.~\ref{sec:app:bouding}.
-
-
-Sec.Supp.~\ref{sec:supp:vf}
+This loss is bounded by the uniform norm of the vector field  on the invariant manifold (See Sec.Supp.~\ref{sec:supp:vf} and \ref{sec:app:bouding}).
 
 
 
@@ -2106,12 +2102,13 @@ Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smoot
  
  \subsection{Vector field on invariant manifold}\label{sec:supp:vf}
  
- We assess the vector field on the found invariant manifold $\manifold$ by calculating it in the state space
+ We assess the vector field for the ODE (Eq.~ \ref{eq:RNN:continuous} without noise and input) on the found invariant manifold $\manifold$ by calculating it in the state space
  and then projecting it onto the output space:
  \begin{equation}
-\wout f(\alpha)
+\dot \alpha \wout f(\hat \alpha) %=: g(\alpha)
 \end{equation}
-for sampled points $\alpha\in \manifold$.
+for sampled points $\hat \alpha\in \manifold$.
+These points $\hat \alpha\in \manifold$ on the manifold are associated with the points on the ring through the mapping $\alpha = \wout\hat\alpha$.
  
   
  \begin{figure}[tbhp]
@@ -2124,13 +2121,16 @@ for sampled points $\alpha\in \manifold$.
          \label{fig:vf_on_ring}
 \end{figure}
  
- 
+This vector field in the output space captures in what direction and how quickly angular memory will decay. 
  The vector field  suggests that the system indeed has an invariant manifold (Fig. \ref{fig:vf_on_ring}).
  Furthermore, the vector field and fixed points are consistent with each other, as the vector field flips direction around found fixed points.
+
  
- There are some inconsistencies around saddle nodes, where the vectori field seems to point off of the manifold.
+ There are some inconsistencies around saddle nodes, where the vectori field seems to point off of the manifold.	
  This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
 
+
+For the bound discussed in Supp.Sec.\ref{sec:app:bouding}, we calculate the uniform norm of the found vector field $\|f\|_\infty = \sup f(\alpha)$.
 
 %
 %
