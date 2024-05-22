@@ -582,7 +582,7 @@ We trained 10 networks for every combination of the following parameters:
 % , and activity regularization ($10^{-3}, 0, 1$).
 %
 All networks were trained using ADAM with $\beta_1=0.9$ and $\beta_2=0.999$ for $5,000$ iterations with a batch size of 64. % and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
-Among the networks, we only analyzed networks with normalized MSE less than -20 dB (Fig.~\ref{}).
+%Among the networks, we only analyzed networks with normalized MSE less than -20 dB (Fig.~\ref{}).
 
 %To avoid overly complex solutions that do not generalize well for longer trials, we penalized high activity using an L2 regularization on the hidden activity $x_t$.
 %%We trained networks with regularizer
@@ -639,7 +639,7 @@ The most often found solution is of the type \emph{fixed point ring manifold} (F
 Less commonly found topologies include slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
 These solutions are consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing,Park2023a} and neuronal circuits underlying persistent representations despite time varying activity~\citep{druckmann2012neuronal}.
 
-\subsection{Universality Amongst Good Solutions}
+\subsection{Universality amongst Good Solutions}
 %to what extent does training neural networks to solve simple tasks, prevalent in neuroscientific studies, uniquely determine the low-dimensional dynamics independent of neural architectures?
 %are the learned dynamics highly sensitive to different neural architectures?
 
@@ -663,7 +663,7 @@ The universal structure of continuous attractor approximations as slow invariant
 
 
 
-\section{Generalization properties}
+\section{Generalization Analysis}
 
 %distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
 
@@ -684,9 +684,10 @@ The two possible approximations of a ring attractor discussed in Sec.~\ref{sec:c
 Approximating the system as a limit cycle results in memory that gradually diminishes over time.
 Conversely, the alternative approximation's memory states are contingent upon the quantity and positioning of stable fixed points within the system.
 We will in detail describe the generaralization properties of the trained networks on the angular velocity integration task.
-We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20dB (Fig.~\ref{fig:angular_loss}C).
+We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}C).
 
-Looking beyond the finite timescale provides valuable insights into the network's ability to store information.% and how this ability degrades across different perturbations.
+Looking beyond the finite timescale provides valuable insights into the network's ability to store information.
+% and how this ability degrades across different perturbations.
 We want in particular to investigate the angular memory capacities of the trained networks.
 We will assess this capacity at two different time-scales:  asymptotic and finite time.
 
@@ -704,15 +705,9 @@ We will assess this capacity at two different time-scales:  asymptotic and finit
   \label{fig:angular_loss}
 \end{figure}
 
-
-
-
- 
 %method
-\paragraph{Finite time}
-%We measure the error on the finite timescale as follows.
-
-Aside from the angular velocity integration component of the task, the trained networks learn to store amemory of an angular variable.
+\ptitle{Finite time}
+Aside from the angular velocity integration component of the task, the trained networks learn to store a memory of an angular variable.
 We assess the performance of the network to store the memory of angle over time.
 The networks typically perform well on the timescale on which they have been trained $T_1=256$ time steps ( Fig.~\ref{fig:angular_loss}E).
 %
@@ -720,10 +715,7 @@ The networks typically perform well on the timescale on which they have been tra
 %infinite norm
 This loss is bounded by the uniform norm of the vector field  on the invariant manifold (Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and \ref{sec:app:bouding}).
 
-
-
-\paragraph{Asymptotic time}
-
+\ptitle{Asymptotic time}
 For the asymptotic time-scale the asymptotic behavior of the system dominates and we identify the network behavior through its $\omega$-limit sets.
 For a one dimensional system this will either be fixed points or a limit cycle.
 For a set of fixed points the maximal error is given by the maximal distance to the next fixed point while for a limit cycle this will always be $\pi$.
@@ -742,9 +734,7 @@ This is another indication that the networks rely on a ring invariant manifold t
 Networks with different number of fixed points might have the same performance on the finite time scale ($T_1$), but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}D).
 
 
-
-
-\subsection{Converse Theory}\label{sec:converse}
+\subsection{Approximate Slow Manifolds are near Continuous Attractors}\label{sec:converse}
 In Sec.~\ref{sec:ras}, we presented a theory of approximate solutions in the neighborhood of continuous attractors.
 When are approximate solutions to the analog working memory problem near a continuous attractor?
 We posit that there are four conditions:
@@ -760,6 +750,7 @@ The S-type robustness \ref{converse:Stype} implies non-expansive flow, that is, 
 Along with the D-type robustness \ref{converse:Dtype}, it implies the manifold is ``attractive'', and it is normally hyperbolic.
 Then, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added makes it a continuous attractor.
 For the RNN experiments, we added state-noise while training using stochastic gradient descent, satisfying \ref{converse:Stype} and \ref{converse:Dtype}.
+We have also verified that \ref{converse:persistent} holds (Fig.~\ref{fig:angular_loss}A).
 Although the stochastic optimization cannot lead to the continuous attractor solution, it gets to the neighborhood where there are approximate solutions.
 Note that effectively feedforward solutions~\citep{Goldman2009} do not satisfy \ref{converse:bijection}.
 
