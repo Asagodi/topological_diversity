@@ -389,7 +389,7 @@ Given a perturbation to the ODE $\vp(\vx)$ that induces a bifurcation,
 \end{align}
 where $\uniformNorm{\vp(\cdot)} = 1$ and $\epsilon > 0$ is the bifurcation parameter,
 we can reparameterize the dynamics around the manifold with coordinates $\vy \in \reals^l$ and the remaining ambient space with $\vz \in \reals^{d-l}$.
-To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function $g$, such that the following system is equivalent to the original ODE:
+To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function $g$ and $h$, such that the following system is equivalent to the original ODE:
 \begin{align}\label{eq:fenichel:flow}
     \dot{\vy} &=           \epsilon  \vg(\vy, \vz, \epsilon) \qquad \text{(tangent)}\\
     \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}
