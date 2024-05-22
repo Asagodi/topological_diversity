@@ -187,7 +187,7 @@ We further analyze task-trained artificial recurrent neural networks to reveal a
   \centering
   \includegraphics[width=\textwidth]{lara_bifurcations}
   \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
-  Some of the structure seems to remain, there is an invariant manifold that is topologically equivalent to the original continuous attractor.
+  Some of the structure seems to remain; there is an invariant manifold that is topologically equivalent to the original continuous attractor.
     (A) Phase portraits for the bounded line attractor (Eq.~\eqref{eq:TLN}).
     Under perturbation of parameters, it bifurcates to systems without the continuous attractor.
     (B) The low-rank ring attractor approximation (Sec.~\eqref{sec:supp:lowrank}).
@@ -281,7 +281,7 @@ In this section, we investigate the bifurcations of various implementations of c
 Continuous attractor network models of the head-direction is based on the interactions of neurons that (anatomically) form a ring-like overlapping neighbor connectivity~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous,knierim2012}.
 %Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 Similarly as with the line attractor, the ring attractor bifurcates for virtually every perturbation.
-Nevertheless, the bifurcated dynamics again follow a similar patter of the dynamics restricted to the ghost manifold around the original continuous attractor.
+Nevertheless, the bifurcated dynamics again follow a similar pattern of the dynamics restricted to the ghost manifold around the original continuous attractor.
 
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
 \ptitle{Piecewise-linear ring attractor model of the central complex}
@@ -318,7 +318,7 @@ There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\
 %a circulant matrix as the connectivity matrix\citep{samsonovich1997path, seeholzer2017efficient, redish1996coupled, goodridge2000, compte2000synaptic}.
 The infinite sized ring attractor network can support a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
 %The position of this bump encodes the head direction.
-This can be accomplished with a connection matrix $W$ is a circular Gaussian function of $i-j$ \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
+This can be accomplished with a connection matrix $W$ with entries that follow a circular Gaussian function of $i-j$ \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
 For finite sized networks the dynamics is constrained to an attractive invariant ring, covered with $N$ stable fixed points for a networks of size $N$ (Fig.~\ref{fig:bio_rings}C).
 %
 %Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is because they are nearby ring attractors as dynamical systems.
@@ -330,7 +330,7 @@ However, in simulations of finite-size networks with this constraint, the dynami
 
 \ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
 Approximate ring attractors can be fit by constraining the connectivity so that the networks Jacobian satisfies certain necessary requirements for a ring attractor to exist (Sec.~\ref{sec:supp:empj}~\citep{pollock2020}).
-The fitted models through this method also contain an invariant ring manifold that on which the dynamics contains stable and saddle fixed points.
+The fitted models through this method also contain an invariant ring manifold on which the dynamics contains stable and saddle fixed points.
 
 \subsection{Observations}
 \mpcomment{to extend the summary and provide outlook}
