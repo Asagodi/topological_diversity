@@ -296,7 +296,7 @@ This continuum of fixed points forms a one dimensional manifold homeomorphic to 
        (A) Perturbations to the ring attractor \citep{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to $2N$ (stable and saddle points are paired). 
        (B)  Perturbations a low-rank approximation of a ring attractor \citep{mastrogiuseppe2018}.
        (C)  Perturbations to a tanh approximation of a ring attractor \citep{seeholzer2017efficient}.
-       (D)  Different EMPJ approximations of a ring attractor \citep{pollock2020}.
+       (D)  Different Embedding Manifolds with Population-level Jacobians (EMPJ) approximations of a ring attractor \citep{pollock2020}.
        }
          \label{fig:bio_rings}
 \end{figure}
@@ -329,6 +329,10 @@ Our theory explains this phenomenon as follows. %MOVE TO LATER
 We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the $m^1, m^2$ plane (independent of the parameter $g$ for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
 %This implies that the ring attractor network 
 For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
+
+\ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
+Approximate ring attractors can be fit by constraining the connectivity so that the networks Jacobian satisfies certain necessary requirements for a ring attractor to exist (Sec.~\ref{sec:supp:empj}~\citep{pollock2020}).
+The fitted models through this method also contain an invariant ring manifold that on which the dynamics contains stable and saddle fixed points.
 
 \subsection{Observations}
 \mpcomment{to extend the summary and provide outlook}
@@ -596,7 +600,7 @@ All networks were trained using stochastic gradient descent with Adam with $\bet
 
 
  %method
- \subsection{Variability in the topologies of the networks}\label{sec:fastslowmethod}
+ \subsection{Fast-slow decomposition}\label{sec:fastslowmethod}
 For each trained network, we find the slow manifold  by integrating the autonomous dynamics and we select the parts of the trajectory that have speed slower than a threshold.
 %
 %We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}.
@@ -2058,7 +2062,7 @@ $g=0, 0.1$
 \end{figure}
 
 
-\subsection{EMPJ}
+\subsection{EMPJ}\label{sec:supp:empj}
 We fit 3 networks with the Embedding Manifolds with Population-level Jacobians (EMPJ) method \citep{pollock2020}.
 We take a ring and embed it with a random linear mapping to a 10 dimensional state space.
 On this embedded ring, we constraint the network to have evenly spaced fixed points with one marginal Jacobian eigenvalue and all others eigenvalues -20.
