@@ -561,6 +561,7 @@ Assuming an Euler integration with unit time step, the discrete-time RNN of \eqr
 \end{align}
 where $\dm{W}$ is Wiener process that models the intrinsic state noise in the brain.
 
+We trained RNNs on two tasks involving continuous variables: the angular velocity integration task and the memory guided saccade task (details in Sec.Supp.~\ref{sec:supp:tasks}).
 The loss $L$ to be minimized was computed by mean squared error (MSE) between the network output $y(t)$ and the target output $\hat y(t)$.
 \begin{equation}\label{eq:loss}
 L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}
