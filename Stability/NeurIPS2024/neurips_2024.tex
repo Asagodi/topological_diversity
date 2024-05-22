@@ -686,7 +686,7 @@ Conversely, the alternative approximation's memory states are contingent upon th
   \includegraphics[width=\textwidth]{angular_losses}
   \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
   (A) 
-  (B) asymptotic time}
+  (B) }
   \label{fig:angular_loss}
 \end{figure}
 
@@ -700,8 +700,7 @@ Conversely, the alternative approximation's memory states are contingent upon th
 \paragraph{Finite time}
 %We measure the error on the finite timescale as follows.
 
-All the trained networks can maintain memory of an angular variable, which implies that 
-
+Aside from the angular velocity integration component of the task, the trained networks learn to store amemory of an angular variable.
 
 
 
@@ -715,7 +714,9 @@ This loss is bounded by the uniform norm of the vector field on the invariant ma
 For a further elaboration of this bound, see Sec.Supp.~\ref{sec:app:bouding}.
 
 
-The mean accumulated error at the time at which the task was trained has a linear relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}), which is another indication that the network relies on a ring invariant manifold to implement the task.
+
+
+
 
 \paragraph{Asymptotic time}
 
@@ -733,8 +734,10 @@ We construct a probability distribution of what part of state space we end up in
 Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution.
 
 
-The topological structure of the found solutions indeed implies how well a network can perform generalization for longer times.
 
+The mean accumulated error at the time at which the task was trained has a linear relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}A), which is another indication that the network relies on a ring invariant manifold to implement the task.
+
+%(Fig.~\ref{fig:angular_loss}A and B)
 
 
 \subsection{Converse Theory}\label{sec:converse}
@@ -763,11 +766,12 @@ We investigated the neighborhood of the continuous attractor networks and analyz
 There were surprisingly diverse bifurcations that the network visits in the presence of stochasticity in synapses and learning signals.
 
 
-As the theory predicts, 
-
-
+As the theory predicts, trained networks have an attractive ring invariant manifold.
 Training RNNs results in a great variety of solutions.
  Nevertheless, within this variability, we can identify common structures.
+The topological structure of the found solutions indeed implies how well a network can perform generalization for longer times.
+
+
 
 
 %error-correcting
