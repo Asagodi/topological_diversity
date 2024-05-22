@@ -2115,15 +2115,20 @@ for sampled points $\alpha\in \manifold$.
   
  \begin{figure}[tbhp]
      \centering
-    \includegraphics[width=\textwidth]{vf_on_ring_closest_exp0}
-       \caption{The projected vector field on the found invariant manifold.}
-         \label{fig:vf_on_ring_closest_exp0}
+    \includegraphics[width=\textwidth]{vf_on_ring}
+       \caption{The projected vector field on the found invariant manifold for the system Fig~\ref{fig:fastslow_decomposition}C.
+       (A) The found vector field aligns well with the ring in the projected output space.
+       (B) The norm of the vector field is low around found fixed points as expected, but is higher for points that are just slow points.
+       }
+         \label{fig:vf_on_ring}
 \end{figure}
  
  
- The vector field (Fig. \ref{fig:vf_on_ring_closest_exp0}) suggests that the system
-
-%i
+ The vector field  suggests that the system indeed has an invariant manifold (Fig. \ref{fig:vf_on_ring}).
+ Furthermore, the vector field and fixed points are consistent with each other, as the vector field flips direction around found fixed points.
+ 
+ There are some inconsistencies around saddle nodes, where the vectori field seems to point off of the manifold.
+ This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
 
 
 %
