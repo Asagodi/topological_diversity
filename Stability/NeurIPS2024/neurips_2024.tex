@@ -600,7 +600,8 @@ All networks were trained using ADAM with $\beta_1=0.9$ and $\beta_2=0.999$ for 
 \subsection{Numerical Fast-Slow Decomposition}\label{sec:fastslowmethod}
 For each trained network, we find the slow manifold  by integrating the autonomous dynamics and we select the parts of the trajectory that have speed slower than a threshold.
 %
-%We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}.
+%We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}. 
+%https://scikit-dimension.readthedocs.io/en/latest/skdim.id.MOM.html#skdim.id.MOM
 In the cases that we identify a one dimensional invariant manifold $\manifold$, we parametrize it by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
 Alternatively, we identify the points along the trajectories that are the closest to a set of point in the output space relevant to the task after convergence, i.e. on the unit ring.
 %Finally, we find the stable fixed points through a threshold on the 
@@ -1522,7 +1523,7 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 \dot x' &=\left(\begin{bmatrix}-2 &0\\0&0\end{bmatrix}+\frac{\epsilon}{2}\begin{bmatrix}1 &-1\\-1&1\end{bmatrix}\right)x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon \\-\epsilon\end{bmatrix}
 \end{align}
 
-\section{Smoother activation functions}
+\subsection{Smoother activation functions}
 It is well-known that activation functions ($\sigma$ in  Eqs.~\ref{eq:RNN:discrete} and  \ref{eq:RNN:continuous}), which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023,ramachandran2017,hayou2019}.
 Activation functions that are $C^r$ for $r\geq 1$ are the ones to which the Persistence Theorem applies. 
 The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistent invariant manifold.
@@ -1887,7 +1888,7 @@ To computationally investigate the neighborhood of recurrent dynamical systems t
 %We consider two topologically distinct temporal integration tasks: (i) linear integration, and (ii) angular integration.
 %For all experiments we used single precision floating point arithmetic and PyTorch.
 
-\subsection{Local and global perturbations}
+%\subsection{Local and global perturbations}
 %Definition of a bump perturbation
 We define a local perturbation (i.e., a change to the ODE with compact support) through the bump function $\Psi(x) = \exp\left(\frac{1}{\|x\|^2-1}\right)$ for $\|x\|<1$ and zero outside, by multiplying it with a uniform, unidirectional vector field. All such perturbations leave at least a part of the continuous attractor intact and preserve the invariant manifold, i.e. the parts where the fixed points disappear a slow flow appears.
 
@@ -1897,8 +1898,8 @@ The parametrized perturbations are characterized as the addition of a random mat
 
 
 
-\subsection{Models}
-\subsubsection{Simple ring attractor}
+
+\subsection{Simple ring attractor}
 %Ring attractor
 We further analyzed a simple (non-biological)  ring attractor, defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
 This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$.
@@ -1910,7 +1911,7 @@ All perturbations maintain the topological structure of the invariant manifold .
 
 
 
-\subsubsection{Heading direction network}\label{sec:supp:headdirection}
+\subsection{Heading direction network}\label{sec:supp:headdirection}
 
 \begin{equation}
 \tau \dot h_j = -h_j + \frac{1}{N} \sum_k (W^{sym}_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
@@ -1945,9 +1946,6 @@ The limit cycle is the only bifurcation that we found that can be achieved on on
 
 
 
-
-
-
 \paragraph{Independence of norm of perturbation on bifurcation}
 
 \begin{figure}[tbhp]
@@ -1960,6 +1958,9 @@ The limit cycle is the only bifurcation that we found that can be achieved on on
 
 
 
+
+
+\newpage
 \subsection{Ring attractor approximation with tanh neurons}\label{sec:supp:goodridge}
 
 
@@ -2030,29 +2031,61 @@ P_{ij} = \frac{m^{(1)}_i n^{(1)}_j}{N} + \dots + \frac{m^{(r)}_i n^{(r)}_j}{N},
 \end{equation} and is in principle characterized by $2r$ vectors $m^{(k)}$ and $n^{(k)}$.
 $g\chi$ is considered unknown except for its statistics (mean 0, variance $g^2/N$).
 
-$N=10,100,1000$
-$\Sigma=2$
-$\rho=1.9$
-$g=0, 0.1$
+%Rank-two structures with internal pairwise overlap
+As a second case, we consider structured matrices where the two connectivity pairs \( m^{(1)} \) and \( n^{(1)} \), \( m^{(2)} \) and \( n^{(2)} \) share two different overlap directions, defined by vectors \( y_1 \) and \( y_2 \). We set:
+\begin{align}
+    m^{(1)} &= \sqrt{\Sigma^2 - r_1^2} \, x_1 + r_1 y_1, \\
+    m^{(2)} &= \sqrt{\Sigma^2 - r_2^2} \, x_2 + r_2 y_2, \\
+    n^{(1)} &= \sqrt{\Sigma^2 - r_1^2} \, x_3 + r_1 y_1, \\
+    n^{(2)} &= \sqrt{\Sigma^2 - r_2^2} \, x_4 + r_2 y_2,
+\end{align}
+where \( \Sigma^2 \) is the variance of the connectivity vectors and \( r_1^2 \) and \( r_2^2 \) quantify the overlaps along the directions \( y_1 \) and \( y_2 \).
+
+
+
+We keep the following parameters for the analysis:
+$\Sigma=2$,
+$\rho=1.9$ and
+$g\in\{0, 0.1\}$.
 
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{N100_si2_rho1.9_g0_fp4.8.12}
-\caption{Some examples of networks dynamics.}
+\caption{Some examples of networks dynamics for sizes $N=10,100,1000$.}
 \label{fig:low_rank_examples}
 \end{figure}
+
+
+
 
 
 \subsection{EMPJ}\label{sec:supp:empj}
 We fit 3 networks with the Embedding Manifolds with Population-level Jacobians (EMPJ) method \citep{pollock2020}.
 We take a ring and embed it with a random linear mapping to a 10 dimensional state space.
 On this embedded ring, we constraint the network to have evenly spaced fixed points with one marginal Jacobian eigenvalue and all others eigenvalues -20.
+We used different numbers of fixed points to contrain the network.
+%todo: numbers
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{empj_onoff_perturbation}
+\caption{Some examples of networks dynamics.}
+\label{fig:empj_onoff_perturbation}
+\end{figure}
+
 
 
 
 %\newpage
 %\subsection{Biswas}\label{sec:supp:biswas}
+
+
+
+
+
+
+
 
 
 
@@ -2073,121 +2106,6 @@ On this embedded ring, we constraint the network to have evenly spaced fixed poi
 %From an arbitrary initialization, we find that a line attractor-like structure often (8 out of 10 runs) emerged with hyperbolically stable fixed points (Fig.\ref{fig:line_att_sols}A) when trained on a longer version of the task. For shorter trial lengths, saddle nodes are more likely to emerge (6 out of 10 runs) at the ends of the line (Fig.~\ref{fig:line_att_sols}B), meaning that the resulting structure is not an attractor. 
 %
 
-
-
-\newpage
-\newpage
-\section{Tasks}\label{sec:supp:tasks}
-%Inputs and outputs for an example trial on each task are shown in Supp.Fig.~\ref{fig:supp:tasks}.
-
-
-\paragraph{Memory guided saccade task}
-
-The total time length of the task was 512 steps.
-The time delay to the output cue was sampled from 
-\begin{align}
-T_{delay} \sim \mathcal{U}(50, 400).
-\end{align}
-We applied a mask $m_{i,t}=0$ for 5 time steps ($T_{delay}+i$ for $i=0,\dots 4$) after the go cue.
-
-
-
-\paragraph{Angular velocity integration task}
-The input is an angular velocity and the target output is the sine and cosine of the integrated angular velocity.
-Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smooth movement trajectories, consistent with the observed animal behavior in flies and rodents.
-%These parameters are set to roughly match the angular velocity distribution of the rat and fly (Stackman & Taube, 1998; Sharp et al., 2001; Bender & Dickinson, 2006; Raudies & Hasselmo, 2012).
-\begin{equation}
-k(x,y)=\exp\left(-\frac{\|x-y\|}{2\ell^2}\right),
-\end{equation}
-with length scale $\ell$.
- The length scale of the kernel was fixed at 1.
- 
- \begin{figure}[tbhp]
-     \centering
-    \includegraphics[width=0.75\textwidth]{task_fig}
-       \caption{Description of the tasks. A) The angular velocity integration task. B) The output of the angular velocity integration in the output space, color coded according to the integrated angle. An example of an input is shown with constant velocity and it is provided until one turn is completed.}
-         \label{fig:angular_task}
-\end{figure}
-
- 
- 
- 
- 
- \section{Training methods}
- 
- We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
- The network size is 20 units, initialized using a normal distribution for the parameters.
-  Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
-   The task has 100 time steps for the training samples, and the mean squared error loss was used.
-The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
-
-The best learning rate was chosen from 5 initial runs for all networks.
-Training a single network took around 10 minutes on a CPU and occupied 10 percent of an 8GB RAM.
-
- \section{RNN analysis methods}
- 
- %fast-slow
- % inv man
- 
- \subsection{Fast-slow decomposition}
- We simulated 1024 trajectories without noise with inputs from the task and let the networks evolve for 16 times the task definition lengths.
- We took the cutoff to identify the slow manifold to be $10^{-3}$ of the highest speed along each trajectory.
- We believe that this gaurantees the identification of the slow manifold in a system that has a fast-slow decomposition.	
- We sampled 1024 points from these points to fit a periodic, cubic spline (black line in Fig.\ref{fig:fastslow_decomposition}).
- 
- \subsection{Vector field on invariant manifold}\label{sec:supp:vf}
- 
- We assess the vector field for the ODE (Eq.~ \ref{eq:RNN:continuous} without noise and input) on the found invariant manifold $\manifold$ by calculating it in the state space
- and then projecting it onto the output space:
- \begin{equation}
-\dot \alpha =  \wout f(\hat \alpha) %=: g(\alpha)
-\end{equation}
-for sampled points $\hat \alpha\in \manifold$.
-These points $\hat \alpha\in \manifold$ on the manifold are associated with the points on the ring through the mapping $\alpha = \wout\hat\alpha$.
- 
-  
- \begin{figure}[tbhp]
-     \centering
-    \includegraphics[width=\textwidth]{vf_on_ring}
-       \caption{The projected vector field on the found invariant manifold for the system Fig~\ref{fig:fastslow_decomposition}C.
-       (A) The found vector field aligns well with the ring in the projected output space.
-       (B) The norm of the vector field is low around found fixed points as expected, but is higher for points that are just slow points.
-       }
-         \label{fig:vf_on_ring}
-\end{figure}
- 
-This vector field in the output space captures in what direction and how quickly angular memory will decay. 
- The vector field  suggests that the system indeed has an invariant manifold (Fig. \ref{fig:vf_on_ring}).
- Furthermore, the vector field and fixed points are consistent with each other, as the vector field flips direction around found fixed points.
-
- 
- There are some inconsistencies around saddle nodes, where the vectori field seems to point off of the manifold.	
- This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
-%
-For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field $\|f\|_\infty = \sup f(\alpha)$ (see also Sec. \ref{sec:app:bouding}).
-
-%
-%
-%\begin{figure}[tbhp]
-%     \centering
-%    \includegraphics[width=\textwidth]{analysis_small}
-%       \caption{Analysis steps for the distillation of the implemented computation in a trained RNN. A) Input driven hidden trajectories for constant inputs of different magnitudes in the left (blue) and right (red) direction. B) Projection onto the output space of the attractors found by simulation until convergence to periodic solutions (color indicates the angular direction it maps to) with slow points found by minimizing the speed of the hidden (square) or output (cross) dynamics. Stability is indicated by green for stable, pink and red for saddles with 1 and 2 unstable dimensions, respectively. C) Effective input drive shown as average vector fields for the hidden dynamics projected onto the output space. Averages taken for a single constant input in left (blue) and right (red) directions.}
-%         \label{fig:asymptotic_analysis}
-%\end{figure}
-%
-%\begin{figure}[tbhp]
-%     \centering
-%    \includegraphics[width=\textwidth]{example_solutions}
-%       \caption{A) A solution with a single limit cycle (light blue) that gets mapped onto a small subset of the output space. B) A solution with multiple limit cycles spread around the ring attractor. C) A solution with only fixed points spread around a ring like attractor with slow dynamics.}
-%         \label{fig:angular_solutions}
-%\end{figure}
-%
-%
-%For the angular velocity integration task, typical solutions have two limit cycles corresponding to the two directions of constant inputs. The autonomous dynamics can be characterized by an (approximate) line attractor with two (approximate) ring attractors at the ends. 
-%The found solutions Fig.\ref{fig:angular_solutions}A-C all show bounded ring-like attractors. These solutions are all composed of two rings (Fig.\ref{fig:asymptotic_analysis}A) connected by an (approximate) line attractor.
-%
-%The vector field (Fig. \ref{fig:asymptotic_analysis}C) suggests that the system exhibits input driven dynamics  corresponding to a limit cycle, which would mean that the invariant manifold of the input-driven dynamics is compact.
-%%\include{iclr2024_supplementary.tex}
 
 
 
@@ -2328,6 +2246,124 @@ and therefore:
 \begin{equation}
     \mathcal{L}(T) \leq \min \left( \frac{2 \pi}{FP}, \pi \right) 
 \end{equation}
+
+
+
+\newpage
+\section{Tasks}\label{sec:supp:tasks}
+%Inputs and outputs for an example trial on each task are shown in Supp.Fig.~\ref{fig:supp:tasks}.
+
+
+\paragraph{Memory guided saccade task}
+
+The total time length of the task was 512 steps.
+The time delay to the output cue was sampled from 
+\begin{align}
+T_{delay} \sim \mathcal{U}(50, 400).
+\end{align}
+We applied a mask $m_{i,t}=0$ for 5 time steps ($T_{delay}+i$ for $i=0,\dots 4$) after the go cue.
+
+
+
+\paragraph{Angular velocity integration task}
+The input is an angular velocity and the target output is the sine and cosine of the integrated angular velocity.
+Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smooth movement trajectories, consistent with the observed animal behavior in flies and rodents.
+%These parameters are set to roughly match the angular velocity distribution of the rat and fly (Stackman & Taube, 1998; Sharp et al., 2001; Bender & Dickinson, 2006; Raudies & Hasselmo, 2012).
+\begin{equation}
+k(x,y)=\exp\left(-\frac{\|x-y\|}{2\ell^2}\right),
+\end{equation}
+with length scale $\ell$.
+ The length scale of the kernel was fixed at 1.
+ 
+ \begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=0.75\textwidth]{task_fig}
+       \caption{Description of the tasks. A) The angular velocity integration task. B) The output of the angular velocity integration in the output space, color coded according to the integrated angle. An example of an input is shown with constant velocity and it is provided until one turn is completed.}
+         \label{fig:angular_task}
+\end{figure}
+
+ 
+ 
+ 
+ 
+ \section{Training methods}
+ 
+ We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
+ The network size is 20 units, initialized using a normal distribution for the parameters.
+  Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
+   The task has 100 time steps for the training samples, and the mean squared error loss was used.
+The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
+
+The best learning rate was chosen from 5 initial runs for all networks.
+Training a single network took around 10 minutes on a CPU and occupied 10 percent of an 8GB RAM.
+
+ \section{RNN analysis methods}
+ 
+ %fast-slow
+ % inv man
+ 
+ \subsection{Fast-slow decomposition}
+ We simulated 1024 trajectories without noise with inputs from the task and let the networks evolve for 16 times the task definition lengths.
+ We took the cutoff to identify the slow manifold to be $10^{-3}$ of the highest speed along each trajectory.
+ We believe that this gaurantees the identification of the slow manifold in a system that has a fast-slow decomposition.	
+ We sampled 1024 points from these points to fit a periodic, cubic spline (black line in Fig.\ref{fig:fastslow_decomposition}).
+ 
+ \subsection{Vector field on invariant manifold}\label{sec:supp:vf}
+ 
+ We assess the vector field for the ODE (Eq.~ \ref{eq:RNN:continuous} without noise and input) on the found invariant manifold $\manifold$ by calculating it in the state space
+ and then projecting it onto the output space:
+ \begin{equation}
+\dot \alpha =  \wout f(\hat \alpha) %=: g(\alpha)
+\end{equation}
+for sampled points $\hat \alpha\in \manifold$.
+These points $\hat \alpha\in \manifold$ on the manifold are associated with the points on the ring through the mapping $\alpha = \wout\hat\alpha$.
+ 
+  
+ \begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=\textwidth]{vf_on_ring}
+       \caption{The projected vector field on the found invariant manifold for the system Fig~\ref{fig:fastslow_decomposition}C.
+       (A) The found vector field aligns well with the ring in the projected output space.
+       (B) The norm of the vector field is low around found fixed points as expected, but is higher for points that are just slow points.
+       }
+         \label{fig:vf_on_ring}
+\end{figure}
+ 
+This vector field in the output space captures in what direction and how quickly angular memory will decay. 
+ The vector field  suggests that the system indeed has an invariant manifold (Fig. \ref{fig:vf_on_ring}).
+ Furthermore, the vector field and fixed points are consistent with each other, as the vector field flips direction around found fixed points.
+
+ 
+ There are some inconsistencies around saddle nodes, where the vectori field seems to point off of the manifold.	
+ This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
+%
+For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field $\|f\|_\infty = \sup f(\alpha)$ (see also Sec. \ref{sec:app:bouding}).
+
+%
+%
+%\begin{figure}[tbhp]
+%     \centering
+%    \includegraphics[width=\textwidth]{analysis_small}
+%       \caption{Analysis steps for the distillation of the implemented computation in a trained RNN. A) Input driven hidden trajectories for constant inputs of different magnitudes in the left (blue) and right (red) direction. B) Projection onto the output space of the attractors found by simulation until convergence to periodic solutions (color indicates the angular direction it maps to) with slow points found by minimizing the speed of the hidden (square) or output (cross) dynamics. Stability is indicated by green for stable, pink and red for saddles with 1 and 2 unstable dimensions, respectively. C) Effective input drive shown as average vector fields for the hidden dynamics projected onto the output space. Averages taken for a single constant input in left (blue) and right (red) directions.}
+%         \label{fig:asymptotic_analysis}
+%\end{figure}
+%
+%\begin{figure}[tbhp]
+%     \centering
+%    \includegraphics[width=\textwidth]{example_solutions}
+%       \caption{A) A solution with a single limit cycle (light blue) that gets mapped onto a small subset of the output space. B) A solution with multiple limit cycles spread around the ring attractor. C) A solution with only fixed points spread around a ring like attractor with slow dynamics.}
+%         \label{fig:angular_solutions}
+%\end{figure}
+%
+%
+%For the angular velocity integration task, typical solutions have two limit cycles corresponding to the two directions of constant inputs. The autonomous dynamics can be characterized by an (approximate) line attractor with two (approximate) ring attractors at the ends. 
+%The found solutions Fig.\ref{fig:angular_solutions}A-C all show bounded ring-like attractors. These solutions are all composed of two rings (Fig.\ref{fig:asymptotic_analysis}A) connected by an (approximate) line attractor.
+%
+%The vector field (Fig. \ref{fig:asymptotic_analysis}C) suggests that the system exhibits input driven dynamics  corresponding to a limit cycle, which would mean that the invariant manifold of the input-driven dynamics is compact.
+%%\include{iclr2024_supplementary.tex}
+
+
+
 
 
 
