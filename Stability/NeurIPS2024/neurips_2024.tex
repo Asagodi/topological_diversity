@@ -1091,18 +1091,12 @@ The found solutions might reflect the trade-off between robustness to noise and 
 %The applicability of the Persistence Theorem to non-differentiable vector fields would depend on the specific characteristics of the system and the nature of the non-differentiability.
 %
 
-\section{Experiments}
-To computationally investigate the neighborhood of recurrent dynamical systems that implement continuous attractors, we investigate 5 RNNs that are known a priori to form 1 or 2 dimensional continuous attractors.
-We consider two topologically distinct temporal integration tasks: (i) linear integration, and (ii) angular integration.
-For all experiments we used single precision floating point arithmetic and PyTorch.
-%In order to demonstrate the implications of the theory of the persistence of bounded continuous attractors, we rigorously test the predictions of the theory on the stability of the BLA.
-% Our objective is to assess the practical implications of the theoretical findings of bounded continuous attractors in a small and tractable system, and second, to contribute empirical evidence that can help refine and extend existing theoretical frameworks. 
-%
+\section{Bifurcation analysis of the bounded line attractor}\label{sec:supp:bla}
+
+In order to demonstrate the implications of the theory of the persistence of bounded continuous attractors, we rigorously test the predictions of the theory on the stability of the BLA.
+ Our objective is to assess the practical implications of the theoretical findings of bounded continuous attractors in a small and tractable system, and second, to contribute empirical evidence that can help refine and extend existing theoretical frameworks. 
 
 
-
-
-\paragraph{Bounded line attractor}\label{sec:bla}
 Similarly as for UBLA, the BLA has a parameter that determines step size along line attractor $\alpha$. Analogously as for UBLA, these parameters determine the capacity of the network.
 The inputs push the input along the line attractor in two opposite directions, see below. UBLA and BLA need to be initialized at $\beta(1,1)$ and $\tfrac{\beta}{2}(1,1)$, respectively, for correct decoding, i.e., output projection.
 \begin{equation}\label{eq:bla}
@@ -1128,22 +1122,23 @@ The inputs push the input along the line attractor in two opposite directions, s
 \end{equation}
 
 
+%\paragraph{Input}
+Parameter that determines step size along line attractor $\alpha$.
+The size determines the maximum number of clicks as the difference between the two channels. 
+This pushes the input along the line ``attractor" in two opposite directions, %what is the correct word for this type of invariant set?
+see below.
 
-\subsection{Bifurcation probability and random perturbations of BLA}
+
 We consider all parametrized perturbations of the form $ \vW \leftarrow \vW + \vV$ for a random matrix $\vV\in \mathbb{R}^{2\times 2}$ to the BLA.
 The BLA can bifurcate in the following systems, characterized by their invariant sets: a system with single stable fixed point, a system with three fixed points (one unstable and two stable) and  a system with two fixed points (one stable and the other a half-stable node) and a system with a (rotated) line attractor. 
 Only the first two bifurcations (Fig.~\ref{fig:lara_bifurcations}A) can happen with nonzero chance for the type of random perturbations we consider.
 The perturbations that leave the line attractor intact or to lead to a system with two fixed points have measure zero in the parameter space.
 %The types of perturbation with measure zero are codimension 2 bifurcations.
-The perturbation that results in one fixed point happen with probability $\frac{3}{4}$, while perturbations lead to a system with three fixed points with probability $\frac{1}{4}$, see Sec.~\ref{sec:supp:bla}.
+The perturbation that results in one fixed point happen with probability $\frac{3}{4}$, while perturbations lead to a system with three fixed points with probability $\frac{1}{4}$, see Sec.~\ref{sec:supp:probbla}.
 The (local) %, in the case of the single fixed point)
  invariant manifold manifold is indeed persistent for the BLA and homeomorphic to the original (the bounded line).
 
 
-
-
-
-\section{Bifurcation analysis of the line attractor}
 
 %\subsection{Discrepancies between discrete and continuous RNNs}
 %\label{sec:discrepancies}
@@ -1191,14 +1186,10 @@ There are only two types of invariant set for the perturbations of the line attr
 
 
 
-\subsection{Bounded line attractor}\label{sec:supp:bla}
+
 %Another implementation of a perfect integrator: one which is bounded.
 
-\paragraph{Input}
-Parameter that determines step size along line attractor $\alpha$.
-The size determines the maximum number of clicks as the difference between the two channels. 
-This pushes the input along the line ``attractor" in two opposite directions, %what is the correct word for this type of invariant set?
-see below.
+
 
 %The parameters:
 %\begin{equation}\label{eq:bla}
@@ -1330,6 +1321,9 @@ The fourth and final type is when the line attractor is maintained but rotated:
 \end{pmatrix}
 \end{equation}
 
+
+
+\subsection{Bifurcation landscape}\label{sec:supp:bifurcationlandscape}
 \begin{theorem}
 All perturbations of the bounded line attractor are of the types as listed above.
 \end{theorem}
@@ -1487,7 +1481,7 @@ C2 & \xmark 		& only Eq\ref{eq:condition2.1} or \ref{eq:condition2.2}  	 & \cmar
 \end{figure}
 
 
-\subsubsection{Probability of bifurcation types}
+\subsubsection{Probability of bifurcation types}\label{sec:supp:probbla}
 We check what proportion of the bifurcation parameter space is constituted with bifurcations of the type that result in three fixed points.
 
 The conditions are 
@@ -1888,14 +1882,23 @@ For situations where smoothness of the persistent invariant manifold is of impor
 \newpage
 \section{Ring perturbations}\label{sec:supp:ring_perturbations}
 
+
+To computationally investigate the neighborhood of recurrent dynamical systems that implement continuous attractors, we investigate 5 RNNs that are known a priori to form 1 or 2 dimensional continuous attractors.
+%We consider two topologically distinct temporal integration tasks: (i) linear integration, and (ii) angular integration.
+%For all experiments we used single precision floating point arithmetic and PyTorch.
+
+\subsection{Local and global perturbations}
 %Definition of a bump perturbation
 We define a local perturbation (i.e., a change to the ODE with compact support) through the bump function $\Psi(x) = \exp\left(\frac{1}{\|x\|^2-1}\right)$ for $\|x\|<1$ and zero outside, by multiplying it with a uniform, unidirectional vector field. All such perturbations leave at least a part of the continuous attractor intact and preserve the invariant manifold, i.e. the parts where the fixed points disappear a slow flow appears.
+
 %Definition of a global perturbation
-The parametrized perturbations are characterized as the addition of random matrix to the connection matrix. 
+The parametrized perturbations are characterized as the addition of a random matrix to the ODE. 
 
 
 
-\subsection{Simple ring attractor}
+
+\subsection{Models}
+\subsubsection{Simple ring attractor}
 %Ring attractor
 We further analyzed a simple (non-biological)  ring attractor, defined by the following ODE: $\dot r = r(1-r), \ \dot \theta = 0.$
 This system has as fixed points the origin and the ring with radius one centered around zero, i.e., $(0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}$.
@@ -1907,7 +1910,7 @@ All perturbations maintain the topological structure of the invariant manifold .
 
 
 
-\subsection{Heading direction network}\label{sec:supp:headdirection}
+\subsubsection{Heading direction network}\label{sec:supp:headdirection}
 
 \begin{equation}
 \tau \dot h_j = -h_j + \frac{1}{N} \sum_k (W^{sym}_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
@@ -1927,7 +1930,7 @@ We bruteforce check all possible supports to find all fixed points.
 We use the eigenvalues of the Jabobian to identify the stability of the found fixed points.
 
 
-\subsubsection{Measure zero co-dimension 1 bifurcations}
+\paragraph{Measure zero co-dimension 1 bifurcations}
 
 \begin{figure}[tbhp]
      \centering
@@ -1937,7 +1940,7 @@ We use the eigenvalues of the Jabobian to identify the stability of the found fi
 \end{figure}
 
 
-\subsubsection{Measure zero co-dimension $N$ bifurcation}
+\paragraph{Measure zero co-dimension $N$ bifurcation}
 The limit cycle is the only bifurcation that we found that can be achieved on only a measure zero set of parameter values around the parameter for the continuous attractor.
 
 
@@ -1945,7 +1948,7 @@ The limit cycle is the only bifurcation that we found that can be achieved on on
 
 
 
-\subsubsection{Independence of norm of perturbation on bifurcation}
+\paragraph{Independence of norm of perturbation on bifurcation}
 
 \begin{figure}[tbhp]
      \centering
@@ -1956,7 +1959,7 @@ The limit cycle is the only bifurcation that we found that can be achieved on on
 
 
 
-\newpage
+
 \subsection{Ring attractor approximation with tanh neurons}\label{sec:supp:goodridge}
 
 
@@ -1980,9 +1983,8 @@ We will show that there are differences at how well approximations perform at di
 
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=\textwidth]{performance}
-  \caption{Degradation of performance across perturbation sizes.
-  (A) System behavior at the asymptotic time scales measured through memory capacity. }
+  \includegraphics[width=\textwidth]{performance2}
+  \caption{Degradation of performance across perturbation sizes. System behavior at the asymptotic time scales measured through memory capacity. }
   \label{fig:performance}
 \end{figure}
 
