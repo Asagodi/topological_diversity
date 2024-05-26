@@ -322,7 +322,7 @@ There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\
 The infinite sized ring attractor network can support a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
 %The position of this bump encodes the head direction.
 This can be accomplished with a connection matrix $W$ with entries that follow a circular Gaussian function of $i-j$ \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
-For finite sized networks the dynamics is constrained to an attractive invariant ring, covered with $N$ stable fixed points for a networks of size $N$ (Fig.~\ref{fig:bio_rings}C).
+For finite sized networks the dynamics is constrained to an attractive invariant ring, covered with $N$ stable fixed points for a networks of size $N$ (Fig.~\ref{fig:bio_rings}B).
 %
 %Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is because they are nearby ring attractors as dynamical systems.
 
@@ -333,7 +333,7 @@ However, in simulations of finite-size networks with this constraint, the dynami
 
 \ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
 Approximate ring attractors can be fit by constraining the connectivity so that the networks Jacobian satisfies certain necessary requirements for a ring attractor to exist (Sec.~\ref{sec:supp:empj}~\citep{pollock2020}).
-The fitted models through this method also contain an invariant ring manifold on which the dynamics contains stable and saddle fixed points.
+The fitted models through this method also contain an invariant ring manifold on which the dynamics contains stable and saddle fixed points (Fig.~\ref{fig:bio_rings}C).
 
 \ptitle{Remark}
 In all example models of ring attractors, we verify that they suffer from the fine-tuning problem.
@@ -2041,8 +2041,6 @@ As a second case, we consider structured matrices where the two connectivity pai
 \end{align}
 where \( \Sigma^2 \) is the variance of the connectivity vectors and \( r_1^2 \) and \( r_2^2 \) quantify the overlaps along the directions \( y_1 \) and \( y_2 \).
 
-
-
 We keep the following parameters for the analysis:
 $\Sigma=2$,
 $\rho=1.9$ and
@@ -2070,7 +2068,7 @@ We used different numbers of fixed points to contrain the network.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{empj_onoff_perturbation}
-\caption{Some examples of networks dynamics.}
+\caption{Perturbations to the third network in Fig.~\ref{fig:bio_rings}C.}
 \label{fig:empj_onoff_perturbation}
 \end{figure}
 
