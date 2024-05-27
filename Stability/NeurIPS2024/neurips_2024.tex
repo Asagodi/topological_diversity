@@ -2128,32 +2128,17 @@ It can be used uniform norm of vector field on the manifold to bound the memory 
 Let $\vx_0 \in \manifold$, and $\phi = \vp\vert_\manifold$ be the flow restricted to the manifold.
 We will show that the average deviation from initial memory $\vx_0$ over time is bounded linearly as in Eq.~\ref{eq:distance:ub}.
 
+\paragraph{Ring attractor}
+Let us define the error (i.e.the  average deviation from initial memory) for an attractor as 
 \begin{align}
+\mathcal{L}(T) \coloneqq
 \frac{1}{\operatorname{vol}\manifold}\int_\manifold
 %\frac{1}{T}\int_0^T
 \abs{\vx(t, \vx_0) - \vx_0}\,
-%\dm{t}
 \dm{\vx_0}
-\leq t\uniformNorm{\phi}.
 \end{align}
 
-Let $\mathcal{U}\subset \mathbb{R}^D$ be a subamifold and  with metric $d(x,y): \mathcal{U} \times \mathcal{U} \rightarrow \mathbb{R}$.
-%Then we have a dynamical system $\bm{x} \in \mathbb{R}^N$ with autonomous dynamics $\dot{ \bm{x}} = F_{\boldsymbol{\theta}} (\bm{x})$. 
-Suppose that there is an encoder mapping $f: \mathcal{U} \rightarrow \mathbb{R}^N$ such that the inverse of this encoder mapping is a function (although not necessarily injective): $f^{-1}: Im(f) \rightarrow \mathcal{U}$. 
-Then, let us define a memory loss in a time $T$ as:
-\begin{equation}
-    \mathcal{L}(T) = \frac{1}{|\mathcal{U}|} \int_\mathcal{U}  \frac{1}{|f(\bm{\alpha})|} \int_{f(\bm{\alpha})} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\bm{\alpha}),t),\bm{\alpha}) dt df(\bm{\alpha}) d\bm{\alpha}
-\end{equation}
-
-If $D = 1$, then without loss of generality we can take $\mathcal{U} = [a,b]$ (or open/closed combinations and/or $a = -\infty$ and/or $b = +\infty$):
-
-\begin{equation}
-    \mathcal{L}(T) = \left(\lim_{a(,b) \rightarrow -\infty(,+\infty)}\right) \frac{1}{b - a} \int_a^b  \frac{1}{|f(\alpha)|} \int_{f(\alpha)} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\alpha),t)),\alpha) dt df(\alpha) d\alpha
-\end{equation}
-
-\paragraph{Ring attractor}
-In the case of the ring attractor the memory we would like to encode is $\alpha \in \mathcal{U} = [0,2 \pi)$ and the error is defined as $d(x,y) = o_\pi(|x-y|)$ where:
-
+In the case of the ring attractor, the memory we would like to encode is $\alpha \in \mathcal{U} = [0,2 \pi)$, the error is defined as $|x-y| = o_\pi(|x-y|)$ where:
 \begin{equation}
     o_\pi(x) = \begin{cases}
     x & \text{if } x < \pi \\
@@ -2164,8 +2149,27 @@ In the case of the ring attractor the memory we would like to encode is $\alpha 
 If we call $\hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) = f^{-1}(\phi_{\bm{\theta}}(f(\alpha),t))$ we get the expression of the memory loss for this kind of memory as:
 
 \begin{equation}
-    \mathcal{L}(T) =  \frac{1}{2 \pi} \int_0^{2 \pi}  \frac{1}{T} \int_0^T o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right) dt d\alpha_0
+    \mathcal{L}(T) =  \frac{1}{2 \pi} \int_0^{2 \pi}   o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right)  d\alpha_0
 \end{equation}
+
+%Let $\mathcal{U}\subset \mathbb{R}^D$ be a subamifold and  with metric $d(x,y): \mathcal{U} \times \mathcal{U} \rightarrow \mathbb{R}$.
+%%Then we have a dynamical system $\bm{x} \in \mathbb{R}^N$ with autonomous dynamics $\dot{ \bm{x}} = F_{\boldsymbol{\theta}} (\bm{x})$. 
+%Suppose that there is an encoder mapping $f: \mathcal{U} \rightarrow \mathbb{R}^N$ such that the inverse of this encoder mapping is a function (although not necessarily injective): $f^{-1}: Im(f) \rightarrow \mathcal{U}$. 
+%Then, let us define a memory loss in a time $T$ as:
+%\begin{equation}
+%    \mathcal{L}(T) = \frac{1}{|\mathcal{U}|} \int_\mathcal{U}  \frac{1}{|f(\bm{\alpha})|} \int_{f(\bm{\alpha})} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\bm{\alpha}),t),\bm{\alpha}) dt df(\bm{\alpha}) d\bm{\alpha}
+%\end{equation}
+
+%If $D = 1$, then without loss of generality we can take $\mathcal{U} = [a,b]$ (or open/closed combinations and/or $a = -\infty$ and/or $b = +\infty$):
+%
+%\begin{equation}
+%    \mathcal{L}(T) = \left(\lim_{a(,b) \rightarrow -\infty(,+\infty)}\right) \frac{1}{b - a} \int_a^b  \frac{1}{|f(\alpha)|} \int_{f(\alpha)} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\alpha),t)),\alpha) dt df(\alpha) d\alpha
+%\end{equation}
+
+
+
+
+
 
 %\subsubsection{Bounds}
 
@@ -2218,8 +2222,8 @@ Finally, if the error is uniform enough we can expect $\epsilon^{m}(t) \approx t
     \mathcal{L}(T) = \frac{1}{T} \int_0^{T} \epsilon^{m}(t) dt \approx  \frac{1}{T} \int_0^{T} t\epsilon^m(\delta t)dt = \frac{T \epsilon^m(\delta t)}{2}
 \end{equation}
 
-\subsubsection{Within manifold case}
-Let's assume that we have managed the system $F_{\boldsymbol{\theta}}$ to be 'good', i.e. have a slow manifold $\manifold \in \mathbb{R}^N$ in bijection with $\mathcal{U}$, i.e. $f|_{\manifold}$ is not a mapping but a bijective function and:
+\paragraph{Within manifold case}
+Let's assume that we have managed the system $F_{\boldsymbol{\theta}}$  have a slow manifold $\manifold \in \mathbb{R}^N$ in bijection with $\mathcal{U}$, i.e. $f|_{\manifold}$ is not a mapping but a bijective function and:
 
 \begin{equation}
 \forall \bm{x} \in \manifold \quad \dot{\bm{x}} = \epsilon_{\bm{\theta}}(\bm{x})\frac{\frac{\partial f}{\partial \alpha}(f^{-1}(\bm{x}))}{||\frac{\partial f}{\partial \alpha}(f^{-1}(\bm{x}))||}
@@ -2255,17 +2259,17 @@ The final equation of the loss in this case has the form:
 
 \textbf{Slow manifold bounds}
 
-In this case, if we have $FP$ fixed points in the ring-like slow manifold, we know that: 
+In this case, if we have $N$ fixed points in the ring-like slow manifold, we know that: 
 
 \begin{equation}
 \begin{split}
-     \epsilon^+(t) &\leq \min \left( \frac{2 \pi}{FP}, \pi \right) 
+     \epsilon^+(t) &\leq \min \left( \frac{2 \pi}{N}, \pi \right) 
 \end{split}
 \end{equation}
 and therefore:
 
 \begin{equation}
-    \mathcal{L}(T) \leq \min \left( \frac{2 \pi}{FP}, \pi \right) 
+    \mathcal{L}(T) \leq \min \left( \frac{2 \pi}{N}, \pi \right) 
 \end{equation}
 
 
