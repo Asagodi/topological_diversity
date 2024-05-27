@@ -10,6 +10,10 @@ from scipy.integrate import solve_ivp
 def ReLU(x):
     return np.where(x<0,0,x)
 
+def ReTanh(x):
+    return np.where(x<0,0,np.tanh(x))
+
+
 def lu_step(x, W, b):
     return x*W+b
 
@@ -39,7 +43,11 @@ def tanh_ode(t,x,W,b,tau,mlrnn=True):
     else:
         return (-x + np.dot(W,np.tanh(x))+b)/tau
 
-
+def recttanh_ode(t,x,W,b,tau,mlrnn=True):
+    if mlrnn:
+        return (-x + ReTanh(np.dot(W,x)+b))/tau
+    else:
+        return (-x + np.dot(W,ReTanh(x))+b)/tau
 
 
 ######numerical integration
