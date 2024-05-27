@@ -89,7 +89,7 @@
 %\title{RNNs with gracefully degrading continuous attractors}
 %\title{The universal approximation of continuous attractors}
 %\title{Approximate Continuous Attractors in Flexible Recurrent Dynamics}
-\title{Back to the Continuous Attractors}
+\title{Back to the Continuous Attractor}
 
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
@@ -494,13 +494,15 @@ It can also be used to bound the memory performance on the short-time scale. % b
 Let $\vx_0 \in \manifold$, and $\phi = \vp\vert_\manifold$ be the flow restricted to the manifold.
 The average deviation from initial memory $\vx_0$ over time is bounded linearly
 \begin{align}\label{eq:distance:ub}
-\frac{1}{\manifold}\int_\manifold
+\frac{1}{\operatorname{vol}\manifold}\int_\manifold
 %\frac{1}{T}\int_0^T
 \abs{\vx(t, \vx_0) - \vx_0}\,
 %\dm{t}
 \dm{\vx_0}
-\leq t\uniformNorm{\phi}
+\leq t\uniformNorm{\phi}.
 \end{align}
+
+See also Sec.~\ref{sec:supp:ub}.
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
 While the uniform norm gives insight into short time scale behavior, we can expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
@@ -2120,8 +2122,20 @@ This indicates that the basin of attration is very small and hence this approxim
 
 \newpage
 
-\section{Bounding the loss}\label{sec:app:bouding}
+\section{Upper bound for the memory performance on a short time scale}\label{sec:supp:ub}
 We formulate here a theory of continuous attractor approximations in terms of memory loss over time.
+It can be used uniform norm of vector field on the manifold to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
+Let $\vx_0 \in \manifold$, and $\phi = \vp\vert_\manifold$ be the flow restricted to the manifold.
+We will show that the average deviation from initial memory $\vx_0$ over time is bounded linearly as in Eq.~\ref{eq:distance:ub}.
+
+\begin{align}
+\frac{1}{\operatorname{vol}\manifold}\int_\manifold
+%\frac{1}{T}\int_0^T
+\abs{\vx(t, \vx_0) - \vx_0}\,
+%\dm{t}
+\dm{\vx_0}
+\leq t\uniformNorm{\phi}.
+\end{align}
 
 Let $\mathcal{U}\subset \mathbb{R}^D$ be a subamifold and  with metric $d(x,y): \mathcal{U} \times \mathcal{U} \rightarrow \mathbb{R}$.
 %Then we have a dynamical system $\bm{x} \in \mathbb{R}^N$ with autonomous dynamics $\dot{ \bm{x}} = F_{\boldsymbol{\theta}} (\bm{x})$. 
@@ -2137,8 +2151,7 @@ If $D = 1$, then without loss of generality we can take $\mathcal{U} = [a,b]$ (o
     \mathcal{L}(T) = \left(\lim_{a(,b) \rightarrow -\infty(,+\infty)}\right) \frac{1}{b - a} \int_a^b  \frac{1}{|f(\alpha)|} \int_{f(\alpha)} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\alpha),t)),\alpha) dt df(\alpha) d\alpha
 \end{equation}
 
-\subsection{Ring attractor}
-
+\paragraph{Ring attractor}
 In the case of the ring attractor the memory we would like to encode is $\alpha \in \mathcal{U} = [0,2 \pi)$ and the error is defined as $d(x,y) = o_\pi(|x-y|)$ where:
 
 \begin{equation}
@@ -2154,7 +2167,7 @@ If we call $\hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) = f^{-1}(\phi_{\bm{\
     \mathcal{L}(T) =  \frac{1}{2 \pi} \int_0^{2 \pi}  \frac{1}{T} \int_0^T o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right) dt d\alpha_0
 \end{equation}
 
-\subsubsection{Bounds}
+%\subsubsection{Bounds}
 
 \textbf{General bounds}
 
