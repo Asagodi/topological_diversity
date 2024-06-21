@@ -489,10 +489,10 @@ Let the uniform norm of the flow tangent to the manifold be $\|y\|_\infty=\eta$.
 There exist a perturbation with uniform norm at most $\eta$ that induces a bifurcation to a continuous attractor manifold. % $\manifold_0$ diffeomorphic to $\manifold_\epsilon$.	
 \end{prop}
 
-This perturbation can be constructed by $\vp(x) = \int_{\manifold_\epsilon} - \delta(x-y)F(y)dy$, see for the proof Sec.~\ref{sec:supp:proofprop1}.
+This perturbation can be constructed by $\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(y)dy$, see for the proof Sec.~\ref{sec:supp:proofprop1}.
 This makes the uniform norm of vector field on the manifold a useful measure of distance from a continuous attractor.
 It can also be used to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
-Let $\vx_0 \in \manifold$, and $\phi = \vp\vert_\manifold$ be the flow restricted to the manifold.
+Let $\vx_0 \in \manifold$, and $\varphi = \vp\vert_\manifold$ be the flow restricted to the manifold.
 The average deviation from initial memory $\vx_0$ over time is bounded linearly
 \begin{align}\label{eq:distance:ub}
 \frac{1}{\operatorname{vol}\manifold}\int_\manifold
@@ -500,7 +500,7 @@ The average deviation from initial memory $\vx_0$ over time is bounded linearly
 \abs{\vx(t, \vx_0) - \vx_0}\,
 %\dm{t}
 \dm{\vx_0}
-\leq t\uniformNorm{\phi}.
+\leq t\uniformNorm{\varphi}.
 \end{align}
 
 See also Sec.~\ref{sec:supp:ub}.
@@ -2137,13 +2137,42 @@ Hence, we have a continuous attractor at $\manifold_epsilon$.
 \end{proof}
 
 
+\begin{prop}
+Let $\manifold$ be a normally hyperbolic slow manifold as in Prop.~\ref{sec:revival}.
+Let $\vx_0 \in \manifold$, and $\varphi = \vf\vert_\manifold$ be the flow restricted to the manifold.
+The average deviation from initial memory $\vx_0$ over time is bounded linearly
+\begin{align}
+\frac{1}{\operatorname{vol}\manifold}\int_\manifold
+\abs{\vx(t, \vx_0) - \vx_0}\,
+\dm{\vx_0}
+\leq t\uniformNorm{\varphi}.
+\end{align}
+\end{prop}
+
+\begin{proof}
+Numerical integration of the ODE gives 
+\begin{align*}
+x(t,\vx_0) &= \int_0^t\varphi(x(\tau))d\tau + \vx_0 \\
+&\leq \int_0^t\|\varphi\|_\infty d\tau + \vx_0 \\
+&= t\|\varphi\|_\infty+ \vx_0
+\end{align*}
+From this, we get 
+\begin{align*}
+\frac{1}{\operatorname{vol}\manifold}\int_\manifold
+\abs{\vx(t, \vx_0) - \vx_0}\,
+\dm{\vx_0} & \leq \frac{1}{\operatorname{vol}\manifold}\int_\manifold t\|\varphi\|_\infty\\
+&= t\uniformNorm{\varphi}.
+\end{align*}
+\end{proof}
+
+
 
 \newpage
 
 \section{Upper bound for the memory performance on a short time scale}\label{sec:supp:ub}
 We formulate here a theory of continuous attractor approximations in terms of memory loss over time.
 It can be used uniform norm of vector field on the manifold to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
-Let $\vx_0 \in \manifold$, and $\phi = \vp\vert_\manifold$ be the flow restricted to the manifold.
+Let $\vx_0 \in \manifold$, and $\varphi = \vp\vert_\manifold$ be the flow restricted to the manifold.
 We will show that the average deviation from initial memory $\vx_0$ over time is bounded linearly as in Eq.~\ref{eq:distance:ub}.
 
 \paragraph{Ring attractor}
@@ -2176,7 +2205,7 @@ In the case of the ring attractor, the memory we would like to encode is $\alpha
     \end{cases}
 \end{equation}
 
-If we call $\hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) = g(\phi_{\bm{\theta}}(f(\alpha),t))$ we get the expression of the memory loss for this kind of memory as:
+If we call $\hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) = g(\varphi_{\bm{\theta}}(f(\alpha),t))$ we get the expression of the memory loss for this kind of memory as:
 
 \begin{equation}
     \mathcal{L}(T) =  \frac{1}{2 \pi} \int_0^{2 \pi}    \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right)  d\alpha_0
