@@ -176,7 +176,7 @@ which reveals various structurally stable dynamics in their vicinity.
 The distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time, and hence differences in the pattern of errors in temporal generalization.
 By assuming normal hyperbolicity, we will separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within for theoretical models and trained recurrent neural networks (RNNs).
 We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects different topologies as \textbf{approximate continuous attractors}.
-We further analyze task-trained artificial recurrent neural networks to reveal a ``universal motif'' of analog memory with various potential topologies.
+We further analyze task-trained artificial RNNs to reveal a ``universal motif'' of analog memory with various potential topologies.
 
 %This discrepancy between biological neural networks and theoretical models highlights a mismatch and thus poses a challenge for modeling working memory and related cognitive processes \citep{Renart2003, seeholzer2019}.
 %\textbf{This seemingly makes continuous attractors impractical and hence irrelenvant to be used as a memory of continuous valued variables.}
@@ -194,8 +194,8 @@ We further analyze task-trained artificial recurrent neural networks to reveal a
     (A) Phase portraits for the bounded line attractor (Eq.~\eqref{eq:TLN}).
     Under perturbation of parameters, it bifurcates to systems without the continuous attractor.
     (B) The low-rank ring attractor approximation (Sec.~\eqref{sec:supp:lowrank}).
-    Different topologies exist for different realizations of a low-rank attractor with overlap between the left and right vectors, different number of fixed points (4, 8 or 12) or a limit cycle (left bottom).
-    Yet, they all share the existence of an ring invariant set.
+    Different topologies exist for different realizations of a low-rank attractor with overlap between the left and right vectors, different number of fixed points (4, 8 or 12) or a limit cycle (right bottom).
+    Yet, they all share the existence of a ring invariant set.
 }
 \label{fig:lara_bifurcations}
 \end{figure}
@@ -296,7 +296,7 @@ This continuum of fixed points forms a one dimensional manifold homeomorphic to 
 \begin{figure}[tbhp]
      \centering
   \includegraphics[width=\textwidth]{bio_rings}
-       \caption{ Perturbations different implementation and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact. For each model, the network dynamics is constrained to a ring which in turn is populated by stable fixed points (green) and saddle nodes (red).
+       \caption{ Perturbations of different implementations and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact. For each model, the network dynamics is constrained to a ring which in turn is populated by stable fixed points (green) and saddle nodes (red).
        (A) Perturbations to the ring attractor \citep{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to $2N$ (stable and saddle points are paired). 
        (B)  Perturbations to a tanh approximation of a ring attractor \citep{seeholzer2017efficient}.
        (C)  Different Embedding Manifolds with Population-level Jacobians (EMPJ) approximations of a ring attractor \citep{pollock2020}.
@@ -609,7 +609,7 @@ Alternatively, we identify the points along the trajectories that are the closes
 Finally, we find the fixed points on the invariant ring by identifying regions where the direction of the flow flips for a dense set of points on the found invariant manifold.
 We assess the direction through projection onto the output mapping and calculating the angular flow.
 Stable fixed points are identified where the flow directions are both pointing towards this flip point, 
-while saddle nodes are identified wherethey are pointing away (filled and hollow circles Fig.~\ref{fig:fastslow_decomposition}A and B for stable and saddle fixed points respectively).
+while saddle nodes are identified where they are pointing away (filled and hollow circles Fig.~\ref{fig:fastslow_decomposition}A and B for stable and saddle fixed points respectively).
 We find that long integrated trajectories of the network converge to the found stable fixed points through this independent method.
 
 
@@ -705,7 +705,7 @@ We will assess this capacity at two different time-scales:  asymptotic and finit
   (B) The memory capacity versus the average accumulated angular error.
   (C) The number of fixed points versus average accumulated angular error, with the average distance between neighbouring fixed points indicated in red.
   (D) The  average accumulated angular error over time for two selected networks, indicated with the blue and orange arrows in (C).
-  (E) Distribution of network performance measured on a validation dataset measured as normalized MSE.
+  (E) Distribution of network performance measured on a validation dataset measured as normalized MSE (NMSE).
   }
   \label{fig:angular_loss}
 \end{figure}
