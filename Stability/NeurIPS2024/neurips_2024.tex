@@ -485,7 +485,7 @@ By taking the limit of the slow flow on the manifold to arbitrarily long time co
 \begin{prop}[Revival of continuous attractor (informal)]\label{prop:revival}
 Let $\manifold_\epsilon$ be a connected, compact, slow manifold with extended normal hyperbolicity. % in the neighborhood of a continuous attractor.
 Let the uniform norm of the flow tangent to the manifold be $\eta$.
-There exist a perturbation with uniform norm at most $\eta$ that induces a bifurcation to a continuous attractor manifold $\manifold_0$ diffeomorphic to $\manifold_\epsilon$.	`
+There exist a perturbation with uniform norm at most $\eta$ that induces a bifurcation to a continuous attractor manifold $\manifold_0$ diffeomorphic to $\manifold_\epsilon$.	
 \end{prop}
 
 The uniform norm of vector field on the manifold is a useful measure of distance from a continuous attractor.
@@ -637,16 +637,17 @@ All solutions involve a slow manifold with the same topology as the relevant var
 The different solutions are different in their asymptotic dynamics (Fig.~\ref{fig:fastslow_decomposition}).
 The most often found solution is of the type \emph{fixed point ring manifold} (Fig.~\ref{fig:fastslow_decomposition}A and B).
 
-Less commonly found topologies include slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
+Less commonly found topologies includes %slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a
+the slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
 These solutions are consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing,Park2023a} and neuronal circuits underlying persistent representations despite time varying activity~\citep{druckmann2012neuronal}.
 
 \subsection{Universality amongst Good Solutions}
 %to what extent does training neural networks to solve simple tasks, prevalent in neuroscientific studies, uniquely determine the low-dimensional dynamics independent of neural architectures?
 %are the learned dynamics highly sensitive to different neural architectures?
 
-\begin{definition}%[Good Solution]
-We define a \emph{Good Solution} as 
-\end{definition}
+%\begin{definition}%[Good Solution]
+%We define a \emph{Good Solution} as 
+%\end{definition}
 
 The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
  much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
@@ -701,7 +702,7 @@ We will assess this capacity at two different time-scales:  asymptotic and finit
   \centering
   \includegraphics[width=\textwidth]{angular_losses2}
   \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
-  (A) The average accumulated angular error versus the uniform norm on the vector field (left and right hand side of Eq.~\ref{eq:distance:ub}, respectively), shown for finite time ($T_1$ indicated with filled markers and at asymptotic time (with hollow markers).
+  (A) The average accumulated angular error versus the uniform norm on the vector field (left and right hand side of Eq.~\ref{eq:distance:ub}, respectively), shown for finite time (time of trial length on which networks were trained, $T_1$) indicated with filled markers and at asymptotic time (with hollow markers).
   (B) The memory capacity versus the average accumulated angular error.
   (C) The number of fixed points versus average accumulated angular error, with the average distance between neighbouring fixed points indicated in red.
   (D) The  average accumulated angular error over time for two selected networks, indicated with the blue and orange arrows in (C).
@@ -747,7 +748,7 @@ We posit that there are four conditions:
 \item sufficiently smooth approximate bijection between neural activity and the memory content, \label{converse:bijection}
 \item the speed of drift of memory content is bounded, \label{converse:persistent}
 \item robustness against state (S-type) noise, and \label{converse:Stype}
-\item robustness against dynamical (D-type) noise \label{converse:Dtype}
+\item robustness against dynamical (D-type) noise \label{converse:Dtype}.
 \end{enumerate}
 The correspondence implied by \ref{converse:bijection} translate to, the existence of a manifold in the neural activity space with the same topology as the memory content.
 The persistence \ref{converse:persistent} requires that the flow on the manifold is slow and bounded.
