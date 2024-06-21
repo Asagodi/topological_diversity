@@ -392,9 +392,9 @@ Given a perturbation to the ODE $\vp(\vx)$ that induces a bifurcation,
 where $\uniformNorm{\vp(\cdot)} = 1$ and $\epsilon > 0$ is the bifurcation parameter,
 we can reparameterize the dynamics around the manifold with coordinates $\vy \in \reals^l$ and the remaining ambient space with $\vz \in \reals^{d-l}$.
 To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function $g$ and $h$, such that the following system is equivalent to the original ODE:
-\begin{align}\label{eq:fenichel:flow}
-    \dot{\vy} &=           \epsilon  \vg(\vy, \vz, \epsilon) \qquad \text{(tangent)}\\
-    \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}
+\begin{align}
+    \dot{\vy} &=           \epsilon  \vg(\vy, \vz, \epsilon) \qquad \text{(tangent)} 		\label{eq:fenichel:flowtangent}\\ 
+    \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}	\label{eq:fenichel:flownormal}
 \end{align}
 where $\epsilon = 0$ gives the condition for the continuous attractor $\dot{\vy} = \mathbf{0}$.
 We denote the corresponding manifold of $l$ dimensions $\manifold_0 = \{(\vy,\vz) \mid \vh(\vy,\vz,0) = 0\}$.
@@ -478,17 +478,19 @@ Because continuous ring attractor are bounded, their invariant manifold persists
 \subsection{Fast-Slow decomposition and the revival of continuous attractors}\label{sec:revival}
 Consider a behaviorally relevant time scale for analog working memory, for instance, 10 ms to 10 sec.
 If the dynamical system is orders of magnitude slower, for example, 1000 sec or longer, its effect is too slow to have a practical impact on the behavior that relies on the working memory mechanism.
-This clear gap in the fast and slow time scales can be recast as \emph{extended normal hyperbolicity} of the slow manifold by relaxing the zero real part to a separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
+This clear gap in the fast and slow time scales can be recast as \emph{normal hyperbolicity} of the slow manifold by relaxing the zero real part to a separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
 In other words, the attractive flow normal to the manifold needs to be uniformly faster than the flow on the manifold.
 
 By taking the limit of the slow flow on the manifold to arbitrarily long time constant (i.e., to zero flow), we achieve the reversal of the persistent manifold theorem.
-\begin{prop}[Revival of continuous attractor (informal)]\label{prop:revival}
-Let $\manifold_\epsilon$ be a connected, compact, slow manifold with extended normal hyperbolicity. % in the neighborhood of a continuous attractor.
-Let the uniform norm of the flow tangent to the manifold be $\eta$.
-There exist a perturbation with uniform norm at most $\eta$ that induces a bifurcation to a continuous attractor manifold $\manifold_0$ diffeomorphic to $\manifold_\epsilon$.	
+\begin{prop}[Revival of continuous attractor]\label{prop:revival}
+Let $\manifold_\epsilon$ be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.\ref{eq:fenichel:flowtangent} and Eq.\ref{eq:fenichel:flownormal}).
+Further, assume that the real part of the eigenvalues of $\nabla_\vz \vh$ are negative. % in the neighborhood of a continuous attractor.
+Let the uniform norm of the flow tangent to the manifold be $\|y\|_\infty=\eta$.
+There exist a perturbation with uniform norm at most $\eta$ that induces a bifurcation to a continuous attractor manifold. % $\manifold_0$ diffeomorphic to $\manifold_\epsilon$.	
 \end{prop}
 
-The uniform norm of vector field on the manifold is a useful measure of distance from a continuous attractor.
+This perturbation can be constructed by $\vp(x) = \int_{\manifold_\epsilon} - \delta(x-y)F(y)dy$, see for the proof Sec.~\ref{sec:supp:proofprop1}.
+This makes the uniform norm of vector field on the manifold a useful measure of distance from a continuous attractor.
 It can also be used to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
 Let $\vx_0 \in \manifold$, and $\phi = \vp\vert_\manifold$ be the flow restricted to the manifold.
 The average deviation from initial memory $\vx_0$ over time is bounded linearly
@@ -2121,6 +2123,18 @@ This indicates that the basin of attration is very small and hence this approxim
 %
 
 
+\newpage
+
+\section{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
+
+\begin{proof}
+It is sufficient to show that there is a perturbation $\vp$ that has zero flow off of $\manifold_\epsilon$ but for which $\vf+\vp=0$ on $\manifold_\epsilon$ for the full system $\vf$  as defined in Eq.~\ref{eq:perturbation:nonparam}.
+Define 
+\[\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)d\vy,\]
+ with the Dirac delta function $\delta(\vx)=\delta(x_1)\delta(x_2)\dots\delta(x_d).$
+It is then easy to check that $(\vf+\vp)(\vx)=0$ for all $\vx\in\manifold_\epsilon$ and $(\vf+\vp)(\vx)=(\vf)(\vx)$ for all $\vx\not\in\manifold_\epsilon$.
+Hence, we have a continuous attractor at $\manifold_epsilon$.
+\end{proof}
 
 
 
