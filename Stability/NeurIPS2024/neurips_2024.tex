@@ -675,9 +675,9 @@ The universal structure of continuous attractor approximations as slow invariant
 
 %distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
 
-Animals are trained on a task for finite time and it is therefore unclear that they learn the intended computation or just a finite time approximation of it.
+When neuroscientists study neural computations in animals, the animal is trained on a finite time task  and it is therefore unclear that they learn the intended computation or just a finite time approximation of it.
 The same is the case for the trained networks.
-We will investigate to what extent the networks have the intended memory necessary for the task or whether they implement it on the timescale on which they have been trained.
+We will investigate to what extent the networks have the intended memory necessary for the computation or whether they implement the task only on the timescale on which they have been trained.
 
 %Our theory shows that not all continuous attractors are born equal, and that there are gracefully degrading continuous attractors.
 %In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
@@ -688,16 +688,16 @@ We will investigate to what extent the networks have the intended memory necessa
 \subsection{Generalization properties of continuous attractor approximations}\label{sec:generalization}
 %, and thus a corresponding pattern of error in temporal generalization
 
+Looking beyond the finite timescale provides valuable insights into the network's ability to store information.
+We will therefore investigate the angular memory capacities of the trained networks at two different time-scales:  asymptotic and finite time.
+
 The two possible approximations of a ring attractor discussed in Sec.~\ref{sec:critique} exhibit markedly distinct generalization characteristics.
-Approximating the system as a limit cycle results in memory that gradually diminishes over time.
+Approximating the system as a limit cycle results in a memory trace that gradually diminishes over time.
 Conversely, the alternative approximation's memory states are contingent upon the quantity and positioning of stable fixed points within the system.
 We will in detail describe the generaralization properties of the trained networks on the angular velocity integration task.
 We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}C).
 
-Looking beyond the finite timescale provides valuable insights into the network's ability to store information.
-% and how this ability degrades across different perturbations.
-We want in particular to investigate the angular memory capacities of the trained networks.
-We will assess this capacity at two different time-scales:  asymptotic and finite time.
+
 
 
 \begin{figure}[tbhp]
@@ -726,15 +726,12 @@ This loss is bounded by the uniform norm of the vector field  on the invariant m
 \ptitle{Asymptotic time}
 For the asymptotic time-scale the asymptotic behavior of the system dominates and we identify the network behavior through its $\omega$-limit sets.
 For a one dimensional system this will either be fixed points or a limit cycle.
-For a set of fixed points the maximal error is given by the maximal distance to the next fixed point while for a limit cycle this will always be $\pi$.
+For the fixed point type solution, the maximal error is given by the maximal distance to the next fixed point while for a limit cycle this will always be $\pi$.
 We identify the location of the fixed points as described in Sec.~\ref{sec:fastslowmethod}.
-
 
 Besides the maximal error that the network will make in the asymptotic limit, we can also characterize how many different angles the network would confuse in the asymptotic limit.
 We construct a probability distribution of what part of state space we end up in at infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
 Finally, we characterize the memory capacity of the network through calculating the entropy of this probability distribution (see Sec.~\ref{sec:supp:boa}).
-
-
 
 The mean accumulated error at the time at which the task was trained has a linear relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}C).
 Furthermore, this error is bounded by the mean distance between stable and unstable fixed points (red dots in Fig.~\ref{fig:angular_loss}C).
@@ -750,13 +747,13 @@ We posit that there are four conditions:
 \item sufficiently smooth approximate bijection between neural activity and the memory content, \label{converse:bijection}
 \item the speed of drift of memory content is bounded, \label{converse:persistent}
 \item robustness against state (S-type) noise, and \label{converse:Stype}
-\item robustness against dynamical (D-type) noise \label{converse:Dtype}.
+\item robustness against dynamical (D-type) noise. \label{converse:Dtype}
 \end{enumerate}
 The correspondence implied by \ref{converse:bijection} translate to, the existence of a manifold in the neural activity space with the same topology as the memory content.
 The persistence \ref{converse:persistent} requires that the flow on the manifold is slow and bounded.
 The S-type robustness \ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
-Along with the D-type robustness \ref{converse:Dtype}, it implies the manifold is ``attractive'', and it is normally hyperbolic.
-Then, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added makes it a continuous attractor.
+Along with the D-type robustness \ref{converse:Dtype}, it implies the manifold is ``attractive'', and  normally hyperbolic.
+Then, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added makes it a continuous attractor (Prop.~\ref{prop:revival}).
 For the RNN experiments, we added state-noise while training using stochastic gradient descent, satisfying \ref{converse:Stype} and \ref{converse:Dtype}.
 We have also verified that \ref{converse:persistent} holds (Fig.~\ref{fig:angular_loss}A).
 Although the stochastic optimization cannot lead to the continuous attractor solution, it gets to the neighborhood where there are approximate solutions.
@@ -777,12 +774,12 @@ As the theory predicts, trained networks have an attractive ring invariant manif
 The topological structure of the found solutions indeed implies how well a network can perform generalization for longer times.
 
 %limitations
-We did not explicitly describe the topology and dimensionality of the identified invariant manifolds for all the networks, only for a representative set.
+We did not explicitly describe the topology and dimensionality of the identified invariant manifolds for all networks, only for a representative set.
 Yet the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
 Although for well-trained networks this separation of timescale exists, the analysis is not guaranteed to work for systems without a fast-slow decomposition.	
 
 %error-correcting
-Previous psychophysical, theoretical, and neurophysiological work has shown noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
+Previous psychophysical, theoretical, and neurophysiological work has shown that noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
 Discrete attractor dynamics can counteract this noise by pulling memories towards a few stable representations~\citep{panichello2019,Koulakov2002,Goldman2003-cz}.
 The found solutions might reflect the trade-off between robustness to noise and the ability to store continuous variables.
 
@@ -2126,6 +2123,7 @@ This indicates that the basin of attration is very small and hence this approxim
 \newpage
 
 \section{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
+  
 
 \begin{proof}
 It is sufficient to show that there is a perturbation $\vp$ that has zero flow off of $\manifold_\epsilon$ but for which $\vf+\vp=0$ on $\manifold_\epsilon$ for the full system $\vf$  as defined in Eq.~\ref{eq:perturbation:nonparam}.
@@ -2137,6 +2135,8 @@ Hence, we have a continuous attractor at $\manifold_epsilon$.
 \end{proof}
 
 
+
+\subsection{Upper bound for the memory performance on a short time scale}\label{sec:supp:ub}
 \begin{prop}
 Let $\manifold$ be a normally hyperbolic slow manifold as in Prop.~\ref{sec:revival}.
 Let $\vx_0 \in \manifold$, and $\varphi = \vf\vert_\manifold$ be the flow restricted to the manifold.
@@ -2167,15 +2167,13 @@ From this, we get
 
 
 
-\newpage
-
-\section{Upper bound for the memory performance on a short time scale}\label{sec:supp:ub}
 We formulate here a theory of continuous attractor approximations in terms of memory loss over time.
 It can be used uniform norm of vector field on the manifold to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
 Let $\vx_0 \in \manifold$, and $\varphi = \vp\vert_\manifold$ be the flow restricted to the manifold.
 We will show that the average deviation from initial memory $\vx_0$ over time is bounded linearly as in Eq.~\ref{eq:distance:ub}.
 
-\paragraph{Ring attractor}
+\subsubsection{Ring attractor}
+For a ring attractor we can give more tight bounds on the accumulated error for the angular memory.
 Suppose we have a dynamical system $\bm{x} \in \mathbb{R}^N$ with autonomous dynamics $\dot{ \bm{x}} = F_{\boldsymbol{\theta}} (\bm{x})$ and solutions $\vx(t, \vx_0)$ uniquely defined for each $\vx_0$.
 Let us define the error (i.e.the  average deviation from initial memory) for an attractor as 
 \begin{align}
@@ -2306,30 +2304,28 @@ Then:
 where we used that $\alpha_0 \in [0,2 \pi) \Rightarrow \alpha_0 = \alpha_0 \mod 2 \pi$ and that $|x \mod 2 \pi - y \mod 2 \pi| = |(x-y) \mod 2 \pi|$.
 
 The final equation of the loss in this case has the form:
-
 \begin{equation}
-    \mathcal{L}(T) =  \frac{1}{2 \pi} \int_0^{2 \pi} \frac{1}{T} \int_0^T o_\pi \left( \left| \int_0^t \epsilon_{\bm{\theta}}(\alpha_0, s) ds \mod 2 \pi \right| \right) dt d\alpha_0
+    \mathcal{L}(T) =  \frac{1}{2 \pi} \int_0^{2 \pi} \frac{1}{T} \int_0^T o_\pi \left( \left| \int_0^t \epsilon_{\bm{\theta}}(\alpha_0, s) ds \mod 2 \pi \right| \right) dt d\alpha_0.
 \end{equation}
 
 \textbf{Slow manifold bounds}
 
 In this case, if we have $N$ fixed points in the ring-like slow manifold, we know that: 
-
 \begin{equation}
 \begin{split}
-     \epsilon^+(t) &\leq \min \left( \frac{2 \pi}{N}, \pi \right) 
+     \epsilon^+(t) &\leq \min \left( \frac{2 \pi}{N}, \pi \right),
 \end{split}
 \end{equation}
 and therefore:
-
 \begin{equation}
-    \mathcal{L}(T) \leq \min \left( \frac{2 \pi}{N}, \pi \right) 
+    \mathcal{L}(T) \leq \min \left( \frac{2 \pi}{N}, \pi \right).
 \end{equation}
 
 
 
 \newpage
-\section{Tasks}\label{sec:supp:tasks}
+\section{Slow manifold in trained RNNs}
+\subsection{Tasks}\label{sec:supp:tasks}
 %Inputs and outputs for an example trial on each task are shown in Supp.Fig.~\ref{fig:supp:tasks}.
 
 
@@ -2368,7 +2364,7 @@ with length scale $\ell$.
  
  
  
- \section{Training methods}
+\subsection{Training methods}
  
  We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
  The network size is 20 units, initialized using a normal distribution for the parameters.
@@ -2387,18 +2383,18 @@ Training a single network took around 10 minutes on a CPU and occupied 10 percen
          \label{fig:training_losses}
 \end{figure}
 
- \section{RNN analysis methods}
+ \subsection{RNN analysis methods}
  
  %fast-slow
  % inv man
  
- \subsection{Fast-slow decomposition}
+ \subsubsection{Fast-slow decomposition}
  We simulated 1024 trajectories without noise with inputs from the task and let the networks evolve for 16 times the task definition lengths.
  We took the cutoff to identify the slow manifold to be $10^{-3}$ of the highest speed along each trajectory.
  We believe that this gaurantees the identification of the slow manifold in a system that has a fast-slow decomposition.	
  We sampled 1024 points from these points to fit a periodic, cubic spline (black line in Fig.\ref{fig:fastslow_decomposition}).
  
- \subsection{Vector field on invariant manifold}\label{sec:supp:vf}
+ \subsubsection{Vector field on invariant manifold}\label{sec:supp:vf}
  
  We assess the vector field for the ODE (Eq.~ \ref{eq:RNN:continuous} without noise and input) on the found invariant manifold $\manifold$ by calculating it in the state space
  and then projecting it onto the output space:
