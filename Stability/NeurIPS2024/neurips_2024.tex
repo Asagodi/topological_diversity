@@ -570,10 +570,10 @@ where $\dm{W}$ is Wiener process that models the intrinsic state noise in the br
 Building upon prior work, which has shown networks' capabilities on such tasks, we trained RNNs to either
 (1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection, cueva2021continuous}
 and (2) perform a memory guided saccade task for a ring variable \citep{wimmer2014} (details in Sec.~\ref{sec:supp:tasks}).
-The loss $L$ to be minimized was computed by mean squared error (MSE) between the network output $y(t)$ and the target output $\hat y(t)$.
-\begin{equation}\label{eq:loss}
-L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}
-\end{equation}
+The loss $L$ to be minimized was computed by the mean squared error (MSE) between the network output $y(t)$ and the target output $\hat y(t)$
+%\begin{equation}\label{eq:loss}
+$L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}, $
+%\end{equation}
 with $i$ the index of the output units and $t$  the index for time.
 We implemented a mask, $m_{i,t}$, for modulating the loss with respect to certain time intervals.
 
@@ -582,7 +582,6 @@ We trained 10 networks for every combination of the following parameters:
  ReLU, tanh and rectified tanh activation functions and
  number of units/neurons (64, 128, 256).
 % , and activity regularization ($10^{-3}, 0, 1$).
-%
 All networks were trained using ADAM with $\beta_1=0.9$ and $\beta_2=0.999$ for $5,000$ iterations with a batch size of 64.  % and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
 %Among the networks, we only analyzed networks with normalized MSE less than -20 dB (Fig.~\ref{}).
 
