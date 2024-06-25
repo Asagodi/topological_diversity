@@ -421,16 +421,17 @@ The continuous dependence theorem~\citep{Chicone2006} says that the trajectories
 Moreover, the topological structure and the asymptotic behavior of trajectories change discontinuously due to the bifurcation.
 Surprisingly there is a strong connection in the geometry due to Fenichel's theorem~\cite{fenichel1971}.
 We informally present a special case due to~\citet{Jones1995}:
-\begin{theorem}[Persistent Manifold Theorem]
+
+\begin{theorem}[Persistent Manifold]
 Let $\manifold_0$ be a connected, compact, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
-For a sufficiently small perturbation $\epsilon > 0$, there exists a manifold $\manifold_\epsilon$ diffeomorphic to $\manifold_0$ and locally invariant under the flow of \eqref{eq:fenichel:flow}.
+For a sufficiently small perturbation $\epsilon > 0$, there exists a manifold $\manifold_\epsilon$ diffeomorphic to $\manifold_0$ and locally invariant under the flow of Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}.
 Moreover, $\manifold_\epsilon$ has $\mathcal{O}(\epsilon)$ Hausdoff distance to $\manifold_0$ and has the same smoothness as $g$ and $h$. % in (\ref{eq:fenichel:flow}).
 \end{theorem}
 
 The manifold $\manifold_\epsilon$ is called the \emph{slow manifold} which is no longer necessarily a continuum of equilibria.
 However, the local invariance implies that trajectories remain within the manifold except potentially at the boundary.
 Furthermore, the non-zero flow on the slow manifold is slow and given in the $\epsilon \to 0$ limit as $\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)$ where $\tau = \epsilon t$ is a rescaled time and $c^\epsilon(\cdot)$ parameterizes the $l$ dimensional slow manifold.
-In addition, the stable manifold of $\manifold_0$ is similarly  persistent~\cite{Jones1995}, implying the manifold $\manifold_\epsilon$ to remain attractive.
+In addition, the stable manifold of $\manifold_0$ is similarly persistent~\cite{Jones1995}, implying the manifold $\manifold_\epsilon$ to remain attractive.
 
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA).
@@ -439,8 +440,7 @@ These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (s
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points and connecting orbits, and is overall still attractive.
 %On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence. %extension: 
 %Importantly, the ``slow'' flow on the perturbed system is not bounded.
-
-Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
+Furthermore, Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
 Because continuous ring attractor are bounded, their invariant manifold persists and it remains attractive under small perturbations to this system~\citep{wiggins1994}.
 %Furthermore, because the ring attractor is boundaryless %it is both forward and backward invariant, i.e. hence
 %the persistent manifold is invariant ~\citep{wiggins1994}.
@@ -483,7 +483,7 @@ In other words, the attractive flow normal to the manifold needs to be uniformly
 
 By taking the limit of the slow flow on the manifold to arbitrarily long time constant (i.e., to zero flow), we achieve the reversal of the persistent manifold theorem.
 \begin{prop}[Revival of continuous attractor]\label{prop:revival}
-Let $\manifold_\epsilon$ be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.\ref{eq:fenichel:flowtangent} and Eq.\ref{eq:fenichel:flownormal}).
+Let $\manifold_\epsilon$ be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}).
 Further, assume that the real part of the eigenvalues of $\nabla_\vz \vh$ are negative. % in the neighborhood of a continuous attractor.
 Let the uniform norm of the flow tangent to the manifold be $\|y\|_\infty=\eta$.
 There exist a perturbation with uniform norm at most $\eta$ that induces a bifurcation to a continuous attractor manifold. % $\manifold_0$ diffeomorphic to $\manifold_\epsilon$.	
