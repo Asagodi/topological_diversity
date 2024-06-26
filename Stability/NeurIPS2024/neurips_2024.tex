@@ -40,7 +40,9 @@
 \titlespacing*{\subsection}{0pt}{1pt}{1pt}
 
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
+\definecolor{ascolor}{rgb}{1, 0.5, 0.}
 \newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
+\newcommand{\ascomment}[1]{\textcolor{ascolor}{(#1)}}
 
 \DeclareGraphicsExtensions{.pdf,.png,.jpg,.mps,.eps,.ps}
 \graphicspath{{../figures/}, {../figures/inv_man/}}
@@ -232,7 +234,7 @@ Specifically, any perturbation to the $0$ eigenvalue destroys the continuous att
 a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stable fixed points separated with a saddle node in between (Fig.~\ref{fig:lara_bifurcations}A bottom).
 However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifold topologically equivalent to the original continuous attractor (note the slow speed).
 Furthermore, the vector field is not escaping the ghost manifold, i.e., it is an invariant manifold.
-This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,Mante2013-em}.
+This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,mante2013context}.
 In general, continuous attractors are not only structurally unstable, they bifurcate almost certainly for an arbitrary perturbation.
 In the following, we focus on 1-dimensional ring attractors.
 
@@ -284,7 +286,7 @@ In this section, we investigate the bifurcations of various implementations of c
 Continuous attractor network models of the head-direction is based on the interactions of neurons that (anatomically) form a ring-like overlapping neighbor connectivity~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous,knierim2012}.
 %Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 Similarly as with the line attractor, the ring attractor bifurcates for virtually every perturbation.
-Nevertheless, the bifurcated dynamics again follow a similar pattern of the dynamics restricted to the ghost manifold around the original continuous attractor.
+Nevertheless, the bifurcated dynamics again follow a similar pattern: the dynamics is restricted to a ghost manifold very close to the original continuous attractor.
 
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
 \ptitle{Piecewise-linear ring attractor model of the central complex}
@@ -767,15 +769,17 @@ The fast-slow time scale analysis can reverse this process and bring all approxi
 This reinstates the continuous attractor as the fundamental theoretical mechanism that represents the collection of approximations.
 Unlike in most of dynamical systems theory where the asymptotic behavior and topology of stability structures are studied, we expend equal amount of focus on the effective finite time behavior and the analytical behavior of the ideal mathematical object.
 
+%as we have shown...
 Training RNNs on tasks involving continuous variables results in a great variety of solutions.
 As the theory predicts, trained networks have an attractive ring invariant manifold.
- Nevertheless, within this variety, we can identify common structures.
-The topological structure of the found solutions indeed implies how well a network can perform generalization for longer times.
+However, even within this variety, we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
+Nvertheless, the topological structure of the found solutions still determines how well a network can perform generalization for longer time scales.
 
 %limitations
 We did not explicitly describe the topology and dimensionality of the identified invariant manifolds for all networks, only for a representative set.
 Yet the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
 Although for well-trained networks this separation of timescale exists, the analysis is not guaranteed to work for systems without a fast-slow decomposition.	
+%point above
 
 %error-correcting
 Previous psychophysical, theoretical, and neurophysiological work has shown that noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
@@ -1977,9 +1981,8 @@ with the dimensionless parameter $J^-$ representing the strength of the weak cro
  and $\sigma$ the width of the connectivity footprint.
  
  
- Such ring attractor approximations are similar to the ones in \citep{goodridge2000, samsonovich1997path, redish1996coupled}. %Equation 9,12
+ Such ring attractor approximations are similar to the ones in \citep{goodridge2000, samsonovich1997path, redish1996coupled, tsodyks1995associative}. %Equation 9,12
  
-
 
 
 \subsubsection{Loss of function: Sensitivity of continuous attractors to perturbations}\label{sec:supp:boa}
@@ -2062,12 +2065,15 @@ $g\in\{0, 0.1\}$.
 
 
 
-\subsection{EMPJ}\label{sec:supp:empj}
+\subsection{Embedding Manifolds with Population-level Jacobians}\label{sec:supp:empj}
 We fit 3 networks with the Embedding Manifolds with Population-level Jacobians (EMPJ) method \citep{pollock2020}.
 We take a ring and embed it with a random linear mapping to a 10 dimensional state space.
 On this embedded ring, we constraint the network to have evenly spaced fixed points with one marginal Jacobian eigenvalue and all others eigenvalues -20.
 We used different numbers of fixed points to contrain the network.
-%todo: numbers
+
+\ascomment{todo: HYPERPARAMS + how are three different networks fit differently?}
+
+\ascomment{todo: introduce D}
 
 
 We remark that the resulting invariant manifold is not robust to S-type perturbations.
@@ -2075,16 +2081,23 @@ For on-manifold perturbations (in the plane in which the ring is embedded), S-ty
 However, for (small) off-manifold perturbations, the trajectories typically diverge away from the invariant ring (Fig.~\ref{fig:empj_onoff_perturbation}B).
 This indicates that the basin of attration is very small and hence this approximantion is not robust to S-type noise.
 
+All of the perturbations were sampled as
+$x(0) = x(0) + \eta$ with $x(0)\in \operatorname{span}(D)$.
+For the on-manifold perturbations $\eta\in \operatorname{span}(D)$  and $\|\eta\|_2=10^{-2}$.
+For the off-manifold perturbations $\eta\in \reals^{10}$ and $\|\eta\|_2=10^{-5}$.
+
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{empj_onoff_perturbation}
-\caption{Perturbations to the third network in Fig.~\ref{fig:bio_rings}C.
-(A) On-manifold perturbations.
-(B) An example of an off-manifold perturbation.
+\caption{Trajectories of the third network in Fig.~\ref{fig:bio_rings}C. Starting point in red, end of trajectory in blue.
+(A) On-manifold S-type perturbations from the ring. 
+(B) An example of an off-manifold  S-type perturbation from the ring.
 }
 \label{fig:empj_onoff_perturbation}
 \end{figure}
+
+
 
 
 
