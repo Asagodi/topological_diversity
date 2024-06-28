@@ -2149,6 +2149,37 @@ Hence, we have a continuous attractor at $\manifold_\epsilon$.
 
 
 
+Setup for case where smoothness matters:
+\begin{itemize}
+\item Define tubular neighbourhood
+\begin{itemize}
+    \item Define the normal bundle $N_X$ of $X$ in $Y$.
+    \item Use the exponential map restricted to $N_X$ to map small normal vectors to $Y$.
+    \item Ensure the map is injective on a sufficiently small neighborhood around the zero section of $N_X$.
+    \item The image of this neighborhood forms the tubular neighborhood $N$.
+    \item Define a retraction map from $N$ to $X$ using the projection along normal fibers.
+\end{itemize}
+\item Use exponential map restricted to $N_X$ to map small normal vectors to $Y$ to define vector field (bump around CA)
+\begin{itemize}
+\item Scale this map with bump function
+\item 
+\begin{equation}
+\psi_x^i(y) =
+\begin{cases}
+\exp\left(-\frac{1}{1-(x_i-y_i)^2)}\right) &\text{  if  } y_i\in(-\delta-x_i, \delta-x_i)\\
+0 & \text{  otherwise } 
+\end{cases}
+\end{equation}
+\end{itemize}
+\item Take a small enough neighbourhood such that 
+\begin{itemize}
+\item Topology is unchanged
+\item 
+\end{itemize}
+\end{itemize}
+
+
+
 \subsection{Upper bound for the memory performance on a short time scale}\label{sec:supp:ub}
 We will now formalize the statement about an upper bound dependent on the uniform norm of the vector field on the slow manifold in Sec.\ref{sec:revival} and provide a proof.
 \begin{prop}
@@ -2398,6 +2429,16 @@ Training a single network took around 10 minutes on a CPU and occupied 10 percen
 \end{figure}
 
  \subsection{RNN analysis methods}
+ 
+ 
+\ptitle{Evaluation Metric}
+After training, we report the normalized mean squared error (NMSE):
+\begin{equation}
+\frac{\mathbb{E[(y-\hat y)^2]]}}{\mathbb{E}[y]},
+\end{equation}
+where $y$ is the target and $\hat y$ is the prediction.
+
+
  
  %fast-slow
  % inv man
