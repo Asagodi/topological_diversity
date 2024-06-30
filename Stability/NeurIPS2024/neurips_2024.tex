@@ -183,7 +183,6 @@ We further analyze task-trained artificial RNNs to reveal a ``universal motif'' 
 %This discrepancy between biological neural networks and theoretical models highlights a mismatch and thus poses a challenge for modeling working memory and related cognitive processes \citep{Renart2003, seeholzer2019}.
 %\textbf{This seemingly makes continuous attractors impractical and hence irrelenvant to be used as a memory of continuous valued variables.}
 %Nevertheless, as we will show, not all implementations of continuous attractors behave similarly in their brittleness, yet all approximations of continuous attractors can be characterized as slow manifolds.
-%A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} or finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:ras}.
 
 
 \section{A critique of pure continuous attractors}\label{sec:critique}
@@ -438,14 +437,9 @@ In addition, the stable manifold of $\manifold_0$ is similarly persistent~\cite{
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA).
  As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting \cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems).
-%applicability of Fenichel’s invariant manifold theorem on continuous piecewise linear (PWL) dynamical systems.
-As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (dark colored regions) that contains fixed points and connecting orbits, and is overall still attractive.
-%On the contrary, the UBLA does not satisfy the compactness condition, hence the theory does not predict its persistence. %extension: 
-%Importantly, the ``slow'' flow on the perturbed system is not bounded.
+As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (Fig.~\ref{fig:lara_bifurcations}, dark colored regions) that contains fixed points and connecting orbits, and is overall still attractive.
 Furthermore, Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
 Because continuous ring attractor are bounded, their invariant manifold persists and it remains attractive under small perturbations to this system~\citep{wiggins1994}.
-%Furthermore, because the ring attractor is boundaryless %it is both forward and backward invariant, i.e. hence
-%the persistent manifold is invariant ~\citep{wiggins1994}.
 
 %Given an $d$-dimensional continuous attractor manifold embedded within a recurrent dynamics of $n$-dimensions, it supports persistent continuous memory of $d$-dimension.
 %There are $d$ zero Lyapunov exponents corresponding to the perturbations tangent to the manifold, coinciding with the memory representation, and $(n-d)$ negative Lyapunov exponents that expresses the attractive nature.
@@ -658,16 +652,9 @@ Previously, it has been observed that  fixed point analysis  has as a major limi
 Our methodology effectively addresses and overcomes this limitation.
 The universal structure of continuous attractor approximations as slow invariant manifolds allows us to connect different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:attractor_bif}).
 
-% \subsection{Infinite horizon computation in a bounded state space}\label{sec:inhoco}
-% Both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions~\citep{orhan2019diverse}.
-% %We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
-% If a dynamical system is implementing a timing-independent (infinite horizon) computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set~\citep{conley1978}.
-% This implies that the only possible implementation of a continuous valued memory that can be decoded linearly is the (approximate) continuous attractor.
 
-% \mpcomment{move the following to the end or conclusion}
-% Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
-% Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
-% This empirical evidence strongly corroborates our proposed theory of continuous memory.
+
+
 
 
 
@@ -785,6 +772,12 @@ Although for well-trained networks this separation of timescale exists, the anal
 Previous psychophysical, theoretical, and neurophysiological work has shown that noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
 Discrete attractor dynamics can counteract this noise by pulling memories towards a few stable representations~\citep{panichello2019,Koulakov2002,Goldman2003-cz}.
 The found solutions might reflect the trade-off between robustness to noise and the ability to store continuous variables.
+
+
+% \mpcomment{move the following to the end or conclusion}
+Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
+Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
+This empirical evidence strongly corroborates our proposed theory of continuous memory.
 
 
 
@@ -2134,6 +2127,14 @@ For the off-manifold perturbations $\eta\in \reals^{10}$ and $\|\eta\|_2=10^{-5}
 
 
 \newpage
+ \section{Infinite horizon computation in a bounded state space}\label{sec:inhoco}
+ Both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions~\citep{orhan2019diverse}.
+ %We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
+ If a dynamical system is implementing a timing-independent (infinite horizon) computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set~\citep{conley1978}.
+ This implies that the only possible implementation of a continuous valued memory that can be decoded linearly is the (approximate) continuous attractor.
+
+
+\newpage
 
 \section{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
   
@@ -2435,7 +2436,7 @@ Training a single network took around 10 minutes on a CPU and occupied 10 percen
 \ptitle{Evaluation Metric}
 After training, we report the normalized mean squared error (NMSE):
 \begin{equation}
-\frac{\mathbb{E[(y-\hat y)^2]]}}{\mathbb{E}[y]},
+\frac{\mathbb{E}[(y-\hat y)^2]}{\mathbb{E}[y]},
 \end{equation}
 where $y$ is the target and $\hat y$ is the prediction.
 
