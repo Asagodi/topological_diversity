@@ -2150,7 +2150,7 @@ For the off-manifold perturbations $\eta\in \reals^{10}$ and $\|\eta\|_2=10^{-5}
 \begin{proof}
 It is sufficient to show that there is a perturbation $\vp$ that has zero flow off of $\manifold_\epsilon$ but for which $\vf+\vp=0$ on $\manifold_\epsilon$ for the full system $\vf$  as defined in Eq.~\ref{eq:perturbation:nonparam}.
 Define 
-\[\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)d\vy,\]
+\[\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\vd\vy,\]
  with the Dirac delta function $\delta(\vx)=\delta(x_1)\delta(x_2)\dots\delta(x_d).$
 It is then easy to check that $(\vf+\vp)(\vx)=0$ for all $\vx\in\manifold_\epsilon$ and $(\vf+\vp)(\vx)=(\vf)(\vx)$ for all $\vx\not\in\manifold_\epsilon$.
 Hence, we have a continuous attractor at $\manifold_\epsilon$.
@@ -2158,15 +2158,13 @@ Hence, we have a continuous attractor at $\manifold_\epsilon$.
 
 \begin{remark}
 If smoothness is important, we can construct the following perturbation.
-
-
-From the $\epsilon$-Neighborhood Theorem, we get that  there exists a smooth positive function $\delta\colon M_\epsilon \rightarrow \reals^+$,
+From the $\epsilon$-Neighborhood Theorem, we get that  there exists a smooth positive function $\delta\colon \manifold_\epsilon \rightarrow \reals^+$,
  such that if we let $N_\delta$ be the
-$\delta$-neighborhood of $M_\epsilon$,
+$\delta$-neighborhood of $\manifold_\epsilon$,
 \[
 M_\epsilon\coloneqq \{y  \in  : |y - x| < \delta(x) \text{ for some }  x \in M_\epsilon\},
 \]
-then each $y\in N_\delta$ possesses a unique closest point $\pi_\delta(y)$ in $M_\epsilon$ with the map $\pi_\delta\colon N_\delta \rightarrow M_\epsilon$ being a submersion.
+then each $y\in N_\delta$ possesses a unique closest point $\pi_\delta(y)$ in $\manifold_\epsilon$ with the map $\pi_\delta\colon \manifold_\delta \rightarrow \manifold_\epsilon$ being a submersion.
 
 We can then define a bump function
 \begin{equation}
@@ -2177,9 +2175,11 @@ We can then define a bump function
 \end{cases}
 \end{equation}
 
-So that 
-
-Hence, we have a continuous attractor at $\manifold_\epsilon$.
+Then the perturbation
+\[
+\vp(\vx) = \int_{\manifold_\epsilon}-\psi(\vy)\vf(\vy)\vd\vy
+\]
+is smooth and creates a continuous attractor at $\manifold_\epsilon$.
 \end{remark}
 
 
