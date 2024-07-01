@@ -39,6 +39,8 @@
 \titlespacing*{\section}{0pt}{1pt}{1pt}
 \titlespacing*{\subsection}{0pt}{1pt}{1pt}
 
+\newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
+
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
 \definecolor{ascolor}{rgb}{1, 0.5, 0.}
 \newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
@@ -287,7 +289,7 @@ Continuous attractor network models of the head-direction is based on the intera
 Similarly as with the line attractor, the ring attractor bifurcates for virtually every perturbation.
 Nevertheless, the bifurcated dynamics again follow a similar pattern: the dynamics is restricted to a ghost manifold very close to the original continuous attractor.
 
-\newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
+
 \ptitle{Piecewise-linear ring attractor model of the central complex}
 Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{Noorman2022}.
 This model is composed of $N$ heading-tuned neurons with preferred headings $\theta_j \in \{\nicefrac{2\pi i}{N}\}_{i=1\dots N}$ radians (see Sec.~\ref{sec:supp:headdirection}).
@@ -2133,6 +2135,11 @@ For the off-manifold perturbations $\eta\in \reals^{10}$ and $\|\eta\|_2=10^{-5}
  If a dynamical system is implementing a timing-independent (infinite horizon) computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set~\citep{conley1978}.
  This implies that the only possible implementation of a continuous valued memory that can be decoded linearly is the (approximate) continuous attractor.
 
+\begin{proof}
+
+
+\end{proof}
+
 
 \newpage
 
@@ -2149,36 +2156,62 @@ It is then easy to check that $(\vf+\vp)(\vx)=0$ for all $\vx\in\manifold_\epsil
 Hence, we have a continuous attractor at $\manifold_\epsilon$.
 \end{proof}
 
+\begin{remark}
+If smoothness is important, we can construct the following perturbation.
 
 
-Setup for case where smoothness matters:
-\begin{itemize}
-\item Define tubular neighbourhood
-\begin{itemize}
-    \item Define the normal bundle $N_X$ of $X$ in $Y$.
-    \item Use the exponential map restricted to $N_X$ to map small normal vectors to $Y$.
-    \item Ensure the map is injective on a sufficiently small neighborhood around the zero section of $N_X$.
-    \item The image of this neighborhood forms the tubular neighborhood $N$.
-    \item Define a retraction map from $N$ to $X$ using the projection along normal fibers.
-\end{itemize}
-\item Use exponential map restricted to $N_X$ to map small normal vectors to $Y$ to define vector field (bump around CA)
-\begin{itemize}
-\item Scale this map with bump function
-\item 
+From the $\epsilon$-Neighborhood Theorem, we get that  there exists a smooth positive function $\delta\colon M_\epsilon \rightarrow \reals^+$,
+ such that if we let $N_\delta$ be the
+$\delta$-neighborhood of $M_\epsilon$,
+\[
+M_\epsilon\coloneqq \{y  \in  : |y - x| < \delta(x) \text{ for some }  x \in M_\epsilon\},
+\]
+then each $y\in N_\delta$ possesses a unique closest point $\pi_\delta(y)$ in $M_\epsilon$ with the map $\pi_\delta\colon N_\delta \rightarrow M_\epsilon$ being a submersion.
+
+We can then define a bump function
 \begin{equation}
-\psi_x^i(y) =
+\psi(y) =
 \begin{cases}
-\exp\left(-\frac{1}{1-(x_i-y_i)^2)}\right) &\text{  if  } y_i\in(-\delta-x_i, \delta-x_i)\\
+\exp\left(-\frac{1}{1-(\pi_\delta(y)-y)^2)}\right) &\text{  if  } y\in(-\delta-\pi_\delta(y), \delta-\pi_\delta(y))\\
 0 & \text{  otherwise } 
 \end{cases}
 \end{equation}
-\end{itemize}
-\item Take a small enough neighbourhood such that 
-\begin{itemize}
-\item Topology is unchanged
-\item 
-\end{itemize}
-\end{itemize}
+
+So that 
+
+Hence, we have a continuous attractor at $\manifold_\epsilon$.
+\end{remark}
+
+
+
+%Setup for case where smoothness matters:
+%\begin{itemize}
+%\item Define tubular neighbourhood
+%\begin{itemize}
+%    \item Define the normal bundle $N_X$ of $X$ in $Y$.
+%    \item Use the exponential map restricted to $N_X$ to map small normal vectors to $Y$.
+%    \item Ensure the map is injective on a sufficiently small neighborhood around the zero section of $N_X$.
+%    \item The image of this neighborhood forms the tubular neighborhood $N$.
+%    \item Define a retraction map from $N$ to $X$ using the projection along normal fibers.
+%\end{itemize}
+%\item Use exponential map restricted to $N_X$ to map small normal vectors to $Y$ to define vector field (bump around CA)
+%\begin{itemize}
+%\item Scale this map with bump function
+%\item 
+%\begin{equation}
+%\psi_x^i(y) =
+%\begin{cases}
+%\exp\left(-\frac{1}{1-(x_i-y_i)^2)}\right) &\text{  if  } y_i\in(-\delta-x_i, \delta-x_i)\\
+%0 & \text{  otherwise } 
+%\end{cases}
+%\end{equation}
+%\end{itemize}
+%\item Take a small enough neighbourhood such that 
+%\begin{itemize}
+%\item Topology is unchanged
+%\item How can we guarantee that no invariant manifolds, especially equilibira, are created next to the CA
+%\end{itemize}
+%\end{itemize}
 
 
 
