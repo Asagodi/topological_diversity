@@ -501,7 +501,7 @@ The average deviation from initial memory $\vx_0$ over time is bounded linearly
 \leq t\uniformNorm{\varphi}.
 \end{align}
 
-See also Sec.~\ref{sec:supp:ub}.
+For a proof, see Sec.~\ref{sec:supp:ub}.
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
 While the uniform norm gives insight into short time scale behavior, we can expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
@@ -2147,7 +2147,7 @@ For the off-manifold perturbations $\eta\in \reals^{10}$ and $\|\eta\|_2=10^{-5}
   
  We will now provide a proof of Prop.~\ref{prop:revival}.
 
-\begin{proof}
+\begin{proof}%[Prop.~\ref{prop:revival}]
 It is sufficient to show that there is a perturbation $\vp$ that has zero flow off of $\manifold_\epsilon$ but for which $\vf+\vp=0$ on $\manifold_\epsilon$ for the full system $\vf$  as defined in Eq.~\ref{eq:perturbation:nonparam}.
 Define 
 \[\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\vd\vy,\]
@@ -2162,7 +2162,7 @@ From the $\epsilon$-Neighborhood Theorem, we get that  there exists a smooth pos
  such that if we let $N_\delta$ be the
 $\delta$-neighborhood of $\manifold_\epsilon$,
 \[
-M_\epsilon\coloneqq \{y  \in  : |y - x| < \delta(x) \text{ for some }  x \in M_\epsilon\},
+M_\epsilon\coloneqq \{y  \in \reals^n : |y - x| < \delta(x) \text{ for some }  x \in M_\epsilon\},
 \]
 then each $y\in N_\delta$ possesses a unique closest point $\pi_\delta(y)$ in $\manifold_\epsilon$ with the map $\pi_\delta\colon \manifold_\delta \rightarrow \manifold_\epsilon$ being a submersion.
 
@@ -2469,7 +2469,7 @@ Training a single network took around 10 minutes on a CPU and occupied 10 percen
 \ptitle{Evaluation Metric}
 After training, we report the normalized mean squared error (NMSE):
 \begin{equation}
-\frac{\mathbb{E}[(y-\hat y)^2]}{\mathbb{E}[y]},
+NMSE = \frac{\mathbb{E}[(y-\hat y)^2]}{\mathbb{E}[y]},
 \end{equation}
 where $y$ is the target and $\hat y$ is the prediction.
 
@@ -2513,7 +2513,7 @@ This vector field in the output space captures in what direction and how quickly
  There are some inconsistencies around saddle nodes, where the vectori field seems to point off of the manifold.	
  This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
 %
-For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field $\|f\|_\infty = \sup f(\alpha)$ (see also Sec. \ref{sec:supp:ub}).
+For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field \begin{equation}\|f\|_\infty = \sup_{\alpha} \wout f(\alpha)\end{equation} (see also Sec. \ref{sec:supp:ub}).
 
 %
 %
