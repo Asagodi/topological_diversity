@@ -28,9 +28,7 @@ from matplotlib.lines import Line2D
 
 from models import RNN 
 from tasks import angularintegration_task, angularintegration_task_constant, center_out_reaching_task
-from odes import tanh_ode, recttanh_ode, relu_ode
-
-
+from odes import relu_ode, tanh_ode, recttanh_ode
 
 
 def load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs):
@@ -95,18 +93,7 @@ def get_weights_from_net(net):
     return wi, wrec, brec, wo, oth
 
 
-def plot_losses(folder):
-    paths = glob.glob(folder + "/result*")
-    
-    fig, ax = plt.subplots(1, 1, figsize=(5, 3));
-    all_losses = np.empty((100,5000))
-    all_losses[:] = np.nan
-    for exp_i, path in tqdm(enumerate(paths)):
-        net, result = load_net_path(path)
-        losses = result['losses']
-        ax.plot(losses[:np.argmin(losses)], 'b', alpha=.05)
-        all_losses[exp_i, :np.argmin(losses)-1] = losses[:np.argmin(losses)-1]
-    ax.plot(np.nanmean(all_losses,axis=0), 'b', zorder=1000, label='tanh')
+
 
 
 
@@ -727,6 +714,21 @@ def test_all_networks(folder):
     return df
 
 ##################
+
+def plot_losses(folder):
+    paths = glob.glob(folder + "/result*")
+    
+    fig, ax = plt.subplots(1, 1, figsize=(5, 3));
+    all_losses = np.empty((100,5000))
+    all_losses[:] = np.nan
+    for exp_i, path in tqdm(enumerate(paths)):
+        net, result = load_net_path(path)
+        losses = result['losses']
+        ax.plot(losses[:np.argmin(losses)], 'b', alpha=.05)
+        all_losses[exp_i, :np.argmin(losses)-1] = losses[:np.argmin(losses)-1]
+    ax.plot(np.nanmean(all_losses,axis=0), 'b', zorder=1000, label='tanh')
+    
+    
 def plot_losses_in_folder(folder):
     #main_exp_name='center_out/variable_N100_T250_Tr100/tanh/'
     #folder = parent_dir+"/experiments/" + main_exp_name
@@ -741,9 +743,8 @@ def plot_losses_in_folder(folder):
         net, result = load_net_path(path)
         # wi, wrec, brec, wo, oth = get_weights_from_net(net);
         losses = result['losses']
-        all_losses[exp_i,:np.argmin(losses)] = losses[:np.argmin(losses)].copy()
+        all_losses[exp_i,:np.argmin(losses)-1] = losses[:np.argmin(losses)-1].copy()
         axs[0].plot(losses[:np.argmin(losses)].copy(), 'b',  alpha=.01); 
-        #print(np.nanmin(losses), np.argmin(losses))
     axs[0].plot(np.nanmean(all_losses,axis=0), 'b', zorder=1000)
     last_non_nan_idx = np.argmax(np.isnan(all_losses), axis=1)
     last_non_nan_idx = np.maximum(0, last_non_nan_idx - 1)
@@ -932,6 +933,7 @@ def analysis(folder, df, batch_size=128, T=256, T1_multiple=16, auton_mult=4, in
         print(path)        
         net, result = load_net_path(path)
         training_kwargs = result['training_kwargs']
+        losses = result['losses']
         net.noise_std = 0
         wi, wrec, brec, wo, oth = get_weights_from_net(net)
         mse, mse_normalized = test_network(net)
@@ -977,6 +979,7 @@ def analysis(folder, df, batch_size=128, T=256, T1_multiple=16, auton_mult=4, in
         T1, N, I, S, R, M, clip_gradient = get_tr_par(training_kwargs)
         df = df.append({'path':path,
         'T': T1, 'N': N, 'I': I, 'S': S, 'R': R, 'M': M, 'clip_gradient':clip_gradient,
+        'losses': losses,
                     'trial': exp_i,
                     'mse': mse,
                     'mse_normalized':mse_normalized,
@@ -1027,7 +1030,7 @@ def all_analysis(folders):
 
 
 
-    # nrecs=[64,256]; nonlins=['relu','tanh','recttanh'];
+    # nrecs=[64,128,256]; nonlins=['relu','tanh','recttanh'];
 
     # folders = [parent_dir + f'/experiments/angular_integration_old/N{nrec}_T128_noisy/{nonlin}/' 
     #            for nrec in nrecs for nonlin in nonlins]
