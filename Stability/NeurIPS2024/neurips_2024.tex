@@ -2447,14 +2447,16 @@ with length scale $\ell$.
 \subsection{Training methods}
  
  We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
-The parameters were initialized were initialized from a normal distribution.
+The parameters were initialized were initialized using the Xavier normal distribution \citep{Glorot2010}.
+For the recurrent weights we used $W_{ij}\sim\mathcal{N}(0, \nicefrac{g}{\sqrt{N}})$ with a high gain $g=1.5$. 
+The initial hidden state was initialized using the output to recurrent mapping matrix $W_{otr}\colon\real^2\rightarrow\reals^{N}$ which was trained together with the other parameters.	
 
-For the recurrent weights: $\wrec_{ij}\sim\mathcal{N}(0, \nicefrac{g}{N})$ with a high gain $g=1.5$. 
-  Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
-   The task has 100 time steps for the training samples, and the mean squared error loss was used.
+Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
+The task has 100 time steps for the training samples, and the mean squared error loss was used.
 The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
 
-The best learning rate was chosen from 5 initial runs for all networks.
+
+The best learning rate was chosen from a set of values $\{10^{-2},10^{-3},10^{-4},10^{-5}\}$ by 5 initial runs for all nonlinearity and size pairings with the lowest average loss after 100 gradient steps.
 Training a single network took around 10 minutes on a CPU and occupied 10 percent of an 8GB RAM.
 
 
