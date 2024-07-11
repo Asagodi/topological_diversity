@@ -491,7 +491,7 @@ This perturbation can be constructed by $\vp(\vx) = \int_{\manifold_\epsilon} - 
 This makes the uniform norm of vector field on the manifold a useful measure of distance from a continuous attractor.
 It can also be used to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
 Let $\vx_0 \in \manifold$, and $\varphi = \vp\vert_\manifold$ be the flow restricted to the manifold.
-The average deviation from initial memory $\vx_0$ over time is bounded linearly
+The average deviation from initial memory $\vx_0$ over time is bounded linearly (for a proof, see Sec.~\ref{sec:supp:ub}):
 \begin{align}\label{eq:distance:ub}
 \frac{1}{\operatorname{vol}\manifold}\int_\manifold
 %\frac{1}{T}\int_0^T
@@ -501,7 +501,7 @@ The average deviation from initial memory $\vx_0$ over time is bounded linearly
 \leq t\uniformNorm{\varphi}.
 \end{align}
 
-For a proof, see Sec.~\ref{sec:supp:ub}.
+
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
 While the uniform norm gives insight into short time scale behavior, we can expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
