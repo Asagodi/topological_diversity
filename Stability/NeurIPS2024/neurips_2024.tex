@@ -53,19 +53,19 @@
 \newcounter{ct}
 \forLoop{1}{26}{ct}{
     \edef\letter{\alph{ct}}
-    \expandafter\defvec\letter
+    \expandafter\defvec\letter%
 }
 
 % captial \vA
 \forLoop{1}{26}{ct}{
     \edef\letter{\Alph{ct}}
-    \expandafter\defvec\letter
+    \expandafter\defvec\letter%
 }
 
 \newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
 \newcommand{\RN}[2]{\frac{\dm{#1}}{\dm{#2}}} % (Radon-Nikodym) derivative
-\newcommand{\PD}[2]{\frac{\partial #1}{\partial #2}} % partial derivative
-\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+\newcommand{\PD}[2]{\frac{\partial#1}{\partial#2}} % partial derivative
+\newcommand{\overbar}[1]{\mkern1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern1.5mu}
 \newcommand{\win}{\vW_{\text{in}}}
 \newcommand{\wout}{\vW_{\text{out}}}
 \newcommand{\bout}{\vb_{\text{out}}}
@@ -101,7 +101,7 @@
 \renewcommand{\cite}{\citep}
 
 \author{%
-    \'Abel ~S\'agodi, Piotr Sok\'o\l, Il Memming Park \\
+    \'Abel S\'agodi, Piotr Sok\'o\l, Il Memming Park \\
     %\thanks{Use footnote for providing further information about author (webpage, alternative address).} \\
     \\
     Champalimaud Centre for the Unknown\\
