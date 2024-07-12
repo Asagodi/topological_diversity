@@ -179,7 +179,7 @@ However, we lack the theoretical basis for relying on the brittle concept of con
 In this study, we explore the bifurcations from continuous attractors in theoretical models,
 which reveals various structurally stable dynamics in their vicinity.
 The distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time, and hence differences in the pattern of errors in temporal generalization.
-By assuming normal hyperbolicity, we will separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within for theoretical models and trained recurrent neural networks (RNNs). \pscomment{By assuming normal hyperbolicity we will separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within it. The proposed decomposition is general, and may be applied to e.g., theoretical models and trained recurrent neural networks (RNNs).}
+By assuming normal hyperbolicity we will separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within it. The proposed decomposition is general, and may be applied to e.g., theoretical models and trained recurrent neural networks (RNNs).
 We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects different topologies as \textbf{approximate continuous attractors}.
 We further analyze task-trained artificial RNNs to reveal a ``universal motif'' of analog memory with various potential topologies.
 
@@ -234,7 +234,7 @@ Small changes to the parameters \((\vb,\vW)\) perturb the eigenvalues.
 Specifically, any perturbation to the \(0\) eigenvalue destroys the continuous attractor as it bifurcates to either
 a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stable fixed points separated with a saddle-node in between (Fig.~\ref{fig:lara_bifurcations}A bottom).
 However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifold topologically equivalent to the original continuous attractor (note the slow speed).
-Furthermore, the flow of the vector field does not escape\pscomment{is contained in the} the ghost manifold, i.e., it is an invariant manifold.
+Furthermore, the flow after the bifurcation is contained in the ghost manifold, i.e., it is an invariant manifold.
 This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,mante2013context}.
 In general, continuous attractors are not only structurally unstable, they bifurcate almost certainly for an arbitrary perturbation.
 In the following, we focus on 1-dimensional ring attractors.
@@ -517,7 +517,7 @@ For a ring attractor, this implies that the stability structure of the invariant
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 For 2 dimensional attractors stable fixed points and saddle nodes can coexist with limit cycles.
 In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states.
-For example, the dynamics of a torus manifold can be described by Kolmogorov-Arnold-Moser (KAM) theory.\pscomment{Technically, only parallel translations, and KAM gives a type of structural stability result.}
+%For example, the dynamics of a torus manifold can be described by Kolmogorov-Arnold-Moser (KAM) theory.\pscomment{Technically, only parallel translations, and KAM gives a type of structural stability result.}
 %For higher dimensional attractors, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
 %\mpcomment{refer to later section on generalization performance?}
 
