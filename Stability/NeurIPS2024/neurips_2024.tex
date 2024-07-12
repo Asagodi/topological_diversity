@@ -247,15 +247,15 @@ In the following, we focus on 1-dimensional ring attractors.
 
 %The membrane potential of a neuron changes over time according to the input it receives and its intrinsic properties, which can be mathematically modeled using ODEs.
 %Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
-%A common form of the ODE for the firing rate \( r(t) \) of a neuron is:
+%A common form of the ODE for the firing rate $ r(t) $ of a neuron is:
 %\begin{align}\label{eq:TLN2}
 %\tau \frac{d r(t)}{d t} = -r(t) + F(I(t))
 %\end{align}
 %where:
 %$\tau$ is the time constant of the neuron,
 %$-r(t)$ represents the decay of the firing rate over time,
-%$I(t)$ is the total input to the neuron at time \( t \) and
-%$F(I)$ is a non-linear function that converts the input \( I(t) \) into an output firing rate.
+%$I(t)$ is the total input to the neuron at time $ t $ and
+%$F(I)$ is a non-linear function that converts the input $ I(t) $ into an output firing rate.
 
 % The Computation through Dynamics (CTD) framework assumes that the brain processes sensory information and generates behavior through neural dynamics, including representations of continuous-valued variables like space and direction~\cite{vyas2020}.
 
@@ -488,7 +488,7 @@ Let the uniform norm of the flow tangent to the manifold be $\|y\|_\infty=\eta$.
 There exist a perturbation with uniform norm at most $\eta$ that induces a bifurcation to a continuous attractor manifold. % $\manifold_0$ diffeomorphic to $\manifold_\epsilon$.
 \end{prop}
 
-This perturbation can be constructed by $\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(y)dy$, see for the proof Sec.~\ref{sec:supp:proofprop1}.
+This perturbation can be constructed by $\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}$, see for the proof Sec.~\ref{sec:supp:proofprop1}.
 This makes the uniform norm of vector field on the manifold a useful measure of distance from a continuous attractor.
 It can also be used to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
 Let $\vx_0 \in \manifold$, and $\varphi = \vp\vert_\manifold$ be the flow restricted to the manifold.
@@ -573,7 +573,7 @@ The loss $L$ to be minimized was computed by the mean squared error (MSE) betwee
 %\begin{equation}\label{eq:loss}
 $L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}, $
 %\end{equation}
-with $i$ the index of the output units and $t$  the index for time.
+with a mask $m_{i,t}$ with $i$ the index of the output units and $t$  the index for time.
 We implemented a mask, $m_{i,t}$, for modulating the loss with respect to certain time intervals.
 We trained 10 networks for every combination of the following parameters:
  ReLU, tanh and rectified tanh activation functions and
@@ -740,10 +740,10 @@ We posit that there are four conditions:
 \item robustness against state (S-type) noise, and \label{converse:Stype}
 \item robustness against dynamical (D-type) noise. \label{converse:Dtype}
 \end{enumerate*}
-The correspondence implied by \ref{converse:bijection} translate to, the existence of a manifold in the neural activity space with the same topology as the memory content.
+The correspondence implied by \ref{converse:bijection} translates to the existence of a manifold in the neural activity space with the same topology as the memory content.
 The persistence \ref{converse:persistent} requires that the flow on the manifold is slow and bounded.
 The S-type robustness \ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
-Along with the D-type robustness \ref{converse:Dtype}, it implies the manifold is ``attractive'', and  normally hyperbolic.
+Along with the D-type robustness \ref{converse:Dtype}, it implies the manifold is ``attractive'', and  normally hyperbolic (see also Sec.~\ref{sec:persitencempliesnh}).
 Then, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added makes it a continuous attractor (Prop.~\ref{prop:revival}).
 For the RNN experiments, we added state-noise while training using stochastic gradient descent, satisfying \ref{converse:Stype} and \ref{converse:Dtype}.
 We have also verified that \ref{converse:persistent} holds (Fig.~\ref{fig:angular_loss}A).
@@ -2039,14 +2039,14 @@ P_{ij} = \frac{m^{(1)}_i n^{(1)}_j}{N} + \dots + \frac{m^{(r)}_i n^{(r)}_j}{N},
 $g\chi$ is considered unknown except for its statistics (mean 0, variance $g^2/N$).
 
 %Rank-two structures with internal pairwise overlap
-As a second case, we consider structured matrices where the two connectivity pairs \( m^{(1)} \) and \( n^{(1)} \), \( m^{(2)} \) and \( n^{(2)} \) share two different overlap directions, defined by vectors \( y_1 \) and \( y_2 \). We set:
+As a second case, we consider structured matrices where the two connectivity pairs $ m^{(1)} $ and $ n^{(1)} $, $ m^{(2)} $ and $ n^{(2)} $ share two different overlap directions, defined by vectors $ y_1 $ and $ y_2 $. We set:
 \begin{align}
     m^{(1)} &= \sqrt{\Sigma^2 - r_1^2} \, x_1 + r_1 y_1, \\
     m^{(2)} &= \sqrt{\Sigma^2 - r_2^2} \, x_2 + r_2 y_2, \\
     n^{(1)} &= \sqrt{\Sigma^2 - r_1^2} \, x_3 + r_1 y_1, \\
     n^{(2)} &= \sqrt{\Sigma^2 - r_2^2} \, x_4 + r_2 y_2,
 \end{align}
-where \( \Sigma^2 \) is the variance of the connectivity vectors and \( r_1^2 \) and \( r_2^2 \) quantify the overlaps along the directions \( y_1 \) and \( y_2 \).
+where $ \Sigma^2 $ is the variance of the connectivity vectors and $ r_1^2 $ and $ r_2^2 $ quantify the overlaps along the directions $ y_1 $ and $ y_2 $.
 
 We keep the following parameters for the analysis:
 $\Sigma=2$,
@@ -2071,9 +2071,9 @@ We take a ring and embed it with a random linear mapping to a 10 dimensional sta
 On this embedded ring, we constraint the network to have evenly spaced fixed points with one marginal Jacobian eigenvalue and all others eigenvalues -20.
 We used different numbers of fixed points to contrain the network.
 
-\ascomment{todo: HYPERPARAMS + how are three different networks fit differently?}
-
-\ascomment{todo: introduce D}
+%\ascomment{todo: HYPERPARAMS + how are three different networks fit differently?}
+%
+%\ascomment{todo: introduce D}
 
 \paragraph{Finding fixed points}
 As we remark in Sec.~\ref{sec:empjnonrobust}, EMPJ networks are not robust to S-type noise, therefore we cannot apply our analysis of identifying the invariant set through the convergence criterion of numerically integrated trajectories.
@@ -2158,8 +2158,8 @@ For the off-manifold perturbations $\eta\in \reals^{10}$ and $\|\eta\|_2=10^{-5}
 
 
 \newpage
-
-\section{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
+\section{Slow Manifolds are near Continuous Attractors}
+\subsection{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
 
  We will now provide a proof of Prop.~\ref{prop:revival}.
 
@@ -2198,8 +2198,6 @@ Then the perturbation
 is smooth and creates a continuous attractor at $\manifold_\epsilon$.
 \end{remark}
 
-
-
 %Setup for case where smoothness matters:
 %\begin{itemize}
 %\item Define tubular neighbourhood
@@ -2230,8 +2228,40 @@ is smooth and creates a continuous attractor at $\manifold_\epsilon$.
 %\end{itemize}
 
 
+\subsection{D-type robustness}\label{sec:persitencempliesnh}
+%What counts as D-type robustness: persistence (+attractiveness)
+Here we shortly discuss what we consider to be a  necessary and sufficient condition for D-type robustness.
+We can use the concept of Lipschitz persistence to define D-type robustness \citep{mane1978persistent}.
+Ma\~{n}e showed that if an invariant manifold is Lipschitz persistent then it must be normally hyperbolic.
+To understand the concept of Lipschitz persistence, we need to define the Lipschitz section and Lipschitz constant.
+\begin{definition}
+Let $M$ be a $C^{\infty}$ boundaryless manifold and $V \subset M$ a $C^1$ compact boundaryless submanifold. 
+Assume that $M$ is a submanifold of $\mathbb{R}^n$. Let $NV$ be a $C^1$ subbundle of $TM|_V$ satisfying $TV \oplus NV = TM|_V$. 
+If $\eta$ is a section of $NV$, define the Lipschitz constant of $\eta$ by
+\[
+\mathrm{Lip}(\eta) = \sup \left\{ \frac{\|\eta(x) - \eta(y)\|}{\|x - y\|} \mid x, y \in V, x \neq y \right\}.
+\]
+We say that $\eta$ is a \emph{Lipschitz section} if $\mathrm{Lip}(\eta) < +\infty$. 
+Let $\Gamma_{\mathcal{L}}(NV)$ be the space of Lipschitz sections of $NV$ endowed with the norm
+\[
+\|\eta\|_{\mathcal{L}} = \sup \left\{ \|\eta(x)\| \mid x \in V \right\} + \mathrm{Lip}(\eta).
+\]
+Let $\mathrm{Diff}^1(M)$ be the space of $C^1$ diffeomorphisms with the topology of the $C^1$ convergence on compact subsets.
+\end{definition}
 
-\subsection{Upper bound for the memory performance on a short time scale}\label{sec:supp:ub}
+\begin{definition}
+ Let $f \in \mathrm{Diff}^1(M)$. 
+ We say that $V$ is a Lipschitz persistent invariant manifold of $f$ if there exists a neighborhood $U$ of $V$ such that for all $\delta > 0$ there exists a neighborhood $\mathcal{U}_\delta$ of $f$ such that if $g \in \mathcal{U}_\delta$ there exists $\eta \in \Gamma_{\mathcal{L}}(NV)$ with $\|\eta\|_{\mathcal{L}} < \delta$ satisfying $V_g = \mathrm{graph}(\eta)$, where $\mathrm{graph}(\eta) = \{\exp_x(\eta(x)) \mid x \in V\}$, $V_g = g(U)$.
+
+Observe that this definition implies $V_f = V$, hence $f(V) = V$. Moreover, the Lipschitz persistence is independent of the bundle $NV$.
+\end{definition}
+
+
+For a flow $\varphi_t$ (coming from the solutions of an ODE) we can fix $t=\tau\in\reals_{>0}$ so that we get a homeomorphism $\varphi_\tau$. 
+This allows us to apply this result to apply to our case.
+
+\newpage
+\section{Upper bound for the memory performance on a short time scale}\label{sec:supp:ub}
 We will now formalize the statement about an upper bound dependent on the uniform norm of the vector field on the slow manifold in Sec.\ref{sec:revival} and provide a proof.
 \begin{prop}
 Let $\manifold$ be a normally hyperbolic slow manifold as in Prop.~\ref{sec:revival}.
@@ -2427,7 +2457,7 @@ and therefore:
 
 \paragraph{Memory guided saccade task}
 
-The total time length of the task was 512 steps.
+The total time length of a trial is 512 steps.
 The time delay to the output cue was sampled from
 \begin{align}
 T_{delay} \sim \mathcal{U}(50, 400).
@@ -2437,6 +2467,7 @@ We applied a mask $m_{i,t}=0$ for 5 time steps ($t=T_{delay}+j$ for $j=0,\dots 4
 
 
 \paragraph{Angular velocity integration task}
+The time length of a trial is 256 steps.
 The input is an angular velocity and the target output is the sine and cosine of the integrated angular velocity.
 Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smooth movement trajectories, consistent with the observed animal behavior in flies and rodents.
 %These parameters are set to roughly match the angular velocity distribution of the rat and fly (Stackman & Taube, 1998; Sharp et al., 2001; Bender & Dickinson, 2006; Raudies & Hasselmo, 2012).
@@ -2479,7 +2510,7 @@ Training a single network took around 10 minutes on a CPU and occupied 10 percen
  \begin{figure}[tbhp]
      \centering
     \includegraphics[width=0.75\textwidth]{training_losses}
-       \caption{Training loss across training epochs.}
+       \caption{Training loss across gradient steps.}
          \label{fig:training_losses}
 \end{figure}
 
