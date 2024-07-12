@@ -124,7 +124,7 @@ Continuous attractors offer a unique class of solutions for storing continuous-v
 Unfortunately, continuous attractors suffer from severe structural instability in general---they are destroyed by most infinitesimal changes of the dynamical law that defines them.
 This fragility limits their utility especially in biological systems as their recurrent dynamics are subject to constant perturbations.
 We observe that the bifurcations from continuous attractors in theoretical neuroscience models display various structurally stable forms.
-Although their asymptotic behaviors of memory are categorically distinct, their finite time behaviors are similar and degrade gracefully.
+Although their asymptotic behaviors of memory are categorically distinct, their finite-time behaviors are similar and degrade gracefully.
 Fast-slow decomposition analysis uncovers the persistent manifold that survives the seemingly destructive bifurcation.
 Moreover, the recurrent neural networks trained on analog memory tasks display approximate continuous attractors with predicted slow manifold structures.
 Therefore, continuous attractors are \emph{functionally robust} and remain useful as a universal analogy for understanding analog memory.
@@ -142,8 +142,8 @@ Therefore, continuous attractors are \emph{functionally robust} and remain usefu
 \section{Introduction}
 Biological systems exhibit robust behaviors that require neural information processing of analog variables such as intensity, direction, and distance.
 Virtually all neural models of working memory for continuous-valued information rely on persistent internal representations through recurrent dynamics.
-The continuous attractor structure in their recurrent dynamics has been a pivotal theoretical tool due to their ability to maintain activity patterns indefinitely through  neural population states~\cite{vyas2020,dayan2001,Khona2022}.
-They are hypothesized to be the neural mechanism for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
+The continuous attractor structure in their recurrent dynamics has been a pivotal theoretical tool due to their ability to maintain activity patterns indefinitely through neural population states~\cite{vyas2020,dayan2001,Khona2022}.
+They are hypothesized to be the neural mechanism for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, and decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
 Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,Noorman2022,Nair2023}.
 %and anatomy?
 
@@ -436,7 +436,7 @@ In addition, the stable manifold of \(\manifold_0\) is similarly persistent~\cit
 
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA).
- As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting \cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems).
+ As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems).
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (Fig.~\ref{fig:lara_bifurcations}, dark colored regions) that contains fixed points and connecting orbits, and is overall still attractive.
 Furthermore, Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
 Because continuous ring attractor are bounded, their invariant manifold persists and it remains attractive under small perturbations to this system~\citep{wiggins1994}.
@@ -557,7 +557,7 @@ where \(\vx_t \in \reals^d\) is the hidden state,
 \(f\colon \reals \to \reals\) an activation function which acts on each of the hidden dimension,
 private noise variable \(\zeta\sim\mathcal{N}(0,\nicefrac{1}{100})\), and %\(\zeta\sim \mathcal{N}(0, .001)\)
 \(\vW, \vb, \win, \wout, \bout\) are parameters.
-Assuming an Euler integration with unit time step, the discrete-time RNN of \eqref{eq:RNN:discrete} corresponds to the stochastic differential equation:
+Assuming an Euler integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation:
 \begin{align}
     \dm{\vx} &= -\vx\dm{t} + f(\win \vI + \vW \vx + \vb)\dm{t} + \sigma \dm{W}. \label{eq:RNN:continuous}
 \end{align}
@@ -730,10 +730,10 @@ In Sec.~\ref{sec:ras}, we presented a theory of approximate solutions in the nei
 When are approximate solutions to the analog working memory problem near a continuous attractor?
 We posit that there are four conditions:
 \begin{enumerate*}[label=\textbf{(C\arabic*)}]
-\item sufficiently smooth approximate bijection between neural activity and memory content, \label{converse:bijection}
-\item the speed of drift of memory content is bounded, \label{converse:persistent}
-\item robustness against state (S-type) noise, and \label{converse:Stype}
-\item robustness against dynamical (D-type) noise. \label{converse:Dtype}
+\item sufficiently smooth approximate bijection between neural activity and memory content,\label{converse:bijection}
+\item the speed of drift of memory content is bounded,\label{converse:persistent}
+\item robustness against state (S-type) noise, and\label{converse:Stype}
+\item robustness against dynamical (D-type) noise.\label{converse:Dtype}
 \end{enumerate*}
 The correspondence implied by~\ref{converse:bijection} translate to, the existence of a manifold in the neural activity space with the same topology as the memory content.
 The persistence~\ref{converse:persistent} requires that the flow on the manifold is slow and bounded.
@@ -760,7 +760,7 @@ Unlike in most of dynamical systems theory where the asymptotic behavior and top
 Training RNNs on tasks involving continuous variables results in a great variety of solutions.
 As the theory predicts, trained networks have an attractive ring invariant manifold.
 However, even within this variety, we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
-Nvertheless, the topological structure of the found solutions still determines how well a network can perform generalization for longer time scales.
+Nevertheless, the topological structure of the found solutions still determines how well a network can perform generalization for longer time scales.
 
 %limitations
 We did not explicitly describe the topology and dimensionality of the identified invariant manifolds for all networks, only for a representative set.
@@ -1443,7 +1443,7 @@ Equation~\ref{eq:condition2.1} and~\ref{eq:condition2.2} together form condition
 Then, we get the following conditions for the different types of bifurcations:
 \begin{enumerate}
 %2 fixed points
-\item  If condition 1 is violated, but condition 2 is satisfied with exactly oner strict inequality, there are two fixed points on the boundary of the admissible quadrant.
+\item  If condition 1 is violated, but condition 2 is satisfied with exactly one strict inequality, there are two fixed points on the boundary of the admissible quadrant.
 %what about the subconditions:
 \item If condition 1 is violated, and only one of the subconditions of condition 2 is satisfied, there is a single fixed point on one of the axes.
 \item If condition 2 is violated, there is a single fixed point with full support.
@@ -1525,7 +1525,7 @@ R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmat
 \end{align}
 
 \subsection{Smoother activation functions}
-It is well-known that activation functions (\(\sigma\) in  Eqs.~\ref{eq:RNN:discrete} and  \ref{eq:RNN:continuous}), which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023,ramachandran2017,hayou2019}.
+It is well-known that activation functions (\(\sigma\) in  Eqs.~\ref{eq:RNN:discrete} and~\ref{eq:RNN:continuous}), which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023,ramachandran2017,hayou2019}.
 Activation functions that are \(C^r\) for \(r\geq 1\) are the ones to which the Persistence Theorem applies.
 The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistent invariant manifold.
 For situations where smoothness of the persistent invariant manifold is of importance, smoother activation functions might be preferable, such as the Exponential Linear Unit (ELU)\citep{clevert2015} or the Continuously Differentiable Exponential Linear Units (CELU) \citep{barron2017}.
@@ -1902,10 +1902,10 @@ The parametrized perturbations are characterized as the addition of a random mat
 
 \subsection{Simple ring attractor}
 %Ring attractor
-We further analyzed a simple (non-biological)  ring attractor, defined by the following ODE: \(\dot r = r(1-r), \ \dot \theta = 0.\)
-This system has as fixed points the origin and the ring with radius one centered around zero, i.e., \((0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}\).
+We further analyzed a simple (non-biological)  ring attractor, defined by the following ODE: \(\dot r = r(1-r), \ \dot \theta = 0\).
+This system has as fixed points the origin and the ring with radius one centered around zero, i.e., \((0,0)\cup\{(1,\theta)\ |\ \theta \in [0,2\pi)\}\). % ChkTeX 9
 We investigate bifurcations caused by parametric and bump perturbations of the ring invariant manifold (see Sec.~\ref{sec:supp:ring_perturbations}), which is bounded and boundaryless.
-All perturbations maintain the topological structure of the invariant manifold . %(Fig.~\ref{fig:lara_bifurcations}B).
+All perturbations maintain the topological structure of the invariant manifold. %(Fig.~\ref{fig:lara_bifurcations}B).
 
 
 %include fig?
@@ -1929,7 +1929,7 @@ x^*_i<0 \text{   for  	 } i\in\sigma.
 \end{equation}
 
 We bruteforce check all possible supports to find all fixed points.
-We use the eigenvalues of the Jabobian to identify the stability of the found fixed points.
+We use the eigenvalues of the Jacobian to identify the stability of the found fixed points.
 
 
 \paragraph{Measure zero co-dimension 1 bifurcations}
@@ -2021,11 +2021,11 @@ The networks consisted of \(N\) firing rate units with a sigmoid inputoutput tra
 \end{equation}
 where \(x_i(t)\) is the total input current to unit \(i\),
 \( J_{ij} = g\chi_{ij} + P_{ij}\) is the connectivity matrix,
-\(\phi(x) = \operatorname{tanh}(x)\) is the current-to-rate transfer function, and \(I_i\) is the external, feedforward input to unit \(i\).
+\(\phi(x) = \tanh(x)\) is the current-to-rate transfer function, and \(I_i\) is the external, feedforward input to unit \(i\).
 
 This far we focused on unit-rank connectivity structure, but our framework can be directly extended to higher-rank structure. A more general structured component of rank \(r\ll N\) can be written as a superposition of \(r\) independent unit-rank terms
 \begin{equation}
-P_{ij} = \frac{m^{(1)}_i n^{(1)}_j}{N} + \dots + \frac{m^{(r)}_i n^{(r)}_j}{N},
+P_{ij} = \frac{m^{(1)}_i n^{(1)}_j}{N} + \cdots + \frac{m^{(r)}_i n^{(r)}_j}{N},
 \end{equation} and is in principle characterized by \(2r\) vectors \(m^{(k)}\) and \(n^{(k)}\).
 \(g\chi\) is considered unknown except for its statistics (mean 0, variance \(g^2/N\)).
 
@@ -2067,7 +2067,7 @@ We used different numbers of fixed points to contrain the network.
 
 \paragraph{Finding fixed points}
 As we remark in Sec.~\ref{sec:empjnonrobust}, EMPJ networks are not robust to S-type noise, therefore we cannot apply our analysis of identifying the invariant set through the convergence criterion of numerically integrated trajectories.
-We therefore find fixed points throught the Newton-Raphson method.
+We therefore find fixed points through the Newton-Raphson method.
 We iteratively solve
 \begin{align}
  \vJ(\vx_i)\vd\vx_i = \vx_i
@@ -2080,7 +2080,7 @@ We initialize \(\vx_0\) on the invariant ring uniformly.
 We remark that the resulting invariant manifold is not robust to S-type perturbations.
 For on-manifold perturbations (in the plane in which the ring is embedded), S-type perturbations do lead to flow towards the invariant ring (Fig.~\ref{fig:empj_onoff_perturbation}A).
 However, for (small) off-manifold perturbations, the trajectories typically diverge away from the invariant ring (Fig.~\ref{fig:empj_onoff_perturbation}B).
-This indicates that the basin of attration is very small and hence this approximantion is not robust to S-type noise.
+This indicates that the basin of attration is very small and hence this approximation is not robust to S-type noise.
 
 
 All of the perturbations were sampled as
@@ -2156,7 +2156,7 @@ For the off-manifold perturbations \(\eta\in \reals^{10}\) and \(\|\eta\|_2=10^{
 It is sufficient to show that there is a perturbation \(\vp\) that has zero flow off of \(\manifold_\epsilon\) but for which \(\vf+\vp=0\) on \(\manifold_\epsilon\) for the full system \(\vf\)  as defined in Eq.~\ref{eq:perturbation:nonparam}.
 Define
 \[\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\vd\vy,\]
- with the Dirac delta function \(\delta(\vx)=\delta(x_1)\delta(x_2)\dots\delta(x_d).\)
+ with the Dirac delta function \(\delta(\vx)=\delta(x_1)\delta(x_2)\dots\delta(x_d)\).
 It is then easy to check that \((\vf+\vp)(\vx)=0\) for all \(\vx\in\manifold_\epsilon\) and \((\vf+\vp)(\vx)=(\vf)(\vx)\) for all \(\vx\not\in\manifold_\epsilon\).
 Hence, we have a continuous attractor at \(\manifold_\epsilon\).
 \end{proof}
@@ -2280,7 +2280,7 @@ g(x) = \arctan(\wout x). %hat alpha?
 %    \mathcal{L}(T) = \frac{1}{|\mathcal{U}|} \int_\mathcal{U}  \frac{1}{|f(\bm{\alpha})|} \int_{f(\bm{\alpha})} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\bm{\alpha}),t),\bm{\alpha}) dt df(\bm{\alpha}) d\bm{\alpha}
 %\end{equation}
 
-In the case of the ring attractor, the memory we would like to encode is \(\alpha \in \mathcal{U} = [0,2 \pi)\), the error is defined as \(|x-y|_o = o_\pi(|x-y|)\) where:
+In the case of the ring attractor, the memory we would like to encode is \(\alpha \in \mathcal{U} = [0,2 \pi)\), the error is defined as \(|x-y|_o = o_\pi(|x-y|)\) where: % ChkTeX 9
 \begin{equation}
     o_\pi(x) = \begin{cases}
     x & \text{if } x < \pi \\
@@ -2386,7 +2386,7 @@ Then:
     &= o_\pi \left( \left| \int_0^t \epsilon_{\bm{\theta}}(\alpha_0, s) ds \mod 2 \pi \right| \right)
 \end{split}
 \end{equation}
-where we used that \(\alpha_0 \in [0,2 \pi) \Rightarrow \alpha_0 = \alpha_0 \mod 2 \pi\) and that \(|x \mod 2 \pi - y \mod 2 \pi| = |(x-y) \mod 2 \pi|\).
+where we used that \(\alpha_0 \in [0,2 \pi) \Rightarrow \alpha_0 = \alpha_0 \mod 2 \pi\) and that \(|x \mod 2 \pi - y \mod 2 \pi| = |(x-y) \mod 2 \pi|\). % ChkTeX 9
 
 The final equation of the loss in this case has the form:
 \begin{equation}
@@ -2490,7 +2490,7 @@ where \(y\) is the target and \(\hat y\) is the prediction.
  \subsubsection{Fast-slow decomposition}\label{sec:fsdecmethod}
  We simulated 1024 trajectories without noise with inputs from the task and let the networks evolve for 16 times the task definition lengths.
  We took the cutoff to identify the slow manifold to be \(10^{-3}\) of the highest speed along each trajectory.
- We believe that this gaurantees the identification of the slow manifold in a system that has a fast-slow decomposition.
+ We believe that this guarantees the identification of the slow manifold in a system that has a fast-slow decomposition.
  We sampled 1024 points from these points to fit a periodic, cubic spline (black line in Fig.~\ref{fig:fastslow_decomposition},~\ref{fig:im_rep},~\ref{fig:im_all}).
  %fast-slow
  % inv man
@@ -2508,7 +2508,7 @@ where \(y\) is the target and \(\hat y\) is the prediction.
        \caption{The identified invariant manifolds with the fixed points (cyan for stable, orange for saddle and black for unstable) for all inferred networks (except the ones in Fig~\ref{fig:im_rep}).}\label{fig:im_all}
 \end{figure}
 
-As one can see, not all solutions can be meaningfully analyzed with this the slow-fast decomposition method. For example, the solution at the center of the \(\operatorname{tanh}, N=256\) block, the found invariant manifold is not correctly captured.
+As one can see, not all solutions can be meaningfully analyzed with this the slow-fast decomposition method. For example, the solution at the center of the \(\tanh, N=256\) block, the found invariant manifold is not correctly captured.
 
 
 
@@ -2540,7 +2540,7 @@ This vector field in the output space captures in what direction and how quickly
  Furthermore, the vector field and fixed points are consistent with each other, as the vector field flips direction around found fixed points.
 
 
- There are some inconsistencies around saddle nodes, where the vectori field seems to point off of the manifold.
+ There are some inconsistencies around saddle nodes, where the vector field seems to point off of the manifold.
  This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
 %
 For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field \begin{equation}\|f\|_\infty = \sup_{\alpha} \wout f(\alpha)\end{equation} (see also Sec.~\ref{sec:supp:ub}).
