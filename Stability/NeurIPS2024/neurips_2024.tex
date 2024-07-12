@@ -1463,28 +1463,7 @@ This is the case if $v=0$.
 It is not possible to have a line attractor with a fixed point off of it for as there cannot be disjoint fixed points that are linearly dependent \citep[Lemma 5.2]{morrison2016a}.
 \end{proof}
 
-\subsection{Structure of the parameter space}
-\begin{table}[H]
-\caption{Summary of the conditions for the different bifurcations.}\label{tab:bifs}
-\centering
-\bgroup
-\def\arraystretch{1.52}
-\begin{tabular}{|c||c|c|c|c|c|}
-\hline
-& 1FP (full) 		& 1FP (partial) & 3FPs & 2FPs & LA  \\\hline \hline
-C1 & \cmark	 	& \xmark 	 & \cmark & \xmark & \xmark \\\hline
-C2 & \xmark 		& only Eq\ref{eq:condition2.1} or \ref{eq:condition2.2}  	 & \cmark & \cmark& \xmark \\\hline
-\end{tabular}
-\egroup
-\end{table}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{bla_parameter_space}
-  \caption{A slice of the parameter space of the BLA for a fixed $\epsilon_{11}$ and $\epsilon_{12}$. %The different bifurcations can be found
-  }
-  \label{fig:blaparameterspace}
-\end{figure}
 
 
 \subsubsection{Probability of bifurcation types}\label{sec:supp:probbla}
@@ -1507,6 +1486,32 @@ we always have that
 This implies that this bifurcation happens with probability $\frac{1}{4}$  in a $\epsilon$-ball around the BLA neural integrator with $\epsilon<1$.
 We conclude that the single stable fixed point type perturbation happens with probability $\frac{3}{4}$.
 
+
+\subsection{Structure of the parameter space}
+We will present the structure of the bifurcation space through a slice in which we fix  $\epsilon_{11}$ and $\epsilon_{12}$. 
+First, we summarize which conditions result in which bifurcation in Table~\ref{tab:bifs}.
+We derive that the local bifurcation in this slice  has the structure as shown in Fig.~\ref{fig:blaparameterspace}.
+\begin{table}[H]
+\caption{Summary of the conditions for the different bifurcations.}\label{tab:bifs}
+\centering
+\bgroup
+\def\arraystretch{1.52}
+\begin{tabular}{|c||c|c|c|c|c|}
+\hline
+& 1FP (full) 		& 1FP (partial) & 3FPs & 2FPs & LA  \\\hline \hline
+C1 & \cmark	 	& \xmark 	 & \cmark & \xmark & \xmark \\\hline
+C2 & \xmark 		& only Eq\ref{eq:condition2.1} or \ref{eq:condition2.2}  	 & \cmark & \cmark& \xmark \\\hline
+\end{tabular}
+\egroup
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{bla_parameter_space}
+  \caption{A slice of the parameter space of the BLA for a fixed $\epsilon_{11}$ and $\epsilon_{12}$. %The different bifurcations can be found
+  }
+  \label{fig:blaparameterspace}
+\end{figure}
 
 \subsection{Fast-slow form}\label{sec:supp:fast_slow_form}
 We will now show how to transform the BLA network to the slow-fast form in Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal}.
