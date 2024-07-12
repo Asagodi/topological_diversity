@@ -26,7 +26,8 @@
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
 %\usepackage{xr-hyper}
-\usepackage{enumitem}
+%\usepackage{enumitem}
+\usepackage[inline]{enumitem}
 
  %% space saving tricks
 \usepackage{sidecap} % caption on the side SCfigure
@@ -574,13 +575,11 @@ $L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}, $
 %\end{equation}
 with $i$ the index of the output units and $t$  the index for time.
 We implemented a mask, $m_{i,t}$, for modulating the loss with respect to certain time intervals.
-
-
 We trained 10 networks for every combination of the following parameters:
  ReLU, tanh and rectified tanh activation functions and
  number of units/neurons (64, 128, 256).
 % , and activity regularization ($10^{-3}, 0, 1$).
-All networks were trained using ADAM with $\beta_1=0.9$ and $\beta_2=0.999$ for $5,000$ iterations with a batch size of 64.  % and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
+%All networks were trained using ADAM with $\beta_1=0.9$ and $\beta_2=0.999$ for $5,000$ iterations with a batch size of 64.  % and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
 %Among the networks, we only analyzed networks with normalized MSE less than -20 dB (Fig.~\ref{}).
 
 %To avoid overly complex solutions that do not generalize well for longer trials, we penalized high activity using an L2 regularization on the hidden activity $x_t$.
@@ -613,10 +612,18 @@ We find that long integrated trajectories of the network converge to the found s
 
 
 \subsection{Variations in the Topologies of the Networks}\label{sec:topologies}
-In this section, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the slow manifold, and the flow on the manifold.
-We want to investigate how networks might solve tasks.
+In this section, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the slow manifold, and the flow on the manifold (Sec.~\ref{sec:fsdecmethod}).
+%We want to investigate how networks might solve tasks.
 %While previous studies have primarily focused on simple tasks that can be solved with fixed points, there remains a gap in comprehensively extracting the mechanisms underlying network implementations~\citep{sussillo2013blackbox}.
 %We address this gap by investigating the internal mechanisms of neural network solvers for tasks involving continuous variables.
+%
+All solutions involve a slow manifold with the same topology as the relevant variable in the task.
+The different solutions are different in their asymptotic dynamics (Fig.~\ref{fig:fastslow_decomposition}).
+The most often found solution is of the type \emph{fixed point ring manifold} (Fig.~\ref{fig:fastslow_decomposition}A and B).
+%
+Less commonly found topologies includes %slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a
+the slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
+These solutions are consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing,Park2023a} and neuronal circuits underlying persistent representations despite time varying activity~\citep{druckmann2012neuronal}.
 
 %Fig 4
 \begin{figure}[tbhp]
@@ -632,13 +639,7 @@ We want to investigate how networks might solve tasks.
   \label{fig:fastslow_decomposition}
 \end{figure}
 
-All solutions involve a slow manifold with the same topology as the relevant variable in the task.
-The different solutions are different in their asymptotic dynamics (Fig.~\ref{fig:fastslow_decomposition}).
-The most often found solution is of the type \emph{fixed point ring manifold} (Fig.~\ref{fig:fastslow_decomposition}A and B).
 
-Less commonly found topologies includes %slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a
-the slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
-These solutions are consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing,Park2023a} and neuronal circuits underlying persistent representations despite time varying activity~\citep{druckmann2012neuronal}.
 
 \subsection{Universality amongst Good Solutions}
 %to what extent does training neural networks to solve simple tasks, prevalent in neuroscientific studies, uniquely determine the low-dimensional dynamics independent of neural architectures?
@@ -733,12 +734,12 @@ Networks with different number of fixed points might have the same performance o
 In Sec.~\ref{sec:ras}, we presented a theory of approximate solutions in the neighborhood of continuous attractors.
 When are approximate solutions to the analog working memory problem near a continuous attractor?
 We posit that there are four conditions:
-\begin{enumerate}[label=\textbf{(C\arabic*)}]
+\begin{enumerate*}[label=\textbf{(C\arabic*)}]
 \item sufficiently smooth approximate bijection between neural activity and memory content, \label{converse:bijection}
 \item the speed of drift of memory content is bounded, \label{converse:persistent}
 \item robustness against state (S-type) noise, and \label{converse:Stype}
 \item robustness against dynamical (D-type) noise. \label{converse:Dtype}
-\end{enumerate}
+\end{enumerate*}
 The correspondence implied by \ref{converse:bijection} translate to, the existence of a manifold in the neural activity space with the same topology as the memory content.
 The persistence \ref{converse:persistent} requires that the flow on the manifold is slow and bounded.
 The S-type robustness \ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
@@ -2431,7 +2432,7 @@ The time delay to the output cue was sampled from
 \begin{align}
 T_{delay} \sim \mathcal{U}(50, 400).
 \end{align}
-We applied a mask $m_{i,t}=0$ for 5 time steps ($t=T_{delay}+i$ for $i=0,\dots 4$) after the go cue.
+We applied a mask $m_{i,t}=0$ for 5 time steps ($t=T_{delay}+j$ for $j=0,\dots 4$) after the go cue.
 
 
 
@@ -2499,7 +2500,7 @@ After training, we report the normalized mean squared error (NMSE) to asses the 
 where $y$ is the target and $\hat y$ is the prediction.
 
 
- \subsubsection{Fast-slow decomposition}
+ \subsubsection{Fast-slow decomposition}\label{sec:fsdecmethod}
  We simulated 1024 trajectories without noise with inputs from the task and let the networks evolve for 16 times the task definition lengths.
  We took the cutoff to identify the slow manifold to be $10^{-3}$ of the highest speed along each trajectory.
  We believe that this gaurantees the identification of the slow manifold in a system that has a fast-slow decomposition.
