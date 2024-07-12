@@ -2074,17 +2074,15 @@ We used different numbers of fixed points to contrain the network.
 
 \ascomment{todo: introduce D}
 
-\ascomment{todo: finding fixed points}
-
 \paragraph{Finding fixed points}
 As we remark in Sec.~\ref{sec:empjnonrobust}, EMPJ networks are not robust to S-type noise, therefore we cannot apply our analysis of identifying the invariant set through the convergence criterion of numerically integrated trajectories.
 We therefore find fixed points throught the Newton-Raphson method. 
 We iteratively solve 
 \begin{align}
- J(\vx_i)\vd\vx_i = x_i
+ \vJ(\vx_i)\vd\vx_i = \vx_i
 \end{align}
-where $J(\vx_i)$ is the Jacobian of the system at $\vx_i$ and $\vx_{i+1}=\vx_i-\vd\vx_i$.
-We initialize $x_0$ on the invaraint ring uniformly.
+where $\vJ(\vx_i)$ is the Jacobian of the system at $\vx_i$ and $\vx_{i+1}=\vx_i-\vd\vx_i$.
+We initialize $\vx_0$ on the invariant ring uniformly.
 
 
 \subsubsection{Lack of S-type robustness}\label{sec:empjnonrobust}
@@ -2433,7 +2431,7 @@ The time delay to the output cue was sampled from
 \begin{align}
 T_{delay} \sim \mathcal{U}(50, 400).
 \end{align}
-We applied a mask $m_{i,t}=0$ for 5 time steps ($T_{delay}+i$ for $i=0,\dots 4$) after the go cue.
+We applied a mask $m_{i,t}=0$ for 5 time steps ($t=T_{delay}+i$ for $i=0,\dots 4$) after the go cue.
 
 
 
@@ -2460,15 +2458,15 @@ with length scale $\ell$.
 
 
 
-
+\newpage
 \subsection{Training methods}
 
  We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
 The parameters were initialized were initialized using the Xavier normal distribution \citep{Glorot2010}.
 For the recurrent weights we used $W_{ij}\sim\mathcal{N}(0, \nicefrac{g}{\sqrt{N}})$ with a high gain $g=1.5$.
-The initial hidden state was initialized using the output to recurrent mapping matrix $W_{otr}\colon\real^2\rightarrow\reals^{N}$ which was trained together with the other parameters.
+The initial hidden state was initialized using the output to recurrent mapping matrix $W_{otr}\colon\reals^2\rightarrow\reals^{N}$ which was trained together with the other parameters.
 
-Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
+Adam optimization with $\beta_1=0.9$ and $\beta_2=0.999$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
 The task has 100 time steps for the training samples, and the mean squared error loss was used.
 The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
 
