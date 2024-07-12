@@ -570,13 +570,13 @@ The loss \(L\) to be minimized was computed by the mean squared error (MSE) betw
 %\begin{equation}\label{eq:loss}
 \(L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}, \)
 %\end{equation}
-with $i$ the index of the output units and $t$  the index for time.
-We implemented a mask, $m_{i,t}$, for modulating the loss with respect to certain time intervals.
+with \(i\) the index of the output units and \(t\)  the index for time.
+We implemented a mask, \(m_{i,t}\), for modulating the loss with respect to certain time intervals.
 We trained 10 networks for every combination of the following parameters:
  ReLU, tanh and rectified tanh activation functions and
  number of units/neurons (64, 128, 256).
-% , and activity regularization ($10^{-3}, 0, 1$).
-%All networks were trained using ADAM with $\beta_1=0.9$ and $\beta_2=0.999$ for $5,000$ iterations with a batch size of 64.  % and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
+% , and activity regularization (\(10^{-3}, 0, 1\)).
+%All networks were trained using ADAM with \(\beta_1=0.9\) and \(\beta_2=0.999\) for \(5,000\) iterations with a batch size of 64.  % and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
 %Among the networks, we only analyzed networks with normalized MSE less than -20 dB (Fig.~\ref{}).
 
 %To avoid overly complex solutions that do not generalize well for longer trials, we penalized high activity using an L2 regularization on the hidden activity \(x_t\).
@@ -735,10 +735,10 @@ We posit that there are four conditions:
 \item robustness against state (S-type) noise, and \label{converse:Stype}
 \item robustness against dynamical (D-type) noise. \label{converse:Dtype}
 \end{enumerate*}
-The correspondence implied by \ref{converse:bijection} translate to, the existence of a manifold in the neural activity space with the same topology as the memory content.
-The persistence \ref{converse:persistent} requires that the flow on the manifold is slow and bounded.
-The S-type robustness \ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
-Along with the D-type robustness \ref{converse:Dtype}, it implies the manifold is ``attractive'', and  normally hyperbolic.
+The correspondence implied by~\ref{converse:bijection} translate to, the existence of a manifold in the neural activity space with the same topology as the memory content.
+The persistence~\ref{converse:persistent} requires that the flow on the manifold is slow and bounded.
+The S-type robustness~\ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
+Along with the D-type robustness~\ref{converse:Dtype}, it implies the manifold is ``attractive'', and  normally hyperbolic.
 Then, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added makes it a continuous attractor (Prop.~\ref{prop:revival}).
 For the RNN experiments, we added state-noise while training using stochastic gradient descent, satisfying~\ref{converse:Stype} and~\ref{converse:Dtype}.
 We have also verified that~\ref{converse:persistent} holds (Fig.~\ref{fig:angular_loss}A).
@@ -2421,7 +2421,7 @@ The time delay to the output cue was sampled from
 \begin{align}
 T_{delay} \sim \mathcal{U}(50, 400).
 \end{align}
-We applied a mask $m_{i,t}=0$ for 5 time steps ($t=T_{delay}+j$ for $j=0,\dots 4$) after the go cue.
+We applied a mask \(m_{i,t}=0\) for 5 time steps (\(t=T_{delay}+j\) for \(j=0,\dots 4\)) after the go cue.
 
 
 
