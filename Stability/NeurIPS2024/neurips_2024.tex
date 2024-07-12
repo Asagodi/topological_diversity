@@ -729,12 +729,12 @@ This is another indication that the networks rely on a ring invariant manifold t
 Networks with different number of fixed points might have the same performance on the finite time scale ($T_1$), but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}D).
 
 
-\subsection{Approximate Slow Manifolds are near Continuous Attractors}\label{sec:converse}
+\section{Approximate Slow Manifolds are near Continuous Attractors}\label{sec:converse}
 In Sec.~\ref{sec:ras}, we presented a theory of approximate solutions in the neighborhood of continuous attractors.
 When are approximate solutions to the analog working memory problem near a continuous attractor?
 We posit that there are four conditions:
 \begin{enumerate}[label=\textbf{(C\arabic*)}]
-\item sufficiently smooth approximate bijection between neural activity and the memory content, \label{converse:bijection}
+\item sufficiently smooth approximate bijection between neural activity and memory content, \label{converse:bijection}
 \item the speed of drift of memory content is bounded, \label{converse:persistent}
 \item robustness against state (S-type) noise, and \label{converse:Stype}
 \item robustness against dynamical (D-type) noise. \label{converse:Dtype}
@@ -1463,7 +1463,34 @@ This is the case if $v=0$.
 It is not possible to have a line attractor with a fixed point off of it for as there cannot be disjoint fixed points that are linearly dependent \citep[Lemma 5.2]{morrison2016a}.
 \end{proof}
 
+
+
+
+\subsubsection{Probability of bifurcation types}\label{sec:supp:probbla}
+We will now calculate which proportion proportion of the bifurcation parameter space is results in the different bifurcation types.
+The conditions  that result in three fixed points are
+\begin{align*}
+0 &< \epsilon_{11}\epsilon_{22}-\epsilon_{11}-\epsilon_{22}-\epsilon_{12}\epsilon_{21}-\epsilon_{12}-\epsilon_{21},\\
+\epsilon_{22} &\leq \epsilon_{12},\\
+\epsilon_{11} &\leq \epsilon_{21}.
+\end{align*}
+Therefore, because
+\begin{align*}
+\epsilon_{22} &\leq \epsilon_{12},\\
+\epsilon_{11} &\leq \epsilon_{21}.
+\end{align*}
+we always have that
+\begin{align*}
+0 &< \epsilon_{11}\epsilon_{22}-\epsilon_{11}-\epsilon_{22}-\epsilon_{12}\epsilon_{21}-\epsilon_{12}-\epsilon_{21}.
+\end{align*}
+This implies that this bifurcation happens with probability $\frac{1}{4}$  in a $\epsilon$-ball around the BLA neural integrator with $\epsilon<1$.
+We conclude that the single stable fixed point type perturbation happens with probability $\frac{3}{4}$.
+
+
 \subsection{Structure of the parameter space}
+We will present the structure of the bifurcation space through a slice in which we fix  $\epsilon_{11}$ and $\epsilon_{12}$. 
+First, we summarize which conditions result in which bifurcation in Table~\ref{tab:bifs}.
+We derive that the local bifurcation in this slice  has the structure as shown in Fig.~\ref{fig:blaparameterspace}.
 \begin{table}[H]
 \caption{Summary of the conditions for the different bifurcations.}\label{tab:bifs}
 \centering
@@ -1486,34 +1513,8 @@ C2 & \xmark 		& only Eq\ref{eq:condition2.1} or \ref{eq:condition2.2}  	 & \cmar
   \label{fig:blaparameterspace}
 \end{figure}
 
-
-\subsubsection{Probability of bifurcation types}\label{sec:supp:probbla}
-We check what proportion of the bifurcation parameter space is constituted with bifurcations of the type that result in three fixed points.
-
-The conditions are
-\begin{align*}
-0 &< \epsilon_{11}\epsilon_{22}-\epsilon_{11}-\epsilon_{22}-\epsilon_{12}\epsilon_{21}-\epsilon_{12}-\epsilon_{21},\\
-\epsilon_{22} &\leq \epsilon_{12},\\
-\epsilon_{11} &\leq \epsilon_{21}.
-\end{align*}
-
-
-Because
-\begin{align*}
-\epsilon_{22} &\leq \epsilon_{12},\\
-\epsilon_{11} &\leq \epsilon_{21}.
-\end{align*}
-we always have that
-\begin{align*}
-0 &< \epsilon_{11}\epsilon_{22}-\epsilon_{11}-\epsilon_{22}-\epsilon_{12}\epsilon_{21}-\epsilon_{12}-\epsilon_{21}.
-\end{align*}
-
-
-This implies that this bifurcation happens with $\frac{1}{4}$ probability in a $\epsilon$-ball around the BLA neural integrator with $\epsilon<1$.
-
-
 \subsection{Fast-slow form}\label{sec:supp:fast_slow_form}
-
+We will now show how to transform the BLA network to the slow-fast form in Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal}.
 We transform the state space so that the line attractor aligns with the $y$-axis.
 So, we apply the affine transformation $R_\theta(x-\frac{1}{2})$ with the rotation matrix $R_\theta = \begin{bmatrix}\cos\theta &-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}= \frac{1}{\sqrt{2}}\begin{bmatrix}1 &1\\-1&1\end{bmatrix}$ where we have set $\theta=-\frac{\pi}{4}$.
 So we perform the transformation $x\rightarrow x'= R_\theta(x-\frac{1}{2})$ and so we have $x=R^{-1}_\theta x'+\frac{1}{2}$ with $R^{-1}_\theta = R_{-\theta}$.
@@ -1953,7 +1954,7 @@ The limit cycle is the only bifurcation that we found that can be achieved on on
 
 
 \paragraph{Independence of norm of perturbation on bifurcation}
-
+As we can see in Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}, the topology of the system is maintained through a range of bifurcation sizes when the bifurcation direction is fixed. 
 \begin{figure}[tbhp]
      \centering
     \includegraphics[width=\textwidth]{noorman_ring_N6_pert_allfxdpnts_allnorms}
@@ -2073,11 +2074,23 @@ We used different numbers of fixed points to contrain the network.
 
 \ascomment{todo: introduce D}
 
+\paragraph{Finding fixed points}
+As we remark in Sec.~\ref{sec:empjnonrobust}, EMPJ networks are not robust to S-type noise, therefore we cannot apply our analysis of identifying the invariant set through the convergence criterion of numerically integrated trajectories.
+We therefore find fixed points throught the Newton-Raphson method. 
+We iteratively solve 
+\begin{align}
+ \vJ(\vx_i)\vd\vx_i = \vx_i
+\end{align}
+where $\vJ(\vx_i)$ is the Jacobian of the system at $\vx_i$ and $\vx_{i+1}=\vx_i-\vd\vx_i$.
+We initialize $\vx_0$ on the invariant ring uniformly.
 
+
+\subsubsection{Lack of S-type robustness}\label{sec:empjnonrobust}
 We remark that the resulting invariant manifold is not robust to S-type perturbations.
 For on-manifold perturbations (in the plane in which the ring is embedded), S-type perturbations do lead to flow towards the invariant ring (Fig.~\ref{fig:empj_onoff_perturbation}A).
 However, for (small) off-manifold perturbations, the trajectories typically diverge away from the invariant ring (Fig.~\ref{fig:empj_onoff_perturbation}B).
 This indicates that the basin of attration is very small and hence this approximantion is not robust to S-type noise.
+
 
 All of the perturbations were sampled as
 $x(0) = x(0) + \eta$ with $x(0)\in \operatorname{span}(D)$.
@@ -2130,17 +2143,17 @@ For the off-manifold perturbations $\eta\in \reals^{10}$ and $\|\eta\|_2=10^{-5}
 %
 
 
-\newpage
- \section{Infinite horizon computation in a bounded state space}\label{sec:inhoco}
- Both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions~\citep{orhan2019diverse}.
- %We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
- If a dynamical system is implementing a timing-independent (infinite horizon) computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set~\citep{conley1978}.
- This implies that the only possible implementation of a continuous valued memory that can be decoded linearly is the (approximate) continuous attractor.
-
-\begin{proof}
-
-
-\end{proof}
+%\newpage
+% \section{Infinite horizon computation in a bounded state space}\label{sec:inhoco}
+% Both sequential and nearly persistent solutions are part of a spectrum that emerges naturally in trained networks under different conditions~\citep{orhan2019diverse}.
+% %We describe the general implementational principles of robust, timing-independent (infinite horizon) neural computation.
+% If a dynamical system is implementing a timing-independent (infinite horizon) computation, on a compact domain, the state will evolve to an attractor state inside the chain-recurrent recurrent set~\citep{conley1978}.
+% This implies that the only possible implementation of a continuous valued memory that can be decoded linearly is the (approximate) continuous attractor.
+%
+%\begin{proof}
+%
+%
+%\end{proof}
 
 
 \newpage
@@ -2418,7 +2431,7 @@ The time delay to the output cue was sampled from
 \begin{align}
 T_{delay} \sim \mathcal{U}(50, 400).
 \end{align}
-We applied a mask $m_{i,t}=0$ for 5 time steps ($T_{delay}+i$ for $i=0,\dots 4$) after the go cue.
+We applied a mask $m_{i,t}=0$ for 5 time steps ($t=T_{delay}+i$ for $i=0,\dots 4$) after the go cue.
 
 
 
@@ -2445,15 +2458,15 @@ with length scale $\ell$.
 
 
 
-
+\newpage
 \subsection{Training methods}
 
  We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
 The parameters were initialized were initialized using the Xavier normal distribution \citep{Glorot2010}.
 For the recurrent weights we used $W_{ij}\sim\mathcal{N}(0, \nicefrac{g}{\sqrt{N}})$ with a high gain $g=1.5$.
-The initial hidden state was initialized using the output to recurrent mapping matrix $W_{otr}\colon\real^2\rightarrow\reals^{N}$ which was trained together with the other parameters.
+The initial hidden state was initialized using the output to recurrent mapping matrix $W_{otr}\colon\reals^2\rightarrow\reals^{N}$ which was trained together with the other parameters.
 
-Adam optimization with $\beta_1=0.9$ and $\beta_2=0.99$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
+Adam optimization with $\beta_1=0.9$ and $\beta_2=0.999$ was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
 The task has 100 time steps for the training samples, and the mean squared error loss was used.
 The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
 
@@ -2474,45 +2487,48 @@ Training a single network took around 10 minutes on a CPU and occupied 10 percen
 
 
 
-
+\newpage
  \subsection{RNN analysis methods}
 
 
-\ptitle{Evaluation Metric}
-After training, we report the normalized mean squared error (NMSE):
+\subsubsection{Evaluation Metric}
+After training, we report the normalized mean squared error (NMSE) to asses the how good a found solution is:
 \begin{equation}
-NMSE = \frac{\mathbb{E}[(y-\hat y)^2]}{\mathbb{E}[y]},
+\operatorname{NMSE} = \frac{\mathbb{E}[(y-\hat y)^2]}{\mathbb{E}[y]},
 \end{equation}
 where $y$ is the target and $\hat y$ is the prediction.
-
-
-
- %fast-slow
- % inv man
-
-   \begin{figure}[tbhp]
-     \centering
-    \includegraphics[width=\textwidth]{im_all_last}
-       \caption{Representative identified invariant manifolds (in blue) with the fixed points (green for stable, red for saddle and black for unstable). The reference target ring is shown in grey.}
-         \label{fig:im_rep}
-\end{figure}
-
-  \begin{figure}[tbhp]
-     \centering
-    \includegraphics[width=\textwidth]{im_all_3x3}
-       \caption{The identified invariant manifolds with the fixed points (green for stable, red for saddle and black for unstable) for all inferred networks (except the ones in Fig~\ref{fig:im_rep}).}
-         \label{fig:im_all}
-\end{figure}
 
 
  \subsubsection{Fast-slow decomposition}
  We simulated 1024 trajectories without noise with inputs from the task and let the networks evolve for 16 times the task definition lengths.
  We took the cutoff to identify the slow manifold to be $10^{-3}$ of the highest speed along each trajectory.
  We believe that this gaurantees the identification of the slow manifold in a system that has a fast-slow decomposition.
- We sampled 1024 points from these points to fit a periodic, cubic spline (black line in Fig.\ref{fig:fastslow_decomposition}).
+ We sampled 1024 points from these points to fit a periodic, cubic spline (black line in Fig.~\ref{fig:fastslow_decomposition}, \ref{fig:im_rep}, \ref{fig:im_all}).
+ %fast-slow
+ % inv man
+
+   \begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=\textwidth]{im_all_last2}
+       \caption{Representative identified invariant manifolds (projected onto the output space, in black) with the fixed points (cyan for stable, orange for saddle and black for unstable). The reference target ring is shown in grey.}
+         \label{fig:im_rep}
+\end{figure}
+
+\newpage
+  \begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=\textwidth]{im_all_3x3}
+       \caption{The identified invariant manifolds with the fixed points (cyan for stable, orange for saddle and black for unstable) for all inferred networks (except the ones in Fig~\ref{fig:im_rep}).}
+         \label{fig:im_all}
+\end{figure}
+
+As one can see, not all solutions can be meaningfully analyzed with this the slow-fast decomposition method. For example, the solution at the center of the $\operatorname{tanh}, N=256$ block, the found invariant manifold is not correctly captured.
 
 
 
+
+
+\newpage
  \subsubsection{Vector field on invariant manifold}\label{sec:supp:vf}
 
  We assess the vector field for the ODE (Eq.~ \ref{eq:RNN:continuous} without noise and input) on the found invariant manifold $\manifold$ by calculating it in the state space
