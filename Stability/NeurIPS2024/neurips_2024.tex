@@ -246,15 +246,15 @@ In the following, we focus on 1-dimensional ring attractors.
 
 %The membrane potential of a neuron changes over time according to the input it receives and its intrinsic properties, which can be mathematically modeled using ODEs.
 %Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
-%A common form of the ODE for the firing rate $ r(t) $ of a neuron is:
+%A common form of the ODE for the firing rate \( r(t) \) of a neuron is:
 %\begin{align}\label{eq:TLN2}
 %\tau \frac{d r(t)}{d t} = -r(t) + F(I(t))
 %\end{align}
 %where:
 %\(\tau\) is the time constant of the neuron,
 %\(-r(t)\) represents the decay of the firing rate over time,
-%\(I(t)\) is the total input to the neuron at time $ t $ and
-%\(F(I)\) is a non-linear function that converts the input $ I(t) $ into an output firing rate.
+%\(I(t)\) is the total input to the neuron at time \( t \) and
+%\(F(I)\) is a non-linear function that converts the input \( I(t) \) into an output firing rate.
 
 % The Computation through Dynamics (CTD) framework assumes that the brain processes sensory information and generates behavior through neural dynamics, including representations of continuous-valued variables like space and direction~\cite{vyas2020}.
 
@@ -485,7 +485,7 @@ Let the uniform norm of the flow tangent to the manifold be \(\|y\|_\infty=\eta\
 There exist a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a continuous attractor manifold. % \(\manifold_0\) diffeomorphic to \(\manifold_\epsilon\).
 \end{prop}
 
-This perturbation can be constructed by $\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}$, see for the proof Sec.~\ref{sec:supp:proofprop1}.
+This perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}\), see for the proof Sec.~\ref{sec:supp:proofprop1}.
 This makes the uniform norm of vector field on the manifold a useful measure of distance from a continuous attractor.
 It can also be used to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
 Let \(\vx_0 \in \manifold\), and \(\varphi = \vp\vert_\manifold\) be the flow restricted to the manifold.
@@ -570,8 +570,8 @@ The loss \(L\) to be minimized was computed by the mean squared error (MSE) betw
 %\begin{equation}\label{eq:loss}
 \(L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}, \)
 %\end{equation}
-with a mask $m_{i,t}$ with $i$ the index of the output units and $t$  the index for time.
-We implemented a mask, $m_{i,t}$, for modulating the loss with respect to certain time intervals.
+with a mask \(m_{i,t}\) with \(i\) the index of the output units and \(t\)  the index for time.
+We implemented a mask, \(m_{i,t}\), for modulating the loss with respect to certain time intervals.
 We trained 10 networks for every combination of the following parameters:
  ReLU, tanh and rectified tanh activation functions and
  number of units/neurons (64, 128, 256).
@@ -2030,14 +2030,14 @@ P_{ij} = \frac{m^{(1)}_i n^{(1)}_j}{N} + \cdots + \frac{m^{(r)}_i n^{(r)}_j}{N},
 \(g\chi\) is considered unknown except for its statistics (mean 0, variance \(g^2/N\)).
 
 %Rank-two structures with internal pairwise overlap
-As a second case, we consider structured matrices where the two connectivity pairs $ m^{(1)} $ and $ n^{(1)} $, $ m^{(2)} $ and $ n^{(2)} $ share two different overlap directions, defined by vectors $ y_1 $ and $ y_2 $. We set:
+As a second case, we consider structured matrices where the two connectivity pairs \( m^{(1)} \) and \( n^{(1)} \), \( m^{(2)} \) and \( n^{(2)} \) share two different overlap directions, defined by vectors \( y_1 \) and \( y_2 \). We set:
 \begin{align}
     m^{(1)} &= \sqrt{\Sigma^2 - r_1^2} \, x_1 + r_1 y_1, \\
     m^{(2)} &= \sqrt{\Sigma^2 - r_2^2} \, x_2 + r_2 y_2, \\
     n^{(1)} &= \sqrt{\Sigma^2 - r_1^2} \, x_3 + r_1 y_1, \\
     n^{(2)} &= \sqrt{\Sigma^2 - r_2^2} \, x_4 + r_2 y_2,
 \end{align}
-where $ \Sigma^2 $ is the variance of the connectivity vectors and $ r_1^2 $ and $ r_2^2 $ quantify the overlaps along the directions $ y_1 $ and $ y_2 $.
+where \( \Sigma^2 \) is the variance of the connectivity vectors and \( r_1^2 \) and \( r_2^2 \) quantify the overlaps along the directions \( y_1 \) and \( y_2 \).
 
 We keep the following parameters for the analysis:
 \(\Sigma=2\),
@@ -2224,29 +2224,29 @@ We can use the concept of Lipschitz persistence to define D-type robustness \cit
 Ma\~{n}e showed that if an invariant manifold is Lipschitz persistent then it must be normally hyperbolic.
 To understand the concept of Lipschitz persistence, we need to define the Lipschitz section and Lipschitz constant.
 \begin{definition}
-Let $M$ be a $C^{\infty}$ boundaryless manifold and $V \subset M$ a $C^1$ compact boundaryless submanifold.
-Assume that $M$ is a submanifold of $\mathbb{R}^n$. Let $NV$ be a $C^1$ subbundle of $TM|_V$ satisfying $TV \oplus NV = TM|_V$.
-If $\eta$ is a section of $NV$, define the Lipschitz constant of $\eta$ by
+Let \(M\) be a \(C^{\infty}\) boundaryless manifold and \(V \subset M\) a \(C^1\) compact boundaryless submanifold.
+Assume that \(M\) is a submanifold of \(\mathbb{R}^n\). Let \(NV\) be a \(C^1\) subbundle of \(TM|_V\) satisfying \(TV \oplus NV = TM|_V\).
+If \(\eta\) is a section of \(NV\), define the Lipschitz constant of \(\eta\) by
 \[
 \mathrm{Lip}(\eta) = \sup \left\{ \frac{\|\eta(x) - \eta(y)\|}{\|x - y\|} \mid x, y \in V, x \neq y \right\}.
 \]
-We say that $\eta$ is a \emph{Lipschitz section} if $\mathrm{Lip}(\eta) < +\infty$.
-Let $\Gamma_{\mathcal{L}}(NV)$ be the space of Lipschitz sections of $NV$ endowed with the norm
+We say that \(\eta\) is a \emph{Lipschitz section} if \(\mathrm{Lip}(\eta) < +\infty\).
+Let \(\Gamma_{\mathcal{L}}(NV)\) be the space of Lipschitz sections of \(NV\) endowed with the norm
 \[
 \|\eta\|_{\mathcal{L}} = \sup \left\{ \|\eta(x)\| \mid x \in V \right\} + \mathrm{Lip}(\eta).
 \]
-Let $\mathrm{Diff}^1(M)$ be the space of $C^1$ diffeomorphisms with the topology of the $C^1$ convergence on compact subsets.
+Let \(\mathrm{Diff}^1(M)\) be the space of \(C^1\) diffeomorphisms with the topology of the \(C^1\) convergence on compact subsets.
 \end{definition}
 
 \begin{definition}
- Let $f \in \mathrm{Diff}^1(M)$.
- We say that $V$ is a Lipschitz persistent invariant manifold of $f$ if there exists a neighborhood $U$ of $V$ such that for all $\delta > 0$ there exists a neighborhood $\mathcal{U}_\delta$ of $f$ such that if $g \in \mathcal{U}_\delta$ there exists $\eta \in \Gamma_{\mathcal{L}}(NV)$ with $\|\eta\|_{\mathcal{L}} < \delta$ satisfying $V_g = \mathrm{graph}(\eta)$, where $\mathrm{graph}(\eta) = \{\exp_x(\eta(x)) \mid x \in V\}$, $V_g = g(U)$.
+ Let \(f \in \mathrm{Diff}^1(M)\).
+ We say that \(V\) is a Lipschitz persistent invariant manifold of \(f\) if there exists a neighborhood \(U\) of \(V\) such that for all \(\delta > 0\) there exists a neighborhood \(\mathcal{U}_\delta\) of \(f\) such that if \(g \in \mathcal{U}_\delta\) there exists \(\eta \in \Gamma_{\mathcal{L}}(NV)\) with \(\|\eta\|_{\mathcal{L}} < \delta\) satisfying \(V_g = \mathrm{graph}(\eta)\), where \(\mathrm{graph}(\eta) = \{\exp_x(\eta(x)) \mid x \in V\}\), \(V_g = g(U)\).
 
-Observe that this definition implies $V_f = V$, hence $f(V) = V$. Moreover, the Lipschitz persistence is independent of the bundle $NV$.
+Observe that this definition implies \(V_f = V\), hence \(f(V) = V\). Moreover, the Lipschitz persistence is independent of the bundle \(NV\).
 \end{definition}
 
 
-For a flow $\varphi_t$ (coming from the solutions of an ODE) we can fix $t=\tau\in\reals_{>0}$ so that we get a homeomorphism $\varphi_\tau$.
+For a flow \(\varphi_t\) (coming from the solutions of an ODE) we can fix \(t=\tau\in\reals_{>0}\) so that we get a homeomorphism \(\varphi_\tau\).
 This allows us to apply this result to apply to our case.
 
 \newpage
