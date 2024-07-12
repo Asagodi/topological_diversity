@@ -33,15 +33,14 @@
 \usepackage{sidecap} % caption on the side SCfigure
 \sidecaptionvpos{figure}{c} % vertically align scfigure in sidecap
 \usepackage[compact]{titlesec}
-\setlength{\abovedisplayskip}{2pt}
-\setlength{\belowdisplayskip}{2pt}
-\AtBeginDocument{\setlength\abovedisplayskip{4pt}}
-\AtBeginDocument{\setlength\belowdisplayskip{4pt}}
+\setlength{\abovedisplayskip}{-2pt}
+\setlength{\belowdisplayskip}{-2pt}
+\AtBeginDocument{\setlength\abovedisplayskip{-2pt}}
+\AtBeginDocument{\setlength\belowdisplayskip{-2pt}}
 \titlespacing*{\section}{0pt}{1pt}{1pt}
 \titlespacing*{\subsection}{0pt}{1pt}{1pt}
 
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
-
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
 \definecolor{ascolor}{rgb}{1, 0.5, 0.}
 \newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
@@ -416,6 +415,8 @@ Informally, normal hyperbolicity guarantees that the perturbations change the st
     %mention topology?
   }\label{fig:fenichel}
 \end{SCfigure}
+%\vspace{-10mm}
+
 
 When \(\epsilon > 0\), the continuous attractor bifurcates away.
 What can we say about the fate of the perturbed system?
@@ -472,7 +473,7 @@ Because continuous ring attractors are bounded, their invariant manifold persist
 %While exploding gradients would prevent gradient descent to correct for deviations from the optima,
 %for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
 
-\subsection{Fast-Slow decomposition and the revival of continuous attractors}\label{sec:revival}
+\subsection{Fast-slow decomposition and the revival of continuous attractors}\label{sec:revival}
 Consider a behaviorally relevant time scale for analog working memory, for instance, 10 ms to 10 sec.
 If the dynamical system is orders of magnitude slower, for example, 1000 sec or longer, its effect is too slow to have a practical impact on the behavior that relies on the working memory mechanism.
 This clear gap in the fast and slow time scales can be recast as \emph{normal hyperbolicity} of the slow manifold by relaxing the zero real part to a separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
@@ -685,9 +686,7 @@ Conversely, the alternative approximation's memory states are contingent upon th
 We will in detail describe the generalization properties of the trained networks on the angular velocity integration task.
 We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}C).
 
-
-
-
+\setlength\belowcaptionskip{-3ex}
 \begin{figure}[tbhp]
   \centering
   \includegraphics[width=\textwidth]{angular_losses2}
@@ -699,9 +698,10 @@ We tested all networks with a validation set and took a cutoff for the normalize
   (E) Distribution of network performance measured on a validation dataset measured as normalized MSE (NMSE).
   }\label{fig:angular_loss}
 \end{figure}
+\setlength{\parskip}{0mm}
 
 %method
-\ptitle{Finite time}
+\paragraph{Finite time}
 Aside from the angular velocity integration component of the task, the trained networks learn to store a memory of an angular variable.
 We assess the performance of the network to store the memory of the angle over time.
 The networks typically perform well on the timescale on which they have been trained \(T_1=256\) time steps (Fig.~\ref{fig:angular_loss}E).
@@ -709,6 +709,7 @@ The networks typically perform well on the timescale on which they have been tra
 %uniform bound
 %infinite norm
 This loss is bounded by the uniform norm of the vector field on the invariant manifold (Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and~\ref{sec:supp:ub}).
+\setlength{\parskip}{2mm}
 
 \ptitle{Asymptotic time}
 For the asymptotic time scale, the asymptotic behavior of the system dominates and we identify the network behavior through its \(\omega\)-limit sets.
@@ -730,12 +731,12 @@ Networks with different numbers of fixed points might have the same performance 
 In Sec.~\ref{sec:ras}, we presented a theory of approximate solutions in the neighborhood of continuous attractors.
 When are approximate solutions to the analog working memory problem near a continuous attractor?
 We posit that there are four conditions:
-\begin{enumerate*}[label=\textbf{(C\arabic*)}]
+\begin{enumerate}[label=\textbf{(C\arabic*)}]
 \item sufficiently smooth approximate bijection between neural activity and memory content,\label{converse:bijection}
 \item the speed of drift of memory content is bounded,\label{converse:persistent}
 \item robustness against state (S-type) noise, and\label{converse:Stype}
 \item robustness against dynamical (D-type) noise.\label{converse:Dtype}
-\end{enumerate*}
+\end{enumerate}
 The correspondence implied by~\ref{converse:bijection} translates to the existence of a manifold in the neural activity space with the same topology as the memory content.
 The persistence~\ref{converse:persistent} requires that the flow on the manifold is slow and bounded.
 The S-type robustness~\ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
