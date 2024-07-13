@@ -236,7 +236,7 @@ a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stabl
 However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifold topologically equivalent to the original continuous attractor (note the slow speed).
 Furthermore, the flow after the bifurcation is contained in the ghost manifold, i.e., it is an invariant manifold.
 This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,mante2013context}.
-In general, continuous attractors are not only structurally unstable, they bifurcate almost certainly for an arbitrary perturbation.
+In general, continuous attractors are not only structurally unstable \citep{mane1987proof}, they bifurcate almost certainly for an arbitrary perturbation.
 In the following, we focus on 1-dimensional ring attractors.
 
 %and perturbations cause the null eigenvalue to be non-zero and the line attractor disappears.
@@ -402,6 +402,8 @@ where \(\epsilon = 0\) gives the condition for the continuous attractor \(\dot{\
 We denote the corresponding manifold of \(l\) dimensions \(\manifold_0 = \{(\vy,\vz) \mid \vh(\vy,\vz,0) = 0\}\).
 
 We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic, meaning that the Jacobians \(\nabla_\vz \vh\) evaluated at any point on the \(\manifold_0\) has \(d-l\) eigenvalues with their real part uniformly bounded away from zero, and \(\nabla_\vy \vg\) has \(l\) eigenvalues with zero real part.
+%intuition for $C^1$-diffeomorphisms:
+%Roughly speaking, $f$ is normally hyperbolic at $N$ if the tangent map $Tf$, restricted to the normal direction to $N$, is hyperbolic (it expands and contracts complementary directions) and if it dominates the restriction of $Tf$ to the tangent direction $TN$ (that is, expansion and contraction in the tangent direction, if any, are weaker than those in the normal direction).
 More specifically, for continuous attractors, the real part of the eigenvalues of \(\nabla_\vz \vh\) will be negative, representing sufficiently strong attractive flow toward the manifold.
 Equivalently, for the ODE, \(\dot{\vx} = \vf(\vx)\), the variational system is of constant rank and has exactly \((d-l)\) eigenvalues with negative real parts uniformly away from zero and \(l\) eigenvalues with zero real parts everywhere along the continuous attractor.
 Informally, normal hyperbolicity guarantees that the perturbations change the structure of the manifold before they can destroy the attractiveness of the manifold.
@@ -2063,9 +2065,9 @@ We take a ring and embed it with a random linear mapping to a 10 dimensional sta
 On this embedded ring, we constraint the network to have evenly spaced fixed points with one marginal Jacobian eigenvalue and all others eigenvalues -20.
 We used different numbers of fixed points to contrain the network.
 
-%\ascomment{todo: HYPERPARAMS + how are three different networks fit differently?}
-%
-%\ascomment{todo: introduce D}
+\ascomment{todo: HYPERPARAMS + how are three different networks fit differently?}
+
+\ascomment{todo: introduce D}
 
 \paragraph{Finding fixed points}
 As we remark in Sec.~\ref{sec:empjnonrobust}, EMPJ networks are not robust to S-type noise, therefore we cannot apply our analysis of identifying the invariant set through the convergence criterion of numerically integrated trajectories.
@@ -2105,12 +2107,15 @@ For the off-manifold perturbations \(\eta\in \reals^{10}\) and \(\|\eta\|_2=10^{
 
 
 
-%\newpage
+
+\newpage
 %\subsection{Biswas}\label{sec:supp:biswas}
 
 
 
 
+\subsection{}
+Some concluding remarks
 
 
 
@@ -2222,9 +2227,10 @@ is smooth and creates a continuous attractor at \(\manifold_\epsilon\).
 \subsection{D-type robustness}\label{sec:persitencempliesnh}
 %What counts as D-type robustness: persistence (+attractiveness)
 Here we shortly discuss what we consider to be a necessary and sufficient condition for D-type robustness.
-We can use the concept of Lipschitz persistence to define D-type robustness \citep{mane1978persistent}.
-Ma\~{n}e showed that if an invariant manifold is Lipschitz persistent then it must be normally hyperbolic.
+We can use the concept of Lipschitz persistence to define D-type robustness.
+Ma\~{n}e showed that if an invariant manifold is Lipschitz persistent then it must be normally hyperbolic \citep{mane1978persistent}. 
 To understand the concept of Lipschitz persistence, we need to define the Lipschitz section and Lipschitz constant.
+
 \begin{definition}
 Let \(M\) be a \(C^{\infty}\) boundaryless manifold and \(V \subset M\) a \(C^1\) compact boundaryless submanifold.
 Assume that \(M\) is a submanifold of \(\mathbb{R}^n\). Let \(NV\) be a \(C^1\) subbundle of \(TM|_V\) satisfying \(TV \oplus NV = TM|_V\).
@@ -2251,6 +2257,27 @@ Observe that this definition implies \(V_f = V\), hence \(f(V) = V\). Moreover, 
 For a flow \(\varphi_t\) (coming from the solutions of an ODE) we can fix \(t=\tau\in\reals_{>0}\) so that we get a homeomorphism \(\varphi_\tau\).
 This allows us to apply this result to apply to our case.
 
+
+In the case where $V$ is a point, then it is a hyperbolic fixed point and the persistence follows trivially from the implicit function theorem. 
+
+
+\begin{remark}
+It is sufficient to take a persistent manifold that is uniformly locally maximal.
+If \(V\) is persistent and uniformly locally maximal, then \(V\) has to be normally hyperbolic \citep{mane1978persistent}.
+
+
+\begin{definition}[Uniformly locally maximal]
+ There exist neighborhoods \(U\) of \(V\) in \(M\) and \(U\) of \(f\) in the space \(\mathrm{Diff}^1(M)\) of \(C^1\)-diffeomorphisms of \(M\), such that for any \(g \in U\), \(N_g = \bigcap_{k \in \mathbb{Z}} g^k(U)\) is a \(C^1\)-submanifold close to \(V\), with \(N_f = N\).
+ The latter property implies the uniqueness of the invariant submanifold.
+\end{definition}
+
+\end{remark}
+
+
+
+
+
+%%%%%%%%%%
 \newpage
 \section{Upper bound for the memory performance on a short time scale}\label{sec:supp:ub}
 We will now formalize the statement about an upper bound dependent on the uniform norm of the vector field on the slow manifold in Sec.\ref{sec:revival} and provide a proof.
