@@ -519,7 +519,9 @@ For a ring attractor, this implies that the stability structure of the invariant
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 For 2 dimensional attractors stable fixed points and saddle nodes can coexist with limit cycles.
 In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states.
-%For example, the dynamics of a torus manifold can be described by Kolmogorov-Arnold-Moser (KAM) theory.\pscomment{Technically, only parallel translations, and KAM gives a type of structural stability result.}
+%The persistence of hyperbolic tori in Hamiltonian systems was described in \citep{li2005persistence}.
+%resonance gap closing \citep{broer2018persistence}.
+%\pscomment{Technically, only parallel translations, and KAM gives a type of structural stability result.}
 %For higher dimensional attractors, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
 %\mpcomment{refer to later section on generalization performance?}
 
@@ -527,6 +529,9 @@ In more complex scenarios, such as a two-dimensional attractor, stable fixed poi
 %This means that, even with perturbations, neural states aren't drastically altered from where they would have been, maintaining a semblance of the original flow.
 % the compact case: the invariant manifolds are diffeomorphic to the original one. So neural states arent too far off from where they would have been before the perturbation.
 %\mpcomment{This subsection is very dry. Make it sound cool and also explain why these are important considerations in the context of neuroscience.}
+
+
+
 
 \section{Numerical Experiments on Task-optimized Recurrent Networks}\label{sec:experiments}
 % Continuous attractor approximations} %from trained RNNs
@@ -1917,11 +1922,20 @@ All perturbations maintain the topological structure of the invariant manifold. 
 
 
 \subsection{Heading direction network}\label{sec:supp:headdirection}
-
+The networks proposed in \citep{Noorman2022} are composed of $N$ heading-tuned neurons whose preferred headings $\theta_j$ uniformly tile heading space, with an angular separation of $\Delta\theta=\nicefrac{2\pi}{N}$ radians.
+These neurons can be arranged topologically in a ring according to their preferred headings, with neurons locally exciting and broadly inhibiting their neighbors.
+The total input activity $h_j$ of each neuron is governed by:
 \begin{equation}
 \tau \dot h_j = -h_j + \frac{1}{N} \sum_k (W^{sym}_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
 \end{equation}
+with 
+\begin{equation}
+W^{sym}_{jk} = J_I + J_E \cos(\theta_j - \theta_k)
+\end{equation}, where \(J_E\) and \(J_I\) respectively control the strength of the tuned and untuned components of recurrent connectivity between neurons with preferred headings \(\theta_j\) and \(\theta_j\)
+and \(v_{in}\) is an angular velocity input which the network receives through asymmetric, velocity-modulated weights \begin{equation}W^{asym} =\sin(\theta_j - \theta_k).\end{equation}
 
+
+\paragraph{Fixed points}
 In the absence of an input (\(v_{in}=0\)) fixed points of the system can be found analytically by considering all submatrices \(W^{sym}_\sigma\) for all subsets \(\{\sigma\subset [n]\}\) with\([n]=\{1,\dots, N\}\).
 A fixed point \(x^*\) needs to satisfy
 \begin{equation}
@@ -1935,13 +1949,17 @@ x^*_i<0 \text{   for  	 } i\in\sigma.
 We bruteforce check all possible supports to find all fixed points.
 We use the eigenvalues of the Jacobian to identify the stability of the found fixed points.
 
+\paragraph{Connecting orbits}
+We approximate connecting orbits through numerical integration of the ODE intialized in close to the identified saddle points along the unstable manifold.
 
+
+\newpage
 \paragraph{Measure zero co-dimension 1 bifurcations}
 Measure zero co-dimension 1 bifurcations of the ring attractor network fall into two types, see Fig.~\ref{fig:meaure_zero_perturbations}.
 
 \begin{figure}[tbhp]
      \centering
-    \includegraphics[width=\textwidth]{ring_n6_perturbations_schematic}
+    \includegraphics[width=.9\textwidth]{ring_n6_perturbations_schematic}
        \caption{Measure zero co-dimension 1 bifurcations of the ring attractor network \citep{Noorman2022}.}\label{fig:meaure_zero_perturbations}
 \end{figure}
 
@@ -2108,14 +2126,14 @@ For the off-manifold perturbations \(\eta\in \reals^{10}\) and \(\|\eta\|_2=10^{
 
 
 
-\newpage
-%\subsection{Biswas}\label{sec:supp:biswas}
-
-
-
-
-\subsection{}
-Some concluding remarks
+%\newpage
+%%\subsection{Biswas}\label{sec:supp:biswas}
+%
+%
+%
+%
+%\subsection{}
+%Some concluding remarks
 
 
 
