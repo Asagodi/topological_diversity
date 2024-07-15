@@ -37,8 +37,8 @@
 \setlength{\belowdisplayskip}{-2pt}
 \AtBeginDocument{\setlength\abovedisplayskip{-2pt}}
 \AtBeginDocument{\setlength\belowdisplayskip{-2pt}}
-\titlespacing*{\section}{0pt}{1pt}{1pt}
-\titlespacing*{\subsection}{0pt}{1pt}{1pt}
+\titlespacing*{\section}{-2pt}{1pt}{1pt}
+\titlespacing*{\subsection}{-2pt}{1pt}{.5pt}
 
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
@@ -320,11 +320,10 @@ There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\
 \ptitle{Bump attractor model}
 %A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, involves utilizing
 %a circulant matrix as the connectivity matrix\citep{samsonovich1997path, seeholzer2017efficient, redish1996coupled, goodridge2000, compte2000synaptic}.
-The infinite-sized ring attractor network can support a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
+An infinite-sized ring attractor network can support a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
 %The position of this bump encodes the head direction.
 This can be accomplished with a connection matrix \(W\) with entries that follow a circular Gaussian function of \(i-j\) \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
 For finite-sized networks, the dynamics are constrained to an attractive invariant ring, covered with \(N\) stable fixed points for a network of size \(N\) (Fig.~\ref{fig:bio_rings}B).
-%
 %Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is because they are nearby ring attractors as dynamical systems.
 
 \ptitle{Low-rank ring attractor model} %mastrogiuseppe, beiran, ostojic
