@@ -2094,8 +2094,9 @@ We iteratively solve
  \vJ(\vx_i)\vd\vx_i = \vx_i
 \end{align}
 where \(\vJ(\vx_i)\) is the Jacobian of the system at \(\vx_i\) and \(\vx_{i+1}=\vx_i-\vd\vx_i\).
+The iteration stops when $|\vd\vx|<\delta$ for a tolerance threshold $\delta$.
 We initialize \(\vx_0\) on the invariant ring uniformly.
-
+The maximum number of iterations was set to 10.000 and the tolerance level to $\delta=10^{-8}$.
 
 \subsubsection{Lack of S-type robustness}\label{sec:empjnonrobust}
 We remark that the resulting invariant manifold is not robust to S-type perturbations.
