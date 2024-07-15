@@ -2401,7 +2401,7 @@ We can call:
 \begin{equation}
 \begin{split}
     \epsilon^+(t) &= \sup_{\alpha_0} \; o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right) \geq \frac{1}{2 \pi} \int_0^{2 \pi}  o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right)  \\
-     \epsilon^{m}(t) &= \frac{1}{2 \pi} \int_0^{2 \pi}  o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right) \\
+     \epsilon^{m}(t) &= \frac{1}{2 \pi} \int_0^{2 \pi}  o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right) d\alpha_0 \\
     \epsilon^-(t) &= \inf_{\alpha_0} \; o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right) \leq \frac{1}{2 \pi} \int_0^{2 \pi}  o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right)
 \end{split}
 \end{equation}
@@ -2415,32 +2415,41 @@ Then we get the bounds for the loss \(\mathcal{L}(T)\) as:
 
 \textbf{Speed bounds}
 
-Notice further that since:
+We can define the maximum, average and minimum memory error speed as:
 
 \begin{equation}
 \begin{split}
-    \epsilon^+(t) &\leq \min(t\epsilon^+(\delta t), \pi) \\
-    \epsilon^-(t) &\geq t\epsilon^-(\delta t)
+    v_{\epsilon^+} &= \sup_{\alpha_0} \; \frac{d}{dt} (o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right)) |_{t = 0}  \\
+    v_{\epsilon^m} &= \frac{1}{2 \pi} \int_0^{2 \pi} \frac{d}{dt} (o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right))|_{t = 0} d\alpha_0 \\
+    v_{\epsilon^-} &= \inf_{\alpha_0} \; \frac{d}{dt} (o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right))|_{t = 0}
 \end{split}
 \end{equation}
-where
-then
+
+Notice then that since:
+
 \begin{equation}
 \begin{split}
-    \frac{1}{T} \int_0^{T} \epsilon^+(t)dt &\leq  \min \left( \frac{1}{T} \int_0^{T} t\epsilon^+(\delta t)dt, \pi \right) = \min \left( \frac{T \epsilon^+(\delta t)}{2}, \pi \right) \\
-    \frac{1}{T} \int_0^{T} \epsilon^-(t)dt &\geq  \frac{1}{T} \int_0^{T} t\epsilon^-(\delta t)dt  = \frac{T \epsilon^-(\delta t)}{2} \\
+    \epsilon^+(t) &\leq \min(t v_{\epsilon^+}, \pi) \\
+    \epsilon^-(t) &\geq t v_{\epsilon^-}
+\end{split}
+\end{equation}
+then,
+\begin{equation}
+\begin{split}
+    \frac{1}{T} \int_0^{T} \epsilon^+(t)dt &\leq  \min \left( \frac{1}{T} \int_0^{T} t v_{\epsilon^+} dt, \pi \right) = \min \left( \frac{T v_{\epsilon^+}}{2}, \pi \right) \\
+    \frac{1}{T} \int_0^{T} \epsilon^-(t)dt &\geq  \frac{1}{T} \int_0^{T} tv_{\epsilon^-}dt  = \frac{T v_{\epsilon^-}}{2} \\
 \end{split}
 \end{equation}
 and we get:
 
 \begin{equation}
-    \frac{T \epsilon^-(\delta t)}{2} \leq \frac{1}{T} \int_0^{T} \epsilon^-(t)dt \leq \mathcal{L}(T) = \frac{1}{T} \int_0^{T} \epsilon^{m}(t) dt \leq  \frac{1}{T} \int_0^{T} \epsilon^+(t) dt \leq \min \left( \frac{T \epsilon^+(\delta t)}{2}, \pi \right)
+    \frac{T v_{\epsilon^-}}{2} \leq \frac{1}{T} \int_0^{T} \epsilon^-(t)dt \leq \mathcal{L}(T) = \frac{1}{T} \int_0^{T} \epsilon^{m}(t) dt \leq  \frac{1}{T} \int_0^{T} \epsilon^+(t) dt \leq \min \left( \frac{T v_{\epsilon^+}}{2}, \pi \right)
 \end{equation}
 
-Finally, if the error is uniform enough we can expect \(\epsilon^{m}(t) \approx t\epsilon^m(\delta t)\) and
+Finally, if the error is uniform enough we can expect \(\epsilon^{m}(t) \approx tv_{\epsilon^m}\) and
 
 \begin{equation}
-    \mathcal{L}(T) = \frac{1}{T} \int_0^{T} \epsilon^{m}(t) dt \approx  \frac{1}{T} \int_0^{T} t\epsilon^m(\delta t)dt = \frac{T \epsilon^m(\delta t)}{2}
+    \mathcal{L}(T) = \frac{1}{T} \int_0^{T} \epsilon^{m}(t) dt \approx  \frac{1}{T} \int_0^{T} t v_{\epsilon^m}dt = \frac{T v_{\epsilon^m}}{2}
 \end{equation}
 
 \paragraph{Within manifold case}
