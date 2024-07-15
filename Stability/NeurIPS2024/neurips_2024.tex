@@ -2074,18 +2074,17 @@ We keep the following parameters for the analysis:
 \end{figure}
 
 
-
-
-
 \subsection{Embedding Manifolds with Population-level Jacobians}\label{sec:supp:empj}
 We fit 3 networks with the Embedding Manifolds with Population-level Jacobians (EMPJ) method \citep{pollock2020}.
-We take a ring and embed it with a random linear mapping to a 10 dimensional state space.
-On this embedded ring, we constraint the network to have evenly spaced fixed points with one marginal Jacobian eigenvalue and all others eigenvalues -20.
-We used different numbers of fixed points to contrain the network.
 
-\ascomment{todo: HYPERPARAMS + how are three different networks fit differently?}
+The networks are RNNs of $N=10$ neurons with a $tanh$ activation function and $\tau = 0.05$ time constant. To use EMPJ we need to specify our desired $k$ fixed points and $m$ eigenvectors and eigenvalues per fixed point. 
 
-\ascomment{todo: introduce D}
+To do this we choose $k=3$ points $\{(x_i, y_i)\}_{i=1}^N$ in the 2D ring with radius $r=1$ that are equally spaced from $0.1$ to $2 \pi$ radians. Then we specify the vectors orthogonal to the ring in those points ($V_o = \{(x_i, y_i)\}_{i=1}^N$, same as the points) and tangent ($V_t = \{(-y_i, x_i)\}_{i=1}^N$). Finally we associate the negative eigenvalue $-1/\tau$ to the orthogonal eigenvectors and different eigenvalues to the tangent eigenvectors. We use $-1$, $0$ or $1$ depending on whether we want the points to be stable, center or unstable in the direction of the slow ring manifold. 
+
+Since these determined dynamics are only in a 2D plane and not in a $N=10$ RNN, we use a random linear mapping to map the fixed points and the eigenvectors to a $10$-dimensional space.
+
+EMPJ then returns a network parameters that satisfy these constraints. Furthermore, due to the particular solver used, that regularises the magnitude of the parameters, we get that all the other eigenvalues not specified are also set to $-1/\tau$ (for details see \citep{pollock2020}).
+
 
 \paragraph{Finding fixed points}
 As we remark in Sec.~\ref{sec:empjnonrobust}, EMPJ networks are not robust to S-type noise, therefore we cannot apply our analysis of identifying the invariant set through the convergence criterion of numerically integrated trajectories.
