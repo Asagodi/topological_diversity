@@ -2042,15 +2042,15 @@ The networks consisted of \(N\) firing rate units with a sigmoid inputoutput tra
 where \(x_i(t)\) is the total input current to unit \(i\),
 \( J_{ij} = g\chi_{ij} + P_{ij}\) is the connectivity matrix,
 \(\phi(x) = \tanh(x)\) is the current-to-rate transfer function, and \(I_i\) is the external, feedforward input to unit \(i\).
-
-This far we focused on unit-rank connectivity structure, but our framework can be directly extended to higher-rank structure. A more general structured component of rank \(r\ll N\) can be written as a superposition of \(r\) independent unit-rank terms
+\(g\chi\) is considered unknown except for its statistics (mean 0, variance \(g^2/N\)).
+A general structured component of rank \(r\ll N\) can be written as a superposition of \(r\) independent unit-rank terms
 \begin{equation}
 P_{ij} = \frac{m^{(1)}_i n^{(1)}_j}{N} + \cdots + \frac{m^{(r)}_i n^{(r)}_j}{N},
 \end{equation} and is in principle characterized by \(2r\) vectors \(m^{(k)}\) and \(n^{(k)}\).
-\(g\chi\) is considered unknown except for its statistics (mean 0, variance \(g^2/N\)).
+
 
 %Rank-two structures with internal pairwise overlap
-As a second case, we consider structured matrices where the two connectivity pairs \( m^{(1)} \) and \( n^{(1)} \), \( m^{(2)} \) and \( n^{(2)} \) share two different overlap directions, defined by vectors \( y_1 \) and \( y_2 \). We set:
+We consider structured matrices where the two connectivity pairs \( m^{(1)} \) and \( n^{(1)} \), \( m^{(2)} \) and \( n^{(2)} \) share two different overlap directions, defined by vectors \( y_1 \) and \( y_2 \). We set:
 \begin{align}
     m^{(1)} &= \sqrt{\Sigma^2 - r_1^2} \, x_1 + r_1 y_1, \\
     m^{(2)} &= \sqrt{\Sigma^2 - r_2^2} \, x_2 + r_2 y_2, \\
