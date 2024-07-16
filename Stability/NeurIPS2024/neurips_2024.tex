@@ -33,12 +33,12 @@
 \usepackage{sidecap} % caption on the side SCfigure
 \sidecaptionvpos{figure}{c} % vertically align scfigure in sidecap
 \usepackage[compact]{titlesec}
-\setlength{\abovedisplayskip}{-2pt}
-\setlength{\belowdisplayskip}{-2pt}
-\AtBeginDocument{\setlength\abovedisplayskip{-2pt}}
-\AtBeginDocument{\setlength\belowdisplayskip{-2pt}}
-\titlespacing*{\section}{-2pt}{1pt}{1pt}
-\titlespacing*{\subsection}{-2pt}{1pt}{.5pt}
+\setlength{\abovedisplayskip}{2pt}
+\setlength{\belowdisplayskip}{2pt}
+\AtBeginDocument{\setlength\abovedisplayskip{2pt}}
+\AtBeginDocument{\setlength\belowdisplayskip{2pt}}
+\titlespacing*{\section}{0pt}{1pt}{1pt}
+\titlespacing*{\subsection}{0pt}{1pt}{.5pt}
 
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
@@ -192,7 +192,7 @@ We further analyze task-trained artificial RNNs to reveal a ``universal motif'' 
 \subsection{Motivating examples}\label{sec:motivating}
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=\textwidth]{lara_bifurcations}
+  \includegraphics[width=\textwidth]{lara_bifurcations_simple}
   \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
   Some of the structure seems to remain; there is an invariant manifold that is topologically equivalent to the original continuous attractor.
     (A) Phase portraits for the bounded line attractor (Eq.~\eqref{eq:TLN}).
@@ -407,6 +407,7 @@ More specifically, for continuous attractors, the real part of the eigenvalues o
 Equivalently, for the ODE, \(\dot{\vx} = \vf(\vx)\), the variational system is of constant rank and has exactly \((d-l)\) eigenvalues with negative real parts uniformly away from zero and \(l\) eigenvalues with zero real parts everywhere along the continuous attractor.
 Informally, normal hyperbolicity guarantees that the perturbations change the structure of the manifold before they can destroy the attractiveness of the manifold.
 
+\setlength\belowcaptionskip{-5ex}
 \begin{SCfigure}[10][bthp]
   \centering
   \includegraphics[width=0.5\textwidth]{FenichelThm}
@@ -416,7 +417,6 @@ Informally, normal hyperbolicity guarantees that the perturbations change the st
     %mention topology?
   }\label{fig:fenichel}
 \end{SCfigure}
-%\vspace{-10mm}
 
 
 When \(\epsilon > 0\), the continuous attractor bifurcates away.
@@ -425,6 +425,8 @@ The continuous dependence theorem~\citep{Chicone2006} says that the trajectories
 Moreover, the topological structure and the asymptotic behavior of trajectories change discontinuously due to the bifurcation.
 Surprisingly there is a strong connection in the geometry due to Fenichel's theorem~\cite{fenichel1971}.
 We informally present a special case due to~\citet{Jones1995}:
+
+\setlength\belowcaptionskip{2ex}
 
 \begin{theorem}[Persistent Manifold]
 Let \(\manifold_0\) be a connected, compact, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
@@ -692,7 +694,8 @@ Conversely, the alternative approximation's memory states are contingent upon th
 We will in detail describe the generalization properties of the trained networks on the angular velocity integration task.
 We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}C).
 
-\setlength\belowcaptionskip{-7ex}
+
+\setlength\belowcaptionskip{-3ex}
 \begin{figure}[tbhp]
   \centering
   \includegraphics[width=\textwidth]{angular_losses2}
