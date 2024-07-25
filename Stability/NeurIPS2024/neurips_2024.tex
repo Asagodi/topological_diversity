@@ -1,5 +1,5 @@
 \documentclass{article} % For LaTeX2e
-\usepackage{neurips_2024}
+\usepackage[preprint]{neurips_2024}
 \pdfminorversion=6
 %\usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath,amsthm}
@@ -16,17 +16,13 @@
 \usepackage{caption}
 \usepackage{float}
 \usepackage{bm}
-%\usepackage{tikz}
-%\usepackage{tikz-cd}
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}       % hyperlinks
 \hypersetup{breaklinks=true}
-\usepackage{url}            % simple URL typesetting
-\usepackage{booktabs}       % professional-quality tables
-\usepackage{nicefrac}       % compact symbols for 1/2, etc.
-\usepackage{microtype}      % microtypography
-%\usepackage{xr-hyper}
-%\usepackage{enumitem}
+\usepackage{url}            		% simple URL typesetting
+\usepackage{booktabs}      		% professional-quality tables
+\usepackage{nicefrac}       		% compact symbols for 1/2, etc.
+\usepackage{microtype}      	% microtypography
 \usepackage[inline]{enumitem}
 
  %% space saving tricks
@@ -102,12 +98,12 @@
 \renewcommand{\cite}{\citep}
 
 \author{%
-    \'Abel S\'agodi, Piotr Sok\'o\l, Il Memming Park \\
+    \'Abel S\'agodi, Guillermo Mart\'in-S\'anchez, Piotr Sok\'o\l, Il Memming Park \\
     %\thanks{Use footnote for providing further information about author (webpage, alternative address).} \\
     \\
     Champalimaud Centre for the Unknown\\
     Champalimaud Foundation, Lisbon, Portugal\\
-    \texttt{\{abel.sagodi,piotr.sokol,memming.park\}@research.fchampalimaud.org} \\
+    \texttt{\{abel.sagodi,guillermo.martin,piotr.sokol,memming.park\}@research.fchampalimaud.org} \\
 }
 
 \begin{document}
@@ -124,7 +120,8 @@ Continuous attractors offer a unique class of solutions for storing continuous-v
 Unfortunately, continuous attractors suffer from severe structural instability in general---they are destroyed by most infinitesimal changes of the dynamical law that defines them.
 This fragility limits their utility especially in biological systems as their recurrent dynamics are subject to constant perturbations.
 We observe that the bifurcations from continuous attractors in theoretical neuroscience models display various structurally stable forms.
-Although their asymptotic behaviors of memory are categorically distinct, their finite-time behaviors are similar and degrade gracefully.
+Although their asymptotic behaviors to maintain memory are categorically distinct, their finite-time behaviors are similar.
+We build on the persistent manifold theory to explain the commonalities between bifurcations away and approximations of continuous attractors.
 Fast-slow decomposition analysis uncovers the persistent manifold that survives the seemingly destructive bifurcation.
 Moreover, the recurrent neural networks trained on analog memory tasks display approximate continuous attractors with predicted slow manifold structures.
 Therefore, continuous attractors are \emph{functionally robust} and remain useful as a universal analogy for understanding analog memory.
@@ -477,7 +474,7 @@ Because continuous ring attractors are bounded, their invariant manifold persist
 %for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
 
 \subsection{Fast-slow decomposition and the revival of continuous attractors}\label{sec:revival}
-Consider a behaviorally relevant time scale for analog working memory, for instance, 10 ms to 10 sec.
+Consider a behaviorally relevant  timescale for working memory, which is considered to be a few to a few tens of seconds.
 If the dynamical system is orders of magnitude slower, for example, 1000 sec or longer, its effect is too slow to have a practical impact on the behavior that relies on the working memory mechanism.
 This clear gap in the fast and slow time scales can be recast as \emph{normal hyperbolicity} of the slow manifold by relaxing the zero real part to a separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
 In other words, the attractive flow normal to the manifold needs to be uniformly faster than the flow on the manifold.
@@ -486,7 +483,7 @@ By taking the limit of the slow flow on the manifold to arbitrarily long time co
 \begin{prop}[Revival of continuous attractor]\label{prop:revival}
 Let \(\manifold_\epsilon\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}).
 Further, assume that the real part of the eigenvalues of \(\nabla_\vz \vh\) are negative. % in the neighborhood of a continuous attractor.
-Let the uniform norm of the flow tangent to the manifold be \(\|y\|_\infty=\eta\).
+Let the uniform norm of the flow tangent to the manifold be \(\|\dot \vy\|_\infty=\eta\).
 There exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a continuous attractor manifold. % \(\manifold_0\) diffeomorphic to \(\manifold_\epsilon\).
 \end{prop}
 
@@ -576,7 +573,7 @@ where \(\dm{W}\) is a Wiener process that models the intrinsic state noise in th
 Building upon prior work, which has shown networks' capabilities on such tasks, we trained RNNs to either
 (1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection, cueva2021continuous}
 and (2) perform a memory-guided saccade task for a ring variable \citep{wimmer2014} (details in Sec.~\ref{sec:supp:tasks}).
-The loss \(L\) to be minimized was computed by the mean squared error (MSE) between the network output \(y(t)\) and the target output \(\hat y(t)\)
+The loss \(L\) to be minimized was computed by the mean squared error (MSE) between the network output \(y(t)\) and the target output \(\hat y(t)\):
 %\begin{equation}\label{eq:loss}
 \(L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}, \)
 %\end{equation}
@@ -2037,9 +2034,9 @@ The memory capacity of this initial configuration is \(N\log(N)\) for the \(2N\)
 
 
 \subsection{Ring attractor approximation with a low-rank network}\label{sec:supp:lowrank}
-The networks consisted of \(N\) firing rate units with a sigmoid inputoutput transfer function \citep{mastrogiuseppe2018}
+The networks consisted of \(N\) firing rate units with a sigmoid inputoutput transfer function \citep{mastrogiuseppe2018}:
 \begin{equation}
-\xi_i(t) = - \xi_i(t) + \sum_{j=1}^{N} J_{ij}\phi(x_j(t)) + I_i
+\dot \xi_i(t) = - \xi_i(t) + \sum_{j=1}^{N} J_{ij}\phi(x_j(t)) + I_i,
 \label{eq:1}
 \end{equation}
 where \(x_i(t)\) is the total input current to unit \(i\),
