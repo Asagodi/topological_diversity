@@ -227,14 +227,15 @@ We refer to it as the \emph{bounded line attractor} (BLA).
 Linearization of the fixed points on the manifold exhibits two eigenvalues, \(0\) and \(-2\);
 the \(0\) eigenvalue allows the continuum of fixed points, while \(-2\) makes the flow normal to the manifold attractive (Fig.~\ref{fig:lara_bifurcations}A,left; flow field).
 
+In general, continuous attractors are not only structurally unstable \citep{mane1987proof}, they bifurcate almost certainly for an arbitrary perturbation.
 Small changes to the parameters \((\vb,\vW)\) perturb the eigenvalues.
 Specifically, any perturbation to the \(0\) eigenvalue destroys the continuous attractor as it bifurcates to either
 a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stable fixed points separated with a saddle-node in between (Fig.~\ref{fig:lara_bifurcations}A bottom).
 However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifold topologically equivalent to the original continuous attractor (note the slow speed).
 Furthermore, the flow after the bifurcation is contained in the ghost manifold, i.e., it is an invariant manifold.
 This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,mante2013context}.
-In general, continuous attractors are not only structurally unstable \citep{mane1987proof}, they bifurcate almost certainly for an arbitrary perturbation.
-In the following, we focus on 1-dimensional ring attractors.
+
+%In the following, we focus on 1-dimensional ring attractors.
 
 %and perturbations cause the null eigenvalue to be non-zero and the line attractor disappears.
 %However, surprisingly, the bifurcations are qualitatively different.
@@ -332,7 +333,7 @@ However, in simulations of finite-size networks with this constraint, the dynami
 Approximate ring attractors can be fit by constraining the connectivity so that the networks Jacobian satisfies certain requirements for a ring attractor to exist (Sec.~\ref{sec:supp:empj}~\citep{pollock2020}).
 The fitted models through this method also contain an invariant ring manifold on which the dynamics contain stable and saddle fixed points (Fig.~\ref{fig:bio_rings}C).
 
-\ptitle{Remark}
+\ptitle{Similarity between all bifurcations and approximations of continuous attractors}
 In all example models of ring attractors, we verify that they suffer from the fine-tuning problem.
 We have observed the ghost of the continuous attractors in many different systems (either through bifurcation or from finite-size effects): an attractive invariant manifold.
 Is this a universal phenomenon?
