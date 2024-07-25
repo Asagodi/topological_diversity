@@ -163,29 +163,30 @@ Observations of persistent neural activity across many brain areas, organisms, a
 
 
 %par3: problems with CAs
-Despite their widespread adoption as models of analog memory, continuous attractors are brittle mathematical objects, casting significant doubts about their ontological value and hence suitability in accurately representing biological functions.
+Despite their widespread adoption as models of analog memory, continuous attractors are brittle mathematical objects, casting significant doubts on their ontological value and hence suitability in accurately representing biological functions.
 Even the smallest arbitrary change in recurrent dynamics can be problematic, destroying the continuum of fixed points essential for continuous-valued working memory.
 In neuroscience, this vulnerability is well-known and often referred to as the ``fine-tuning problem''~\cite{seung1996,Renart2003,Park2023a}.
 There are two primary sources of perturbations in the recurrent network dynamics:
 (1) the stochastic nature of online learning signals that act via synaptic plasticity, and
 (2) spontaneous fluctuations in synaptic weights~\cite{Fusi2007-yg,shimizu2021}.
 Thus, additional mechanisms are necessary to compensate for the degradation in particular implementations, by bringing the short-term behavior close to that of a continuous attractor~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022}.
-However, we lack the theoretical basis for relying on the brittle concept of continuous attractors for understanding biological working memory.
-% However, the reliance on the fragile concept of continuous attractors lacks a robust theoretical foundation, raising concerns about its practical utility. % <-- chat's suggestion :P
+However, we lack the theoretical basis for relying on the brittle concept of continuous attractors for understanding biological analog working memory.
 
-In this study, we explore the bifurcations from continuous attractors in theoretical models,
-which reveals various structurally stable dynamics in their vicinity.
+
+In this study, we explore bifurcation away from and approximations of continuous attractors in theoretical models.
+We first report on the differences and similarities between the various structurally stable dynamics in the vicinity of continuous attractors in these models.
 The distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time, and hence differences in the pattern of errors in temporal generalization.
-By assuming normal hyperbolicity we will separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within it. The proposed decomposition is general, and may be applied to e.g., theoretical models and trained recurrent neural networks (RNNs).
+By assuming normal hyperbolicity we will separate the time scales to obtain a decomposition of the dynamics by separating out the fast flow normal towards the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within it.
+The proposed decomposition is general, and we be apply it to theoretical models and task-trained recurrent neural networks (RNNs) to reveal a ``universal motif'' of analog memory with various potential topologies.
 We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects different topologies as \textbf{approximate continuous attractors}.
-We further analyze task-trained artificial RNNs to reveal a ``universal motif'' of analog memory with various potential topologies.
-
-%This discrepancy between biological neural networks and theoretical models highlights a mismatch and thus poses a challenge for modeling working memory and related cognitive processes \citep{Renart2003, seeholzer2019}.
-%\textbf{This seemingly makes continuous attractors impractical and hence irrelenvant to be used as a memory of continuous valued variables.}
-%Nevertheless, as we will show, not all implementations of continuous attractors behave similarly in their brittleness, yet all approximations of continuous attractors can be characterized as slow manifolds.
+Our theory guarantees that systems close to a continuous attractor (in the space of vector fields) will have similar behavior to it.
+%Furthermore, our theory provides information of the generalization properties of these approximations.
+%We demonstrate these theoretical insights in trained RNNs.
 
 
 \section{A critique of pure continuous attractors}\label{sec:critique}
+We will first lay out a number of observations about the dynamics of bifurcations and approximations of continuous attractors used in theoretical neuroscience.
+
 \subsection{Motivating examples}\label{sec:motivating}
 \begin{figure}[tbhp]
   \centering
@@ -309,6 +310,7 @@ We found that the ring (consisting of infinite fixed points) can be perturbed in
 As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
 The probability of each type of bifurcation was numerically estimated (See Sec.~\ref{sec:supp:headdirection}).
 There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\ref{fig:meaure_zero_perturbations}).
+Surprisingly, the number of fixed points is maintained throughtout a range of perturbation sizes (Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}).
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 
 %how can we understand the underlying mechanism of these bifurcations
@@ -334,10 +336,10 @@ Approximate ring attractors can be fit by constraining the connectivity so that 
 The fitted models through this method also contain an invariant ring manifold on which the dynamics contain stable and saddle fixed points (Fig.~\ref{fig:bio_rings}C).
 
 \ptitle{Similarity between all bifurcations and approximations of continuous attractors}
-In all example models of ring attractors, we verify that they suffer from the fine-tuning problem.
-We have observed the ghost of the continuous attractors in many different systems (either through bifurcation or from finite-size effects): an attractive invariant manifold.
+In all discussed models of ring attractors, we verify that they suffer from the fine-tuning problem.
+However, we have observed the ghost of the continuous attractors in many different systems (either through bifurcation or from finite-size effects): an \emph{attractive invariant manifold}.
 Is this a universal phenomenon?
-Moreover, although the exact ring attractor was not implemented, they were approximate ring attractors in some sense.
+Moreover, although the exact ring attractor was not implemented, they were approximate ring attractors in the sense that the fixed points and connecting orbits still form a circle.
 Are continuous attractors somehow still useful as a model of how animals might represent continuous variables?
 We will answer these questions in an implementation-agnostic manner.
 
@@ -439,7 +441,7 @@ In addition, the stable manifold of \(\manifold_0\) is similarly persistent~\cit
 
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA).
- As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems).
+\footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems).}
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (Fig.~\ref{fig:lara_bifurcations}, dark-colored regions) that contains fixed points and connecting orbits and is overall still attractive.
 Furthermore, Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
 Because continuous ring attractors are bounded, their invariant manifold persists and it remains attractive under small perturbations to this system~\citep{wiggins1994}.
@@ -757,7 +759,11 @@ Note that effectively feedforward solutions~\citep{Goldman2009} do not satisfy~\
 
 
 \section{Discussion}
-An attractive manifold of equilibria in a continuous attractor network provides continuous memory.
+An attractive manifold of equilibria in a continuous attractor network provides continuous memory and hence makes it an attractive model in theoretical neuroscience.
+Howerver, continuous attractors bifurcate almost certainly for an arbitrary perturbation.
+Nevertheless, we provide a robust theoretical foundation to better understand the way these structures are robust and hence provide practical utility as models in neuroscience.
+ 
+ 
 Although the corresponding configurations for a continuous attractor are measure-zero in parameter space, we showed that when the persistent manifold theorem holds, the finite time behavior of the trajectories only slowly breaks down under perturbations.
 We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in various example systems.
 There were surprisingly diverse bifurcations that the network visits in the presence of stochasticity in synapses and learning signals.
