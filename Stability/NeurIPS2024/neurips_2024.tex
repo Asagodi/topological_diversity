@@ -829,7 +829,10 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\makeatletter
+\if@preprint
+\makeatother
+\else
 \newpage
 \section*{NeurIPS Paper Checklist}
 
@@ -1071,6 +1074,7 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
     \end{itemize}
 
 \end{enumerate}
+\fi
 
 \newpage
 \appendix
