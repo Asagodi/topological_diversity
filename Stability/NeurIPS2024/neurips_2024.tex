@@ -625,7 +625,8 @@ We find that long integrated trajectories of the network converge to the found s
 
 
 \subsection{Variations in the Topologies of the Networks}\label{sec:topologies}
-In this section, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the slow manifold, and the flow on the manifold (Sec.~\ref{sec:fsdecmethod}).
+To understand the what solutions the RNNs found to solve the task, we investigate their memory mechanism.
+For this, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the slow manifold, and the flow on the manifold (Sec.~\ref{sec:fsdecmethod}).
 %We want to investigate how networks might solve tasks.
 %While previous studies have primarily focused on simple tasks that can be solved with fixed points, there remains a gap in comprehensively extracting the mechanisms underlying network implementations~\citep{sussillo2013blackbox}.
 %We address this gap by investigating the internal mechanisms of neural network solvers for tasks involving continuous variables.
@@ -2177,6 +2178,13 @@ Fenichel's Persistence Theorem extends the classical theory of invariant manifol
 This theorem is particularly powerful in analyzing systems where perturbations are inevitable, providing a  framework for understanding how qualitative features of the system's dynamics are maintained.
 In this section, we delve into the specifics of Fenichel's Persistence Theorem, outlining its key components, assumptions, and implications.
 
+
+\paragraph{Invariance}
+\begin{definition}
+A set \(\manifold\) is \emph{locally invariant} under the flow from Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} if it has neighborhood \(V\) so that no trajectory can leave \(\manifold\) without also leaving \(V\). 
+In other words, it is locally invariant if for all \(x \in \manifold, \varphi(x, [0, t] \subset V\) implies that  \(\varphi(x,[0, t]) \subset M\), similarly with \([0, t]\) replaced by \([t, 0]\) when \(t < 0\).
+\end{definition}
+
 \begin{definition}
 A set \( S \) is said to be forward invariant under a flow \( \varphi_t \) if for every point \( x \) in \( S \) and for all \( t \geq 0 \), the image of \( x \) under the flow at time \( t \), denoted \( \varphi_t(x) \), remains in \( S \). This can be written as:
 
@@ -2185,6 +2193,7 @@ A set \( S \) is said to be forward invariant under a flow \( \varphi_t \) if fo
 
 
 
+\paragraph{Small perturbation}
 In the context of Fenichel's Persistence Theorem, a "sufficiently small \( C^r \) perturbation of the vector field \( f \)" refers to perturbations that are small in the \( C^r \) norm. The \( C^r \) norm measures the size of a function and its derivatives up to order \( r \).
 
 Formally, let \( f: \mathbb{R}^n \rightarrow \mathbb{R}^n \) be the original smooth vector field and let \( \tilde{f} \) be a perturbed vector field. The perturbation \( \tilde{f} \) is a sufficiently small \( C^r \) perturbation if the difference \( \tilde{f} - f \) has a small \( C^r \) norm. Mathematically, this can be expressed as:
@@ -2197,27 +2206,49 @@ Which gives a constraint on how much each of the \(k\)-th derivatives \( D^k \) 
 In summary, a perturbation \( \tilde{f} \) is considered sufficiently small in the \( C^r \) sense if the difference between \( \tilde{f} \) and \( f \), along with their derivatives up to order \( r \), is uniformly small across the domain.
 
 
+\subsection{Fenichels' Invariant Manifold Theorem}
+
+System \ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} can be reformulated with a change of time-scale as
+\begin{align}\label{eq:slow}
+\begin{cases}
+\epsilon x' &= g ( x , y , \epsilon) \\
+y'&= h(x, y, \epsilon)
+\end{cases}
+\end{align}
+where  \('=\frac{d}{d\tau}\) and \(\tau=\nicefrac{t}{\epsilon}\).
+ The time scale given by \(\tau\) is said to be fast whereas that for \(t\) is slow, as long as \(\epsilon\neq 0\) the two systems are equivalent.
+
+
+%Assumptions
+The functions \(g\) and \(h\)in Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} are both assumed to be \(C^r\) (for \(r>0\) on a set \(U\times I\) where \(U\subset\reals^d\) is open, and \(I\) is an open interval, containing \(0\).
+
+Suppose that the set \(\manifold_0\)  is a subset of the set \(\{h(x, y, 0) = 0\}\) and is a compact manifold, possibly with boundary, and is normally hyperbolic relative to \ref{eq:slow}.
+
+
+\begin{theorem}[Theorem 1 in \citep{Jones1995}]
+If \(\epsilon >0\), but sufficiently small, there exists a manifold \(\manifold_\epsilon\) that lies within \(\mathcal{O}(\epsilon)\) of \(\manifold_0\) and is diffeomorphic to \(\manifold_0\).
+ Moreover it is locally invariant under the flow of Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal}, and \(C^r\), including in \(\epsilon\), for any \(0<r< \infty\).
+\end{theorem}
+
+
 
 %-  page 6: “Although we have seen numerous topologies in Sec. 2, dynamical systems theory says that they are fundamentally limited, especially in low dimensions.” - it would be super useful to add a reference, or even unpack this statement a little more
 \subsection{Fundamental limitations of the topology of bifurcated continuous attractors}
-
-
+%\subsubsection{Flow on a line}
 
 \subsubsection{Flow on a ring}
 The flow on a ring can be described by the differential equation\citep{hirsch2013differential}:
 \begin{equation}
 \frac{d\theta}{dt} = f(\theta),
 \end{equation}
-with \(\theta\in[0,1\pi].\)
-
+with \(\theta\in[0,2\pi].\)
 
 The simplest type of flow on a ring is the uniform circular flow, where each point moves with a constant angular velocity \(f(\theta)=\omega\).
-If \(|f(\theta)|>0\) for all \(theta\), there is a circular flow with a variable speed.
+If \(|f(\theta)|>0\) for all \(\theta\), there is a circular flow with a variable speed.
 
-where can have multiple roots, leading to fixed points. The nature of the flow around these fixed points can be classified into:
-
-Stable fixed points: Points where the flow tends to as time progresses.
-Unstable fixed points: Points from which the flow diverges.
+There is a fixed point for each unique \(\theta\) for which \(f(\theta)=0\). The nature of the flow around these fixed points can be classified into:
+Stable fixed points: Points where the flow tends to as time progresses (\(f(\theta)>0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)<0\) for al l\( \theta\in[\theta,2\pi]\cap V\) for some open ball \(V\) around \(\theta\)).
+Unstable fixed points: Points from which the flow diverges (\(f(\theta)<0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)>0\) for all \( \theta\in[\theta,2\pi]\cap V\) for some open ball \(V\) around \(\theta\)) .
 
 
 \subsection{Consequences to system identification}
