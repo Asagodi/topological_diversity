@@ -614,7 +614,7 @@ For each trained network, we find the slow manifold by integrating the autonomou
 %https://scikit-dimension.readthedocs.io/en/latest/skdim.id.MOM.html#skdim.id.MOM
 We identify the points on the invariant manifold from the simulated trajectories that are projected closest to a set of points in the output space relevant to the task after convergence, i.e. on the target ring.
 We parametrize the one-dimensional invariant manifold \(\manifold\) by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
-The normal hyperbolicity is measured by a gap in the eigenvalue spectrum gap of the linearization along points on the invariant manifold (Fig.\ref{fig:eigenvalue_gap}).
+Normal hyperbolicity is measured by a gap in the timescales of the system (measured from the eigenvalue spectrum of the linearization along points on the invariant manifold (Fig.\ref{fig:eigenvalue_gap}).
 
 %Finally, we find the stable fixed points through a threshold on the
 We find the fixed points on the invariant ring by identifying regions where the direction of the flow flips for a dense set of points on the found invariant manifold.
@@ -681,13 +681,9 @@ The universal structure of continuous attractor approximations as slow invariant
 
 %distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
 
-When neuroscientists study neural computations in animals, the animal is trained on a finite time task and it is therefore unclear whether they learn the intended computation or just a finite time approximation of it.
-The same is the case for the trained networks.
-We will investigate to what extent the networks have the intended memory necessary for the computation or whether they implement the task only on the timescale on which they have been trained.
-
-%Our theory shows that not all continuous attractors are born equal, and that there are gracefully degrading continuous attractors.
-%In finite time, trajectories are well-behaved, contrary to the asymptotic behavior captured by the Lyapunov exponents.
-%Animal behavior is finite time in nature and the longer the temporal distance the harder it is to learn temporal dependencies in general.
+When neuroscientists study neural computations in animals, the animals are trained on tasks with finite durations. As a result, it is unclear whether the animals learn the intended computation or merely a finite-time approximation of it. The same issue arises with trained neural networks.
+We will investigate to what extent the networks have the intended memory necessary for perfect memory or whether they implement the task only on the timescale on which they have been trained.
+We show that the theoretical upper bound for the memory performance based on the distance to a continuous attractor (Prop.\ref{prop:ub}) holds in  trained RNNs (Fig.~\ref{fig:angular_loss}A).
 
 %generalization
 %\subsection{Different topologies have different generalization properties}
@@ -779,8 +775,9 @@ Unlike in most dynamical systems theories where the asymptotic behavior and topo
 
 %as we have shown...
 Training RNNs on tasks involving continuous variables results in a great variety of solutions.
-As the theory predicts, trained networks have an attractive ring invariant manifold.
 However, even within this variety, we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
+As the theory predicts, trained networks have an attractive ring invariant manifold.
+This supports our theory that theoretical models that satisfy conditions \ref{con	verse:bijection}-\ref{converse:Dtype} and hence have behavior consistent with an almost perfect memory system, will be near continuous attractors (in parameter space).
 Nevertheless, the topological structure of the found solutions still determines how well a network can perform generalization for longer time scales.
 
 %limitations
@@ -2380,7 +2377,7 @@ If \(V\) is persistent and uniformly locally maximal, then \(V\) has to be norma
 \newpage
 \section{Upper bound for the memory performance on a short time scale}\label{sec:supp:ub}
 We will now formalize the statement about an upper bound dependent on the uniform norm of the vector field on the slow manifold in Sec.\ref{sec:revival} and provide a proof.
-\begin{prop}
+\begin{prop}\label{prop:ub}
 Let \(\manifold\) be a normally hyperbolic slow manifold as in Prop.~\ref{sec:revival}.
 Let \(\vx_0 \in \manifold\), and \(\varphi = \vf\vert_\manifold\) be the flow restricted to the manifold.
 The average deviation from initial memory \(\vx_0\) over time is bounded linearly
@@ -2689,6 +2686,11 @@ The largest  eigenvalue is non-zero (the invariant manifold is not a continuous 
        \caption{The eigenvalue spectrum for the trained networks in Fig~\ref{fig:fastslow_decomposition})B and C show a gap between the first two largest eigenvalues.}
        \label{fig:eigenvalue_gap}
 \end{figure}
+
+For a stable system, where the eigenvalues have negative real parts, the time constant \(\tau\) is given by the negative inverse of the eigenvalue’s real part: \(\tau = -\frac{1}{\Re(\lambda)}\),
+where \(\Re(\lambda)\) denotes the real part of the eigenvalue \(\lambda\).
+
+
 
 
 \newpage
