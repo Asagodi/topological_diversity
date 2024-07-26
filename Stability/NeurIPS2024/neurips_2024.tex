@@ -571,7 +571,7 @@ where \(\vx_t \in \reals^d\) is the hidden state,
 \(f\colon \reals \to \reals\) an activation function that acts on each of the hidden dimensions,
 private noise variable \(\zeta\sim\mathcal{N}(0,\nicefrac{1}{100})\), and %\(\zeta\sim \mathcal{N}(0, .001)\)
 \(\vW, \vb, \win, \wout, \bout\) are parameters.
-Assuming an Euler integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation:
+Assuming Euler integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation:
 \begin{align}
     \dm{\vx} &= -\vx\dm{t} + f(\win \vI + \vW \vx + \vb)\dm{t} + \sigma \dm{W}. \label{eq:RNN:continuous}
 \end{align}
@@ -752,7 +752,7 @@ The persistence~\ref{converse:persistent} requires that the flow on the manifold
 The S-type robustness~\ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
 Along with the D-type robustness~\ref{converse:Dtype}, it implies the manifold is ``attractive'', and normally hyperbolic (see also Sec.~\ref{sec:persitencempliesnh}).
 
-If these four conditions hold, for example for task-trained RNNs, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added, it becomes a continuous attractor (Prop.~\ref{prop:revival}, see also Sec.~\ref{sec:near_ca}).
+If these four conditions hold, for example for task-trained RNNs, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added, the slow manifold becomes a continuous attractor (Prop.~\ref{prop:revival}, see also Sec.~\ref{sec:near_ca}).
 For the RNN experiments, we added state-noise while training using stochastic gradient descent, satisfying~\ref{converse:Stype} and~\ref{converse:Dtype}.
 We have also verified that~\ref{converse:persistent} holds (Fig.~\ref{fig:angular_loss}A).
 Although the stochastic optimization cannot lead to the continuous attractor solution, it gets to the neighborhood where there are approximate solutions.
