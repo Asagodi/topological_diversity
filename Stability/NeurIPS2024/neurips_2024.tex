@@ -33,8 +33,8 @@
 \setlength{\belowdisplayskip}{2pt}
 \AtBeginDocument{\setlength\abovedisplayskip{2pt}}
 \AtBeginDocument{\setlength\belowdisplayskip{2pt}}
-\titlespacing*{\section}{0pt}{1pt}{1pt}
-\titlespacing*{\subsection}{0pt}{1pt}{.5pt}
+\titlespacing*{\section}{0pt}{2pt}{2pt}
+\titlespacing*{\subsection}{0pt}{2pt}{2pt}
 
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
@@ -141,7 +141,7 @@ Biological systems exhibit robust behaviors that require neural information proc
 Virtually all neural models of working memory for continuous-valued information rely on persistent internal representations through recurrent dynamics.
 The continuous attractor structure in their recurrent dynamics has been a pivotal theoretical tool due to their ability to maintain activity patterns indefinitely through neural population states~\cite{vyas2020,dayan2001,Khona2022}.
 They are hypothesized to be the neural mechanism for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, and decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
-Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,Noorman2022,Nair2023}.
+Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,Noorman2022,Nair2023,petrucco2023neural,yang2022brainstem}.
 %and anatomy?
 
 %par1: animals can represent CVs
@@ -505,23 +505,23 @@ The average deviation from initial memory \(\vx_0\) over time is bounded linearl
 \end{align}
 
 
+We will demonstrate that this bound can be sucessfully found in trained RNNs numerically.
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
 While the uniform norm gives insight into short-time scale behavior, we can expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
 The long-time scale behavior of the slow manifold is dominated by the stability structure, i.e., the topology of the dynamics.
-Although we have seen numerous topologies in Sec.~\ref{sec:critique}, dynamical systems theory says that they are fundamentally limited, especially in low dimensions.
-%Understanding attractors and their bifurcation structure is crucial in neuroscience because they provide a blueprint for how neural activity can remain stable and robust even in the face of disruptions.
+Although we have seen numerous topologies in Sec.~\ref{sec:critique}, dynamical systems theory says that they are fundamentally limited, especially in low dimensions (see for more details Sec.~\ref{persistence_extra}).
 %This resilience is fundamental for cognitive functions, learning, and memory.
 %Thanks to Fenichel's Persistent Manifold Theorem, we can understand how these persistent pathways, or manifolds, survive even when the system undergoes  bifurcations.
 %Essentially, this theorem assures us that the underlying structure of continuous attractors remains intact, maintaining a consistent topology despite the changes.
 %The theory implies that in the space of dynamical systems, all systems in the neighbourhood of a continuous attractor all share the same topology for the attractive persistent invariant manifold and that the flow on the manifold is slow.
 For a ring attractor, this implies that the stability structure of the invariant manifold is either
 (1) composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits, or (2) a limit cycle.
+These different strability structures have different generalization properties (see Sec.~\ref{sec:generalization}).
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 For 2 dimensional attractors stable fixed points and saddle nodes can coexist with limit cycles.
 In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states.
 %The persistence of hyperbolic tori in Hamiltonian systems was described in \citep{li2005persistence}.
-%resonance gap closing \citep{broer2018persistence}.
 %\pscomment{Technically, only parallel translations, and KAM gives a type of structural stability result.}
 %For higher dimensional attractors, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
 %\mpcomment{refer to later section on generalization performance?}
@@ -630,6 +630,7 @@ The most often found solution is of the type \emph{fixed point ring manifold} (F
 %
 Less commonly found topologies includes %slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a
 the slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
+All stability structures (fixed points and limit cycles) are mapped close to the target output circle (Figs.~\ref{fig:fastslow_decomposition_otuput}, \ref{fig:im_rep}, \ref{fig:im_all}).
 These solutions are consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing, Park2023a} and neuronal circuits underlying persistent representations despite time-varying activity~\citep{druckmann2012neuronal}.
 
 %Fig 4
@@ -670,7 +671,7 @@ The universal structure of continuous attractor approximations as slow invariant
 
 
 
-\section{Generalization Analysis}
+\section{Generalization Analysis}\label{sec:generalization}
 
 %distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
 
@@ -687,15 +688,13 @@ We will investigate to what extent the networks have the intended memory necessa
 \subsection{Generalization properties of continuous attractor approximations}\label{sec:generalization}
 %, and thus a corresponding pattern of error in temporal generalization
 
-Looking beyond the finite timescale provides valuable insights into the network's ability to store information.
-We will therefore investigate the angular memory capacities of the trained networks at two different time scales:  asymptotic and finite time.
+
 
 The two possible approximations of a ring attractor discussed in Sec.~\ref{sec:critique} exhibit markedly distinct generalization characteristics.
 Approximating the system as a limit cycle results in a memory trace that gradually diminishes over time.
 Conversely, the alternative approximation's memory states are contingent upon the quantity and positioning of stable fixed points within the system.
-We will in detail describe the generalization properties of the trained networks on the angular velocity integration task.
+We describe in detail the generalization properties of the trained networks on the angular velocity integration task at two different time scales:  asymptotic and finite time.
 We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}C).
-
 
 \setlength\belowcaptionskip{-3ex}
 \begin{figure}[tbhp]
@@ -711,7 +710,6 @@ We tested all networks with a validation set and took a cutoff for the normalize
 \end{figure}
 \setlength\belowcaptionskip{2ex}
 
-%method
 \ptitle{Finite time}
 Aside from the angular velocity integration component of the task, the trained networks learn to store a memory of an angular variable.
 We assess the performance of the network to store the memory of the angle over time.
@@ -722,7 +720,9 @@ The networks typically perform well on the timescale on which they have been tra
 This loss is bounded by the uniform norm of the vector field on the invariant manifold (Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and~\ref{sec:supp:ub}).
 
 
+
 \ptitle{Asymptotic time}
+Looking beyond the finite timescale provides valuable insights into the network's ability to store information.
 For the asymptotic time scale, the asymptotic behavior of the system dominates and we identify the network behavior through its \(\omega\)-limit sets.
 For a one-dimensional system, this will either be fixed points or a limit cycle.
 For the fixed-point type solution, the maximal error is given by the maximal distance to the next fixed point while for a limit cycle, this will always be \(\pi\).
@@ -748,21 +748,23 @@ We posit that there are four conditions (See for more detail Sec.~\ref{sec:condi
 \item robustness against state (S-type) noise, and\label{converse:Stype}
 \item robustness against dynamical (D-type) noise.\label{converse:Dtype}
 \end{enumerate}
-The correspondence implied by~\ref{converse:bijection} translates to the existence of a manifold in the neural activity space with the same topology as the memory content.
+The correspondence implied by~\ref{converse:bijection} translates to the existence of a manifold in the neural activity space with the same topology as the memory content.\footnote{Note that effectively feedforward solutions~\citep{Goldman2009} do not satisfy~\ref{converse:bijection}.}
 The persistence~\ref{converse:persistent} requires that the flow on the manifold is slow and bounded.
 The S-type robustness~\ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
 Along with the D-type robustness~\ref{converse:Dtype}, it implies the manifold is ``attractive'', and normally hyperbolic (see also Sec.~\ref{sec:persitencempliesnh}).
-Then, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added makes it a continuous attractor (Prop.~\ref{prop:revival}).
+
+If these four conditions hold, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added, it becomes a continuous attractor (Prop.~\ref{prop:revival}, see also Sec.~\ref{sec:near_ca}).
 For the RNN experiments, we added state-noise while training using stochastic gradient descent, satisfying~\ref{converse:Stype} and~\ref{converse:Dtype}.
 We have also verified that~\ref{converse:persistent} holds (Fig.~\ref{fig:angular_loss}A).
 Although the stochastic optimization cannot lead to the continuous attractor solution, it gets to the neighborhood where there are approximate solutions.
-Note that effectively feedforward solutions~\citep{Goldman2009} do not satisfy~\ref{converse:bijection}.
+
 
 
 
 \section{Discussion}
 An attractive manifold of equilibria in a continuous attractor network provides continuous memory and hence makes it an attractive model in theoretical neuroscience.
 Howerver, continuous attractors bifurcate almost certainly for an arbitrary perturbation.
+Understanding attractors and their bifurcation structure is crucial in neuroscience because they provide a blueprint for how neural activity can remain stable and robust even in the face of disruptions.
 Nevertheless, we provide a robust theoretical foundation to better understand the way these structures are robust and hence provide practical utility as models in neuroscience.
  
  
@@ -2186,21 +2188,72 @@ For the off-manifold perturbations \(\eta\in \reals^{10}\) and \(\|\eta\|_2=10^{
 %\end{proof}
 
 
-%\section{Persistence Theorem}
-%- in Theorem 1, what does “locally invariant” actually mean?
-%def: locally invariant
+\newpage
+\section{Persistence Theorem}\label{persistence_extra}
+Understanding the long-term behavior of dynamical systems is a fundamental question in various fields, including mathematical biology, ecological modeling, and neuroscience.
+ Fenichel's Persistence Theorem provides critical insights into the behavior of such systems, particularly in relation to the stability and persistence of invariant manifolds under perturbations.
+ 
+Fenichel's Persistence Theorem extends the classical theory of invariant manifolds, offering conditions under which normally hyperbolic invariant manifolds persist despite small perturbations.
+This theorem is particularly powerful in analyzing systems where perturbations are inevitable, providing a  framework for understanding how qualitative features of the system's dynamics are maintained.
+In this section, we delve into the specifics of Fenichel's Persistence Theorem, outlining its key components, assumptions, and implications.
 
-%general Fenichel theorem actually says, and how it explains the bifurcation structure
+\begin{definition}
+A set \( S \) is said to be forward invariant under a flow \( \varphi_t \) if for every point \( x \) in \( S \) and for all \( t \geq 0 \), the image of \( x \) under the flow at time \( t \), denoted \( \varphi_t(x) \), remains in \( S \). This can be written as:
+
+\[ \varphi_t(x) \in S \quad \text{for all} \quad x \in S \quad \text{and} \quad t \geq 0. \]
+\end{definition}
+
+
+
+In the context of Fenichel's Persistence Theorem, a "sufficiently small \( C^r \) perturbation of the vector field \( f \)" refers to perturbations that are small in the \( C^r \) norm. The \( C^r \) norm measures the size of a function and its derivatives up to order \( r \).
+
+Formally, let \( f: \mathbb{R}^n \rightarrow \mathbb{R}^n \) be the original smooth vector field and let \( \tilde{f} \) be a perturbed vector field. The perturbation \( \tilde{f} \) is a sufficiently small \( C^r \) perturbation if the difference \( \tilde{f} - f \) has a small \( C^r \) norm. Mathematically, this can be expressed as:
+
+\[ \| \tilde{f} - f \|_{C^r} < \epsilon, \]
+where \( \epsilon \) is a small positive number, and the \( C^r \) norm is defined as:
+\[ \| \tilde{f} - f \|_{C^r} = \max_{0 \leq k \leq r} \sup_{x \in \mathbb{R}^n} \left\| D^k (\tilde{f}(x) - f(x)) \right\|. \]
+Which gives a constraint on how much each of the \(k\)-th derivatives \( D^k \) of the perturbed vector field can differ from the original.
+
+In summary, a perturbation \( \tilde{f} \) is considered sufficiently small in the \( C^r \) sense if the difference between \( \tilde{f} \) and \( f \), along with their derivatives up to order \( r \), is uniformly small across the domain.
+
+
 
 %-  page 6: “Although we have seen numerous topologies in Sec. 2, dynamical systems theory says that they are fundamentally limited, especially in low dimensions.” - it would be super useful to add a reference, or even unpack this statement a little more
+\subsection{Fundamental limitations of the topology of bifurcated continuous attractors}
+
+
+
+\subsubsection{Flow on a ring}
+The flow on a ring can be described by the differential equation\citep{hirsch2013differential}:
+\begin{equation}
+\frac{d\theta}{dt} = f(\theta),
+\end{equation}
+with \(\theta\in[0,1\pi].\)
+
+
+The simplest type of flow on a ring is the uniform circular flow, where each point moves with a constant angular velocity \(f(\theta)=\omega\).
+If \(|f(\theta)|>0\) for all \(theta\), there is a circular flow with a variable speed.
+
+where can have multiple roots, leading to fixed points. The nature of the flow around these fixed points can be classified into:
+
+Stable fixed points: Points where the flow tends to as time progresses.
+Unstable fixed points: Points from which the flow diverges.
+
+
+\subsection{Consequences to system identification}
+Fenichel's Persistence Theorem has several significant implications for modelling and system identification in dynamical systems.
+Because the theorem provides a guarantee that small perturbations in the system do not lead to significant changes in the qualitative behavior of the system,
+we can be (slightly) wrong for example about the exact nonlinearity of a neuron's transform function.
+For example, if neurons are only approximately ReLU the theory developed in \citep{biswas2022geometric} still holds (at the behaviorally relevant timescales).
+
 
 
 
 \newpage
-\section{Near Perfect Analog Memory System must be near a Continuous Attractor}
+\section{A Near Perfect Analog Memory System must be close to a Continuous Attractor}
 \subsection{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
 
- We will now provide a proof of Prop.~\ref{prop:revival}.
+ We  provide a proof of Prop.~\ref{prop:revival}.
 
 \begin{proof}%[Prop.~\ref{prop:revival}]
 It is sufficient to show that there is a perturbation \(\vp\) that has zero flow off of \(\manifold_\epsilon\) but for which \(\vf+\vp=0\) on \(\manifold_\epsilon\) for the full system \(\vf\)  as defined in Eq.~\ref{eq:perturbation:nonparam}.
@@ -2209,9 +2262,9 @@ Define
  with the Dirac delta function \(\delta(\vx)=\delta(x_1)\delta(x_2)\dots\delta(x_d)\).
 It is then easy to check that \(\vf(\vx)+\vp(\vx)=0\) for all \(\vx\in\manifold_\epsilon\) and \(\vf(\vx)+\vp(\vx)=\vf(\vx)\) for all \(\vx\not\in\manifold_\epsilon\).
 Hence, we have a continuous attractor at \(\manifold_\epsilon\).
-\end{proof}
-
-\begin{remark}
+%\end{proof}
+%
+%\begin{remark}
 If smoothness is important, we can construct the following perturbation.
 From the \(\epsilon\)-Neighborhood Theorem\citep{folland1999real}, we get that  there exists a smooth positive function \(\delta\colon \manifold_\epsilon \rightarrow \reals^+\),
  such that if we let \(N_\delta\) be the
@@ -2235,7 +2288,7 @@ Then the perturbation
 \vp(\vy) = - \psi(\vy)\vf(\pi_\delta(\vy))
 \]
 is smooth and creates a continuous attractor at \(\manifold_\epsilon\).
-\end{remark}
+\end{proof}
 
 %Setup for case where smoothness matters:
 %\begin{itemize}
@@ -2266,18 +2319,29 @@ is smooth and creates a continuous attractor at \(\manifold_\epsilon\).
 %\end{itemize}
 %\end{itemize}
 
-\subsection{Conditions}\label{sec:condition_clarifications}
+\subsection{Approximate solutions  to an analog working memory problem}\label{sec:condition_clarifications}
+We will now dicuss the conditions for when approximate solutions to an analog working memory problem are near a continuous attractor.
+We consider approximate solutions to an analog working memory problem to be systems of the form \ref{eq:RNN:discrete} or \ref{eq:RNN:continuous} (in both cases following a linear decoder), which have a small memory error over time in output space.
+
+\subsubsection{Guarantee for a continuous attractor}\label{sec:near_ca}
+The theory guarantees that a system that satisfies condition  will have a continuous attractor in the following sense.
+For such a system there exists a decomposition such that the system can be effectively decomposed into a continuous attractor (attractive invariant manifold with zero flow) and a component on which a (possibly ``fast'' flow) can exist buy which get quenched by the out put projection.
 
 
-
-
+\subsubsection{Robustness}
+Noise, practically defined as unpredictable components of the system’s behavior, comes from many sources.
 The concept of S- and D-type noise is based on \citep{Park2023a}.
 
-\subsubsection{S-type robustness}\label{sec:stype}
+\paragraph{S-type robustness}\label{sec:stype}
+S-type noise encapsulates reversible changes in the neural state such that the deterministic part of the dynamics itself remains unchanged.
 
 
-\subsubsection{D-type robustness}\label{sec:persitencempliesnh}
+\paragraph{D-type robustness}\label{sec:persitencempliesnh}
 %What counts as D-type robustness: persistence (+attractiveness)
+D-type noise, in the space of recurrent network dynamics parameterized by the synaptic weights.
+This corresponds to slight changes to the ODE, i.e. perturbations.
+Previously, it robustness to D-type noise was considered to correspond to structurally stability \citep{Park2023a}.
+
 Here we shortly discuss what we consider to be a necessary and sufficient condition for D-type robustness.
 We can use the concept of Lipschitz persistence to define D-type robustness.
 Ma\~{n}e showed that if an invariant manifold is Lipschitz persistent then it must be normally hyperbolic \citep{mane1978persistent}. 
@@ -2566,9 +2630,22 @@ with length scale \(\ell\).
 \end{figure}
 
 
+\subsection{Output projection of invariant manifold}
+%Fig 4
+
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[width=\textwidth]{fastslow_decomposition_outputs2}
+  \caption{Output projection of slow manifold approximation of the trained networks of Fig.~\ref{fig:fastslow_decomposition}. All stability strutures are colored according to the decoded angle shown in Fig.~\ref{fig:angular_task}B, target output circle shown in red.
+ (A) An example fixed-point type solution to the memory-guided saccade task (Fig.~\ref{fig:fastslow_decomposition}B).
+ (B) An example of a found solution to the angular velocity integration task (Fig.~\ref{fig:fastslow_decomposition}C).
+ (C) An example slow-torus type solution to the memory-guided saccade task. The colored curves indicate stable limit cycles of the system (Fig.~\ref{fig:fastslow_decomposition}D).
+}\label{fig:fastslow_decomposition_otuput}
+\end{figure}
+
+The output projection of the invariant manifolds and stability structures (fixed points and limit cycles) is very close to the target output circle.
 
 
-\newpage
 \subsection{Training methods}
 
  We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
@@ -2616,20 +2693,43 @@ where \(y\) is the target and \(\hat y\) is the prediction.
  %fast-slow
  % inv man
 
-   \begin{figure}[tbhp]
+
+We use the eigenvalue spectrum as evidence for normal hyperbolicity.
+Normal hyperbolicity of an attractive ring invariant manifold implies that the eigenvalue spectrum has a gap in its eigenvalue spectrum.
+The  biggest eigenvalue (real part) for such a manifold needs to be much closer to zero than the second biggest.
+We verify that this gap exists in the trained networks shown in Fig.~\ref{fig:fastslow_decomposition}.
+The biggest eigenvalue is non-zero (the invariant manifold is not a continuous attractor), but it is removed from the second biggest, see Fig.~\ref{fig:eigenvalue_gap}.
+\begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=\textwidth]{eigenvalue_gap}
+       \caption{ Fig~\ref{fig:fastslow_decomposition}).}
+       \label{fig:eigenvalue_gap}
+\end{figure}
+
+
+\newpage
+ \subsubsection{Identified invariant manifold output projections}\label{sec:inv_man_projections}
+ The identified invariant manifolds in the trained networks (Fig.~\ref{fig:im_rep} and Fig.~\ref{fig:im_all}).
+ However, not all solutions can be meaningfully analyzed with this the slow-fast decomposition method.
+ For example, the solution at the center of the \(\tanh, N=256\) block, the found invariant manifold is not correctly captured.
+ This is true for the networks that have not learned the task correctly (networks with a NMSE higher than -20dB).
+ 
+ \begin{figure}[tbhp]
      \centering
     \includegraphics[width=\textwidth]{im_all_last2}
-       \caption{Representative identified invariant manifolds (projected onto the output space, in black) with the fixed points (cyan for stable, orange for saddle and black for unstable). The reference target ring is shown in grey.}\label{fig:im_rep}
+       \caption{Representative identified invariant manifolds (projected onto the output space, in black) with the fixed points (cyan for stable, orange for saddle and black for unstable).
+        The reference target ring is shown in grey.}
+       \label{fig:im_rep}
 \end{figure}
 
 \newpage
-  \begin{figure}[tbhp]
+\begin{figure}[tbhp]
      \centering
     \includegraphics[width=\textwidth]{im_all_3x3}
-       \caption{The identified invariant manifolds with the fixed points (cyan for stable, orange for saddle and black for unstable) for all inferred networks (except the ones in Fig~\ref{fig:im_rep}).}\label{fig:im_all}
+       \caption{The identified invariant manifolds with the fixed points (cyan for stable, orange for saddle and black for unstable) for all inferred networks (except the ones in Fig~\ref{fig:im_rep}).}
+       \label{fig:im_all}
 \end{figure}
 
-As one can see, not all solutions can be meaningfully analyzed with this the slow-fast decomposition method. For example, the solution at the center of the \(\tanh, N=256\) block, the found invariant manifold is not correctly captured.
 
 
 
