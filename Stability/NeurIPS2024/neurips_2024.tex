@@ -187,6 +187,14 @@ Our theory guarantees that systems close to a continuous attractor (in the space
 \section{A critique of pure continuous attractors}\label{sec:critique}
 We will first lay out a number of observations about the dynamics of bifurcations and approximations of continuous attractors used in theoretical neuroscience.
 
+Ordinary differential equations (ODEs) are commonly used to describe the dynamical laws governing the temporal evolution of firing rates or latent population states\cite{vyas2020}.
+In this framework, neural systems are viewed as implementing the continuous time evolution of neural states to perform computations.
+We will consider a continuous attractor as a mechanism that implements analog memory computation: carrying a particular memory representation over time.
+To define it formally, let \(\vx(t) \in \reals^d\) denote the neural state, and \(\dot{\vx} = \vf(\vx)\) represent its dynamics.
+Let \(\manifold \subset \reals^d\) be a manifold.
+We say \(\manifold\) is a continuous attractor, if (1) every state on the manifold is a fixed point, \(\forall \vx \in \manifold, \vf(\vx) = 0\), and (2) the fixed points are marginally stable tangent to the manifold and stable normal to the manifold.
+In other words, the continuous attractor is a continuum of equilibrium points such that the neural state near the manifold is attracted to it, and on the manifold, the state does not move.
+
 \subsection{Motivating examples}\label{sec:motivating}
 \begin{figure}[tbhp]
   \centering
@@ -204,13 +212,7 @@ We will first lay out a number of observations about the dynamics of bifurcation
 %par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
 %Fig1
 
-Ordinary differential equations (ODEs) are commonly used to describe the dynamical laws governing the temporal evolution of firing rates or latent population states\cite{vyas2020}.
-In this framework, neural systems are viewed as implementing the continuous time evolution of neural states to perform computations.
-We will consider a continuous attractor as a mechanism that implements analog memory computation: carrying a particular memory representation over time.
-To define it formally, let \(\vx(t) \in \reals^d\) denote the neural state, and \(\dot{\vx} = \vf(\vx)\) represent its dynamics.
-Let \(\manifold \subset \reals^d\) be a manifold.
-We say \(\manifold\) is a continuous attractor, if (1) every state on the manifold is a fixed point, \(\forall \vx \in \manifold, \vf(\vx) = 0\), and (2) the fixed points are marginally stable tangent to the manifold and stable normal to the manifold.
-In other words, the continuous attractor is a continuum of equilibrium points such that the neural state near the manifold is attracted to it, and on the manifold, the state does not move.
+
 
 For example, we can construct a line attractor (a continuous attractor with a line manifold) as follows:
 %We will describe the bifurcation space of some continuous attractors.
@@ -733,7 +735,7 @@ Finally, we characterize the memory capacity of the network by calculating the e
 The mean accumulated error at the time at which the task was trained has a linear relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}C).
 Furthermore, this error is bounded by the mean distance between stable and unstable fixed points (red dots in Fig.~\ref{fig:angular_loss}C).
 This is another indication that the networks rely on a ring invariant manifold to implement the task.
-Networks with different numbers of fixed points might have the same performance on the finite time scale (\(T_1\)) but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}D).
+Networks with different numbers of fixed points might have the same performance on the finite time scale (\(T_1\), bounded by \(T_1\uniformNorm{\varphi}\)) but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}D).
 
 
 \section{Approximate Slow Manifolds are near Continuous Attractors}\label{sec:converse}
@@ -751,7 +753,7 @@ The persistence~\ref{converse:persistent} requires that the flow on the manifold
 The S-type robustness~\ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
 Along with the D-type robustness~\ref{converse:Dtype}, it implies the manifold is ``attractive'', and normally hyperbolic (see also Sec.~\ref{sec:persitencempliesnh}).
 
-If these four conditions hold, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added, it becomes a continuous attractor (Prop.~\ref{prop:revival}, see also Sec.~\ref{sec:near_ca}).
+If these four conditions hold, for example for task-trained RNNs, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added, it becomes a continuous attractor (Prop.~\ref{prop:revival}, see also Sec.~\ref{sec:near_ca}).
 For the RNN experiments, we added state-noise while training using stochastic gradient descent, satisfying~\ref{converse:Stype} and~\ref{converse:Dtype}.
 We have also verified that~\ref{converse:persistent} holds (Fig.~\ref{fig:angular_loss}A).
 Although the stochastic optimization cannot lead to the continuous attractor solution, it gets to the neighborhood where there are approximate solutions.
@@ -789,41 +791,21 @@ Although for well-trained networks this separation of timescale exists, the anal
 Previous psychophysical, theoretical, and neurophysiological work has shown that noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
 Discrete attractor dynamics can counteract this noise by pulling memories towards a few stable representations~\citep{panichello2019,Koulakov2002,Goldman2003-cz}.
 The found solutions might reflect the trade-off between robustness to noise and the ability to store continuous variables.
+%A future line of research could quantify the size of proposed homeostatic mechanisms to maintain analog working memory as proposed in e.g. \citep{Renart2003}.
 
 
-% \mpcomment{move the following to the end or conclusion}
 Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
 Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
 This empirical evidence strongly corroborates our proposed theory of continuous memory.
 
 
 
-%In this study, we did not impose any additional structural constraints on the RNNs during training.
-%It would be interesting to investigate how such constraints might affect the representation and computation in the trained RNNs.
 
 
-%\subsection{Implications for Neuroscience}\label{sec:imp:neuroscience}
-
-%some remarks on the structure? maybe just leave out for now
-%The conditions for normally hyperbolic continuous attractors are favorable in the recurrent neuronal networks: (1) mutual inhibition is widely present and evidence points to inhibition dominated dynamics,
-%(2) the neural state space is bounded due to physiological constraints, namely by a non-negative firing rate below and a maximum firing rate above.
-
-
-
-
-
-% We have derived a general theory that describes the loss landscape of RNNs around continuous attractor solutions.
-% This theory implies that backpropagating gradient does not explode for systems near compact continuous attractors because of divergent dynamics.
-% This insight also suggests that there can exist homeostatic mechanisms for certain implementations of continuous attractors that maintain the structure of the attractor sufficiently for the neural computation it is used in, which we demonstrate in a simple network.
-
-%\begin{ack}
-%Use unnumbered first level headings for the acknowledgments. All acknowledgments go at the end of the paper before the list of references. Moreover, you are required to declare
-%funding (financial activities supporting the submitted work) and competing interests (related financial activities outside the submitted work).
-%More information about this disclosure can be found at: \url{https://neurips.cc/Conferences/2023/PaperInformation/FundingDisclosure}.
-%
-%
-%Do {\bf not} include this section in the anonymized submission, only in the final paper. You can use the \texttt{ack} environment provided in the style file to autmoatically hide this section in the anonymized submission.
-%\end{ack}
+\begin{ack}
+We would like to extend our heartfelt thanks to Sukbin Lim and Srdjan Ostojic for their invaluable feedback and thoughtful suggestions which significantly refined the work.
+This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resilience Plan (PPR), through project number 62, Center for Responsible AI, and the Portuguese national funds, through FCT - Fundação para a Ciência e a Tecnologia - in the context of the project UIDB/04443/2020.
+\end{ack}
 
 
 %\section*{References}
@@ -2323,7 +2305,7 @@ We will now dicuss the conditions for when approximate solutions to an analog wo
 We consider approximate solutions to an analog working memory problem to be systems of the form \ref{eq:RNN:discrete} or \ref{eq:RNN:continuous} (in both cases following a linear decoder), which have a small memory error over time in output space.
 
 \subsubsection{Guarantee for a continuous attractor}\label{sec:near_ca}
-The theory guarantees that a system that satisfies condition  will have a continuous attractor in the following sense.
+The theory guarantees that a system that satisfies conditions \ref{converse:bijection}-\ref{converse:Dtype}  will have a continuous attractor in the following sense.
 For such a system there exists a decomposition such that the system can be effectively decomposed into a continuous attractor (attractive invariant manifold with zero flow) and a component on which a (possibly ``fast'' flow) can exist buy which get quenched by the out put projection.
 
 
