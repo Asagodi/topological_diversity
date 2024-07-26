@@ -612,10 +612,12 @@ For each trained network, we find the slow manifold by integrating the autonomou
 %
 %We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}.
 %https://scikit-dimension.readthedocs.io/en/latest/skdim.id.MOM.html#skdim.id.MOM
-In the cases that we identify a one-dimensional invariant manifold \(\manifold\), we parametrize it by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
-Alternatively, we identify the points along the trajectories that are the closest to a set of points in the output space relevant to the task after convergence, i.e. on the unit ring.
+We identify the points on the invariant manifold from the simulated trajectories that are projected closest to a set of points in the output space relevant to the task after convergence, i.e. on the target ring.
+We parametrize the one-dimensional invariant manifold \(\manifold\) by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
+The normal hyperbolicity is measured by a gap in the eigenvalue spectrum gap of the linearization along points on the invariant manifold (Fig.\ref{fig:eigenvalue_gap}).
+
 %Finally, we find the stable fixed points through a threshold on the
-Finally, we find the fixed points on the invariant ring by identifying regions where the direction of the flow flips for a dense set of points on the found invariant manifold.
+We find the fixed points on the invariant ring by identifying regions where the direction of the flow flips for a dense set of points on the found invariant manifold.
 We assess the direction through projection onto the output mapping and calculate the angular flow.
 Stable fixed points are identified where the flow directions are both pointing towards this flip point,
 while saddle nodes are identified where they are pointing away (filled and hollow circles Fig.~\ref{fig:fastslow_decomposition}A and B for stable and saddle fixed points respectively).
@@ -799,7 +801,7 @@ Amidst the variability of solutions, we observe that all trained networks share 
 This empirical evidence strongly corroborates our proposed theory of continuous memory.
 
 
-
+%C1-C4
 
 
 \begin{ack}
@@ -1697,7 +1699,7 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %%Then we looked for networks that diverged due to exploding gradients which we identify as having a loss of 1 or higher.
 %Note that exploding gradients can be seen for UBLA manifested as the bimodal distribution of the gradients in Fig.~\ref{fig:maintenance_h0}F. This does lead to faster divergence (for lower learning rate) but has on the other hand the benefit of providing useful gradients to maintain the (local) solution around the optimal solution, which explains the superior performance at the optimal learning rate for the UBLA (Fig.~\ref{fig:maintenance_h0}A), on this timescale for the trial that we investigated.
 %Also in the presence of input and internal noise the UBLA has a higher tendency to have exploding gradients for lower learning rates, see Fig.~\ref{fig:all_lrs_vs_mses}.
-%%This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make bigger jumps.
+%%This is because the noise sometimes pushes the UBLA to the regime with divergent dynamics which leads to exploding gradients, which then causes the weights to make larger jumps.
 %%The fact that the iRNN has a smaller range of gradients explains exploding gradients at a higher learning rate for iRNN and the need for a higher learning rate for optimal maintenance of the solution and is explained by a more shallow loss landscape in the close vininity of the iRNN (Fig.~\ref{fig:maintenance_h0}C).
 %We hypothesise that the negative effect of exploding gradients shows only for longer trials.
 %
@@ -2677,9 +2679,10 @@ where \(y\) is the target and \(\hat y\) is the prediction.
 
 We use the eigenvalue spectrum as evidence for normal hyperbolicity.
 Normal hyperbolicity of an attractive ring invariant manifold implies that the eigenvalue spectrum has a gap in its eigenvalue spectrum.
-The  biggest eigenvalue (real part) for such a manifold needs to be much closer to zero than the second biggest.
+To measure this, we linearize at reference points on the invariant manifold (calculate the Jacobian) and calculate the eigenvalues.
+The largest  eigenvalue (real part) for such a manifold needs to be much closer to zero than the second largest .
 We verify that this gap exists in the trained networks shown in Fig.~\ref{fig:fastslow_decomposition}.
-The biggest eigenvalue is non-zero (the invariant manifold is not a continuous attractor), but it is removed from the second biggest, see Fig.~\ref{fig:eigenvalue_gap}.
+The largest  eigenvalue is non-zero (the invariant manifold is not a continuous attractor), but it is removed from the second largest , see Fig.~\ref{fig:eigenvalue_gap}.
 \begin{figure}[tbhp]
      \centering
     \includegraphics[width=\textwidth]{eigenvalue_gap}
