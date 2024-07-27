@@ -684,7 +684,7 @@ The universal structure of continuous attractor approximations as slow invariant
 
 When neuroscientists study neural computations in animals, the animals are trained on tasks with finite durations. As a result, it is unclear whether the animals learn the intended computation or merely a finite-time approximation of it. The same issue arises with trained neural networks.
 We will investigate to what extent the networks have the intended memory necessary for perfect memory or whether they implement the task only on the timescale on which they have been trained.
-We show that the theoretical upper bound for the memory performance based on the distance to a continuous attractor (Prop.~\ref{prop:ub}) holds in  trained RNNs (Fig.~\ref{fig:angular_loss}A).
+We show that the theoretical upper bound for the memory performance based on the distance to a continuous attractor (Prop.~\ref{prop:ub}) holds in trained RNNs (Fig.~\ref{fig:angular_loss}A).
 
 %generalization
 %\subsection{Different topologies have different generalization properties}
@@ -715,7 +715,7 @@ We tested all networks with a validation set and took a cutoff for the normalize
 \ptitle{Finite time}
 Aside from the angular velocity integration component of the task, the trained networks learn to store a memory of an angular variable.
 We assess the performance of the network to store the memory of the angle over time.
-The networks typically perform well on the timescale on which they have been trained \(T_1=256\) time steps (Fig.~\ref{fig:angular_loss}E).
+The networks typically perform well on the timescale on which they have been trained \(T_1=256\) time steps (Fig.~\ref{fig:angular_loss}B).
 This loss is bounded by the uniform norm of the vector field on the invariant manifold (Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and~\ref{sec:supp:ub}).
 
 
@@ -731,10 +731,10 @@ Besides the maximal error that the network will make in the asymptotic limit, we
 We construct a probability distribution of what part of state space we end up in an infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
 Finally, we characterize the memory capacity of the network by calculating the entropy of this probability distribution (see Sec.~\ref{sec:supp:boa}).
 
-The mean accumulated error at the time at which the task was trained has a linear relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}C).
-Furthermore, this error is bounded by the mean distance between stable and unstable fixed points (red dots in Fig.~\ref{fig:angular_loss}C).
+The mean accumulated error at the time at which the task was trained has an exponential relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}A).
+Furthermore, this error is bounded by the mean distance between stable and unstable fixed points (red dots in Fig.~\ref{fig:angular_loss}D).
 This is another indication that the networks rely on a ring invariant manifold to implement the task.
-Networks with different numbers of fixed points might have the same performance on the finite time scale (\(T_1\), bounded by \(T_1\uniformNorm{\varphi}\)) but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}D).
+Networks with different numbers of fixed points might have the same performance on the finite time scale (\(T_1\), bounded by \(T_1\uniformNorm{\varphi}\)) but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}C).
 
 
 \section{Approximate Slow Manifolds are near Continuous Attractors}\label{sec:converse}
