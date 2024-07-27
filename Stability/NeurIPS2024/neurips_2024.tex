@@ -724,17 +724,20 @@ This loss is bounded by the uniform norm of the vector field on the invariant ma
 Looking beyond the finite timescale provides valuable insights into the network's ability to store information.
 For the asymptotic time scale, the asymptotic behavior of the system dominates and we identify the network behavior through its \(\omega\)-limit sets.
 For a one-dimensional system, this will either be fixed points or a limit cycle.
-For the fixed-point type solution, the maximal error is given by the maximal distance to the next fixed point while for a limit cycle, this will always be \(\pi\).
+For the fixed-point type solution, the maximal error is given by the maximal distance to the next fixed point, while for a limit cycle, this will always be \(\pi\).
+We calculate the \emph{average fixed point distance} by takeing the average of the inter-fixed-point interval for each neighbouring pair of fixed points.
 We identify the location of the fixed points as described in Sec.~\ref{sec:fastslowmethod}.
 
 Besides the maximal error that the network will make in the asymptotic limit, we can also characterize how many different angles the network would confuse in the asymptotic limit.
 We construct a probability distribution of what part of state space we end up in an infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
-Finally, we characterize the memory capacity of the network by calculating the entropy of this probability distribution (see Sec.~\ref{sec:supp:boa}).
+Finally, we characterize the memory capacity of the network by calculating the entropy of this probability distribution (this gives the \emph{memory capacity} of the network, see Sec.~\ref{sec:supp:boa}).
 
+
+\ptitle{Error Accumulation in Neural Networks}
 The mean accumulated error at the time at which the task was trained has an exponential relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}A).
 Furthermore, this error is bounded by the mean distance between stable and unstable fixed points (red dots in Fig.~\ref{fig:angular_loss}D).
 This is another indication that the networks rely on a ring invariant manifold to implement the task.
-Networks with different numbers of fixed points might have the same performance on the finite time scale (\(T_1\), bounded by \(T_1\uniformNorm{\varphi}\)) but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}C).
+Networks with different numbers of fixed points might have the same performance on the finite time scale (bounded by \(T_1\uniformNorm{\varphi}\) for the trial time \(T_1\) and the uniform norm of the vector field on the invariant slow manifold \(\uniformNorm{\varphi}\)) but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}C).
 
 
 \section{Approximate Slow Manifolds are near Continuous Attractors}\label{sec:converse}
@@ -778,7 +781,7 @@ Unlike in most dynamical systems theories where the asymptotic behavior and topo
 Training RNNs on tasks involving continuous variables results in a great variety of solutions.
 However, even within this variety, we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
 As the theory predicts, trained networks have an attractive ring invariant manifold.
-This supports our theory that theoretical models that satisfy conditions \ref{con	verse:bijection}-\ref{converse:Dtype} and hence have behavior consistent with an almost perfect memory system, will be near continuous attractors (in parameter space).
+This supports our theory that theoretical models that satisfy conditions \ref{converse:bijection}-\ref{converse:Dtype} and hence have behavior consistent with an almost perfect memory system, will be near continuous attractors (in parameter space).
 Nevertheless, the topological structure of the found solutions still determines how well a network can perform generalization for longer time scales.
 
 %limitations
