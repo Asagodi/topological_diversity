@@ -2271,7 +2271,7 @@ For example, if neurons are only approximately ReLU the theory developed in \cit
 
 
 \newpage
-\section{A Near Perfect Analog Memory System must be close to a Continuous Attractor}
+\section{Near Perfect Analog Memory Systems are close to Continuous Attractors}
 \subsection{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
 
  We  provide a proof of Prop.~\ref{prop:revival}.
@@ -2310,6 +2310,39 @@ Then the perturbation
 \]
 is smooth and creates a continuous attractor at \(\manifold_\epsilon\).
 \end{proof}
+
+
+
+\subsection{Near Perfect Analog Memory Systems are close to Decomposable Systems with a Continuous Attractor}
+
+We now prove a more general statement:.
+Assumptions:
+- \(\manifold_X= \manifold_{\text{slow}}\times \manifold_{null}\) with \(\manifold_{slow}\simeq \manifold_Y\)
+- there is a slow flow (in the direction of \(\manifold_\text{slow}\)) (it is possible that there is no flow in output space but there is flow in the kernel of the output mapping)
+
+
+
+
+
+Problem: if the flow is in the kernel of the output mapping it can be arbitrarily fast (even though memory is degrading slowly)
+
+
+More general:
+Prove (?): There is a point \(y\in Y\) for which \(g^{-1}(y)={x}\times \manifold_{null}\) 
+With some implicit function theorem?
++the fact that the invariant manifold is compact
+
+This would imply that the invariant manifold \( \manifold_{\text{slow}}\times \manifold_{null}\) hold for every point because \(\manifold_X\) is a manifold
+
+
+
+\subsection{Output mapping}
+This paper focuses on a linear output mapping for simplicity.
+Errors can be minimized with a nonlinear mapping.
+However, this can only be applied for error off of the output manifold. 
+%So if there is an output that is mapped off of the manild there is a mapping that 
+If there is memory degradation along the output manifold, it is not possible to choose another mapping that corrects for this error.
+
 
 %Setup for case where smoothness matters:
 %\begin{itemize}
