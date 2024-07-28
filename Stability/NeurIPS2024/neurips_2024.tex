@@ -2321,7 +2321,15 @@ Assumptions:
 - there is a slow flow (in the direction of \(\manifold_\text{slow}\)) (it is possible that there is no flow in output space but there is flow in the kernel of the output mapping)
 
 
+\begin{theorem}
+Let \(\manifold_\epsilon\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}) with the real part of the eigenvalues of \(\nabla_\vz \vh\) all negative. % in the neighborhood of a continuous attractor.
+Further assume that this manifold can be decomposed \(\manifold_X= \manifold_{\text{slow}}\times \manifold_{null}\) with \(\manifold_{slow}\simeq \manifold_Y\) and that 
+ the uniform norm of the flow tangent to \(\manifold_\epsilon\) restricted to \(\manifold_{\text{slow}}\) be \(\|\dot \vy\|_\infty=\eta\).
+There exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a system that is decomposable into a continuous attractor and a system with a non-zero flow. 
+Furthermore, the trajectories of the second system make up a vector bundle for which the output projection is the bundle projection.
+\end{theorem}
 
+In other words, after applying this perturbation we get \(\dot x|_\text{slow} = 0\).
 
 
 Problem: if the flow is in the kernel of the output mapping it can be arbitrarily fast (even though memory is degrading slowly)
