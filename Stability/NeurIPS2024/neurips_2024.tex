@@ -2351,11 +2351,16 @@ Assumptions:
 -- replace with : output mapping must be a submersion
 - there is a slow flow (in the direction of \(\manifold_\text{slow}\)) (it is possible that there is no flow in output space but there is flow in the kernel of the output mapping)
 
+%eta:
+% a smooth map φ : M → N and a vector field X on M
+%||\dot x|N||\infty Where we take the component N normal to each fiber \g^{-1}(y)
 
 \begin{theorem}
 Let \(\manifold_\epsilon\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}) with the real part of the eigenvalues of \(\nabla_\vz \vh\) all negative. % in the neighborhood of a continuous attractor.
 Further assume that this manifold can be decomposed \(\manifold_X= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_Y\) and that 
  the uniform norm of the flow tangent to \(\manifold_\epsilon\) restricted to \(\manifold_{\text{slow}}\) be \(\|\dot \vy\|_\infty=\eta\).
+ %eta should be the uniform norm of the projected vector field on the output manifold
+ %actually it should be the supremum over all possible pullback sections
 There exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a system that is decomposable into a continuous attractor and a system with a non-zero flow. 
 % eta/||g||_\infty for the output mapping g
 Furthermore, the trajectories of the second system make up a fiber bundle for which the output projection is the bundle projection.
@@ -2368,7 +2373,7 @@ Assume that the output mapping is a submersion from the invariant manifold to th
 Ehresmann's lemma implies that locally trivial fibration
 
 the part of the vector field orthogonal to the fibers
-perturbation is vf normal to \(\pi^{-1}(x)\)
+perturbation is vf normal to \(\g^{-1}(x)\)
 
 \end{proof}
 
