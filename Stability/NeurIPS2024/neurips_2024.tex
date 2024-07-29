@@ -2272,6 +2272,9 @@ For example, if neurons are only approximately ReLU the theory developed in \cit
 
 \newpage
 \section{Near Perfect Analog Memory Systems are close to Continuous Attractors}
+%some intro comments
+%definitions:
+%%Near Perfect Analog Memory Systems
 \subsection{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
 
  We  provide a proof of Prop.~\ref{prop:revival}.
@@ -2340,28 +2343,103 @@ is smooth and creates a continuous attractor at \(\manifold_\epsilon\).
 %\end{itemize}
 %\end{itemize}
 
+\subsection{Output mapping}
+This paper focuses on a linear output mapping for simplicity.
+Errors can be minimized with a nonlinear mapping.
+However, this can only be applied for error off of the output manifold. 
+%So if there is an output that is mapped off of the manild there is a mapping that 
+If there is memory degradation along the output manifold, it is not possible to choose another mapping that corrects for this error.
 
 
 
 \subsection{Near Perfect Analog Memory Systems are close to Decomposable Systems with a Continuous Attractor}
 
-We now prove a more general statement:.
-Assumptions:
-- \(\manifold_X= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_Y\) 
--- replace with : output mapping must be a submersion
-- there is a slow flow (in the direction of \(\manifold_\text{slow}\)) (it is possible that there is no flow in output space but there is flow in the kernel of the output mapping)
+We now prove a more general statement about the kind of systems that are close to perfect analog memory systems.
+For this part of the theory, we need to consider the output manifold \(\manifold_{\text{output}}\), the manifold on which we determine the error over time as in Sec.~\ref{sec:supp:ub}.
+For this section, we will consider the output mapping to be a smooth (possibly nonlinear) mapping \(g\colon X\rightarrow Y\) between the neural state space \(X=\reals^{d_X}\) and the output space \(Y=\reals^{d_Y}\).
+For a circular variable this will be the ring \(S^1\).
 
-%eta:
+The construction of a perturbation relies on finding the necessary minimal structure in the invariant manifold for which we can guarantee closeness to a continuous attractor.
+Therefore, first of all, we need this closeness in terms of the geometry of the manifold, which we guarantee through the notion of a fibration of the output mapping.
+Second, we need to guarantee that the flow is bounded in a sense so that our perturbation is also bounded by this amount.
+We will characterize this by the vector field normal to the fibers of the fiber bundle.
+So we first state the definition of a fiber bundle and a trivial fibration.
+
+\begin{definition}
+A \emph{fiber bundle} is a structure $(E, B, \pi, F)$ where:
+\begin{itemize}
+    \item $E$ is the \emph{total space},
+    \item $B$ is the \emph{base space},
+    \item $\pi: E \to B$ is a continuous surjection called the \emph{projection map}, and
+    \item $F$ is a topological space called the \emph{fiber}.
+\end{itemize}
+This structure must satisfy the local triviality condition: for each $b \in B$, there exists an open neighborhood $U$ of $b$ such that there is a homeomorphism
+\[
+\varphi: \pi^{-1}(U) \to U \times F
+\]
+that commutes with the projection onto $U$, meaning that the following diagram commutes:
+\[
+\begin{array}{ccc}
+\pi^{-1}(U) & \xrightarrow{\varphi} & U \times F \\
+\pi \downarrow &  & \downarrow \text{pr}_1 \\
+U & = & U
+\end{array}
+\]
+where $\text{pr}_1: U \times F \to U$ is the projection onto the first factor.
+\end{definition}
+
+\begin{definition}
+We say that a projection map \(\pi:E \rightarrow  B\) is \emph{locally trivial} if each point \(b \in B\) is contained in an open set \(U\) having the property that \(E_U\coloneqq \pi^{-1}(U)\) is trivial over \(U\).
+\end{definition}
+
+We will rely on the concept of a submersion to charaterize how the output space needs to relate to our invarinat manifold.
+\begin{definition}[Submersion]
+Let \(M\) and \(N\) be differentiable manifolds and \(f\colon M\to N\) be a differentiable map between them.
+ The map \(f\) is a \emph{submersion} at a point \(p\in M\) if its differential \(Df_{p}\colon T_{p}M\to T_{f(p)}N\) is a surjective linear map.
+\end{definition}
+
+
+
+This allows us to characterize what kind of structure the invariant manifold needs to have, namely it can be see as the direct product of the output manifold and some other manifold which described over what part of the invariant manifold the output mapping is invariant.
+\begin{theorem}[Ehresmann's lemma\citep{ehresmann1950connexions}]
+If a smooth mapping \(f\colon M\rightarrow N\), where \(M\) and \(N\) are smooth manifolds, is
+ \begin{enumerate}
+\item a surjective submersion, and
+\item a proper map
+\end{enumerate}
+then it is a locally trivial fibration.
+\end{theorem}
+
+\begin{remark}
+If a manifold \(M\) is compact, then the above smooth map  is a proper map.
+If we do not have a submersion or that the output mapping is transversal to the output manifold, we have a situation in which the flow on the invariant manifold can be arbitrarily fast  (even though memory is degrading slowly).
+This happens when the flow is in a singularity of the output mapping.
+\end{remark}
+
+For our statement we want that the invariant manifold can be decomposed into a space that is diffeomorphic to the output manifold and another compact manifold: \(\manifold_\epsilon= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_Y\). We can relax this to allow for the possiblility of some torision along the invariant manifold.
+For this to hold, it is sufficient that the output mapping must be a submersion because this makes it a locally trivial fibration.
+So we get that \(g\colon X\rightarrow Y\) defines a locally trivial fiber mapping.
+
+%The second assumption we need is about the speed along the output manifold.
+The second assumption we need is to have a bound for the speed of trajectories along the fibers, which will correspond to a speed along the output manifold, resulting in memory degradation.
+We need to assume that there is a slow flow (in the direction of \(\manifold_\text{slow}\)). %(it is possible that there is no flow in output space but there is flow in the kernel of the output mapping)
+We characterize this as follows.
+---- the supremum over the uniform norm of the vector field tangent to sections in the space of smooth sections of the fiber bundle 
+---- supremum over  the uniform norms over the vector field normal to the fibers of the fiber bundle 
+
+
+%eta: 
 % a smooth map φ : M → N and a vector field X on M
 %||\dot x|N||\infty Where we take the component N normal to each fiber \g^{-1}(y)
+%for later: eta in output space: average vector field tangent to output manifold per fiber
 
 \begin{theorem}
 Let \(\manifold_\epsilon\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}) with the real part of the eigenvalues of \(\nabla_\vz \vh\) all negative. % in the neighborhood of a continuous attractor.
-Further assume that this manifold can be decomposed \(\manifold_X= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_Y\) and that 
+Further, assume that this manifold can be decomposed \(\manifold_\epsilon= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_Y\) and that 
  the uniform norm of the flow tangent to \(\manifold_\epsilon\) restricted to \(\manifold_{\text{slow}}\) be \(\|\dot \vy\|_\infty=\eta\).
  %eta should be the uniform norm of the projected vector field on the output manifold
  %actually it should be the supremum over all possible pullback sections
-There exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a system that is decomposable into a continuous attractor and a system with a non-zero flow. 
+Then, there exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a system that is decomposable into a continuous attractor and a system with a non-zero flow. 
 % eta/||g||_\infty for the output mapping g
 Furthermore, the trajectories of the second system make up a fiber bundle for which the output projection is the bundle projection.
 \end{theorem}
@@ -2374,45 +2452,31 @@ Ehresmann's lemma implies that locally trivial fibration
 
 the part of the vector field orthogonal to the fibers
 perturbation is vf normal to \(g^{-1}(x)\)
-\mpcomment{Incomplete marker}
+
+
+\mpcomment{Incomplete marker}	
 
 \end{proof}
 
-\begin{definition}[Submersion]
-Let \(M\) and \(N\) be differentiable manifolds and \(f\colon M\to N\) be a differentiable map between them.
- The map \(f\) is a \emph{submersion} at a point \(p\in M\) if its differential \(Df_{p}\colon T_{p}M\to T_{f(p)}N\) is a surjective linear map.
-\end{definition}
-
-\begin{theorem}[Ehresmann's lemma]
-states that if a smooth mapping \(f\colon M\rightarrow N\), where \(M\) and \(N\) are smooth manifolds, is
- \begin{enumerate}
-\item a surjective submersion, and
-\item a proper map
-\end{enumerate}
-then it is a locally trivial fibration.
-\end{theorem}
-
-Remark: if M is compact, then it is a proper map.
-If we do not have a submersion or that the output mapping is transversal to the output manifold, we have the following:
-Problem: if the flow is in the kernel of the output mapping it can be arbitrarily fast (even though memory is degrading slowly)
 
 
 
-More general:
-Prove (?): There is a point \(y\in Y\) for which \(g^{-1}(y)={x}\times \manifold_{null}\) 
-With some implicit function theorem?
-+the fact that the invariant manifold is compact
 
-This would imply that the invariant manifold \( \manifold_{\text{slow}}\times \manifold_{\text{null}}\) hold for every point because \(\manifold_X\) is a manifold
+
+\paragraph{Example}
+\ref{fig:fastslow_decomposition}D
 
 
 
-\subsection{Output mapping}
-This paper focuses on a linear output mapping for simplicity.
-Errors can be minimized with a nonlinear mapping.
-However, this can only be applied for error off of the output manifold. 
-%So if there is an output that is mapped off of the manild there is a mapping that 
-If there is memory degradation along the output manifold, it is not possible to choose another mapping that corrects for this error.
+%\paragraph{} More general:
+%Prove (?): There is a point \(y\in Y\) for which \(g^{-1}(y)={x}\times \manifold_{null}\) 
+%With some implicit function theorem?
+%+the fact that the invariant manifold is compact
+%
+%This would imply that the invariant manifold \( \manifold_{\text{slow}}\times \manifold_{\text{null}}\) hold for every point because \(\manifold_X\) is a manifold
+
+
+
 
 
 
