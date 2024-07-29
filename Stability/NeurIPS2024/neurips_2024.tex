@@ -122,7 +122,7 @@ Unfortunately, continuous attractors suffer from severe structural instability i
 This fragility limits their utility especially in biological systems as their recurrent dynamics are subject to constant perturbations.
 We observe that the bifurcations from continuous attractors in theoretical neuroscience models display various structurally stable forms.
 Although their asymptotic behaviors to maintain memory are categorically distinct, their finite-time behaviors are similar.
-We build on the persistent manifold theory to explain the commonalities between bifurcations away from and approximations of continuous attractors.
+We build on the persistent manifold theory to explain the commonalities between bifurcations from and approximations of continuous attractors.
 Fast-slow decomposition analysis uncovers the persistent manifold that survives the seemingly destructive bifurcation.
 Moreover, recurrent neural networks trained on analog memory tasks display approximate continuous attractors with predicted slow manifold structures.
 Therefore, continuous attractors are \emph{functionally robust} and remain useful as a universal analogy for understanding analog memory.
@@ -170,15 +170,15 @@ In neuroscience, this vulnerability is well-known and often referred to as the `
 There are two primary sources of perturbations in the recurrent network dynamics:
 (1) the stochastic nature of online learning signals that act via synaptic plasticity, and
 (2) spontaneous fluctuations in synaptic weights~\cite{Fusi2007-yg,shimizu2021}.
-Thus, additional mechanisms are necessary to compensate for the degradation in particular implementations, by bringing the short-term behavior close to that of a continuous attractor~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022}.
+Thus, additional mechanisms are necessary to compensate for the degradation in particular implementations, by bringing the short-term behavior closer to that of a continuous attractor~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022}.
 However, we lack the theoretical basis for relying on the brittle concept of continuous attractors for understanding biological analog working memory.
 
 
-In this study, we explore bifurcation away from and approximations of continuous attractors in theoretical models.
+In this study, we explore perturbations and approximations of continuous attractors in the space of dynamical models.
 We first report on the differences and similarities between the various structurally stable dynamics in the vicinity of continuous attractors in these models.
 The distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time, and hence differences in the pattern of errors in temporal generalization.
 By assuming normal hyperbolicity we will separate the time scales to obtain a decomposition of the dynamics by separating out the fast flow normal towards the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within it.
-The proposed decomposition is general, and we apply it to theoretical models and task-trained recurrent neural networks (RNNs) to reveal a ``universal motif'' of analog memory mechanism with various potential topologies.
+The proposed decomposition applied to theoretical models and task-trained recurrent neural networks (RNNs) reveals a ``universal motif'' of analog memory mechanism with various potential topologies.
 We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects resulting systems with different topologies as \textbf{approximate continuous attractors}.
 Our theory guarantees that systems close to a continuous attractor (in the space of vector fields) will have similar behavior to it.
 %Furthermore, our theory provides information of the generalization properties of these approximations.
