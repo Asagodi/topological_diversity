@@ -643,16 +643,21 @@ the slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslo
 All stability structures (fixed points and limit cycles) are mapped close to the target output circle (Figs.~\ref{fig:fastslow_decomposition_otuput}, \ref{fig:im_rep}, \ref{fig:im_all}).
 These solutions are consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing, Park2023a} and neuronal circuits underlying persistent representations despite time-varying activity~\citep{druckmann2012neuronal}.
 
+We verify that this gap exists in the trained networks shown in Fig.~\ref{fig:fastslow_decomposition}B and C.
+The largest  eigenvalue of the Jacobian is non-zero (the invariant manifold is not a continuous attractor), but it is removed from the second largest, see Fig.~\ref{fig:fastslow_decomposition}E and F.
+This implies that normal hyperbolicity for these trained networks holds.
+
 %Fig 4
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=.95\textwidth]{fastslow_decomposition_m}
+  \includegraphics[width=.95\textwidth]{fastslow_decomposition_m_normhyp}
   \caption{Slow manifold approximation of different trained networks on the memory-guided saccade and angular velocity integration tasks.
  (A1) Example of a trajectory on the angular velocity integration task.
  (A2) Example of a trajectory on the memory-guided saccade task.
  (B) An example fixed-point type solution to the memory-guided saccade task.
  (C) An example of a found solution to the angular velocity integration task.
  (D) An example slow-torus type solution to the memory-guided saccade task. The colored curves indicate stable limit cycles of the system.
+ (E+F) The eigenvalue spectrum for the trained networks in B and C show a gap between the first two largest eigenvalues.
 }\label{fig:fastslow_decomposition}
 \end{figure}
 
@@ -2878,15 +2883,14 @@ where \(y\) is the target and \(\hat y\) is the prediction.
 We use the eigenvalue spectrum as evidence for normal hyperbolicity.
 Normal hyperbolicity of an attractive ring invariant manifold implies that the eigenvalue spectrum has a gap in its eigenvalue spectrum.
 To measure this, we linearize at reference points on the invariant manifold (calculate the Jacobian) and calculate the eigenvalues.
-The largest  eigenvalue (real part) for such a manifold needs to be much closer to zero than the second largest .
-We verify that this gap exists in the trained networks shown in Fig.~\ref{fig:fastslow_decomposition}.
-The largest  eigenvalue is non-zero (the invariant manifold is not a continuous attractor), but it is removed from the second largest , see Fig.~\ref{fig:eigenvalue_gap}.
-\begin{figure}[tbhp]
-     \centering
-    \includegraphics[width=\textwidth]{eigenvalue_gap}
-       \caption{The eigenvalue spectrum for the trained networks in Fig~\ref{fig:fastslow_decomposition})B and C show a gap between the first two largest eigenvalues.}
-       \label{fig:eigenvalue_gap}
-\end{figure}
+The largest  eigenvalue (real part) for such a manifold needs to be much closer to zero than the second largest.
+
+%\begin{figure}[tbhp]
+%     \centering
+%    \includegraphics[width=\textwidth]{eigenvalue_gap}
+%       \caption{The eigenvalue spectrum for the trained networks in Fig~\ref{fig:fastslow_decomposition})B and C show a gap between the first two largest eigenvalues.}
+%       \label{fig:eigenvalue_gap}
+%\end{figure}
 
 For a stable system, where the eigenvalues have negative real parts, the time constant \(\tau\) is given by the negative inverse of the eigenvalue’s real part: \(\tau = -\frac{1}{\Re(\lambda)}\),
 where \(\Re(\lambda)\) denotes the real part of the eigenvalue \(\lambda\).
