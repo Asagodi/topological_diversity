@@ -493,7 +493,8 @@ Let the uniform norm of the flow tangent to the manifold be \(\|\dot \vy\|_\inft
 There exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a continuous attractor manifold. % \(\manifold_0\) diffeomorphic to \(\manifold_\epsilon\).
 \end{prop}
 
-This perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}\), see for the proof Sec.~\ref{sec:supp:proofprop1}.
+An explicit perturbation is derived in Sec.~\ref{sec:supp:proofprop1}.
+%A perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}\), see for the proof Sec.~\ref{sec:supp:proofprop1}.
 This makes the uniform norm of the vector field on a (slow) manifold a useful measure to express the distance of an approximation to a continuous attractor.
 It can also be used to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
 Let \(\vx_0 \in \manifold\), and \(\varphi = \vp(\cdot)\vert_\manifold\) be the flow restricted to the manifold.
@@ -505,10 +506,12 @@ The average deviation from initial memory \(\vx_0\) over time is bounded linearl
 %\dm{t}
 \dm{\vx_0}
 \leq t\uniformNorm{\varphi}.
+\quad
+\text{(error bound)}
 \end{align}
+for sufficiently small $t \geq 0$.
 
-
-We will demonstrate that this bound can be sucessfully found in trained RNNs numerically.
+% We will demonstrate that this bound can be successfully found in trained RNNs numerically.
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
 While the uniform norm gives insight into short-time scale behavior, we can expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
