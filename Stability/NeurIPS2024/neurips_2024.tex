@@ -792,13 +792,14 @@ There was a diverse set of bifurcations all sharing an essential element: an att
 Training RNNs on tasks involving continuous variables resulted similarly in a great variety of solutions.
 %However, even within this variety, we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
 As the theory predicted, trained networks have an attractive ring invariant manifold, which allows for a more useful comparison between trained networks than existing fixed point analyses.
-This supports our theory that theoretical models that satisfy conditions \ref{converse:bijection}-\ref{converse:Dtype} and hence have behavior consistent with an almost perfect memory system, will be near continuous attractors (in parameter space).
+This supports our theory that theoretical models that satisfy conditions \ref{converse:bijection}-\ref{converse:Dtype} %and hence have behavior consistent with an almost perfect memory system, 
+will be near continuous attractors (in parameter space).
 Nevertheless, the topological structure of the found solutions still determines how well a network can perform generalization for longer time scales.
 
 %limitations
-We did not explicitly describe the topology and dimensionality of the identified invariant manifolds for all networks, only for a representative set.
-Yet the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
-Although for well-trained networks this separation of timescale exists, the analysis is not guaranteed to work for systems without a fast-slow decomposition.
+Although, we only explicitly describe the topology and dimensionality of the identified invariant manifolds for a representative set,
+ the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
+Although this separation of timescale necessarily exists for well-trained networks, the analysis is not guaranteed to work for systems without a fast-slow decomposition.
 %point above
 
 %error-correcting
@@ -808,9 +809,9 @@ The found solutions might reflect the trade-off between robustness to noise and 
 %A future line of research could quantify the size of proposed homeostatic mechanisms to maintain analog working memory as proposed in e.g. \citep{Renart2003}.
 
 
-Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
-Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
-This empirical evidence strongly corroborates our proposed theory of continuous memory.
+%Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
+%Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
+%This empirical evidence strongly corroborates our proposed theory of analog memory.
 
 
 
