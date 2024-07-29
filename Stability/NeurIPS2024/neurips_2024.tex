@@ -2277,10 +2277,20 @@ For example, if neurons are only approximately ReLU the theory developed in \cit
 %some intro comments
 %definitions:
 %%Near Perfect Analog Memory Systems
+We will give some clarifications and proofs of the claims on systems near perfect analog memory systems. 
+
 \subsection{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
 
- We  provide a proof of Prop.~\ref{prop:revival}.
+We  provide a proof of Prop.~\ref{prop:revival} which is dependent on the \(\epsilon\)-Neighborhood Theorem\citep{guillemin2010differential}\footnote{Not to be confused with the perturbation parameter \(\epsilon\)}, which we state here.
 
+\begin{theorem}[\(\epsilon\)-Neighborhood Theorem\citep{guillemin2010differential}]
+Let \( Y \subseteq \mathbb{R}^n \) be a smooth, compact manifold. Then for a small enough \(\epsilon > 0\),
+each \( w \in Y_\epsilon := \{ w \in \mathbb{R}^n \mid \exists y \in Y : \|y - w\| < \epsilon \} \) 
+has a unique closest point in \( Y \), denoted \( \pi(w) \).
+Moreover, \( \pi: Y_\epsilon \to Y \) is a submersion with \( \pi|_Y = \text{id} \).
+\end{theorem}
+
+We now prove  Prop.~\ref{prop:revival}.
 \begin{proof}%[Prop.~\ref{prop:revival}]
 It is sufficient to show that there is a perturbation \(\vp\) that has zero flow off of \(\manifold_\epsilon\) but for which \(\vf+\vp=0\) on \(\manifold_\epsilon\) for the full system \(\vf\)  as defined in Eq.~\ref{eq:perturbation:nonparam}.
 Define
@@ -2420,7 +2430,6 @@ If \(V\) is persistent and uniformly locally maximal, then \(V\) has to be norma
  There exist neighborhoods \(U\) of \(V\) in \(M\) and \(U\) of \(f\) in the space \(\mathrm{Diff}^1(M)\) of \(C^1\)-diffeomorphisms of \(M\), such that for any \(g \in U\), \(N_g = \bigcap_{k \in \mathbb{Z}} g^k(U)\) is a \(C^1\)-submanifold close to \(V\), with \(N_f = N\).
  The latter property implies the uniqueness of the invariant submanifold.
 \end{definition}
-
 \end{remark}
 
 
@@ -2536,10 +2545,16 @@ Hence, the perturbed system is decomposable into a system that is a continuous a
 \end{proof}
 
 
+\paragraph{Remark}
+This perturbation can be made smoothness, along similar lines as above.
+We can take a\(\epsilon\)-Neighborhood around the invariant manifold on which we extend the above vector field with bump functions to get a smooth vector field that still results in an attractive invariant manifold.
+
 
 \paragraph{Example}
 An example of an approximate continous attractor solution of the form with a decomposable system of which one of the subsystems is close to a continuous attractor is the torus solution in Fig.~\ref{fig:fastslow_decomposition}D.
 In this case, the system can be perturbed slightly such that there exists a continuum of limit cycles laid out over a ring.
+
+
 
 
 %\paragraph{} More general:
