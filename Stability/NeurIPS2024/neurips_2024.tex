@@ -388,13 +388,13 @@ In this section, we apply invariant manifold theory to continuous attractor mode
 \subsection{Persistent Manifold Theorem}\label{sec:imt}
 %We start by formulating an ODE implementing a continuous attractor in continuous time: \(\dot{\vx} = \vf(\vx)\).
 Let \(l\) be the intrinsic dimension of the manifold of equilibria that defines the continuous attractor.
-Given a perturbation to the ODE \(\vp(\vx)\) that induces a bifurcation,
+Given a perturbation \(\vp(\vx)\) to the ODE that induces a bifurcation,
 \begin{align}\label{eq:perturbation:nonparam}
 	\dot{\vx} &= \vf(\vx) + \epsilon\,\vp(\vx)
 \end{align}
 where \(\uniformNorm{\vp(\cdot)} = 1\) and \(\epsilon > 0\) is the bifurcation parameter,
 we can reparameterize the dynamics around the manifold with coordinates \(\vy \in \reals^l\) and the remaining ambient space with \(\vz \in \reals^{d-l}\).
-To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function \(g\) and \(h\), such that the following system is equivalent to the original ODE:
+To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function \(\vg\) and \(\vh\), such that the following system is equivalent to the original ODE:
 \begin{align}
     \dot{\vy} &=           \epsilon  \vg(\vy, \vz, \epsilon) \qquad \text{(tangent)}\label{eq:fenichel:flowtangent}\\
     \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}\label{eq:fenichel:flownormal}
