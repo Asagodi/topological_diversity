@@ -505,8 +505,8 @@ The average deviation from initial memory \(\vx_0\) over time is bounded linearl
 \abs{\vx(t, \vx_0) - \vx_0}\,
 %\dm{t}
 \dm{\vx_0}
-\leq t\uniformNorm{\varphi}.
-\quad
+\leq t\uniformNorm{\varphi}
+\qquad
 \text{(error bound)}
 \end{align}
 for sufficiently small $t \geq 0$.
@@ -514,8 +514,8 @@ for sufficiently small $t \geq 0$.
 % We will demonstrate that this bound can be successfully found in trained RNNs numerically.
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
-While the uniform norm gives insight into short-time scale behavior, we can expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
-The long-time scale behavior of the slow manifold is dominated by the stability structure, i.e., the topology of the dynamics.
+While the uniform norm gives insight on the short-time scale behavior of the perturbed ODE, we expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
+The long-time scale behavior on the slow manifold is dominated by the stability structure, i.e., the topology of the dynamics.
 Although we have seen numerous topologies in Sec.~\ref{sec:critique}, dynamical systems theory says that they are fundamentally limited, especially in low dimensions (see for more details Sec.~\ref{persistence_extra}).
 This is especially relevant as previous works have identified a low-dimensional organization of neural activity to explain the brain's ability to adapt behavioral responses to changing stimuli and environments \citep{beiran2023parametric,altan2023low,fanthomme2021low}.
 %This resilience is fundamental for cognitive functions, learning, and memory.
@@ -526,7 +526,7 @@ For a ring attractor, this implies that the stability structure of the invariant
 (1) composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits, or (2) a limit cycle.
 These different strability structures have different generalization properties (see Sec.~\ref{sec:generalization}).
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
-For 2 dimensional attractors stable fixed points and saddle nodes can coexist with limit cycles.
+%For 2 dimensional attractors, stable fixed points and saddle nodes can coexist with limit cycles.
 In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states.
 %The persistence of hyperbolic tori in Hamiltonian systems was described in \citep{li2005persistence}.
 %\pscomment{Technically, only parallel translations, and KAM gives a type of structural stability result.}
