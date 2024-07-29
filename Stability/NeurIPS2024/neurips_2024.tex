@@ -75,6 +75,7 @@
 \DeclareMathOperator{\relu}{ReLU}
 \DeclareMathOperator{\basin}{Basin}
 \newcommand{\iidsample}{\stackrel{iid}{\sim}}
+\newcommand{\identity}{\ensuremath{\mathbb{I}}}
 
 \newcommand{\probP}{\text{I\kern-0.15em P}}
 \newcommand{\cmark}{\ding{51}}%
@@ -563,7 +564,7 @@ We examined vanilla continuous-time RNNs for this work.
 The time-discretized version of RNN network activity is given by
 \begin{equation}
   \begin{aligned}
-	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta \label{eq:RNN:discrete}\\
+	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t \label{eq:RNN:discrete}\\
 	\vy_t &= \wout \vx_t + \bout
   \end{aligned}
 \end{equation}
@@ -571,18 +572,18 @@ where \(\vx_t \in \reals^d\) is the hidden state,
 \(\vy_t \) is the readout,
 \(\vI_t \in \reals^K\) is the input,
 \(f\colon \reals \to \reals\) an activation function that acts on each of the hidden dimensions,
-private noise variable \(\zeta\sim\mathcal{N}(0,\nicefrac{1}{100})\), and %\(\zeta\sim \mathcal{N}(0, .001)\)
+state noise variable \(\zeta_t\iidsample\mathcal{N}(\mathbf{0},\sigma^2 = \nicefrac{1}{100}\identity)\), and %\(\zeta\sim \mathcal{N}(0, .001)\)
 \(\vW, \vb, \win, \wout, \bout\) are parameters.
-Assuming Euler integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation:
+Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation:
 \begin{align}
-    \dm{\vx} &= -\vx\dm{t} + f(\win \vI + \vW \vx + \vb)\dm{t} + \sigma \dm{W}. \label{eq:RNN:continuous}
+    \dm{\vx} &= -\vx\,\dm{t} + f(\win \vI(t) + \vW \vx + \vb)\,\dm{t} + \sigma\,\dm{W}. \label{eq:RNN:continuous}
 \end{align}
 where \(\dm{W}\) is a Wiener process that models the intrinsic state noise in the brain.
 
-Building upon prior work, which has shown networks' capabilities on such tasks, we trained RNNs to either
-(1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection, cueva2021continuous}
+Building upon prior work, which has shown their capabilities on such tasks, we trained RNNs to either
+(1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection,cueva2021continuous}
 and (2) perform a memory-guided saccade task for a ring variable \citep{wimmer2014} (details in Sec.~\ref{sec:supp:tasks}).
-The loss \(L\) to be minimized was computed by the mean squared error (MSE) between the network output \(y(t)\) and the target output \(\hat y(t)\):
+We numerically minimized the loss \(L\) which was the mean squared error (MSE) between the network output \(y(t)\) and the target output \(\hat y(t)\):
 %\begin{equation}\label{eq:loss}
 \(L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}, \)
 %\end{equation}
