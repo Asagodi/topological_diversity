@@ -1,0 +1,103 @@
+\ProvidesPackage{tcb-theorems}[Colorful theorem like envs with optional tcolorbox wrapping]
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{
+  family=@tcbtt,
+  prefix=@tcbtt@
+}
+\RequirePackage{hyperref}
+\RequirePackage{amsmath,mathtools,cleveref}
+\RequirePackage{amssymb,amsthm,thmtools}
+\RequirePackage{mathrsfs,bm}
+\RequirePackage{etoolbox}
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\RequirePackage{xcolor}
+\DeclareBoolOption[true]{tcbbox}
+\DeclareComplementaryOption{notcb}{tcbbox}
+\ProcessKeyvalOptions*
+\declaretheoremstyle[
+  headfont=\bfseries\sffamily\color{ForestGreen!70!black}, bodyfont=\normalfont,
+  spaceabove=6pt, spacebelow=6pt, postheadspace = \newline,
+]{thmgreenbox}
+\declaretheoremstyle[
+  headfont=\bfseries\sffamily\color{NavyBlue!70!black}, bodyfont=\normalfont,
+  spaceabove=6pt, spacebelow=6pt, postheadspace = \newline,
+]{thmbluebox}
+\declaretheoremstyle[
+  headfont=\bfseries\sffamily\color{NavyBlue!70!black}, bodyfont=\normalfont,
+  numbered=no,
+  spaceabove=6pt, spacebelow=6pt, postheadspace = \newline,
+]{thmexplanationbox}
+\declaretheoremstyle[
+  headfont=\bfseries\sffamily\color{RawSienna!70!black}, bodyfont=\normalfont,
+  spaceabove=6pt, spacebelow=6pt, postheadspace = \newline,
+]{thmredbox}
+\declaretheoremstyle[
+  headfont=\bfseries\sffamily\color{RawSienna!70!black}, bodyfont=\normalfont,
+  numbered=no,
+  spaceabove=3pt, spacebelow=6pt,
+  qed=\qedsymbol
+]{thmproofbox}
+\declaretheorem[style=thmgreenbox, name=Definition]{definition}
+\declaretheorem[style=thmgreenbox, numbered=no, name=Assumptions]{assumptions}
+% \declaretheorem[style=thmbluebox, numbered=no, name=Example]{example}
+\declaretheorem[style=thmbluebox, name=Example]{example}
+\declaretheorem[style=thmbluebox, name=Exercise]{exercise}
+\declaretheorem[style=thmredbox, name=Proposition]{proposition}
+\declaretheorem[style=thmredbox, name=Theorem]{theorem}
+\declaretheorem[style=thmredbox, name=Lemma]{lemma}
+\declaretheorem[style=thmredbox, name=Corollary]{corollary}
+\declaretheorem[style=thmproofbox, name=Proof]{replacementproof}
+\renewenvironment{proof}[1][\proofname]{
+  \begin{replacementproof}
+    }{
+  \end{replacementproof}
+}
+\declaretheorem[style=thmbluebox, numbered=no, name=Remark]{remark}
+\declaretheorem[style=thmbluebox, name=Claim]{claim}
+\declaretheorem[style=thmbluebox, numbered=no, name=Note]{note}
+
+\if@tcbtt@tcbbox
+  \PassOptionsToPackage{most}{tcolorbox}
+  \RequirePackage{tcolorbox}
+  \tcbset{tcbtheorems/.style={
+        blanker,breakable,left=5mm,
+        before skip=1em,after skip=1em,
+        borderline west={2pt}{0pt}{#1}
+      }
+  }
+  \tcolorboxenvironment{definition}{tcbtheorems=ForestGreen!70!black}
+  \tcolorboxenvironment{assumption}{tcbtheorems=ForestGreen!70!black}
+  \tcolorboxenvironment{example}{tcbtheorems=NavyBlue!70!black}
+  \tcolorboxenvironment{exercise}{tcbtheorems=NavyBlue!70!black}
+  \tcolorboxenvironment{proposition}{tcbtheorems=RawSienna!70!black}
+  \tcolorboxenvironment{theorem}{tcbtheorems=RawSienna!70!black}
+  \tcolorboxenvironment{lemma}{tcbtheorems=RawSienna!70!black}
+  \tcolorboxenvironment{corollary}{tcbtheorems=RawSienna!70!black}
+  \tcolorboxenvironment{remark}{tcbtheorems=NavyBlue!70!black}
+  \tcolorboxenvironment{claim}{tcbtheorems=NavyBlue!70!black}
+  \tcolorboxenvironment{note}{tcbtheorems=NavyBlue!70!black}
+\fi
+
+\makeatletter
+\patchcmd\thmtlo@chaptervspacehack
+{\addtocontents{loe}{\protect\addvspace{10\p@}}}
+{\addtocontents{loe}{\protect\thmlopatch@endchapter\protect\thmlopatch@chapter{\thechapter}}}
+{}{}
+\AtEndDocument{\addtocontents{loe}{\protect\thmlopatch@endchapter}}
+\long\def\thmlopatch@chapter#1#2\thmlopatch@endchapter{%
+  \setbox\z@=\vbox{#2}%
+  \ifdim
+    \ht\z@>\z@
+    \hbox{\bfseries\chaptername\ #1}\nobreak
+     #2
+     \addvspace{10\p@}
+  \fi
+}
+\def\thmlopatch@endchapter{}
+\pretocmd{\listoftheorems}{ \addcontentsline{toc}{part}{\listtheoremname}}{}{}
+% \pretocmd{\listoftheorems}{\addtocontents{loe}{\protect\addcontentsline{toc}{part}{\listtheoremname}}}{}{}
+
+\makeatother
+\renewcommand{\thmtformatoptarg}[1]{ -- #1}
+% \renewcommand{\listtheoremname}{List of theorems}
+\endinput
