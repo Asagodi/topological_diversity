@@ -480,10 +480,10 @@ Because continuous ring attractors are bounded, their invariant manifold persist
 %for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
 
 \subsection{Fast-slow decomposition and the revival of continuous attractors}\label{sec:revival}
-Consider a behaviorally relevant  timescale for working memory, which is considered to be a few to a few tens of seconds.
+Consider a behaviorally relevant timescale for working memory, for example, roughly up to a few tens of seconds.
 If the dynamical system is orders of magnitude slower, for example, 1000 sec or longer, its effect is too slow to have a practical impact on the behavior that relies on the working memory mechanism.
 This clear gap in the fast and slow time scales can be recast as \emph{normal hyperbolicity} of the slow manifold by relaxing the zero real part to a separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
-In other words, the attractive flow normal to the manifold needs to be uniformly faster than the flow on the manifold.
+In other words, the attractive flow normal to the manifold needs to be uniformly faster than the flow on the slow manifold.
 
 By taking the limit of the slow flow on the manifold to arbitrarily long time constant (i.e., to zero flow), we achieve the reversal of the persistent manifold theorem.
 \begin{prop}[Revival of continuous attractor]\label{prop:revival}
@@ -497,7 +497,7 @@ This perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_\epsilon} -
 This makes the uniform norm of the vector field on a (slow) manifold a useful measure to express the distance of an approximation to a continuous attractor.
 It can also be used to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
 Let \(\vx_0 \in \manifold\), and \(\varphi = \vp(\cdot)\vert_\manifold\) be the flow restricted to the manifold.
-The average deviation from initial memory \(\vx_0\) over time is bounded linearly (for a proof, see Sec.~\ref{sec:supp:ub}):
+The average deviation from initial memory \(\vx_0\) over time is bounded linearly (for a derivation, see Sec.~\ref{sec:supp:ub}):
 \begin{align}\label{eq:distance:ub}
 \frac{1}{\operatorname{vol}\manifold}\int_\manifold
 %\frac{1}{T}\int_0^T
