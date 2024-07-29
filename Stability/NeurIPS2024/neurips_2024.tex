@@ -772,19 +772,22 @@ Although the stochastic optimization cannot lead to the continuous attractor sol
 
 
 \section{Discussion}
-An attractive manifold of equilibria in a continuous attractor network provides continuous memory and hence makes it an attractive model in theoretical neuroscience.
-However, continuous attractors bifurcate almost certainly for an arbitrary perturbation except in special parametric forms.
-Understanding attractors and their bifurcation structure is crucial in neuroscience because they provide a blueprint for how neural activity can remain stable and robust even in the face of disruptions.
-We provide a robust theoretical foundation to better understand the way these structures are robust and hence provide practical utility as models in neuroscience.
+%2 paragraph conclusion
+A manifold of equilibria in a continuous attractor network provides continuous memory, making it a compelling model in theoretical neuroscience. 
+However, continuous attractors almost certainly bifurcate under arbitrary perturbations except in special paramtric forms, making them unsuitable as models for neural computation in the traditional perspective on robustness.
+We have shown that continuous attractors are functionally robust and therefore are an important concept to describe the neural computation underlying analog memory.
 
-Although the corresponding configurations for a continuous attractor are measure-zero in parameter space, we showed that when the persistent manifold theorem holds, the finite time behavior of the trajectories only slowly breaks down under perturbations.
 We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in various example systems.
-There were surprisingly diverse bifurcations that the network visits in the presence of stochasticity in synapses and learning signals.
-The fast-slow time scale analysis can reverse this process and bring all approximate continuous attractors into an equivalence class.
-This reinstates the continuous attractor as the fundamental theoretical mechanism that represents the collection of approximations.
-Unlike in most dynamical systems theories where the asymptotic behavior and topology of stability structures are studied, we expend an equal amount of focus on the effective finite time and asymptotic behavior.% of the ideal mathematical object.
+Although the corresponding configurations for a continuous attractor are measure-zero in parameter space, we showed that when the persistent manifold theorem holds, the finite time behavior of the trajectories only slowly breaks down under perturbations.
+There was a diverse set of bifurcations all sharing an essential element: an attractive invariant slow manifold.
 
-%as we have shown...
+The fast-slow time scale analysis can reverse this process and bring all approximate continuous attractors into an equivalence class.
+%This reinstates the continuous attractor as the fundamental theoretical concept that represents the collection of approximations.
+
+there's a region in configuration space with systems in it that all have similar behaviors.
+
+
+%as we have shown...	
 Training RNNs on tasks involving continuous variables results in a great variety of solutions.
 However, even within this variety, we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
 As the theory predicts, trained networks have an attractive ring invariant manifold.
@@ -808,8 +811,6 @@ Through a series of experiments of training RNNs on two tasks with various archi
 Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
 This empirical evidence strongly corroborates our proposed theory of continuous memory.
 
-
-%C1-C4
 
 
 \begin{ack}
