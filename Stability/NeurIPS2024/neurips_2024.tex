@@ -202,9 +202,9 @@ In other words, the continuous attractor is a continuum of equilibrium points su
   \includegraphics[width=\textwidth]{lara_bifurcations_simple}
   \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
   Some of the structure seems to remain; there is an invariant manifold that is topologically equivalent to the original continuous attractor.
-    (A) Phase portraits for the bounded line attractor (Eq.~\eqref{eq:TLN}).
+    \textbf{(A)} Phase portraits for the bounded line attractor (Eq.~\eqref{eq:TLN}).
     Under perturbation of parameters, it bifurcates to systems without the continuous attractor.
-    (B) The low-rank ring attractor approximation (Sec.~\eqref{sec:supp:lowrank}).
+    \textbf{(B)} The low-rank ring attractor approximation (Sec.~\eqref{sec:supp:lowrank}).
     Different topologies exist for different realizations of a low-rank attractor with overlap between the left and right vectors, different numbers of fixed points (4, 8, 12), or a limit cycle (right bottom).
     Yet, they all share the existence of a ring invariant set.
 }\label{fig:lara_bifurcations}
@@ -213,9 +213,7 @@ In other words, the continuous attractor is a continuum of equilibrium points su
 %par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
 %Fig1
 
-
-
-For example, we can construct a line attractor (a continuous attractor with a line manifold) as follows:
+As an example, we can construct a line attractor (a continuous attractor with a line manifold) as follows:
 %We will describe the bifurcation space of some continuous attractors.
 %Neurons exhibit complex dynamics that can be described by differential equations.
 \begin{align}\label{eq:TLN}
@@ -234,7 +232,7 @@ the \(0\) eigenvalue allows the continuum of fixed points, while \(-2\) makes th
 In general, continuous attractors are not only structurally unstable \citep{mane1987proof}, they bifurcate almost certainly for an arbitrary perturbation.
 Small changes to the parameters \((\vb,\vW)\) perturb the eigenvalues.
 Specifically, any perturbation to the \(0\) eigenvalue destroys the continuous attractor as it bifurcates to either
-a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A top) or two stable fixed points separated with a saddle-node in between (Fig.~\ref{fig:lara_bifurcations}A bottom).
+a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A, top) or two stable fixed points separated with a saddle-node in between (Fig.~\ref{fig:lara_bifurcations}A, bottom).
 However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifold topologically equivalent to the original continuous attractor (note the slow speed).
 Furthermore, the flow after the bifurcation is contained in the ghost manifold, i.e., it is an invariant manifold.
 This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,mante2013context}.
@@ -294,8 +292,8 @@ Nevertheless, the bifurcated dynamics again follow a similar pattern: the dynami
 
 \ptitle{Piecewise-linear ring attractor model of the central complex}
 Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{Noorman2022}.
-This model is composed of \(N\) heading-tuned neurons with preferred headings \(\theta_j \in \{\nicefrac{2\pi i}{N}\}_{i=1\dots N}\) radians (see Sec.~\ref{sec:supp:headdirection}).
-For sufficiently strong local excitation (given by the parameter \(J_E\)) and broad inhibition (\(J_I\)), this network will generate a stable bump of activity, one corresponding to each head direction.
+This model is composed of \(N\) heading-tuned neurons with preferred headings \(\theta_j \in \{\nicefrac{2\pi i}{N}\}_{i=1\dots N}\) radians (Sec.~\ref{sec:supp:headdirection}).
+For sufficiently strong local excitation (given by the parameter \(J_E\)) and broad inhibition (\(J_I\)), this network will generate a stable bump of activity corresponding to the head direction.
 This continuum of fixed points forms a one-dimensional manifold homeomorphic to the circle.
 
 \begin{figure}[tbhp]
@@ -311,8 +309,8 @@ This continuum of fixed points forms a one-dimensional manifold homeomorphic to 
 We evaluate the effect of parametric perturbations of the form \( \vW \leftarrow \vW + \vV\) with \(\vV_{i,j}\iidsample\mathcal{N}(0,\nicefrac{1}{100})\) on a network of size \(N = 6\) with \(J_E= 4\) and \(J_I=-2.4\) by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
 We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:bio_rings}A).
 As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
-The probability of each type of bifurcation was numerically estimated (See Sec.~\ref{sec:supp:headdirection}).
-There are several additional co-dim 1 bifurcations with measure zero (see Fig.~\ref{fig:meaure_zero_perturbations}).
+The probability of each type of bifurcation was numerically estimated (Sec.~\ref{sec:supp:headdirection}).
+There are several additional co-dim 1 bifurcations with measure zero (Fig.~\ref{fig:meaure_zero_perturbations}).
 Surprisingly, the number of fixed points is maintained throughout a range of perturbation sizes (Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}).
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 
@@ -332,18 +330,18 @@ For such networks the number of fixed points does change with the size of the pe
 
 \ptitle{Low-rank ring attractor model} %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
-Using dynamical mean field theory, in the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors, see also Sec.~\ref{sec:supp:lowrank}.
-However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points located on a ring~\citep{mastrogiuseppe2018}.
+Using dynamical mean field theory, in the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors (see Sec.~\ref{sec:supp:lowrank}).
+However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points arranged on a ring~\citep{mastrogiuseppe2018}.
 
 \ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
-Approximate ring attractors can be fit by constraining the connectivity so that the networks Jacobian satisfies certain requirements for a ring attractor to exist (Sec.~\ref{sec:supp:empj}~\citep{pollock2020}).
-The fitted models through this method also contain an invariant ring manifold on which the dynamics contain stable and saddle fixed points (Fig.~\ref{fig:bio_rings}C).
+Approximate ring attractors can be constructed by constraining the connectivity so that the networks Jacobian satisfies certain requirements for a ring attractor to exist~\citep{pollock2020} (Sec.~\ref{sec:supp:empj})
+The models optimized using this method also can contain an invariant ring manifold on which the dynamics contain stable and saddle fixed points (Fig.~\ref{fig:bio_rings}C).
 
 \ptitle{Similarity between all bifurcations and approximations of continuous attractors}
 In all discussed models of ring attractors, we verify that they suffer from the fine-tuning problem.
-However, we observe ghosts of the continuous attractor in many different systems (either through bifurcation or from finite-size effects): an \emph{attractive invariant manifold}.
+However, we observe ghosts of the continuous attractor in many different systems (either through bifurcation or from finite-size effects) that is an \emph{attractive invariant manifold}.
 Is this a universal phenomenon?
-Moreover, although the exact ring attractor was not implemented, they were approximate ring attractors in the sense that the fixed points and connecting orbits still form a circle.
+Moreover, while they were not a continuous attractor in the mathematical sense, they were \textit{approximate} ring attractors in the sense that the fixed points and connecting orbits still form a circle.
 Are continuous attractors somehow still useful as a model of how animals might represent continuous variables?
 We will answer these questions in an implementation-agnostic manner.
 
