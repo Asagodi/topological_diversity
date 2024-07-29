@@ -546,16 +546,15 @@ In more complex scenarios, such as a two-dimensional attractor, stable fixed poi
 
 While our theory describes the abundance of approximate continuous attractors in the vicinity of a continuous attractor, it does not imply that there are no approximate solutions away from continuous attractors.
 We use task-optimized RNNs as a means to search for plausible solutions for analog memory for a circular variable.
-We will train a diverse set of RNNs, and then identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
+We train a diverse set of RNNs, and then identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
 %Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors. \mpcomment{I disagree that it is!! It is a universal approximators of bounded length sequence-to-sequence transformations, not dynamical systems. Guillermo?}
 %Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
-
-Understanding the implemented computation in neural systems in terms of dynamical systems has a well-established practice~\citep{seung1996,sompolinsky1988}.
-Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis~\citep{sussillo2013blackbox,sussillo2014,barak2013,driscoll2022,maheswaranathan2019universality,cueva2019headdirection,cueva2021continuous} and to compare those artificial networks to biological circuits~\citep{mante2013context,remington2018flexible,ghazizadeh2021slow}.
+Understanding the implemented computation in neural systems in terms of dynamical systems is a well-established practice~\citep{seung1996,sompolinsky1988}.
+Researchers have analyzed task-optimized RNNs through nonlinear dynamical systems analysis~\citep{sussillo2013blackbox,sussillo2014,barak2013,driscoll2022,maheswaranathan2019universality,cueva2019headdirection,cueva2021continuous} and to compare those artificial networks to biological circuits~\citep{mante2013context,remington2018flexible,ghazizadeh2021slow}.
 %
 Previously, systematic analysis of the variability in network dynamics has been surveyed in vanilla RNNs, and variations in dynamical solutions over architecture and nonlinearity have been quantified~\citep{sussillo2013blackbox,mante2013context,yang2019task,maheswaranathan2019universality,driscoll2022}.
-Furthermore, the spectrum of how RNNs may hold memory has been addressed~\citep{orhan2019diverse}.
+Furthermore, working memory mechanisms in RNNs had tendencies to find sequential or persistent representations through training depending on the task specification~\citep{orhan2019diverse}.
 %comparing artificial network representations to neural data
 We therefore investigated to what extent training RNNs on a task uniquely determines the low-dimensional dynamics, independent of neural architectures.
 
