@@ -75,6 +75,7 @@
 \DeclareMathOperator{\relu}{ReLU}
 \DeclareMathOperator{\basin}{Basin}
 \newcommand{\iidsample}{\stackrel{iid}{\sim}}
+\newcommand{\identity}{\ensuremath{\mathbb{I}}}
 
 \newcommand{\probP}{\text{I\kern-0.15em P}}
 \newcommand{\cmark}{\ding{51}}%
@@ -493,7 +494,8 @@ Let the uniform norm of the flow tangent to the manifold be \(\|\dot \vy\|_\inft
 There exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a continuous attractor manifold. % \(\manifold_0\) diffeomorphic to \(\manifold_\epsilon\).
 \end{prop}
 
-This perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}\), see for the proof Sec.~\ref{sec:supp:proofprop1}.
+An explicit perturbation is derived in Sec.~\ref{sec:supp:proofprop1}.
+%A perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}\), see for the proof Sec.~\ref{sec:supp:proofprop1}.
 This makes the uniform norm of the vector field on a (slow) manifold a useful measure to express the distance of an approximation to a continuous attractor.
 It can also be used to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
 Let \(\vx_0 \in \manifold\), and \(\varphi = \vp(\cdot)\vert_\manifold\) be the flow restricted to the manifold.
@@ -504,15 +506,17 @@ The average deviation from initial memory \(\vx_0\) over time is bounded linearl
 \abs{\vx(t, \vx_0) - \vx_0}\,
 %\dm{t}
 \dm{\vx_0}
-\leq t\uniformNorm{\varphi}.
+\leq t\uniformNorm{\varphi}
+\qquad
+\text{(error bound)}
 \end{align}
+Note that this bound is the worst case and tighter for sufficiently small $t \geq 0$.
 
-
-We will demonstrate that this bound can be sucessfully found in trained RNNs numerically.
+% We will demonstrate that this bound can be successfully found in trained RNNs numerically.
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
-While the uniform norm gives insight into short-time scale behavior, we can expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
-The long-time scale behavior of the slow manifold is dominated by the stability structure, i.e., the topology of the dynamics.
+While the uniform norm gives insight on the short-time scale behavior of the perturbed ODE, we expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
+The long-time scale behavior on the slow manifold is dominated by the stability structure, i.e., the topology of the dynamics.
 Although we have seen numerous topologies in Sec.~\ref{sec:critique}, dynamical systems theory says that they are fundamentally limited, especially in low dimensions (see for more details Sec.~\ref{persistence_extra}).
 This is especially relevant as previous works have identified a low-dimensional organization of neural activity to explain the brain's ability to adapt behavioral responses to changing stimuli and environments \citep{beiran2023parametric,altan2023low,fanthomme2021low}.
 %This resilience is fundamental for cognitive functions, learning, and memory.
@@ -523,7 +527,7 @@ For a ring attractor, this implies that the stability structure of the invariant
 (1) composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits, or (2) a limit cycle.
 These different strability structures have different generalization properties (see Sec.~\ref{sec:generalization}).
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
-For 2 dimensional attractors stable fixed points and saddle nodes can coexist with limit cycles.
+%For 2 dimensional attractors, stable fixed points and saddle nodes can coexist with limit cycles.
 In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states.
 %The persistence of hyperbolic tori in Hamiltonian systems was described in \citep{li2005persistence}.
 %\pscomment{Technically, only parallel translations, and KAM gives a type of structural stability result.}
@@ -543,16 +547,15 @@ In more complex scenarios, such as a two-dimensional attractor, stable fixed poi
 
 While our theory describes the abundance of approximate continuous attractors in the vicinity of a continuous attractor, it does not imply that there are no approximate solutions away from continuous attractors.
 We use task-optimized RNNs as a means to search for plausible solutions for analog memory for a circular variable.
-We will train a diverse set of RNNs, and then identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
+We train a diverse set of RNNs, and then identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
 %Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors. \mpcomment{I disagree that it is!! It is a universal approximators of bounded length sequence-to-sequence transformations, not dynamical systems. Guillermo?}
 %Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
-
-Understanding the implemented computation in neural systems in terms of dynamical systems has a well-established practice~\citep{seung1996,sompolinsky1988}.
-Researchers have attempted to understand optimized neural networks through nonlinear dynamical systems analysis~\citep{sussillo2013blackbox,sussillo2014,barak2013,driscoll2022,maheswaranathan2019universality,cueva2019headdirection,cueva2021continuous} and to compare those artificial networks to biological circuits~\citep{mante2013context,remington2018flexible,ghazizadeh2021slow}.
+Understanding the implemented computation in neural systems in terms of dynamical systems is a well-established practice~\citep{seung1996,sompolinsky1988}.
+Researchers have analyzed task-optimized RNNs through nonlinear dynamical systems analysis~\citep{sussillo2013blackbox,sussillo2014,barak2013,driscoll2022,maheswaranathan2019universality,cueva2019headdirection,cueva2021continuous} and to compare those artificial networks to biological circuits~\citep{mante2013context,remington2018flexible,ghazizadeh2021slow}.
 %
 Previously, systematic analysis of the variability in network dynamics has been surveyed in vanilla RNNs, and variations in dynamical solutions over architecture and nonlinearity have been quantified~\citep{sussillo2013blackbox,mante2013context,yang2019task,maheswaranathan2019universality,driscoll2022}.
-Furthermore, the spectrum of how RNNs may hold memory has been addressed~\citep{orhan2019diverse}.
+Furthermore, working memory mechanisms in RNNs had tendencies to find sequential or persistent representations through training depending on the task specification~\citep{orhan2019diverse}.
 %comparing artificial network representations to neural data
 We therefore investigated to what extent training RNNs on a task uniquely determines the low-dimensional dynamics, independent of neural architectures.
 
@@ -561,7 +564,7 @@ We examined vanilla continuous-time RNNs for this work.
 The time-discretized version of RNN network activity is given by
 \begin{equation}
   \begin{aligned}
-	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta \label{eq:RNN:discrete}\\
+	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t \label{eq:RNN:discrete}\\
 	\vy_t &= \wout \vx_t + \bout
   \end{aligned}
 \end{equation}
@@ -569,18 +572,18 @@ where \(\vx_t \in \reals^d\) is the hidden state,
 \(\vy_t \) is the readout,
 \(\vI_t \in \reals^K\) is the input,
 \(f\colon \reals \to \reals\) an activation function that acts on each of the hidden dimensions,
-private noise variable \(\zeta\sim\mathcal{N}(0,\nicefrac{1}{100})\), and %\(\zeta\sim \mathcal{N}(0, .001)\)
+state noise variable \(\zeta_t\iidsample\mathcal{N}(\mathbf{0},\sigma^2 = \nicefrac{1}{100}\identity)\), and %\(\zeta\sim \mathcal{N}(0, .001)\)
 \(\vW, \vb, \win, \wout, \bout\) are parameters.
-Assuming Euler integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation:
+Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation:
 \begin{align}
-    \dm{\vx} &= -\vx\dm{t} + f(\win \vI + \vW \vx + \vb)\dm{t} + \sigma \dm{W}. \label{eq:RNN:continuous}
+    \dm{\vx} &= -\vx\,\dm{t} + f(\win \vI(t) + \vW \vx + \vb)\,\dm{t} + \sigma\,\dm{W}. \label{eq:RNN:continuous}
 \end{align}
 where \(\dm{W}\) is a Wiener process that models the intrinsic state noise in the brain.
 
-Building upon prior work, which has shown networks' capabilities on such tasks, we trained RNNs to either
-(1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection, cueva2021continuous}
+Building upon prior work, which has shown their capabilities on such tasks, we trained RNNs to either
+(1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection,cueva2021continuous}
 and (2) perform a memory-guided saccade task for a ring variable \citep{wimmer2014} (details in Sec.~\ref{sec:supp:tasks}).
-The loss \(L\) to be minimized was computed by the mean squared error (MSE) between the network output \(y(t)\) and the target output \(\hat y(t)\):
+We numerically minimized the loss \(L\) which was the mean squared error (MSE) between the network output \(y(t)\) and the target output \(\hat y(t)\):
 %\begin{equation}\label{eq:loss}
 \(L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}, \)
 %\end{equation}
@@ -608,13 +611,13 @@ We trained 10 networks for every combination of the following parameters:
 
  %method
 \subsection{Numerical Fast-Slow Decomposition}\label{sec:fastslowmethod}
-For each trained network, we find the slow manifold by integrating the autonomous dynamics and we select the parts of the trajectory that have a speed slower than a threshold.
+For each trained network, we find the slow manifold by integrating the autonomous dynamics then selecting the parts of the trajectory that have a speed slower than a threshold.
 %
 %We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}.
 %https://scikit-dimension.readthedocs.io/en/latest/skdim.id.MOM.html#skdim.id.MOM
 We identify the points on the invariant manifold from the simulated trajectories that are projected closest to a set of points in the output space relevant to the task after convergence, i.e. on the target ring.
 We parametrize the one-dimensional invariant manifold \(\manifold\) by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
-Normal hyperbolicity is measured by a gap in the timescales of the system (measured from the eigenvalue spectrum of the linearization along points on the invariant manifold (Fig.\ref{fig:eigenvalue_gap}).
+Normal hyperbolicity is measured by a gap in the timescales of the system (measured from the eigenvalue spectrum of the linearization along points on the invariant manifold (Fig.~\ref{fig:eigenvalue_gap}).
 
 %Finally, we find the stable fixed points through a threshold on the
 We find the fixed points on the invariant ring by identifying regions where the direction of the flow flips for a dense set of points on the found invariant manifold.
@@ -765,11 +768,10 @@ Although the stochastic optimization cannot lead to the continuous attractor sol
 
 \section{Discussion}
 An attractive manifold of equilibria in a continuous attractor network provides continuous memory and hence makes it an attractive model in theoretical neuroscience.
-Howerver, continuous attractors bifurcate almost certainly for an arbitrary perturbation.
+However, continuous attractors bifurcate almost certainly for an arbitrary perturbation except in special parametric forms.
 Understanding attractors and their bifurcation structure is crucial in neuroscience because they provide a blueprint for how neural activity can remain stable and robust even in the face of disruptions.
-Nevertheless, we provide a robust theoretical foundation to better understand the way these structures are robust and hence provide practical utility as models in neuroscience.
- 
- 
+We provide a robust theoretical foundation to better understand the way these structures are robust and hence provide practical utility as models in neuroscience.
+
 Although the corresponding configurations for a continuous attractor are measure-zero in parameter space, we showed that when the persistent manifold theorem holds, the finite time behavior of the trajectories only slowly breaks down under perturbations.
 We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in various example systems.
 There were surprisingly diverse bifurcations that the network visits in the presence of stochasticity in synapses and learning signals.

@@ -1,0 +1,116 @@
+\ProvidesPackage{tcb-callouts}[Jan 7 2024 v0.2 Obsidian flavored callout boxes]
+\RequirePackage{fontawesome5}
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\PassOptionsToPackage{most}{tcolorbox}
+\PassOptionsToPackage{shortlabels}{enumitem}
+\RequirePackage{tcolorbox,xcolor,xstring,enumitem}
+% \newenvironment{%}%
+% {\itemize\let\origitem\item%
+%   \renewcommand{\item}[1][default]%
+%   {\origitem[\csname task##1\endcsname]}}%
+% {\enditemize}%
+% \newcommand{\taskdefault}{\faCircle[regular]}%
+% \newcommand{\taskdone}{\faCheckCircle[regular]}%
+% \newcommand{\taskprogress}{\faPlayCircle[regular]}%
+% \newcommand{\taskcanceled}{\faTimesCircle[regular]}%
+\DeclareDocumentEnvironment{itemize-tasks}{}{
+  \begin{itemize}[label={\faCircle[regular]}]
+    }{
+  \end{itemize}
+}
+\AtBeginEnvironment{itemize-tasks}
+{\ifundef{\originalitem}{\NewCommandCopy{\originalitem}{\item}
+    \RenewDocumentCommand\item{o}{\IfValueTF{#1}
+      {\IfStrEqCase{#1}{%
+          {done}{%
+              \originalitem[{\faCheckCircle[regular]}]%
+            }%
+            {progress}{%
+              \originalitem[{\faPlayCircle[regular]}]
+            }%
+            {canceled}{%
+              \originalitem[{\faTimesCircle[regular]}]
+            }%
+        }
+      }{\originalitem}}}{}}
+% \providecolorset{HTML}{}{}{noteColor,1e66f5;infoColor,179299;summaryColor,dd7878;questionColor,8839ef;attentionColor,fe640b;remarkColor,df8e1d;taskColor,1e66f5;editColor,179299}
+\providecolorset{HTML}{}{}{noteColor,27ae60;infoColor,2f80ed;summaryColor,27ae60;questionColor,f2994a;attentionColor,eb5757;remarkColor,e2b93b;taskColor,eb5757;editColor,f2994a}
+
+\tcbset{MDCallout/.style={
+      colframe=#1,
+      colback=white,
+      colbacktitle=white,
+      coltitle=#1,
+      halign title= flush left,
+      boxrule=0pt,
+      leftrule=2pt,
+      enhanced jigsaw, % better frame drawing
+      sharp corners, % better drop shadow
+      breakable,
+      fonttitle=\large,
+      fontupper=\normalsize,
+      fontlower=\normalsize,
+    }
+}
+
+\ProvideDocumentEnvironment{callout}{m O{} +b}{
+  \colorlet{MyColback}{white}
+  \colorlet{MyColbacktitle}{white}
+  \IfStrEqCase{#1}{%
+    {note}{%
+        \colorlet{calloutMainColor}{noteColor}%
+        \def\calloutTitle{Note:}%
+        \def\faSymbol{\faIcon{pencil-alt} }%
+      }%
+      {info}{%
+        \colorlet{calloutMainColor}{infoColor}%
+        \def\calloutTitle{Info:}%
+        \def\faSymbol{\faIcon{info-circle} }%
+      }%
+      {summary}{%
+        \colorlet{calloutMainColor}{summaryColor}%
+        \def\calloutTitle{Summary:}%
+        \def\faSymbol{\faIcon{clipboard-list} }%
+      }%
+      {question}{%
+        \colorlet{calloutMainColor}{questionColor}%
+        \def\calloutTitle{Question:}%
+        \def\faSymbol{\faIcon[regular]{question-circle} }%
+      }%
+      {attention}{%
+        \colorlet{calloutMainColor}{attentionColor}%
+        \def\calloutTitle{Attention:}%
+        \def\faSymbol{\faIcon{exclamation-triangle} }%
+      }%
+      {remark}{%
+        \colorlet{calloutMainColor}{remarkColor}%
+        \def\calloutTitle{NB:}%
+        \def\faSymbol{\faIcon[regular]{sticky-note} }%
+      }%
+      {task}{%
+        \colorlet{calloutMainColor}{taskColor}%
+        \colorlet{MyColback}{calloutMainColor!15!white}%
+        \colorlet{MyColbacktitle}{calloutMainColor!15!white}%
+        \def\faSymbol{\faIcon{tasks} }%
+        \def\calloutTitle{TODO:}%
+      }%
+      {edit}{%
+        \colorlet{calloutMainColor}{editColor}%
+        \colorlet{MyColback}{calloutMainColor!15!white}%
+        \colorlet{MyColbacktitle}{calloutMainColor!15!white}%
+        \def\calloutTitle{Needs editing:}%
+        \def\faSymbol{\faEdit[regular] }%
+      }%
+  }
+  \begin{tcolorbox}[MDCallout=calloutMainColor,colback=MyColback,colbacktitle=MyColbacktitle, title={\faSymbol \calloutTitle{} #2}]%
+    #3%
+  \end{tcolorbox}
+}{}%
+
+\DeclareTColorBox{unimportant}{ O{0.5} }{blanker, breakable, opacitytext=#1,
+  every box/.style={opacitytext=#1, opacityframe=#1, opacityfill=#1, autoparskip}}
+% \AtBeginEnvironment{unimportant}{%
+%   \tcbsetforeverylayer{opacitytext=0.5, opacityframe=0.5, opacityfill=0.5, autoparskip}%
+% }%
+
+\endinput
