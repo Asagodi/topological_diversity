@@ -510,9 +510,12 @@ The average deviation from initial memory \(\vx_0\) over time is bounded linearl
 \qquad
 \text{(error bound)}
 \end{align}
-Note that this bound is the worst case and tighter for sufficiently small $t \geq 0$.
+Note that this bound is the worst case and tighter for sufficiently small $t \geq 0$. 
+Furthermore, for compact invariant manifolds the error is bounded by the size of the manifold and hence this bound becomes irrelevant for \(t\) large.
+
 
 Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has other dynanamics than just slow, as long as that is happening inside submanifolds to which the output mapping is invariant (see Theorem \ref{thrm:near_ca}).
+In this case, we can guarantee that the system can be perturbed onto a decomposable system where one of the subsystems has a slow flow.
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
 While the uniform norm gives insight on the short-time scale behavior of the perturbed ODE, we expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
@@ -730,10 +733,10 @@ The persistence~\ref{converse:persistent} requires that the flow on the manifold
 The S-type robustness~\ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
 Along with the D-type robustness~\ref{converse:Dtype}, it implies the manifold is ``attractive'', and normally hyperbolic (see also Sec.~\ref{sec:persitencempliesnh}).
 
-If these four conditions hold, for example for task-trained RNNs, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added, the slow manifold becomes a continuous attractor (Prop.~\ref{prop:revival}, see also Sec.~\ref{sec:near_ca}).
+If these four conditions hold, for example for task-trained RNNs, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added, the slow manifold becomes a continuous attractor (Prop.~\ref{prop:revival} and Theorem~\ref{thrm:near_ca}, see also Sec.~\ref{sec:near_ca}).
 For the RNN experiments, we added state-noise while training using stochastic gradient descent, satisfying~\ref{converse:Stype} and~\ref{converse:Dtype}.
 We have also verified that~\ref{converse:persistent} holds (Fig.~\ref{fig:angular_loss}A).
-Although the stochastic optimization cannot lead to the continuous attractor solution, it gets to the neighborhood where there are approximate solutions.
+Although the stochastic optimization cannot lead to \emph{the} continuous attractor solution, it gets to the neighborhood where all approximate solutions share the same main feature: having a subsystem that has a slow flow.
 
 
 
