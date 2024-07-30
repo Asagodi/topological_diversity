@@ -23,6 +23,20 @@
   \section{The purpose}
     Using group theory we can write down pretty general results about compact continuous attractors, and their perturbations.
     Given our interest in ring attractors, we'll focus on those, plus they have the advantage of being particularly tractable.
+    
+  \section{Definitions}
+  \begin{definition}
+  The fixed-point subspace, $\text{Fix}(\Sigma)$, associated with a subgroup $\Sigma$ of $\Gamma$ is defined by
+\[
+\text{Fix}(\Sigma) = \{ x \in V \mid \sigma \cdot x = x, \, \forall \sigma \in \Sigma \}.
+\]
+  \end{definition}
+  
+  \begin{theorem}[Equivariant Branching Lemma (Theorem 4.5 in \citep{hoyle2006}, Lemma 1.31 in \citep{golubitsky2002symmetric})]
+Consider a smooth map \( F: \mathbb{R}^n \times \mathbb{R} \to \mathbb{R}^n \) that is \( G \)-equivariant, where \( G \) is a group acting on \( \mathbb{R}^n \). Suppose that \( F(0, \lambda) = 0 \) for all \( \lambda \in \mathbb{R} \). Let \( \lambda = \lambda_c \) be a bifurcation point, which means that the linearization \( D_x F(0, \lambda_c) \) has a non-trivial kernel \( V \). 
+Then, for each non-trivial irreducible representation \( V_\rho \) of \( G \) contained in \( V \), there exists a branch of non-trivial solutions bifurcating from \( (0, \lambda_c) \) that lies in \( V_\rho \).
+\end{theorem}
+  
   \section{Normal forms for O2 and SO2 symmetry}
     \begin{example}[{\cites[Ex.~1.33]{golubitsky2002symmetry}}]\label{notes_normal_forms:ex:1.33}
       Let \(\Gamma=\mathbf{O}(2)\) act on \(\mathbb{R}^{2} \cong \mathbb{C}\).
