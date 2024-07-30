@@ -11,6 +11,7 @@
 \setcitestyle{open={},close={},comma,numbers,sort&compress,super}
 %\usepackage{subcaption}
 \usepackage{graphicx}
+\usepackage{tikz-cd}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{pifont} 				%xmark
 \usepackage{caption}
@@ -511,10 +512,10 @@ The average deviation from initial memory \(\vx_0\) over time is bounded linearl
 \text{(error bound)}
 \end{align}
 Note that this bound is the worst case and tighter for sufficiently small $t \geq 0$.
-Furthermore, for compact invariant manifolds the error is bounded by the size of the manifold and hence this bound becomes irrelevant for \(t\) large.
+Furthermore, for compact invariant manifolds the error is bounded by the diameter of the manifold and hence this bound becomes irrelevant for \(t\) large.
 
 
-Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has other dynanamics than just slow, as long as that is happening inside submanifolds to which the output mapping is invariant (see Theorem \ref{thrm:near_ca}).
+Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has other dynamics than just slow, as long as that is happening inside submanifolds to which the output mapping is invariant (see Theorem~\ref{thrm:near_ca}).
 In this case, we can guarantee that the system can be perturbed onto a decomposable system where one of the subsystems has a slow flow.
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
@@ -2430,19 +2431,25 @@ A \emph{fiber bundle} is a structure \((E, B, \pi, F)\) where:
     \item \(\pi: E \to B\) is a continuous surjection called the \emph{projection map}, and
     \item \(F\) is a topological space called the \emph{fiber}.
 \end{itemize}
-This structure must satisfy the local triviality condition: for each \(b \in B\), there exists an open neighborhood \(U\) of \(b\) such that there is a homeomorphism
+This structure must satisfy the local triviality condition: for each \(b \in B\), there exists an open neighborhood \(U\) of \(b\) such that there is a homeomorphism \pscomment{Can mention that \(\varphi\) is the trivialization. }
 \[
-\varphi: \pi^{-1}(U) \to U \times F
+\varphi: \pi^{-1}(U_{b}) \to U_{b} \times F_{b}
 \]
 that commutes with the projection onto \(U\), meaning that the following diagram commutes:
-\[
-\begin{array}{ccc}
-\pi^{-1}(U) & \xrightarrow{\varphi} & U \times F \\
-\pi \downarrow &  & \downarrow \text{pr}_1 \\
-U & = & U
-\end{array}
-\]
-where \(\text{pr}_1: U \times F \to U\) is the projection onto the first factor.
+\begin{equation*}
+    \begin{tikzcd}
+        \pi^{-1}(U_{b}) \arrow[rightarrow]{r}{\varphi}	\arrow[swap]{d}{\pi} & U_{b} \times F_{b}	\arrow[rightarrow]{d}{\operatorname{pr}_{1}} 	\\
+        U_{b} \arrow[rightarrow]{r}{id}  &	 	U_{b}
+      \end{tikzcd}
+\end{equation*}
+% \[
+% \begin{array}{ccc}
+% \pi^{-1}(U) & \xrightarrow{\varphi} & U \times F \\
+% \pi \downarrow &  & \downarrow \text{pr}_1 \\
+% U & = & U
+% \end{array}
+% \]
+where \(\text{pr}_1: U_{b} \times F_{b} \to U_{b}\) is the projection onto the first factor.
 \end{definition}
 
 \begin{definition}
