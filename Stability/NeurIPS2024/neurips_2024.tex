@@ -497,7 +497,7 @@ There exists a perturbation with uniform norm at most \(\eta\) that induces a bi
 An explicit perturbation is derived in Sec.~\ref{sec:supp:proofprop1}.
 %A perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}\), see for the proof Sec.~\ref{sec:supp:proofprop1}.
 This makes the uniform norm of the vector field on a (slow) manifold a useful measure to express the distance of an approximation to a continuous attractor.
-It can also be used to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
+It can also be used to bound the memory performance on the short-time scale. 
 Let \(\vx_0 \in \manifold\), and \(\varphi = \vp(\cdot)\vert_\manifold\) be the flow restricted to the manifold.
 The average deviation from initial memory \(\vx_0\) over time is bounded linearly (for a derivation, see Sec.~\ref{sec:supp:ub}):
 \begin{align}\label{eq:distance:ub}
@@ -511,8 +511,6 @@ The average deviation from initial memory \(\vx_0\) over time is bounded linearl
 \text{(error bound)}
 \end{align}
 Note that this bound is the worst case and tighter for sufficiently small $t \geq 0$.
-
-% We will demonstrate that this bound can be successfully found in trained RNNs numerically.
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
 While the uniform norm gives insight on the short-time scale behavior of the perturbed ODE, we expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
@@ -543,20 +541,15 @@ In more complex scenarios, such as a two-dimensional attractor, stable fixed poi
 
 
 \section{Numerical Experiments on Task-optimized Recurrent Networks}\label{sec:experiments}
-% Continuous attractor approximations} %from trained RNNs
 
 While our theory describes the abundance of approximate continuous attractors in the vicinity of a continuous attractor, it does not imply that there are no approximate solutions away from continuous attractors.
 We use task-optimized RNNs as a means to search for plausible solutions for analog memory for a circular variable.
 We train a diverse set of RNNs, and then identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
-%Recurrent neural networks (RNNs) are universal approximators of dynamical systems \citep{doya1993, schafer2006recurrent} and should therefore be able to approximate continuous attractors. \mpcomment{I disagree that it is!! It is a universal approximators of bounded length sequence-to-sequence transformations, not dynamical systems. Guillermo?}
-%Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
 Understanding the implemented computation in neural systems in terms of dynamical systems is a well-established practice~\citep{seung1996,sompolinsky1988}.
 Researchers have analyzed task-optimized RNNs through nonlinear dynamical systems analysis~\citep{sussillo2013blackbox,sussillo2014,barak2013,driscoll2022,maheswaranathan2019universality,cueva2019headdirection,cueva2021continuous} and to compare those artificial networks to biological circuits~\citep{mante2013context,remington2018flexible,ghazizadeh2021slow}.
-%
 Previously, systematic analysis of the variability in network dynamics has been surveyed in vanilla RNNs, and variations in dynamical solutions over architecture and nonlinearity have been quantified~\citep{sussillo2013blackbox,mante2013context,yang2019task,maheswaranathan2019universality,driscoll2022}.
 Furthermore, working memory mechanisms in RNNs had tendencies to find sequential or persistent representations through training depending on the task specification~\citep{orhan2019diverse}.
-%comparing artificial network representations to neural data
 We therefore investigated to what extent training RNNs on a task uniquely determines the low-dimensional dynamics, independent of neural architectures.
 
 \subsection{Model Architectures and Training Procedure}
@@ -584,9 +577,7 @@ Building upon prior work, which has shown their capabilities on such tasks, we t
 (1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection,cueva2021continuous}
 and (2) perform a memory-guided saccade task for a ring variable \citep{wimmer2014} (details in Sec.~\ref{sec:supp:tasks}).
 We numerically minimized the loss \(L\) which was the mean squared error (MSE) between the network output \(y(t)\) and the target output \(\hat y(t)\):
-%\begin{equation}\label{eq:loss}
 \(L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}, \)
-%\end{equation}
 with a mask \(m_{i,t}\) with \(i\) the index of the output units and \(t\)  the index for time.
 We implemented a mask, \(m_{i,t}\), for modulating the loss with respect to certain time intervals.
 We trained 10 networks for every combination of the following parameters:
@@ -595,11 +586,6 @@ We trained 10 networks for every combination of the following parameters:
 % , and activity regularization (\(10^{-3}, 0, 1\)).
 %All networks were trained using ADAM with \(\beta_1=0.9\) and \(\beta_2=0.999\) for \(5,000\) iterations with a batch size of 64.  % and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
 %Among the networks, we only analyzed networks with normalized MSE less than -20 dB (Fig.~\ref{}).
-
-%To avoid overly complex solutions that do not generalize well for longer trials, we penalized high activity using an L2 regularization on the hidden activity \(x_t\).
-%%We trained networks with regularizer
-%The hyperparameter selection criterion for regularization was the highest level of regularization that ...............
-%We found the highest level regularization that ...............
 
 
 %\subsection{Fast-slow decomposition: Unpacking the slow manifolds in trained RNNs} %from trained RNNs
@@ -612,14 +598,14 @@ We trained 10 networks for every combination of the following parameters:
  %method
 \subsection{Numerical Fast-Slow Decomposition}\label{sec:fastslowmethod}
 For each trained network, we find the slow manifold by integrating the autonomous dynamics then selecting the parts of the trajectory that have a speed slower than a threshold.
-%
 %We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}.
 %https://scikit-dimension.readthedocs.io/en/latest/skdim.id.MOM.html#skdim.id.MOM
 We identify the points on the invariant manifold from the simulated trajectories that are projected closest to a set of points in the output space relevant to the task after convergence, i.e. on the target ring.
 We parametrize the one-dimensional invariant manifold \(\manifold\) by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
-Normal hyperbolicity is measured by a gap in the timescales of the system (measured from the eigenvalue spectrum of the linearization along points on the invariant manifold (Fig.~\ref{fig:eigenvalue_gap}).
+Normal hyperbolicity is measured by a gap in the timescales of the system (measured from the eigenvalue spectrum of the linearization along points on the invariant manifold (Fig.~\ref{fig:fastslow_decomposition}E and F).
+%Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
-%Finally, we find the stable fixed points through a threshold on the
+
 We find the fixed points on the invariant ring by identifying regions where the direction of the flow flips for a dense set of points on the found invariant manifold.
 We assess the direction through projection onto the output mapping and calculate the angular flow.
 Stable fixed points are identified where the flow directions are both pointing towards this flip point,
@@ -630,15 +616,10 @@ We find that long integrated trajectories of the network converge to the found s
 \subsection{Variations in the Topologies of the Networks}\label{sec:topologies}
 To understand the what solutions the RNNs found to solve the task, we investigate their memory mechanism.
 For this, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the slow manifold, and the flow on the manifold (Sec.~\ref{sec:fsdecmethod}).
-%We want to investigate how networks might solve tasks.
-%While previous studies have primarily focused on simple tasks that can be solved with fixed points, there remains a gap in comprehensively extracting the mechanisms underlying network implementations~\citep{sussillo2013blackbox}.
-%We address this gap by investigating the internal mechanisms of neural network solvers for tasks involving continuous variables.
-%
 All solutions involve a slow manifold with the same topology as the relevant variable in the task.
 The different solutions are different in their asymptotic dynamics (Fig.~\ref{fig:fastslow_decomposition}).
 The most often found solution is of the type \emph{fixed point ring manifold} (Fig.~\ref{fig:fastslow_decomposition}A and B).
-%
-Less commonly found topologies includes %slow limit cycles (Fig.~\ref{fig:fastslow_decomposition}C) and a
+Less commonly found topologies includes
 the slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
 All stability structures (fixed points and limit cycles) are mapped close to the target output circle (Figs.~\ref{fig:fastslow_decomposition_otuput}, \ref{fig:im_rep}, \ref{fig:im_all}).
 These solutions are consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing, Park2023a} and neuronal circuits underlying persistent representations despite time-varying activity~\citep{druckmann2012neuronal}.
@@ -661,17 +642,7 @@ This implies that normal hyperbolicity for these trained networks holds.
 }\label{fig:fastslow_decomposition}
 \end{figure}
 
-%(B) 
-%(C) C:\Users\abel_\Documents\Lab\Projects\topological_diversity\experiments\center_out\N128_T512_Tr100\tanh
-%(D) C:\Users\abel_\Documents\Lab\Projects\topological_diversity\experiments\center_out\mask_after_saccade_N50_T500_noisy_actreg\tanh
-
 \subsection{Universality amongst Good Solutions}
-% To what extent does training neural networks to solve simple tasks, prevalent in neuroscientific studies, uniquely determine the low-dimensional dynamics independent of neural architectures?
-%are the learned dynamics highly sensitive to different neural architectures?
-
-%\begin{definition}%[Good Solution]
-%We define a \emph{Good Solution} as
-%\end{definition}
 
 The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
  much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
@@ -688,16 +659,10 @@ The universal structure of continuous attractor approximations as slow invariant
 
 \section{Generalization Analysis}\label{sec:generalization}
 
-%distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time
-
 When neuroscientists study neural computations in animals, the animals are trained on tasks with finite durations. As a result, it is unclear whether the animals learn the intended computation or merely a finite-time approximation of it. The same issue arises with trained neural networks.
 We will investigate to what extent the networks have the intended memory necessary for perfect memory or whether they implement the task only on the timescale on which they have been trained.
 We show that the theoretical upper bound for the memory performance based on the distance to a continuous attractor (Prop.~\ref{prop:ub}) holds in trained RNNs (Fig.~\ref{fig:angular_loss}A).
 
-%generalization
-%\subsection{Different topologies have different generalization properties}
-%\subsection{Generalization properties of continuous attractor approximations}\label{sec:generalization:sub}
-%, and thus a corresponding pattern of error in temporal generalization
 
 The two possible approximations of a ring attractor discussed in Sec.~\ref{sec:critique} exhibit markedly distinct generalization characteristics.
 Approximating the system as a limit cycle results in a memory trace that gradually diminishes over time.
@@ -786,32 +751,29 @@ So for biological system or artificial neural networks it is sufficient to be ne
 We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in various example systems.
 Although the corresponding configurations for a continuous attractor are measure-zero in parameter space, we showed that when the persistent manifold theorem holds, the finite time behavior of the trajectories only slowly breaks down under perturbations.
 There was a diverse set of bifurcations all sharing an essential element: an attractive invariant slow manifold.
-%
-%as we have shown...	
+This empirical evidence strongly corroborates our proposed theory of analog memory.
 
 Training RNNs on tasks involving continuous variables resulted similarly in a great variety of solutions.
 %However, even within this variety, we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
 As the theory predicted, trained networks have an attractive ring invariant manifold, which allows for a more useful comparison between trained networks than existing fixed point analyses.
 This supports our theory that theoretical models that satisfy conditions \ref{converse:bijection}-\ref{converse:Dtype} %and hence have behavior consistent with an almost perfect memory system, 
 will be near continuous attractors (in parameter space).
-Nevertheless, the topological structure of the found solutions still determines how well a network can perform generalization for longer time scales.
+Nevertheless, the topological structure of the found solutions still determines how well a network will perform generalization for longer time scales.
 
 %limitations
-Although, we only explicitly describe the topology and dimensionality of the identified invariant manifolds for a representative set,
- the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
-Although this separation of timescale necessarily exists for well-trained networks, the analysis is not guaranteed to work for systems without a fast-slow decomposition.
+Although, we only explicitly describe the topology and dimensionality of the identified invariant manifolds for a representative set, the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
+This separation of timescale necessarily exists for well-trained networks, however, the analysis is not guaranteed to work for systems without a fast-slow decomposition.
 %point above
 
 %error-correcting
 Previous psychophysical, theoretical, and neurophysiological work has shown that noise in neural activity can cause memories to diffuse away from their original representation, leading to errors in working memory.
 Discrete attractor dynamics can counteract this noise by pulling memories towards a few stable representations~\citep{panichello2019,Koulakov2002,Goldman2003-cz}.
-The found solutions might reflect the trade-off between robustness to noise and the ability to store continuous variables.
-%A future line of research could quantify the size of proposed homeostatic mechanisms to maintain analog working memory as proposed in e.g. \citep{Renart2003}.
+The found solutions  reflect the trade-off between robustness to noise and the ability to store continuous variables.
+A future line of research could verify whether the size of homeostatic mechanisms to maintain analog working memory as proposed in e.g. \citep{Renart2003} is in line with our theory.
 
 
-%Through a series of experiments of training RNNs on two tasks with various architectures, sizes and activation functions, we shed light on the intricate workings of neural networks when confronted with continuous-variable tasks.
-%Amidst the variability of solutions, we observe that all trained networks share the universal feature of having a slow invariant manifold with the same topology as the variable on which the computation relies.
-%This empirical evidence strongly corroborates our proposed theory of analog memory.
+
+
 
 
 
