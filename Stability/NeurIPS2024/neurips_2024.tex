@@ -512,6 +512,8 @@ The average deviation from initial memory \(\vx_0\) over time is bounded linearl
 \end{align}
 Note that this bound is the worst case and tighter for sufficiently small $t \geq 0$.
 
+Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has other dynanamics than just slow, as long as that is happening inside submanifolds to which the output mapping is invariant (see Theorem \ref{thrm:near_ca}).
+
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
 While the uniform norm gives insight on the short-time scale behavior of the perturbed ODE, we expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
 The long-time scale behavior on the slow manifold is dominated by the stability structure, i.e., the topology of the dynamics.
@@ -2483,7 +2485,7 @@ We need to assume that there is a slow flow (in the direction of \(\manifold_\te
 We characterize the relevant maximal size of the vector field that needs to be perturbed as the  supremum over the uniform norms of the vector field normal to the fibers of the fiber bundle.
 
 
-\begin{theorem}
+\begin{theorem}\label{thrm:near_ca}
 Let \(\manifold_\epsilon\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}) with the real part of the eigenvalues of \(\nabla_\vz \vh\) all negative. % in the neighborhood of a continuous attractor.
 Further, assume that this manifold can be decomposed \(\manifold_\epsilon= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_Y\) and that 
  the uniform norm of the flow tangent to \(\manifold_\epsilon\) restricted to \(\manifold_{\text{slow}}\) be \(\|\dot{(\vy)}_{\text{slow}}\|_\infty=\eta\).
