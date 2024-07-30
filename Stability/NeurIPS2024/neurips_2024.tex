@@ -744,25 +744,25 @@ Although the stochastic optimization cannot lead to \emph{the} continuous attrac
 \section{Discussion}
 %2 paragraph conclusion
 A manifold of equilibria in a continuous attractor network provides analog memory, making it a compelling model in theoretical neuroscience. 
-However, continuous attractors almost certainly bifurcate under arbitrary perturbations except in special paramtric forms, making them unsuitable as models for neural computation in the traditional perspective on robustness.
+However, continuous attractors almost certainly bifurcate under arbitrary perturbations except in special paramtric forms.
+This makes them unsuitable as models for neural computation in noisy biological systems according to the traditional perspective on robustness.
 We will therefore never see we reach through traditional RNN training techniques and never observe a biological one.
-Nevertheless, have shown that continuous attractors are functionally robust and therefore are an important concept to describe the neural computation underlying analog memory.
+Nevertheless, we have shown that continuous attractors are functionally robust and therefore are an important concept to describe the neural computation underlying analog memory.
 
 We further show that under some assumptions, approximations of analog memory must have slow manifold dynamics and hence be close to a continuous attractor in the space of dynamical systems.
 So for biological system or artificial neural networks it is sufficient to be near a continuous attractor to be effectively solving the problem similar enough to how the perfect theoretical model would solve it on a behaviorally relevant timescale.
 
 
-
 We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in various example systems.
-Although the corresponding configurations for a continuous attractor are measure-zero in parameter space, we showed that when the persistent manifold theorem holds, the finite time behavior of the trajectories only slowly breaks down under perturbations.
-There was a diverse set of bifurcations all sharing an essential element: an attractive invariant slow manifold.
+Although the configurations corresponding to a continuous attractor are measure-zero in parameter space, we showed that when the persistent manifold theorem holds, the finite time behavior of the trajectories only slowly breaks down under perturbations.
+For all perturbations and approximations there a diverse set of topologies.
+However, all systems share an essential element: an attractive invariant slow manifold.
 This empirical evidence strongly corroborates our proposed theory of analog memory.
 
 Training RNNs on tasks involving continuous variables resulted similarly in a great variety of solutions.
-%However, even within this variety, we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
-As the theory predicted, trained networks have an attractive ring invariant manifold, which allows for a more useful comparison between trained networks than existing fixed point analyses.
-This supports our theory that theoretical models that satisfy conditions \ref{converse:bijection}-\ref{converse:Dtype} %and hence have behavior consistent with an almost perfect memory system, 
-will be near continuous attractors (in parameter space).
+%However, even within this variety, with our theory we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
+As the theory predicted, trained networks on a circular analog memory task all have an attractive ring invariant manifold, which allows for a more useful comparison between trained networks than existing fixed point analyses.
+This supports our theory that theoretical models that satisfy conditions \ref{converse:bijection}-\ref{converse:Dtype} will be near continuous attractors (in parameter space).
 Nevertheless, the topological structure of the found solutions still determines how well a network will perform generalization for longer time scales.
 
 %limitations
@@ -775,11 +775,6 @@ Previous psychophysical, theoretical, and neurophysiological work has shown that
 Discrete attractor dynamics can counteract this noise by pulling memories towards a few stable representations~\citep{panichello2019,Koulakov2002,Goldman2003-cz}.
 The found solutions  reflect the trade-off between robustness to noise and the ability to store continuous variables.
 A future line of research could verify whether the size of homeostatic mechanisms to maintain analog working memory as proposed in e.g. \citep{Renart2003} is in line with our theory.
-
-
-
-
-
 
 
 \begin{ack}
