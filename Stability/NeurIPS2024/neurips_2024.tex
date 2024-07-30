@@ -2260,6 +2260,8 @@ has a unique closest point in \( Y \), denoted \( \pi(w) \).
 Moreover, \( \pi: Y_\epsilon \to Y \) is a submersion with \( \pi|_Y = \text{id} \).
 \end{theorem}
 
+%Use Extension Lemma for Vector Fields on Submanifolds?
+
 We now prove  Prop.~\ref{prop:revival}.
 \begin{proof}%[Prop.~\ref{prop:revival}]
 It is sufficient to show that there is a perturbation \(\vp\) that has zero flow off of \(\manifold_\epsilon\) but for which \(\vf+\vp=0\) on \(\manifold_\epsilon\) for the full system \(\vf\)  as defined in Eq.~\ref{eq:perturbation:nonparam}.
@@ -2475,39 +2477,32 @@ For our statement we want that the invariant manifold can be decomposed into a s
 For this to hold, it is sufficient that the output mapping must be a submersion because this makes it a locally trivial fibration.
 So we get that \(g\colon X\rightarrow Y\) defines a locally trivial fiber mapping.
 
-%The second assumption we need is about the speed along the output manifold.
+
 The second assumption we need is to have a bound for the speed of trajectories along the fibers, which will correspond to a speed along the output manifold, resulting in memory degradation.
-We need to assume that there is a slow flow (in the direction of \(\manifold_\text{slow}\)). %(it is possible that there is no flow in output space but there is flow in the kernel of the output mapping)
+We need to assume that there is a slow flow (in the direction of \(\manifold_\text{slow}\)). 
 We characterize the relevant maximal size of the vector field that needs to be perturbed as the  supremum over the uniform norms of the vector field normal to the fibers of the fiber bundle.
-%equiv.: ---- the supremum over the uniform norm of the vector field tangent to sections in the space of smooth sections of the fiber bundle 
-%maximum perturbation
 
-
-%eta: 
-% a smooth map φ : M → N and a vector field X on M
-%||\dot x|N||\infty Where we take the component N normal to each fiber \g^{-1}(y)
-%for later: eta in output space: average vector field tangent to output manifold per fiber
 
 \begin{theorem}
 Let \(\manifold_\epsilon\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}) with the real part of the eigenvalues of \(\nabla_\vz \vh\) all negative. % in the neighborhood of a continuous attractor.
 Further, assume that this manifold can be decomposed \(\manifold_\epsilon= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_Y\) and that 
- the uniform norm of the flow tangent to \(\manifold_\epsilon\) restricted to \(\manifold_{\text{slow}}\) be \(\|\dot \vy\|_\infty=\eta\).
+ the uniform norm of the flow tangent to \(\manifold_\epsilon\) restricted to \(\manifold_{\text{slow}}\) be \(\|\dot{(\vy)}_{\text{slow}}\|_\infty=\eta\).
  %eta should be the uniform norm of the projected vector field on the output manifold
  %actually it should be the supremum over all possible pullback sections
 Then, there exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a system that is decomposable into a continuous attractor and a system with a non-zero flow. 
 % eta/||g||_\infty for the output mapping g
 \end{theorem}
 
-In other words, after applying this perturbation, we get \(\dot \vx'|_\text{slow} = 0\) for the perturbed system \(\dot \vx' = \vf(\vx) + \vp(\vx)\).
-%
-Furthermore, the trajectories of the second system make up a fiber bundle for which the output projection is the bundle projection.
-The fibers are unions of trajectories that are all mapped onto the same value in \(\manifold_{\text{output}}\). %are equivalence classes of the output projection 
+In other words, after applying this perturbation, the slow component of the perturbed system satisfies \(\dot{\vx}'|_{\text{slow}} = 0\) for the system \(\dot{\vx}' = \vf(\vx) + \vp(\vx)\).
+Furthermore, the trajectories of the resulting system form a fiber bundle where the output projection serves as the bundle projection.
+Each fiber consists of trajectories that are mapped to the same value in \(\manifold_{\text{output}}\), meaning that the fibers describe an invariance under the output projection. % equivalence classes under the output projection.
 
 
 \begin{proof}
 Assume that the output mapping is a submersion from the invariant manifold \(\manifold_\epsilon\) to the output manifold \(\manifold_{\text{output}}\).
 Ehresmann's lemma implies that this implies that we have a locally trivial fibration \((\manifold_\epsilon, \manifold_{\text{output}}, g,\manifold_{\text{null}})\).
 We construct the perturbation \(\vp\) as the part of the vector field that us normal to the fibers \(g^{-1}(y)\) for each \(y\in\manifold_{\text{output}}\).
+By construction, this perturbation has uniform norm at most \(\eta\).
 This perturbation makes the vector field normal to each fiber zero.
 That implies that each fiber is an invariant submanifold of \(\manifold_\epsilon\).
 From the structure of the fiber bundle it follows that there is a continuum of such invariant submanifolds.
