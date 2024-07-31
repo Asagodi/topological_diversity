@@ -2162,6 +2162,10 @@ In this section, we delve into the specifics of Fenichel's Persistence Theorem, 
 
 
 \paragraph{Invariance}
+One of the main concepts in the Persistence Theorem is the notion of an invariant manifold. 
+Intuitively, this just means that trajectories stay inside the manifold for all time.
+Local invariance is a bit more involved and allows for the possibility of leaving the manifold, but only through it's boundary.
+
 \begin{definition}
 A set \(\manifold\) is \emph{locally invariant} under the flow from Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} if it has neighborhood \(V\) so that no trajectory can leave \(\manifold\) without also leaving \(V\).
 In other words, it is locally invariant if for all \(x \in \manifold, \varphi(x, [0, t] \subset V\) implies that  \(\varphi(x,[0, t]) \subset M\), similarly with \([0, t]\) replaced by \([t, 0]\) when \(t < 0\).
@@ -2233,8 +2237,12 @@ If \(|f(\theta)|>0\) for all \(\theta\), there is a circular flow with a variabl
 
 There is a fixed point for each unique \(\theta\) for which \(f(\theta)=0\). The nature of the flow around these fixed points can be classified into:
 Stable fixed points: Points where the flow tends to as time progresses (\(f(\theta)>0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)<0\) for al l\( \theta\in[\theta,2\pi]\cap V\) for some open ball \(V\) around \(\theta\)).
-Unstable fixed points: Points from which the flow diverges (\(f(\theta)<0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)>0\) for all \( \theta\in[\theta,2\pi]\cap V\) for some open ball \(V\) around \(\theta\)) .
+Unstable fixed points: Points from which the flow diverges (\(f(\theta)<0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)>0\) for all \( \theta\in[\theta,2\pi]\cap V\) for some open ball \(V\) around \(\theta\)).
 
+For a detailed discussion of how bifurcations of a continuous attractors depend on its symmetry see for example The Equivariant Branching Lemma (Lemma 1.31 in \citep{golubitsky2002symmetry}).
+If the solutions are symmetric under rotations (a circular symmetry such as for a ring attractor).
+As you change the bifurcation parameter, you find that new solutions appear that also respect this rotational symmetry.
+The lemma tells you that these new solutions will align with specific symmetries (like different rotation angles), which are described by the irreducible representations of the symmetry group.
 
 \subsection{Consequences to system identification}
 Fenichel's Persistence Theorem has several significant implications for modelling and system identification in dynamical systems.
