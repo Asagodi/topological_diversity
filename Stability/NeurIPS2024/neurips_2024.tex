@@ -327,18 +327,18 @@ Surprisingly, the number of fixed points is maintained throughout a range of per
 \ptitle{Bump attractor model}
 A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, involves utilizing a circulant matrix as the connectivity matrix\citep{benyishai1995theory, samsonovich1997path}.
 This type of ring attractor network can support a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
-This can be accomplished with a connection matrix \(W\) with entries that follow a circular Gaussian function of \(i-j\) \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
+This can be accomplished with a connection matrix \(W\) with entries that follow a circular Gaussian function of \(i-j\) \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic} (see for more details Sec.~\ref{sec:supp:goodridge}).
 For finite-sized networks, the dynamics are constrained to an attractive invariant ring, covered with \(N\) stable fixed points for a network of size \(N\) (Fig.~\ref{fig:bio_rings}B).
 For such networks the number of fixed points does change with the size of the perturbation (Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}).
 %Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is because they are nearby ring attractors as dynamical systems.
 
 \ptitle{Low-rank ring attractor model} %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
-Using dynamical mean field theory, in the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors (see Sec.~\ref{sec:supp:lowrank}).
+Using dynamical mean field theory, in the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining overlap of the right- and left-connectivity vectors (see for more details  Sec.~\ref{sec:supp:lowrank}).
 However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points arranged on a ring~\citep{mastrogiuseppe2018}.
 
 \ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
-Approximate ring attractors can be constructed by constraining the connectivity so that the networks Jacobian satisfies certain requirements for a ring attractor to exist~\citep{pollock2020} (Sec.~\ref{sec:supp:empj})
+Approximate ring attractors can be constructed by constraining the connectivity so that the networks Jacobian satisfies certain requirements for a ring attractor to exist~\citep{pollock2020} (see for more details Sec.~\ref{sec:supp:empj})
 The models optimized using this method also can contain an invariant ring manifold on which the dynamics contain stable and saddle fixed points (Fig.~\ref{fig:bio_rings}C).
 
 \ptitle{Similarity between all bifurcations and approximations of continuous attractors}
