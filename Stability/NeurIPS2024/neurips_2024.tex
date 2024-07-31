@@ -640,12 +640,14 @@ This implies that normal hyperbolicity for these trained networks holds.
   \caption{Slow manifold approximation of different trained networks on the memory-guided saccade and angular velocity integration tasks.
  (A1) Example of a trajectory on the angular velocity integration task.
  (A2) Example of a trajectory on the memory-guided saccade task.
- (B) An example fixed-point type solution to the memory-guided saccade task.
+ (B) An example fixed-point type solution to the memory-guided saccade task. Circles indicate fixed points of the system (filled for stable, empty for saddle) and the decoded angular value on the output ring is indicated with the color according to A1.
  (C) An example of a found solution to the angular velocity integration task.
  (D) An example slow-torus type solution to the memory-guided saccade task. The colored curves indicate stable limit cycles of the system.
  (E+F) The eigenvalue spectrum for the trained networks in B and C show a gap between the first two largest eigenvalues.
 }\label{fig:fastslow_decomposition}
 \end{figure}
+
+
 
 \subsection{Universality amongst Good Solutions}
 
@@ -675,6 +677,7 @@ Conversely, the alternative approximation's memory states are contingent upon th
 We describe in detail the generalization properties of the trained networks on the angular velocity integration task at two different time scales:  asymptotic and finite time.
 We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}C).
 
+%Fig 5
 %\setlength\belowcaptionskip{-3ex}
 \begin{figure}[tbhp]
   \centering
