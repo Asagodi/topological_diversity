@@ -11,6 +11,7 @@
 \setcitestyle{open={},close={},comma,numbers,sort&compress,super}
 %\usepackage{subcaption}
 \usepackage{graphicx}
+\usepackage{tikz-cd}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{pifont} 				%xmark
 \usepackage{caption}
@@ -401,7 +402,7 @@ To describe an arbitrary bifurcation of interest, we introduce a sufficiently sm
     \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}\label{eq:fenichel:flownormal}
 \end{align}
 where \(\epsilon = 0\) gives the condition for the continuous attractor \(\dot{\vy} = \mathbf{0}\).
-We denote the corresponding manifold of \(l\) dimensions \(\manifold_0 = \{(\vy,\vz) \mid \vh(\vy,\vz,0) = 0\}\).
+We denote the corresponding manifold of \(l\) dimensions \(\manifold_0 = \{(\vy,\vz) \mid \vh(\vy,\vz,0) = \mathbf{0} \}\).
 
 We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic, meaning that the Jacobians \(\nabla_\vz \vh\) evaluated at any point on the \(\manifold_0\) has \(d-l\) eigenvalues with their real part uniformly bounded away from zero, and \(\nabla_\vy \vg\) has \(l\) eigenvalues with zero real part.
 %intuition for $C^1$-diffeomorphisms:
@@ -440,7 +441,7 @@ Moreover, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdoff distance
 The manifold \(\manifold_\epsilon\) is called the \emph{slow manifold} which is no longer necessarily a continuum of equilibria.
 However, the local invariance implies that trajectories remain within the manifold except potentially at the boundary.
 Furthermore, the non-zero flow on the slow manifold is slow and given in the \(\epsilon \to 0\) limit as \(\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)\) where \(\tau = \epsilon t\) is a rescaled time and \(c^\epsilon(\cdot)\) parameterizes the \(l\) dimensional slow manifold.
-In addition, the stable manifold of \(\manifold_0\) is similarly persistent~\cite{Jones1995}, implying the manifold \(\manifold_\epsilon\) to remain attractive.
+In addition, the stable manifold of \(\manifold_0\) is similarly persistent~\cite{Jones1995}, implying the manifold \(\manifold_\epsilon\) to remain attractive.\pscomment{\textbf{Suggestion}:implying the stability of the manifold \(\manifold_\epsilon\) is preserved.}
 
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA%
@@ -497,7 +498,7 @@ There exists a perturbation with uniform norm at most \(\eta\) that induces a bi
 An explicit perturbation is derived in Sec.~\ref{sec:supp:proofprop1}.
 %A perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}\), see for the proof Sec.~\ref{sec:supp:proofprop1}.
 This makes the uniform norm of the vector field on a (slow) manifold a useful measure to express the distance of an approximation to a continuous attractor.
-It can also be used to bound the memory performance on the short-time scale. 
+It can also be used to bound the memory performance on the short-time scale.
 Let \(\vx_0 \in \manifold\), and \(\varphi = \vp(\cdot)\vert_\manifold\) be the flow restricted to the manifold.
 The average deviation from initial memory \(\vx_0\) over time is bounded linearly (for a derivation, see Sec.~\ref{sec:supp:ub}):
 \begin{align}\label{eq:distance:ub}
@@ -510,11 +511,11 @@ The average deviation from initial memory \(\vx_0\) over time is bounded linearl
 \qquad
 \text{(error bound)}
 \end{align}
-Note that this bound is the worst case and tighter for sufficiently small $t \geq 0$. 
-Furthermore, for compact invariant manifolds the error is bounded by the size of the manifold and hence this bound becomes irrelevant for \(t\) large.
+Note that this bound is the worst case and tighter for sufficiently small $t \geq 0$.
+Furthermore, for compact invariant manifolds the error is bounded by the diameter of the manifold and hence this bound becomes irrelevant for \(t\) large.
 
 
-Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has other dynanamics than just slow, as long as that is happening inside submanifolds to which the output mapping is invariant (see Theorem \ref{thrm:near_ca}).
+Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has other dynamics than just slow, as long as that is happening inside submanifolds to which the output mapping is invariant (see Theorem~\ref{thrm:near_ca}).
 In this case, we can guarantee that the system can be perturbed onto a decomposable system where one of the subsystems has a slow flow.
 
 \subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
@@ -743,7 +744,7 @@ Although the stochastic optimization cannot lead to \emph{the} continuous attrac
 
 \section{Discussion}
 %2 paragraph conclusion
-A manifold of equilibria in a continuous attractor network provides analog memory, making it a compelling model in theoretical neuroscience. 
+A manifold of equilibria in a continuous attractor network provides analog memory, making it a compelling model in theoretical neuroscience.
 However, continuous attractors almost certainly bifurcate under arbitrary perturbations except in special paramtric forms.
 This makes them unsuitable as models for neural computation in noisy biological systems according to the traditional perspective on robustness.
 We will therefore never see we reach through traditional RNN training techniques and never observe a biological one.
@@ -1897,7 +1898,7 @@ The total input activity $h_j$ of each neuron is governed by:
 \begin{equation}
 \tau \dot h_j = -h_j + \frac{1}{N} \sum_k (W^{sym}_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
 \end{equation}
-with 
+with
 \begin{equation}
 W^{sym}_{jk} = J_I + J_E \cos(\theta_j - \theta_k)
 \end{equation}, where \(J_E\) and \(J_I\) respectively control the strength of the tuned and untuned components of recurrent connectivity between neurons with preferred headings \(\theta_j\) and \(\theta_j\)
@@ -2049,10 +2050,10 @@ We keep the following parameters for the analysis:
 We fit 3 networks with the Embedding Manifolds with Population-level Jacobians (EMPJ) method \citep{pollock2020}.
 
 The networks are RNNs of $N=10$ neurons with a $tanh$ activation function and $\tau = 0.05$ time constant.
- To use EMPJ we need to specify our desired $k$ fixed points and $m$ eigenvectors and eigenvalues per fixed point. 
+ To use EMPJ we need to specify our desired $k$ fixed points and $m$ eigenvectors and eigenvalues per fixed point.
 
 To do this we choose $k=3$ points $\{(x_i, y_i)\}_{i=1}^N$ in the 2D ring with radius $r=1$ that are equally spaced from $0.1$ to $2 \pi$ radians. Then we specify the vectors orthogonal to the ring in those points ($V_o = \{(x_i, y_i)\}_{i=1}^N$, same as the points) and tangent ($V_t = \{(-y_i, x_i)\}_{i=1}^N$).
-Finally we associate the negative eigenvalue $-1/\tau$ to the orthogonal eigenvectors and different eigenvalues to the tangent eigenvectors. We use $-1$, $0$ or $1$ depending on whether we want the points to be stable, center or unstable in the direction of the slow ring manifold. 
+Finally we associate the negative eigenvalue $-1/\tau$ to the orthogonal eigenvectors and different eigenvalues to the tangent eigenvectors. We use $-1$, $0$ or $1$ depending on whether we want the points to be stable, center or unstable in the direction of the slow ring manifold.
 
 Since these determined dynamics are only in a 2D plane, we use a random linear mapping $D\colon\reals^2\rightarrow\reals^N$ to map the fixed points and the eigenvectors to a $10$-dimensional space. First, we sample a random from orthogonal matrix $A$ from the $O(N)$ Haar distribution and then we take the first two columns of this matrix to be $D=[A]_{12}$.
 
@@ -2152,7 +2153,7 @@ For the off-manifold perturbations \(\eta\in \reals^{10}\) and \(\|\eta\|_2=10^{
 \section{Persistence Theorem}\label{persistence_extra}
 Understanding the long-term behavior of dynamical systems is a fundamental question in various fields, including mathematical biology, ecological modeling, and neuroscience.
  Fenichel's Persistence Theorem provides critical insights into the behavior of such systems, particularly in relation to the stability and persistence of invariant manifolds under perturbations.
- 
+
 Fenichel's Persistence Theorem extends the classical theory of invariant manifolds, offering conditions under which normally hyperbolic invariant manifolds persist despite small perturbations.
 This theorem is particularly powerful in analyzing systems where perturbations are inevitable, providing a  framework for understanding how qualitative features of the system's dynamics are maintained.
 In this section, we delve into the specifics of Fenichel's Persistence Theorem, outlining its key components, assumptions, and implications.
@@ -2160,7 +2161,7 @@ In this section, we delve into the specifics of Fenichel's Persistence Theorem, 
 
 \paragraph{Invariance}
 \begin{definition}
-A set \(\manifold\) is \emph{locally invariant} under the flow from Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} if it has neighborhood \(V\) so that no trajectory can leave \(\manifold\) without also leaving \(V\). 
+A set \(\manifold\) is \emph{locally invariant} under the flow from Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} if it has neighborhood \(V\) so that no trajectory can leave \(\manifold\) without also leaving \(V\).
 In other words, it is locally invariant if for all \(x \in \manifold, \varphi(x, [0, t] \subset V\) implies that  \(\varphi(x,[0, t]) \subset M\), similarly with \([0, t]\) replaced by \([t, 0]\) when \(t < 0\).
 \end{definition}
 
@@ -2247,7 +2248,7 @@ For example, if neurons are only approximately ReLU the theory developed in \cit
 %some intro comments
 %definitions:
 %%Near Perfect Analog Memory Systems
-We will give some clarifications and proofs of the claims on systems near perfect analog memory systems. 
+We will give some clarifications and proofs of the claims on systems near perfect analog memory systems.
 
 \subsection{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
 
@@ -2255,7 +2256,7 @@ We  provide a proof of Prop.~\ref{prop:revival} which is dependent on the \(\eps
 
 \begin{theorem}[\(\epsilon\)-Neighborhood Theorem\citep{guillemin2010differential}]
 Let \( Y \subseteq \mathbb{R}^n \) be a smooth, compact manifold. Then for a small enough \(\epsilon > 0\),
-each \( w \in Y_\epsilon := \{ w \in \mathbb{R}^n \mid \exists y \in Y : \|y - w\| < \epsilon \} \) 
+each \( w \in Y_\epsilon := \{ w \in \mathbb{R}^n \mid \exists y \in Y : \|y - w\| < \epsilon \} \)
 has a unique closest point in \( Y \), denoted \( \pi(w) \).
 Moreover, \( \pi: Y_\epsilon \to Y \) is a submersion with \( \pi|_Y = \text{id} \).
 \end{theorem}
@@ -2331,8 +2332,8 @@ is smooth and creates a continuous attractor at \(\manifold_\epsilon\).
 \subsection{Output mapping} %move to next subsection?
 This paper focuses on a linear output mapping for simplicity.
 Errors can be minimized with a nonlinear mapping.
-However, this can only be applied for error off of the output manifold. 
-%So if there is an output that is mapped off of the manild there is a mapping that 
+However, this can only be applied for error off of the output manifold.
+%So if there is an output that is mapped off of the manild there is a mapping that
 If there is memory degradation along the output manifold, it is not possible to choose another mapping that corrects for this error.
 
 
@@ -2360,7 +2361,7 @@ Previously, it robustness to D-type noise was considered to correspond to struct
 
 Here we shortly discuss what we consider to be a necessary and sufficient condition for D-type robustness.
 We can use the concept of Lipschitz persistence to define D-type robustness.
-Ma\~{n}e showed that if an invariant manifold is Lipschitz persistent then it must be normally hyperbolic \citep{mane1978persistent}. 
+Ma\~{n}e showed that if an invariant manifold is Lipschitz persistent then it must be normally hyperbolic \citep{mane1978persistent}.
 To understand the concept of Lipschitz persistence, we need to define the Lipschitz section and Lipschitz constant.
 
 \begin{definition}
@@ -2390,7 +2391,7 @@ For a flow \(\varphi_t\) (coming from the solutions of an ODE) we can fix \(t=\t
 This allows us to apply this result to apply to our case.
 
 
-In the case where $V$ is a point, then it is a hyperbolic fixed point and the persistence follows trivially from the implicit function theorem. 
+In the case where $V$ is a point, then it is a hyperbolic fixed point and the persistence follows trivially from the implicit function theorem.
 
 
 \begin{remark}
@@ -2430,19 +2431,25 @@ A \emph{fiber bundle} is a structure \((E, B, \pi, F)\) where:
     \item \(\pi: E \to B\) is a continuous surjection called the \emph{projection map}, and
     \item \(F\) is a topological space called the \emph{fiber}.
 \end{itemize}
-This structure must satisfy the local triviality condition: for each \(b \in B\), there exists an open neighborhood \(U\) of \(b\) such that there is a homeomorphism
+This structure must satisfy the local triviality condition: for each \(b \in B\), there exists an open neighborhood \(U\) of \(b\) such that there is a homeomorphism \pscomment{Can mention that \(\varphi\) is the trivialization. }
 \[
-\varphi: \pi^{-1}(U) \to U \times F
+\varphi: \pi^{-1}(U_{b}) \to U_{b} \times F_{b}
 \]
 that commutes with the projection onto \(U\), meaning that the following diagram commutes:
-\[
-\begin{array}{ccc}
-\pi^{-1}(U) & \xrightarrow{\varphi} & U \times F \\
-\pi \downarrow &  & \downarrow \text{pr}_1 \\
-U & = & U
-\end{array}
-\]
-where \(\text{pr}_1: U \times F \to U\) is the projection onto the first factor.
+\begin{equation*}
+    \begin{tikzcd}
+        \pi^{-1}(U_{b}) \arrow[rightarrow]{r}{\varphi}	\arrow[swap]{d}{\pi} & U_{b} \times F_{b}	\arrow[rightarrow]{d}{\operatorname{pr}_{1}} 	\\
+        U_{b} \arrow[rightarrow]{r}{id}  &	 	U_{b}
+      \end{tikzcd}
+\end{equation*}
+% \[
+% \begin{array}{ccc}
+% \pi^{-1}(U) & \xrightarrow{\varphi} & U \times F \\
+% \pi \downarrow &  & \downarrow \text{pr}_1 \\
+% U & = & U
+% \end{array}
+% \]
+where \(\text{pr}_1: U_{b} \times F_{b} \to U_{b}\) is the projection onto the first factor.
 \end{definition}
 
 \begin{definition}
@@ -2479,17 +2486,17 @@ So we get that \(g\colon X\rightarrow Y\) defines a locally trivial fiber mappin
 
 
 The second assumption we need is to have a bound for the speed of trajectories along the fibers, which will correspond to a speed along the output manifold, resulting in memory degradation.
-We need to assume that there is a slow flow (in the direction of \(\manifold_\text{slow}\)). 
+We need to assume that there is a slow flow (in the direction of \(\manifold_\text{slow}\)).
 We characterize the relevant maximal size of the vector field that needs to be perturbed as the  supremum over the uniform norms of the vector field normal to the fibers of the fiber bundle.
 
 
 \begin{theorem}\label{thrm:near_ca}
 Let \(\manifold_\epsilon\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}) with the real part of the eigenvalues of \(\nabla_\vz \vh\) all negative. % in the neighborhood of a continuous attractor.
-Further, assume that this manifold can be decomposed \(\manifold_\epsilon= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_Y\) and that 
+Further, assume that this manifold can be decomposed \(\manifold_\epsilon= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_Y\) and that
  the uniform norm of the flow tangent to \(\manifold_\epsilon\) restricted to \(\manifold_{\text{slow}}\) be \(\|\dot{(\vy)}_{\text{slow}}\|_\infty=\eta\).
  %eta should be the uniform norm of the projected vector field on the output manifold
  %actually it should be the supremum over all possible pullback sections
-Then, there exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a system that is decomposable into a continuous attractor and a system with a non-zero flow. 
+Then, there exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a system that is decomposable into a continuous attractor and a system with a non-zero flow.
 % eta/||g||_\infty for the output mapping g
 \end{theorem}
 
@@ -2523,7 +2530,7 @@ In this case, the system can be perturbed slightly such that there exists a cont
 
 
 %\paragraph{} More general:
-%Prove (?): There is a point \(y\in Y\) for which \(g^{-1}(y)={x}\times \manifold_{null}\) 
+%Prove (?): There is a point \(y\in Y\) for which \(g^{-1}(y)={x}\times \manifold_{null}\)
 %With some implicit function theorem?
 %+the fact that the invariant manifold is compact
 %
@@ -2864,7 +2871,7 @@ where \(\Re(\lambda)\) denotes the real part of the eigenvalue \(\lambda\).
  However, not all solutions can be meaningfully analyzed with this the slow-fast decomposition method.
  For example, the solution at the center of the \(\tanh, N=256\) block, the found invariant manifold is not correctly captured.
  This is true for the networks that have not learned the task correctly (networks with a NMSE higher than -20dB).
- 
+
  \begin{figure}[tbhp]
      \centering
     \includegraphics[width=\textwidth]{im_all_last2}
