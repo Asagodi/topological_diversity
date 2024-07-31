@@ -322,13 +322,11 @@ Surprisingly, the number of fixed points is maintained throughout a range of per
 
 %how can we understand the underlying mechanism of these bifurcations
 
-%\mpcomment{transition missing}
+
 %In modeling neural dynamics, ensuring biological plausibility is paramount.
 \ptitle{Bump attractor model}
-%A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, involves utilizing
-%a circulant matrix as the connectivity matrix\citep{samsonovich1997path, seeholzer2017efficient, redish1996coupled, goodridge2000, compte2000synaptic}.
-An infinite-sized ring attractor network can support a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
-%The position of this bump encodes the head direction.
+A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, involves utilizing a circulant matrix as the connectivity matrix\citep{benyishai1995theory, samsonovich1997path}.
+This type of ring attractor network can support a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
 This can be accomplished with a connection matrix \(W\) with entries that follow a circular Gaussian function of \(i-j\) \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic}.
 For finite-sized networks, the dynamics are constrained to an attractive invariant ring, covered with \(N\) stable fixed points for a network of size \(N\) (Fig.~\ref{fig:bio_rings}B).
 For such networks the number of fixed points does change with the size of the perturbation (Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}).
@@ -445,7 +443,7 @@ Moreover, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdoff distance
 The manifold \(\manifold_\epsilon\) is called the \emph{slow manifold} which is no longer necessarily a continuum of equilibria.
 However, the local invariance implies that trajectories remain within the manifold except potentially at the boundary.
 Furthermore, the non-zero flow on the slow manifold is slow and given in the \(\epsilon \to 0\) limit as \(\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)\) where \(\tau = \epsilon t\) is a rescaled time and \(c^\epsilon(\cdot)\) parameterizes the \(l\) dimensional slow manifold.
-In addition, the stable manifold of \(\manifold_0\) is similarly persistent~\cite{Jones1995}, implying the manifold \(\manifold_\epsilon\) to remain attractive.\pscomment{\textbf{Suggestion}:implying the stability of the manifold \(\manifold_\epsilon\) is preserved.}
+In addition, the stable manifold of \(\manifold_0\) is similarly persistent~\cite{Jones1995}, implying the manifold \(\manifold_\epsilon\) to remain attractive.%\pscomment{\textbf{Suggestion}:implying the stability of the manifold \(\manifold_\epsilon\) is preserved.}
 
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the rerparametrization of the BLA%
@@ -2425,6 +2423,7 @@ The construction of a perturbation relies on finding the necessary minimal struc
 Therefore, first of all, we need this closeness in terms of the geometry of the manifold, which we guarantee through the notion of a fibration of the output mapping.
 Second, we need to guarantee that the flow is bounded in a sense so that our perturbation is also bounded by this amount.
 We will characterize this by the vector field normal to the fibers of the fiber bundle.
+A fiber bundle is a mathematical structure that allows us to study spaces that are locally like a product space but globally may have a different structure.
 So we first state the definition of a fiber bundle and a trivial fibration.
 
 \begin{definition}
@@ -2435,7 +2434,7 @@ A \emph{fiber bundle} is a structure \((E, B, \pi, F)\) where:
     \item \(\pi: E \to B\) is a continuous surjection called the \emph{projection map}, and
     \item \(F\) is a topological space called the \emph{fiber}.
 \end{itemize}
-This structure must satisfy the local triviality condition: for each \(b \in B\), there exists an open neighborhood \(U\) of \(b\) such that there is a homeomorphism \pscomment{Can mention that \(\varphi\) is the trivialization. }
+This structure must satisfy the local triviality condition: for each \(b \in B\), there exists an open neighborhood \(U\) of \(b\) such that there is a homeomorphism 
 \[
 \varphi: \pi^{-1}(U_{b}) \to U_{b} \times F_{b}
 \]
@@ -2455,6 +2454,8 @@ that commutes with the projection onto \(U\), meaning that the following diagram
 % \]
 where \(\text{pr}_1: U_{b} \times F_{b} \to U_{b}\) is the projection onto the first factor.
 \end{definition}
+
+So, around every point in the base space, you can "zoom in" and see that the bundle looks like a straightforward product of the base space and the fiber and \(\varphi\) is providing this trivialization.
 
 \begin{definition}
 We say that a projection map \(\pi:E \rightarrow  B\) is \emph{locally trivial} if each point \(b \in B\) is contained in an open set \(U\) having the property that \(E_U\coloneqq \pi^{-1}(U)\) is trivial over \(U\).
