@@ -6,19 +6,22 @@ We appreciate the remark, and shall include additional tasks where the approxima
 That being said, we would like to reiterate that the primary contribution is theoretical and the numerical experiments are meant to illustrate the theory.
 Furthermore, planar attractors are diffeomorphic to $R^2$ do not conform to the assumptions on normally hyperbolic invariant manifolds, since $R^2$ isn't compact.
 There are suitable generalizations of this theory to noncompact manifolds, but we do not pursue them since they require more refined tools, which would only obscure the point that we are trying to make.
+We would also like to point out that we assume that the brain is bounded and hence expect its dynamics to be describable by a compact manifold.
 Similarly, approximations of planar attractors are diffeomorphic to $[0,1]\times[0,1]$ are also excluded since they’re an example of a **manifold with corners**.
 
 > The authors have only qualitatively characterized the variations in the topologies of the networks. It is perhaps possible to quantitatively characterize this by using Dynamical Similarity Analysis [1] on various trained networks.
->
+
 We thank the reviewer for pointing out the reference; we are currently applying DSA to our numerical results.
 Our preliminary observations are that DSA reflects the fact that the geometry of the invariant manifold is preserved, but cannot resolve the emergence of fixed-points and saddles on the pertubed manifold.
 This appears to be consistent with the results reported in the referenced paper, c.f. Figure 4 shows a gradual increase in DSA as $\alpha \to 1$ despite having a bifurcation at $\alpha = 1$.
 
+
 > For the generalization analysis, the authors could evaluate generalization performance by the nature/type of the approximate attractor as well. Furthermore, although I may have missed this, could the authors comment on what networks hyperparameters lead to which approximations?
 This question doesn’t make sense.
-We looked at the generalization performance by the nature/type of the approximate attractor. (Fig.4D MSE vs nfps)
-**@Abel**, did you mean Fig. 5D? I'm not sure if you're referring to the correct subfigure.
-The only networks hyperparameters that we varied were the nonlinearity and the size
+We looked at the generalization performance by the nature/type of the approximate attractor. (Fig.5D MSE vs nfps)
+The only networks hyperparameters that we varied were the nonlinearity and the size.
+In Fig.5D we show to what fixed point topology the different nonlinearities and sizes converge.
+
 > The figures and presentation could be improved:
 > 1. On line 107 there is a comment that should be removed ("add link to details").
 > 2. Fig. 4C, caption should indicate the nature of the solution found.
@@ -39,4 +42,5 @@ We will revise the writing to improve clarity.
 See above.
 
 > At what level of performance are all trained networks compared? Are they all trained until the same loss value and how close is this MSE to 0?
-**@Abel**, can you comment on this briefly? I'll clean up the writing.
+All networks are trained for 5000 gradient steps.
+We exclude those networks from the analysis that are performing less than -20dB in terms of normalized mean squared error.
