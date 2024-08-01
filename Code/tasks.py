@@ -107,6 +107,55 @@ def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, 
     
     return task
 
+def double_angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, random_angle_init=False, max_input=None):
+    input_length = int(T/dt)
+    
+    def task(batch_size):
+        
+        X = np.expand_dims(np.linspace(-length_scale, length_scale, input_length), 1)
+        sigma = exponentiated_quadratic(X, X)  
+        if sparsity =='variable':
+            sparsities = np.random.uniform(0, 2, batch_size)
+            mask_input = np.random.random(size=(batch_size, input_length))<1-sparsities[:,None]
+        elif sparsity:
+            mask_input = np.random.random(size=(batch_size, input_length)) < 1-sparsity
+        inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
+        inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
+        if max_input:
+            inputs1 = np.where(np.abs(inputs1)>max_input, np.sign(inputs1), inputs1)
+            inputs2 = np.where(np.abs(inputs2)>max_input, np.sign(inputs2), inputs2)
+        if sparsity:
+            inputs1[mask_input] = 0.
+            inputs2[mask_input] = 0.
+        outputs1_1d = np.cumsum(inputs1, axis=1)*dt
+        outputs2_1d = np.cumsum(inputs2, axis=1)*dt
+        if random_angle_init=='equally_spaced':
+            outputs1_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+            outputs2_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+        elif random_angle_init:
+            random_angles1 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+            outputs1_1d += random_angles1[:, np.newaxis]
+            
+            random_angles2 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+            outputs2_1d += random_angles2[:, np.newaxis]
+
+        outputs1 = np.stack((np.cos(outputs1_1d), np.sin(outputs1_1d)), axis=-1)
+        outputs2 = np.stack((np.cos(outputs2_1d), np.sin(outputs2_1d)), axis=-1)
+        outputs = np.concatenate((outputs1, outputs2), axis=-1)
+        
+        if last_mses:
+            fin_int = np.random.randint(1,last_mses,size=batch_size)
+            mask = np.zeros((batch_size, input_length, 4))
+            mask[np.arange(batch_size), -fin_int, :] = 1
+
+        else:
+            mask = np.ones((batch_size, input_length, 4))
+
+        inputs = np.stack((inputs1, inputs2), axis=-1)
+        return inputs.reshape((batch_size, input_length, 2)), outputs, mask
+    
+    return task
+
 def angularintegration_task_constant(T, dt, speed_range=[-1,1], sparsity=1, last_mses=False, random_angle_init=False, max_input=None):
     """
     Creates N_batch trials of the angular integration task with Guassian Process angular velocity inputs.
