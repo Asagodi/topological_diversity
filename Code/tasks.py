@@ -62,6 +62,8 @@ def eyeblink_task(input_length, t_delay, t_stim=1, t_target=1, min_us_time=5, ma
 
 
 #########################################
+
+##ANGULAR INTEGRATION
 def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, random_angle_init=False, max_input=None):
     """
     Creates N_batch trials of the angular integration task with Guassian Process angular velocity inputs.
@@ -107,52 +109,95 @@ def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, 
     
     return task
 
-def double_angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, random_angle_init=False, max_input=None):
+def double_angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, random_angle_init=False,
+                                   max_input=None, constant_speed=False, speed_range=[-1,1]):
     input_length = int(T/dt)
     
-    def task(batch_size):
-        
-        X = np.expand_dims(np.linspace(-length_scale, length_scale, input_length), 1)
-        sigma = exponentiated_quadratic(X, X)  
-        if sparsity =='variable':
-            sparsities = np.random.uniform(0, 2, batch_size)
-            mask_input = np.random.random(size=(batch_size, input_length))<1-sparsities[:,None]
-        elif sparsity:
-            mask_input = np.random.random(size=(batch_size, input_length)) < 1-sparsity
-        inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
-        inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
-        if max_input:
-            inputs1 = np.where(np.abs(inputs1)>max_input, np.sign(inputs1), inputs1)
-            inputs2 = np.where(np.abs(inputs2)>max_input, np.sign(inputs2), inputs2)
-        if sparsity:
-            inputs1[mask_input] = 0.
-            inputs2[mask_input] = 0.
-        outputs1_1d = np.cumsum(inputs1, axis=1)*dt
-        outputs2_1d = np.cumsum(inputs2, axis=1)*dt
-        if random_angle_init=='equally_spaced':
-            outputs1_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
-            outputs2_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
-        elif random_angle_init:
-            random_angles1 = np.random.uniform(-np.pi, np.pi, size=batch_size)
-            outputs1_1d += random_angles1[:, np.newaxis]
+    if not constant_speed:
+        def task(batch_size):
             
-            random_angles2 = np.random.uniform(-np.pi, np.pi, size=batch_size)
-            outputs2_1d += random_angles2[:, np.newaxis]
+            X = np.expand_dims(np.linspace(-length_scale, length_scale, input_length), 1)
+            sigma = exponentiated_quadratic(X, X)  
+            if sparsity =='variable':
+                sparsities = np.random.uniform(0, 2, batch_size)
+                mask_input = np.random.random(size=(batch_size, input_length))<1-sparsities[:,None]
+            elif sparsity:
+                mask_input = np.random.random(size=(batch_size, input_length)) < 1-sparsity
+            inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
+            inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
+            if max_input:
+                inputs1 = np.where(np.abs(inputs1)>max_input, np.sign(inputs1), inputs1)
+                inputs2 = np.where(np.abs(inputs2)>max_input, np.sign(inputs2), inputs2)
+            if sparsity:
+                inputs1[mask_input] = 0.
+                inputs2[mask_input] = 0.
+            outputs1_1d = np.cumsum(inputs1, axis=1)*dt
+            outputs2_1d = np.cumsum(inputs2, axis=1)*dt
+            if random_angle_init=='equally_spaced':
+                outputs1_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+                outputs2_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+            elif random_angle_init:
+                random_angles1 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+                outputs1_1d += random_angles1[:, np.newaxis]
+                
+                random_angles2 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+                outputs2_1d += random_angles2[:, np.newaxis]
+    
+            outputs1 = np.stack((np.cos(outputs1_1d), np.sin(outputs1_1d)), axis=-1)
+            outputs2 = np.stack((np.cos(outputs2_1d), np.sin(outputs2_1d)), axis=-1)
+            outputs = np.concatenate((outputs1, outputs2), axis=-1)
+            
+            if last_mses:
+                fin_int = np.random.randint(1,last_mses,size=batch_size)
+                mask = np.zeros((batch_size, input_length, 4))
+                mask[np.arange(batch_size), -fin_int, :] = 1
+    
+            else:
+                mask = np.ones((batch_size, input_length, 4))
+    
+            inputs = np.stack((inputs1, inputs2), axis=-1)
+            return inputs.reshape((batch_size, input_length, 2)), outputs, mask
+    
+    else:
+        def task(batch_size):
+            #no mask, no lastmse
+                
+            inputs1_0 = np.random.uniform(low=speed_range[0], high=speed_range[1], size=batch_size)
+            inputs2_0 = np.random.uniform(low=speed_range[0], high=speed_range[1], size=batch_size)
+            inputs1_0 = inputs1_0.reshape(-1, 1) * np.ones((batch_size, input_length))
+            inputs2_0 = inputs2_0.reshape(-1, 1) * np.ones((batch_size, input_length))
+            inputs = np.stack((inputs1_0, inputs2_0), axis=-1)
+            
+            if max_input:
+                inputs1_0 = np.where(np.abs(inputs1_0)>max_input, np.sign(inputs1_0), inputs1_0)
+                inputs2_0 = np.where(np.abs(inputs2_0)>max_input, np.sign(inputs2_0), inputs2_0)
 
-        outputs1 = np.stack((np.cos(outputs1_1d), np.sin(outputs1_1d)), axis=-1)
-        outputs2 = np.stack((np.cos(outputs2_1d), np.sin(outputs2_1d)), axis=-1)
-        outputs = np.concatenate((outputs1, outputs2), axis=-1)
-        
-        if last_mses:
-            fin_int = np.random.randint(1,last_mses,size=batch_size)
-            mask = np.zeros((batch_size, input_length, 4))
-            mask[np.arange(batch_size), -fin_int, :] = 1
+            outputs_1d = np.cumsum(inputs1_0, axis=1)*dt
+            outputs_2d = np.cumsum(inputs2_0, axis=1)*dt
 
-        else:
-            mask = np.ones((batch_size, input_length, 4))
+            if random_angle_init=='equally_spaced':
+                #outputs_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+                #outputs_2d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+                
+                angles = np.linspace(-np.pi, np.pi, int(np.sqrt(batch_size)))
+                theta, phi = np.meshgrid(angles, angles)
 
-        inputs = np.stack((inputs1, inputs2), axis=-1)
-        return inputs.reshape((batch_size, input_length, 2)), outputs, mask
+                outputs_1d += theta.flatten()[:, np.newaxis]
+                outputs_2d += phi.flatten()[:, np.newaxis]
+
+
+            elif random_angle_init:
+                random_angles1 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+                outputs_1d += random_angles1[:, np.newaxis]
+                random_angles2 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+                outputs_2d += random_angles2[:, np.newaxis]
+
+            outputs1 = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
+            outputs2 = np.stack((np.cos(outputs_2d), np.sin(outputs_2d)), axis=-1)
+            outputs = np.concatenate((outputs1, outputs2), axis=-1)
+
+            mask = np.ones((batch_size, input_length, 2))
+            return inputs, outputs, mask
     
     return task
 
@@ -224,6 +269,24 @@ def angularintegration_delta_task(T, dt, p=.1, amplitude=1):
 
 
 
+def sphere_integration_task(n_samples, n):
+    data = []
+    for _ in range(n_samples):
+        theta = np.random.uniform(0, np.pi, n_theta)
+        phi = np.random.uniform(0, 2*np.pi, n_phi)
+        r = 1  # Unit sphere
+
+        x = r * np.sin(theta) * np.cos(n * phi)
+        y = r * np.sin(theta) * np.sin(n * phi)
+        z = r * np.cos(theta)
+
+        f_xyz = x**2 + y**2 + z**2  # Example function
+
+        data.append((theta, phi, f_xyz))
+    return data 
+
+
+##############LINEAR INTEGRATION
 def simplestep_integration_task(T, dt, amplitude=1, pulse_time=1, delay=1):
     """
     Creates a trial with a positive and negative step with length step_length and amplitude
