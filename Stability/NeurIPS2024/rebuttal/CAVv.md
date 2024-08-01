@@ -6,8 +6,9 @@ We appreciate the remark, and shall include additional tasks where the approxima
 That being said, we would like to reiterate that the primary contribution is theoretical and the numerical experiments are meant to illustrate the theory.
 Furthermore, planar attractors are diffeomorphic to $R^2$ do not conform to the assumptions on normally hyperbolic invariant manifolds, since $R^2$ isn't compact.
 There are suitable generalizations of this theory to noncompact manifolds, but we do not pursue them since they require more refined tools, which would only obscure the point that we are trying to make.
-We would also like to point out that we assume that the brain is bounded and hence expect its dynamics to be describable by a compact manifold.
-Similarly, approximations of planar attractors are diffeomorphic to $[0,1]\times[0,1]$ are also excluded since they’re an example of a **manifold with corners**.
+We would also like to point out that we assume that neural activity is bounded, due to e.g. energy constraints, and hence focusing on the compact manifold case is natural.
+Regarding approximations of planar attractors are diffeomorphic to $[0,1]\times[0,1]$, please note that they too violate the assumptions of Theorem 1.
+Such objects are **manifolds with corners**, for a discussion see Lang's Differential Manifolds Ch II section 4.
 
 > The authors have only qualitatively characterized the variations in the topologies of the networks. It is perhaps possible to quantitatively characterize this by using Dynamical Similarity Analysis [1] on various trained networks.
 
@@ -17,10 +18,9 @@ This appears to be consistent with the results reported in the referenced paper,
 
 
 > For the generalization analysis, the authors could evaluate generalization performance by the nature/type of the approximate attractor as well. Furthermore, although I may have missed this, could the authors comment on what networks hyperparameters lead to which approximations?
-This question doesn’t make sense.
-We looked at the generalization performance by the nature/type of the approximate attractor. (Fig.5D MSE vs nfps)
+We would like to point out that Fig.5D provides such a quantification.
+In it, we show to what fixed point topology the different nonlinearities and sizes converge.
 The only networks hyperparameters that we varied were the nonlinearity and the size.
-In Fig.5D we show to what fixed point topology the different nonlinearities and sizes converge.
 
 > The figures and presentation could be improved:
 > 1. On line 107 there is a comment that should be removed ("add link to details").
@@ -31,10 +31,11 @@ In Fig.5D we show to what fixed point topology the different nonlinearities and 
 > - Fig. 5E, y-axis label is missing. Also, the authors could just use
 > the normalized MSE on the axis could just follow the convention used in
 > Fig. 5A instead of using dB.
+
 We appreciate the comments, and will change the manuscript accordingly.
 > Overall, the writing could be improved in several places to improve clarity. For example, the conclusions of the generalization analysis and their implications are not very clear, and how this connects to the various types of approximate attractors is not clear (related to W3).
 
-We will revise the writing to improve clarity.
+We concur; we will re-flowing the text to improve clarity, and to offer clearer take-aways from each section.
 ### Questions:
 
 > How do the authors identify the various kinds of approximations of the attractors? Can this be automated, perhaps by using to DSA to cluster the various types?
