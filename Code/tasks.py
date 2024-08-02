@@ -270,7 +270,7 @@ def angularintegration_delta_task(T, dt, p=.1, amplitude=1):
 
 
 #####SPHERE
-def sphere_integration_task(T, dt, length_scale=1, r=1, random_angle_init=True):
+def sphere_integration_task(T, dt, length_scale=1, r=1, random_angle_init=True, sparsity=1):
     """
     Creates N_batch trials of the sphere (S^2, 2-sphere, ordinary sphere) integration task 
     Inputs is velocities ... and 
@@ -288,6 +288,18 @@ def sphere_integration_task(T, dt, length_scale=1, r=1, random_angle_init=True):
         
         inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #theta
         inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #phi
+
+        if sparsity =='variable':
+            sparsities = np.random.uniform(0, 2, batch_size)
+            mask_input = np.random.random(size=(batch_size, input_length))<1-sparsities[:,None]
+        elif sparsity:
+            mask_input = np.random.random(size=(batch_size, input_length)) < 1-sparsity
+        inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
+        inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
+        if sparsity:
+            inputs1[mask_input] = 0.
+            inputs2[mask_input] = 0.
+            
         inputs = np.stack((inputs1, inputs2), axis=-1)
 
         
