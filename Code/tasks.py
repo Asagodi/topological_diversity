@@ -301,14 +301,17 @@ def sphere_integration_task(T, dt, length_scale=1, r=1, random_angle_init=True, 
             inputs2[mask_input] = 0.
             
         inputs = np.stack((inputs1, inputs2), axis=-1)
-
         
         outputs1_1d = np.cumsum(inputs1, axis=1)*dt
         outputs2_1d = np.cumsum(inputs2, axis=1)*dt
 
         if random_angle_init=='equally_spaced':
-            outputs1_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
-            outputs2_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+            angles = np.linspace(-np.pi, np.pi, int(np.sqrt(batch_size)))
+            theta, phi = np.meshgrid(angles, angles)
+
+            outputs1_1d += theta.flatten()[:, np.newaxis]
+            outputs2_1d += phi.flatten()[:, np.newaxis]
+            
 
         elif random_angle_init:
             random_angles1 = np.random.uniform(-np.pi, np.pi, size=batch_size)
