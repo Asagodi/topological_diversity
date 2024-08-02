@@ -129,9 +129,9 @@ This fragility limits their utility especially in biological systems as their re
 We observe that the bifurcations from continuous attractors in theoretical neuroscience models display various structurally stable forms.
 Although their asymptotic behaviors to maintain memory are categorically distinct, their finite-time behaviors are similar.
 We build on the persistent manifold theory to explain the commonalities between bifurcations from and approximations of continuous attractors.
-Fast-slow decomposition analysis uncovers the persistent manifold that survives the seemingly destructive bifurcation.
-Moreover, recurrent neural networks trained on analog memory tasks display approximate continuous attractors with predicted slow manifold structures.
-Therefore, continuous attractors are \emph{functionally robust} and remain useful as a universal analogy for understanding analog memory.
+Fast-slow decomposition analysis uncovers the existence of a persistent slow manifold that survives the seemingly destructive bifurcation, relating the flow within the manifold to the size of the perturbation. Moreover, this allows the bounding of the memory error of these approximations of continuous attractors. 
+Finally, we train recurrent neural networks on analog memory tasks to support the appearance of these systems as solutions and their generalization capabilities.
+Therefore, we conclude that continuous attractors are \emph{functionally robust} and remain useful as a universal analogy for understanding analog memory.
 % to the problem of maintaining a memory of continuous-valued variables for arbitrarily long intervals.
 % poses a problem in biological neural networks, as they are constantly subjected to perturbations caused by noise.
 % Ultimately, our theory is not about solving the fine-tuning problem. It's about realizing that it is not a problem.
@@ -177,15 +177,17 @@ There are two primary sources of perturbations in the recurrent network dynamics
 (1) the stochastic nature of online learning signals that act via synaptic plasticity, and
 (2) spontaneous fluctuations in synaptic weights~\cite{Fusi2007-yg,shimizu2021}.
 Thus, additional mechanisms are necessary to compensate for the degradation in particular implementations, by bringing the short-term behavior closer to that of a continuous attractor~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022}.
-However, we lack the theoretical basis for relying on the brittle concept of continuous attractors for understanding biological analog working memory.
+However, we lack the theoretical basis to understand how much this matters in practice, i.e. what are the effects of different levels of degradation on memory. This is fundamental to justify relying on the brittle concept of continuous attractors for understanding biological analog working memory.
 
 
 In this study, we explore perturbations and approximations of continuous attractors in the space of dynamical models.
 We first report on the differences and similarities between the various structurally stable dynamics in the vicinity of continuous attractors in these models.
-The distinct topology of these dynamics implies qualitatively different behaviors in the asymptotic limit of time, and hence differences in the pattern of errors in temporal generalization.
-By assuming normal hyperbolicity we will separate the time scales to obtain a decomposition of the dynamics by separating out the fast flow normal towards the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within it.
-The proposed decomposition applied to theoretical models and task-trained recurrent neural networks (RNNs) reveals a ``universal motif'' of analog memory mechanism with various potential topologies.
-We derive a theory describing the persistent manifold that survives the seemingly destructive bifurcations and connects resulting systems with different topologies as \textbf{approximate continuous attractors}.
+We observe the existence of a ``ghost'' continuous attractor (a.k.a. slow manifold) in all(?) of them (Sec.~\ref{sec:critique}).
+By assuming normal hyperbolicity we will separate the time scales to obtain a decomposition of the dynamics by separating out the fast flow normal towards the slow manifold and the slow flow within it.
+With this we get theoretical results that ensure the existence of a slow manifold and relate their characteristics with the closeness to the continuous attractor and the memory performance of the system (Sec.~\ref{sec:theory}). 
+We then explore task-trained recurrent neural networks (RNNs) to show that these systems appear naturally as solutions to the task (Sec.~\ref{sec:experiments}) and that their generalization capabilities can easily be studied as the distance to the continuous attractor (Sec.~\ref{sec:generalization}).
+The proposed decomposition applied to theoretical models and task-trained recurrent neural networks (RNNs) reveals a ``universal motif'' of analog memory mechanism with various potential topologies. 
+This leads to the connection of different systems with different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:converse}).
 Our theory guarantees that systems close to a continuous attractor (in the space of vector fields) will have similar behavior to it.
 %Furthermore, our theory provides information of the generalization properties of these approximations.
 %We demonstrate these theoretical insights in trained RNNs.
@@ -345,11 +347,12 @@ The models optimized using this method also can contain an invariant ring manifo
 
 \ptitle{Similarity between all bifurcations and approximations of continuous attractors}
 In all discussed models of ring attractors, we verify that they suffer from the fine-tuning problem.
-However, we observe ghosts of the continuous attractor in many different systems (either through bifurcation or from finite-size effects) that is an \emph{attractive invariant manifold}.
-Is this a universal phenomenon?
-Moreover, while they were not a continuous attractor in the mathematical sense, they were \textit{approximate} ring attractors in the sense that the fixed points and connecting orbits still form a circle.
-Are continuous attractors somehow still useful as a model of how animals might represent continuous variables?
-We will answer these questions in an implementation-agnostic manner.
+However, importantly, we also observe in all(?) the systems  the existence of ghosts of the continuous attractor (either through bifurcation or from finite-size effects) in the form of an \emph{attractive invariant manifold}.
+Therefore, while they are not strictly a continuous attractor in the mathematical sense, they are \textit{approximate} ring attractors in the sense that the fixed points and connecting orbits still form a circle. 
+
+Is this lawful degradation a universal phenomenon? And if so, how does it relate to the size of the perturbation? And what are the implications for the memory performance of this approximations? (Sec.~\ref{sec:theory}).
+Do these approximations actually appear as natural solutions to the memory storage problem? (Sec.~\ref{sec:experiments}). And if so, how well do they generalize to longer time requirements? (Sec.~\ref{sec:generalization}).
+In conclusion, are approximate continuous attractors ubiquitous and well-behaved? And therefore, are continuous attractors in practice still useful as an idealized model of how animals represent continuous variables?(Sec.~\ref{sec:converse}).
 
 % Our theory explains this phenomenon as follows. %MOVE TO LATER
 % We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the \(m^1, m^2\) plane (independent of the parameter \(g\) for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
@@ -388,10 +391,12 @@ We will answer these questions in an implementation-agnostic manner.
 
 %\section{Theory of gracefully degrading continuous attractors}\label{sec:theory}
 \section{Theory of Approximate Continuous Attractors}\label{sec:theory}
-In this section, we apply invariant manifold theory to continuous attractor models and translate the results for the theoretical neuroscience audience.
+In this section, we theoretically answer in an implementation-agnostic manner the degradation questions posed from the exploration. 
+To do so, we apply invariant manifold theory to continuous attractor models and translate the results for the theoretical neuroscience audience.
 %Our emphasis in this paper centers on investigating the distinctive properties of continuous attractors that prove essential for specific tasks, with a deliberate exclusion of considerations related to learning chaotic dynamics.
 %\subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
 \subsection{Persistent Manifold Theorem}\label{sec:imt}
+First, we argue that the lawful degradation into a system with a slow manifold is universally guaranteed (as long as the perturbation is small, and the continuous attractor was normally hyperbolic).
 %We start by formulating an ODE implementing a continuous attractor in continuous time: \(\dot{\vx} = \vf(\vx)\).
 Let \(l\) be the intrinsic dimension of the manifold of equilibria that defines the continuous attractor.
 Given a perturbation \(\vp(\vx)\) to the ODE that induces a bifurcation,
@@ -486,6 +491,7 @@ Because continuous ring attractors are bounded, their invariant manifold persist
 %for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
 
 \subsection{Fast-slow decomposition and the revival of continuous attractors}\label{sec:revival}
+Second, we relate the flow tangent to the slow manifold to the size of the perturbation needed to bring it back to a continuous attractor. 
 Consider a behaviorally relevant timescale for working memory, for example, roughly up to a few tens of seconds.
 If the dynamical system is orders of magnitude slower, for example, 1000 sec or longer, its effect is too slow to have a practical impact on the behavior that relies on the working memory mechanism.
 This clear gap in the fast and slow time scales can be recast as \emph{normal hyperbolicity} of the slow manifold by relaxing the zero real part to a separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
@@ -502,7 +508,17 @@ There exists a perturbation with uniform norm at most \(\eta\) that induces a bi
 An explicit perturbation is derived in Sec.~\ref{sec:supp:proofprop1}.
 %A perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}\), see for the proof Sec.~\ref{sec:supp:proofprop1}.
 This makes the uniform norm of the vector field on a (slow) manifold a useful measure to express the distance of an approximation to a continuous attractor.
-It can also be used to bound the memory performance on the short-time scale.
+
+
+Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has other dynamics than just slow, as long as that is happening inside submanifolds to which the output mapping is invariant (see Theorem~\ref{thrm:near_ca}).
+In this case, we can guarantee that the system can be perturbed onto a decomposable system where one of the subsystems has a slow flow.
+
+\subsection{Relevance of dynamics on the memory performance of the slow manifold}\label{sec:attractor_bif}
+
+Third, we relate the flow of the manifold (and through Prop.~\ref{prop:revival}, the size of the perturbation) to the memory error of the approximation in short-time scale. 
+We also discuss the implications of the theoretical insights on the memory error in the asymptotic time scale.
+
+In the short-time scale the memory performance is bounded by the uniform norm of the flow tangent to the manifold.
 Let \(\vx_0 \in \manifold\), and \(\varphi = \vp(\cdot)\vert_\manifold\) be the flow restricted to the manifold.
 The average deviation from initial memory \(\vx_0\) over time is bounded linearly (for a derivation, see Sec.~\ref{sec:supp:ub}):
 \begin{align}\label{eq:distance:ub}
@@ -518,11 +534,6 @@ The average deviation from initial memory \(\vx_0\) over time is bounded linearl
 Note that this bound is the worst case and tighter for sufficiently small $t \geq 0$.
 Furthermore, for compact invariant manifolds the error is bounded by the diameter of the manifold and hence this bound becomes irrelevant for \(t\) large.
 
-
-Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has other dynamics than just slow, as long as that is happening inside submanifolds to which the output mapping is invariant (see Theorem~\ref{thrm:near_ca}).
-In this case, we can guarantee that the system can be perturbed onto a decomposable system where one of the subsystems has a slow flow.
-
-\subsection{Relevance of dynamics on the slow manifold in the asymptotic time scale}\label{sec:attractor_bif}
 While the uniform norm gives insight on the short-time scale behavior of the perturbed ODE, we expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
 The long-time scale behavior on the slow manifold is dominated by the stability structure, i.e., the topology of the dynamics.
 Although we have seen numerous topologies in Sec.~\ref{sec:critique}, dynamical systems theory says that they are fundamentally limited, especially in low dimensions (see for more details Sec.~\ref{persistence_extra}).
@@ -553,7 +564,7 @@ In more complex scenarios, such as a two-dimensional attractor, stable fixed poi
 \section{Numerical Experiments on Task-optimized Recurrent Networks}\label{sec:experiments}
 
 While our theory describes the abundance of approximate continuous attractors in the vicinity of a continuous attractor, it does not imply that there are no approximate solutions away from continuous attractors.
-We use task-optimized RNNs as a means to search for plausible solutions for analog memory for a circular variable.
+In this section, we use task-optimized RNNs as a means to search for plausible solutions for analog memory for a circular variable.
 We train a diverse set of RNNs, and then identify the solution type of trained RNNs to gain insights into its performance, error patterns, generalization capabilities, and, ultimately, proximity to a continuous attractor.
 
 Understanding the implemented computation in neural systems in terms of dynamical systems is a well-established practice~\citep{seung1996,sompolinsky1988}.
@@ -561,6 +572,7 @@ Researchers have analyzed task-optimized RNNs through nonlinear dynamical system
 Previously, systematic analysis of the variability in network dynamics has been surveyed in vanilla RNNs, and variations in dynamical solutions over architecture and nonlinearity have been quantified~\citep{sussillo2013blackbox,mante2013context,yang2019task,maheswaranathan2019universality,driscoll2022}.
 Furthermore, working memory mechanisms in RNNs had tendencies to find sequential or persistent representations through training depending on the task specification~\citep{orhan2019diverse}.
 We therefore investigated to what extent training RNNs on a task uniquely determines the low-dimensional dynamics, independent of neural architectures.
+We see that all the solutions have a slow invariant manifold, making all of them an instatiation of approximate continuous attractors.
 
 \subsection{Model Architectures and Training Procedure}
 We examined vanilla continuous-time RNNs for this work.
@@ -624,7 +636,7 @@ We find that long integrated trajectories of the network converge to the found s
 
 
 \subsection{Variations in the Topologies of the Networks}\label{sec:topologies}
-To understand the what solutions the RNNs found to solve the task, we investigate their memory mechanism.
+To understand what solutions the RNNs found to solve the task, we investigate their memory mechanism.
 For this, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the slow manifold, and the flow on the manifold (Sec.~\ref{sec:fsdecmethod}).
 All solutions involve a slow manifold with the same topology as the relevant variable in the task.
 The different solutions are different in their asymptotic dynamics (Fig.~\ref{fig:fastslow_decomposition}).
@@ -669,16 +681,19 @@ The universal structure of continuous attractor approximations as slow invariant
 
 \section{Generalization Analysis}\label{sec:generalization}
 
+Finally, in this section, we use the task-trained RNNs to study the relationship between the dynamics and the generalization capabilities.
+
 When neuroscientists study neural computations in animals, the animals are trained on tasks with finite durations. As a result, it is unclear whether the animals learn the intended computation or merely a finite-time approximation of it. The same issue arises with trained neural networks.
 We will investigate to what extent the networks have the intended memory necessary for perfect memory or whether they implement the task only on the timescale on which they have been trained.
-We show that the theoretical upper bound for the memory performance based on the distance to a continuous attractor (Prop.~\ref{prop:ub}) holds in trained RNNs (Fig.~\ref{fig:angular_loss}A).
 
 
 The two possible approximations of a ring attractor discussed in Sec.~\ref{sec:critique} exhibit markedly distinct generalization characteristics.
 Approximating the system as a limit cycle results in a memory trace that gradually diminishes over time.
 Conversely, the alternative approximation's memory states are contingent upon the quantity and positioning of stable fixed points within the system.
-We describe in detail the generalization properties of the trained networks on the angular velocity integration task at two different time scales:  asymptotic and finite time.
-We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}C).
+We describe in detail the generalization properties of the trained networks%
+\footnote{We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}B).}%
+on the angular velocity integration task at two different time scales:  asymptotic and finite time.
+We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}B).
 
 %\setlength\belowcaptionskip{-3ex}
 \begin{figure}[tbhp]
@@ -698,9 +713,8 @@ We tested all networks with a validation set and took a cutoff for the normalize
 \ptitle{Finite time}
 Aside from the angular velocity integration component of the task, the trained networks learn to store a memory of an angular variable.
 We assess the performance of the network to store the memory of the angle over time.
-The networks typically perform well on the timescale on which they have been trained \(T_1=256\) time steps (Fig.~\ref{fig:angular_loss}B).
-This loss is bounded by the uniform norm of the vector field on the invariant manifold (Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and~\ref{sec:supp:ub}).
-
+The networks typically perform well on the timescale on which they have been trained \(T_1=256\) time steps (Fig.~\ref{fig:angular_loss}C).
+This loss is, as theoretically predicted (Prop.~\ref{prop:ub}), bounded by the uniform norm of the vector field on the invariant manifold (and therefore by the distance to a continuous attractor (Prop.~\ref{prop:revival}) (Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and~\ref{sec:supp:ub}).
 
 
 \ptitle{Asymptotic time}
