@@ -317,12 +317,11 @@ def sphere_integration_task(T, dt, length_scale=1, r=1, random_angle_init=True, 
             random_angles2 = np.random.uniform(-np.pi, np.pi, size=batch_size)
             outputs2_1d += random_angles2[:, np.newaxis]
 
-        x = r*np.cos(outputs1_1d) * np.cos(outputs2_1d)
-        y = r*np.cos(outputs1_1d) * np.cos(outputs2_1d)
+        x = r*np.sin(outputs1_1d) * np.cos(outputs2_1d)
+        y = r*np.sin(outputs1_1d) * np.sin(outputs2_1d)
         z = r*np.cos(outputs1_1d) 
         # outputs = np.concatenate((x, y, z), axis=-1)
         outputs = np.stack((x,y,z), axis=-1)
-    
     
         mask = np.ones((batch_size, input_length, 3))
         return inputs, outputs, mask
