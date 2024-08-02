@@ -269,21 +269,53 @@ def angularintegration_delta_task(T, dt, p=.1, amplitude=1):
 
 
 
-def sphere_integration_task(n_samples, n):
-    data = []
-    for _ in range(n_samples):
-        theta = np.random.uniform(0, np.pi, n_theta)
-        phi = np.random.uniform(0, 2*np.pi, n_phi)
-        r = 1  # Unit sphere
+#####SPHERE
+def sphere_integration_task(T, dt, length_scale=1, r=1, random_angle_init=True):
+    """
+    Creates N_batch trials of the sphere (S^2, 2-sphere, ordinary sphere) integration task 
+    Inputs is velocities ... and 
+    target output is ... of integrated angular velocities.
+    r = 1  # Unit sphere
+    Returns inputs, outputs, mask
+    -------
+    """
+    input_length = int(T/dt)
 
-        x = r * np.sin(theta) * np.cos(n * phi)
-        y = r * np.sin(theta) * np.sin(n * phi)
-        z = r * np.cos(theta)
+    def task(batch_size):
+        
+        X = np.expand_dims(np.linspace(-length_scale, length_scale, input_length), 1)
+        sigma = exponentiated_quadratic(X, X)  
+        
+        inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #theta
+        inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #phi
+        inputs = np.stack((inputs1, inputs2), axis=-1)
 
-        f_xyz = x**2 + y**2 + z**2  # Example function
+        
+        outputs1_1d = np.cumsum(inputs1, axis=1)*dt
+        outputs2_1d = np.cumsum(inputs2, axis=1)*dt
 
-        data.append((theta, phi, f_xyz))
-    return data 
+        if random_angle_init=='equally_spaced':
+            outputs1_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+            outputs2_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+
+        elif random_angle_init:
+            random_angles1 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+            outputs1_1d += random_angles1[:, np.newaxis]
+            
+            random_angles2 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+            outputs2_1d += random_angles2[:, np.newaxis]
+
+        x = r*np.cos(outputs1_1d) * np.cos(outputs2_1d)
+        y = r*np.cos(outputs1_1d) * np.cos(outputs2_1d)
+        z = r*np.cos(outputs1_1d) 
+        # outputs = np.concatenate((x, y, z), axis=-1)
+        outputs = np.stack((x,y,z), axis=-1)
+    
+    
+        mask = np.ones((batch_size, input_length, 3))
+        return inputs, outputs, mask
+    
+    return task
 
 
 ##############LINEAR INTEGRATION
