@@ -16,7 +16,9 @@ import numpy as np
 
 import matplotlib.pyplot as plt; from matplotlib.ticker import MaxNLocator
 
-from analysis_functions import db
+# from analysis_functions import db
+def db(x):
+    return 10*np.log10(x)
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
@@ -144,7 +146,8 @@ def test_model(model, task, batch_size):
     mse_normalized = mse/target_power
     return db(mse_normalized), outputs, trajectories
 
-def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001, clip_norm=0.,output_noise_level=0.01, weight_decay=0.01):
+def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001, 
+                clip_norm=0., output_noise_level=0.01, weight_decay=0.01, scale_factor=1.):
     criterion = nn.MSELoss()
     optimizer = optim.Adam([
                             {'params': model.lstm.parameters(), 'weight_decay': weight_decay},
@@ -160,9 +163,28 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
         output_noise = torch.randn(batch_size, inputs.shape[1], targets.shape[-1])*output_noise_level
         targets += output_noise
         mask = torch.tensor(mask, dtype=torch.float32)
+        
+        # Save model and optimizer state
+        model_state_dict = model.state_dict()
+        optimizer_state_dict = optimizer.state_dict()
 
         outputs, _, _ = model(inputs, targets)
+        
+        # Check for inf values in outputs
+        if torch.isinf(outputs).any():
+            print(f'Inf detected in outputs at epoch {epoch + 1}. Scaling down weights.')
+            with torch.no_grad():
+                for param in model.parameters():
+                    param *= scale_factor
+        
         loss = criterion(outputs * mask, targets * mask)
+        
+        # Check for NaNs in loss
+        if torch.isnan(loss):
+            print(f'NaN detected in loss at epoch {epoch + 1}. Rolling back to previous state.')
+            model.load_state_dict(model_state_dict)
+            optimizer.load_state_dict(optimizer_state_dict)
+            continue
         
         optimizer.zero_grad()
         loss.backward()
@@ -182,26 +204,34 @@ def train_n(n, task, input_size = 1, hidden_size = 64,  output_size = 2,
         train_model(model, task, num_epochs=num_epochs, batch_size=batch_size, learning_rate=learning_rate, clip_norm=clip_norm);
         torch.save(model.state_dict(), exp_path+f'/model_{i}.pth')
 
-# def run():
-#     T = 12.8
-#     dt = 0.1
-#     task = angularintegration_task(T, dt, sparsity='variable', random_angle_init=True)
-    # long_task = angularintegration_task_constant(T, dt, speed_range=[0,0], random_angle_init='equally_spaced')
-#     input_size = 1
-#     hidden_size = 50
-#     batch_size = 64
-#     output_size = 2; model = LSTMModel(input_size, hidden_size, output_size)
-#     train_model(model, task, num_epochs=5000, batch_size=batch_size)
+
+def grid_search(task, input_size = 1, hidden_size = 64, output_size = 2,
+            num_epochs=5000, batch_size=64, learning_rate=0.001, dropout=0.,
+            exp_path=''):
     
+    if not os.path.exists(exp_path):
+        os.makedirs(exp_path)
     
-#     batch_size=256; 
-#     inputs, targets, mask = task(batch_size)
-#     inputs = torch.tensor(inputs, dtype=torch.float32)
-#     targets = torch.tensor(targets, dtype=torch.float32)
-#     outputs, hs, cs = model.sequence(inputs, targets);
-#     outputs = outputs.detach().numpy(); hs = hs.detach().numpy(); cs = cs.detach().numpy(); hs=hs.squeeze(); cs=cs.squeeze(); trajectories = np.concatenate((hs,cs),axis=-1); trajectories = np.concatenate((hs,cs),axis=-1)
+    scale_factors = [0.8,.9,0.99,1.]
+    weight_decays = np.logspace(-5, -1).tolist() + [0]
+    clip_norms = np.logspace(-2,3)
+    dropouts = [0,.1,.25,.5]
     
-    
+    # Iterate over all combinations of hyperparameters
+    for scale_factor in scale_factors:
+        for weight_decay in weight_decays:
+            for clip_norm in clip_norms:
+                for dropout in dropouts:
+                    # Initialize the model
+                    model = LSTMModel(input_size, hidden_size, output_size, dropout=dropout)
+                    
+                    # Train the model
+                    train_model(model, task, num_epochs=num_epochs, batch_size=batch_size, learning_rate=learning_rate, clip_norm=clip_norm, weight_decay=weight_decay, scale_factor=scale_factor)
+                    
+                    # Save the model with a name that reflects the hyperparameters
+                    model_name = f'model_sf{scale_factor}_wd{weight_decay}_cn{clip_norm}_do{dropout}.pth'
+                    torch.save(model.state_dict(), os.path.join(exp_path, model_name))
+
 #     fig = plt.figure(figsize=(3, 3));
 #     ax = fig.add_subplot(111)
 #     xs = np.linspace(0,2*np.pi,100)
@@ -210,9 +240,3 @@ def train_n(n, task, input_size = 1, hidden_size = 64,  output_size = 2,
 #         ax.plot(outputs[i,:,0], outputs[i,:,1]);
 #     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 #     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-
-
-# for i in range(0,10):
-#     model = LSTMModel(input_size, hidden_size, output_size)
-#     train_model(model, task, num_epochs=5000, batch_size=batch_size, learning_rate=0.001,clip_norm=100);
-#     torch.save(model.state_dict(), f'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/angular_integration_old/N128_T128_noisy/lstm/model_{i}.pth')
