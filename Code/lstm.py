@@ -33,7 +33,7 @@ def makedirs(dirname):
 
 # Define the LSTM model
 class LSTMModel(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size, num_layers=1, dropout=0.5):
+    def __init__(self, input_size, hidden_size, output_size, num_layers=1, dropout=0.5, init_weight_radius_scaling=1):
         super(LSTMModel, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
@@ -45,6 +45,16 @@ class LSTMModel(nn.Module):
         self.fc = nn.Linear(hidden_size, output_size)
         
         self.dropout = nn.Dropout(dropout)
+        
+        # Initialize weights with a smaller standard deviation for LSTM weights
+        self.init_weight_radius_scaling = init_weight_radius_scaling
+        self._initialize_weights()
+    
+    def _initialize_weights(self):
+        stdv = self.init_weight_radius_scaling / np.sqrt(self.hidden_size)
+        for name, param in self.lstm.named_parameters():
+            if 'weight_hh' in name:  # Only initialize recurrent weights
+                nn.init.uniform_(param, -stdv, stdv)
 
     def forward(self, x, target):
         
