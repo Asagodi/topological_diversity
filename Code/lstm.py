@@ -144,9 +144,14 @@ def test_model(model, task, batch_size):
     mse_normalized = mse/target_power
     return db(mse_normalized), outputs, trajectories
 
-def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001, clip_norm=0.,output_noise_level=0.01):
+def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001, clip_norm=0.,output_noise_level=0.01, weight_decay=0.01):
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = optim.Adam([
+                            {'params': model.lstm.parameters(), 'weight_decay': weight_decay},
+                            {'params': model.fc.parameters(), 'weight_decay': 0.0},
+                            {'params': model.output_to_hidden, 'weight_decay': 0.0},
+                            {'params': model.output_to_cell, 'weight_decay': 0.0}
+                        ], lr=learning_rate)
 
     for epoch in range(num_epochs):
         inputs, targets, mask = task(batch_size)
@@ -169,11 +174,11 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
             print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}')
 
 def train_n(n, task, input_size = 1, hidden_size = 64,  output_size = 2,
-            num_epochs=5000, batch_size=64, learning_rate=0.001, clip_norm=1,
+            num_epochs=5000, batch_size=64, learning_rate=0.001, clip_norm=1, dropout=0.,
             exp_path='C:/Users/abel_/Documents/Lab/projects/topological_diversity/experiments/angular_integration_old/N128_T128_noisy/lstm/'):
     makedirs(exp_path)
     for i in range(n):
-        model = LSTMModel(input_size, hidden_size, output_size,dropout=0.)
+        model = LSTMModel(input_size, hidden_size, output_size, dropout=dropout)
         train_model(model, task, num_epochs=num_epochs, batch_size=batch_size, learning_rate=learning_rate, clip_norm=clip_norm);
         torch.save(model.state_dict(), exp_path+f'/model_{i}.pth')
 
