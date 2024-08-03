@@ -196,9 +196,19 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
         
         # Check for NaNs in loss
         if torch.isnan(loss):
-            print(f'NaN detected in loss at epoch {epoch + 1}. Rolling back to previous state.')
-            model.load_state_dict(model_state_dict)
-            optimizer.load_state_dict(optimizer_state_dict)
+            if epoch == 0:
+                print(f'NaN detected in loss at epoch {epoch + 1}. Reinitializing model parameters.')
+                model.apply(init_weights)
+                optimizer = optim.Adam([
+                            {'params': model.lstm.parameters(), 'weight_decay': weight_decay},
+                            {'params': model.fc.parameters(), 'weight_decay': 0.0},
+                            {'params': model.output_to_hidden, 'weight_decay': 0.0},
+                            {'params': model.output_to_cell, 'weight_decay': 0.0}
+                        ], lr=learning_rate)
+            else:
+                print(f'NaN detected in loss at epoch {epoch + 1}. Rolling back to previous state.')
+                model.load_state_dict(model_state_dict)
+                optimizer.load_state_dict(optimizer_state_dict)
             continue
         
         optimizer.zero_grad()
@@ -209,6 +219,14 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
 
         if (epoch + 1) % 10 == 0:
             print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}')
+            
+def init_weights(m):
+    if isinstance(m, nn.Linear) or isinstance(m, nn.LSTM):
+        nn.init.xavier_uniform_(m.weight)
+        if m.bias is not None:
+            nn.init.zeros_(m.bias)
+    elif isinstance(m, nn.Parameter):
+        nn.init.xavier_uniform_(m)
 
 def train_n(n, task, input_size = 1, hidden_size = 64,  output_size = 2,
             num_epochs=5000, batch_size=64, learning_rate=0.001, clip_norm=1, dropout=0.,
