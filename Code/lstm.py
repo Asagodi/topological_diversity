@@ -25,6 +25,8 @@ plt.rc('font', family='serif')
 
 tanh = nn.Tanh()
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 def makedirs(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -48,13 +50,13 @@ class LSTMModel(nn.Module):
         
         batch_size = x.shape[0]
         #h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
-        h_init_torch = nn.Parameter(torch.Tensor(self.num_layers, batch_size, self.hidden_size))
+        h_init_torch = nn.Parameter(torch.Tensor(self.num_layers, batch_size, self.hidden_size)).to(x.device)
         h_init_torch.requires_grad = False
         h_init_torch = target[:,0,:].matmul(self.output_to_hidden)
         h_init_torch = tanh(h_init_torch)
             
         #c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
-        c_init_torch = nn.Parameter(torch.Tensor(self.num_layers, batch_size, self.hidden_size))
+        c_init_torch = nn.Parameter(torch.Tensor(self.num_layers, batch_size, self.hidden_size)).to(x.device)
         c_init_torch.requires_grad = False
         c_init_torch = target[:,0,:].matmul(self.output_to_cell)
         c_init_torch = tanh(h_init_torch)
@@ -134,8 +136,8 @@ def extract_lstm_parameters(model):
 def test_model(model, task, batch_size):
     with torch.no_grad():
         inputs, targets, mask = task(batch_size)
-        inputs = torch.tensor(inputs, dtype=torch.float32)
-        targets = torch.tensor(targets, dtype=torch.float32)
+        inputs = torch.tensor(inputs, dtype=torch.float32).to(device)
+        targets = torch.tensor(targets, dtype=torch.float32).to(device)
         outputs, _, _ = model(inputs, targets);
         _, hs, cs = model.sequence(inputs, targets);
     targets = targets.detach().numpy()
@@ -155,14 +157,17 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
                             {'params': model.output_to_hidden, 'weight_decay': 0.0},
                             {'params': model.output_to_cell, 'weight_decay': 0.0}
                         ], lr=learning_rate)
+    
+    model.to(device)
+    criterion.to(device)
 
     for epoch in range(num_epochs):
         inputs, targets, mask = task(batch_size)
-        inputs = torch.tensor(inputs, dtype=torch.float32)
-        targets = torch.tensor(targets, dtype=torch.float32)
-        output_noise = torch.randn(batch_size, inputs.shape[1], targets.shape[-1])*output_noise_level
+        inputs = torch.tensor(inputs, dtype=torch.float32).to(device)
+        targets = torch.tensor(targets, dtype=torch.float32).to(device)
+        output_noise = torch.randn(batch_size, inputs.shape[1], targets.shape[-1]).to(device)*output_noise_level
         targets += output_noise
-        mask = torch.tensor(mask, dtype=torch.float32)
+        mask = torch.tensor(mask, dtype=torch.float32).to(device)
         
         # Save model and optimizer state
         model_state_dict = model.state_dict()
