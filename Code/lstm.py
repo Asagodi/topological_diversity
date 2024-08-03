@@ -137,11 +137,12 @@ def test_model(model, task, batch_size):
         outputs, _, _ = model(inputs, targets);
         _, hs, cs = model.sequence(inputs, targets);
     targets = targets.detach().numpy()
-    outputs = outputs.detach().numpy(); hs = hs.detach().numpy(); cs = cs.detach().numpy(); hs=hs.squeeze(); cs=cs.squeeze(); trajectories = np.concatenate((hs,cs),axis=-1); trajectories = np.concatenate((hs,cs),axis=-1); 
+    outputs = outputs.detach().numpy(); hs = hs.detach().numpy(); cs = cs.detach().numpy(); hs=hs.squeeze(); cs=cs.squeeze();
+    trajectories = np.concatenate((hs,cs),axis=-1); trajectories = np.concatenate((hs,cs),axis=-1); 
     from_t=0; to_t=None; target_power = np.mean(targets[:,from_t:to_t,:]**2)
     mse = np.mean((targets[:,from_t:to_t,:] - outputs[:,from_t:to_t,:])**2)
     mse_normalized = mse/target_power
-    print(db(mse_normalized))
+    return db(mse_normalized), outputs, trajectories
 
 def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001, clip_norm=0.,output_noise_level=0.01):
     criterion = nn.MSELoss()
