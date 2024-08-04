@@ -13,6 +13,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 
+from tasks import angularintegration_task, angularintegration_task_constant, double_angularintegration_task
+
+
 # from analysis_functions import db
 def db(x):
     return 10 * np.log10(x)
@@ -109,8 +112,12 @@ def test_model(model, task, batch_size):
     mse_normalized = mse / target_power
     return db(mse_normalized), outputs, trajectories
 
+
+
+    return inputs, targets, outputs, trajectories
+
 def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001, 
-                clip_norm=0., output_noise_level=0.01, weight_decay=0.01, scale_factor=1.):
+                clip_norm=0., output_noise_level=0.01, weight_decay=0.01):
     criterion = nn.MSELoss()
     optimizer = optim.Adam([
                             {'params': model.gru.parameters(), 'weight_decay': weight_decay},
@@ -123,6 +130,7 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
 
     # for epoch in range(num_epochs):
     epoch = 0
+    losses = [] 
     while epoch < num_epochs:
 
         inputs, targets, mask = task(batch_size)
@@ -140,39 +148,51 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
         
         # Check for inf values in outputs
         if torch.isinf(outputs).any():
-            print(f'Inf detected in outputs at epoch {epoch + 1}. Scaling down weights.')
+            print(f'Inf detected in outputs at epoch {epoch}. Scaling down weights.')
             with torch.no_grad():
                 for param in model.parameters():
-                    param *= scale_factor
+                    param *= model.init_weight_radius_scaling
         
         loss = criterion(outputs * mask, targets * mask)
         
         # Check for NaNs in loss
         if torch.isnan(loss):
-            if epoch == 0:
-                print(f'NaN detected in loss at epoch {epoch + 1}. Reinitializing model parameters.')
-                model._initialize_weights()
-                optimizer = optim.Adam([
-                            {'params': model.gru.parameters(), 'weight_decay': weight_decay},
-                            {'params': model.fc.parameters(), 'weight_decay': 0.0},
-                            {'params': model.output_to_hidden, 'weight_decay': 0.0}
-                        ], lr=learning_rate)
+            # if epoch == 0:
+            #     print(f'NaN detected in loss at epoch {epoch}. Reinitializing model parameters.')
+            #     model._initialize_weights()
+            #     optimizer = optim.Adam([
+            #                 {'params': model.gru.parameters(), 'weight_decay': weight_decay},
+            #                 {'params': model.fc.parameters(), 'weight_decay': 0.0},
+            #                 {'params': model.output_to_hidden, 'weight_decay': 0.0}
+            #             ], lr=learning_rate)
+            #     optimizer.zero_grad()
+
                 
-            else:
-                print(f'NaN detected in loss at epoch {epoch + 1}. Rolling back to previous state.')
+            # else:
+                print(f'NaN detected in loss at epoch {epoch}. Rolling back to previous state.')
                 model.load_state_dict(model_state_dict)
                 optimizer.load_state_dict(optimizer_state_dict)
-            continue
+                with torch.no_grad():
+                    for param in model.parameters():
+                        param *= model.init_weight_radius_scaling
+                optimizer.zero_grad()
+                epoch+=1
+                continue
         
         optimizer.zero_grad()
         loss.backward()
         if clip_norm > 0.:
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=clip_norm)
         optimizer.step()
+        
+        losses.append(loss.item())  # Save the loss value
 
         if (epoch + 1) % 10 == 0:
             print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}')
         epoch+=1
+        
+    losses_array = np.array(losses)
+    return losses
 
 def train_n(n, task, input_size=1, hidden_size=64, output_size=2,
             num_epochs=5000, batch_size=64, learning_rate=0.001, clip_norm=1, dropout=0.,
@@ -180,8 +200,24 @@ def train_n(n, task, input_size=1, hidden_size=64, output_size=2,
     makedirs(exp_path)
     for i in range(n):
         model = GRUModel(input_size, hidden_size, output_size, dropout=dropout)
-        train_model(model, task, num_epochs=num_epochs, batch_size=batch_size, learning_rate=learning_rate, clip_norm=clip_norm)
+        losses = train_model(model, task, num_epochs=num_epochs, batch_size=batch_size, learning_rate=learning_rate, clip_norm=clip_norm)
         torch.save(model.state_dict(), exp_path + f'/model_{i}.pth')
+        
+        
+# T = 12.8
+# dt = 0.1
+# task = angularintegration_task(T, dt, sparsity='variable', random_angle_init=True)
+# long_task = angularintegration_task_constant(T, dt, speed_range=[0,0], random_angle_init='equally_spaced')
+# input_size = 1
+# hidden_size = 64
+# batch_size = 64
+# output_size = 2;
+
+# for i in range(1,10):
+#     model = GRUModel(input_size, hidden_size, output_size, dropout=0.5)
+#     losses = train_model(model, task, num_epochs=5000, batch_size=batch_size, learning_rate=0.01, clip_norm=1000,scale_factor=.5);
+#     torch.save(model.state_dict(), f'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/angular_integration_old/N{hidden_size}_T128_noisy/gru/model_{i}.pth')
+#     np.save(exp_path+f'/losses_{i}.npy', losses)
         
         
 def grid_search(task, input_size=1, hidden_size=64, output_size=2,
@@ -218,3 +254,26 @@ def init_weights(m):
             nn.init.zeros_(m.bias)
     elif isinstance(m, nn.Parameter):
         nn.init.xavier_uniform_(m)
+        
+        
+        
+        
+        
+        
+#######################ANALYSIS
+from lstm import nmse, angluar_error
+
+def test_gru(model, task, batch_size=256):
+    with torch.no_grad():
+        inputs, targets, mask = task(batch_size)
+        inputs = torch.tensor(inputs, dtype=torch.float32).to(device)
+        targets = torch.tensor(targets, dtype=torch.float32).to(device)
+        outputs, _ = model(inputs, targets)
+        _, hs = model.sequence(inputs, targets)
+    targets = targets.detach().numpy()
+    outputs = outputs.detach().numpy()
+    hs = hs.detach().numpy()
+    hs = hs.squeeze()
+    trajectories = hs
+    
+    return inputs, targets, outputs, trajectories
