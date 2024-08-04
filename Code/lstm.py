@@ -273,3 +273,99 @@ def grid_search(task, input_size = 1, hidden_size = 64, output_size = 2,
 #         ax.plot(outputs[i,:,0], outputs[i,:,1]);
 #     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 #     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#######################ANALYSIS
+
+
+def test_lstm(model, task, batch_size=256):
+    
+    
+    with torch.no_grad():
+        inputs, targets, mask = task(batch_size)
+        inputs = torch.tensor(inputs, dtype=torch.float32)
+        targets = torch.tensor(targets, dtype=torch.float32)
+        outputs, _, _ = model(inputs, targets);
+        _, hs, cs = model.sequence(inputs, targets);
+    targets = targets.detach().numpy()
+    outputs = outputs.detach().numpy(); hs_np = hs.detach().numpy(); cs_np = cs.detach().numpy(); hs=hs.squeeze(); cs=cs.squeeze(); trajectories = np.concatenate((hs_np,cs_np),axis=-1);
+    
+    return inputs, targets, outputs, trajectories
+
+def nmse(targets, outputs, from_t=0, to_t=None):
+    target_power = np.mean(targets[:,from_t:to_t,:]**2)
+    mse = np.mean((targets[:,from_t:to_t,:] - outputs[:,from_t:to_t,:])**2)
+    mse_normalized = mse/target_power
+    return mse, mse_normalized, db(mse_normalized)
+
+
+
+def find_fixed_point(outputs):
+    
+    trajectories_proj2 = outputs
+    thetas = np.arctan2(trajectories_proj2[:,:,0], trajectories_proj2[:,:,1]);
+
+    thetas_init = thetas[:,0] #np.arange(-np.pi, np.pi, np.pi/batch_size*2);
+    idx = np.argsort(thetas_init)
+    thetas_init = thetas_init[idx]    
+    
+    idx = np.argsort(thetas_init)
+    thetas_init = thetas_init[idx]; 
+    thetas_sorted = thetas[idx]
+    outputs_sorted = outputs[idx]
+    theta_unwrapped = np.unwrap(thetas_sorted, period=2*np.pi);
+    theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0);
+    arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
+    idx=[i for i, t in enumerate(zip(arr, arr[1:])) if t[0] != t[1]];
+    stabilities=-arr[idx].astype(int)
+
+    fxd_pnt_output = outputs_sorted[:,-1,:][idx]
+
+    return fxd_pnt_output, stabilities
+
+
+
+
+
+
+
+
+
+
+#################PLOT
+def plot_outputs_fps(outputs, fxd_pnt_output, stabilities,
+        exp_path='', exp_i=None):
+    
+    fig = plt.figure(figsize=(3, 3));
+    stab_colors = np.array(['k', 'red', 'g'])
+    ax = fig.add_subplot(111)
+    xs = np.linspace(0,2*np.pi,100)
+    ax.plot(np.cos(xs), np.sin(xs), 'grey', linewidth=10)
+    #for i in range(batch_size):
+    #ax.plot(outputs[:,0,0], outputs[:,0,1]);
+    ax.plot(outputs[:,-1,0], outputs[:,-1,1], 'k');
+    #ax.plot(fxd_pnt_output[:,0], fxd_pnt_output[:,1], '.')
+    ax.scatter(fxd_pnt_output[:,0], fxd_pnt_output[:,1], marker='o',
+               c=stab_colors[stabilities], alpha=1, zorder=101)
+    ax.set_xlim([-1.4,1.4])
+    ax.set_ylim([-1.4,1.4])
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True));
+    plt.savefig(exp_path+f'/inv_man_fps_{exp_i}.pdf');
