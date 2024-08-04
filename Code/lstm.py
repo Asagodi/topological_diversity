@@ -298,7 +298,6 @@ def grid_search(task, input_size = 1, hidden_size = 64, output_size = 2,
 
 def test_lstm(model, task, batch_size=256):
     
-    
     with torch.no_grad():
         inputs, targets, mask = task(batch_size)
         inputs = torch.tensor(inputs, dtype=torch.float32)
@@ -381,7 +380,6 @@ def mean_fp_distance(fxd_pnt_thetas):
     return np.mean(pairwise_distances)
 
 
-    
 def vf_norm_from_outtraj(angle_t, angle_tplus1):
     return np.max(np.linalg.norm(angle_tplus1-angle_t,axis=-1))
 
@@ -447,6 +445,10 @@ def run_all():
             nfps = fxd_pnt_output.shape[0]
             fp_boa = boa(fxd_pnt_thetas)
             mean_fp_dist = mean_fp_distance(fxd_pnt_thetas)
+            
+            #VF uniform norm
+            thetas = np.arctan2(outputs[:,:,0], outputs[:,:,1]);
+            vf_infty = vf_norm_from_outtraj(thetas[:,126], thetas[:,127])
         
             df = df.append({'path':model_path,
             'T': T, 'N': hidden_size, 'scale_factor': .5,  'dropout': 0., 'M': True, 'clip_gradient':1,
@@ -458,6 +460,7 @@ def run_all():
                         'boa':fp_boa,
                         'mean_fp_dist':mean_fp_dist,
                          'inv_man':outputs[:,127,:],
+                         'vf_infty':vf_infty,
                           'min_error_0':min_error,
                            'mean_error_0':mean_error,
                             'max_error_0':max_error,
