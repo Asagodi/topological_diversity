@@ -13,6 +13,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
+import pandas as pd
 
 import matplotlib.pyplot as plt; from matplotlib.ticker import MaxNLocator
 
@@ -316,6 +317,24 @@ def nmse(targets, outputs, from_t=0, to_t=None):
     return mse, mse_normalized, db(mse_normalized)
 
 
+def angluar_error(target, output):
+    output_angle = np.arctan2(output[:,:,1], output[:,:,0]);
+    target_angle = np.arctan2(target[:,:,1], target[:,:,0]);
+    angle_error = np.abs(output_angle - target_angle)
+    angle_error[np.where(angle_error>np.pi)] = 2*np.pi-angle_error[np.where(angle_error>np.pi)]
+    
+    mean_error = np.mean(angle_error,axis=0)
+    max_error = np.max(angle_error,axis=0)
+    min_error = np.min(angle_error,axis=0)
+
+    eps_mean_int = np.cumsum(mean_error) / np.arange(mean_error.shape[0])
+    eps_plus_int = np.cumsum(max_error) / np.arange(mean_error.shape[0])
+    eps_min_int = np.cumsum(min_error) / np.arange(mean_error.shape[0])
+    
+    return min_error, mean_error, max_error, eps_min_int, eps_mean_int, eps_plus_int
+ 
+
+
 
 def find_fixed_point(outputs):
     
@@ -337,15 +356,34 @@ def find_fixed_point(outputs):
     stabilities=-arr[idx].astype(int)
 
     fxd_pnt_output = outputs_sorted[:,-1,:][idx]
+    fxd_pnt_thetas = thetas_init[idx]
 
-    return fxd_pnt_output, stabilities
-
-
-
+    return fxd_pnt_output, fxd_pnt_thetas, stabilities
 
 
+def boa(fxd_pnt_thetas):
+    nfps = fxd_pnt_thetas.shape[0]
+    boas = []
+    for i in range(0,nfps,2):
+        boa = (fxd_pnt_thetas[i+1]-fxd_pnt_thetas[i-1])% (2*np.pi)
+        boas.append(boa/np.pi/2)
+    if nfps>2:
+        perf = -np.sum([boa*np.log(boa) for boa in boas])
+    else:
+        perf=0
+    return perf
+
+def mean_fp_distance(fxd_pnt_thetas):
+    if fxd_pnt_thetas.shape[0]==0:
+        return np.inf
+    pairwise_distances = np.diff(fxd_pnt_thetas)
+    pairwise_distances = np.mod(pairwise_distances, 2*np.pi)
+    return np.mean(pairwise_distances)
 
 
+def vf_norm_from_outtraj(angle_t, angle_tplus1):
+    return np.max(np.lingalg.norm(angle_tplus1-angle_t,axis=-1))
+    
 
 
 
@@ -369,3 +407,63 @@ def plot_outputs_fps(outputs, fxd_pnt_output, stabilities,
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     ax.yaxis.set_major_locator(MaxNLocator(integer=True));
     plt.savefig(exp_path+f'/inv_man_fps_{exp_i}.pdf');
+    
+    
+    
+    
+#OVERALL
+def run_all():
+    df = pd.DataFrame(columns=['path', 'T', 'N'])
+    T = 12.8
+    dt = 0.1
+    task = angularintegration_task(T, dt, sparsity='variable', random_angle_init=True)
+    long_task = angularintegration_task_constant(T*10, dt, speed_range=[0,0], random_angle_init='equally_spaced')
+    input_size = 1
+    output_size = 2
+    for N in [64,128,256]:
+            
+        hidden_size = int(N/2)
+        
+        exp_path = f'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/angular_integration_old/N{N}_T128_noisy/lstm/'
+        for exp_i in range(10):
+            #load model
+            model_path = exp_path+f'/model_{exp_i}.pth'
+            model = LSTMModel(input_size, hidden_size, output_size,dropout=0.)
+            model.load_state_dict(torch.load(model_path))
+            
+            #run model on original task
+            inputs, targets, outputs, trajectories = test_lstm(model, task, batch_size=256)
+            mse, mse_normalized, db_mse_normalized = nmse(targets, outputs)
+            print(db_mse_normalized)
+        
+            #run model autonomously
+            inputs, targets, outputs, trajectories = test_lstm(model, long_task, batch_size=256)
+            
+            #angular error
+            min_error, mean_error, max_error, eps_min_int, eps_mean_int, eps_plus_int = angluar_error(targets, outputs)
+            
+            #fixed point
+            fxd_pnt_output, fxd_pnt_thetas, stabilities = find_fixed_point(outputs)
+            nfps = fxd_pnt_output.shape[0]
+            fp_boa = boa(fxd_pnt_thetas)
+            mean_fp_dist = mean_fp_distance(fxd_pnt_thetas)
+        
+            df = df.append({'path':model_path,
+            'T': T, 'N': hidden_size, 'scale_factor': .5,  'dropout': 0., 'M': True, 'clip_gradient':1,
+                        'trial': exp_i,
+                        'mse': mse,
+                        'mse_normalized':mse_normalized,
+                        'nfps': nfps,
+                        'stabilities':stabilities,
+                        'boa':fp_boa,
+                        'mean_fp_dist':mean_fp_dist,
+                         'inv_man':outputs[:,127,:],
+                          'min_error_0':min_error,
+                           'mean_error_0':mean_error,
+                            'max_error_0':max_error,
+                            'eps_min_int_0':eps_min_int,
+                            'eps_mean_int_0':eps_mean_int,
+                            'eps_plus_int_0':eps_plus_int
+                            }, ignore_index=True)
+            
+    return df
