@@ -381,9 +381,9 @@ def mean_fp_distance(fxd_pnt_thetas):
     return np.mean(pairwise_distances)
 
 
-def vf_norm_from_outtraj(angle_t, angle_tplus1):
-    return np.max(np.lingalg.norm(angle_tplus1-angle_t,axis=-1))
     
+def vf_norm_from_outtraj(angle_t, angle_tplus1):
+    return np.max(np.linalg.norm(angle_tplus1-angle_t,axis=-1))
 
 
 
