@@ -134,8 +134,14 @@ def double_angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=
             outputs1_1d = np.cumsum(inputs1, axis=1)*dt
             outputs2_1d = np.cumsum(inputs2, axis=1)*dt
             if random_angle_init=='equally_spaced':
-                outputs1_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
-                outputs2_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+                # outputs1_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+                # outputs2_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+                angles = np.linspace(-np.pi, np.pi, int(np.sqrt(batch_size)))
+                theta, phi = np.meshgrid(angles, angles)
+
+                outputs1_1d += theta.flatten()[:, np.newaxis]
+                outputs2_1d += phi.flatten()[:, np.newaxis]
+
             elif random_angle_init:
                 random_angles1 = np.random.uniform(-np.pi, np.pi, size=batch_size)
                 outputs1_1d += random_angles1[:, np.newaxis]
@@ -176,9 +182,6 @@ def double_angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=
             outputs_2d = np.cumsum(inputs2_0, axis=1)*dt
 
             if random_angle_init=='equally_spaced':
-                #outputs_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
-                #outputs_2d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
-                
                 angles = np.linspace(-np.pi, np.pi, int(np.sqrt(batch_size)))
                 theta, phi = np.meshgrid(angles, angles)
 
@@ -437,6 +440,64 @@ def contbernouilli_noisy_integration_task(T, input_length, sigma, final_loss):
     return task
 
 
+################ADD and MULT
+def addition_task(T):
+    """
+    Creates samples for the addition problem.
+    Each sample consists of a 2 x T input series and a target output.
+    """
+    def task(batch_size):
+        inputs = np.zeros((batch_size, T, 2))
+        targets = np.zeros((batch_size, T, 1))
+        
+        for i in range(batch_size):
+            s1 = np.random.uniform(0, 1, T)
+            s2 = np.zeros(T)
+            t1 = np.random.randint(0, 10)
+            t2 = np.random.randint(10, T//2)
+            s2[t1] = 1
+            s2[t2] = 1
+            inputs[i, :, 0] = s1
+            inputs[i, :, 1] = s2
+            targets[i,-1,:] = s1[t1] + s1[t2]
+        
+        mask = np.zeros((batch_size, T, 1))  # Mask is all ones
+        mask[:,-1,:] = 1
+        
+        return inputs, targets, mask
+    
+    return task
+
+def multiplication_task(T):
+    """
+    Creates samples for the multiplication problem.
+    Each sample consists of a 2 x T input series and a target output.
+    """
+    def task(batch_size):
+        inputs = np.zeros((batch_size, T, 2))
+        targets = np.zeros((batch_size, T, 1))
+        
+        for i in range(batch_size):
+            s1 = np.random.uniform(0, 1, T)
+            s2 = np.zeros(T)
+            t1 = np.random.randint(0, 10)
+            t2 = np.random.randint(10, T//2)
+            s2[t1] = 1
+            s2[t2] = 1
+            inputs[i, :, 0] = s1
+            inputs[i, :, 1] = s2
+            targets[i,-1,:] = s1[t1] * s1[t2]
+        
+        mask = np.ones((batch_size, T, 1))  
+        
+        return inputs, targets, mask
+    
+    return task
+
+
+
+
+####FLIPFLOP
 def flipflop(dims, dt,
     t_max=50,
     fixation_duration=1,
@@ -541,6 +602,10 @@ def flipflop(dims, dt,
     else:
         return task
     
+    
+    
+    
+#####POISSON CLICKS
 def poisson_clicks_task(T, dt, set_stim_duration=None,
                         cue_output_durations = [10,5,10,5,1], 
                         ratios=[-39,-37/3,-31/9,-26/14,26/14,31/9,37/3,39],  sum_of_rates=40,
@@ -620,7 +685,7 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
 
 
 
-
+########MEMORY GUIDED SACCADE
 def center_out_reaching_task(T, dt, 
                              cue_output_durations = [5,5,75,5,5],
                              time_until_cue_range=[50, 75], angles_random=True):
