@@ -17,12 +17,13 @@ In the revised version of the manuscript, we will include the above limitations 
 
 We thank the reviewer for pointing out the reference; we are currently applying DSA to our numerical results.
 Our preliminary observations are that DSA reflects the fact that the geometry of the invariant manifold is preserved, but it cannot detect the emergence of fixed-points and saddles on the pertubed manifold.
+<!-- How to discuss DSA giving near zero ds score for networks trained on different tasks?-->
 This appears to be consistent with the results reported in the referenced paper, c.f. Figure 4 shows a gradual increase in DSA as $\alpha \to 1$ despite having a bifurcation at $\alpha = 1$.
 
 
 > For the generalization analysis, the authors could evaluate generalization performance by the nature/type of the approximate attractor as well.
 
-We looked at the generalization performance by the nature/type of the approximate attractor (Fig.5D MSE vs # fixed points).
+We looked at the generalization performance by the nature/type of the approximate attractor (Fig.5D MSE vs number of fixed points).
 >Furthermore, although I may have missed this, could the authors comment on what networks hyperparameters lead to which approximations?
 The only networks hyperparameters that we varied were the nonlinearity and the size.
 
@@ -35,21 +36,24 @@ The only networks hyperparameters that we varied were the nonlinearity and the s
 > - Fig. 5E, y-axis label is missing. Also, the authors could just use
 > the normalized MSE on the axis could just follow the convention used in
 > Fig. 5A instead of using dB.
-We appreciate the comments, and will change the manuscript accordingly.
+We appreciate the comments, and changed the manuscript accordingly.
 
 
 > Overall, the writing could be improved in several places to improve clarity.
 
-We will improve the writing, focusing on overall clarity.
+We improved the writing, focusing on overall clarity.
+
 
 >For example, the conclusions of the generalization analysis and their implications are not very clear, and how this connects to the various types of approximate attractors is not clear (related to W3).
 
 In the revised version, we will make a stronger point that connects the inherent slowness of the invariant manifold to the generalizability of the approximate solutions.
-We will also add a longer description of the implications of our numerical experiments to the main text.
+We will also added a longer description of the implications of our numerical experiments to the main text.
 
 ### Questions:
 
 > How do the authors identify the various kinds of approximations of the attractors? Can this be automated, perhaps by using to DSA to cluster the various types?
+
+
 
 See above.
 
