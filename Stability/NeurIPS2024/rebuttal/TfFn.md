@@ -6,11 +6,11 @@
 > I would have liked a lot more signposting: why are these sections the right ones  to care about? What are you showing, and why?
 >
 
-We added extra senteces as the start of sections and subsections to better introduce the main message of the section.
+We added extra sentences as the start of sections and subsections to better introduce the main message of the section.
 
 
 > For example, section 2 shows that noise degrades CANs - a nice
-literature review - and then shows a categorisation of perturbed fixed
+literature review - and then shows a categorization of perturbed fixed
 point dynamics. I guess the idea was to show that noise-instability was a
  problem for all CAN types in the literature? If so you could do with
 signposting that. If not, why did you include all of that? Why was it
@@ -28,10 +28,10 @@ We now added a reference to Fig.1B.
 > Fig 2) Why were there hexagons everywhere? I never could find any
 reason for there to be hexagonal figures, did you just make the ring a hexagon for fun? If so, tell the reader!
 
-This is simply a quality of the ring attractor as proposed in [1]. The ring attractor we discuss in the text is implemented by 6 neurons. This results in 6 line attractors, fused at their ends. 
+This is simply a quality of the ring attractor as proposed in [1]. The ring attractor we discuss in the text is implemented by 6 neurons. This results in 6 line attractors, fused at their ends.
 At these fusion points there is a lack of smoothness (similar to the function abs(x)).
 The ring is embedded in 6 dimensional space and we visualize it by projecting it to two dimensions.
-So this piecewise straigh "ring" attractor, when projected onto two dimensions looks like a hexagon.
+So this piecewise straight "ring" attractor, when projected onto two dimensions looks like a hexagon.
 
 
 > Further, in B and C, are the blue lines numerical? How did you choose what to colour blue?
@@ -60,23 +60,23 @@ Fig.4A2 is indeed showing example trajectories, we have corrected this in the te
 We have further corrected the mistake of referring to Fig.4B and C as a limit cycle.
 We did not include the slow repulsive points that we found as they do not seem to be relevant for how the network solves the task.
 We found this structure both through the Fixed Point Finder and through the Newton-Raphson method that we describe in the paper.
-The grey lines on the torus show simulated trajectories. 
+The grey lines on the torus show simulated trajectories.
 Fig.4A1 is indeed showing the output of an integrated angular velocity.
 This figure is just to illustrate the task. This is in addition to Fig.4C which shows the stability structures of the network for which the trajectories are shown as an example.
 
 
 > On that last point, why include details of the (standard)
-discretisation scheme, MSE loss, and network details, when key steps to
+discretization scheme, MSE loss, and network details, when key steps to
 understand what I am looking at (e.g. figure A1 = output space) are
 missing?
-We included these details to support reproducability.
+We included these details to support reproducibility.
 We have now added the extra details to explain what is shown in Fig.4.
 
 > Figure 5A) Why did one of the finite time results go above the line?
 Shouldn't this be an exact theoretical result, yet it appears not to be true?
 
 This is indeed an exact theoretical result, however, our numerical methods are not exact.
-Becuase we only approximate the invariant manifold, on which we calculate the uniform norm of the vector field, we cannot guarantee that this is exactly the vector field that the simulated trajectories follow.
+Because we only approximate the invariant manifold, on which we calculate the uniform norm of the vector field, we cannot guarantee that this is exactly the vector field that the simulated trajectories follow.
 
 
 > Seemed obtuse to claim a linear relationship then show a log-linear plot, fig 5C? How should I see this?
@@ -115,7 +115,7 @@ Although their analysis elegantly shows that the population activity of the pert
 
 
 > What was section 5.2 trying to show? First it claims that 2.2
-presents a theory of approximate solutions in the neighbourhood of
+presents a theory of approximate solutions in the neighborhood of
 continuous attractors (news to me, as far as I could tell, that section
 showed me that all CAN models were unstable to noise and turn into a
 variety of different fixed points under noise, that doesn't sound like a

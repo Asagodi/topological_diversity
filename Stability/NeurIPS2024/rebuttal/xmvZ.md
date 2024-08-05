@@ -23,7 +23,7 @@ The numerical experiments … -->
 >1) Under what conditions the perturbation function p(x) induces a bifurcation?
 
 Continuous attractors satisfy first-order conditions for a local bifurcation; i.e. they are equilibria, and their Jacobian linearization has a non-trivial subspace with eigenvalues with zero real part.
-Therefore, *any* generic perturbation will cause the system to bifurcate.
+Therefore, *any* generic perturbation $p(x)$ will cause the system to bifurcate.
 A more detailed discussion of this is available in Kuznetsov 2004 and Robbinson 1999.
 
 1) For most CANs p(x) almost always induces a bifurcation. (Is it true that the only way to modify the dynamics such that there is not a bifurcation is via changing the level of attractiveness of the the continuous manifold?. In this sense “almost always” = measure zero of parameter space (?) For exact determination maybe Piotr’s ideas)
