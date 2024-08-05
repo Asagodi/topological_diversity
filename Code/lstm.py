@@ -434,8 +434,11 @@ def eigenspectrum_invman(model, hs, cs):
         # c0 = torch.tensor(c0, dtype=torch.float32, requires_grad=True).unsqueeze(0).expand(1, -1, -1)
         
         J = lstm_jacobian(model,h0,c0)
-        eigenvalues, eigenvectors = np.linalg.eig(J)
-        eigenvalues = sorted(np.real(eigenvalues))
+        if np.isfinite(J).all():
+            eigenvalues, eigenvectors = np.linalg.eig(J)           
+            eigenvalues = sorted(np.real(eigenvalues))
+        else:
+            eigenvalues = [np.nan]*hidden_size*2
 
         # plt.scatter([i]*hidden_size, eigenvalues, s=1, c='k', marker='o', alpha=0.5); 
         eigenspectrum.append(eigenvalues)
