@@ -494,7 +494,7 @@ def multiplication_task(T):
     
     return task
 
-def integration_2d_task(T, dt, length_scale=100, autonomous=False, random_angle_init=True,threshold=0):
+def integration_2d_task(T, dt, length_scale=.001, autonomous=False, random_angle_init=True,threshold=0):
     """
     Creates samples for the 2D integration.
     Each sample consists of a T input series and a target output.
@@ -507,6 +507,8 @@ def integration_2d_task(T, dt, length_scale=100, autonomous=False, random_angle_
 
         if autonomous:
             inputs = np.zeros((batch_size, input_length, 2))
+            inputs1 = np.zeros((batch_size, input_length))
+            inputs2 = np.zeros((batch_size, input_length))
         else:
             inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #theta
             inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #phi
@@ -522,10 +524,8 @@ def integration_2d_task(T, dt, length_scale=100, autonomous=False, random_angle_
                 inputs1[i,start_zeros:start_zeros+10] = 0
                 inputs2[i,start_zeros:start_zeros+10] = 0
                 
-        targets[:,:,0] = np.cumsum(inputs1,axis=1)
-        targets[:,:,1] = np.cumsum(inputs2,axis=1)
-            
-        inputs = np.stack((inputs1, inputs2), axis=-1)
+            targets[:,:,0] = np.cumsum(inputs1,axis=1)
+            targets[:,:,1] = np.cumsum(inputs2,axis=1)
 
         if random_angle_init=='equally_spaced':
             t0 = np.linspace(-np.pi, np.pi, int(np.sqrt(batch_size)))
@@ -533,7 +533,7 @@ def integration_2d_task(T, dt, length_scale=100, autonomous=False, random_angle_
             targets[:,:,0] += t1.flatten()[:, np.newaxis]
             targets[:,:,1] += t2.flatten()[:, np.newaxis]
         else:
-            targets += np.random.uniform(-.1, .1, (batch_size,1,2))
+            targets += np.random.uniform(-.01, .01, (batch_size,1,2))
         
         if threshold>0:
             cumsum = targets[:,:,0]
@@ -546,6 +546,7 @@ def integration_2d_task(T, dt, length_scale=100, autonomous=False, random_angle_
             cumsum[cumsum > threshold] = threshold
             cumsum[cumsum < -threshold] = -threshold
         
+        inputs = np.stack((inputs1, inputs2), axis=-1)
         mask = np.ones((batch_size, input_length, 2))  
         
         return inputs, targets, mask

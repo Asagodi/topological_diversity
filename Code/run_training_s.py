@@ -429,7 +429,7 @@ if __name__ == "__main__":
     training_kwargs['input_nonlinearity'] = 'recurrent'
     training_kwargs['readout_nonlinearity'] = 'id'
     training_kwargs['sparsity'] = 'variable'
-    training_kwargs['noise_std'] = 0.01
+    training_kwargs['noise_std'] = 0.0001
     training_kwargs['task_noise_sigma'] = 0 #1e-1
     training_kwargs['act_reg_lambda'] = 0 #1e-3    
     training_kwargs['h0_init'] = 'random'
@@ -442,7 +442,7 @@ if __name__ == "__main__":
     training_kwargs['drouput'] = .0
     training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
-    training_kwargs['learning_rate'] = 0.001
+    training_kwargs['learning_rate'] = 0.01
     training_kwargs['n_epochs'] = 5000
     training_kwargs['stop_patience'] = 5000
     training_kwargs['stop_min_delta'] = 0
@@ -454,7 +454,7 @@ if __name__ == "__main__":
     training_kwargs['initialization_type'] = 'gain' #initialization_type_list[model_i]
     training_kwargs['loss_function'] = 'mse_loss_masked' #loss_functions[model_i]
     training_kwargs['rnn_init_gain'] = 1.5 # g_list[model_i]        ##########
-    training_kwargs['scheduler_step_size'] = 500 # scheduler_step_sizes[model_i]
+    training_kwargs['scheduler_step_size'] = 250 # scheduler_step_sizes[model_i]
     training_kwargs['scheduler_gamma'] = .75 #gammas[model_i]
     
     # if training_kwargs['task'] == 'integration_2d':
