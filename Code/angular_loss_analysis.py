@@ -7,6 +7,8 @@ Created on Sat May 18 17:44:55 2024
 import os, sys
 import glob
 import pickle
+import yaml
+from pathlib import Path, PurePath
 current_dir = os.getcwd()
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, current_dir) 
@@ -16,9 +18,10 @@ def makedirs(dirname):
         
 from tqdm import tqdm
 import numpy as np
+import torch
 from scipy.spatial.distance import cdist
 import scipy
-import skdim
+#import skdim
 from ripser import ripser
 from persim import plot_diagrams
 
@@ -27,9 +30,9 @@ import matplotlib as mpl
 from matplotlib.lines import Line2D
 
 from models import RNN 
-from tasks import angularintegration_task, angularintegration_task_constant, center_out_reaching_task
-from odes import relu_ode, tanh_ode, recttanh_ode
-
+from tasks import angularintegration_task, angularintegration_task_constant, center_out_reaching_task, double_angularintegration_task
+from odes import relu_ode, tanh_ode, recttanh_ode, relu_jacobian, tanh_jacobian, recttanh_jacobian_point
+from analysis_functions import db
 
 def load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs):
 
@@ -106,7 +109,6 @@ def simulate_rnn_with_input(net, input, h_init):
     return output, trajectories
 
 def simulate_rnn_with_task(net, task, T, h_init, batch_size=256):
-
     input, target, mask = task(batch_size);
     input_ = torch.from_numpy(input).float();
     target_ = torch.from_numpy(target).float();
@@ -284,6 +286,32 @@ def angle_analysis_on_net(net, T, input_or_task='input',
     # #fig.savefig(folder+"/angle_error.pdf", bbox_inches="tight");
     
     
+def anglular_double_noinput(net, T, input_or_task='input',
+                          batch_size=128,
+                          dt=0.1, 
+                          random_seed=100):
+
+    np.random.seed(random_seed)
+    net.noise_std = noise_std
+    input = np.zeros((angle_init.shape[0], T, net.dims[0]))
+    output, trajectories = simulate_rnn_with_input(net, input, h_init=h_init)
+    output_angle = np.arctan2(output[:,:,1], output[:,:,0]);
+    #target_angle = np.arctan2(angle_init[:,1], angle_init[:,0]);
+    angle_error = np.abs(output_angle - angle_init[:, np.newaxis])
+    y0 = np.dot(h_init, net.wo.detach().numpy())
+    hat_alpha_0 = np.arctan2(y0[:,0], y0[:,1])
+    angle_error[:,0] = np.abs(hat_alpha_0 - angle_init)
+    angle_error[np.where(angle_error>np.pi)] = 2*np.pi-angle_error[np.where(angle_error>np.pi)]
+    
+    mean_error = np.mean(angle_error,axis=0)
+    max_error = np.max(angle_error,axis=0)
+    min_error = np.min(angle_error,axis=0)
+
+    eps_mean_int = np.cumsum(mean_error) / np.arange(mean_error.shape[0])
+    eps_plus_int = np.cumsum(max_error) / np.arange(mean_error.shape[0])
+    eps_min_int = np.cumsum(min_error) / np.arange(mean_error.shape[0])
+    
+    return 
     
     
 def angular_loss_msg(net, cue_range, T1_multiple=16, dt=.1, batch_size=128):
@@ -341,6 +369,8 @@ def angular_loss_msg(net, cue_range, T1_multiple=16, dt=.1, batch_size=128):
     eps_min_int = np.cumsum(min_error) / np.arange(1, mean_error.shape[0]+1)
     
     return ts, eps_min_int, eps_mean_int, eps_plus_int
+
+
 
 
 ##########SPEED
@@ -530,9 +560,9 @@ def vf_inv_man_analysis(inv_man, wo, wrec, brec, cs, rnn_ode):
     vf_diff_closest, X, Y, U_closest, V_closest = vf_on_ring(inv_man, wo,  wrec, brec, None, method='closest', rnn_ode=rnn_ode)
     return vf_diff_spline, vf_diff_closest, U_spline, V_spline, U_closest, V_closest
 
-def get_dimension(inv_man, function=skdim.id.MOM()):
-    dim=function.fit(inv_man).dimension_
-    return dim
+#def get_dimension(inv_man, function=skdim.id.MOM()):
+#    dim=function.fit(inv_man).dimension_
+#    return dim
 
 def tda_trajectories(inv_man, maxdim=1, show=False):
     diagrams = ripser(inv_man, maxdim=maxdim)['dgms']
@@ -914,15 +944,34 @@ def boa(fxd_pnt_thetas):
         perf=0
     return perf
 
-def db(x):
-    return 10*np.log10(x)
 
+
+
+def eigenspectrum_invman(wrec, brec, csx):
+    max_eigv = []
+    max_eigv_2nd = []
+    for i,x in enumerate(csx):
+        J = relu_jacobian(wrec,brec,1,x)
+        eigenvalues, eigenvectors = np.linalg.eig(J)
+        eigenvalues = sorted(np.real(eigenvalues))
+        max_eigv.append(eigenvalues[-1])
+        max_eigv_2nd.append(eigenvalues[-2])
+        plt.scatter([i]*n_rec, eigenvalues, s=1, c='k', marker='o', alpha=0.5); 
+    plt.plot(max_eigv, 'b', label='1st')
+    plt.plot(max_eigv_2nd, 'purple', label='2nd')
+    plt.xlabel(r'$\theta$')
+    plt.ylabel('eigenvalue spectrum')
+    plt.xticks([0,len(csx)], [0,r'$2\pi$'])
+    #plt.ylim([-1.5,0.2])
+    plt.legend(loc='lower right')
+    plt.hlines(0, 0,len(csx), 'r', linestyles='dotted');
+    plt.savefig(exp_path+f'/eigenvalue_spectrum_{exp_i}.pdf')
 
 # df_good = df2[db(df2['mse_normalized'])<-20]
 ######mean_error_0 = np.stack(df2['mean_error_0'].to_numpy())
 
 
-def analysis(folder, df, batch_size=128, T=256, T1_multiple=16, auton_mult=4, input_strength=0.05, subsample=10, tol=1e-3):
+def analysis(folder, df, batch_size=128, T=256, T1_multiple=16, auton_mult=4, input_strength=0.05, subsample=10, tol=1e-2):
     #main_exp_name='/experiments/angular_integration_old/N64_T128_noisy/relu/';
     #folder=parent_dir+main_exp_name
     exp_list = glob.glob(folder + "/res*")
@@ -974,7 +1023,6 @@ def analysis(folder, df, batch_size=128, T=256, T1_multiple=16, auton_mult=4, in
 
         input = input_strength*np.ones((csx2.shape[0], T*T1_multiple, net.dims[0]));
         min_error_input, mean_error_input, max_error_input, eps_min_int_input, eps_mean_int_input, eps_plus_int_input = angular_loss_angvel_with_input(net, angle_init=xs, h_init=csx2, input=input)
-        
         
         T1, N, I, S, R, M, clip_gradient = get_tr_par(training_kwargs)
         df = df.append({'path':path,

@@ -62,6 +62,8 @@ def eyeblink_task(input_length, t_delay, t_stim=1, t_target=1, min_us_time=5, ma
 
 
 #########################################
+
+##ANGULAR INTEGRATION
 def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, random_angle_init=False, max_input=None):
     """
     Creates N_batch trials of the angular integration task with Guassian Process angular velocity inputs.
@@ -104,6 +106,101 @@ def angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, 
             mask = np.ones((batch_size, input_length, 2))
 
         return inputs.reshape((batch_size, input_length, 1)), outputs, mask
+    
+    return task
+
+def double_angularintegration_task(T, dt, length_scale=1, sparsity=1, last_mses=False, random_angle_init=False,
+                                   max_input=None, constant_speed=False, speed_range=[-1,1]):
+    input_length = int(T/dt)
+    
+    if not constant_speed:
+        def task(batch_size):
+            
+            X = np.expand_dims(np.linspace(-length_scale, length_scale, input_length), 1)
+            sigma = exponentiated_quadratic(X, X)  
+            if sparsity =='variable':
+                sparsities = np.random.uniform(0, 2, batch_size)
+                mask_input = np.random.random(size=(batch_size, input_length))<1-sparsities[:,None]
+            elif sparsity:
+                mask_input = np.random.random(size=(batch_size, input_length)) < 1-sparsity
+            inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
+            inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
+            if max_input:
+                inputs1 = np.where(np.abs(inputs1)>max_input, np.sign(inputs1), inputs1)
+                inputs2 = np.where(np.abs(inputs2)>max_input, np.sign(inputs2), inputs2)
+            if sparsity:
+                inputs1[mask_input] = 0.
+                inputs2[mask_input] = 0.
+            outputs1_1d = np.cumsum(inputs1, axis=1)*dt
+            outputs2_1d = np.cumsum(inputs2, axis=1)*dt
+            if random_angle_init=='equally_spaced':
+                # outputs1_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+                # outputs2_1d += np.arange(-np.pi, np.pi, 2*np.pi/batch_size)[:, np.newaxis]
+                angles = np.linspace(-np.pi, np.pi, int(np.sqrt(batch_size)))
+                theta, phi = np.meshgrid(angles, angles)
+
+                outputs1_1d += theta.flatten()[:, np.newaxis]
+                outputs2_1d += phi.flatten()[:, np.newaxis]
+
+            elif random_angle_init:
+                random_angles1 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+                outputs1_1d += random_angles1[:, np.newaxis]
+                
+                random_angles2 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+                outputs2_1d += random_angles2[:, np.newaxis]
+    
+            outputs1 = np.stack((np.cos(outputs1_1d), np.sin(outputs1_1d)), axis=-1)
+            outputs2 = np.stack((np.cos(outputs2_1d), np.sin(outputs2_1d)), axis=-1)
+            outputs = np.concatenate((outputs1, outputs2), axis=-1)
+            
+            if last_mses:
+                fin_int = np.random.randint(1,last_mses,size=batch_size)
+                mask = np.zeros((batch_size, input_length, 4))
+                mask[np.arange(batch_size), -fin_int, :] = 1
+    
+            else:
+                mask = np.ones((batch_size, input_length, 4))
+    
+            inputs = np.stack((inputs1, inputs2), axis=-1)
+            return inputs.reshape((batch_size, input_length, 2)), outputs, mask
+    
+    else:
+        def task(batch_size):
+            #no mask, no lastmse
+                
+            inputs1_0 = np.random.uniform(low=speed_range[0], high=speed_range[1], size=batch_size)
+            inputs2_0 = np.random.uniform(low=speed_range[0], high=speed_range[1], size=batch_size)
+            inputs1_0 = inputs1_0.reshape(-1, 1) * np.ones((batch_size, input_length))
+            inputs2_0 = inputs2_0.reshape(-1, 1) * np.ones((batch_size, input_length))
+            inputs = np.stack((inputs1_0, inputs2_0), axis=-1)
+            
+            if max_input:
+                inputs1_0 = np.where(np.abs(inputs1_0)>max_input, np.sign(inputs1_0), inputs1_0)
+                inputs2_0 = np.where(np.abs(inputs2_0)>max_input, np.sign(inputs2_0), inputs2_0)
+
+            outputs_1d = np.cumsum(inputs1_0, axis=1)*dt
+            outputs_2d = np.cumsum(inputs2_0, axis=1)*dt
+
+            if random_angle_init=='equally_spaced':
+                angles = np.linspace(-np.pi, np.pi, int(np.sqrt(batch_size)))
+                theta, phi = np.meshgrid(angles, angles)
+
+                outputs_1d += theta.flatten()[:, np.newaxis]
+                outputs_2d += phi.flatten()[:, np.newaxis]
+
+
+            elif random_angle_init:
+                random_angles1 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+                outputs_1d += random_angles1[:, np.newaxis]
+                random_angles2 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+                outputs_2d += random_angles2[:, np.newaxis]
+
+            outputs1 = np.stack((np.cos(outputs_1d), np.sin(outputs_1d)), axis=-1)
+            outputs2 = np.stack((np.cos(outputs_2d), np.sin(outputs_2d)), axis=-1)
+            outputs = np.concatenate((outputs1, outputs2), axis=-1)
+
+            mask = np.ones((batch_size, input_length, 2))
+            return inputs, outputs, mask
     
     return task
 
@@ -175,6 +272,70 @@ def angularintegration_delta_task(T, dt, p=.1, amplitude=1):
 
 
 
+#####SPHERE
+def sphere_integration_task(T, dt, length_scale=1, r=1, random_angle_init=True, sparsity=1):
+    """
+    Creates N_batch trials of the sphere (S^2, 2-sphere, ordinary sphere) integration task 
+    Inputs is velocities ... and 
+    target output is ... of integrated angular velocities.
+    r = 1  # Unit sphere
+    Returns inputs, outputs, mask
+    -------
+    """
+    input_length = int(T/dt)
+
+    def task(batch_size):
+        
+        X = np.expand_dims(np.linspace(-length_scale, length_scale, input_length), 1)
+        sigma = exponentiated_quadratic(X, X)  
+        
+        inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #theta
+        inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #phi
+
+        if sparsity =='variable':
+            sparsities = np.random.uniform(0, 2, batch_size)
+            mask_input = np.random.random(size=(batch_size, input_length))<1-sparsities[:,None]
+        elif sparsity:
+            mask_input = np.random.random(size=(batch_size, input_length)) < 1-sparsity
+        inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
+        inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)
+        if sparsity:
+            inputs1[mask_input] = 0.
+            inputs2[mask_input] = 0.
+            
+        inputs = np.stack((inputs1, inputs2), axis=-1)
+        
+        outputs1_1d = np.cumsum(inputs1, axis=1)*dt
+        outputs2_1d = np.cumsum(inputs2, axis=1)*dt
+
+        if random_angle_init=='equally_spaced':
+            angles = np.linspace(-np.pi, np.pi, int(np.sqrt(batch_size)))
+            theta, phi = np.meshgrid(angles, angles)
+
+            outputs1_1d += theta.flatten()[:, np.newaxis]
+            outputs2_1d += phi.flatten()[:, np.newaxis]
+            
+
+        elif random_angle_init:
+            random_angles1 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+            outputs1_1d += random_angles1[:, np.newaxis]
+            
+            random_angles2 = np.random.uniform(-np.pi, np.pi, size=batch_size)
+            outputs2_1d += random_angles2[:, np.newaxis]
+
+        x = r*np.sin(outputs1_1d) * np.cos(outputs2_1d)
+        y = r*np.sin(outputs1_1d) * np.sin(outputs2_1d)
+        z = r*np.cos(outputs1_1d) 
+        # outputs = np.concatenate((x, y, z), axis=-1)
+        outputs = np.stack((x,y,z), axis=-1)
+    
+        mask = np.ones((batch_size, input_length, 3))
+        return inputs, outputs, mask
+    
+    return task
+
+
+##############LINEAR INTEGRATION
 def simplestep_integration_task(T, dt, amplitude=1, pulse_time=1, delay=1):
     """
     Creates a trial with a positive and negative step with length step_length and amplitude
@@ -279,6 +440,158 @@ def contbernouilli_noisy_integration_task(T, input_length, sigma, final_loss):
     return task
 
 
+################ADD and MULT
+def addition_task(T):
+    """
+    Creates samples for the addition problem.
+    Each sample consists of a T input series and a target output.
+    """
+    def task(batch_size):
+        inputs = np.zeros((batch_size, T, 2))
+        targets = np.zeros((batch_size, T, 1))
+        
+        for i in range(batch_size):
+            s1 = np.random.uniform(0, 1, T)
+            s2 = np.zeros(T)
+            t1 = np.random.randint(0, 10)
+            t2 = np.random.randint(10, T//2)
+            s2[t1] = 1
+            s2[t2] = 1
+            inputs[i, :, 0] = s1
+            inputs[i, :, 1] = s2
+            targets[i,-1,:] = s1[t1] + s1[t2]
+        
+        mask = np.zeros((batch_size, T, 1))  # Mask is all ones
+        mask[:,-1,:] = 1
+        
+        return inputs, targets, mask
+    
+    return task
+
+def multiplication_task(T):
+    """
+    Creates samples for the multiplication problem.
+    Each sample consists of a T input series and a target output.
+    """
+    def task(batch_size):
+        inputs = np.zeros((batch_size, T, 2))
+        targets = np.zeros((batch_size, T, 1))
+        
+        for i in range(batch_size):
+            s1 = np.random.uniform(0, 1, T)
+            s2 = np.zeros(T)
+            t1 = np.random.randint(0, 10)
+            t2 = np.random.randint(10, T//2)
+            s2[t1] = 1
+            s2[t2] = 1
+            inputs[i, :, 0] = s1
+            inputs[i, :, 1] = s2
+            targets[i,-1,:] = s1[t1] * s1[t2]
+        
+        mask = np.ones((batch_size, T, 1))  
+        
+        return inputs, targets, mask
+    
+    return task
+
+def integration_2d_task(T, dt, length_scale=100, autonomous=False, random_angle_init=True,threshold=0):
+    """
+    Creates samples for the 2D integration.
+    Each sample consists of a T input series and a target output.
+    """
+    input_length = int(T/dt)
+    def task(batch_size):
+        X = np.expand_dims(np.linspace(-length_scale, length_scale, input_length), 1)
+        sigma = exponentiated_quadratic(X, X)          
+        targets = np.zeros((batch_size, input_length, 2))
+
+        if autonomous:
+            inputs = np.zeros((batch_size, input_length, 2))
+        else:
+            inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #theta
+            inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #phi
+            
+            for i in range(batch_size):
+                # s1 = np.random.uniform(-.1, .1, input_length)
+                # s2 = np.random.uniform(-.1, .1, input_length)
+                start_zeros = np.random.randint(10, 30)
+                inputs1[i,start_zeros:start_zeros+10] = 0
+                inputs2[i,start_zeros:start_zeros+10] = 0
+                
+                start_zeros = np.random.randint(50, 70)
+                inputs1[i,start_zeros:start_zeros+10] = 0
+                inputs2[i,start_zeros:start_zeros+10] = 0
+                
+        targets[:,:,0] = np.cumsum(inputs1,axis=1)
+        targets[:,:,1] = np.cumsum(inputs2,axis=1)
+            
+        inputs = np.stack((inputs1, inputs2), axis=-1)
+
+        if random_angle_init=='equally_spaced':
+            t0 = np.linspace(-np.pi, np.pi, int(np.sqrt(batch_size)))
+            t1, t2 = np.meshgrid(t0, t0)
+            targets[:,:,0] += t1.flatten()[:, np.newaxis]
+            targets[:,:,1] += t2.flatten()[:, np.newaxis]
+        else:
+            targets += np.random.uniform(-.1, .1, (batch_size,1,2))
+        
+        if threshold>0:
+            cumsum = targets[:,:,0]
+            inputs1[np.abs(cumsum) > threshold] = 0
+            cumsum[cumsum > threshold] = threshold
+            cumsum[cumsum < -threshold] = -threshold
+            
+            cumsum = targets[:,:,1]
+            inputs2[np.abs(cumsum) > threshold] = 0
+            cumsum[cumsum > threshold] = threshold
+            cumsum[cumsum < -threshold] = -threshold
+        
+        mask = np.ones((batch_size, input_length, 2))  
+        
+        return inputs, targets, mask
+    
+    return task
+
+def set_random_consecutive_zeros_no_overlap(arr, num_sequences=1, min_consecutive=10):
+    """
+    Sets random consecutive entries of at least `min_consecutive` elements of an array to zero for a specified number of sequences without overlap.
+    
+    Parameters:
+    arr (numpy.ndarray): The input array.
+    num_sequences (int): The number of sequences to set to zero.
+    min_consecutive (int): The minimum number of consecutive elements to set to zero.
+    
+    Returns:
+    numpy.ndarray: The modified array with consecutive elements set to zero.
+    list: The indices of the elements that were set to zero.
+    """
+    if len(arr) < min_consecutive * num_sequences:
+        raise ValueError("Array length must be at least as long as the total number of consecutive elements to set to zero.")
+    
+    zero_indices = set()
+    
+    for _ in range(num_sequences):
+        while True:
+            # Randomly select a starting index
+            start_idx = np.random.randint(0, len(arr) - min_consecutive + 1)
+            
+            # Randomly determine the length of the sequence to set to zero
+            seq_length = np.random.randint(min_consecutive, len(arr) - start_idx + 1)
+            
+            # Check if the selected range overlaps with any previously set ranges
+            if all(idx not in zero_indices for idx in range(start_idx, start_idx + seq_length)):
+                break
+        
+        # Set the consecutive elements to zero
+        arr[start_idx:start_idx + seq_length] = 0
+        
+        # Add the indices to the set of zero indices
+        zero_indices.update(range(start_idx, start_idx + seq_length))
+    
+    return arr, list(zero_indices)
+
+
+####FLIPFLOP
 def flipflop(dims, dt,
     t_max=50,
     fixation_duration=1,
@@ -383,6 +696,10 @@ def flipflop(dims, dt,
     else:
         return task
     
+    
+    
+    
+#####POISSON CLICKS
 def poisson_clicks_task(T, dt, set_stim_duration=None,
                         cue_output_durations = [10,5,10,5,1], 
                         ratios=[-39,-37/3,-31/9,-26/14,26/14,31/9,37/3,39],  sum_of_rates=40,
@@ -462,7 +779,7 @@ def poisson_clicks_task(T, dt, set_stim_duration=None,
 
 
 
-
+########MEMORY GUIDED SACCADE
 def center_out_reaching_task(T, dt, 
                              cue_output_durations = [5,5,75,5,5],
                              time_until_cue_range=[50, 75], angles_random=True):
