@@ -13,12 +13,12 @@ We believe that the above modifications will convey the very general applicabili
 Given the remarks made by the other reviewers, we elaborate on the generality and limitations of Theorem 1.
 
 > RNNs with specific activation functions and restrictive settings,
-We have trained and analyzed gated RNNs such as LSTM, and GRU.
-The new results will be uploaded to OpenReview in a separated document.
 
-<!-- The theory holds for any dimension.
-The analytical results …
-The numerical experiments … -->
+We have trained and analyzed gated RNNs such as LSTM, and GRU.
+The new results have been uploaded to OpenReview in a separated document.
+The solutions as found by trained LSTMs and GRUs follow the same pattern as Vanilla RNNs:
+there exists a normally hyperbolic attractive invariant ring with slow dynamics that evolve onto fixed points.
+
 
 > 1. In Sect. 3.1, the perturbation p(x) is not clear enough. Specifically, it is unclear:
 >1) Under what conditions the perturbation function p(x) induces a bifurcation?
@@ -55,7 +55,7 @@ Let us state the essence of Theorem 1 differently: **if** $f$ has a normally hyp
 
 <!-- 3)  h(x,y,\epsilon) -->
 
-> 1. What does **sufficiently smooth** mean in Theorem 1? As mentioned by the authors after this theorem, it applies to continuous piecewise linear systems. However, it cannot be applied to all piecewise smooth (PWS) systems , such as Filippov systems.
+> 1. What does **sufficiently smooth** mean in Theorem 1? As mentioned by the authors after this theorem, it applies to continuous piecewise linear systems. However, it cannot be applied to all piecewise smooth (PWS) systems , such as Filippov systems.
 
 >In particular, for these systems, bifurcations involving non-hyperbolic fixed points can be analyzed using similar slow (center) manifold approaches, but only for part of the phase space.
 
