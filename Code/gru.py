@@ -157,6 +157,7 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
         
         # Check for NaNs in loss
         if torch.isnan(loss):
+            return False
             # if epoch == 0:
             #     print(f'NaN detected in loss at epoch {epoch}. Reinitializing model parameters.')
             #     model._initialize_weights()
@@ -169,15 +170,15 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
 
                 
             # else:
-                print(f'NaN detected in loss at epoch {epoch}. Rolling back to previous state.')
-                model.load_state_dict(model_state_dict)
-                optimizer.load_state_dict(optimizer_state_dict)
-                with torch.no_grad():
-                    for param in model.parameters():
-                        param *= model.init_weight_radius_scaling
-                optimizer.zero_grad()
-                epoch+=1
-                continue
+                # print(f'NaN detected in loss at epoch {epoch}. Rolling back to previous state.')
+                # model.load_state_dict(model_state_dict)
+                # optimizer.load_state_dict(optimizer_state_dict)
+                # with torch.no_grad():
+                #     for param in model.parameters():
+                #         param *= model.init_weight_radius_scaling
+                # optimizer.zero_grad()
+                # epoch+=1
+                # continue
         
         optimizer.zero_grad()
         loss.backward()
