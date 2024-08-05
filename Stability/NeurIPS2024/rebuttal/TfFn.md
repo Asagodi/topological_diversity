@@ -110,11 +110,8 @@ preserved in the presence of moderate disordered background
 connectivity, Kuhn & Monasson, 2023.
 >
 
-presence of disorder in the interactions could impact the information stored in attractor networks in the form of patterns. In the case of CANNs this translates into a breaking of the translational symmetry of bump-like solutions
-
-disorder does not wipe out all information in the attractor network. In particular, the Fisher information is robust to
-the introduction of disorder
-
+[Kuhn and Monasson 2023] analyzes an Ising network perturbed with a specially structured noise at the thermodynamic limit.
+Although their analysis elegantly shows that the population activity of the perturbed system does not destroy the Fisher information about the input, they do not consider a scenario where the ring attractor is used as a working memory mechanism, it is rather used to encode instantaneous representation. In contrast, our analysis involves understanding how the working memory content degrades over time due to the dynamics. We are not aware of any mean field analysis that covers this aspect.
 
 
 > What was section 5.2 trying to show? First it claims that 2.2
