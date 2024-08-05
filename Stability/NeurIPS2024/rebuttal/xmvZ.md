@@ -90,4 +90,6 @@ It’s not about emergence by identification.
 > The authors have discussed most limitations of the analysis in the discussion section, but I suggest making them more explicit. This could be done by either incorporating a dedicated (sub)section on limitations or adding a bold title "**Limitations**" at the beginning of the relevant paragraph within the discussion section.
 > As mentioned above, another important limitation is that it is difficult to determine how general their theoretical discussion is and whether it can be applied to investigate and obtain results for more general and high-dimensional cases.
 
-We included a **Limitations** subsection
+We included a **Limitations** subsection.
+@Abel, do you mean the part of the checklist?
+If so I'll just tell all of the reviewers we'll add a sub-section like that.
