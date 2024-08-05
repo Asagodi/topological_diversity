@@ -5,7 +5,7 @@
 > The bifurcation analysis of the line attractors and fast-slow decomposition in Section S2 are also studied for very simple systems. Therefore, it is difficult to determine how general their theoretical discussion is and whether it can be applied to investigate and obtain results for more general and high-dimensional cases.
 
 We respectfully disagree-- the role of the analysis, and numerical experiments is not to prove the generality of the theory but to illustrate it.
-Because of that, we focus on low-dimensional systems which are easier to visualize and arguably helpful in developing intuition.
+Because of that, we focus on low-dimensional systems which are easier to visualize and arguably are more helpful in developing intuition.
 In the updated manuscript, we will emphasize that the theory holds, regardless of the dimensionality of the system and the dimensionality of the invariant manifold.
 Furthermore, we will include a revised statement showing that normal hyperbolicity is both sufficient and necessary for invariant manifolds to persist. See [1]
 
@@ -13,7 +13,8 @@ We believe that the above modifications will convey the very general applicabili
 Given the remarks made by the other reviewers, we elaborate on the generality and limitations of Theorem 1.
 
 > RNNs with specific activation functions and restrictive settings,
-We are currently training, and analyzing gated RNNs such as LSTM, and GRU.
+We have trained and analyzed gated RNNs such as LSTM, and GRU.
+The new results will be uploaded to OpenReview in a separated document.
 
 <!-- The theory holds for any dimension.
 The analytical results …
@@ -24,20 +25,27 @@ The numerical experiments … -->
 
 Continuous attractors satisfy first-order conditions for a local bifurcation; i.e. they are equilibria, and their Jacobian linearization has a non-trivial subspace with eigenvalues with zero real part.
 Therefore, *any* generic perturbation $p(x)$ will cause the system to bifurcate.
-A more detailed discussion of this is available in Kuznetsov 2004 and Robbinson 1999.
+A more detailed discussion of this is available in Kuznetsov 2004, Robbinson 1999, and Abraham and Marsden 2008.
 
-1) For most CANs p(x) almost always induces a bifurcation. (Is it true that the only way to modify the dynamics such that there is not a bifurcation is via changing the level of attractiveness of the the continuous manifold?. In this sense “almost always” = measure zero of parameter space (?) For exact determination maybe Piotr’s ideas)
-Piotr: I took a stab at writing it but I get too annoyed to phrase it well. The almost always is a bit different though--- for parametric systems it happens on a dense set of parameters. For the vector fields, I'm guessing a similar statement can be made but I can't recall the precise phrasing of it.
+<!-- 1) For most CANs p(x) almost always induces a bifurcation. (Is it true that the only way to modify the dynamics such that there is not a bifurcation is via changing the level of attractiveness of the the continuous manifold?. In this sense “almost always” = measure zero of parameter space (?) For exact determination maybe Piotr’s ideas) -->
+<!-- Piotr: I took a stab at writing it but I get too annoyed to phrase it well. The almost always is a bit different though--- for parametric systems it happens on a dense set of parameters. For the vector fields, I'm guessing a similar statement can be made but I can't recall the precise phrasing of it. -->
 
 >2) What types of (generic) bifurcations can arise from the perturbation p(x)?
 
 We are working to characterize codimension-1 bifurcations for a ring attractor. We believe a simple, polynomial normal form can be derived.
+
 However, the general problem remains an open one. Note that for a continuous attractor of dimension $n$, the bifurcation is potentially of codim $n$.
-The characterization of codim $n>2$ bifurcations is an open problem; our approach provides a trade-off between the specificity of a detailed bifurcation analysis and generality. Again, please note that our results pose no restrictions on the dimensionality of the system or the continuous attractor.
-2) Any that are at most at epsilon distance from original system (C^1 topology) (Could you say / is it true that it will always be either no bifurcation, or a limit cycle or a slow manifold with fixed points?  I have that intuition but do not know if it is fair)
+The characterization of codim $n>2$ bifurcations is an open problem; our approach provides a trade-off between the specificity of a detailed bifurcation analysis and generality.
+Rather than specifying the topology of the dynamics within the slow manifold, we provide a geometric statement.
+We then show that the persistence of an invariant manifold can lead to fruitful analyses even without an explicit knowledge of the bifurcation (viz. generalization bounds).
+<!-- Lastly, please recall that our results pose no restrictions on the dimensionality of the system or the continuous attractor. -->
+<!-- 2) Any that are at most at epsilon distance from original system (C^1 topology) (Could you say / is it true that it will always be either no bifurcation, or a limit cycle or a slow manifold with fixed points?  I have that intuition but do not know if it is fair) -->
 
 >Likewise, the functions h and g are also not clear enough. It is unclear how one can obtain/choose the functions h and g such that the two systems defined by Eq. (2) and Eqs. (3) & (4) are equivalent.
 
+Obtaining $h,\,g$ is problem specific, and cannot be given in closed for general invariant manifolds.
+Let us state the essence of Theorem 1 differently: **if** $f$ has a normally hyperbolic invariant manifold, then there exist vector fields $h,\,g$.
+@Abel, comments?
 <!-- 1) Under what conditions the perturbation function p(x) induces a bifurcation?
 
 2) What types of (generic) bifurcations can arise from the perturbation p(x)? -->
@@ -45,7 +53,7 @@ The characterization of codim $n>2$ bifurcations is an open problem; our approac
 <!-- 3) the functions h and g (how can one obtain/choose the functions h and g such that the two systems defined by Eq. (2) and Eqs. (3) & (4) are equivalent?) -->
 
 
-3)  h(x,y,\epsilon)
+<!-- 3)  h(x,y,\epsilon) -->
 
 > 1. What does **sufficiently smooth** mean in Theorem 1? As mentioned by the authors after this theorem, it applies to continuous piecewise linear systems. However, it cannot be applied to all piecewise smooth (PWS) systems , such as Filippov systems.
 
