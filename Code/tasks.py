@@ -494,7 +494,7 @@ def multiplication_task(T):
     
     return task
 
-def integration_2d_task(T, dt, length_scale=.001, autonomous=False, random_angle_init=True,threshold=0):
+def integration_2d_task(T, dt, length_scale=.002, autonomous=False, random_angle_init=True, threshold=0):
     """
     Creates samples for the 2D integration.
     Each sample consists of a T input series and a target output.
@@ -510,8 +510,8 @@ def integration_2d_task(T, dt, length_scale=.001, autonomous=False, random_angle
             inputs1 = np.zeros((batch_size, input_length))
             inputs2 = np.zeros((batch_size, input_length))
         else:
-            inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #theta
-            inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #phi
+            inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)*length_scale #theta
+            inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size)*length_scale #phi
             
             for i in range(batch_size):
                 # s1 = np.random.uniform(-.1, .1, input_length)
@@ -528,12 +528,12 @@ def integration_2d_task(T, dt, length_scale=.001, autonomous=False, random_angle
             targets[:,:,1] = np.cumsum(inputs2,axis=1)
 
         if random_angle_init=='equally_spaced':
-            t0 = np.linspace(-np.pi, np.pi, int(np.sqrt(batch_size)))
+            t0 = np.linspace(-threshold, threshold, int(np.sqrt(batch_size)))
             t1, t2 = np.meshgrid(t0, t0)
             targets[:,:,0] += t1.flatten()[:, np.newaxis]
             targets[:,:,1] += t2.flatten()[:, np.newaxis]
         else:
-            targets += np.random.uniform(-.01, .01, (batch_size,1,2))
+            targets += np.random.normal(0, threshold/4, (batch_size,1,2))
         
         if threshold>0:
             cumsum = targets[:,:,0]
