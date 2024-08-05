@@ -315,9 +315,11 @@ def test_lstm(model, task, batch_size=256):
         outputs, _, _ = model(inputs, targets);
         _, hs, cs = model.sequence(inputs, targets);
     targets = targets.detach().numpy()
-    outputs = outputs.detach().numpy(); hs_np = hs.detach().numpy(); cs_np = cs.detach().numpy(); hs=hs.squeeze(); cs=cs.squeeze(); trajectories = np.concatenate((hs_np,cs_np),axis=-1);
+    outputs = outputs.detach().numpy(); 
+    hs_np = hs.detach().numpy(); cs_np = cs.detach().numpy(); hs=hs.squeeze(); cs=cs.squeeze();
+    trajectories = np.concatenate((hs_np,cs_np),axis=-1);
     
-    return inputs, targets, outputs, trajectories
+    return inputs, targets, outputs, trajectories, hs, cs
 
 def nmse(targets, outputs, from_t=0, to_t=None):
     target_power = np.mean(targets[:,from_t:to_t,:]**2)
@@ -420,28 +422,33 @@ def lstm_jacobian(model, h0, c0):
     jacobian_matrix = jacobian.detach().numpy()
     return jacobian_matrix
 
-def eigenspectrum_invman(model, inv_man):
+def eigenspectrum_invman(model, hs, cs):
     hidden_size = model.hidden_size
-    max_eigv = []
-    max_eigv_2nd = []
-    for i,x in enumerate(inv_man):
-        h0 = x[:hidden_size]
-        c0 = x[hidden_size:]
+
+    eigenspectrum = []
+    for i,x in enumerate(hs):
+        h0 = hs[i].clone().detach().unsqueeze(0).expand(1, -1, -1).requires_grad_(True)
+        c0 = cs[i].clone().detach().unsqueeze(0).expand(1, -1, -1).requires_grad_(True)
+
+        # h0 = torch.tensor(h0, dtype=torch.float32, requires_grad=True).unsqueeze(0).expand(1, -1, -1)
+        # c0 = torch.tensor(c0, dtype=torch.float32, requires_grad=True).unsqueeze(0).expand(1, -1, -1)
+        
         J = lstm_jacobian(model,h0,c0)
         eigenvalues, eigenvectors = np.linalg.eig(J)
         eigenvalues = sorted(np.real(eigenvalues))
-        max_eigv.append(eigenvalues[-1])
-        max_eigv_2nd.append(eigenvalues[-2])
-        plt.scatter([i]*hidden_size, eigenvalues, s=1, c='k', marker='o', alpha=0.5); 
-    plt.plot(max_eigv, 'b', label='1st')
-    plt.plot(max_eigv_2nd, 'purple', label='2nd')
-    plt.xlabel(r'$\theta$')
-    plt.ylabel('eigenvalue spectrum')
-    plt.xticks([0,len(csx)], [0,r'$2\pi$'])
-    #plt.ylim([-1.5,0.2])
-    plt.legend(loc='lower right')
-    plt.hlines(0, 0,len(csx), 'r', linestyles='dotted');
-    plt.savefig(exp_path+f'/eigenvalue_spectrum_{exp_i}.pdf')
+
+        # plt.scatter([i]*hidden_size, eigenvalues, s=1, c='k', marker='o', alpha=0.5); 
+        eigenspectrum.append(eigenvalues)
+    return eigenspectrum
+    # plt.plot(max_eigv, 'b', label='1st')
+    # plt.plot(max_eigv_2nd, 'purple', label='2nd')
+    # plt.xlabel(r'$\theta$')
+    # plt.ylabel('eigenvalue spectrum')
+    # plt.xticks([0,len(csx)], [0,r'$2\pi$'])
+    # #plt.ylim([-1.5,0.2])
+    # plt.legend(loc='lower right')
+    # plt.hlines(0, 0,len(csx), 'r', linestyles='dotted');
+    # plt.savefig(exp_path+f'/eigenvalue_spectrum_{exp_i}.pdf')
     
 
 #################PLOT
@@ -489,12 +496,12 @@ def run_all():
             model.load_state_dict(torch.load(model_path))
             
             #run model on original task
-            inputs, targets, outputs, trajectories = test_lstm(model, task, batch_size=256)
+            inputs, targets, outputs, trajectories, hs, cs = test_lstm(model, task, batch_size=256)
             mse, mse_normalized, db_mse_normalized = nmse(targets, outputs)
             print(db_mse_normalized)
         
             #run model autonomously
-            inputs, targets, outputs, trajectories = test_lstm(model, long_task, batch_size=256)
+            inputs, targets, outputs, trajectories, hs, cs = test_lstm(model, long_task, batch_size=256)
             
             #angular error
             min_error, mean_error, max_error, eps_min_int, eps_mean_int, eps_plus_int = angluar_error(targets, outputs)
@@ -508,6 +515,9 @@ def run_all():
             #VF uniform norm
             thetas = np.arctan2(outputs[:,:,0], outputs[:,:,1]);
             vf_infty = vf_norm_from_outtraj(thetas[:,126], thetas[:,127])
+            
+            #eigenspec
+            eigenspectrum = eigenspectrum_invman(model, hs[:,127,:], cs[:,127,:])
         
             df = df.append({'path':model_path,
             'T': T, 'N': hidden_size, 'scale_factor': .5,  'dropout': 0., 'M': True, 'clip_gradient':1,
@@ -521,6 +531,7 @@ def run_all():
                         'inv_man':trajectories[:,127,:],
                          'inv_man_output':outputs[:,127,:],
                          'vf_infty':vf_infty,
+                         'eigenspectrum':eigenspectrum,
                           'min_error_0':min_error,
                            'mean_error_0':mean_error,
                             'max_error_0':max_error,
