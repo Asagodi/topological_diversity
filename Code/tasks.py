@@ -444,7 +444,7 @@ def contbernouilli_noisy_integration_task(T, input_length, sigma, final_loss):
 def addition_task(T):
     """
     Creates samples for the addition problem.
-    Each sample consists of a 2 x T input series and a target output.
+    Each sample consists of a T input series and a target output.
     """
     def task(batch_size):
         inputs = np.zeros((batch_size, T, 2))
@@ -471,7 +471,7 @@ def addition_task(T):
 def multiplication_task(T):
     """
     Creates samples for the multiplication problem.
-    Each sample consists of a 2 x T input series and a target output.
+    Each sample consists of a T input series and a target output.
     """
     def task(batch_size):
         inputs = np.zeros((batch_size, T, 2))
@@ -494,7 +494,101 @@ def multiplication_task(T):
     
     return task
 
+def integration_2d_task(T, dt, length_scale=100, autonomous=False, random_angle_init=True,threshold=0):
+    """
+    Creates samples for the 2D integration.
+    Each sample consists of a T input series and a target output.
+    """
+    input_length = int(T/dt)
+    def task(batch_size):
+        X = np.expand_dims(np.linspace(-length_scale, length_scale, input_length), 1)
+        sigma = exponentiated_quadratic(X, X)          
+        targets = np.zeros((batch_size, input_length, 2))
 
+        if autonomous:
+            inputs = np.zeros((batch_size, input_length, 2))
+        else:
+            inputs1 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #theta
+            inputs2 = np.random.multivariate_normal(mean=np.zeros(input_length), cov=sigma, size=batch_size) #phi
+            
+            for i in range(batch_size):
+                # s1 = np.random.uniform(-.1, .1, input_length)
+                # s2 = np.random.uniform(-.1, .1, input_length)
+                start_zeros = np.random.randint(10, 30)
+                inputs1[i,start_zeros:start_zeros+10] = 0
+                inputs2[i,start_zeros:start_zeros+10] = 0
+                
+                start_zeros = np.random.randint(50, 70)
+                inputs1[i,start_zeros:start_zeros+10] = 0
+                inputs2[i,start_zeros:start_zeros+10] = 0
+                
+        targets[:,:,0] = np.cumsum(inputs1,axis=1)
+        targets[:,:,1] = np.cumsum(inputs2,axis=1)
+            
+        inputs = np.stack((inputs1, inputs2), axis=-1)
+
+        if random_angle_init=='equally_spaced':
+            t0 = np.linspace(-np.pi, np.pi, int(np.sqrt(batch_size)))
+            t1, t2 = np.meshgrid(t0, t0)
+            targets[:,:,0] += t1.flatten()[:, np.newaxis]
+            targets[:,:,1] += t2.flatten()[:, np.newaxis]
+        else:
+            targets += np.random.uniform(-.1, .1, (batch_size,1,2))
+        
+        if threshold>0:
+            cumsum = targets[:,:,0]
+            inputs1[np.abs(cumsum) > threshold] = 0
+            cumsum[cumsum > threshold] = threshold
+            cumsum[cumsum < -threshold] = -threshold
+            
+            cumsum = targets[:,:,1]
+            inputs2[np.abs(cumsum) > threshold] = 0
+            cumsum[cumsum > threshold] = threshold
+            cumsum[cumsum < -threshold] = -threshold
+        
+        mask = np.ones((batch_size, input_length, 2))  
+        
+        return inputs, targets, mask
+    
+    return task
+
+def set_random_consecutive_zeros_no_overlap(arr, num_sequences=1, min_consecutive=10):
+    """
+    Sets random consecutive entries of at least `min_consecutive` elements of an array to zero for a specified number of sequences without overlap.
+    
+    Parameters:
+    arr (numpy.ndarray): The input array.
+    num_sequences (int): The number of sequences to set to zero.
+    min_consecutive (int): The minimum number of consecutive elements to set to zero.
+    
+    Returns:
+    numpy.ndarray: The modified array with consecutive elements set to zero.
+    list: The indices of the elements that were set to zero.
+    """
+    if len(arr) < min_consecutive * num_sequences:
+        raise ValueError("Array length must be at least as long as the total number of consecutive elements to set to zero.")
+    
+    zero_indices = set()
+    
+    for _ in range(num_sequences):
+        while True:
+            # Randomly select a starting index
+            start_idx = np.random.randint(0, len(arr) - min_consecutive + 1)
+            
+            # Randomly determine the length of the sequence to set to zero
+            seq_length = np.random.randint(min_consecutive, len(arr) - start_idx + 1)
+            
+            # Check if the selected range overlaps with any previously set ranges
+            if all(idx not in zero_indices for idx in range(start_idx, start_idx + seq_length)):
+                break
+        
+        # Set the consecutive elements to zero
+        arr[start_idx:start_idx + seq_length] = 0
+        
+        # Add the indices to the set of zero indices
+        zero_indices.update(range(start_idx, start_idx + seq_length))
+    
+    return arr, list(zero_indices)
 
 
 ####FLIPFLOP

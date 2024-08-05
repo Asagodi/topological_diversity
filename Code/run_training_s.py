@@ -28,7 +28,7 @@ import torch.optim as optim
 
 from models import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget, LSTM_noforget2, LSTM
 from network_initialization import qpta_rec_weights, bla_rec_weights
-from tasks import angularintegration_task, eyeblink_task, poisson_clicks_task, bernouilli_noisy_integration_task, contbernouilli_noisy_integration_task, center_out_reaching_task
+from tasks import angularintegration_task, double_angularintegration_task, sphere_integration_task, eyeblink_task, poisson_clicks_task, bernouilli_noisy_integration_task, contbernouilli_noisy_integration_task, center_out_reaching_task, addition_task, multiplication_task, integration_2d_task
 from qpta_initializers import _qpta_tanh_hh
 from plot_losses import get_params_exp
 
@@ -47,6 +47,14 @@ def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsit
         task =  angularintegration_task(T=T, dt=dt, sparsity=sparsity,
                                         last_mses=last_mses, random_angle_init=random_angle_init)
         
+    elif task_name == 'double_angular_integration':
+        task =  double_angularintegration_task(T=T, dt=dt, sparsity=sparsity,
+                                        last_mses=last_mses, random_angle_init=random_angle_init)
+        
+    elif task_name == 'sphere_integration':
+        task =  sphere_integration_task(T=T, dt=dt, sparsity=sparsity, random_angle_init=random_angle_init)
+        
+        
     elif task_name == 'poisson_clicks_task':
         task =  poisson_clicks_task(T=T, dt=dt, cue_output_durations=cue_output_durations) #[10,5,10,5,10]
 
@@ -60,6 +68,16 @@ def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsit
         task = center_out_reaching_task(T, dt, 
                                      cue_output_durations=cue_output_durations,
                                      time_until_cue_range=time_until_cue_range)
+        
+    elif task_name == 'addition':
+            task = addition_task(T)
+            
+    elif task_name == 'multiplication':
+        task = multiplication_task(T)
+        
+    elif task_name == 'integration_2d':
+        task = integration_2d_task(T, dt, threshold=1)
+        
     else:
         raise Exception("Task not known.")
         
@@ -209,11 +227,11 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
     if save:
         result.append(training_kwargs)
         res_dict['training_kwargs'] = training_kwargs
-        with open(experiment_folder + '/results_%s.pickle'%timestamp, 'wb') as handle:
-            pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        # with open(experiment_folder + '/results_%s.pickle'%timestamp, 'wb') as handle:
+        #     pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
-        # with open(experiment_folder + '/result_dict_%s.pickle'%timestamp, 'wb') as handle:
-        #     pickle.dump(res_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(experiment_folder + '/result_dict_%s.pickle'%timestamp, 'wb') as handle:
+            pickle.dump(res_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
     return result
     
@@ -395,39 +413,23 @@ if __name__ == "__main__":
     scheduler_step_sizes = [100, 300, 100, 100, 300]
     gammas = [1., 0.5, 0.75, 0.75, 1.]
     nrecs = [115, 200, 200, 200, 200]
-    
-    # size_experiment(main_exp_name='angular_integration', sub_exp_name='lambda')
-    
-    main_exp_name = 'center_out' #poisson_clicks_task' # angular_integration'
-    # main_exp_name = 'poisson_clicks' #poisson_clicks_task' # angular_integration'
+        
+    main_exp_name = 'integration_2d/' #poisson_clicks_task' # angular_integration'
 
-    sub_exp_name = 'variable_N100_T250_Tr100/tanh'    
-
-    model_i, model_name = 2, ''
-
-    training_kwargs['fix_seed'] = True
-    training_kwargs['save_inputs'] = False
-
-    # training_kwargs['clip_gradient'] = 
-    training_kwargs['task'] = 'center_out'
-    # training_kwargs['task'] = 'poisson_clicks_task'
-    training_kwargs['max_input'] = None
-    training_kwargs['input_length'] = 25
+    training_kwargs['task'] = 'integration_2d'
     training_kwargs['random_angle_init'] = True
-    training_kwargs['map_output_to_hidden'] = False
-    training_kwargs['T'] = 2500 # 12.8*2
-    training_kwargs['last_mses'] = False
-    training_kwargs['time_until_cue_range']=[50, 200]
-    training_kwargs['N_in'] = 3
-    training_kwargs['N_out'] = 2
-    training_kwargs['b_a'] = 5
+    training_kwargs['map_output_to_hidden'] = True
+    training_kwargs['T'] = 12.8 # 12.8*2
 
-    training_kwargs['nonlinearity'] = 'tanh'
+    training_kwargs['N_in'] = 2
+    training_kwargs['N_out'] = 2
+    training_kwargs['N_rec'] = 128
+
+    training_kwargs['nonlinearity'] = 'rect_tanh'
     training_kwargs['input_nonlinearity'] = 'recurrent'
     training_kwargs['readout_nonlinearity'] = 'id'
-    # training_kwargs['ml_rnn'] = False
     training_kwargs['sparsity'] = 'variable'
-    training_kwargs['noise_std'] =  0.001
+    training_kwargs['noise_std'] = 0.01
     training_kwargs['task_noise_sigma'] = 0 #1e-1
     training_kwargs['act_reg_lambda'] = 0 #1e-3    
     training_kwargs['h0_init'] = 'random'
@@ -435,7 +437,6 @@ if __name__ == "__main__":
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['N_rec'] = 100
     training_kwargs['batch_size'] = 64
     training_kwargs['weight_decay'] = 0.
     training_kwargs['drouput'] = .0
@@ -445,41 +446,37 @@ if __name__ == "__main__":
     training_kwargs['n_epochs'] = 5000
     training_kwargs['stop_patience'] = 5000
     training_kwargs['stop_min_delta'] = 0
-    training_kwargs['record_step'] = 10
-    training_kwargs['dt_rnn'] = .1
-    training_kwargs['dt_task'] = .1
+    training_kwargs['record_step'] = 5000
+
     training_kwargs['adam_beta1'] = 0.9
     training_kwargs['adam_beta2'] = 0.999
-    training_kwargs['network_type'] = network_types[model_i]
+    training_kwargs['network_type'] = network_types[2]
     training_kwargs['initialization_type'] = 'gain' #initialization_type_list[model_i]
     training_kwargs['loss_function'] = 'mse_loss_masked' #loss_functions[model_i]
-    training_kwargs['rnn_init_gain'] = 1. # g_list[model_i]        ##########
+    training_kwargs['rnn_init_gain'] = 1.5 # g_list[model_i]        ##########
     training_kwargs['scheduler_step_size'] = 500 # scheduler_step_sizes[model_i]
     training_kwargs['scheduler_gamma'] = .75 #gammas[model_i]
+    
+    # if training_kwargs['task'] == 'integration_2d':
+    #     T = training_kwargs['T']
+    # else:
+    T = int(training_kwargs['T']/training_kwargs['dt_task'])
+    N_rec = training_kwargs['N_rec']
+    nonlin = training_kwargs['nonlinearity'].replace('_', '')
+    sub_exp_name = f'N{N_rec}_T{T}_noisy/{nonlin}'
+    
+    training_kwargs['input_length'] = 25
+    training_kwargs['fix_seed'] = True
+    training_kwargs['save_inputs'] = False
+    training_kwargs['last_mses'] = False
+    training_kwargs['time_until_cue_range']=[50, 200]
+    training_kwargs['max_input'] = None
+    training_kwargs['dt_rnn'] = .1
+    training_kwargs['dt_task'] = .1
 
     training_kwargs['network_folder'] = parent_dir + '/experiments/center_out/variable_N200_T2000/tanh'
     training_kwargs['trained_exp_i'] = 0
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
-                                                          model_name=model_name, trials=7, training_kwargs=training_kwargs)
+                                                          model_name="", trials=10, training_kwargs=training_kwargs)
 
-    
-    # param_grid = {'initialization_type': ['qpta'],
-    #               'g': [.5],
-    #             'T': [25.6],
-    #               'dt_rnn': [.1],
-    #               'g_in': [1e-3, 1e-2],
-    #               'learning_rate':[1e-2],
-    #               'batch_size': [128],
-    #               'optimizer': ['adam'],
-    #               'n_epochs': [1000],
-    #               'scheduler_step_size':[1000],
-    #               'adam_beta1': [.8], #[.7, .8, .9, .95],
-    #               'adam_beta2': [0.99], # [.9, .99, .999, .9999],
-    #               'scheduler_gamma':[1.],
-    #               'scheduler': ['steplr'],
-    #               'clip_gradient': [None]}
-    # df, df_final, min_final_loss, min_final_meanloss = grid_search(parameter_file_name, param_grid=param_grid,
-    #                                                                 experiment_folder='angular_integration/gin256_lr1e-2',
-    #                                                                 sub_exp_name='qpta',
-    #                                                                 parameter_path=parameter_path, trials=3)
