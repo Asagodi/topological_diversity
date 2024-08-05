@@ -31,6 +31,31 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 def makedirs(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
+        
+        
+class NoisyLSTM(nn.LSTM):
+    def __init__(self, *args, noise_std=0.1, **kwargs):
+        super(NoisyLSTM, self).__init__(*args, **kwargs)
+        self.noise_std = noise_std
+    
+    def forward(self, input, hx=None):
+        if hx is None:
+            num_layers = self.num_layers * 2 if self.bidirectional else self.num_layers
+            h_0 = torch.zeros(num_layers, input.size(1), self.hidden_size, device=input.device, dtype=input.dtype)
+            c_0 = torch.zeros(num_layers, input.size(1), self.hidden_size, device=input.device, dtype=input.dtype)
+            hx = (h_0, c_0)
+        
+        h_0, c_0 = hx
+        h_0 = h_0 + torch.randn_like(h_0) * self.noise_std
+        c_0 = c_0 + torch.randn_like(c_0) * self.noise_std
+
+        output, (h_n, c_n) = super(NoisyLSTM, self).forward(input, (h_0, c_0))
+
+        # Inject noise at each time step
+        h_n = h_n + torch.randn_like(h_n) * self.noise_std
+        c_n = c_n + torch.randn_like(c_n) * self.noise_std
+
+        return output, (h_n, c_n)
 
 # Define the LSTM model
 class LSTMModel(nn.Module):
@@ -181,7 +206,7 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
     
     model.to(device)
     criterion.to(device)
-
+    losses = []
     for epoch in range(num_epochs):
         inputs, targets, mask = task(batch_size)
         inputs = torch.tensor(inputs, dtype=torch.float32).to(device)
@@ -227,9 +252,14 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
         if clip_norm>0.:
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=clip_norm)
         optimizer.step()
+        
+        losses.append(loss.item())  # Save the loss value
 
         if (epoch + 1) % 10 == 0:
             print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}')
+        
+    losses_array = np.array(losses)
+    return losses_array
             
 def init_weights(m):
     if isinstance(m, nn.Linear) or isinstance(m, nn.LSTM):
@@ -243,11 +273,14 @@ def train_n(n, task, input_size = 1, hidden_size = 64,  output_size = 2,
             num_epochs=5000, batch_size=64, learning_rate=0.001, clip_norm=1, dropout=0.,
             exp_path='C:/Users/abel_/Documents/Lab/projects/topological_diversity/experiments/angular_integration_old/N128_T128_noisy/lstm/'):
     makedirs(exp_path)
-    for i in range(n):
+    i=0
+    while i<n:
         model = LSTMModel(input_size, hidden_size, output_size, dropout=dropout)
-        train_model(model, task, num_epochs=num_epochs, batch_size=batch_size, learning_rate=learning_rate, clip_norm=clip_norm);
+        losses = train_model(model, task, num_epochs=num_epochs, batch_size=batch_size, learning_rate=learning_rate, clip_norm=clip_norm);
+        if not losses:
+            continue
         torch.save(model.state_dict(), exp_path+f'/model_{i}.pth')
-
+        i+=1
 
 def grid_search(task, input_size = 1, hidden_size = 64, output_size = 2,
             num_epochs=5000, batch_size=64, learning_rate=0.001, dropout=0.,
