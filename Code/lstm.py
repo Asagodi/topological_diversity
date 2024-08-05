@@ -80,6 +80,16 @@ class LSTMModel(nn.Module):
         out = self.fc(out)
         return out, hn, cn
     
+    def forward_nooth(self, x, h_init_torch, c_init_torch):
+        
+        h0 = h_init_torch.unsqueeze(0).expand(self.num_layers, -1, -1)  # (num_layers, batch_size, hidden_size)
+        c0 = c_init_torch.unsqueeze(0).expand(self.num_layers, -1, -1)  # (num_layers, batch_size, hidden_size)
+
+        out, (hn, cn) = self.lstm(x, (h0, c0))
+        out = self.dropout(out)
+        out = self.fc(out)
+        return out, hn, cn
+    
     def sequence(self, x, target):
             batch_size = x.shape[0]
             
@@ -384,6 +394,55 @@ def vf_norm_from_outtraj(angle_t, angle_tplus1):
     return np.max(np.linalg.norm(angle_tplus1-angle_t,axis=-1))
 
 
+def lstm_jacobian(model, h0, c0):
+    hidden_size = model.hidden_size
+    
+    # Input tensor at the origin
+    x = torch.zeros(1, 1, 1)
+    
+    # Forward pass through the LSTM
+    out, (hn, cn) = model.lstm(x, (h0, c0))
+    
+    # Jointly concatenate hidden and cell states
+    joint_state = torch.cat((hn.view(-1), cn.view(-1)))
+    
+    # Compute the Jacobian matrix
+    jacobian = torch.zeros(2*hidden_size, 2*hidden_size)
+    
+    for i in range(2*hidden_size):
+        model.zero_grad()
+        joint_state[i].backward(retain_graph=True)
+        jacobian[i] = torch.cat((h0.grad.view(-1), c0.grad.view(-1)))
+        h0.grad.zero_()
+        c0.grad.zero_()
+    
+    # Return the Jacobian matrix
+    jacobian_matrix = jacobian.detach().numpy()
+    return jacobian_matrix
+
+def eigenspectrum_invman(model, inv_man):
+    hidden_size = model.hidden_size
+    max_eigv = []
+    max_eigv_2nd = []
+    for i,x in enumerate(inv_man):
+        h0 = x[:hidden_size]
+        c0 = x[hidden_size:]
+        J = lstm_jacobian(model,h0,c0)
+        eigenvalues, eigenvectors = np.linalg.eig(J)
+        eigenvalues = sorted(np.real(eigenvalues))
+        max_eigv.append(eigenvalues[-1])
+        max_eigv_2nd.append(eigenvalues[-2])
+        plt.scatter([i]*hidden_size, eigenvalues, s=1, c='k', marker='o', alpha=0.5); 
+    plt.plot(max_eigv, 'b', label='1st')
+    plt.plot(max_eigv_2nd, 'purple', label='2nd')
+    plt.xlabel(r'$\theta$')
+    plt.ylabel('eigenvalue spectrum')
+    plt.xticks([0,len(csx)], [0,r'$2\pi$'])
+    #plt.ylim([-1.5,0.2])
+    plt.legend(loc='lower right')
+    plt.hlines(0, 0,len(csx), 'r', linestyles='dotted');
+    plt.savefig(exp_path+f'/eigenvalue_spectrum_{exp_i}.pdf')
+    
 
 #################PLOT
 def plot_outputs_fps(outputs, fxd_pnt_output, stabilities,
@@ -459,7 +518,8 @@ def run_all():
                         'stabilities':stabilities,
                         'boa':fp_boa,
                         'mean_fp_dist':mean_fp_dist,
-                         'inv_man':outputs[:,127,:],
+                        'inv_man':trajectories[:,127,:],
+                         'inv_man_output':outputs[:,127,:],
                          'vf_infty':vf_infty,
                           'min_error_0':min_error,
                            'mean_error_0':mean_error,
