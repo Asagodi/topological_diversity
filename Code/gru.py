@@ -193,16 +193,22 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
         epoch+=1
         
     losses_array = np.array(losses)
-    return losses
+    return losses_array
 
 def train_n(n, task, input_size=1, hidden_size=64, output_size=2,
             num_epochs=5000, batch_size=64, learning_rate=0.001, clip_norm=1, dropout=0.,
             exp_path='C:/Users/abel_/Documents/Lab/projects/topological_diversity/experiments/angular_integration_old/N128_T128_noisy/gru/'):
     makedirs(exp_path)
-    for i in range(n):
-        model = GRUModel(input_size, hidden_size, output_size, dropout=dropout)
-        losses = train_model(model, task, num_epochs=num_epochs, batch_size=batch_size, learning_rate=learning_rate, clip_norm=clip_norm)
-        torch.save(model.state_dict(), exp_path + f'/model_{i}.pth')
+    i=0
+    while i<n:
+        model = GRUModel(input_size, hidden_size, output_size, dropout=0.5, init_weight_radius_scaling=0.25)
+        losses = train_model(model, task, num_epochs=5000, batch_size=batch_size, output_noise_level=0.01,
+                             weight_decay=0.0001, learning_rate=0.01, clip_norm=100);
+        if not losses:
+            continue
+        torch.save(model.state_dict(), exp_path+f'/model_{i}.pth')
+        np.save(exp_path+f'/losses_{i}.npy', losses)
+        i+=1
         
         
 # T = 12.8
