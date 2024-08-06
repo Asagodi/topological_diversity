@@ -2,13 +2,14 @@
 > 1. The experiments and associated analyses focus solely on networks that approximate 1D ring attractors.
 > This is quite simplistic, and at least for the numerical expreiments, the authors could consider tasks like navigation where a planar 2D attractor is approximated by the networks.
 
-We appreciate the remark, and shall include additional tasks where the approximate continuous attractor is of higher dimension.
+We appreciate the remark, and have included an additional task where the approximate continuous attractor is of higher dimension, namely a double angular velocity integration task.
+The networks develop corresponding approximate continuous attractors that have the same structure as the task requires (in this case a torus).
+
 That being said, we would like to reiterate that the primary contribution is theoretical and the numerical experiments are meant to illustrate the theory.
 Regarding navigation tasks, two points bear mentioning.
 1. For planar attractors are diffeomorphic to $R^2$, note that they do not conform to the assumptions on normally hyperbolic invariant manifolds, since $R^2$ isn't compact.
 There are suitable generalizations of this theory to noncompact manifolds [1], but we do not pursue them since they require more refined tools, which would only obscure the point that we are trying to make.
 Tangentially, we would also like to point out that we assume that neural dynamics are naturally bounded (e.g. by energy constraints) and hence sufficiently well described by compact invariant manifolds.
-1. Approximations of planar attractors that are diffeomorphic to $[0,1]\times[0,1]$ are also excluded since they’re an example of a **manifold with corners**.
 
 In the revised version of the manuscript, we will include the above limitations and provide reference to [2].
 
@@ -20,7 +21,6 @@ In the revised version of the manuscript, we will include the above limitations 
 We thank the reviewer for pointing out the reference; we applied DSA to our numerical results.
 Our preliminary observations are that DSA reflects the fact that the geometry of the invariant manifold is preserved, but it cannot detect the emergence of fixed-points and saddles on the pertubed manifold.
 The DSA values clustered around two points regardless of the number of fixed points.
-<!-- How to discuss DSA giving near zero ds score for networks trained on different tasks?-->
 This appears to be consistent with the results reported in the referenced paper, c.f. Figure 4 shows a gradual increase in DSA as $\alpha \to 1$ despite having a bifurcation at $\alpha = 1$.
 
 Lastly, we would like to note that the analysis using DSA cannot be trivially automated. As pointed out by the authors of DSA:
@@ -68,7 +68,7 @@ For the difficulties of using DSA, see above.
 > At what level of performance are all trained networks compared? Are they all trained until the same loss value and how close is this MSE to 0?
 
 All networks are trained for 5000 gradient steps.
-We exclude those networks from the analysis that are performing less than -20dB in terms of normalized mean squared error.
+We exclude those networks from the analysis that are performing less than -20dB in terms of normalized mean squared error tested on a  version of the task that is 16 times as long as the task on which the networks were trained.
 
 
 
