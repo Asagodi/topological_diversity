@@ -45,18 +45,12 @@ We then show that the persistence of an invariant manifold can lead to fruitful 
 
 Obtaining $h,\,g$ is problem specific, and cannot be given in closed for general invariant manifolds.
 Let us state the essence of Theorem 1 differently: **if** $f$ has a normally hyperbolic invariant manifold, then there exist vector fields $h,\,g$.
-@Abel, comments?
-<!-- 1) Under what conditions the perturbation function p(x) induces a bifurcation?
-
-2) What types of (generic) bifurcations can arise from the perturbation p(x)? -->
-
-<!-- 3) the functions h and g (how can one obtain/choose the functions h and g such that the two systems defined by Eq. (2) and Eqs. (3) & (4) are equivalent?) -->
 
 
-<!-- 3)  h(x,y,\epsilon) -->
+
+
 
 > 1. What does **sufficiently smooth** mean in Theorem 1? As mentioned by the authors after this theorem, it applies to continuous piecewise linear systems. However, it cannot be applied to all piecewise smooth (PWS) systems , such as Filippov systems.
-
 >In particular, for these systems, bifurcations involving non-hyperbolic fixed points can be analyzed using similar slow (center) manifold approaches, but only for part of the phase space.
 
 Please note, that a center manifold is not necessarily unique, and generally is local **both** $\mathcal{X} \times T$, i.e. in phase space and time.
@@ -65,10 +59,13 @@ Stability, or invariance under the flow therefore generally cannot be analyzed u
 >However, discontinuity-induced bifurcations cannot be examined in the same way, as there is no slow manifold in these cases.
 
 We will make more clear in the text that discontinuous systems are not being considered.
+Because all both theoretical models and activation functions for RNNs are at least continuous and piecewise smooth, we believe that this limitation still includes an essential part of relevant dynamical systems and that therefore our theory is very general.
 
-Because all typical RNNs are at least piecewise smooth, we believe that this limitation still includes a really big part of relevant dynamical systems and is therefore a very general theoretical result.
+Furthermore, the smoothness of the system determines how close and how smoothly the invariant manifold will change w.r.t. perturbation parameter.
+If there is no assumption about even continuity, then the system will not 
 
-Further, the smoothness of the system determines how close and how smoothly the invariant manifold will change w.r.t. perturbation parameter.
+Finally, we rely on the minimal requirement of continuity of the vector field to be able to
+
 
 >1. It is unclear under what conditions RNN dynamics can be decomposed into slow-fast form to which we can apply Theorem 1.
 
@@ -76,7 +73,7 @@ Theorem 1 holds for all RNNs that have a normally hyperbolic continuous attracto
 All continuous attractors are normally hyperbolic, the zero flow leaves an infinite gap.
 <!-- (Can you say something on whether most CAs are normally hyperbolic? I have that intuition but do not know if it is fair) -->
 So they can all be decomposed
-We do not have a general expression for the decomposition though.
+We do not have a general expression for the decomposition, but show that it necessarily needs to exist.
 
 > 1. In Sect. 4.1, line 213, it is vague how assuming an Euler integration with unit time step, the discrete-time RNN of (6) transforms to eq. (7). Is this transformation independent of the function f and matrix W in eq. (6)?
 
