@@ -66,9 +66,15 @@ However, the theory also has implications robustness of theoretical models more 
 We have now extended a serparate **Limitations** subsection in the paper.
 
 
+Although, we only explicitly describe the topology and dimensionality of the identified invariant manifolds for a representative set, the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
+This separation of timescale necessarily exists for well-trained networks, however, the analysis is not guaranteed to work for systems without a fast-slow decomposition.
+
+To identify solutions with a fast-slow decomposition only rely on the generalization property of the network (in terms of the normalized mean square error for ten times longer trials).
+The possible solutions that the networks can find are restricted by having a linear output mapping.
+For a nonlinear output mapping, a possible solution for analog memory is the quasi-periodic toroidal attractor, but this is not possible for a linear output mapping.
+Our analysis methods can identify these limit sets, but we do not have a simple way to parametrize the invariant manifold.
 
 
 
 
 
-# DSA
