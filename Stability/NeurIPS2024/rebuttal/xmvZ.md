@@ -46,23 +46,22 @@ Any perturbations that are at most an epsilon distance from the original ring at
 Instead of specifying the topology of the dynamics within the slow manifold, we provide a geometric statement. We demonstrate that the persistence of an invariant manifold can lead to fruitful analyses, even without explicit knowledge of the bifurcation. This approach allows us to derive generalization bounds and other insights.
 
 
-
-
-
 >Likewise, the functions h and g are also not clear enough. It is unclear how one can obtain/choose the functions h and g such that the two systems defined by Eq. (2) and Eqs. (3) & (4) are equivalent.
 
-Obtaining $h,\,g$ is problem specific, and cannot be given in closed for general invariant manifolds.
-Let us state the essence of Theorem 1 differently: **if** $f$ has a normally hyperbolic invariant manifold, then there exist vector fields $h,\,g$.
+Obtaining the functions \( h \) and \( g \) is problem-specific and cannot be provided in a closed form for general invariant manifolds. 
+The essence of Theorem 1 can be restated as follows: **if** the function \( f \) has a normally hyperbolic invariant manifold, **then** there exist vector fields \( h \) and \( g \) that satisfy the conditions for equivalence between the systems defined by Eq. (2) and Eqs. (3) & (4).
+This means that the existence of such functions \( h \) and \( g \) is guaranteed under the condition of having a normally hyperbolic invariant manifold, but their explicit forms depend on the specific problem at hand.
 
 
 
 
-
+%%%%needs work
 > 1. What does **sufficiently smooth** mean in Theorem 1? As mentioned by the authors after this theorem, it applies to continuous piecewise linear systems. However, it cannot be applied to all piecewise smooth (PWS) systems , such as Filippov systems.
 >In particular, for these systems, bifurcations involving non-hyperbolic fixed points can be analyzed using similar slow (center) manifold approaches, but only for part of the phase space.
 
 Please note, that a center manifold is not necessarily unique, and generally is local **both** $\mathcal{X} \times T$, i.e. in phase space and time.
 Stability, or invariance under the flow therefore generally cannot be analyzed using these methods.
+
 
 >However, discontinuity-induced bifurcations cannot be examined in the same way, as there is no slow manifold in these cases.
 
@@ -73,15 +72,16 @@ Furthermore, the smoothness of the system determines how close and how smoothly 
 If there is no assumption about even continuity, then the system will not 
 
 Finally, we rely on the minimal requirement of continuity of the vector field to be able to
+%%%
 
 
 >1. It is unclear under what conditions RNN dynamics can be decomposed into slow-fast form to which we can apply Theorem 1.
 
-Theorem 1 holds for all RNNs that have a normally hyperbolic continuous attractor.
-All continuous attractors are normally hyperbolic, the zero flow leaves an infinite gap.
-<!-- (Can you say something on whether most CAs are normally hyperbolic? I have that intuition but do not know if it is fair) -->
-So they can all be decomposed
-We do not have a general expression for the decomposition, but show that it necessarily needs to exist.
+Theorem 1 holds for all RNNs that have a normally hyperbolic continuous attractor. 
+For example, RNNs with a ReLU activation functions can only have normally hyperbolic continuous attractors. This is because at any point the vector field that they define either is zero or has a linear terms (ReLU RNNs are piecewise linear systems). 
+The examples of continuous attractors and continuous attractor approximations that we discuss in the paper are all normally hyperbolic.
+In fact, there is a huge benefit from having normal hyperbolicity as it can counteract state noise.
+This means that for any dynamical system with a normally hyperbolic continuous attractor, the dynamics can be decomposed into slow and fast components, allowing the application of Theorem 1.
 
 > 1. In Sect. 4.1, line 213, it is vague how assuming an Euler integration with unit time step, the discrete-time RNN of (6) transforms to eq. (7). Is this transformation independent of the function f and matrix W in eq. (6)?
 
