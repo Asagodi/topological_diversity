@@ -1,6 +1,7 @@
 Thank you very much for your thoughtful and constructive review of our manuscript. We are grateful for your positive feedback, particularly your recognition of the interesting main idea of our work and its potential significance. We are pleased that you found the connection to Fenichel’s theorem to be noteworthy and that the visualizations in Figure 1 helped convey our overall message. Your appreciation of these aspects is greatly encouraging.
 
 Now, we would like to address the specific weaknesses and questions that were raised.
+
 ### Weaknesses:
 > their theoretical investigation and results are limited to a few very simple systems, low-dimensional systems [...] 
 
@@ -8,7 +9,7 @@ We respectfully disagree with the stated limitation-- the role of the analysis, 
 Because of this, we focus on low-dimensional systems which are easier to visualize and arguably are more helpful in developing intuition.
 In the updated manuscript, we will emphasize that the theory holds under broad, practically relevant conditions.
 1. Specifically, we will add statements that assure that our theory is applicable regardless of the dimensionality of the system and the dimensionality of the invariant manifold.
-1. Furthermore, we will revise Theorem 1, to show that normal hyperbolicity is both **sufficient and necessary** for invariant manifolds to persist. See [1]
+1. Furthermore, we will revise Theorem 1, to show that normal hyperbolicity is both **sufficient and necessary** for invariant manifolds to persist, see [1].
 
 Please also see the shared reply to all reviewers, where we discuss the scope and the limitations of Theorem 1.
 
@@ -30,9 +31,6 @@ For a more comprehensive discussion on this topic, we refer the reviewer to the 
 1. Robinson, 1999
 1. Abraham and Marsden, 2008
 These references provide detailed insights into the conditions under which perturbations lead to bifurcations, supporting our assertion.
-
-<!-- 1) For most CANs p(x) almost always induces a bifurcation. (Is it true that the only way to modify the dynamics such that there is not a bifurcation is via changing the level of attractiveness of the the continuous manifold?. In this sense “almost always” = measure zero of parameter space (?) For exact determination maybe Piotr’s ideas) -->
-<!-- Piotr: I took a stab at writing it but I get too annoyed to phrase it well. The almost always is a bit different though--- for parametric systems it happens on a dense set of parameters. For the vector fields, I'm guessing a similar statement can be made but I can't recall the precise phrasing of it. -->
 
 
 >2) What types of (generic) bifurcations can arise from the perturbation p(x)?
