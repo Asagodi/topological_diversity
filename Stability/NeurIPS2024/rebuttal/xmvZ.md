@@ -21,7 +21,6 @@ We appreciate the reviewer's insightful comment regarding the use of specific ac
 Our findings indicate that the solutions identified by the trained LSTM and GRU models exhibit similar patterns to those observed in Vanilla RNNs. Specifically, we observed the presence of a normally hyperbolic attractive invariant ring characterized by slow dynamics that eventually converge to fixed points. This consistency across different RNN architectures reinforces the robustness of our initial observations and provides further validation of our theoretical framework.
 
 
-> 1. In Sect. 3.1, the perturbation p(x) is not clear enough. Specifically, it is unclear:
 > 1. Under what conditions the perturbation function p(x) induces a bifurcation?
 
 Continuous attractors satisfy the first-order conditions for a local bifurcation; that is, they are equilibria, and their Jacobian linearization possesses a non-trivial subspace with eigenvalues having zero real parts. Consequently, any generic perturbation ($p(x)$) will induce a bifurcation in the system.
@@ -35,19 +34,12 @@ These references provide detailed insights into the conditions under which pertu
 
 >2) What types of (generic) bifurcations can arise from the perturbation p(x)?
 
-We are actively working to characterize codimension-1 bifurcations for a ring attractor and believe that a simple, polynomial normal form can be derived for this purpose.
-
-However, the general problem remains an open one. For a continuous attractor of dimension $n$, the bifurcation is potentially of codimension $n$.
-The characterization of bifurcations with codimension $n > 2$ is an open problem.
-Our approach aims to balance the specificity of a detailed bifurcation analysis with generality.
-
-We characterize exhaustively possible perturbations for a ring attractor.
-Any perturbations that are at most an epsilon distance from the original ring attractor (in $C^1$ topology) will either result in no bifurcation, a limit cycle, or a slow manifold with fixed points.
-
-Instead of specifying the topology of the dynamics within the slow manifold, we provide a geometric statement. We demonstrate that the persistence of an invariant manifold can lead to fruitful analyses, even without explicit knowledge of the bifurcation. This approach allows us to derive generalization bounds and other insights.
+We are working to characterize codimension-1 bifurcations for a ring attractor and believe a simple polynomial normal form can be derived. 
+Characterizing bifurcations with codimension $n > 2$ is still an open problem. 
+We exhaustively characterize possible perturbations for a ring attractor. Perturbations in the neighbourhood of a ring attractor (in $C^1$ topology) will result in no bifurcation, a limit cycle, or a ring slow manifold with fixed points. We propose that in many cases the specific bifurcation in fact is irrelevant, instead, what is imporant is that the continuous attractor persists as an invariant manifold.
 
 
->Likewise, the functions h and g are also not clear enough. It is unclear how one can obtain/choose the functions h and g such that the two systems defined by Eq. (2) and Eqs. (3) & (4) are equivalent.
+>Likewise, the functions h and g are also not clear enough. [...]
 
 Obtaining the functions \( h \) and \( g \) is problem-specific and cannot be provided in a closed form for general invariant manifolds.
 The essence of Theorem 1 can be restated as follows: **if** the function \( f \) has a normally hyperbolic invariant manifold, **then** there exist vector fields \( h \) and \( g \) that satisfy the conditions for equivalence between the systems defined by Eq. (2) and Eqs. (3) & (4).
@@ -55,10 +47,7 @@ This means that the existence of such functions \( h \) and \( g \) is guarantee
 
 
 
-
-%%%%needs work
-> 1. What does **sufficiently smooth** mean in Theorem 1? As mentioned by the authors after this theorem, it applies to continuous piecewise linear systems. However, it cannot be applied to all piecewise smooth (PWS) systems , such as Filippov systems.
->In particular, for these systems, bifurcations involving non-hyperbolic fixed points can be analyzed using similar slow (center) manifold approaches, but only for part of the phase space.
+> 1. What does **sufficiently smooth** mean in Theorem 1? [...]
 
 Please note, that a center manifold is not necessarily unique, and generally is local in **both** space and time ($J \subset \mathcal{X} \times T$).
 Stability, or invariance under the flow therefore generally cannot be analyzed using these methods.
@@ -66,14 +55,8 @@ Stability, or invariance under the flow therefore generally cannot be analyzed u
 
 >However, discontinuity-induced bifurcations cannot be examined in the same way, as there is no slow manifold in these cases.
 
-We will make more clear in the text that discontinuous systems are not being considered.
-Because all both theoretical models and activation functions for RNNs are at least continuous and piecewise smooth, we believe that this limitation still includes an essential part of relevant dynamical systems and that therefore our theory is very general.
+We will clarify in the text that discontinuous systems are not considered in our theory. Since all theoretical models and activation functions for RNNs are at least continuous and piecewise smooth, we believe this limitation still encompasses a significant portion of dynamical systems relevant for theoretical neuroscience, making our theory broadly applicable.
 
-Furthermore, the smoothness of the system determines how close and how smoothly the invariant manifold will change w.r.t. perturbation parameter.
-If there is no assumption about even continuity, then the system will not
-
-Finally, we rely on the minimal requirement of continuity of the vector field to be able to
-%%%
 
 
 >1. It is unclear under what conditions RNN dynamics can be decomposed into slow-fast form to which we can apply Theorem 1.
@@ -93,7 +76,7 @@ However, it is important to note that the discretization process can result in s
 
 
 
-> 1. In S4, the sentence "All such perturbations leave at least a part of the continuous attractor intact and preserve the invariant manifold, i.e. the parts where the fixed points disappear a slow flow appears." needs more clarification. Could you explain the mathematical reasoning behind this assertion?
+> 1. In S4, the sentence "All such [...]
 
 We will reformulate it as "all such perturbations leave the geometry of the continuous attractor intact as an attractive invariant slow manifold, i.e. the parts where the fixed points disappear a slow flow appears."
 The preservation of the invariant manifold under perturbations is a direct consequence of the normal hyperbolicity condition described in Theorem 1.
@@ -113,16 +96,13 @@ In regions where fixed points disappear due to the perturbation, the dynamics wi
 > Could you elaborate on how different threshold settings impact the dynamics of network states and the emergence of persistent manifolds?
 
 It is unclear to which threshold the reviewer is referring. However, we can clarify the general impact of thresholds on the dynamics of network states and the emergence of persistent manifolds.
-
 We demonstrate that all systems with a sufficiently good generalization property (in our case, defined as networks with NMSE lower than -20 dB) must have a normally hyperbolic invariant manifold that approximates a continuous attractor. According to the theory, these manifolds are necessarily persistent.
-
 The persistence of these manifolds is a direct consequence of their normal hyperbolicity, which ensures that small perturbations do not destroy the manifold but may alter its structure. This property guarantees that the overall geometry of the continuous attractor remains intact, maintaining the stability and dynamics of the network states.
 
 
 **Limitations:**
 
-> The authors have discussed most limitations of the analysis in the discussion section, but I suggest making them more explicit. This could be done by either incorporating a dedicated (sub)section on limitations or adding a bold title "**Limitations**" at the beginning of the relevant paragraph within the discussion section.
-> As mentioned above, another important limitation is that it is difficult to determine how general their theoretical discussion is and whether it can be applied to investigate and obtain results for more general and high-dimensional cases.
+> The authors have discussed most limitations [...]
 
 We appreciate the reviewer's suggestion to make the limitations of our analysis more explicit. In response, we have included a dedicated Limitations subsection in the discussion section of the manuscript. Please refer to the shared rebuttal for further details.
 
