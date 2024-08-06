@@ -126,7 +126,8 @@ This section seemed... strange, in my eyes the paper would be improved by removi
 Section 5.2 (which we moved to a it's own section now) is showing how the reverse of the Persistence Theorem looks like for continuous attractors.
 The Persistence Theorem says that systems in the neighbourhood of a (normally hyperbolic) continous attractor will behave similarily to it.
 This section is showing the reverse: under reasonable assumptions, if a system behaves (in output space) like a continuous attractor, its recurrent dynamics will be near one.
-
+We have now added a more general theoretical result that proves that the invariant slow manifold might have some additional dynamics (which is not slow) as long as the flow of the system is in the kernel of the output mapping 
+(which covers the torus solution type approximation in Fig.4D).
 
 
 > Smaller things:
