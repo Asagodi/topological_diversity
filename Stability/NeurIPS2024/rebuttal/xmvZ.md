@@ -1,15 +1,19 @@
+Thank you very much for your thoughtful and constructive review of our manuscript. We are grateful for your positive feedback, particularly your recognition of the interesting main idea of our work and its potential significance. We are pleased that you found the connection to Fenichel’s theorem to be noteworthy and that the visualizations in Figure 1 helped convey our overall message. Your appreciation of these aspects is greatly encouraging.
+
+Now, we would like to address the specific weaknesses and questions that were raised.
 ### Weaknesses:
 > 1. They discussed some interesting theoretical techniques (e.g., Theorem 1, Proposition 1) in their study.
 >However, their theoretical investigation and results are limited to a few very simple systems, low-dimensional systems either in Section S4 or low-dimensional RNNs with specific activation functions and restrictive settings, i.e., specific parameter values (e.g., equations (1) and (10)).
 > The bifurcation analysis of the line attractors and fast-slow decomposition in Section S2 are also studied for very simple systems. Therefore, it is difficult to determine how general their theoretical discussion is and whether it can be applied to investigate and obtain results for more general and high-dimensional cases.
 
-We respectfully disagree-- the role of the analysis, and numerical experiments is not to prove the generality of the theory but to illustrate it.
-Because of that, we focus on low-dimensional systems which are easier to visualize and arguably are more helpful in developing intuition.
-In the updated manuscript, we will emphasize that the theory holds, regardless of the dimensionality of the system and the dimensionality of the invariant manifold.
-Furthermore, we will include a revised statement showing that normal hyperbolicity is both sufficient and necessary for invariant manifolds to persist. See [1]
+We respectfully disagree with the stated limitation-- the role of the analysis, and numerical experiments is not to prove the generality of the theory but to illustrate it.
+Because of this, we focus on low-dimensional systems which are easier to visualize and arguably are more helpful in developing intuition.
+In the updated manuscript, we will emphasize that the theory holds under broad, practically relevant conditions.
+1. Specifically, we will add statements that assure that our theory is applicable regardless of the dimensionality of the system and the dimensionality of the invariant manifold.
+1. Furthermore, we will revise Theorem 1, to show that normal hyperbolicity is both **sufficient and necessary** for invariant manifolds to persist. See [1]
 
-We believe that the above modifications will convey the very general applicability of the results we're presenting.
-Given the remarks made by the other reviewers, we elaborate on the generality and limitations of Theorem 1.
+<!-- We believe that the above modifications will convey the very general applicability of the results we're presenting. -->
+Please also see the shared reply to all reviewers, where we discuss the scope and limitations of Theorem 1.
 
 > RNNs with specific activation functions and restrictive settings,
 
@@ -19,7 +23,7 @@ Our findings indicate that the solutions identified by the trained LSTM and GRU 
 
 
 > 1. In Sect. 3.1, the perturbation p(x) is not clear enough. Specifically, it is unclear:
->1) Under what conditions the perturbation function p(x) induces a bifurcation?
+> 1. Under what conditions the perturbation function p(x) induces a bifurcation?
 
 Continuous attractors satisfy the first-order conditions for a local bifurcation; that is, they are equilibria, and their Jacobian linearization possesses a non-trivial subspace with eigenvalues having zero real parts. Consequently, any generic perturbation ($p(x)$) will induce a bifurcation in the system.
 
@@ -59,7 +63,7 @@ This means that the existence of such functions \( h \) and \( g \) is guarantee
 > 1. What does **sufficiently smooth** mean in Theorem 1? As mentioned by the authors after this theorem, it applies to continuous piecewise linear systems. However, it cannot be applied to all piecewise smooth (PWS) systems , such as Filippov systems.
 >In particular, for these systems, bifurcations involving non-hyperbolic fixed points can be analyzed using similar slow (center) manifold approaches, but only for part of the phase space.
 
-Please note, that a center manifold is not necessarily unique, and generally is local **both** $\mathcal{X} \times T$, i.e. in phase space and time.
+Please note, that a center manifold is not necessarily unique, and generally is local in **both** space and time ($J \subset \mathcal{X} \times T$).
 Stability, or invariance under the flow therefore generally cannot be analyzed using these methods.
 
 
@@ -69,7 +73,7 @@ We will make more clear in the text that discontinuous systems are not being con
 Because all both theoretical models and activation functions for RNNs are at least continuous and piecewise smooth, we believe that this limitation still includes an essential part of relevant dynamical systems and that therefore our theory is very general.
 
 Furthermore, the smoothness of the system determines how close and how smoothly the invariant manifold will change w.r.t. perturbation parameter.
-If there is no assumption about even continuity, then the system will not 
+If there is no assumption about even continuity, then the system will not
 
 Finally, we rely on the minimal requirement of continuity of the vector field to be able to
 %%%
@@ -82,6 +86,7 @@ For example, RNNs with a ReLU activation functions can only have normally hyperb
 The examples of continuous attractors and continuous attractor approximations that we discuss in the paper are all normally hyperbolic.
 In fact, there is a huge benefit from having normal hyperbolicity as it can counteract state noise.
 This means that for any dynamical system with a normally hyperbolic continuous attractor, the dynamics can be decomposed into slow and fast components, allowing the application of Theorem 1.
+
 
 > 1. In Sect. 4.1, line 213, it is vague how assuming an Euler integration with unit time step, the discrete-time RNN of (6) transforms to eq. (7). Is this transformation independent of the function f and matrix W in eq. (6)?
 
