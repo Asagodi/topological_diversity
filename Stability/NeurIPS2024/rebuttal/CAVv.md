@@ -76,4 +76,4 @@ We exclude those networks from the analysis that are performing less than -20dB 
 
 
 
-[2] Eldering, J. (2013). Normally hyperbolic invariant manifolds: the noncompact case (Vol. 2). Atlantis Press.
+[2] Eldering, J. (2013). Normally hyperbolic invariant manifolds: The noncompact case (Vol. 2). Atlantis Press.
