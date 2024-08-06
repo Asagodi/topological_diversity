@@ -12,7 +12,9 @@ Tangentially, we would also like to point out that we assume that neural dynamic
 
 In the revised version of the manuscript, we will include the above limitations and provide reference to [2].
 
-[2] Eldering, Normally Hyperbolic Invariant Manifolds.
+
+
+
 > The authors have only qualitatively characterized the variations in the topologies of the networks. It is perhaps possible to quantitatively characterize this by using Dynamical Similarity Analysis [1] on various trained networks.
 
 We thank the reviewer for pointing out the reference; we applied DSA to our numerical results.
@@ -26,9 +28,6 @@ Lastly, we would like to note that the analysis using DSA cannot be trivially au
 1. DSA essentially requires 'learning' or fitting a separate model, which implicitly requires performing model selection with respect to the delay embedding, rank of the linear operator.
 
 For these reasons, we would like to adhere to the spirit of our initial analyses.
-<!-- Furthermore, the score that DSA gives is relative, so one would need to rely on a relative score for the different networks.
-Finally, DSA requires checks that ensure that the linearized dynamics captures the structure of the dynamical system, which would need additional analysis outside of DSA. -->
-
 
 
 
@@ -38,15 +37,7 @@ We looked at the generalization performance by the nature/type of the approximat
 >Furthermore, although I may have missed this, could the authors comment on what networks hyperparameters lead to which approximations?
 The only networks hyperparameters that we varied were the nonlinearity and the size.
 
-> The figures and presentation could be improved:
-> 1. On line 107 there is a comment that should be removed ("add link to details").
-> 2. Fig. 4C, caption should indicate the nature of the solution found.
-> 3. Fig. 5B, y-axis label is missing.
-> 4. Fig. 5D, could also show the mean
-> - std for classes of networks.
-> - Fig. 5E, y-axis label is missing. Also, the authors could just use
-> the normalized MSE on the axis could just follow the convention used in
-> Fig. 5A instead of using dB.
+> The figures and presentation could be improved [...]
 We appreciate the comments, and changed the manuscript accordingly.
 
 
@@ -64,7 +55,12 @@ We also added a longer description of the implications of our numerical experime
 
 > How do the authors identify the various kinds of approximations of the attractors? Can this be automated, perhaps by using to DSA to cluster the various types?
 
-We identify the various kinds of approximations as follows. @Abel
+We identify approximations by their (1) attractive invariant manifold (as motivated by the theory) and (2) asymptotic behavior (as motivated by our analysis of perturbations and approximations of ring attractors).
+The invariant manifold in our examples typically take the structure of a ring with fixed points and trasient trajectories on it.
+We find the fixed points and their stabilities by identifying where the flow reverses by sampling the direction of the local flow for 1024 sample points along the found invariant manifold.
+The only example we found that is of another type is the attractive torus (Fig.4D).
+For this network, instead of finding the fixed points, we identifies stable limit cycles where there was a recurrence of the simulated trajectories, i.e., where the flow returned back to an initial chosen number of time steps (up to a distance of 10^{-4}).
+
 
 
 For the difficulties of using DSA, see above.
@@ -73,3 +69,7 @@ For the difficulties of using DSA, see above.
 
 All networks are trained for 5000 gradient steps.
 We exclude those networks from the analysis that are performing less than -20dB in terms of normalized mean squared error.
+
+
+
+[2] Eldering, J. (2013). Normally hyperbolic invariant manifolds: the noncompact case (Vol. 2). Atlantis Press.
