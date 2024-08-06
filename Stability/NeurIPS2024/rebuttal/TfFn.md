@@ -93,25 +93,23 @@ Becuase we only numerically approximate the invariant manifold of each trained R
 
 > Seemed obtuse to claim a linear relationship then show a log-linear plot, fig 5C? How should I see this?
 
-We have corrected this mistake to indeed observe the log-linear relationship.
+We thank the reviewer for catching this and have corrected this mistake to indeed observe the log-linear relationship.
 
 
 > Did you define the memory capacity?
 
 We characterize the memory capacity of the network by calculating the entropy of this probability distribution.
-We determine the location of the fixed points through the local flow direction criterion as described in Sec.~\ref{sec:fastslowmethod}
-and determine the basin of attraction
+We determine the location of the fixed points through the local flow direction criterion as described in Sec.~\ref{sec:fastslowmethod}.
+Because the system evolves along a 1D subspace, we can simply look at the local flow direction to assess to which stable fixed point each part of the invariant ring converges to. We do this for 1024 sample points in the found invariant manifold.
 
-$$\text{Basin}(x_0) := \\{x\in \mathcal{M} \| \lim_{t \rightarrow \infty } \varphi(t,x)=\\{x_0\\}\\}$$
 
-through assesing the local flow direction for 1024 sample points in the found invariant manifold.
-This invariant manifold was found to be consistently close the the original invariant ring attractor.
-We have updated the manuscript to better explain this term.
+
 
 > Did you need to introduce omega-limit set, especially given the likely audience for this paper?
 
 We believe that this definition is supporting the definition of memory capacity.
 As we explained above, the memory capacity is calculated from the omega-limit set of each of the points on the invariant ring.
+This idea can be more generally applied to systems with other omega-limit sets, like limit cycles or chaotic orbits and therefore included this definition.
 
 > Finall, some other points:
 >
