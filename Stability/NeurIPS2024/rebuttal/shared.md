@@ -50,9 +50,18 @@ However, the theory also has implications robustness of theoretical models more 
 
 
 3. Section 5.2
-In Section 5.2 we discuss our theory of analog working memory approximations.
-We have included a reference to the used concepts and explanations to the importance to the different claims.
-This section is showing the reverse of the Persistence Theorem: under reasonable assumptions, if a system behaves (in output space) like a continuous attractor, its recurrent dynamics will be near one.
+
+Section 5.2 (which we moved to its own section now) is showing under what conditions approximations to a analog working memory problem are near a continuous attractor. 
+This section is important to clarify under what conditions a situation such as in Proposition 1 would arise. 
+In fact, these conditions are met for RNNs.
+C1 translates to the existence of a manifold in the neural activity space with the same topology as the memory content (we have elaborated on this by formalizing this dependence as that the output mapping is a locally trivial fibration over the output manifold.)
+(C2) The persistence (see the verserse of the Persistent Manifold Theorem) requires that the flow on the manifold is slow and bounded.
+(C3+C4) The S-type robustness requires non-positive Lyapunov exponents (i.e. the negative eigenvalues of \(\nabla_\vz \vh\)).
+Along with the D-type robustness (corresponding to persistence of the manifold) implies and normally hyperbolic (we have expanded on this correspondence through building on the work of Mane [1]).
+The Persistent Manifold Theorem says that systems in the neighbourhood of a (normally hyperbolic) continous attractor will behave similarily to it.
+
+As a side note, we would like to mention that we have  added a more general theoretical result that proves that the invariant slow manifold might have some additional dynamics (which is not slow) as long as the flow of the system is in the kernel of the output mapping  (which covers the torus solution type approximation in Fig.4D).
+
 
 
 
@@ -85,10 +94,10 @@ For a nonlinear output mapping, a possible solution for analog memory is the qua
 Our analysis methods can identify these limit sets, but we do not have a simple way to parametrize the invariant manifold.
 
 Our analysis is dependent on a time scale separation that we identify from simulated trajectories.
-```
-Sth missing: If the separation of time-scales is small, our method can
-```
-This separation is reflected however in the distance of the approximation to the continous attractor; a system without a large separation will be either not robust to state (S-type) noise or will be performing poorly for longer trial times than it was trained on.
+If the separation of time-scales is small, our method can accidentally identify parts of state space that are only forward invariant (i.e. transient).
+Nevertheless, this seems to have not caused a problem with our analysis of the trained RNNs.
+This is not surprising, the separation is reflected in the distance of the approximation to the continous attractor; a system without a large separation will be either not robust to state (S-type) noise or will be performing poorly for longer trial times than it was trained on.
 
 
 
+[1]
