@@ -81,7 +81,7 @@ Finally, we rely on the minimal requirement of continuity of the vector field to
 
 >1. It is unclear under what conditions RNN dynamics can be decomposed into slow-fast form to which we can apply Theorem 1.
 
-Theorem 1 holds for all RNNs that have a normally hyperbolic continuous attractor. 
+Theorem 1 holds for all dynamical systems that have a normally hyperbolic continuous attractor. 
 For example, RNNs with a ReLU activation functions can only have normally hyperbolic continuous attractors. This is because at any point the vector field that they define either is zero or has a linear terms (ReLU RNNs are piecewise linear systems). 
 The examples of continuous attractors and continuous attractor approximations that we discuss in the paper are all normally hyperbolic.
 In fact, there is a huge benefit from having normal hyperbolicity as it can counteract state noise.
