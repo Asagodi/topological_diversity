@@ -1,27 +1,17 @@
-We would like to thank the reviewers 
+We are grateful to hear that the reviewers found our work novel and interesting. Reviewers remarked that it is "a novel contribution and an important result to bolster the continuous attractor hypothesis", "fresh look, novel, original, and interesting [and] superb theoretical motivation", and that "the main thrust of the paper was very interesting and very novel and that one of the reviewers even thinks it should be applauded."
+
+We agree with the reviewers on the lack of clarity in places.
+
+We have now added clarifications about topics, experiments, figures and concepts that were pointed out in the reviews and improved the overall flow of the text and the main message of the different subsections.
+
+However, we are disappointed by the corresponding scores.
+Perhaps these scores can be explained by the lack of clarity in the previous version of the paper.
+
 
 # List of changes
 1.  
 1. 
 1. 
-
-
-# 
-We are very happy that the reviewers thought that
-> the main idea of the paper is interesting
-> this is a novel contribution and an important result to bolster the continuous attractor hypothesis
-> study of continuous attractors in the finite time limit [...] is a fresh look, novel, original, and interesting [and] superb theoretical motivation
-> the main thrust of the paper was very interesting and very novel
-and that one of the reviewers even thinks 
-> it should be applauded.
-
-
-However, we are disappointed by the corresponding scores.
-Perhaps these scores can be explained by the lack of clarity in the previous version of the paper.
-We have now added clarifications about topics, experiments, figures and concepts that were pointed out in the reviews and improved the overall flow of the text and the main message of the different subsections.
-
-
-
 
 
 We would like to summarize the important big picture clarifications to our paper.
