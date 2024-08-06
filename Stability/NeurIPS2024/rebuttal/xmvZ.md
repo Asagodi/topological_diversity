@@ -85,24 +85,44 @@ This means that for any dynamical system with a normally hyperbolic continuous a
 
 > 1. In Sect. 4.1, line 213, it is vague how assuming an Euler integration with unit time step, the discrete-time RNN of (6) transforms to eq. (7). Is this transformation independent of the function f and matrix W in eq. (6)?
 
+The transformation from the continuous-time RNN described by Eq. (6) to the discrete-time RNN in Eq. (7) is indeed independent on the function \( f \) and the matrix \( W \).
+However, it is important to note that the discretization process can result in significantly different system behavior depending on the activation functions used. For instance, in the case of Filippov systems, discretization can introduce instabilities that are not present in the continuous-time system.
+
+
+
+
 > 1. In S4, the sentence "All such perturbations leave at least a part of the continuous attractor intact and preserve the invariant manifold, i.e. the parts where the fixed points disappear a slow flow appears." needs more clarification. Could you explain the mathematical reasoning behind this assertion?
 
-This just follows from Theorem 1……………………
+We will reformulate it as "all such perturbations leave the geometry of the continuous attractor intact as an attractive invariant slow manifold, i.e. the parts where the fixed points disappear a slow flow appears."
+The preservation of the invariant manifold under perturbations is a direct consequence of the normal hyperbolicity condition described in Theorem 1.
+Mathematically, this means that for a continuous attractor, which is normally hyperbolic, any small perturbation will result in the persistence of the invariant manifold.
+In regions where fixed points disappear due to the perturbation, the dynamics will adjust to form a slow flow instead. This slow flow is a result of the system's tendency to maintain the invariant manifold's structure, even if the specific fixed points are no longer present.
+
+
+
 
 **Questions:**
 
 >How does the selection of a specific threshold value influence the identification and characterization of slow manifolds in neural networks with continuous attractors as discussed in the first lines of section 4.2?
 
+[We can include a plot that shows Hausdorff distance between identifies invariant manifolds as a function of the perturbation parameter?]
+
+
 > Could you elaborate on how different threshold settings impact the dynamics of network states and the emergence of persistent manifolds?
 
-[We can include a plot that shows Hausdorff distance between identifies invariant manifolds as a function of the perturbation parameter?]
-It’s not about emergence by identification.
+It is unclear to which threshold the reviewer is referring. However, we can clarify the general impact of thresholds on the dynamics of network states and the emergence of persistent manifolds.
+
+We demonstrate that all systems with a sufficiently good generalization property (in our case, defined as networks with NMSE lower than -20 dB) must have a normally hyperbolic invariant manifold that approximates a continuous attractor. According to the theory, these manifolds are necessarily persistent.
+
+The persistence of these manifolds is a direct consequence of their normal hyperbolicity, which ensures that small perturbations do not destroy the manifold but may alter its structure. This property guarantees that the overall geometry of the continuous attractor remains intact, maintaining the stability and dynamics of the network states.
+
 
 **Limitations:**
 
 > The authors have discussed most limitations of the analysis in the discussion section, but I suggest making them more explicit. This could be done by either incorporating a dedicated (sub)section on limitations or adding a bold title "**Limitations**" at the beginning of the relevant paragraph within the discussion section.
 > As mentioned above, another important limitation is that it is difficult to determine how general their theoretical discussion is and whether it can be applied to investigate and obtain results for more general and high-dimensional cases.
 
-We included a **Limitations** subsection.
-@Abel, do you mean the part of the checklist?
-If so I'll just tell all of the reviewers we'll add a sub-section like that.
+We appreciate the reviewer's suggestion to make the limitations of our analysis more explicit. In response, we have included a dedicated Limitations subsection in the discussion section of the manuscript. Please refer to the shared rebuttal for further details.
+
+
+
