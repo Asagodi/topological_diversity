@@ -13,32 +13,41 @@ Given the remarks made by the other reviewers, we elaborate on the generality an
 
 > RNNs with specific activation functions and restrictive settings,
 
-We have trained and analyzed gated RNNs such as LSTM, and GRU.
-The new results have been uploaded to OpenReview in a separate document.
-The solutions as found by trained LSTMs and GRUs follow the same pattern as Vanilla RNNs:
-there exists a normally hyperbolic attractive invariant ring with slow dynamics that evolve onto fixed points.
+We appreciate the reviewer's insightful comment regarding the use of specific activation functions and restrictive settings in RNNs. In response, we have conducted additional experiments with gated RNN architectures, specifically LSTM and GRU models. The results of these experiments have been thoroughly documented and uploaded to OpenReview in a supplementary document for your review.
+
+Our findings indicate that the solutions identified by the trained LSTM and GRU models exhibit similar patterns to those observed in Vanilla RNNs. Specifically, we observed the presence of a normally hyperbolic attractive invariant ring characterized by slow dynamics that eventually converge to fixed points. This consistency across different RNN architectures reinforces the robustness of our initial observations and provides further validation of our theoretical framework.
 
 
 > 1. In Sect. 3.1, the perturbation p(x) is not clear enough. Specifically, it is unclear:
 >1) Under what conditions the perturbation function p(x) induces a bifurcation?
 
-Continuous attractors satisfy first-order conditions for a local bifurcation; i.e. they are equilibria, and their Jacobian linearization has a non-trivial subspace with eigenvalues with zero real part.
-Therefore, *any* generic perturbation $p(x)$ will cause the system to bifurcate.
-A more detailed discussion of this is available in Kuznetsov 2004, Robbinson 1999, and Abraham and Marsden 2008.
+Continuous attractors satisfy the first-order conditions for a local bifurcation; that is, they are equilibria, and their Jacobian linearization possesses a non-trivial subspace with eigenvalues having zero real parts. Consequently, any generic perturbation ($p(x)$) will induce a bifurcation in the system.
+
+For a more comprehensive discussion on this topic, we refer the reviewer to the following references:
+1. Kuznetsov, 2004
+1. Robinson, 1999
+1. Abraham and Marsden, 2008
+These references provide detailed insights into the conditions under which perturbations lead to bifurcations, supporting our assertion.
 
 <!-- 1) For most CANs p(x) almost always induces a bifurcation. (Is it true that the only way to modify the dynamics such that there is not a bifurcation is via changing the level of attractiveness of the the continuous manifold?. In this sense “almost always” = measure zero of parameter space (?) For exact determination maybe Piotr’s ideas) -->
 <!-- Piotr: I took a stab at writing it but I get too annoyed to phrase it well. The almost always is a bit different though--- for parametric systems it happens on a dense set of parameters. For the vector fields, I'm guessing a similar statement can be made but I can't recall the precise phrasing of it. -->
 
 >2) What types of (generic) bifurcations can arise from the perturbation p(x)?
 
-We are working to characterize codimension-1 bifurcations for a ring attractor. We believe a simple, polynomial normal form can be derived.
+We are actively working to characterize codimension-1 bifurcations for a ring attractor and believe that a simple, polynomial normal form can be derived for this purpose.
 
-However, the general problem remains an open one. Note that for a continuous attractor of dimension $n$, the bifurcation is potentially of codim $n$.
-The characterization of codim $n>2$ bifurcations is an open problem; our approach provides a trade-off between the specificity of a detailed bifurcation analysis and generality.
-Rather than specifying the topology of the dynamics within the slow manifold, we provide a geometric statement.
-We then show that the persistence of an invariant manifold can lead to fruitful analyses even without explicit knowledge of the bifurcation (viz. generalization bounds).
-<!-- Lastly, please recall that our results pose no restrictions on the dimensionality of the system or the continuous attractor. -->
-<!-- 2) Any that are at most at epsilon distance from original system (C^1 topology) (Could you say / is it true that it will always be either no bifurcation, or a limit cycle or a slow manifold with fixed points?  I have that intuition but do not know if it is fair) -->
+However, the general problem remains an open one. For a continuous attractor of dimension $n$, the bifurcation is potentially of codimension $n$.
+The characterization of bifurcations with codimension $n > 2$ is an open problem.
+Our approach aims to balance the specificity of a detailed bifurcation analysis with generality.
+
+We have however characterized all possible perturbations for a ring attractor.
+Any perturbations that are at most an epsilon distance from the original ring attractor (in ( C^1 ) topology) will either result in no bifurcation, a limit cycle, or a slow manifold with fixed points.
+
+Instead of specifying the topology of the dynamics within the slow manifold, we provide a geometric statement. We demonstrate that the persistence of an invariant manifold can lead to fruitful analyses, even without explicit knowledge of the bifurcation. This approach allows us to derive generalization bounds and other insights.
+
+
+
+
 
 >Likewise, the functions h and g are also not clear enough. It is unclear how one can obtain/choose the functions h and g such that the two systems defined by Eq. (2) and Eqs. (3) & (4) are equivalent.
 
