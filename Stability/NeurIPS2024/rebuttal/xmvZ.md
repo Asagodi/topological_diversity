@@ -1,4 +1,4 @@
-Thank you very much for your thoughtful and constructive review of our manuscript. We are grateful for your positive feedback, particularly your recognition of the interesting main idea of our work and its potential significance. We are pleased that you found the connection to Fenichel’s theorem to be noteworthy and that the visualizations in Figure 1 helped convey our overall message. Your appreciation of these aspects is greatly encouraging.
+Thank you very much for your thoughtful and constructive review of our manuscript. We are grateful for your positive feedback.
 
 Now, we would like to address the specific weaknesses and questions that were raised.
 
@@ -22,7 +22,6 @@ We appreciate the reviewer's insightful comment regarding the use of specific ac
 > 1. Under what conditions the perturbation function p(x) induces a bifurcation?
 
 Continuous attractors satisfy the first-order conditions for a local bifurcation; that is, they are equilibria, and their Jacobian linearization possesses a non-trivial subspace with eigenvalues having zero real parts. Consequently, any generic perturbation ($p(x)$) will induce a bifurcation in the system.
-
 For a more comprehensive discussion on this topic, we refer the reviewer to the following references:
 Kuznetsov, Y. A., Kuznetsov, I. A., & Kuznetsov, Y. (1998). Elements of applied bifurcation theory (Vol. 112, pp. xx+-591). New York: Springer.
 
@@ -32,19 +31,18 @@ These references provide detailed insights into the conditions under which pertu
 >2) What types of (generic) bifurcations can arise from the perturbation p(x)?
 
 We are working to characterize codimension-1 bifurcations for a ring attractor and believe a simple polynomial normal form can be derived. 
-Characterizing bifurcations with codimension $n > 2$ is still an open problem. 
-We exhaustively characterize possible perturbations for a ring attractor. Perturbations in the neighbourhood of a ring attractor (in $C^1$ topology) will result in no bifurcation, a limit cycle, or a ring slow manifold with fixed points. We propose that in many cases the specific bifurcation in fact is irrelevant, instead, what is imporant is that the continuous attractor persists as an invariant manifold.
+Characterizing bifurcations with codimension $n > 2$ is an open problem. 
+Perturbations in the neighbourhood of a ring attractor (in $C^1$ topology) will result in no bifurcation, a limit cycle, or a ring slow manifold with fixed points. We propose that in many cases the specific bifurcation in fact is irrelevant, instead, what is imporant is that the continuous attractor persists as an invariant manifold.
 
 
->Likewise, the functions h and g are also not clear enough. [...]
+> the functions h and g are also not clear 
 
-Obtaining the functions \( h \) and \( g \) is problem-specific and cannot be provided in a closed form for general invariant manifolds.
 The essence of Theorem 1 can be restated as follows: **if** the function \( f \) has a normally hyperbolic invariant manifold, **then** there exist vector fields \( h \) and \( g \) that satisfy the conditions for equivalence between the systems defined by Eq. (2) and Eqs. (3) & (4).
 This means that the existence of such functions \( h \) and \( g \) is guaranteed under the condition of having a normally hyperbolic invariant manifold, but their explicit forms depend on the specific problem at hand.
 
 
 
-> 1. What does **sufficiently smooth** mean in Theorem 1? [...]
+> 1. What does **sufficiently smooth** mean in Theorem 1?
 
 Please note, that a center manifold is not necessarily unique, and generally is local in **both** space and time ($J \subset \mathcal{X} \times T$).
 Stability, or invariance under the flow therefore generally cannot be analyzed using these methods.
@@ -58,11 +56,11 @@ We will clarify in the text that discontinuous systems are not considered in our
 
 >1. It is unclear under what conditions RNN dynamics can be decomposed into slow-fast form to which we can apply Theorem 1.
 
-Theorem 1 holds for all dynamical systems that have a normally hyperbolic continuous attractor.
+Theorem 1 holds for all dynamical systems that have a normally hyperbolic continuous attractor. 
 For example, RNNs with a ReLU activation functions can only have normally hyperbolic continuous attractors. This is because at any point the vector field that they define either is zero or has a linear terms (ReLU RNNs are piecewise linear systems).
-The examples of continuous attractors and continuous attractor approximations that we discuss in the paper are all normally hyperbolic.
+The continuous attractors and their approximations that we discuss are all normally hyperbolic.
 In fact, there is a huge benefit from having normal hyperbolicity as it can counteract state noise.
-This means that for any dynamical system with a normally hyperbolic continuous attractor, the dynamics can be decomposed into slow and fast components, allowing the application of Theorem 1.
+
 
 
 > 1. In Sect. 4.1, line 213, it is vague how assuming an Euler integration with unit time step, the discrete-time RNN of (6) transforms to eq. (7). Is this transformation independent of the function f and matrix W in eq. (6)?
@@ -77,9 +75,8 @@ However, it is important to note that the discretization process can result in s
 
 We will reformulate it as "all such perturbations leave the geometry of the continuous attractor intact as an attractive invariant slow manifold, i.e. the parts where the fixed points disappear a slow flow appears."
 The preservation of the invariant manifold under perturbations is a direct consequence of the normal hyperbolicity condition described in Theorem 1.
-Mathematically, this means that for a continuous attractor, which is normally hyperbolic, any small perturbation will result in the persistence of the invariant manifold.
-In regions where fixed points disappear due to the perturbation, the dynamics will adjust to form a slow flow instead. This slow flow is a result of the system's tendency to maintain the invariant manifold's structure, even if the specific fixed points are no longer present.
-
+This means that for a normally hyperbolic continuous attractor, any small perturbation will bifurcate away the continuum of fixed points but there will remain an attractive invariant manifold.
+In regions where fixed points disappear due to the perturbation, the dynamics will form a slow flow.
 
 
 
@@ -94,7 +91,8 @@ In regions where fixed points disappear due to the perturbation, the dynamics wi
 
 It is unclear to which threshold the reviewer is referring. However, we can clarify the general impact of thresholds on the dynamics of network states and the emergence of persistent manifolds.
 We demonstrate that all systems with a sufficiently good generalization property (in our case, defined as networks with NMSE lower than -20 dB) must have a normally hyperbolic invariant manifold that approximates a continuous attractor. According to the theory, these manifolds are necessarily persistent.
-The persistence of these manifolds is a direct consequence of their normal hyperbolicity, which ensures that small perturbations do not destroy the manifold but may alter its structure. This property guarantees that the overall geometry of the continuous attractor remains intact, maintaining the stability and dynamics of the network states.
+The persistence of these manifolds is a direct consequence of their normal hyperbolicity, which ensures that small perturbations do not destroy the manifold but may alter its structure. This property guarantees that the overall geometry of the continuous attractor persists.
+
 
 
 **Limitations:**
