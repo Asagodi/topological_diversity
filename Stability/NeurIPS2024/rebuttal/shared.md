@@ -1,12 +1,15 @@
-We are grateful to hear that the reviewers found our work novel and interesting. Reviewers remarked that it is "a novel contribution and an important result to bolster the continuous attractor hypothesis", "fresh look, novel, original, and interesting [and] superb theoretical motivation", and that "the main thrust of the paper was very interesting and very novel and that one of the reviewers even thinks it should be applauded."
+We are grateful to hear that the reviewers found our work novel and interesting. Reviewers remarked that it is "a novel contribution and an important result to bolster the continuous attractor hypothesis", "fresh look, novel, original, and interesting [and] superb theoretical motivation", that "the main thrust of the paper was very interesting and very novel" and that "it should be applauded."
 
-We agree with the reviewers on the lack of clarity in places.
+To respond to the reviewer's comments, we have performed the following analysis:
+ - quantify the fast-slow time scale seperation on the manifold found in task-trained RNN [Fig R1]
+ - trained LSTM and GRU networks [Fig R2]
+ - trained RNNs on 2D task where the continuous attractor manifold is a torus [Fig R3]
 
-We have now added clarifications about topics, experiments, figures and concepts that were pointed out in the reviews and improved the overall flow of the text and the main message of the different subsections.
+## Generality of the Theory
 
-However, we are disappointed by the corresponding scores.
-Perhaps these scores can be explained by the lack of clarity in the previous version of the paper.
+While most bifurcation analyses in theoretical neuroscience and machine learning is based on a particular parameterization (e.g., pairwise weight matrix), our theory is applies to any differentiable dynamical system and to continuous piecewise smooth systems (for which the continuous attractor is a global attractor). Hence, the behavior of many different ring attractors and RNNs discussed can be explained in this framework. Note that the only important condition is the normal hyperbolicity.
 
+<<<<<<< HEAD
 
 # List of changes
 1.
@@ -20,6 +23,9 @@ We would like to summarize the important big picture clarifications to our paper
 In fact, it applies to any differentiable dynamical system
 and to continuous piecewise smooth systems (for which the continuous attractor is a global attractor).
 This covers most of the theoretical models involving continuous attractors as we tried to point out by discussing the main classes of implementations of a ring attractor.
+=======
+## Focus on the ring attractor implementations
+>>>>>>> 9fb208a (not happy about this)
 
 The role of the analysis of theoretical models, and that of the numerical experiments involving trained RNNs is not to prove the generality of the theory, but to illustrate its practical applicability.
 We focused on low-dimensional systems because they easier to visualize and are a better guide to develop intuition.
@@ -31,6 +37,24 @@ Furthermore, we find evidence of the relevance of the bound on the error in thes
 Another point about the generality of the theory involves our claim of the universality of the found RNNs through training.
 We tested our theory in other architectures as well, namely LSTMs and GRUs.
 We found the same normally hyperbolic attractive invariant manifolds of fixed point type: a ring invariant manifold made up of stable and saddle nodes connected by heteroclinic orbits.
+
+## Broader impact within compuational neuroscience
+
+
+## Clarity
+
+We agree with the reviewers on the lack of clarity in places.
+
+MPComment: I don't think we should promise what we will change...that doesn't work well
+
+We have now added clarifications about topics, experiments, figures and concepts that were pointed out in the reviews and improved the overall flow of the text and the main message of the different subsections.
+
+However, we are disappointed by the corresponding scores.
+Perhaps these scores can be explained by the lack of clarity in the previous version of the paper.
+
+
+We would like to summarize the important big picture clarifications to our paper.
+
 
 
 2. For whom is this relevant? <!--# Discuss contributions and impacts-->
