@@ -74,7 +74,9 @@ The possible solutions that the networks can find are restricted by having a lin
 For a nonlinear output mapping, a possible solution for analog memory is the quasi-periodic toroidal attractor, but this is not possible for a linear output mapping.
 Our analysis methods can identify these limit sets, but we do not have a simple way to parametrize the invariant manifold.
 
-
+Our analysis is dependent on a time scale separation that we identify from simulated trajectories.
+If the separation of time-scales is small, our method can 
+This separation is reflected however in the distance of the approximation to the continous attractor; a system without a large separation will be either not robust to state (S-type) noise or will be performing poorly for longer trial times than it was trained on.
 
 
 
