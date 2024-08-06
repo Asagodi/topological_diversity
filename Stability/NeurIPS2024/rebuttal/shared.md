@@ -1,83 +1,72 @@
-We are grateful to hear that the reviewers found our work novel and interesting. Reviewers remarked that it is "a novel contribution and an important result to bolster the continuous attractor hypothesis", "fresh look, novel, original, and interesting [and] superb theoretical motivation", and that "the main thrust of the paper was very interesting and very novel and that one of the reviewers even thinks it should be applauded."
+We are grateful to hear that the reviewers found our work novel and interesting. Reviewers remarked that it is "a novel contribution and an important result to bolster the continuous attractor hypothesis", "fresh look, novel, original, and interesting [and] superb theoretical motivation", "the main thrust of the paper was very interesting and very novel" and that "it should be applauded!".
 
-We agree with the reviewers on the lack of clarity in places.
+However, we were disappointed by the corresponding scores.
+We understand these scores can be partly explained by the lack of clarity in the previous version of the paper. We ourselves agree with the reviewers on the lack of clarity in places.
 
-We have now added clarifications about topics, experiments, figures and concepts that were pointed out in the reviews and improved the overall flow of the text and the main message of the different subsections.
-
-However, we are disappointed by the corresponding scores.
-Perhaps these scores can be explained by the lack of clarity in the previous version of the paper.
-
+Therefore, we have now added clarifications about topics, experiments, figures and concepts that were pointed out in the reviews and improved the overall flow of the text and the main message of the different subsections. We hope that the updated version of the manuscript is clearer and more understandable.
 
 # List of changes
-1.
-1.
-1.
-
 
 We would like to summarize the important big picture clarifications to our paper.
-1. We would like to emphasize that the theory applies very generally to any continuous attractor.
-<!-- that is normally hyperbolic : every continuous attractor is normally hyperbolic -->
+
+## Applicability of our theory
+
+We would like to emphasize that the theory applies very generally to any continuous attractor that is normally hyperbolic.
 In fact, it applies to any differentiable dynamical system
 and to continuous piecewise smooth systems (for which the continuous attractor is a global attractor).
-This covers most of the theoretical models involving continuous attractors as we tried to point out by discussing the main classes of implementations of a ring attractor.
+This covers most of the theoretical models involving continuous attractors. As exemplified by the discussed main classes of implementations of a particular case, the ring attractor.
 
-The role of the analysis of theoretical models, and that of the numerical experiments involving trained RNNs is not to prove the generality of the theory, but to illustrate its practical applicability.
-We focused on low-dimensional systems because they easier to visualize and are a better guide to develop intuition.
-We agree however that applying our theory to higher dimensional problems would provide a convincing argument for its practical relevance.
+The role of the analysis of theoretical models, and of the numerical experiments involving trained RNNs is not to prove the generality of the theory, but to illustrate its practical applicability.
+
+First, we focused on low-dimensional systems because they easier to visualize and are a better guide to develop intuition.
+We agree however that testing the theory in higher dimensional settings provides proof of the relevance of the theory in practice.
 Therefore, we include results on RNNs trained on a 2D task: a double angular velocity integration task.
-We find a slow attractive invariant manifold with a point topology in the trained RNNs.
-Furthermore, we find evidence of the relevance of the bound on the error in these trained RNNs as well.
+We find a slow attractive invariant manifold with a torus(?) topology in the trained RNNs.
+Furthermore, we analyze the bound on the error in these trained RNNs, showing that, as expected, it holds as well.
 
-Another point about the generality of the theory involves our claim of the universality of the found RNNs through training.
-We tested our theory in other architectures as well, namely LSTMs and GRUs.
+Secondly, we claimed universality of the found RNNs through training. However, initially we had only tested vanilla RNNs, which we agree is limited testing. 
+Therefore, we tested our theory in other architectures as well, namely LSTMs and GRUs.
 We found the same normally hyperbolic attractive invariant manifolds of fixed point type: a ring invariant manifold made up of stable and saddle nodes connected by heteroclinic orbits.
 
+## Relevance
 
-2. For whom is this relevant? <!--# Discuss contributions and impacts-->
-We believe that our theory is relevant to all (theoretical) neuroscientists who are trying to understand analog working memory, the ways how it might be implemented in the brain and its robustness
-We demonstrate robustness of the implemented analog memory in recurrent systems to perturbations of their connection matrix.
-However, the theory also has implications robustness of theoretical models more generally than just : for small changes to the functional form of the activation function of the neurons the network will behave functionally similar to the original model.
+For whom is this relevant? <!--# Discuss contributions and impacts-->
+We believe that our theory is relevant to all (theoretical) neuroscientists who are trying to understand analog working memory, the ways how it might be implemented in the brain and its robustness. 
+We demonstrate robustness of the implemented analog memory in recurrent systems to perturbations of their connectivity matrix, describing the rules of a lawful degradation from the brittle idealization of a continuous attractors.
+(What does this sentence even mean? -> However, the theory also has implications for the robustness of theoretical models more generally than just: for small changes to the functional form of the activation function of the neurons the network will behave functionally similar to the original model).
 
+## Section 5.2.
 
-3. Section 5.2
+TODO
 In Section 5.2 we discuss our theory of analog working memory approximations.
 We have included a reference to the used concepts and explanations to the importance to the different claims.
-This section is showing the reverse of the Persistence Theorem: under reasonable assumptions, if a system behaves (in output space) like a continuous attractor, its recurrent dynamics will be near one.
+(That's section 3.2.? -> This section is showing the reverse of the Persistence Theorem: under reasonable assumptions, if a system behaves (in output space) like a continuous attractor, its recurrent dynamics will be near one.)
 
 
+## (Hyper)parameters choices and dependences
 
+Hyperparameters / Parameter choices and parameter dependence for the analysis
+There are very few limitations we place on training the RNNs. 
 
-4. Hyperparameters / Parameter choices and parameter dependence for the analysis
-There are very few limitations we place on training the RNNs.
-
-
-The threshold parameter for identifying invariant slow manifolds was chosen such that it reflects the two distributions of speeds along the integrated trajectories.
+The threshold parameter for identifying invariant slow manifolds was chosen such that it reflects the two distributions of speeds along the integrated trajectories. 
 There is a bit of dependence of how many fixed points are identified on how many points on the invariant are sampled for the angular flow.
 However, this will converge to a maximal number if the grid of initial points is increased.
-Becuase all networks have less than 50 fixed points, we believe that 1024 initial points are sufficient.
+Because all networks have less than 50 fixed points, we believe that 1024 initial points are sufficient.
 
+## Limitations
 
-
-
-
-
-# Limitations
-
-We have now extended a serparate **Limitations** subsection in the paper.
-
+We have now extended a serparate **Limitations** subsection in the paper. Here we summarize the main points reflected there:
 
 Although, we only explicitly describe the topology and dimensionality of the identified invariant manifolds for a representative set, the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
 This separation of timescale necessarily exists for well-trained networks, however, the analysis is not guaranteed to work for systems without a fast-slow decomposition.
 
-To identify solutions with a fast-slow decomposition only rely on the generalization property of the network (in terms of the normalized mean square error for ten times longer trials).
+To identify solutions with a fast-slow decomposition we only rely on the generalization property of the network (in terms of the normalized mean square error for ten times longer trials).
 The possible solutions that the networks can find are restricted by having a linear output mapping.
 For a nonlinear output mapping, a possible solution for analog memory is the quasi-periodic toroidal attractor, but this is not possible for a linear output mapping.
 Our analysis methods can identify these limit sets, but we do not have a simple way to parametrize the invariant manifold.
 
 Our analysis is dependent on a time scale separation that we identify from simulated trajectories.
-```
-Sth missing: If the separation of time-scales is small, our method can
-```
+If the separation of time-scales is small, our method can (TODO)
 This separation is reflected however in the distance of the approximation to the continous attractor; a system without a large separation will be either not robust to state (S-type) noise or will be performing poorly for longer trial times than it was trained on.
 
 
