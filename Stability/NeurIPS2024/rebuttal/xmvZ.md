@@ -16,9 +16,7 @@ Please also see the shared reply to all reviewers, where we discuss the scope an
 
 > RNNs with specific activation functions and restrictive settings,
 
-We appreciate the reviewer's insightful comment regarding the use of specific activation functions and restrictive settings in RNNs. In response, we have conducted additional experiments with gated RNN architectures, specifically LSTM and GRU models. The results of these experiments have been thoroughly documented and uploaded to OpenReview in a supplementary document for your review.
-
-Our findings indicate that the solutions identified by the trained LSTM and GRU models exhibit similar patterns to those observed in Vanilla RNNs. Specifically, we observed the presence of a normally hyperbolic attractive invariant ring characterized by slow dynamics that eventually converge to fixed points. This consistency across different RNN architectures reinforces the robustness of our initial observations and provides further validation of our theoretical framework.
+We appreciate the reviewer's insightful comment regarding the use of specific activation functions and restrictive settings in RNNs. In response, we have conducted additional experiments LSTMs and GRUs. The results of these experiments are discussed in the shared rebuttal, see also the supplementary document.
 
 
 > 1. Under what conditions the perturbation function p(x) induces a bifurcation?
@@ -26,9 +24,8 @@ Our findings indicate that the solutions identified by the trained LSTM and GRU 
 Continuous attractors satisfy the first-order conditions for a local bifurcation; that is, they are equilibria, and their Jacobian linearization possesses a non-trivial subspace with eigenvalues having zero real parts. Consequently, any generic perturbation ($p(x)$) will induce a bifurcation in the system.
 
 For a more comprehensive discussion on this topic, we refer the reviewer to the following references:
-1. Kuznetsov, 2004
-1. Robinson, 1999
-1. Abraham and Marsden, 2008
+Kuznetsov, Y. A., Kuznetsov, I. A., & Kuznetsov, Y. (1998). Elements of applied bifurcation theory (Vol. 112, pp. xx+-591). New York: Springer.
+
 These references provide detailed insights into the conditions under which perturbations lead to bifurcations, supporting our assertion.
 
 

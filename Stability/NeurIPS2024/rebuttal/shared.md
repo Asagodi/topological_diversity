@@ -11,7 +11,7 @@ While most bifurcation analyses in theoretical neuroscience and machine learning
 
 Another point about the generality of the theory involves our claim of the universality of the found RNNs through training.
 We tested our theory in other architectures as well, namely LSTMs and GRUs.
-We found the same normally hyperbolic attractive invariant manifolds of fixed point type: a ring invariant manifold made up of stable and saddle nodes connected by heteroclinic orbits.
+Our findings indicate that the solutions identified by the trained LSTM and GRU models exhibit similar patterns to those observed in Vanilla RNNs. Specifically, we observed the presence of a normally hyperbolic attractive invariant ring characterized by slow dynamics that eventually converge to fixed points. This consistency across different RNN architectures reinforces the robustness of our initial observations and provides further validation of our theoretical framework.
 
 ## Focus on the ring attractor implementations
 
@@ -100,4 +100,4 @@ This is not surprising, the separation is reflected in the distance of the appro
 
 
 
-[1]
+[1] Mané, R. (1978). Persistent manifolds are normally hyperbolic. Transactions of the American Mathematical Society, 246, 261-283.
