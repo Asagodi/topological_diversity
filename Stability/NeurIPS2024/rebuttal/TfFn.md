@@ -1,11 +1,12 @@
 We would like to thank the reviewer for their valuable comments and suggestions. They have significantly enhanced the quality of our manuscript.
 
 
+> signposting
 
 We thank the reviewer for and agree with this feedback. We tried to make the manuscript clearer by:
 - Changing the last paragraph of the intruduction, making a reference to which points are made in which section.
 - Adding which are the main questions that arise and in which section they are answered after the exploration in the end of Section 2.
--  Adding extra senteces at the start of sections and subsections to better introduce the main messages of the section.
+- Adding extra senteces at the start of sections and subsections to better introduce the main messages of the section.
 
 
 > Fig 1) A was a great figure, B was never mentioned in the text, despite being very pretty.
@@ -62,10 +63,7 @@ The other subfigures in Fig.4 illustrate the stability structures of the network
 
 
 
-> On that last point, why include details of the (standard)
-discretisation scheme, MSE loss, and network details, when key steps to
-understand what I am looking at (e.g. figure A1 = output space) are
-missing?
+> On that last point [...]
 
 We included these details to support reproducibility. We have now added the extra details to explain what is shown in Fig. 4.
 
@@ -115,11 +113,7 @@ We have now included a discussion of this work to a section on continuous attrac
 
 
 
-> What was section 5.2 trying to show? First it claims that 2.2 presents a theory of approximate solutions in the neighbourhood of
-continuous attractors (news to me, as far as I could tell, that section showed me that all CAN models were unstable to noise and turn into a
-variety of different fixed points under noise, that doesn't sound like a  theory at all? Section 3 seems to be the theory?) Then you list four
-conditions on what sounds like exactly the same problem?
- What is the difference between dynamical systems having robust manifolds, and the working memory task being solved, isn't the whole point of the model that these two are the same? (i.e. you can solve a working memory task with a CAN). Is this supposed to be a concluding section that says when working memory can be solved? Then why have you suddenly defined state and dynamical noise that haven't been used before, I thought we had a perfectly nice definition of perturbations on the network (equation 2)?
+> What was section 5.2 trying to show? 
 
 
 See the shared rebuttal for our clarification of Section 5.2.
