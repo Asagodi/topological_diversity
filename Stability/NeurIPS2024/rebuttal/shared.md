@@ -9,20 +9,21 @@ Perhaps these scores can be explained by the lack of clarity in the previous ver
 
 
 # List of changes
-1.  
-1. 
-1. 
+1.
+1.
+1.
 
 
 We would like to summarize the important big picture clarifications to our paper.
-1. We would like to emphasize that the theory applies very generally to any continuous attractor that is normally hyperbolic.
+1. We would like to emphasize that the theory applies very generally to any continuous attractor.
+<!-- that is normally hyperbolic : every continuous attractor is normally hyperbolic -->
 In fact, it applies to any differentiable dynamical system
 and to continuous piecewise smooth systems (for which the continuous attractor is a global attractor).
 This covers most of the theoretical models involving continuous attractors as we tried to point out by discussing the main classes of implementations of a ring attractor.
 
 The role of the analysis of theoretical models, and that of the numerical experiments involving trained RNNs is not to prove the generality of the theory, but to illustrate its practical applicability.
 We focused on low-dimensional systems because they easier to visualize and are a better guide to develop intuition.
-We agree however that testing the theory in higher dimensional settings provides proof of the relevance of the theory in practice.
+We agree however that applying our theory to higher dimensional problems would provide a convincing argument for its practical relevance.
 Therefore, we include results on RNNs trained on a 2D task: a double angular velocity integration task.
 We find a slow attractive invariant manifold with a point topology in the trained RNNs.
 Furthermore, we find evidence of the relevance of the bound on the error in these trained RNNs as well.
@@ -33,8 +34,8 @@ We found the same normally hyperbolic attractive invariant manifolds of fixed po
 
 
 2. For whom is this relevant? <!--# Discuss contributions and impacts-->
-We believe that our theory is relevant to all (theoretical) neuroscientists who are trying to understand analog working memory, the ways how it might be implemented in the brain and its robustness 
-We demonstrate robustness of the implemented analog memory in recurrent systems to perturbations of their connection matrix. 
+We believe that our theory is relevant to all (theoretical) neuroscientists who are trying to understand analog working memory, the ways how it might be implemented in the brain and its robustness
+We demonstrate robustness of the implemented analog memory in recurrent systems to perturbations of their connection matrix.
 However, the theory also has implications robustness of theoretical models more generally than just : for small changes to the functional form of the activation function of the neurons the network will behave functionally similar to the original model.
 
 
@@ -47,10 +48,10 @@ This section is showing the reverse of the Persistence Theorem: under reasonable
 
 
 4. Hyperparameters / Parameter choices and parameter dependence for the analysis
-There are very few limitations we place on training the RNNs. 
+There are very few limitations we place on training the RNNs.
 
 
-The threshold parameter for identifying invariant slow manifolds was chosen such that it reflects the two distributions of speeds along the integrated trajectories. 
+The threshold parameter for identifying invariant slow manifolds was chosen such that it reflects the two distributions of speeds along the integrated trajectories.
 There is a bit of dependence of how many fixed points are identified on how many points on the invariant are sampled for the angular flow.
 However, this will converge to a maximal number if the grid of initial points is increased.
 Becuase all networks have less than 50 fixed points, we believe that 1024 initial points are sufficient.
@@ -74,7 +75,9 @@ For a nonlinear output mapping, a possible solution for analog memory is the qua
 Our analysis methods can identify these limit sets, but we do not have a simple way to parametrize the invariant manifold.
 
 Our analysis is dependent on a time scale separation that we identify from simulated trajectories.
-If the separation of time-scales is small, our method can 
+```
+Sth missing: If the separation of time-scales is small, our method can
+```
 This separation is reflected however in the distance of the approximation to the continous attractor; a system without a large separation will be either not robust to state (S-type) noise or will be performing poorly for longer trial times than it was trained on.
 
 
