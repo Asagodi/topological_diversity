@@ -2,7 +2,7 @@
 > 1. The experiments and associated analyses focus solely on networks that approximate 1D ring attractors.
 > This is quite simplistic, and at least for the numerical expreiments, the authors could consider tasks like navigation where a planar 2D attractor is approximated by the networks.
 
-We appreciate the remark, and have included an additional task where the approximate continuous attractor is of higher dimension, namely a double angular velocity integration task.
+We appreciate the remark, and have included an additional task where the approximate continuous attractor is of higher dimension, namely a double angular velocity integration task. Please see the shared reply to all reviewers on our new findings.
 The networks develop corresponding approximate continuous attractors that have the same structure as the task requires (in this case a torus).
 
 That being said, we would like to reiterate that the primary contribution is theoretical and the numerical experiments are meant to illustrate the theory.
@@ -65,9 +65,8 @@ We find the fixed points and their stabilities by identifying where the flow rev
 The only example we found that is of another type is the attractive torus (Fig.4D).
 For this network, instead of finding the fixed points, we identifies stable limit cycles where there was a recurrence of the simulated trajectories, i.e., where the flow returned back to an initial chosen number of time steps (up to a distance of 10^{-4}).
 
-
-
 For the difficulties of using DSA, see above.
+
 
 > At what level of performance are all trained networks compared? Are they all trained until the same loss value and how close is this MSE to 0?
 
