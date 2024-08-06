@@ -15,10 +15,15 @@ In the revised version of the manuscript, we will include the above limitations 
 [1] Eldering, Normally Hyperbolic Invariant Manifolds.
 > The authors have only qualitatively characterized the variations in the topologies of the networks. It is perhaps possible to quantitatively characterize this by using Dynamical Similarity Analysis [1] on various trained networks.
 
-We thank the reviewer for pointing out the reference; we are currently applying DSA to our numerical results.
+We thank the reviewer for pointing out the reference; we are applied DSA to our numerical results.
 Our preliminary observations are that DSA reflects the fact that the geometry of the invariant manifold is preserved, but it cannot detect the emergence of fixed-points and saddles on the pertubed manifold.
+The DSA values clustered around two points regardless of the number of fixed points
 <!-- How to discuss DSA giving near zero ds score for networks trained on different tasks?-->
 This appears to be consistent with the results reported in the referenced paper, c.f. Figure 4 shows a gradual increase in DSA as $\alpha \to 1$ despite having a bifurcation at $\alpha = 1$.
+Furthermore, the score that DSA gives is relative, so one would need to rely on a relative score for the different networks.
+Finally, DSA requires checks that ensure that the linearized dynamics captures the structure of the dynamical system, which would need additional analysis outside of DSA.
+
+
 
 
 > For the generalization analysis, the authors could evaluate generalization performance by the nature/type of the approximate attractor as well.
@@ -47,15 +52,16 @@ We improved the writing, focusing on overall clarity.
 >For example, the conclusions of the generalization analysis and their implications are not very clear, and how this connects to the various types of approximate attractors is not clear (related to W3).
 
 In the revised version, we will make a stronger point that connects the inherent slowness of the invariant manifold to the generalizability of the approximate solutions.
-We will also added a longer description of the implications of our numerical experiments to the main text.
+We also added a longer description of the implications of our numerical experiments to the main text.
 
 ### Questions:
 
 > How do the authors identify the various kinds of approximations of the attractors? Can this be automated, perhaps by using to DSA to cluster the various types?
 
+We identify the various kinds of approximations as follows.
 
 
-See above.
+For the difficulties of using DSA, see above.
 
 > At what level of performance are all trained networks compared? Are they all trained until the same loss value and how close is this MSE to 0?
 All networks are trained for 5000 gradient steps.
