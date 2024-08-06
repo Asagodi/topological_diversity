@@ -1,6 +1,6 @@
 \documentclass[letterpaper]{article}
 \usepackage{graphicx}
-\usepackage{caption}
+\usepackage[font=footnotesize]{caption}
 \usepackage{subcaption}
 \usepackage[margin=.5in]{geometry}
 
@@ -25,10 +25,11 @@
   \centering
   \includegraphics[width=\textwidth]{angular_losses_lstm_gru}
   \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
-    \textbf{(A)} The average accumulated angular error versus the uniform norm on the vector field shown.
-     Angular error at time of trial length on which networks were trained (\(T_1\), filled markers) and at asymptotic time (hollow markers).
-      The number of fixed point is an integer number. The points are spread out slightly to aid visibility.
-    \textbf{(B)}  The number of fixed points versus average accumulated angular error, with the average distance between neighbouring fixed points (magenta).
+    \textbf{(A)} The average accumulated angular error vs. the uniform norm on the vector field shown.
+     Angular error at \(T_1 =\) trial length (filled markers) and \(\lim T_{1} \to \infty\)  (hollow markers).
+      % The number of fixed point is an integer number.
+      Points are jittered to aid legibility.
+    \textbf{(B)}  The \# of fixed points vs. average accumulated angular error, with the average distance between neighboring fixed points (magenta).
 }\label{fig:angular_losses_lstm_gru}
 \end{figure}
 %A==A

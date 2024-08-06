@@ -44,15 +44,15 @@ However, the general problem remains an open one. For a continuous attractor of 
 The characterization of bifurcations with codimension $n > 2$ is an open problem.
 Our approach aims to balance the specificity of a detailed bifurcation analysis with generality.
 
-We have however characterized all possible perturbations for a ring attractor.
-Any perturbations that are at most an epsilon distance from the original ring attractor (in ( C^1 ) topology) will either result in no bifurcation, a limit cycle, or a slow manifold with fixed points.
+We characterize exhaustively possible perturbations for a ring attractor.
+Any perturbations that are at most an epsilon distance from the original ring attractor (in $C^1$ topology) will either result in no bifurcation, a limit cycle, or a slow manifold with fixed points.
 
 Instead of specifying the topology of the dynamics within the slow manifold, we provide a geometric statement. We demonstrate that the persistence of an invariant manifold can lead to fruitful analyses, even without explicit knowledge of the bifurcation. This approach allows us to derive generalization bounds and other insights.
 
 
 >Likewise, the functions h and g are also not clear enough. It is unclear how one can obtain/choose the functions h and g such that the two systems defined by Eq. (2) and Eqs. (3) & (4) are equivalent.
 
-Obtaining the functions \( h \) and \( g \) is problem-specific and cannot be provided in a closed form for general invariant manifolds. 
+Obtaining the functions \( h \) and \( g \) is problem-specific and cannot be provided in a closed form for general invariant manifolds.
 The essence of Theorem 1 can be restated as follows: **if** the function \( f \) has a normally hyperbolic invariant manifold, **then** there exist vector fields \( h \) and \( g \) that satisfy the conditions for equivalence between the systems defined by Eq. (2) and Eqs. (3) & (4).
 This means that the existence of such functions \( h \) and \( g \) is guaranteed under the condition of having a normally hyperbolic invariant manifold, but their explicit forms depend on the specific problem at hand.
 
@@ -81,8 +81,8 @@ Finally, we rely on the minimal requirement of continuity of the vector field to
 
 >1. It is unclear under what conditions RNN dynamics can be decomposed into slow-fast form to which we can apply Theorem 1.
 
-Theorem 1 holds for all dynamical systems that have a normally hyperbolic continuous attractor. 
-For example, RNNs with a ReLU activation functions can only have normally hyperbolic continuous attractors. This is because at any point the vector field that they define either is zero or has a linear terms (ReLU RNNs are piecewise linear systems). 
+Theorem 1 holds for all dynamical systems that have a normally hyperbolic continuous attractor.
+For example, RNNs with a ReLU activation functions can only have normally hyperbolic continuous attractors. This is because at any point the vector field that they define either is zero or has a linear terms (ReLU RNNs are piecewise linear systems).
 The examples of continuous attractors and continuous attractor approximations that we discuss in the paper are all normally hyperbolic.
 In fact, there is a huge benefit from having normal hyperbolicity as it can counteract state noise.
 This means that for any dynamical system with a normally hyperbolic continuous attractor, the dynamics can be decomposed into slow and fast components, allowing the application of Theorem 1.
