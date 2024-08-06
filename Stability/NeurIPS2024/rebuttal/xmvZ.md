@@ -17,38 +17,52 @@ Please also see the shared reply to all reviewers, where we discuss the scope an
 
 > RNNs with specific activation functions and restrictive settings,
 
-We agree that incorporating gated RNNs in our analysis would strengthen our submission.
-To this end, we trained and analyzed LSTM and GRU RNNs.
-The new results have been uploaded to OpenReview in a separate document.
-The solutions as found by trained LSTMs and GRUs follow the same pattern as Vanilla RNNs--- there exists a normally hyperbolic attractive invariant ring with slow dynamics that evolve onto fixed points.
+We appreciate the reviewer's insightful comment regarding the use of specific activation functions and restrictive settings in RNNs. In response, we have conducted additional experiments with gated RNN architectures, specifically LSTM and GRU models. The results of these experiments have been thoroughly documented and uploaded to OpenReview in a supplementary document for your review.
+
+Our findings indicate that the solutions identified by the trained LSTM and GRU models exhibit similar patterns to those observed in Vanilla RNNs. Specifically, we observed the presence of a normally hyperbolic attractive invariant ring characterized by slow dynamics that eventually converge to fixed points. This consistency across different RNN architectures reinforces the robustness of our initial observations and provides further validation of our theoretical framework.
 
 
 > 1. In Sect. 3.1, the perturbation p(x) is not clear enough. Specifically, it is unclear:
 > 1. Under what conditions the perturbation function p(x) induces a bifurcation?
 
-Continuous attractors satisfy first-order conditions for a local bifurcation; i.e. they are equilibria, and their Jacobian linearization has a non-trivial subspace with eigenvalues with zero real part.
-Therefore, *any* generic perturbation $\mathbf{p}(\mathbf{x})$ will cause the system to bifurcate.
-A more detailed discussion of this is available in Kuznetsov 2004, Robbinson 1999, and Abraham and Marsden 2008.
+Continuous attractors satisfy the first-order conditions for a local bifurcation; that is, they are equilibria, and their Jacobian linearization possesses a non-trivial subspace with eigenvalues having zero real parts. Consequently, any generic perturbation ($p(x)$) will induce a bifurcation in the system.
+
+For a more comprehensive discussion on this topic, we refer the reviewer to the following references:
+1. Kuznetsov, 2004
+1. Robinson, 1999
+1. Abraham and Marsden, 2008
+These references provide detailed insights into the conditions under which perturbations lead to bifurcations, supporting our assertion.
+
+<!-- 1) For most CANs p(x) almost always induces a bifurcation. (Is it true that the only way to modify the dynamics such that there is not a bifurcation is via changing the level of attractiveness of the the continuous manifold?. In this sense “almost always” = measure zero of parameter space (?) For exact determination maybe Piotr’s ideas) -->
+<!-- Piotr: I took a stab at writing it but I get too annoyed to phrase it well. The almost always is a bit different though--- for parametric systems it happens on a dense set of parameters. For the vector fields, I'm guessing a similar statement can be made but I can't recall the precise phrasing of it. -->
 
 >2) What types of (generic) bifurcations can arise from the perturbation p(x)?
 
-We are working to characterize codimension-1 bifurcations for a ring attractor. We believe a simple, polynomial normal form can be derived.
+We are actively working to characterize codimension-1 bifurcations for a ring attractor and believe that a simple, polynomial normal form can be derived for this purpose.
 
-As mentioned before, a continuous attractor of dimension $n$, the bifurcation is potentially of codim $n$.
-The characterization of codim $n>2$ bifurcations is an open problem (viz. Kuznetsov 2004).
-Our approach effectively side-steps this difficulty.
-Rather than specifying the topology of equilibria within the invariant manifold, we provide a geometric statement about the persistence of the invariant manifold.
-We then show that the persistence of an invariant manifold can lead to fruitful analyses even without explicit knowledge of the bifurcation (viz. generalization bounds).
+However, the general problem remains an open one. For a continuous attractor of dimension $n$, the bifurcation is potentially of codimension $n$.
+The characterization of bifurcations with codimension $n > 2$ is an open problem.
+Our approach aims to balance the specificity of a detailed bifurcation analysis with generality.
+
+We have however characterized all possible perturbations for a ring attractor.
+Any perturbations that are at most an epsilon distance from the original ring attractor (in ( C^1 ) topology) will either result in no bifurcation, a limit cycle, or a slow manifold with fixed points.
+
+Instead of specifying the topology of the dynamics within the slow manifold, we provide a geometric statement. We demonstrate that the persistence of an invariant manifold can lead to fruitful analyses, even without explicit knowledge of the bifurcation. This approach allows us to derive generalization bounds and other insights.
+
+
+
+
 
 >Likewise, the functions h and g are also not clear enough. It is unclear how one can obtain/choose the functions h and g such that the two systems defined by Eq. (2) and Eqs. (3) & (4) are equivalent.
 
-We understand the reviewer's criticism but would like to offer an alternative perspective.
-1. The essence of Theorem 1 is *not a practical recipe, but a statement of existence*: **if** $\mathbf{f}$ has a normally hyperbolic invariant manifold, then there exist vector fields $\mathbf{h},\,\mathbf{g}$.
-1. Obtaining $\mathbf{h},\,\mathbf{g}$ is problem specific, and cannot be given in closed for general invariant manifolds.
+Obtaining $h,\,g$ is problem specific, and cannot be given in closed for general invariant manifolds.
+Let us state the essence of Theorem 1 differently: **if** $f$ has a normally hyperbolic invariant manifold, then there exist vector fields $h,\,g$.
+
+
+
 
 
 > 1. What does **sufficiently smooth** mean in Theorem 1? As mentioned by the authors after this theorem, it applies to continuous piecewise linear systems. However, it cannot be applied to all piecewise smooth (PWS) systems , such as Filippov systems.
-
 >In particular, for these systems, bifurcations involving non-hyperbolic fixed points can be analyzed using similar slow (center) manifold approaches, but only for part of the phase space.
 
 Please note, that a center manifold is not necessarily unique, and generally is local in **both** space and time ($J \subset \mathcal{X} \times T$).
@@ -57,17 +71,20 @@ Stability, or invariance under the flow therefore generally cannot be analyzed u
 >However, discontinuity-induced bifurcations cannot be examined in the same way, as there is no slow manifold in these cases.
 
 We will make more clear in the text that discontinuous systems are not being considered.
+Because all both theoretical models and activation functions for RNNs are at least continuous and piecewise smooth, we believe that this limitation still includes an essential part of relevant dynamical systems and that therefore our theory is very general.
 
-Because all typical RNNs are at least piecewise smooth, we believe that this limitation still includes a really big part of relevant dynamical systems and is therefore a very general theoretical result.
+Furthermore, the smoothness of the system determines how close and how smoothly the invariant manifold will change w.r.t. perturbation parameter.
+If there is no assumption about even continuity, then the system will not
 
-Further, the smoothness of the system determines how close and how smoothly the invariant manifold will change w.r.t. perturbation parameter.
+Finally, we rely on the minimal requirement of continuity of the vector field to be able to
+
 
 >1. It is unclear under what conditions RNN dynamics can be decomposed into slow-fast form to which we can apply Theorem 1.
 
 Theorem 1 holds for all RNNs that have a normally hyperbolic continuous attractor.
 All continuous attractors are normally hyperbolic, the zero flow leaves an infinite gap.
 So they can all be decomposed
-We do not have a general expression for the decomposition though.
+We do not have a general expression for the decomposition, but show that it necessarily needs to exist.
 
 > 1. In Sect. 4.1, line 213, it is vague how assuming an Euler integration with unit time step, the discrete-time RNN of (6) transforms to eq. (7). Is this transformation independent of the function f and matrix W in eq. (6)?
 
