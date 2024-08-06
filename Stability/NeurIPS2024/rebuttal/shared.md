@@ -33,16 +33,16 @@ This covers most of the theoretical models involving continuous attractors as we
 The role of the analysis of theoretical models, and that of the numerical experiments involving trained RNNs is not to prove the generality of the theory, but to illustrate its practical applicability.
 We focused on low-dimensional systems because they easier to visualize and are a better guide to develop intuition.
 We agree however that testing the theory in higher dimensional settings provides proof of the relevance of the theory in practice.
-Therefore, we include results on RNNs trained on 2D tasks. <!-- Double angular velocity integrations and  -->
+Therefore, we include results on RNNs trained on a 2D task: a double angular velocity integration task.
 We find a slow attractive invariant manifold with a point topology in the trained RNNs.
 Furthermore, we find evidence of the relevance of the bound on the error in these trained RNNs as well.
 
 Another point about the generality of the theory involves our claim of the universality of the found RNNs through training.
 We tested our theory in other architectures as well, namely LSTMs and GRUs.
-We found the same normally hyperbolic attractive invariant manifolds of fixed point type.
+We found the same normally hyperbolic attractive invariant manifolds of fixed point type: a ring invariant manifold made up of stable and saddle nodes connected by heteroclinic orbits.
 
 
-1. For whom is this relevant?
+2. For whom is this relevant?
 We believe that our theory is relevant to all (theoretical) neuroscientists who are trying to understand analog working memory, the ways how it might be implemented in the brain and its robustness 
 We demonstrate robustness of the implemented analog memory in recurrent systems to perturbations of their connection matrix. 
 However, the theory also has implications robustness of theoretical models more generally than just : for small changes to the functional form of the activation function of the neurons the network will behave functionally similar to the original model.
@@ -50,9 +50,14 @@ However, the theory also has implications robustness of theoretical models more 
 
 
 
-1. Hyperparameters / Parameter choices and parameter dependence for the analysis
+3. Hyperparameters / Parameter choices and parameter dependence for the analysis
+There are very few limitations we place on training the RNNs. 
 
 
+The threshold parameter for identifying invariant slow manifolds was chosen such that it reflects the two distributions of speeds along the integrated trajectories. 
+There is a bit of dependence of how many fixed points are identified on how many points on the invariant are sampled for the angular flow.
+However, this will converge to a maximal number if the grid of initial points is increased.
+Becuase all networks have less than 50 fixed points, we believe that 1024 initial points are sufficient.
 
 
 # Discuss contributions and impacts
