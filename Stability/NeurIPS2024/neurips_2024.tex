@@ -2066,7 +2066,8 @@ We keep the following parameters for the analysis:
 
 \subsubsection{Mean field approaches}
 \citep{kuhn2023information} analyzes an Ising network perturbed with a specially structured noise at the thermodynamic limit.
-Although their analysis elegantly shows that the population activity of the perturbed system does not destroy the Fisher information about the input, they do not consider a scenario where the ring attractor is used as a working memory mechanism, it is rather used to encode instantaneous representation. In contrast, our analysis involves understanding how the working memory content degrades over time due to the dynamics. We are not aware of any mean field analysis that covers this aspect.
+Although their analysis elegantly shows that the population activity of the perturbed system does not destroy the Fisher information about the input, they do not consider a scenario where the ring attractor is used as a working memory mechanism, it is rather used to encode instantaneous representation.
+In contrast, our analysis involves understanding how the working memory content degrades over time due to the dynamics. We are not aware of any mean field analysis that covers this aspect.
 
 
 
@@ -2082,9 +2083,6 @@ To do this we choose $k=3$ points $\{(x_i, y_i)\}_{i=1}^N$ in the 2D ring with r
 Finally we associate the negative eigenvalue $-1/\tau$ to the orthogonal eigenvectors and different eigenvalues to the tangent eigenvectors. We use $-1$, $0$ or $1$ depending on whether we want the points to be stable, center or unstable in the direction of the slow ring manifold.
 
 Since these determined dynamics are only in a 2D plane, we use a random linear mapping $D\colon\reals^2\rightarrow\reals^N$ to map the fixed points and the eigenvectors to a $10$-dimensional space. First, we sample a random from orthogonal matrix $A$ from the $O(N)$ Haar distribution and then we take the first two columns of this matrix to be $D=[A]_{12}$.
-
-
-
 
 EMPJ then returns a network parameters that satisfy these constraints. Furthermore, due to the particular solver used, that regularises the magnitude of the parameters, we get that all the other eigenvalues not specified are also set to $-1/\tau$ (for details see \citep{pollock2020}).
 
