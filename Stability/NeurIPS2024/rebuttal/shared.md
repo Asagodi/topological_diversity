@@ -1,50 +1,51 @@
-We would like to thank the reviewers 
+We are grateful to hear that the reviewers found our work novel and interesting. Reviewers remarked that it is "a novel contribution and an important result to bolster the continuous attractor hypothesis", "fresh look, novel, original, and interesting [and] superb theoretical motivation", that "the main thrust of the paper was very interesting and very novel" and that "it should be applauded."
 
-# List of changes
-1.  
-1. 
-1. 
+To respond to the reviewer's comments, we have performed the following analysis:
+ - quantify the fast-slow time scale seperation on the manifold found in task-trained RNN [Fig R1]
+ - trained LSTM and GRU networks [Fig R2]
+ - trained RNNs on 2D task where the continuous attractor manifold is a torus [Fig R3]
 
+## Generality of the Theory
 
-# 
-We are very happy that the reviewers thought that
-> the main idea of the paper is interesting
-> this is a novel contribution and an important result to bolster the continuous attractor hypothesis
-> study of continuous attractors in the finite time limit [...] is a fresh look, novel, original, and interesting [and] superb theoretical motivation
-> the main thrust of the paper was very interesting and very novel
-and that one of the reviewers even thinks 
-> it should be applauded.
-
-
-However, we are disappointed by the corresponding scores.
-Perhaps these scores can be explained by the lack of clarity in the previous version of the paper.
-We have now added clarifications about topics, experiments, figures and concepts that were pointed out in the reviews and improved the overall flow of the text and the main message of the different subsections.
-
-
-
-
-
-We would like to summarize the important big picture clarifications to our paper.
-1. We would like to emphasize that the theory applies very generally to any continuous attractor that is normally hyperbolic.
-In fact, it applies to any differentiable dynamical system
-and to continuous piecewise smooth systems (for which the continuous attractor is a global attractor).
-This covers most of the theoretical models involving continuous attractors as we tried to point out by discussing the main classes of implementations of a ring attractor.
-
-The role of the analysis of theoretical models, and that of the numerical experiments involving trained RNNs is not to prove the generality of the theory, but to illustrate its practical applicability.
-We focused on low-dimensional systems because they easier to visualize and are a better guide to develop intuition.
-We agree however that testing the theory in higher dimensional settings provides proof of the relevance of the theory in practice.
-Therefore, we include results on RNNs trained on a 2D task: a double angular velocity integration task.
-We find a slow attractive invariant manifold with a point topology in the trained RNNs.
-Furthermore, we find evidence of the relevance of the bound on the error in these trained RNNs as well.
+While most bifurcation analyses in theoretical neuroscience and machine learning is based on a particular parameterization (e.g., pairwise weight matrix), our theory is applies to any differentiable dynamical system and to continuous piecewise smooth systems (for which the continuous attractor is a global attractor). Hence, the behavior of many different ring attractors and RNNs discussed can be explained in this framework. Note that the only important condition is the normal hyperbolicity.
 
 Another point about the generality of the theory involves our claim of the universality of the found RNNs through training.
 We tested our theory in other architectures as well, namely LSTMs and GRUs.
 We found the same normally hyperbolic attractive invariant manifolds of fixed point type: a ring invariant manifold made up of stable and saddle nodes connected by heteroclinic orbits.
 
+## Focus on the ring attractor implementations
+
+MPComment: I'm not happy with the writing below. Maybe process through LLM if you are stuck.
+
+The role of the analysis of theoretical models, and that of the numerical experiments involving trained RNNs is not to prove the generality of the theory, but to illustrate its practical applicability.
+We focused on low-dimensional systems because they easier to visualize and are a better guide to develop intuition.
+We agree however that applying our theory to higher dimensional problems would provide a convincing argument for its practical relevance.
+Therefore, we include results on RNNs trained on a 2D task: a double angular velocity integration task.
+We find a slow attractive invariant manifold with a point topology in the trained RNNs.
+Furthermore, we find evidence of the relevance of the bound on the error in these trained RNNs as well.
+
+## Broader impact within compuational neuroscience
+
+
+## Clarity
+
+We agree with the reviewers on the lack of clarity in places.
+
+MPComment: I don't think we should promise what we will change...that doesn't work well
+
+We have now added clarifications about topics, experiments, figures and concepts that were pointed out in the reviews and improved the overall flow of the text and the main message of the different subsections.
+
+However, we are disappointed by the corresponding scores.
+Perhaps these scores can be explained by the lack of clarity in the previous version of the paper.
+
+
+We would like to summarize the important big picture clarifications to our paper.
+
+
 
 2. For whom is this relevant? <!--# Discuss contributions and impacts-->
-We believe that our theory is relevant to all (theoretical) neuroscientists who are trying to understand analog working memory, the ways how it might be implemented in the brain and its robustness 
-We demonstrate robustness of the implemented analog memory in recurrent systems to perturbations of their connection matrix. 
+We believe that our theory is relevant to all (theoretical) neuroscientists who are trying to understand analog working memory, the ways how it might be implemented in the brain and its robustness
+We demonstrate robustness of the implemented analog memory in recurrent systems to perturbations of their connection matrix.
 However, the theory also has implications robustness of theoretical models more generally than just : for small changes to the functional form of the activation function of the neurons the network will behave functionally similar to the original model.
 
 
@@ -57,10 +58,10 @@ This section is showing the reverse of the Persistence Theorem: under reasonable
 
 
 4. Hyperparameters / Parameter choices and parameter dependence for the analysis
-There are very few limitations we place on training the RNNs. 
+There are very few limitations we place on training the RNNs.
 
 
-The threshold parameter for identifying invariant slow manifolds was chosen such that it reflects the two distributions of speeds along the integrated trajectories. 
+The threshold parameter for identifying invariant slow manifolds was chosen such that it reflects the two distributions of speeds along the integrated trajectories.
 There is a bit of dependence of how many fixed points are identified on how many points on the invariant are sampled for the angular flow.
 However, this will converge to a maximal number if the grid of initial points is increased.
 Becuase all networks have less than 50 fixed points, we believe that 1024 initial points are sufficient.
@@ -84,7 +85,9 @@ For a nonlinear output mapping, a possible solution for analog memory is the qua
 Our analysis methods can identify these limit sets, but we do not have a simple way to parametrize the invariant manifold.
 
 Our analysis is dependent on a time scale separation that we identify from simulated trajectories.
-If the separation of time-scales is small, our method can 
+```
+Sth missing: If the separation of time-scales is small, our method can
+```
 This separation is reflected however in the distance of the approximation to the continous attractor; a system without a large separation will be either not robust to state (S-type) noise or will be performing poorly for longer trial times than it was trained on.
 
 

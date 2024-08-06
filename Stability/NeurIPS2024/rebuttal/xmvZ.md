@@ -1,6 +1,5 @@
 ### Weaknesses:
 > 1. They discussed some interesting theoretical techniques (e.g., Theorem 1, Proposition 1) in their study.
-
 >However, their theoretical investigation and results are limited to a few very simple systems, low-dimensional systems either in Section S4 or low-dimensional RNNs with specific activation functions and restrictive settings, i.e., specific parameter values (e.g., equations (1) and (10)).
 > The bifurcation analysis of the line attractors and fast-slow decomposition in Section S2 are also studied for very simple systems. Therefore, it is difficult to determine how general their theoretical discussion is and whether it can be applied to investigate and obtain results for more general and high-dimensional cases.
 
@@ -15,7 +14,7 @@ Given the remarks made by the other reviewers, we elaborate on the generality an
 > RNNs with specific activation functions and restrictive settings,
 
 We have trained and analyzed gated RNNs such as LSTM, and GRU.
-The new results have been uploaded to OpenReview in a separated document.
+The new results have been uploaded to OpenReview in a separate document.
 The solutions as found by trained LSTMs and GRUs follow the same pattern as Vanilla RNNs:
 there exists a normally hyperbolic attractive invariant ring with slow dynamics that evolve onto fixed points.
 
@@ -37,7 +36,7 @@ We are working to characterize codimension-1 bifurcations for a ring attractor. 
 However, the general problem remains an open one. Note that for a continuous attractor of dimension $n$, the bifurcation is potentially of codim $n$.
 The characterization of codim $n>2$ bifurcations is an open problem; our approach provides a trade-off between the specificity of a detailed bifurcation analysis and generality.
 Rather than specifying the topology of the dynamics within the slow manifold, we provide a geometric statement.
-We then show that the persistence of an invariant manifold can lead to fruitful analyses even without an explicit knowledge of the bifurcation (viz. generalization bounds).
+We then show that the persistence of an invariant manifold can lead to fruitful analyses even without explicit knowledge of the bifurcation (viz. generalization bounds).
 <!-- Lastly, please recall that our results pose no restrictions on the dimensionality of the system or the continuous attractor. -->
 <!-- 2) Any that are at most at epsilon distance from original system (C^1 topology) (Could you say / is it true that it will always be either no bifurcation, or a limit cycle or a slow manifold with fixed points?  I have that intuition but do not know if it is fair) -->
 

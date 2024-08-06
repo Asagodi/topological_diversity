@@ -10,18 +10,24 @@ There are suitable generalizations of this theory to noncompact manifolds [1], b
 Tangentially, we would also like to point out that we assume that neural dynamics are naturally bounded (e.g. by energy constraints) and hence sufficiently well described by compact invariant manifolds.
 1. Approximations of planar attractors that are diffeomorphic to $[0,1]\times[0,1]$ are also excluded since they’re an example of a **manifold with corners**.
 
-In the revised version of the manuscript, we will include the above limitations and provide reference to [1].
+In the revised version of the manuscript, we will include the above limitations and provide reference to [2].
 
-[1] Eldering, Normally Hyperbolic Invariant Manifolds.
+[2] Eldering, Normally Hyperbolic Invariant Manifolds.
 > The authors have only qualitatively characterized the variations in the topologies of the networks. It is perhaps possible to quantitatively characterize this by using Dynamical Similarity Analysis [1] on various trained networks.
 
-We thank the reviewer for pointing out the reference; we are applied DSA to our numerical results.
+We thank the reviewer for pointing out the reference; we applied DSA to our numerical results.
 Our preliminary observations are that DSA reflects the fact that the geometry of the invariant manifold is preserved, but it cannot detect the emergence of fixed-points and saddles on the pertubed manifold.
-The DSA values clustered around two points regardless of the number of fixed points
+The DSA values clustered around two points regardless of the number of fixed points.
 <!-- How to discuss DSA giving near zero ds score for networks trained on different tasks?-->
 This appears to be consistent with the results reported in the referenced paper, c.f. Figure 4 shows a gradual increase in DSA as $\alpha \to 1$ despite having a bifurcation at $\alpha = 1$.
-Furthermore, the score that DSA gives is relative, so one would need to rely on a relative score for the different networks.
-Finally, DSA requires checks that ensure that the linearized dynamics captures the structure of the dynamical system, which would need additional analysis outside of DSA.
+
+Lastly, we would like to note that the analysis using DSA cannot be trivially automated. As pointed out by the authors of DSA:
+1. The DSA 'score' is relative; one needs to compare different dynamics.
+1. DSA essentially requires 'learning' or fitting a separate model, which implicitly requires performing model selection with respect to the delay embedding, rank of the linear operator.
+
+For these reasons, we would like to adhere to the spirit of our initial analyses.
+<!-- Furthermore, the score that DSA gives is relative, so one would need to rely on a relative score for the different networks.
+Finally, DSA requires checks that ensure that the linearized dynamics captures the structure of the dynamical system, which would need additional analysis outside of DSA. -->
 
 
 
@@ -58,11 +64,12 @@ We also added a longer description of the implications of our numerical experime
 
 > How do the authors identify the various kinds of approximations of the attractors? Can this be automated, perhaps by using to DSA to cluster the various types?
 
-We identify the various kinds of approximations as follows.
+We identify the various kinds of approximations as follows. @Abel
 
 
 For the difficulties of using DSA, see above.
 
 > At what level of performance are all trained networks compared? Are they all trained until the same loss value and how close is this MSE to 0?
+
 All networks are trained for 5000 gradient steps.
 We exclude those networks from the analysis that are performing less than -20dB in terms of normalized mean squared error.
