@@ -2,9 +2,9 @@ We would like to thank the reviewer for their valuable comments and suggestions.
 
 > signposting
 We thank the reviewer for and agree with this feedback. We tried to make the manuscript clearer by:
-- Changing the last paragraph of the introduction, making a reference to which points are made in which section.
-- Adding which are the main questions that arise and in which section they are answered after the exploration in the end of Section 2.
-- Adding extra senteces at the start of sections and subsections to better introduce the main messages of the section.
+- Changing the last paragraph of the introduction, summerizing each section
+- Highlighting the main questions arising from the discussed examples and where the answers are after Sec.2
+- Adding introductory senteces at the start of sections and subsections to describe the main message of the section
 
 > Fig 1) A was a great figure, B was never mentioned in the text, despite being very pretty.
 We now added an essential reference to Fig.1B.
