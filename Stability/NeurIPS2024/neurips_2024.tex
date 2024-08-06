@@ -304,7 +304,7 @@ Nevertheless, the bifurcated dynamics again follow a similar pattern: the dynami
 Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{Noorman2022}.
 This model is composed of \(N\) heading-tuned neurons with preferred headings \(\theta_j \in \{\nicefrac{2\pi i}{N}\}_{i=1\dots N}\) radians (Sec.~\ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter \(J_E\)) and broad inhibition (\(J_I\)), this network will generate a stable bump of activity corresponding to the head direction.
-This continuum of fixed points forms a one-dimensional manifold homeomorphic to the circle.
+This continuum of fixed points forms a \(N\)-sided polygon: a one-dimensional manifold homeomorphic to the circle.
 
 \begin{figure}[tbhp]
      \centering
@@ -316,7 +316,7 @@ This continuum of fixed points forms a one-dimensional manifold homeomorphic to 
        }\label{fig:bio_rings}
 \end{figure}
 
-We evaluate the effect of parametric perturbations of the form \( \vW \leftarrow \vW + \vV\) with \(\vV_{i,j}\iidsample\mathcal{N}(0,\nicefrac{1}{100})\) on a network of size \(N = 6\) with \(J_E= 4\) and \(J_I=-2.4\) by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
+We evaluate the effect of parametric perturbations of the form \( \vW \leftarrow \vW + \vV\) with \(\vV_{i,j}\iidsample\mathcal{N}(0,\nicefrac{1}{100})\) on a network of size \(N = 6\) (forming an hexagon) with \(J_E= 4\) and \(J_I=-2.4\) by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
 We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:bio_rings}A).
 As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
 The probability of each type of bifurcation was numerically estimated (Sec.~\ref{sec:supp:headdirection}).
