@@ -64,11 +64,12 @@ We also added a longer description of the implications of our numerical experime
 
 > How do the authors identify the various kinds of approximations of the attractors? Can this be automated, perhaps by using to DSA to cluster the various types?
 
-We identify the various kinds of approximations as follows.
+We identify the various kinds of approximations as follows. @Abel
 
 
 For the difficulties of using DSA, see above.
 
 > At what level of performance are all trained networks compared? Are they all trained until the same loss value and how close is this MSE to 0?
+
 All networks are trained for 5000 gradient steps.
 We exclude those networks from the analysis that are performing less than -20dB in terms of normalized mean squared error.
