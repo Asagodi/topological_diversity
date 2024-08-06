@@ -42,15 +42,21 @@ We tested our theory in other architectures as well, namely LSTMs and GRUs.
 We found the same normally hyperbolic attractive invariant manifolds of fixed point type: a ring invariant manifold made up of stable and saddle nodes connected by heteroclinic orbits.
 
 
-2. For whom is this relevant?
+2. For whom is this relevant? <!--# Discuss contributions and impacts-->
 We believe that our theory is relevant to all (theoretical) neuroscientists who are trying to understand analog working memory, the ways how it might be implemented in the brain and its robustness 
 We demonstrate robustness of the implemented analog memory in recurrent systems to perturbations of their connection matrix. 
 However, the theory also has implications robustness of theoretical models more generally than just : for small changes to the functional form of the activation function of the neurons the network will behave functionally similar to the original model.
 
 
+3. Section 5.2
+In Section 5.2 we discuss our theory of analog working memory approximations.
+We have included a reference to the used concepts and explanations to the importance to the different claims.
+This section is showing the reverse of the Persistence Theorem: under reasonable assumptions, if a system behaves (in output space) like a continuous attractor, its recurrent dynamics will be near one.
 
 
-3. Hyperparameters / Parameter choices and parameter dependence for the analysis
+
+
+4. Hyperparameters / Parameter choices and parameter dependence for the analysis
 There are very few limitations we place on training the RNNs. 
 
 
@@ -59,8 +65,6 @@ There is a bit of dependence of how many fixed points are identified on how many
 However, this will converge to a maximal number if the grid of initial points is increased.
 Becuase all networks have less than 50 fixed points, we believe that 1024 initial points are sufficient.
 
-
-# Discuss contributions and impacts
 
 
 
