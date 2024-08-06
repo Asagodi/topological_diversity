@@ -6,11 +6,11 @@
 > I would have liked a lot more signposting: why are these sections the right ones  to care about? What are you showing, and why?
 >
 
-We added extra sentences as the start of sections and subsections to better introduce the main message of the section.
+We added extra senteces as the start of sections and subsections to better introduce the main message of the section.
 
 
 > For example, section 2 shows that noise degrades CANs - a nice
-literature review - and then shows a categorization of perturbed fixed
+literature review - and then shows a categorisation of perturbed fixed
 point dynamics. I guess the idea was to show that noise-instability was a
  problem for all CAN types in the literature? If so you could do with
 signposting that. If not, why did you include all of that? Why was it
@@ -28,10 +28,10 @@ We now added a reference to Fig.1B.
 > Fig 2) Why were there hexagons everywhere? I never could find any
 reason for there to be hexagonal figures, did you just make the ring a hexagon for fun? If so, tell the reader!
 
-This is simply a quality of the ring attractor as proposed in [1]. The ring attractor we discuss in the text is implemented by 6 neurons. This results in 6 line attractors, fused at their ends.
+This is simply a quality of the ring attractor as proposed in [1]. The ring attractor we discuss in the text is implemented by 6 neurons. This results in 6 line attractors, fused at their ends. 
 At these fusion points there is a lack of smoothness (similar to the function abs(x)).
 The ring is embedded in 6 dimensional space and we visualize it by projecting it to two dimensions.
-So this piecewise straight "ring" attractor, when projected onto two dimensions looks like a hexagon.
+So this piecewise straigh "ring" attractor, when projected onto two dimensions looks like a hexagon.
 
 
 > Further, in B and C, are the blue lines numerical? How did you choose what to colour blue?
@@ -60,23 +60,23 @@ Fig.4A2 is indeed showing example trajectories, we have corrected this in the te
 We have further corrected the mistake of referring to Fig.4B and C as a limit cycle.
 We did not include the slow repulsive points that we found as they do not seem to be relevant for how the network solves the task.
 We found this structure both through the Fixed Point Finder and through the Newton-Raphson method that we describe in the paper.
-The grey lines on the torus show simulated trajectories.
+The grey lines on the torus show simulated trajectories. 
 Fig.4A1 is indeed showing the output of an integrated angular velocity.
 This figure is just to illustrate the task. This is in addition to Fig.4C which shows the stability structures of the network for which the trajectories are shown as an example.
 
 
 > On that last point, why include details of the (standard)
-discretization scheme, MSE loss, and network details, when key steps to
+discretisation scheme, MSE loss, and network details, when key steps to
 understand what I am looking at (e.g. figure A1 = output space) are
 missing?
-We included these details to support reproducibility.
+We included these details to support reproducability.
 We have now added the extra details to explain what is shown in Fig.4.
 
 > Figure 5A) Why did one of the finite time results go above the line?
 Shouldn't this be an exact theoretical result, yet it appears not to be true?
 
 This is indeed an exact theoretical result, however, our numerical methods are not exact.
-Because we only approximate the invariant manifold, on which we calculate the uniform norm of the vector field, we cannot guarantee that this is exactly the vector field that the simulated trajectories follow.
+Becuase we only approximate the invariant manifold, on which we calculate the uniform norm of the vector field, we cannot guarantee that this is exactly the vector field that the simulated trajectories follow.
 
 
 > Seemed obtuse to claim a linear relationship then show a log-linear plot, fig 5C? How should I see this?
@@ -114,34 +114,28 @@ connectivity, Kuhn & Monasson, 2023.
 Although their analysis elegantly shows that the population activity of the perturbed system does not destroy the Fisher information about the input, they do not consider a scenario where the ring attractor is used as a working memory mechanism, it is rather used to encode instantaneous representation. In contrast, our analysis involves understanding how the working memory content degrades over time due to the dynamics. We are not aware of any mean field analysis that covers this aspect.
 
 
-> What was section 5.2 trying to show? First it claims that 2.2
-presents a theory of approximate solutions in the neighborhood of
-continuous attractors (news to me, as far as I could tell, that section
-showed me that all CAN models were unstable to noise and turn into a
-variety of different fixed points under noise, that doesn't sound like a
- theory at all? Section 3 seems to be the theory?) Then you list four
-conditions on what sounds like exactly the same problem? What is the
-difference between dynamical systems having robust manifolds, and the
-working memory task being solved, isn't the whole point of the model
-that these two are the same? (i.e. you can solve a working memory task
-with a CAN). Is this supposed to be a concluding section that says when
-working memory can be solved? Then why have you suddenly defined state
-and dynamical noise that haven't been used before, I thought we had a
-perfectly nice definition of perturbations on the network (equation 2)?
-This section seemed... strange, in my eyes the paper would be improved
-by removing it
->
+> What was section 5.2 trying to show? First it claims that 2.2 presents a theory of approximate solutions in the neighbourhood of
+continuous attractors (news to me, as far as I could tell, that section showed me that all CAN models were unstable to noise and turn into a
+variety of different fixed points under noise, that doesn't sound like a  theory at all? Section 3 seems to be the theory?) Then you list four
+conditions on what sounds like exactly the same problem? What is the difference between dynamical systems having robust manifolds, and the
+working memory task being solved, isn't the whole point of the model that these two are the same? (i.e. you can solve a working memory task
+with a CAN). Is this supposed to be a concluding section that says when working memory can be solved? Then why have you suddenly defined state
+and dynamical noise that haven't been used before, I thought we had a perfectly nice definition of perturbations on the network (equation 2)?
+This section seemed... strange, in my eyes the paper would be improved by removing it
+
+Section 5.2 (which we moved to a it's own section now) is showing how the reverse of the Persistence Theorem looks like for continuous attractors.
+The Persistence Theorem says that systems in the neighbourhood of a (normally hyperbolic) continous attractor will behave similarily to it.
+This section is showing the reverse: under reasonable assumptions, if a system behaves (in output space) like a continuous attractor, its recurrent dynamics will be near one.
+
+
 
 > Smaller things:
->
 
 > line 107 - comment left in doc
->
 
 > Figure 2 caption line 1, missing 'of' and pluralisation of 'implementation'
->
 
-We thank the reviewer for pointing out these mistakes.
+We thank the reviewer for pointing out these mistakes which we have now corrected.
 
 
 > So all in all, I think the exposition, despite, as I said, often
