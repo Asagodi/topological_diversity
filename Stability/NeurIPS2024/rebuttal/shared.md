@@ -9,23 +9,13 @@ To respond to the reviewer's comments, we have performed the following analysis:
 
 While most bifurcation analyses in theoretical neuroscience and machine learning is based on a particular parameterization (e.g., pairwise weight matrix), our theory is applies to any differentiable dynamical system and to continuous piecewise smooth systems (for which the continuous attractor is a global attractor). Hence, the behavior of many different ring attractors and RNNs discussed can be explained in this framework. Note that the only important condition is the normal hyperbolicity.
 
-<<<<<<< HEAD
+Another point about the generality of the theory involves our claim of the universality of the found RNNs through training.
+We tested our theory in other architectures as well, namely LSTMs and GRUs.
+We found the same normally hyperbolic attractive invariant manifolds of fixed point type: a ring invariant manifold made up of stable and saddle nodes connected by heteroclinic orbits.
 
-# List of changes
-1.
-1.
-1.
-
-
-We would like to summarize the important big picture clarifications to our paper.
-1. We would like to emphasize that the theory applies very generally to any continuous attractor.
-<!-- that is normally hyperbolic : every continuous attractor is normally hyperbolic -->
-In fact, it applies to any differentiable dynamical system
-and to continuous piecewise smooth systems (for which the continuous attractor is a global attractor).
-This covers most of the theoretical models involving continuous attractors as we tried to point out by discussing the main classes of implementations of a ring attractor.
-=======
 ## Focus on the ring attractor implementations
->>>>>>> 9fb208a (not happy about this)
+
+MPComment: I'm not happy with the writing below. Maybe process through LLM if you are stuck.
 
 The role of the analysis of theoretical models, and that of the numerical experiments involving trained RNNs is not to prove the generality of the theory, but to illustrate its practical applicability.
 We focused on low-dimensional systems because they easier to visualize and are a better guide to develop intuition.
@@ -33,10 +23,6 @@ We agree however that applying our theory to higher dimensional problems would p
 Therefore, we include results on RNNs trained on a 2D task: a double angular velocity integration task.
 We find a slow attractive invariant manifold with a point topology in the trained RNNs.
 Furthermore, we find evidence of the relevance of the bound on the error in these trained RNNs as well.
-
-Another point about the generality of the theory involves our claim of the universality of the found RNNs through training.
-We tested our theory in other architectures as well, namely LSTMs and GRUs.
-We found the same normally hyperbolic attractive invariant manifolds of fixed point type: a ring invariant manifold made up of stable and saddle nodes connected by heteroclinic orbits.
 
 ## Broader impact within compuational neuroscience
 
