@@ -27,15 +27,19 @@ Lastly, we would like to note that the analysis using DSA cannot be trivially au
 1. The DSA 'score' is relative; one needs to compare different dynamics.
 1. DSA essentially requires 'learning' or fitting a separate model, which implicitly requires performing model selection with respect to the delay embedding, rank of the linear operator.
 
-For these reasons, we would like to adhere to the spirit of our initial analyses.
+For these reasons, we would like to adhere to our initial analyses.
 
 
 
 > For the generalization analysis, the authors could evaluate generalization performance by the nature/type of the approximate attractor as well.
 
 We looked at the generalization performance by the nature/type of the approximate attractor (Fig.5D MSE vs number of fixed points).
+
+
 >Furthermore, although I may have missed this, could the authors comment on what networks hyperparameters lead to which approximations?
 The only networks hyperparameters that we varied were the nonlinearity and the size.
+In all our figures we show which nonlinearity and size corresponds to which fixed point topology (which we characterize through the number of fixed points on the invariant ring).
+
 
 > The figures and presentation could be improved [...]
 We appreciate the comments, and changed the manuscript accordingly.
