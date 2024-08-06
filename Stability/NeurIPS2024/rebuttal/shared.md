@@ -60,7 +60,7 @@ C1 translates to the existence of a manifold in the neural activity space with t
 Along with the D-type robustness (corresponding to persistence of the manifold) implies and normally hyperbolic (we have expanded on this correspondence through building on the work of Mane [1]).
 The Persistent Manifold Theorem says that systems in the neighbourhood of a (normally hyperbolic) continous attractor will behave similarily to it.
 
-As a side note, we would like to mention that we have  added a more general theoretical result that proves that the invariant slow manifold might have some additional dynamics (which is not slow) as long as the flow of the system is in the kernel of the output mapping  (which covers the torus solution type approximation in Fig.4D).
+As a side note, we would like to mention that we have added a more general theoretical result that proves that the invariant slow manifold might have some additional dynamics (which is not slow) as long as the flow of the system is in the kernel of the output mapping  (which covers the torus solution type approximation in Fig.4D).
 
 
 
