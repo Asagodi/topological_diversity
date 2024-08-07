@@ -1,4 +1,5 @@
 We are grateful and encouraged that the reviewers found our work novel and interesting. Reviewers remarked that it is "a novel contribution and an important result to bolster the continuous attractor hypothesis", "fresh look, novel, original, and interesting [and] superb theoretical motivation", that "the main thrust of the paper was very interesting and very novel" and "it should be applauded."
+We feel many of your suggestions have led us to changes and additions that better position the paper.
 
 To respond to the reviewer's comments, we have performed the following analysis:
 
