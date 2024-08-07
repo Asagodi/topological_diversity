@@ -14,12 +14,12 @@ These networks have the same normally hyperbolic invariant slow ring manifold ju
 ## Focus on the ring attractor implementations
 The analysis of theoretical models and numerical experiments is intended to illustrate the theory's practical applicability rather than to prove its generality.
 We focused on low-dimensional systems because they are easier to visualize and are a better guide to developing intuition.
-We include results on RNNs trained on a 2D task (a double angular velocity integration task) to demonstrate the relevance of our theory further. In these trained RNNs (FigR.3A,B), we find a slow, attractive, invariant manifold in the shape of a torus with a point topology. Additionally, we find evidence supporting the relevance of the error bound in these trained RNNs (FigR.3C,D).
+We include results on RNNs trained on a 2D task (a double angular velocity integration task) to further demonstrate our theory's relevance. In these trained RNNs (FigR.3A,B), we find a slow, attractive, invariant manifold in the shape of a torus with a point topology. Additionally, we find evidence supporting the relevance of the error bound in these trained RNNs (FigR.3C,D).
 
 ## Broader impact within computational neuroscience
-We believe that our theory is relevant to all (theoretical) neuroscientists trying to understand analog working memory and its robustness.
+Our theory is relevant to all (theoretical) neuroscientists trying to understand analog working memory and its robustness.
 We demonstrate the robustness of the implemented analog memory in recurrent systems to perturbations of their connection matrix.
-The theory also has implications robustness of theoretical models more generally: for example, we can be slightly wrong about the functional form of the activation function of the neurons, the network will behave functionally the same as the neural dynamics.
+The theory also has implications for the robustness of theoretical models more generally: for example, we can be slightly wrong about the functional form of the activation function of the neurons; the network will behave functionally the same as the neural dynamics.
 
 # Clarity
 We acknowledge the reviewers' concerns regarding clarity in certain sections. In response, we have added detailed clarifications on the topics, experiments, figures, and concepts highlighted in the reviews. Additionally, we have enhanced the overall flow of the text and strengthened the main messages of the various subsections. Below, we summarize the key clarifications and improvements made to our paper.
@@ -32,11 +32,11 @@ C3 + C4: S-type robustness requires non-positive Lyapunov exponents (i.e., the n
 
 
 ## Hyperparameters / Parameter choices and parameter dependence for the analysis
-The threshold parameter for identifying invariant slow manifolds was chosen such that it reflects the two distributions of speeds along the integrated trajectories.
-There is a bit of dependence of how many fixed points are identified on how many points on the invariant are sampled for the angular flow.
+The threshold parameter for identifying invariant slow manifolds was chosen to reflect the bimodal distributions of speeds along the integrated trajectories.
+The number of fixed points identified depends on the number of points on the invariant sampled for the angular flow.
 However, this will converge to a maximal number if the grid of initial points is increased.
-Because all networks have less than 50 fixed points, we believe that 1024 initial points are sufficient.
-In the supplementary document (FigR.1), we show that the identified invariant manifold accurately reflects the fast-slow separation expected for a normally hyperbolic system, thereby validating our method's legitimacy.
+Because all networks have less than 50 fixed points, we believe 1024 initial points are sufficient.
+The supplementary document (FigR.1) shows that the identified invariant manifold accurately reflects the fast-slow separation expected for a normally hyperbolic system, thereby validating our method's legitimacy.
 
 
 
@@ -44,8 +44,8 @@ In the supplementary document (FigR.1), we show that the identified invariant ma
 We have added a separate **Limitations** subsection:
 While we explicitly describe the topology and dimensionality of the identified invariant manifolds for a representative set, our results indicate that most solutions exhibit a ring invariant manifold with a slow flow. This separation of timescales necessarily exists for well-trained networks; however, the analysis is not guaranteed to work for systems without a fast-slow decomposition.
 
-To identify solutions with a fast-slow decomposition, we rely solely on the generalization property of the network, measured in terms of the normalized mean square error over ten times longer trials. The possible solutions that the networks can find are restricted by having a linear output mapping. For a nonlinear output mapping, a possible solution for analog memory is the quasi-periodic toroidal attractor, but this is not a possible solution with a linear output mapping. While our analysis methods can identify these limit sets, we do not have a straightforward way to parametrize the invariant manifold.
+To identify solutions with a fast-slow decomposition, we rely solely on the generalization property of the network, measured in terms of the normalized mean square error over ten times longer trials. The possible solutions the networks can find are restricted by having a linear output mapping. For a nonlinear output mapping, a possible solution for analog memory is the quasi-periodic toroidal attractor, but this is not a possible solution with a linear output mapping. While our analysis methods can identify these limit sets, we do not have a straightforward way to parametrize the invariant manifold.
 
-Our analysis relies on identifying a time scale separation from simulated trajectories. If the separation of time scales is too small, our method may inadvertently identify parts of the state space that are only forward invariant (i.e., transient). However, this did not pose a problem in our analysis of the trained RNNs. This is expected, as the separation is reflected in the distance of the approximation to the continuous attractor. A system without a significant separation will either lack robustness to state noise or perform poorly for trial times longer than those it was trained on.
+Our analysis relies on identifying a time scale separation from simulated trajectories. If the separation of time scales is too small, our method may inadvertently identify parts of the state space that are only forward invariant (i.e., transient). However, this did not pose a problem in our analysis of the trained RNNs, which is unsurprising, as the separation is relates to state noise robustness. A system without a significant separation will either lack robustness to state noise or perform poorly for trial times longer than those it was trained on.
 
 [1] Mané, R. (1978). Persistent manifolds are normally hyperbolic. Transactions of the American Mathematical Society, 246, 261-283.
