@@ -13,9 +13,6 @@ Tangentially, we would also like to point out that we assume that neural dynamic
 
 In the revised version of the manuscript, we will include the above limitations and provide reference to [2].
 
-
-
-
 > The authors have only qualitatively characterized the variations in the topologies of the networks. It is perhaps possible to quantitatively characterize this by using Dynamical Similarity Analysis [1] on various trained networks.
 
 We thank the reviewer for pointing out the reference; we applied DSA to our numerical results.
@@ -30,11 +27,8 @@ Lastly, we would like to note that the analysis using DSA cannot be trivially au
 For these reasons, we would like to adhere to our initial analyses.
 
 
-
 > For the generalization analysis, the authors could evaluate generalization performance by the nature/type of the approximate attractor as well.
-
 We looked at the generalization performance by the nature/type of the approximate attractor (Fig.5D MSE vs number of fixed points).
-
 
 >Furthermore, although I may have missed this, could the authors comment on what networks hyperparameters lead to which approximations?
 The only networks hyperparameters that we varied were the nonlinearity and the size.
@@ -43,7 +37,6 @@ In all our figures we show which nonlinearity and size corresponds to which fixe
 
 > The figures and presentation could be improved [...]
 We appreciate the comments, and changed the manuscript accordingly.
-
 
 > Overall, the writing could be improved in several places to improve clarity.
 
@@ -72,7 +65,5 @@ For the difficulties of using DSA, see above.
 
 All networks are trained for 5000 gradient steps.
 We exclude those networks from the analysis that are performing less than -20dB in terms of normalized mean squared error tested on a  version of the task that is 16 times as long as the task on which the networks were trained.
-
-
 
 [2] Eldering, J. (2013). Normally hyperbolic invariant manifolds: The noncompact case (Vol. 2). Atlantis Press.
