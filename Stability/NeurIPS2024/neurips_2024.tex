@@ -442,7 +442,7 @@ We informally present a special case due to~\citet{Jones1995}:
 \setlength\belowcaptionskip{2ex}
 
 \begin{theorem}[Persistent Manifold]
-Let \(\manifold_0\) be a connected, compact, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
+Let \(\manifold_0\) be a connected, compact\footnote{See \citep{eldering2013normally} for results of persistence of noncompact invariant manifolds.}, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
 For a sufficiently small perturbation \(\epsilon > 0\), there exists a manifold \(\manifold_\epsilon\) diffeomorphic to \(\manifold_0\) and locally invariant under the flow of Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}.
 Moreover, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdoff distance to \(\manifold_0\) and has the same smoothness as \(g\) and \(h\). % in (\ref{eq:fenichel:flow}).
 \end{theorem}
@@ -2880,8 +2880,15 @@ where \(y\) is the target and \(\hat y\) is the prediction.
  We sampled 1024 points from these points to fit a periodic, cubic spline (black line in Fig.~\ref{fig:fastslow_decomposition},~\ref{fig:im_rep},~\ref{fig:im_all}).
  %fast-slow
  % inv man
+ 
+
+\paragraph{Finding fixed points}
+ We then find fixed points by identifying where the flow reverses by sampling the direction of the local flow for 1024 sample points along the found invariant manifold.
+If the flow is pointing towards a point where the flow reverses then we consider there to be a stable fixed point.
+If the flow s pointing away from a reversal point then we consider the fixed point there to be a saddle.
 
 
+\paragraph{Eigenspectrum along the invariant manifold}
 We use the eigenvalue spectrum as evidence for normal hyperbolicity.
 Normal hyperbolicity of an attractive ring invariant manifold implies that the eigenvalue spectrum has a gap in its eigenvalue spectrum.
 To measure this, we linearize at reference points on the invariant manifold (calculate the Jacobian) and calculate the eigenvalues.

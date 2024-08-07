@@ -19,10 +19,10 @@
 
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=0.8\textwidth]{eigenvalue_gap}
+  \includegraphics[width=0.6\textwidth]{eigenvalue_gap_comp}
   \caption{The eigenvalue spectrum of the linearization along the invariant manifold shows a gap between the first two largest eigenvalues.
-    \textbf{(A)} Network trained on the memory-guided saccade task (Fig.4B in the main text).
-    \textbf{(B)} Network trained on the angular velocity integration task (Fig.4C in the main text).
+    \textbf{(A)} Network trained on the memory-guided saccade task (Fig.4B in main text).
+    \textbf{(B)} Network trained on the angular velocity integration task (Fig.4C in main text).
 }\label{fig:eigenvalue_gap}
 \end{figure}
 
@@ -31,13 +31,15 @@
 
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=.8\textwidth]{angular_losses_lstm_gru}
+  \includegraphics[width=.9\textwidth]{angular_losses_lstm_gru}
   \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
     \textbf{(A)} The average accumulated angular error vs. the uniform norm on the vector field shown.
      Angular error at \(T_1 =\) trial length (filled markers) and \(\lim T_{1} \to \infty\)  (hollow markers).
       % The number of fixed point is an integer number.
       Points are jittered to aid legibility.
-    \textbf{(B)}  The \# of fixed points vs. average accumulated angular error, with the average distance between neighboring fixed points (magenta).
+    \textbf{(B)} The number of fixed points vs. average accumulated angular error, with the average distance between neighboring fixed points (magenta).
+    \textbf{(C)} Invariant manifold (black) of a trained LSTM with stable fixed points (green) and saddle nodes (red).
+    \textbf{(D)} Invariant manifold (black) of a trained GRU.
 }\label{fig:angular_losses_lstm_gru}
 \end{figure}
 %A==A
@@ -47,7 +49,7 @@
 
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=0.8\textwidth]{davit}
+  \includegraphics[width=0.9\textwidth]{davit_comp}
   \caption{Networks trained on a double angular velocity integration task.
     \textbf{(A)} Initializations and fixed points of an example network.
     \textbf{(B)} Fixed points on a 2D parametrization of the torus for the example network.
