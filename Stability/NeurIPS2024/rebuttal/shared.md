@@ -20,24 +20,22 @@ We include results on RNNs trained on a 2D task (a double angular velocity integ
 ## Broader impact
 Our theory is relevant to all (theoretical) neuroscientists trying to understand analog working memory and its robustness.
 We demonstrate the robustness of the implemented analog memory in recurrent systems to perturbations of their connection matrix.
-The theory also has implications for the robustness of theoretical models more generally: for example, we can be slightly wrong about the functional form of the activation function of the neurons; the network will behave functionally the same as the neural dynamics.
+The theory also has implications for the robustness of theoretical models more generally: for example, we can be wrong about the activation function of the neurons; the neural dynamics is functionally robust to changes to it.
 
 # Clarity
 We acknowledge the reviewers' concerns regarding clarity and add details on the main topics highlighted in the reviews. 
 
 ## Section 5.2
-Section 5.2, which we have now moved to a separate section, outlines the conditions under which approximations to an analog working memory problem are near a continuous attractor. This section is crucial for clarifying when a situation like Proposition 1 would occur. These conditions are met for RNNs:
-C1: This translates to the existence of a manifold in the neural activity space with the same topology as the memory content. We have elaborated on this by formalizing the dependence as the output mapping being a locally trivial fibration over the output manifold.
+Section 5.2 (now in a separate section) outlines the conditions under which approximations to an analog working memory problem are near a continuous attractor. This section is crucial for clarifying when a situation like Proposition 1 would occur. These conditions are met for RNNs:
+C1: This translates to the existence of a manifold in the neural activity space with the same topology as the memory content. We formalize the dependence as the output mapping being a locally trivial fibration over the output manifold.
 C2: Persistence, as per the reverse of the Persistent Manifold Theorem, requires the flow on the manifold to be slow and bounded.
-C3 + C4: S-type robustness requires non-positive Lyapunov exponents (i.e., the negative eigenvalues of $\nabla_\vz \vh$). Along with D-type robustness (corresponding to the persistence of the manifold), this implies normal hyperbolicity. We have expanded on this correspondence by building on the work of Mane [1].
-
+C3+C4: S-type robustness requires non-positive Lyapunov exponents (i.e., the negative eigenvalues of $\nabla_\vz \vh$). Along with D-type robustness (corresponding to the persistence of the manifold), this implies normal hyperbolicity. We have expanded on this correspondence by building on the work of Mane [1].
 
 ## Parameter dependence for the analysis
 The threshold parameter for identifying invariant slow manifolds was chosen to reflect the bimodal distributions of speeds along the integrated trajectories.
 The supplementary document (FigR.1) shows that the identified invariant manifold accurately reflects the fast-slow separation expected for a normally hyperbolic system, thereby validating our method's legitimacy.
 The number of fixed points (NFPS) identified depends on the number of points sampled for the angular flow on the invariant ring.
 However, this converges to the true NFPS as the grid of initial points is increased.
-Because all networks have less than 50 fixed points, we believe 1024 initial points are sufficient.
 
 # Limitations
 We have added a separate **Limitations** subsection:
@@ -45,6 +43,6 @@ While we explicitly describe the topology and dimensionality of the identified i
 
 To identify solutions with a fast-slow decomposition, we rely solely on the generalization property of the network, measured in terms of the normalized mean square error over ten times longer trials. The possible solutions the networks can find are restricted by having a linear output mapping. For a nonlinear output mapping, a possible solution for analog memory is the quasi-periodic toroidal attractor, but this is not a possible solution with a linear output mapping. While our analysis methods can identify these limit sets, we do not have a straightforward way to parametrize the invariant manifold.
 
-Our analysis relies on identifying a time scale separation from simulated trajectories. If the separation of time scales is too small, our method may inadvertently identify parts of the state space that are only forward invariant (i.e., transient). However, this did not pose a problem in our analysis of the trained RNNs, which is unsurprising, as the separation is relates to state noise robustness. A system without a significant separation will either lack robustness to state noise or perform poorly for trial times longer than those it was trained on.
+Our analysis relies on identifying a time scale separation from simulated trajectories. If the separation of time scales is too small, our method may inadvertently identify parts of the state space that are only forward invariant (i.e., transient). However, this did not pose a problem in our analysis of the trained RNNs, which is unsurprising, as the separation is guaranteed by state noise robustness.
 
 [1] Mané, R. (1978). Persistent manifolds are normally hyperbolic. Transactions of the American Mathematical Society, 246, 261-283.
