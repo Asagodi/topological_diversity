@@ -1,0 +1,57 @@
+\documentclass[letterpaper]{article}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{thmtools,mathtools,mathrsfs}
+\usepackage{amsfonts}       		% blackboard math symbols
+\usepackage{graphicx}
+\usepackage[font=footnotesize]{caption}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{forloop}
+
+\newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
+\newcounter{ct}
+\forLoop{1}{26}{ct}{
+    \edef\letter{\alph{ct}}
+    \expandafter\defvec\letter%
+}
+
+% captial \vA
+\forLoop{1}{26}{ct}{
+    \edef\letter{\Alph{ct}}
+    \expandafter\defvec\letter%
+}
+
+\newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
+\newcommand{\RN}[2]{\frac{\dm{#1}}{\dm{#2}}} % (Radon-Nikodym) derivative
+\newcommand{\PD}[2]{\frac{\partial#1}{\partial#2}} % partial derivative
+\newcommand{\overbar}[1]{\mkern1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern1.5mu}
+\newcommand{\win}{\vW_{\text{in}}}
+\newcommand{\wout}{\vW_{\text{out}}}
+\newcommand{\bout}{\vb_{\text{out}}}
+\newcommand{\reals}{\mathbb{R}}
+
+\newcommand{\manifold}{\mathcal{M}}
+\newcommand{\uniformNorm}[1]{\left\|#1\right\|_\infty} % uniform norm
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+
+\begin{document}
+
+Discretize the time variable: Let \( t_n = n \Delta t \) where \( \Delta t = 1 \) (unit time step).
+
+Apply the Euler-Maruyama method: The Euler-Maruyama method for a stochastic differential equation \( \dm{\vx} = a(\vx)\dm{t} + b(\vx)\dm{W} \) is given by: \[ \vx_{t+1} = \vx_t + a(\vx_t) \Delta t + b(\vx_t) \Delta W_t. \]
+
+%Drift term ( a(\vx, t) = -\vx + f(\win \vI(t) + \vW \vx + \vb) )
+%Diffusion term ( b(\vx, t) = \sigma )
+Substitute the drift and diffusion terms into the Euler-Maruyama formula: \[ \vx_{t+1} = \vx_t + \left( -\vx_t + f(\win \vI_t + \vW \vx_t + \vb) \right) \Delta t + \sigma \Delta W_t. \]
+
+Simplify the equation with \(\Delta t = 1\): 
+\begin{align}
+ \vx_{t+1} &= \vx_t + \left( -\vx_t + f(\win \vI_t + \vW \vx_t + \vb) \right) + \sigma \Delta W_t. \\
+ \vx_{t+1} &= f(\win \vI_t + \vW \vx_t + \vb) + \sigma \Delta W_t. 
+ \end{align}
+
+Introduce the noise term \(\zeta_t = \sigma \Delta W_t\), which represents the discrete-time noise term.
+
+Thus, we have derived the discrete-time equation: \[ \vx_t = f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t. \]
+
+\end{document}
