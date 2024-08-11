@@ -1,56 +1,55 @@
 \documentclass[letterpaper]{article}
 \usepackage{graphicx}
-\usepackage[font=footnotesize]{caption}
-\usepackage{subcaption}
-\usepackage[margin=.25in]{geometry}
+%\usepackage[font=footnotesize]{caption}
+%\usepackage{subcaption}
+\usepackage[margin=.5in]{geometry}
 
 \renewcommand{\thefigure}{R\arabic{figure}} % figure numbering for rebuttal only
 
-\DeclareGraphicsExtensions{.pdf,.png,.jpg,.mps,.eps,.ps}
+\DeclareGraphicsExtensions{.png,.pdf,.jpg,.mps,.eps,.ps}
 \graphicspath{{../../figures/inv_man/}}
 
 % Reduce space between figures and captions
 \setlength{\abovecaptionskip}{1pt plus 1pt minus 2pt} % Adjust as needed
 \setlength{\belowcaptionskip}{0pt} % Adjust as needed
 
-\enlargethispage{5\baselineskip}
+%\enlargethispage{5\baselineskip}
+
+\clearpage
+\thispagestyle{empty} % no page number
+
+\renewcommand{\topfraction}{1.0}
+\renewcommand{\bottomfraction}{1.0}
 
 \begin{document}
 
-\begin{figure}[tbhp]
+\begin{figure}[th!]
   \centering
-  \includegraphics[width=0.6\textwidth]{eigenvalue_gap_comp}
-  \caption{The eigenvalue spectrum of the linearization along the invariant manifold shows a gap between the first two largest eigenvalues.
+  \includegraphics[width=0.6\textwidth]{eigenvalue_gap}
+  \caption{\textbf{Empirical demonstration of the slow-fast time scale separation in task-trained RNNs.}
+      The eigenvalue spectrum of the linearization along the invariant manifold shows a gap between the first two largest eigenvalues.
     \textbf{(A)} Network trained on the memory-guided saccade task (Fig.4B in main text).
     \textbf{(B)} Network trained on the angular velocity integration task (Fig.4C in main text).
 }\label{fig:eigenvalue_gap}
 \end{figure}
-
-
-
-
-\begin{figure}[tbhp]
+\begin{figure}[h!]
   \centering
   \includegraphics[width=.9\textwidth]{angular_losses_lstm_gru}
-  \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
+  \caption{\textbf{GRU and LSTM results.}
+      The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
     \textbf{(A)} The average accumulated angular error vs. the uniform norm on the vector field shown.
      Angular error at \(T_1 =\) trial length (filled markers) and \(\lim T_{1} \to \infty\)  (hollow markers).
       % The number of fixed point is an integer number.
       Points are jittered to aid legibility.
     \textbf{(B)} The number of fixed points vs. average accumulated angular error, with the average distance between neighboring fixed points (magenta).
-    \textbf{(C)} Invariant manifold (black) of a trained LSTM with stable fixed points (green) and saddle nodes (red).
-    \textbf{(D)} Invariant manifold (black) of a trained GRU.
+    \textbf{(C,D)} Invariant manifold (black) of a trained LSTM (C) and GRU (D) with stable fixed points (green) and saddle nodes (red).
 }\label{fig:angular_losses_lstm_gru}
 \end{figure}
-%A==A
-%B==C in main text
-
-
-
-\begin{figure}[tbhp]
+\begin{figure}[h!]
   \centering
-  \includegraphics[width=0.95\textwidth]{davit_comp}
-  \caption{Networks trained on a double angular velocity integration task.
+  \includegraphics[width=0.9\textwidth]{davit}
+  \caption{\textbf{2D continuous attractor in RNNs.}
+      Networks trained on a double angular velocity integration task.
     \textbf{(A)} Initializations (blue) and fixed points (orange) of an example network.
     \textbf{(B)} Fixed points on a 2D parametrization of the torus for the example network.
     \textbf{(C)} The sum of the total mean angular error (sum of the two seperate angular errors over the two rings) is bounded by the uniform norm of the vector field.
