@@ -14,11 +14,14 @@ The analysis can furthermore be easily extended to a more general form W = [w11 
 We agree that this analysis in S2 can be extended to higher dimensions, and we will incorporate this remark into the supplementary text.
 An extension of these results of a low-dimensional system can be easily echieved by addition of dimensions that have an attractive flow normal to the low-dimensional continuous attractor or invariant manifold. 
 
-In fact, all continuous attractors are center manifolds.
-Therefore, we can always analyse a continuous attractor as a center manifold.
-However, not all center manifolds are continuous attractors.
-So all in all, the results can be extended to higher dimensional systems through reference to the normal hyperbolicity of the involved invariant manifolds.
-We believe that using center manifold theory is superfluous to extend results from low- to high-dimensional systems.
+
+The results from a low dimensional system can indeed be extended to higher dimensional systems through reduction methods from center manifold theory.
+On the center manifold the singular perturbation problem (as is the case for continuous attractors) restricts to a regular perturbation problem [1a].
+Furthermore, relying on the Reduction Principle [2a], one can always reduce all systems (independent of dimension) to the same canonical form, given that they have the same continuous attractor. We thank the reviewer for pointing this out and will add a remark on this possibility to extend results. 
+
+
+
+
 
 
 ## Perturbation and dimensionality
@@ -60,12 +63,12 @@ We will update our manuscript to include $\Delta t$ for clarity.
 
 
 ### Integration scheme
-Numerical integration of a stochastic differential equation is an extensive field by itself [1a].
+Numerical integration of a stochastic differential equation is an extensive field by itself [3a].
 We chose to use the simplest Euler-Maruyama discretization form, because this leads to the standard RNN form, even though it is inferior to other methods.
-Computational neuroscientists often train RNNs as models of neural computation [2a,3a]
+Computational neuroscientists often train RNNs as models of neural computation [4a,5a]
 and interpret them as dynamical systems.
 Our experiments connects to existing literature.
-In future studies, it would be interesting to perform experiments with Neural SDEs [4a].
+In future studies, it would be interesting to perform experiments with Neural SDEs [6a].
 
 
 
@@ -73,15 +76,17 @@ In future studies, it would be interesting to perform experiments with Neural SD
 
 
 
-[1a] Kopell, N. (1996). Global center manifolds and singularly perturbed equations: A brief (and biased) guide to (some of) the literature. Dynamical Systems and Probabilistic Methods in Partial Differential Equations: 1994 Summer Seminar on Dynamical Systems and Probabilistic Methods for Nonlinear Waves, June 20-July 1, 1994, MSRI, Berkeley, CA, 31, 47.
+[1a] Fenichel, N. (1979). Geometric singular perturbation theory for ordinary differential equations. Journal of differential equations, 31(1), 53-98.
 
-[2a] https://docs.sciml.ai/DiffEqDocs/stable/solvers/sde_solve/
+[2a] Kirchgraber, U., & Palmer, K. J. (1990). Geometry in the neighborhood of invariant manifolds of maps and flows and linearization. (No Title).
 
-[3a] Mante, V., Sussillo, D., Shenoy, K. V., & Newsome, W. T. (2013). Context-dependent computation by recurrent dynamics in prefrontal cortex. nature, 503(7474), 78-84.
+[3a] https://docs.sciml.ai/DiffEqDocs/stable/solvers/sde_solve/
 
-[4a] Sussillo, D., & Barak, O. (2013). Opening the black box: low-dimensional dynamics in high-dimensional recurrent neural networks. Neural computation, 25(3), 626-649.
+[4a] Mante, V., Sussillo, D., Shenoy, K. V., & Newsome, W. T. (2013). Context-dependent computation by recurrent dynamics in prefrontal cortex. nature, 503(7474), 78-84.
 
-[5a] Monfared, Z., & Durstewitz, D. (2020). Transformation of ReLU-based recurrent neural networks from discrete-time to continuous-time. In International Conference on Machine Learning (pp. 6999-7009). PMLR.
+[5a] Sussillo, D., & Barak, O. (2013). Opening the black box: low-dimensional dynamics in high-dimensional recurrent neural networks. Neural computation, 25(3), 626-649.
+
+[6a] Tzen, B., & Raginsky, M. (2019). Neural stochastic differential equations: Deep latent gaussian models in the diffusion limit. arXiv preprint arXiv:1905.09883.
 
 
 
