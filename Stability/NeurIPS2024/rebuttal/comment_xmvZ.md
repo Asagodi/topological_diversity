@@ -21,7 +21,6 @@ So all in all, the results can be extended to higher dimensional systems through
 We believe that using center manifold theory is superfluous to extend results from low- to high-dimensional systems.
 
 
-
 ## Perturbation and dimensionality
 > Regarding the perturbation ...
 We have now changed the statement in Sec.3.1 to be $l\neq 0$ for clarity.
