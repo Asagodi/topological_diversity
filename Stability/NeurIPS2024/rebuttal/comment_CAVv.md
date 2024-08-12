@@ -1,4 +1,5 @@
 ## Discretization and Euler-Maruyama Method
+In the supplementary material we included a note on the discretization.
 
 **Discretize the time variable:** Let \( t_n = n \Delta t \) where \( \Delta t = 1 \) (unit time step).
 
