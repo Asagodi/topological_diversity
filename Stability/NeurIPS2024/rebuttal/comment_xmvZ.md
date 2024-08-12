@@ -12,12 +12,12 @@ The analysis can furthermore be easily extended to a more general form W = [w11 
 
 ### Extension of bounded line attractor analysis to higher dimensional systems
 We agree that this analysis in S2 can be extended to higher dimensions, and we will incorporate this remark into the supplementary text.
-An extension of these results of a low-dimensional system can be easily echieved by addition of dimensions that have an attractive flow normal to the low-dimensional continuous attractor or invariant manifold. 
+An extension of these results of a low-dimensional system can be easily achieved by  adding dimensions that have an attractive flow normal to the low-dimensional continuous attractor or invariant manifold. 
 
 
-The results from a low dimensional system can indeed be extended to higher dimensional systems through reduction methods from center manifold theory.
+More generally, the results from a low dimensional system can indeed be extended to higher dimensional systems through reduction methods from center manifold theory.
 On the center manifold the singular perturbation problem (as is the case for continuous attractors) restricts to a regular perturbation problem [1a].
-Furthermore, relying on the Reduction Principle [2a], one can always reduce all systems (independent of dimension) to the same canonical form, given that they have the same continuous attractor. We thank the reviewer for pointing this out and will add a remark on this possibility to extend results. 
+Furthermore, relying on the Reduction Principle [2a], one can always reduce all systems (independent of dimension) to the same canonical form, given that they have diffeomorphic invariant manifold. We thank the reviewer for pointing this out and will add a remark on this possibility to extend results. 
 
 
 
@@ -26,7 +26,7 @@ Furthermore, relying on the Reduction Principle [2a], one can always reduce all 
 
 ## Perturbation and dimensionality
 > Regarding the perturbation ...
-We have now changed the statement in Sec.3.1 to be $l\neq 0$ for clarity.
+We have now changed the statement in Sec.3.1 to be $l\\neq 0$ for clarity.
 
 
 ## Discretization of SDE
@@ -36,29 +36,29 @@ We appreciate the suggestion to better explain the discretization procedure, i.e
 ### Steps
 In the supplementary material we will include a note on the discretization, which goes as follows.
 
-**Discretize the time variable:** Let $t_n = n \Delta t$.
+**Discretize the time variable:** Let $t_n = n \\Delta t$.
 
-The Euler-Maruyama method for a stochastic differential equation $$\mathrm{d}{\mathbf{x}} = \left(-\mathbf{x} + f(\mathbf{W}_{\text{in}} \mathbf{I}(t) + \mathbf{W} \mathbf{x} + \mathbf{b})\right)\mathrm{d}{t} + \sigma\mathrm{d}{W}_t$$ is given by :
-$$\mathbf{x}_{n+1} = \mathbf{x}_n + \left( -\mathbf{x}_n + f(\mathbf{W}_{\text{in}} \mathbf{I}_n + \mathbf{W} \mathbf{x}_n + \mathbf{b}) \right) \Delta t + \sigma \Delta W_n,$$
-with $\Delta W_{n}=W_{(n+1)\Delta t}-W_{n\Delta t}\sim \mathcal{N}(0,\Delta t).$
+The Euler-Maruyama method for a stochastic differential equation $$\\mathrm{d}{\\mathbf{x}} = \\left(-\\mathbf{x} + f(\\mathbf{W}_{\\text{in}} \\mathbf{I}(t) + \\mathbf{W} \\mathbf{x} + \\mathbf{b})\\right)\\mathrm{d}{t} + \\sigma\\mathrm{d}{W}_t$$ is given by :
+$$\\mathbf{x}_{n+1} = \\mathbf{x}_n + \\left( -\\mathbf{x}_n + f(\\mathbf{W}_{\\text{in}} \\mathbf{I}_n + \\mathbf{W} \\mathbf{x}_n + \\mathbf{b}) \\right) \\Delta t + \\sigma \\Delta W_n,$$
+with $\\Delta W_{n}=W_{(n+1)\\Delta t}-W_{n\\Delta t}\\sim \\mathcal{N}(0,\\Delta t).$
 
-**Subsitute $\Delta t = 1$:**
+**Subsitute $\\Delta t = 1$:**
 $$
-\begin{aligned}
- \mathbf{x}_{t+1} &= \mathbf{x}_t + \left( -\mathbf{x}_t + f(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) \right) + \sigma \Delta W_t, \\
- &= f(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) + \sigma \Delta W_t.
- \end{aligned}
+\\begin{aligned}
+ \\mathbf{x}_{t+1} &= \\mathbf{x}_t + \\left( -\\mathbf{x}_t + f(\\mathbf{W}_{\\text{in}} \\mathbf{I}_t + \\mathbf{W} \\mathbf{x}_t + \\mathbf{b}) \\right) + \\sigma \\Delta W_t, \\\\
+ &= f(\\mathbf{W}_{\\text{in}} \\mathbf{I}_t + \\mathbf{W} \\mathbf{x}_t + \\mathbf{b}) + \\sigma \\Delta W_t.
+ \\end{aligned}
 $$
 
-**Introduce the noise term** $\zeta_t = \sigma \Delta W_t$, which represents the discrete-time noise term.
+**Introduce the noise term** $\\zeta_t = \\sigma \\Delta W_t$, which represents the discrete-time noise term.
 Thus, we have derived the discrete-time equation:
 
-$$\mathbf{x}_t = f(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_{t-1} + \mathbf{b}) + \zeta_t.$$
+$$\\mathbf{x}_t = f(\\mathbf{W}_{\\text{in}} \\mathbf{I}_t + \\mathbf{W} \\mathbf{x}_{t-1} + \\mathbf{b}) + \\zeta_t.$$
 
 
-We thought that $\Delta t=1$ would simplify the presentation, however, it seems to be misleading the readers.
-In our numerical experiments, we actually used a $\Delta t<1$. 
-We will update our manuscript to include $\Delta t$ for clarity.
+We thought that $\\Delta t=1$ would simplify the presentation, however, it seems to be misleading the readers.
+In our numerical experiments, we actually used a $\\Delta t<1$. 
+We will update our manuscript to include $\\Delta t$ for clarity.
 
 
 
