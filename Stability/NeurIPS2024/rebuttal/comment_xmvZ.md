@@ -12,9 +12,13 @@ The analysis can furthermore be easily extended to a more general form W = [w11 
 
 ### Extension of bounded line attractor analysis to higher dimensional systems
 We agree that this analysis in S2 can be extended to higher dimensions, and we will incorporate this remark into the supplementary text.
-An extension of these results of a low-dimensional system can be easily echieved by addition of dimensions that have an attractive flow onto the low-dimensional continuous attractor or invariant manifold. 
+An extension of these results of a low-dimensional system can be easily echieved by addition of dimensions that have an attractive flow normal to the low-dimensional continuous attractor or invariant manifold. 
 
- Specifically, we will emphasize that while the initial analysis may focus on low-dimensional systems, it can be generalized to higher-dimensional cases using methods like center manifold theory [1a]. This approach demonstrates that higher-dimensional systems can retain structural similarities to their low-dimensional counterparts.
+In fact, all continuous attractors are center manifolds.
+Therefore, we can always analyse a continuous attractor as a center manifold.
+However, not all center manifolds are continuous attractors.
+So all in all, the results can be extended to higher dimensional systems through reference to the normal hyperbolicity of the involved invariant manifolds.
+We believe that using center manifold theory is superfluous to extend results from low- to high-dimensional systems.
 
 
 
