@@ -7,17 +7,17 @@ We thank the reviewer for the additional comments.
 ### Analytically tractable examples
 We would first like to clarify that in Supplementary Sections 1 and 2 that the provided examples are illustrative rather than exhaustive.
 Recognizing that the supplementary material previously lacked clear structure and signposting, we will revise the text to better convey the motivation behind the examples and to provide a clearer explanation of the analysis.
-The analysis can furthermore be easily extended to a more general form W = [w11 w12; w21 w22] that has a bounded line attractor, through a coordinate transformation.
+The analysis can furthermore be easily extended to a more general form $W = [w_{11} w_{12}; w_{21} w_{22}]$ that has a bounded line attractor, through a coordinate transformation.
 
 
 ### Extension of bounded line attractor analysis to higher dimensional systems
 We agree that this analysis in S2 can be extended to higher dimensions, and we will incorporate this remark into the supplementary text.
-An extension of these results of a low-dimensional system can be easily echieved by addition of dimensions that have an attractive flow normal to the low-dimensional continuous attractor or invariant manifold. 
+An extension of these results of a low-dimensional system can be easily achieved by 'addition' of dimensions that have an attractive flow normal to the low-dimensional continuous attractor or invariant manifold.
 
 
 The results from a low dimensional system can indeed be extended to higher dimensional systems through reduction methods from center manifold theory.
 On the center manifold the singular perturbation problem (as is the case for continuous attractors) restricts to a regular perturbation problem [1a].
-Furthermore, relying on the Reduction Principle [2a], one can always reduce all systems (independent of dimension) to the same canonical form, given that they have the same continuous attractor. We thank the reviewer for pointing this out and will add a remark on this possibility to extend results. 
+Furthermore, relying on the Reduction Principle [2a], one can always reduce all systems (independent of dimension) to the same canonical form, given that they have the same continuous attractor. We thank the reviewer for pointing this out and will add a remark on this possibility to extend results.
 
 
 
@@ -30,7 +30,7 @@ We have now changed the statement in Sec.3.1 to be $l\neq 0$ for clarity.
 
 
 ## Discretization of SDE
-We appreciate the suggestion to better explain the discretization procedure, i.e., the steps for going from Eq.(7) to Eq.(6). 
+We appreciate the suggestion to better explain the discretization procedure, i.e., the steps for going from Eq.(7) to Eq.(6).
 
 
 ### Steps
@@ -57,7 +57,7 @@ $$\mathbf{x}_t = f(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_{
 
 
 We thought that $\Delta t=1$ would simplify the presentation, however, it seems to be misleading the readers.
-In our numerical experiments, we actually used a $\Delta t<1$. 
+In our numerical experiments, we actually used a $\Delta t<1$.
 We will update our manuscript to include $\Delta t$ for clarity.
 
 
