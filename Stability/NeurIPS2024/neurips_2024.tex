@@ -220,8 +220,6 @@ In other words, the continuous attractor is a continuum of equilibrium points su
 }\label{fig:lara_bifurcations}
 \end{figure}
 
-%par4: observation: CAs bifurcate into invariant manifolds topologically equivalent to the original CA
-%Fig1
 
 As an example, we can construct a line attractor (a continuous attractor with a line manifold) as follows:
 %We will describe the bifurcation space of some continuous attractors.
@@ -349,11 +347,11 @@ However, importantly, we also observe in all the systems  the existence of ghost
 Therefore, while they are not strictly a continuous attractor in the mathematical sense, they are \textit{approximate} ring attractors in the sense that the fixed points and connecting orbits still form a circle. 
 
 Is this lawful degradation a universal phenomenon?
- And if so, how does it relate to the size of the perturbation? And what are the implications for the memory performance of this approximations? (Sec.~\ref{sec:theory}).
-Do these approximations actually appear as natural solutions to the memory storage problem? (Sec.~\ref{sec:experiments}).
+ And if so, how does it relate to the size of the perturbation? And what are the implications for the memory performance of these approximations? (Sec.~\ref{sec:theory}).
+Do these approximations appear as natural solutions to the memory storage problem? (Sec.~\ref{sec:experiments}).
  And if so, how well do they generalize to longer time requirements? (Sec.~\ref{sec:generalization}).
-In conclusion, are approximate continuous attractors ubiquitous and well-behaved?
- And therefore, are continuous attractors in practice still useful as an idealized model of how animals represent continuous variables?(Sec.~\ref{sec:converse}).
+In conclusion, are approximate continuous attractors ubiquitous and well-behaved? 
+ And therefore, are continuous attractors in practice still useful as an idealized model of how animals represent continuous variables? (Sec.~\ref{sec:converse}).
 
 % Our theory explains this phenomenon as follows. %MOVE TO LATER
 % We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the \(m^1, m^2\) plane (independent of the parameter \(g\) for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
@@ -718,7 +716,7 @@ This loss is, as theoretically predicted (Prop.~\ref{prop:ub}), bounded by the u
 
 \ptitle{Asymptotic time}
 Looking beyond the finite timescale provides valuable insights into the network's ability to store information.
-For the asymptotic time scale, the asymptotic behavior of the system dominates and we identify the network behavior through its \(\omega\)-limit sets.
+For the asymptotic time scale, we capture the asymptotic behavior of the system by identifying to what part of the system evolves to in the limit $t\rightarrow\infty$ (see also Sec.\ref{sec:supp:asymbehav}). 
 For a one-dimensional system, this will either be fixed points or a limit cycle.
 For the fixed-point type solution, the maximal error is given by the maximal distance to the next fixed point, while for a limit cycle, this will always be \(\pi\).
 We calculate the \emph{average fixed point distance} by takeing the average of the inter-fixed-point interval for each neighbouring pair of fixed points.
@@ -726,7 +724,7 @@ We identify the location of the fixed points as described in Sec.~\ref{sec:fasts
 
 Besides the maximal error that the network will make in the asymptotic limit, we can also characterize how many different angles the network would confuse in the asymptotic limit.
 We construct a probability distribution of what part of state space we end up in an infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
-Finally, we characterize the memory capacity of the network by calculating the entropy of this probability distribution (this gives the \emph{memory capacity} of the network, see Sec.~\ref{sec:supp:boa}).
+Finally, we characterize the \emph{memory capacity} of the network by calculating the entropy of this probability distribution (see Sec.~\ref{sec:supp:asymbehav}).
 
 
 \ptitle{Error Accumulation in Neural Networks}
@@ -1990,6 +1988,12 @@ However, some have other nonlinearities, e.g.,  the sigmoid is used in \citep{go
 
 \paragraph{Loss of function: Sensitivity of continuous attractors to perturbations}\label{sec:supp:boa}
 We will show that there are differences at how well approximations perform at different timescales.
+We measure how performance of different models for the representation of an angular variable drop as a function of perturbation size Fig.~\ref{fig:performance} through the memory capacity metric (Sec.\ref{sec:supp:asymbehav}).
+For each perturbation size, we sample a low rank (rank 1,2 or 3) random matrix with norm equal to that perturbation size.
+We determine the location of the fixed points through the local flow direction criterion as described in Sec.~\ref{sec:fastslowmethod}
+This invariant manifold was found to be consistently close the the original invariant ring attractor.
+The initial ring had \(2N\) fixed points (\(N\) stable, \(N\) saddle) on this invariant ring manifold.
+The memory capacity of this initial configuration is \(N\log(N)\) for the \(2N\) uniformly spaced fixed points.
 
 \begin{figure}[tbhp]
   \centering
@@ -2000,17 +2004,7 @@ We will show that there are differences at how well approximations perform at di
 
 
 
-We measure how performance of different models for the representation of an angular variable drop as a function of perturbation size Fig.~\ref{fig:performance} through the memory capacity metric.
-For each perturbation size, we sample a low rank (rank 1,2 or 3) random matrix with norm equal to that perturbation size.
-We determine the location of the fixed points through the local flow direction criterion as described in Sec.~\ref{sec:fastslowmethod}
-and determine the basin of attraction
-\begin{equation}
-\basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}.
-\end{equation}
-through assesing the local flow direction for 1024 sample points in the found invariant manifold.
-This invariant manifold was found to be consistently close the the original invariant ring attractor.
-The initial ring had \(2N\) fixed points (\(N\) stable, \(N\) saddle) on this invariant ring manifold.
-The memory capacity of this initial configuration is \(N\log(N)\) for the \(2N\) uniformly spaced fixed points.
+
 
 
 %Networks
@@ -2956,6 +2950,19 @@ After training, we report the normalized mean squared error (NMSE) to asses the 
 where \(y\) is the target and \(\hat y\) is the prediction.
 
 
+\subsubsection{Asymptotic behavior and memory capacity}\label{sec:supp:asymbehav}
+%and we identify the network behavior through its \(\omega\)-limit sets.
+We determine the location of the fixed points through the local flow direction criterion as described in Sec.~\ref{sec:fastslowmethod}
+and determine the basin of attraction
+\begin{equation}
+\basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}.
+\end{equation}
+through assesing the local flow direction for 1024 sample points in the found invariant manifold.
+
+We construct a probability distribution of what part of state space we end up in an infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
+Finally, we characterize the memory capacity of the network by calculating the entropy of this probability distribution of the network.
+
+
  \subsubsection{Fast-slow decomposition}\label{sec:fsdecmethod}
  We simulated 1024 trajectories without noise with inputs from the task and let the networks evolve for 16 times the task definition lengths.
  We took the cutoff to identify the slow manifold to be \(10^{-3}\) of the highest speed along each trajectory.
@@ -2969,6 +2976,7 @@ where \(y\) is the target and \(\hat y\) is the prediction.
  We then find fixed points by identifying where the flow reverses by sampling the direction of the local flow for 1024 sample points along the found invariant manifold.
 If the flow is pointing towards a point where the flow reverses then we consider there to be a stable fixed point.
 If the flow s pointing away from a reversal point then we consider the fixed point there to be a saddle.
+
 
 
 \paragraph{Eigenspectrum along the invariant manifold}
@@ -3050,7 +3058,7 @@ These results underline the universality of our findings beyond vanilla RNNs.
 \newpage
  \subsection{Identified invariant manifold output projections}\label{sec:inv_man_projections}
  The identified invariant manifolds in the trained networks (Fig.~\ref{fig:im_rep} and Fig.~\ref{fig:im_all}).
- However, not all solutions can be meaningfully analyzed with this the slow-fast decomposition method.
+ However, not all solutions can be meaningfully analyzed with the slow-fast decomposition method.
  For example, the solution at the center of the \(\tanh, N=256\) block, the found invariant manifold is not correctly captured.
  This is true for the networks that have not learned the task correctly (networks with a NMSE higher than -20dB).
 
