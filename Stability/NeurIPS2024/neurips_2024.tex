@@ -3023,6 +3023,11 @@ For LSTMs and GRUs the  vector field was approximated by taking the differrence 
 \newpage
 \subsection{LSTM and GRU results}
 
+The trained LSTMs and GRUs share the same pattern observed in the trained vanilla RNNs: a ring slow invariant manifold (Fig.~\citep{fig:angular_losses_lstm_gru}C and D).
+The fixed point topologies in the LSTM and GRU networks show a lot of variation in the number of fixed points, paralleling the systems adjacent to continuous attractors from Fig.~\ref{fig:lara_bifurcations}, as seen in Figure \ref{fig:angular_losses2}D. These variations are similar to those discussed in Figures \ref{fig:angular_losses_lstm_gru}B.
+Additionally, the angular error and memory capacity measures across different time scales are comparable to those illustrated in Figure \ref{fig:angular_losses_lstm_gru}A, highlighting the generalization properties influenced by the topology of the solutions.
+These results underline the universality of our findings beyond vanilla RNNs.
+
 \begin{figure}[tbhp]
   \centering
   \includegraphics[width=\textwidth]{angular_losses_lstm_gru}
