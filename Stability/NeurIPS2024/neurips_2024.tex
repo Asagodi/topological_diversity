@@ -182,7 +182,7 @@ However, we lack the theoretical basis to understand how much this matters in pr
 
 In this study, we explore perturbations and approximations of continuous attractors in the space of dynamical models.
 We first report on the differences and similarities between the various structurally stable dynamics in the vicinity of continuous attractors in these models.
-We observe the existence of a ``ghost'' continuous attractor (a.k.a. slow manifold) in all(?) of them (Sec.~\ref{sec:critique}).
+We observe the existence of a ``ghost'' continuous attractor (a.k.a. slow manifold) in all of them (Sec.~\ref{sec:critique}).
 By assuming normal hyperbolicity we will separate the time scales to obtain a decomposition of the dynamics by separating out the fast flow normal towards the slow manifold and the slow flow within it.
 With this we get theoretical results that ensure the existence of a slow manifold and relate their characteristics with the closeness to the continuous attractor and the memory performance of the system (Sec.~\ref{sec:theory}). 
 We then explore task-trained recurrent neural networks (RNNs) to show that these systems appear naturally as solutions to the task (Sec.~\ref{sec:experiments}) and that their generalization capabilities can easily be studied as the distance to the continuous attractor (Sec.~\ref{sec:generalization}).
@@ -347,12 +347,15 @@ The models optimized using this method also can contain an invariant ring manifo
 
 \ptitle{Similarity between all bifurcations and approximations of continuous attractors}
 In all discussed models of ring attractors, we verify that they suffer from the fine-tuning problem.
-However, importantly, we also observe in all(?) the systems  the existence of ghosts of the continuous attractor (either through bifurcation or from finite-size effects) in the form of an \emph{attractive invariant manifold}.
+However, importantly, we also observe in all the systems  the existence of ghosts of the continuous attractor (either through bifurcation or from finite-size effects) in the form of an \emph{attractive invariant manifold}.
 Therefore, while they are not strictly a continuous attractor in the mathematical sense, they are \textit{approximate} ring attractors in the sense that the fixed points and connecting orbits still form a circle. 
 
-Is this lawful degradation a universal phenomenon? And if so, how does it relate to the size of the perturbation? And what are the implications for the memory performance of this approximations? (Sec.~\ref{sec:theory}).
-Do these approximations actually appear as natural solutions to the memory storage problem? (Sec.~\ref{sec:experiments}). And if so, how well do they generalize to longer time requirements? (Sec.~\ref{sec:generalization}).
-In conclusion, are approximate continuous attractors ubiquitous and well-behaved? And therefore, are continuous attractors in practice still useful as an idealized model of how animals represent continuous variables?(Sec.~\ref{sec:converse}).
+Is this lawful degradation a universal phenomenon?
+ And if so, how does it relate to the size of the perturbation? And what are the implications for the memory performance of this approximations? (Sec.~\ref{sec:theory}).
+Do these approximations actually appear as natural solutions to the memory storage problem? (Sec.~\ref{sec:experiments}).
+ And if so, how well do they generalize to longer time requirements? (Sec.~\ref{sec:generalization}).
+In conclusion, are approximate continuous attractors ubiquitous and well-behaved?
+ And therefore, are continuous attractors in practice still useful as an idealized model of how animals represent continuous variables?(Sec.~\ref{sec:converse}).
 
 % Our theory explains this phenomenon as follows. %MOVE TO LATER
 % We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the \(m^1, m^2\) plane (independent of the parameter \(g\) for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
@@ -605,9 +608,6 @@ We implemented a mask, \(m_{i,t}\), for modulating the loss with respect to cert
 We trained 10 networks for every combination of the following parameters:
  ReLU, tanh, and rectified tanh activation functions and
  number of units/neurons (64, 128, 256).
-% , and activity regularization (\(10^{-3}, 0, 1\)).
-%All networks were trained using ADAM with \(\beta_1=0.9\) and \(\beta_2=0.999\) for \(5,000\) iterations with a batch size of 64.  % and a stopping criterion............. % and training was run until no decrease in the loss occurred for 100 epochs
-%Among the networks, we only analyzed networks with normalized MSE less than -20 dB (Fig.~\ref{}).
 
 
 %\subsection{Fast-slow decomposition: Unpacking the slow manifolds in trained RNNs} %from trained RNNs
@@ -2841,12 +2841,11 @@ The parameters were initialized were initialized using the Xavier normal distrib
 For the recurrent weights we used \(W_{ij}\sim\mathcal{N}(0, \nicefrac{g}{\sqrt{N}})\) with a high gain \(g=1.5\).
 The initial hidden state was initialized using the output to recurrent mapping matrix \(W_{otr}\colon\reals^2\rightarrow\reals^{N}\) which was trained together with the other parameters.
 
-Adam optimization with \(\beta_1=0.9\) and \(\beta_2=0.999\) was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 1000 epochs.
-The task has 100 time steps for the training samples, and the mean squared error loss was used.
+Adam optimization with \(\beta_1=0.9\) and \(\beta_2=0.999\) was employed with a batch size of 512 and training was run for 5000 gradient updates.
 The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
 
 
-The best learning rate was chosen from a set of values \(\{10^{-2},10^{-3},10^{-4},10^{-5}\}\) by 5 initial runs for all nonlinearity and size pairings with the lowest average loss after 100 gradient steps.
+The best learning rate $10^{-2}$ was chosen from a set of values \(\{10^{-2},10^{-3},10^{-4},10^{-5}\}\) by 5 initial runs for all nonlinearity and size pairings with the lowest average loss after 100 gradient steps.
 Training a single network took around 10 minutes on a CPU and occupied 10 percent of an 8GB RAM.
 
 
