@@ -2837,7 +2837,7 @@ The output projection of the invariant manifolds and stability structures (fixed
 
 \subsection{Discretization}
 We will shortly explain the discretization procedure, i.e., the steps for going from Eq.~\ref{eq:RNN:continuous} to Eq.~\ref{eq:RNN:discrete}.
-Let $t_n = n \\Delta t$.
+Let $t_n = n \Delta t$.
 
 The Euler-Maruyama method for a stochastic differential equation (Eq.~\ref{eq:RNN:continuous})
 \[\mathrm{d}{\mathbf{x}} = \left(-\mathbf{x} + f(\mathbf{W}_{\text{in}} \mathbf{I}(t) + \mathbf{W} \mathbf{x} + \mathbf{b})\right)\mathrm{d}{t} + \sigma\mathrm{d}{W}_t\] is given by :
@@ -2857,7 +2857,7 @@ Thus, we have derived the discrete-time equation: \[ \vx_t = f(\win \vI_t + \vW 
 
 \subsection{Training methods}
 We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
-We used a 
+We used a time step of $\Delta t=0.1$.
 The parameters were initialized were initialized using the Xavier normal distribution \citep{Glorot2010}.
 For the recurrent weights we used \(W_{ij}\sim\mathcal{N}(0, \nicefrac{g}{\sqrt{N}})\) with a high gain \(g=1.5\).
 The initial hidden state was initialized using the output to recurrent mapping matrix \(W_{otr}\colon\reals^2\rightarrow\reals^{N}\) which was trained together with the other parameters.
