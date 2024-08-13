@@ -2799,6 +2799,14 @@ with length scale \(\ell\).
 \paragraph{Double angular velocity integration task}
 
 
+\paragraph{Unbounded tasks}
+Regarding tasks with an unbounded range, such as navigation tasks, two points bear mentioning.
+
+For planar attractors are diffeomorphic to $\reals^2$, note that they do not conform to the assumptions on normally hyperbolic invariant manifolds, since $\reals^2$ is not compact.
+There are suitable generalizations of this theory to noncompact manifolds \citep{eldering2013normally}, but we do not pursue them since they require more refined tools, which would only obscure the point that we are trying to make.
+Tangentially, we would also like to point out that we assume that neural dynamics are naturally bounded (e.g. by energy constraints) and hence sufficiently well described by compact invariant manifolds.
+
+
 \subsection{Output projection of the invariant manifold}
 %Fig 4
 
@@ -2957,6 +2965,10 @@ For the two example networks in Fig.\ref{fig:fastslow_decomposition}, there is a
 
 
 
+\paragraph{LSTM and GRU}
+
+
+
 \newpage
  \subsubsection{Identified invariant manifold output projections}\label{sec:inv_man_projections}
  The identified invariant manifolds in the trained networks (Fig.~\ref{fig:im_rep} and Fig.~\ref{fig:im_all}).
@@ -3017,6 +3029,10 @@ This vector field in the output space captures in what direction and how quickly
 For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field \begin{equation}\|f\|_\infty = \sup_{\alpha} \wout f(\alpha)\end{equation} (see also Sec.~\ref{sec:supp:ub}).
 
 
+\paragraph{LSTM and GRU}
+
+
+\newpage
 \subsection{Comparison to other methods}
 
 
@@ -3032,6 +3048,13 @@ For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm
 
 \paragraph{DSA}
 \citep{ostrow2024beyond}
+
+The DSA 'score' is relative.
+
+
+DSA essentially requires 'learning' or fitting a separate model, which implicitly requires performing model selection with respect to the delay embedding, rank of the linear operator.
+
+
 
 
 %
