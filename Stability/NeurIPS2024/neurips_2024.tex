@@ -2797,7 +2797,9 @@ with length scale \(\ell\).
 \end{figure}
 
 \paragraph{Double angular velocity integration task}
+The Double Angular Velocity Integration Task is an extension of the Angular Velocity Integration Task, where two independent instances of the task are performed simultaneously. In this case, you have two separate angular velocities, each sampled from its own Gaussian Process, representing two distinct movement trajectories.
 
+For each of the two angular velocities, the integration over time is performed separately, resulting in two sets of outputs: one for each angular velocity, making the output space four dimensional.
 
 \paragraph{Unbounded tasks}
 Regarding tasks with an unbounded range, such as navigation tasks, two points bear mentioning.
@@ -3054,6 +3056,8 @@ The DSA 'score' is relative.
 
 DSA essentially requires 'learning' or fitting a separate model, which implicitly requires performing model selection with respect to the delay embedding, rank of the linear operator.
 
+
+\ascomment{Include table?}
 
 
 
