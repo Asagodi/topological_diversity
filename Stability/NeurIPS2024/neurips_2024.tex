@@ -560,6 +560,7 @@ Frurthermore, our theory bounds the error in working memory incurred over time f
 Therefore, the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory, even if the ideal continuous attractor is never observed in practice. 
 Experimental observations that indicate the slowly changing population representations during the "delay periods" where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
 
+For more intuitive explanations of the concepts, refer to Sec.\ref{sec:supp:simplifications}.
 
 
 \section{Numerical Experiments on Task-optimized Recurrent Networks}\label{sec:experiments}
@@ -1086,9 +1087,7 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 %Many different methods have been proposed for overcoming this difficulty.
 
 
-\section{}
-
-
+\section{}\label{sec:supp:simplifications}
 
 
 \subsection{Intuitive definitions of several key concepts used in our paper}
@@ -2974,6 +2973,7 @@ We use the eigenvalue spectrum as evidence for normal hyperbolicity.
 Normal hyperbolicity of an attractive ring invariant manifold implies that the eigenvalue spectrum has a gap in its eigenvalue spectrum.
 To measure this, we linearize at reference points on the invariant manifold (calculate the Jacobian) and calculate the eigenvalues.
 The largest  eigenvalue (real part) for such a manifold needs to be much closer to zero than the second largest.
+For LSTMs and GRUs the  eigenspectrum was approximated by autodifferentiation of the networks w.r.t. the states on the identified invariant manifold.
 
 %\begin{figure}[tbhp]
 %     \centering
@@ -3017,16 +3017,20 @@ This vector field in the output space captures in what direction and how quickly
 For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field 
 \begin{equation}\|f\|_\infty = \sup_{\alpha} \wout f(\alpha),\end{equation} see also Sec.~\ref{sec:supp:ub}.
 
-\paragraph{LSTM and GRU}
+For LSTMs and GRUs the  vector field was approximated by taking the differrence the initial and the next state after initializing the network from states on the identified invariant manifold.
 
 
-\subsection{LSTM and GRU}
+
+
+\subsection{LSTM and GRU results}
+
+
 
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=.9\textwidth]{angular_losses_lstm_gru}
-  \caption{\textbf{GRU and LSTM results.}
+  \includegraphics[width=\textwidth]{angular_losses_lstm_gru}
+  \caption{%\textbf{GRU and LSTM results.}
       The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
     \textbf{(A)} The average accumulated angular error vs. the uniform norm on the vector field shown.
      Angular error at \(T_1 =\) trial length (filled markers) and \(\lim T_{1} \to \infty\)  (hollow markers).
@@ -3068,8 +3072,8 @@ For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm
 \subsection{Double angular integration task}
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.9\textwidth]{davit}
-  \caption{\textbf{2D continuous attractor in RNNs.}
+  \includegraphics[width=\textwidth]{davit}
+  \caption{%\textbf{2D continuous attractor in RNNs.}
       Networks trained on a double angular velocity integration task.
     \textbf{(A)} Initializations (blue) and fixed points (orange) of an example network.
     \textbf{(B)} Fixed points on a 2D parametrization of the torus for the example network.
