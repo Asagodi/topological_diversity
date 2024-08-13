@@ -440,7 +440,7 @@ We informally present a special case due to~\citet{Jones1995}:
 
 \setlength\belowcaptionskip{2ex}
 
-\begin{theorem}[Persistent Manifold]
+\begin{theorem}[Persistent Manifold]\label{theorem:persistent}
 Let \(\manifold_0\) be a connected, compact\footnote{See \citep{eldering2013normally} for results of persistence of noncompact invariant manifolds.}, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
 For a sufficiently small perturbation \(\epsilon > 0\), there exists a manifold \(\manifold_\epsilon\) diffeomorphic to \(\manifold_0\) and locally invariant under the flow of Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}.
 Moreover, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdoff distance to \(\manifold_0\) and has the same smoothness as \(g\) and \(h\). % in (\ref{eq:fenichel:flow}).
@@ -3035,7 +3035,7 @@ For LSTMs and GRUs the  vector field was approximated by taking the differrence 
 \subsection{LSTM and GRU results}
 
 The trained LSTMs and GRUs share the same pattern observed in the trained vanilla RNNs: a ring slow invariant manifold (Fig.~\ref{fig:angular_losses_lstm_gru}C and D).
-The fixed point topologies in the LSTM and GRU networks show a lot of variation in the number of fixed points, paralleling the systems adjacent to continuous attractors from Fig.~\ref{fig:lara_bifurcations}, as seen in Figure \ref{fig:angular_losses}D. These variations are similar to those discussed in Figures \ref{fig:angular_losses_lstm_gru}B.
+The fixed point topologies in the LSTM and GRU networks show a lot of variation in the number of fixed points, paralleling the systems adjacent to continuous attractors from Fig.~\ref{fig:lara_bifurcations}, as seen in Figure \ref{fig:angular_loss}D. These variations are similar to those discussed in Figures \ref{fig:angular_losses_lstm_gru}B.
 Additionally, the angular error and memory capacity measures across different time scales are comparable to those illustrated in Figure \ref{fig:angular_losses_lstm_gru}A, highlighting the generalization properties influenced by the topology of the solutions.
 These results underline the universality of our findings beyond vanilla RNNs.
 
@@ -3109,9 +3109,14 @@ These results underline the universality of our findings beyond 1D tasks.
 
 
 \paragraph{Fixed point analysis}
-\citep{sussillo2013blackbox}
 
-\citep{golub2018fixedpointfinder}
+\citep{sussillo2013blackbox} and \citep{golub2018fixedpointfinder} are primarily concerned with a pointwise definition of slowness, by comparison normal hyperbolicity requires a uniform separation of timescales over the entire invariant manifold.
+In \citep{sussillo2013blackbox}, it was observed that structural perturbations  (random gaussian noise in the parameters with zero mean and standard deviation) still leads to the same approximate plane attractor dynamical structure is still in place, however no explanation is provided for these observations.
+Our theory can explain why perturbations to the trained RNN.
+The Persistence Manifold Theorem (Theorem \ref{theorem:persistent}) guarantees that for small perturbations (of size \(\epsilon\)) the persistent invariant manifold will be at the approximate same place (it will be at a distance of order \(\mathcal{O}(\epsilon)\)).
+
+
+
 
 
 \paragraph{PWL}
