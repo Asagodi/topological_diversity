@@ -243,7 +243,8 @@ Specifically, any perturbation to the \(0\) eigenvalue destroys the continuous a
 a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A, top) or two stable fixed points separated with a saddle-node in between (Fig.~\ref{fig:lara_bifurcations}A, bottom).
 However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifold topologically equivalent to the original continuous attractor (note the slow speed).
 Furthermore, the flow after the bifurcation is contained in the ghost manifold, i.e., it is an invariant manifold.
-This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,mante2013context}.
+This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,mante2013context,schmidt2019identifying}.
+%Similar to the BLA in \citep{schmidt2019identifying} a line attractor approximation was described as a slightly detuned line attractor with arbitrarily slow time constants.
 
 %In the following, we focus on 1-dimensional ring attractors.
 
@@ -1087,10 +1088,9 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 %Many different methods have been proposed for overcoming this difficulty.
 
 
-\section{}\label{sec:supp:simplifications}
+\section{Intuitive definitions of several key concepts used in our paper}\label{sec:supp:simplifications}
 
 
-\subsection{Intuitive definitions of several key concepts used in our paper}
 \paragraph{Manifold:} A part of the state-space that locally resembles a flat, ordinary space (such as a plane or a three-dimensional space, but more generally 
 -dimensional Euclidean space) but can have a more complicated global shape (such as a donut).
 \paragraph{Invariant set:} A property of a set of points in the state space where, if you start within the set, all future states remain within the set and all past states belong to the set as well.
@@ -3119,19 +3119,22 @@ The Persistence Manifold Theorem (Theorem \ref{theorem:persistent}) guarantees t
 
 
 
-\paragraph{PWL}
-\citep{schmidt2019identifying} identifies asymptotic behaviors in dynamical systems, fixed point dynamics and more general cases cycles and chaos. We look beyond asymptotic behavior and characterize attractive invariant manifolds, thereby also identifying connecting orbits (or heteroclinic orbits) between fixed points. We would like to reiterate that we believe that the main contribution of the paper is a new theory of approximations of continuous attractors. Although we developed new analysis methods for dynamical systems to find slow manifolds in them, we do not propose a new general framework for analysis of all dynamical systems. Finally, \citep{schmidt2019identifying} provides analysis tools for Piecewise-Linear Dynamical Systems, while our methods are generally applicable to RNNs with any activation function.
-
-\paragraph{DSA}
-\citep{ostrow2024beyond}
-
-The DSA score is relative.
+\paragraph{Piecewise linear recurrent neural network}
+\citep{schmidt2019identifying} identifies asymptotic behaviors in dynamical systems, fixed point dynamics and more general cases cycles and chaos.
+We look beyond asymptotic behavior and characterize attractive invariant manifolds, thereby also identifying connecting orbits (or heteroclinic orbits) between fixed points.
+Although we developed new analysis methods for dynamical systems to find slow manifolds in them, we do not propose a new general framework for analysis of all dynamical systems.
+Finally, \citep{schmidt2019identifying} provides analysis tools for Piecewise-Linear Dynamical Systems, while our methods are generally applicable to RNNs with any activation function.
 
 
-DSA essentially requires fitting a separate model, which implicitly requires performing model selection with respect to the delay embedding, rank of the linear operator.
 
+%\paragraph{DSA}
+%\citep{ostrow2024beyond}
+%
+%The DSA score is relative.
+%
+%DSA essentially requires fitting a separate model, which implicitly requires performing model selection with respect to the delay embedding, rank of the linear operator.
 
-\ascomment{Include table?}
+%\ascomment{Include table?}
 
 
 
