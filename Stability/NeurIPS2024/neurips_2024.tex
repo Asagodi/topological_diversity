@@ -461,15 +461,6 @@ As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (Fig.~
 Furthermore, Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
 Because continuous ring attractors are bounded, their invariant manifold persists and it remains attractive under small perturbations~\citep{wiggins1994}.
 
-%Given an \(d\)-dimensional continuous attractor manifold embedded within a recurrent dynamics of \(n\)-dimensions, it supports persistent continuous memory of \(d\)-dimension.
-%There are \(d\) zero Lyapunov exponents corresponding to the perturbations tangent to the manifold, coinciding with the memory representation, and \((n-d)\) negative Lyapunov exponents that expresses the attractive nature.
-%In theory, the topology of the manifold can be arbitrary, ideally matching the desired structure of the target variables.
-
-%In practice, the sufficient conditions for RNNs implementing continuous attractors to have this graceful breakdown (like BLA but not UBLA) is for the continuous attractor manifold to be of finite dimension throughout, connected, and bounded.
-%However, in systems with an invariant manifold with dimension at least three, it is possible that a slow manifold with chaotic dynamics is created through a perturbation.
-%This would have as consequence that the perturbed system acquires positive Lyapunov exponents (corresponding to the chaotic orbit), which then can still lead to exploding gradients albeit with very slow flow that has little practical consequence in finite time experiments.
-%The probability of such a bifurcation is low.
-
 
 %\subsection{Implications on Machine Learning}\label{sec:imp:ML}
 %Extending the memory time constant of RNNs have long been an important area of research with much focus on random weights~\cite{Legenstein2007,Goldman2009,Toyoizumi2011,Kerg2019,Chen2018,Henaff2016,Rusch2021,arjovsky2016}.
@@ -559,6 +550,15 @@ In more complex scenarios, such as a two-dimensional attractor, stable fixed poi
 % the compact case: the invariant manifolds are diffeomorphic to the original one. So neural states arent too far off from where they would have been before the perturbation.
 %\mpcomment{This subsection is very dry. Make it sound cool and also explain why these are important considerations in the context of neuroscience.}
 
+\subsection{Implications on experimental neuroscience}\label{sec:implications}
+Animal behavior exhibits strong resilience to changes in their neural dynamics, such as the continuous fluctuations in the synapses or slight variations in neuromodulator levels or temperature. 
+Hence, any theoretical model of neural or cognitive function that requires fine-tuning, such as the continuous attractor model for analog working memory, raises concerns, as they are seemingly biologically irrelevant. 
+Moreover, unbiased data-driven models of time series data and task-trained recurrent network models cannot recover such continuous attractor theories precisely. 
+Our theory shows that this apparent fragility is not as devastating as previously thought: despite the "qualitative differences" in the phase portrait, the "effective behavior" of the system can be arbitrarily close, especially in the behaviorally relevant time scales. 
+We show that as long as the attractive flow to the memory representation manifold is fast and the flow on the manifold is sufficiently slow, it represents an approximate continuous attractor. 
+Frurthermore, our theory bounds the error in working memory incurred over time for such approximate continuous attractors. 
+Therefore, the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory, even if the ideal continuous attractor is never observed in practice. 
+Experimental observations that indicate the slowly changing population representations during the "delay periods" where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
 
 
 
@@ -1088,8 +1088,7 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 
 \section{}
 
-\subsection{Implications on experimental neuroscience}\label{sec:supp:implications}
-Animal behavior exhibits strong resilience to changes in their neural dynamics, such as the continuous fluctuations in the synapses or slight variations in neuromodulator levels or temperature. Hence, any theoretical model of neural or cognitive function that requires fine-tuning, such as the continuous attractor model for analog working memory, raises concerns, as they are seemingly biologically irrelevant. Moreover, unbiased data-driven models of time series data and task-trained recurrent network models cannot recover such continuous attractor theories precisely. Our theory shows that this apparent fragility is not as devastating as previously thought: despite the "qualitative differences" in the phase portrait, the "effective behavior" of the system can be arbitrarily close, especially in the behaviorally relevant time scales. We show that as long as the attractive flow to the memory representation manifold is fast and the flow on the manifold is sufficiently slow, it represents an approximate continuous attractor. Our theory bounds the error in working memory incurred over time for such approximate continuous attractors. Therefore, the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory, even if the ideal continuous attractor is never observed in practice. Experimental observations that indicate the slowly changing population representations during the "delay periods" where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
+
 
 
 \subsection{Intuitive definitions of several key concepts used in our paper}
