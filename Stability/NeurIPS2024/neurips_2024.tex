@@ -146,7 +146,7 @@ Therefore, we conclude that continuous attractors are \emph{functionally robust}
 \section{Introduction}
 Biological systems exhibit robust behaviors that require neural information processing of analog variables such as intensity, direction, and distance.
 Virtually all neural models of working memory for continuous-valued information rely on persistent internal representations through recurrent dynamics.
-The continuous attractor structure in their recurrent dynamics has been a pivotal theoretical tool due to their ability to maintain activity patterns indefinitely through neural population states~\cite{vyas2020,dayan2001,Khona2022}.
+The continuous attractor structure in their recurrent dynamics has been a pivotal theoretical tool due to their ability to maintain activity patterns indefinitely through neural population states~\cite{vyas2020,dayan2001,Khona2022,durstewitz2023reconstructing}.
 They are hypothesized to be the neural mechanism for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, and decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
 Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,Noorman2022,Nair2023,petrucco2023neural,yang2022brainstem}.
 %and anatomy?
@@ -2839,15 +2839,13 @@ The Euler-Maruyama method for a stochastic differential equation (Eq.~\ref{eq:RN
 \[\mathbf{x}_{n+1} = \mathbf{x}_n + \left( -\mathbf{x}_n + f(\mathbf{W}_{\text{in}} \mathbf{I}_n + \mathbf{W} \mathbf{x}_n + \mathbf{b}) \right) \Delta t + \sigma \Delta W_n,\]
 with \(\Delta W_{n}=W_{(n+1)\Delta t}-W_{n\Delta t}\sim \mathcal{N}(0,\Delta t).\)
 
-Subsitute \(\Delta t = 1\):
+Now subsitute \(\Delta t = 1\):
 \begin{align}
  \mathbf{x}_{t+1} &= \mathbf{x}_t + \left( -\mathbf{x}_t + f(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) \right) + \sigma \Delta W_t, \\
  &= f(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) + \sigma \Delta W_t.
  \end{align}
 
-Introduce the noise term \(\zeta_t = \sigma \Delta W_t\), which represents the discrete-time noise.
-
-Thus, we have derived the discrete-time equation: \[ \vx_t = f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t. \]
+If we introduce the noise term \(\zeta_t = \sigma \Delta W_t\), which represents the discrete-time noise, we have derived the discrete-time equation: \[ \vx_t = f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t. \]
 
 \ascomment{cite?}\citep{monfared2020transformation}
 
@@ -2888,12 +2886,12 @@ We used vanilla RNNs with different nonlinearities (ReLU, tanh and rectified tan
 
 
 \paragraph{LSTM}
-The number of units the trained LSTMs was half of that of vanilla RNNs to match the number of paramters \citep{Hochreiter1997}.
+The number of units for the trained LSTMs was half of that of vanilla RNNs to match the number of paramters \citep{Hochreiter1997}.
 
 
 
 \paragraph{GRU}
-\citep{cho2014learning}
+We also trained Gated Recurrent Units (GRU) \citep{cho2014learning} for which we used the same number of hidden units as the vanilla RNNs.
 
 
 
@@ -2905,7 +2903,7 @@ The parameters were initialized were initialized using the Xavier normal distrib
 For the recurrent weights we used \(W_{ij}\sim\mathcal{N}(0, \nicefrac{g}{\sqrt{N}})\) with a high gain \(g=1.5\).
 The initial hidden state was initialized using the output to recurrent mapping matrix \(W_{otr}\colon\reals^2\rightarrow\reals^{N}\) which was trained together with the other parameters.
 
-Adam optimization with \(\beta_1=0.9\) and \(\beta_2=0.999\) was employed with a batch size of 512 and training was run for 5000 gradient updates.
+Adam optimization with \(\beta_1=0.9\) and \(\beta_2=0.999\) was employed with a batch size of 64 and training was run for 5000 gradient updates.
 The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
 
 
@@ -3082,10 +3080,10 @@ For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm
 \paragraph{DSA}
 \citep{ostrow2024beyond}
 
-The DSA 'score' is relative.
+The DSA score is relative.
 
 
-DSA essentially requires 'learning' or fitting a separate model, which implicitly requires performing model selection with respect to the delay embedding, rank of the linear operator.
+DSA essentially requires fitting a separate model, which implicitly requires performing model selection with respect to the delay embedding, rank of the linear operator.
 
 
 \ascomment{Include table?}
