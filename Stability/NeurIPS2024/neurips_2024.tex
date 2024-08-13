@@ -2988,7 +2988,7 @@ For the two example networks in Fig.\ref{fig:fastslow_decomposition}, there is a
 
  \paragraph{Vector field on invariant manifold}\label{sec:supp:vf}
 
- We assess the vector field for the ODE (Eq.~~\ref{eq:RNN:continuous} without noise and input) on the found invariant manifold \(\manifold\) by calculating it in the state space
+ We assess the vector field for the ODE (Eq.~\ref{eq:RNN:continuous}) without noise and input) on the found invariant manifold \(\manifold\) by calculating it in the state space
  and then projecting it onto the output space:
  \begin{equation}
 \dot \alpha =  \wout f(\hat \alpha) %=: g(\alpha)
@@ -3013,7 +3013,6 @@ This vector field in the output space captures in what direction and how quickly
 
  There are some inconsistencies around saddle nodes, where the vector field seems to point off of the manifold.
  This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
-%
 For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field 
 \begin{equation}\|f\|_\infty = \sup_{\alpha} \wout f(\alpha),\end{equation} see also Sec.~\ref{sec:supp:ub}.
 
