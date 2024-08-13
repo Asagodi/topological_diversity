@@ -786,12 +786,14 @@ Nevertheless, the topological structure of the found solutions still determines 
 %limitations
 \paragraph{Limitations}
 Although, we only explicitly describe the topology and dimensionality of the identified invariant manifolds for a representative set, the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
-This separation of timescale necessarily exists for well-trained networks, however, the analysis is not guaranteed to work for systems without a fast-slow decomposition.
+Our numerical analysis relies on identifying a time scale separation from simulated trajectories. If the separation of time scales is too small, it may inadvertently identify parts of the state space that are only forward invariant (i.e., transient). However, this did not pose a problem in our analysis of the trained RNNs, which is unsurprising, as the separation is guaranteed by state noise robustness (due to injected state noise during training).
 
 To identify solutions with a fast-slow decomposition only rely on the generalization property of the network (in terms of the normalized mean square error for ten times longer trials).
 The possible solutions that the networks can find are restricted by having a linear output mapping.
 For a nonlinear output mapping, a possible solution for analog memory is the quasi-periodic toroidal attractor, but this is not possible for a linear output mapping.
-Our analysis methods can identify these limit sets, but we do not have a simple way to parametrize the invariant manifold.
+Our analysis methods can identify these limit sets, but we do not have a simple way to parametrize the two dimensional torus invariant manifold.
+
+
 
 
 
@@ -1091,13 +1093,14 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 
 
 \subsection{Intuitive definitions of several key concepts used in our paper}
-\paragraph{Manifold}: A part of the state-space that locally resembles a flat, ordinary space (such as a plane or a three-dimensional space, but more generally 
+\paragraph{Manifold:} A part of the state-space that locally resembles a flat, ordinary space (such as a plane or a three-dimensional space, but more generally 
 -dimensional Euclidean space) but can have a more complicated global shape (such as a donut).
-\paragraph{Invariant set}: A property of a set of points in the state space where, if you start within the set, all future states remain within the set and all past states belong to the set as well.
-\paragraph{Normally Hyperbolic Invariant Manifold}: A behavior of a dynamical system where flow in the direction orthogonal to the manifold converges (or diverges) to the manifold significantly faster than the direction that remains on the manifold.
-\paragraph{Diffeomorphism}: A diffeomorphism is a stretchable map that can be used to transform one shape into another without tearing or gluing. 
+\paragraph{Invariant set:} A property of a set of points in the state space where, if you start within the set, all future states remain within the set and all past states belong to the set as well.
+\paragraph{Normally Hyperbolic Invariant Manifold:} A behavior of a dynamical system where flow in the direction orthogonal to the manifold converges (or diverges) to the manifold significantly faster than the direction that remains on the manifold.
+\paragraph{Diffeomorphism:} A diffeomorphism is a stretchable map that can be used to transform one shape into another without tearing or gluing. 
+A differentilable map with differentilable inverse.
 
-\paragraph{$C^1$ neighborhood of a $C^1$ function}: A set of functions that are close to the function in terms of both their values and their first derivatives.
+\paragraph{$C^1$ neighborhood of a $C^1$ function:} A set of functions that are close to the function in terms of both their values and their first derivatives.
 
 \ascomment{TODO: compact, diffeomorphism and heteroclinic/connecting orbits.}
 
