@@ -324,8 +324,6 @@ There are several additional co-dim 1 bifurcations with measure zero (Fig.~\ref{
 Surprisingly, the number of fixed points is maintained throughout a range of perturbation sizes and hence depends only on the direction of the perturbation (Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}).
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 
-%how can we understand the underlying mechanism of these bifurcations
-
 
 %In modeling neural dynamics, ensuring biological plausibility is paramount.
 \ptitle{Bump attractor model}
@@ -592,7 +590,7 @@ where \(\vx_t \in \reals^d\) is the hidden state,
 \(f\colon \reals \to \reals\) an activation function that acts on each of the hidden dimensions,
 state noise variable \(\zeta_t\iidsample\mathcal{N}(\mathbf{0},\sigma^2 = \nicefrac{1}{100}\identity)\), and %\(\zeta\sim \mathcal{N}(0, .001)\)
 \(\vW, \vb, \win, \wout, \bout\) are parameters.
-Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation(see Supp.Sec.\ref{sec:discretization}):
+Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation(see Sec.\ref{sec:discretization}):
 \begin{align}
     \dm{\vx} &= -\vx\,\dm{t} + f(\win \vI(t) + \vW \vx + \vb)\,\dm{t} + \sigma\,\dm{W}. \label{eq:RNN:continuous}
 \end{align}
@@ -2045,12 +2043,14 @@ We keep the following parameters for the analysis:
 Although their analysis elegantly shows that the population activity of the perturbed system does not destroy the Fisher information about the input, they do not consider a scenario where the ring attractor is used as a working memory mechanism, it is rather used to encode instantaneous representation.
 In contrast, our analysis involves understanding how the working memory content degrades over time due to the dynamics. We are not aware of any mean field analysis that covers this aspect.
 
+\citep{battista2020capacity}
 
 
+\citep{wojtak2023robust}
 
 %EMPJ
 \subsection{Embedding Manifolds with Population-level Jacobians}\label{sec:supp:empj}
-We fit 3 networks with the Embedding Manifolds with Population-level Jacobians (EMPJ) method \citep{pollock2020}.
+We fit three networks with the Embedding Manifolds with Population-level Jacobians (EMPJ) method \citep{pollock2020}.
 
 The networks are RNNs of $N=10$ neurons with a $tanh$ activation function and $\tau = 0.05$ time constant.
  To use EMPJ we need to specify our desired $k$ fixed points and $m$ eigenvectors and eigenvalues per fixed point.
@@ -2060,8 +2060,11 @@ Finally we associate the negative eigenvalue $-1/\tau$ to the orthogonal eigenve
 
 Since these determined dynamics are only in a 2D plane, we use a random linear mapping $D\colon\reals^2\rightarrow\reals^N$ to map the fixed points and the eigenvectors to a $10$-dimensional space. First, we sample a random from orthogonal matrix $A$ from the $O(N)$ Haar distribution and then we take the first two columns of this matrix to be $D=[A]_{12}$.
 
-EMPJ then returns a network parameters that satisfy these constraints. Furthermore, due to the particular solver used, that regularises the magnitude of the parameters, we get that all the other eigenvalues not specified are also set to $-1/\tau$ (for details see \citep{pollock2020}).
+EMPJ then returns a network parameters that satisfy these constraints. Furthermore, due to the particular solver used, that regularises the magnitude of the parameters, we get that all the other eigenvalues not specified are also set to $-\nicefrac{1}{\tau}$ (for details see \citep{pollock2020}).
 
+
+\ascomment{include sphere and torus?}
+\citep{hermansen2024uncovering}
 
 \paragraph{Finding fixed points}
 As we remark in Sec.~\ref{sec:empjnonrobust}, EMPJ networks are not robust to S-type noise, therefore we cannot apply our analysis of identifying the invariant set through the convergence criterion of numerically integrated trajectories.
@@ -2793,6 +2796,8 @@ with length scale \(\ell\).
         }\label{fig:angular_task}
 \end{figure}
 
+\paragraph{Double angular velocity integration task}
+
 
 \subsection{Output projection of the invariant manifold}
 %Fig 4
@@ -2811,7 +2816,7 @@ The output projection of the invariant manifolds and stability structures (fixed
 
 
 
-\subsection{Discretization}
+\subsection{Discretization}\label{sec:discretization}
 We will shortly explain the discretization procedure, i.e., the steps for going from Eq.~\ref{eq:RNN:continuous} to Eq.~\ref{eq:RNN:discrete}.
 Let $t_n = n \Delta t$.
 
@@ -2830,6 +2835,7 @@ Introduce the noise term \(\zeta_t = \sigma \Delta W_t\), which represents the d
 
 Thus, we have derived the discrete-time equation: \[ \vx_t = f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t. \]
 
+\ascomment{cite?}\citep{monfared2020transformation}
 
 %\subsection{Discrepancies between discrete and continuous RNNs}
 %\label{sec:discrepancies}
@@ -2859,9 +2865,28 @@ Thus, we have derived the discrete-time equation: \[ \vx_t = f(\win \vI_t + \vW 
 %
 %The bias to the recurrent units is zero.
 
+\subsection{Network architectures}
+In all network architectures a linear output is used.
+Furthermore, for the angular velocity integration tasks we used an additional mapping from the output to the hidden layer to initialize the hidden state on the initial position along the ring from which the network needed to integrate from.
+
+\paragraph{Vanilla}
+We used vanilla RNNs with different nonlinearities (ReLU, tanh and rectified tanh) for the recurrent layer.
+
+
+\paragraph{LSTM}
+The number of units the trained LSTMs was half of that of vanilla RNNs to match the number of paramters \citep{Hochreiter1997}.
+
+
+
+\paragraph{GRU}
+\citep{cho2014learning}
+
+
+
+
 \subsection{Training methods}
-We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.	
-We used a time step of $\Delta t=0.1$.
+We trained  RNNs with PyTorch \citep{paszke2017automatic}  on the three tasks Fig.~\ref{fig:angular_task}.	
+For the vanilla RNNs, we used a time step of $\Delta t=0.1$.
 The parameters were initialized were initialized using the Xavier normal distribution \citep{Glorot2010}.
 For the recurrent weights we used \(W_{ij}\sim\mathcal{N}(0, \nicefrac{g}{\sqrt{N}})\) with a high gain \(g=1.5\).
 The initial hidden state was initialized using the output to recurrent mapping matrix \(W_{otr}\colon\reals^2\rightarrow\reals^{N}\) which was trained together with the other parameters.
@@ -2990,6 +3015,24 @@ This vector field in the output space captures in what direction and how quickly
  This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
 %
 For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field \begin{equation}\|f\|_\infty = \sup_{\alpha} \wout f(\alpha)\end{equation} (see also Sec.~\ref{sec:supp:ub}).
+
+
+\subsection{Comparison to other methods}
+
+
+
+\paragraph{Fixed point analysis}
+\citep{sussillo2013blackbox}
+
+\citep{golub2018fixedpointfinder}
+
+
+\paragraph{PWL}
+\citep{schmidt2019identifying} identifies asymptotic behaviors in dynamical systems, fixed point dynamics and more general cases cycles and chaos. We look beyond asymptotic behavior and characterize attractive invariant manifolds, thereby also identifying connecting orbits (or heteroclinic orbits) between fixed points. We would like to reiterate that we believe that the main contribution of the paper is a new theory of approximations of continuous attractors. Although we developed new analysis methods for dynamical systems to find slow manifolds in them, we do not propose a new general framework for analysis of all dynamical systems. Finally, \citep{schmidt2019identifying} provides analysis tools for Piecewise-Linear Dynamical Systems, while our methods are generally applicable to RNNs with any activation function.
+
+\paragraph{DSA}
+\citep{ostrow2024beyond}
+
 
 %
 %
