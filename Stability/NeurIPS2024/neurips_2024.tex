@@ -1086,10 +1086,30 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 %Many different methods have been proposed for overcoming this difficulty.
 
 
-%\section{Persistence in non-differentiable vector fields}
-%The applicability of the Persistence Theorem to non-differentiable vector fields would depend on the specific characteristics of the system and the nature of the non-differentiability.
-%
+\section{}
 
+\subsection{Implications on experimental neuroscience}\label{sec:supp:implications}
+Animal behavior exhibits strong resilience to changes in their neural dynamics, such as the continuous fluctuations in the synapses or slight variations in neuromodulator levels or temperature. Hence, any theoretical model of neural or cognitive function that requires fine-tuning, such as the continuous attractor model for analog working memory, raises concerns, as they are seemingly biologically irrelevant. Moreover, unbiased data-driven models of time series data and task-trained recurrent network models cannot recover such continuous attractor theories precisely. Our theory shows that this apparent fragility is not as devastating as previously thought: despite the "qualitative differences" in the phase portrait, the "effective behavior" of the system can be arbitrarily close, especially in the behaviorally relevant time scales. We show that as long as the attractive flow to the memory representation manifold is fast and the flow on the manifold is sufficiently slow, it represents an approximate continuous attractor. Our theory bounds the error in working memory incurred over time for such approximate continuous attractors. Therefore, the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory, even if the ideal continuous attractor is never observed in practice. Experimental observations that indicate the slowly changing population representations during the "delay periods" where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
+
+
+\subsection{Intuitive definitions of several key concepts used in our paper}
+\paragraph{Manifold}: A part of the state-space that locally resembles a flat, ordinary space (such as a plane or a three-dimensional space, but more generally 
+-dimensional Euclidean space) but can have a more complicated global shape (such as a donut).
+\paragraph{Invariant set}: A property of a set of points in the state space where, if you start within the set, all future states remain within the set and all past states belong to the set as well.
+\paragraph{Normally Hyperbolic Invariant Manifold}: A behavior of a dynamical system where flow in the direction orthogonal to the manifold converges (or diverges) to the manifold significantly faster than the direction that remains on the manifold.
+\paragraph{Diffeomorphism}: A diffeomorphism is a stretchable map that can be used to transform one shape into another without tearing or gluing. 
+
+\paragraph{$C^1$ neighborhood of a $C^1$ function}: A set of functions that are close to the function in terms of both their values and their first derivatives.
+
+\ascomment{TODO: compact, diffeomorphism and heteroclinic/connecting orbits.}
+
+\subsection{Visualization of geometric intuition of closeness in model space to behavioral similarty correspondence}
+\ascomment{TODO: we will include a subsection with a visual illustration of our claims, aiming to tap into human geometric intuition. In this visualization, we show how models that behave almost like a perfect analog memory system correspond to a volume of models in the space of dynamical systems.}
+
+
+
+
+\newpage
 \section{The bounded line attractor}\label{sec:supp:bla}
 In order to demonstrate the implications of the theory of the persistence of  continuous attractors, we rigorously test the predictions of the theory on the stability of the Bounded Line Attractor (BLA).
 Our objective is to assess the practical implications of the theoretical findings of bounded continuous attractors in a small and tractable system, and second, to contribute empirical evidence that can help refine and extend existing theoretical frameworks.
@@ -2267,7 +2287,7 @@ We will give some clarifications and proofs of the claims on systems near perfec
 
 \subsection{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
 
-We  provide a proof of Prop.~\ref{prop:revival} which is dependent on the \(\epsilon\)-Neighborhood Theorem\citep{guillemin2010differential}\footnote{Not to be confused with the perturbation parameter \(\epsilon\)}, which we state here.
+We  provide a proof of Prop.~\ref{prop:revival} which is dependent on the \(\epsilon\)-Neighborhood Theorem\citep{guillemin2010differential}\footnote{Not to be confused with the perturbation parameter \(\epsilon\).}, which we state here.
 
 \begin{theorem}[\(\epsilon\)-Neighborhood Theorem\citep{guillemin2010differential}]
 Let \( Y \subseteq \mathbb{R}^n \) be a smooth, compact manifold. Then for a small enough \(\epsilon > 0\),
