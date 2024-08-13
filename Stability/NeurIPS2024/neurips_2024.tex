@@ -1127,6 +1127,10 @@ This pushes the input along the line ``attractor'' in two opposite directions, %
 see below.
 
 
+The results from such low-dimensional system can be extended to higher-dimensional systems through reduction methods from center manifold theory.
+On the center manifold the singular perturbation problem (as is the case for continuous attractors) restricts to a regular perturbation problem \citep{fenichel1979geometric}. Furthermore, relying on the Reduction Principle \citep{kirchgraber1990geometry}, one can always reduce all systems (independent of dimension) to the same canonical form, given that they have the same continuous attractor.
+
+
 \subsection{Fast-slow form}\label{sec:supp:fast_slow_form}
 First of all, we will show how to transform the BLA network to the slow-fast form in Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} to explicitly demonstrate that the theory applies to it.
 To achieve this, we transform the state space so that the line attractor aligns with the \(y\)-axis.
@@ -2965,42 +2969,7 @@ For a stable system, where the eigenvalues have negative real parts, the time co
 where \(\Re(\lambda)\) denotes the real part of the eigenvalue \(\lambda\).
 For the two example networks in Fig.\ref{fig:fastslow_decomposition}, there is a time scale separation between the dynamics on and off the invariant manifold because there is only one eigenvalue close to zero.
 
-
-
-\paragraph{LSTM and GRU}
-
-
-
-\newpage
- \subsubsection{Identified invariant manifold output projections}\label{sec:inv_man_projections}
- The identified invariant manifolds in the trained networks (Fig.~\ref{fig:im_rep} and Fig.~\ref{fig:im_all}).
- However, not all solutions can be meaningfully analyzed with this the slow-fast decomposition method.
- For example, the solution at the center of the \(\tanh, N=256\) block, the found invariant manifold is not correctly captured.
- This is true for the networks that have not learned the task correctly (networks with a NMSE higher than -20dB).
-
- \begin{figure}[tbhp]
-     \centering
-    \includegraphics[width=\textwidth]{im_all_last2}
-       \caption{Representative identified invariant manifolds (projected onto the output space, in black) with the fixed points (cyan for stable, orange for saddle and black for unstable).
-        The reference target ring is shown in grey.}
-       \label{fig:im_rep}
-\end{figure}
-
-\newpage
-\begin{figure}[tbhp]
-     \centering
-    \includegraphics[width=\textwidth]{im_all_3x3}
-       \caption{The identified invariant manifolds with the fixed points (cyan for stable, orange for saddle and black for unstable) for all inferred networks (except the ones in Fig~\ref{fig:im_rep}).}
-       \label{fig:im_all}
-\end{figure}
-
-
-
-
-
-
-\newpage
- \subsubsection{Vector field on invariant manifold}\label{sec:supp:vf}
+ \paragraph{Vector field on invariant manifold}\label{sec:supp:vf}
 
  We assess the vector field for the ODE (Eq.~~\ref{eq:RNN:continuous} without noise and input) on the found invariant manifold \(\manifold\) by calculating it in the state space
  and then projecting it onto the output space:
@@ -3028,10 +2997,72 @@ This vector field in the output space captures in what direction and how quickly
  There are some inconsistencies around saddle nodes, where the vector field seems to point off of the manifold.
  This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
 %
-For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field \begin{equation}\|f\|_\infty = \sup_{\alpha} \wout f(\alpha)\end{equation} (see also Sec.~\ref{sec:supp:ub}).
-
+For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field 
+\begin{equation}\|f\|_\infty = \sup_{\alpha} \wout f(\alpha),\end{equation} see also Sec.~\ref{sec:supp:ub}.
 
 \paragraph{LSTM and GRU}
+
+
+\subsection{LSTM and GRU}
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=.9\textwidth]{angular_losses_lstm_gru}
+  \caption{\textbf{GRU and LSTM results.}
+      The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
+    \textbf{(A)} The average accumulated angular error vs. the uniform norm on the vector field shown.
+     Angular error at \(T_1 =\) trial length (filled markers) and \(\lim T_{1} \to \infty\)  (hollow markers).
+      % The number of fixed point is an integer number.
+      Points are jittered to aid legibility.
+    \textbf{(B)} The number of fixed points vs. average accumulated angular error, with the average distance between neighboring fixed points (magenta).
+    \textbf{(C,D)} Invariant manifold (black) of a trained LSTM (C) and GRU (D) with stable fixed points (green) and saddle nodes (red).
+}\label{fig:angular_losses_lstm_gru}
+\end{figure}
+
+
+
+\newpage
+ \subsection{Identified invariant manifold output projections}\label{sec:inv_man_projections}
+ The identified invariant manifolds in the trained networks (Fig.~\ref{fig:im_rep} and Fig.~\ref{fig:im_all}).
+ However, not all solutions can be meaningfully analyzed with this the slow-fast decomposition method.
+ For example, the solution at the center of the \(\tanh, N=256\) block, the found invariant manifold is not correctly captured.
+ This is true for the networks that have not learned the task correctly (networks with a NMSE higher than -20dB).
+
+ \begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=\textwidth]{im_all_last2}
+       \caption{Representative identified invariant manifolds (projected onto the output space, in black) with the fixed points (cyan for stable, orange for saddle and black for unstable).
+        The reference target ring is shown in grey.}
+       \label{fig:im_rep}
+\end{figure}
+
+\newpage
+\begin{figure}[tbhp]
+     \centering
+    \includegraphics[width=\textwidth]{im_all_3x3}
+       \caption{The identified invariant manifolds with the fixed points (cyan for stable, orange for saddle and black for unstable) for all inferred networks (except the ones in Fig~\ref{fig:im_rep}).}
+       \label{fig:im_all}
+\end{figure}
+
+
+
+\newpage
+\subsection{Double angular integration task}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.9\textwidth]{davit}
+  \caption{\textbf{2D continuous attractor in RNNs.}
+      Networks trained on a double angular velocity integration task.
+    \textbf{(A)} Initializations (blue) and fixed points (orange) of an example network.
+    \textbf{(B)} Fixed points on a 2D parametrization of the torus for the example network.
+    \textbf{(C)} The sum of the total mean angular error (sum of the two seperate angular errors over the two rings) is bounded by the uniform norm of the vector field.
+    \textbf{(D)} Generalization for longer memory depends on the number of fixed points in the network.
+}\label{fig:davit}
+\end{figure}
+
+
+
 
 
 \newpage
