@@ -592,7 +592,7 @@ where \(\vx_t \in \reals^d\) is the hidden state,
 \(f\colon \reals \to \reals\) an activation function that acts on each of the hidden dimensions,
 state noise variable \(\zeta_t\iidsample\mathcal{N}(\mathbf{0},\sigma^2 = \nicefrac{1}{100}\identity)\), and %\(\zeta\sim \mathcal{N}(0, .001)\)
 \(\vW, \vb, \win, \wout, \bout\) are parameters.
-Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation:
+Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation(see Supp.Sec.\ref{sec:discretization}):
 \begin{align}
     \dm{\vx} &= -\vx\,\dm{t} + f(\win \vI(t) + \vW \vx + \vb)\,\dm{t} + \sigma\,\dm{W}. \label{eq:RNN:continuous}
 \end{align}
@@ -1095,11 +1095,11 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 \section{Bifurcation analysis of the bounded line attractor}\label{sec:supp:bla}
 
 In order to demonstrate the implications of the theory of the persistence of bounded continuous attractors, we rigorously test the predictions of the theory on the stability of the BLA.
- Our objective is to assess the practical implications of the theoretical findings of bounded continuous attractors in a small and tractable system, and second, to contribute empirical evidence that can help refine and extend existing theoretical frameworks.
+Our objective is to assess the practical implications of the theoretical findings of bounded continuous attractors in a small and tractable system, and second, to contribute empirical evidence that can help refine and extend existing theoretical frameworks.
 
 
-Similarly as for UBLA, the BLA has a parameter that determines step size along line attractor \(\alpha\). Analogously as for UBLA, these parameters determine the capacity of the network.
-The inputs push the input along the line attractor in two opposite directions, see below. UBLA and BLA need to be initialized at \(\beta(1,1)\) and \(\tfrac{\beta}{2}(1,1)\), respectively, for correct decoding, i.e., output projection.
+The BLA has a parameter that determines step size along line attractor \(\alpha\). Analogously as for UBLA, these parameters determine the capacity of the network.
+The inputs push the input along the line attractor in two opposite directions, see below. The BLA needs to be initialized at \(\beta(1,1)\) and \(\tfrac{\beta}{2}(1,1)\), respectively, for correct decoding, i.e., output projection.
 \begin{equation}\label{eq:bla}
 \win = \alpha
 \begin{pmatrix}
@@ -2834,9 +2834,30 @@ with length scale \(\ell\).
 The output projection of the invariant manifolds and stability structures (fixed points and limit cycles) is very close to the target output circle.
 
 
-\subsection{Training methods}
 
- We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
+\subsection{Discretization}
+We will shortly explain the discretization procedure, i.e., the steps for going from Eq.~\ref{eq:RNN:continuous} to Eq.~\ref{eq:RNN:discrete}.
+Let $t_n = n \\Delta t$.
+
+The Euler-Maruyama method for a stochastic differential equation (Eq.~\ref{eq:RNN:continuous})
+\[\mathrm{d}{\mathbf{x}} = \left(-\mathbf{x} + f(\mathbf{W}_{\text{in}} \mathbf{I}(t) + \mathbf{W} \mathbf{x} + \mathbf{b})\right)\mathrm{d}{t} + \sigma\mathrm{d}{W}_t\] is given by :
+\[\mathbf{x}_{n+1} = \mathbf{x}_n + \left( -\mathbf{x}_n + f(\mathbf{W}_{\text{in}} \mathbf{I}_n + \mathbf{W} \mathbf{x}_n + \mathbf{b}) \right) \Delta t + \sigma \Delta W_n,\]
+with \(\Delta W_{n}=W_{(n+1)\Delta t}-W_{n\Delta t}\sim \mathcal{N}(0,\Delta t).\)
+
+Subsitute \(\Delta t = 1\):
+\begin{align}
+ \mathbf{x}_{t+1} &= \mathbf{x}_t + \left( -\mathbf{x}_t + f(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) \right) + \sigma \Delta W_t, \\
+ &= f(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) + \sigma \Delta W_t.
+ \end{align}
+
+Introduce the noise term \(\zeta_t = \sigma \Delta W_t\), which represents the discrete-time noise.
+
+Thus, we have derived the discrete-time equation: \[ \vx_t = f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t. \]
+
+
+\subsection{Training methods}
+We trained vanilla RNNs with PyTorch \citep{paszke2017automatic} with a tanh nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}.
+We used a 
 The parameters were initialized were initialized using the Xavier normal distribution \citep{Glorot2010}.
 For the recurrent weights we used \(W_{ij}\sim\mathcal{N}(0, \nicefrac{g}{\sqrt{N}})\) with a high gain \(g=1.5\).
 The initial hidden state was initialized using the output to recurrent mapping matrix \(W_{otr}\colon\reals^2\rightarrow\reals^{N}\) which was trained together with the other parameters.
