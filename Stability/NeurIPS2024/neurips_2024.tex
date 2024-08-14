@@ -2064,6 +2064,8 @@ We keep the following parameters for the analysis:
 Although their analysis elegantly shows that the population activity of the perturbed system does not destroy the Fisher information about the input, they do not consider a scenario where the ring attractor is used as a working memory mechanism, it is rather used to encode instantaneous representation.
 In contrast, our analysis involves understanding how the working memory content degrades over time due to the dynamics. We are not aware of any mean field analysis that covers this aspect.
 
+
+\ascomment{TODO:}
 \citep{battista2020capacity}
 
 
@@ -2194,12 +2196,10 @@ In other words, it is locally invariant if for all \(x \in \manifold, \varphi(x,
 \end{definition}
 
 \begin{definition}
-A set \( S \) is said to be forward invariant under a flow \( \varphi_t \) if for every point \( x \) in \( S \) and for all \( t \geq 0 \), the image of \( x \) under the flow at time \( t \), denoted \( \varphi_t(x) \), remains in \( S \). This can be written as:
+A set \( S \) is said to be \emph{forward invariant} under a flow \( \varphi_t \) if for every point \( x \) in \( S \) and for all \( t \geq 0 \), the image of \( x \) under the flow at time \( t \), denoted \( \varphi_t(x) \), remains in \( S \). This can be written as:
 
 \[ \varphi_t(x) \in S \quad \text{for all} \quad x \in S \quad \text{and} \quad t \geq 0. \]
 \end{definition}
-
-
 
 \paragraph{Small perturbation}
 In the context of Fenichel's Persistence Theorem, a "sufficiently small \( C^r \) perturbation of the vector field \( f \)" refers to perturbations that are small in the \( C^r \) norm. The \( C^r \) norm measures the size of a function and its derivatives up to order \( r \).
@@ -2212,11 +2212,39 @@ where \( \epsilon \) is a small positive number, and the \( C^r \) norm is defin
 Which gives a constraint on how much each of the \(k\)-th derivatives \( D^k \) of the perturbed vector field can differ from the original.
 
 In summary, a perturbation \( \tilde{f} \) is considered sufficiently small in the \( C^r \) sense if the difference between \( \tilde{f} \) and \( f \), along with their derivatives up to order \( r \), is uniformly small across the domain.
+For \(C^1\) perturbations, this defines a \(C^1\)  neighborhood of functions, within which the persistence of the manifold is ensured by Fenichel's theorem.
+
+
+
+\paragraph{Closeness}
+Finally, to formalize what is meant by that the persistent invariant manifold is very close to the original continuous attractor, we need a notion of distance between the manifolds.
+\begin{definition}
+Let \((M, d)\) be a metric space. For each pair of non-empty subsets \(X \subset M\) and \(Y \subset M\), the \emph{Hausdorff distance} between \(X\) and \(Y\) is defined as
+\[
+d_H(X, Y) := \max \left\{ \sup_{x \in X} d(x, Y), \ \sup_{y \in Y} d(X, y) \right\},
+\]
+where \(\sup\) represents the supremum operator, \(\inf\) the infimum operator, and where
+\[
+d(a, B) := \inf_{b \in B} d(a, b)
+\]
+quantifies the distance from a point \(a \in X\) to the subset \(B \subseteq X\).
+\end{definition}
+
+In conclusion, the Hausdorff distance provides a rigorous mathematical framework to quantify the "closeness" or "similarity" between two sets.
+
+
 
 
 \subsection{Fenichels' Persistent Manifold Theorem}
 
-System \ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} can be reformulated with a change of time-scale as
+This section will introduce the original Fenichel's Persistent Manifold Theorem, laying the groundwork for understanding how normally hyperbolic invariant manifolds persist under perturbations in systems with distinct time scales.
+ By examining this foundational theorem, we can build a deeper understanding of the stability and behavior of complex dynamical systems.
+
+In the study of dynamical systems, particularly those involving multiple time scales, understanding the behavior of solutions near invariant manifolds is crucial.
+These manifolds often determine the long-term dynamics of the system and their stability properties.
+ The Fenichel's Persistent Manifold Theorem provides a powerful framework for analyzing such systems by demonstrating the persistence of normally hyperbolic invariant manifolds under small perturbations. This theorem is particularly relevant in systems where variables evolve on different time scales—typically referred to as "slow" and "fast" dynamics.
+ By reformulating the system with a change of time-scale, we can explore how the dynamics on these manifolds behave, especially when perturbed.
+Consider the system given by Equations \ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal}, which can be rewritten using a rescaled time variable, \(\tau\), to distinguish between the fast and slow dynamics as follows:
 \begin{align}\label{eq:slow}
 \begin{cases}
 \epsilon x' &= g ( x , y , \epsilon) \\
@@ -2266,6 +2294,9 @@ For a detailed discussion of how bifurcations of a continuous attractors depend 
 If the solutions are symmetric under rotations (a circular symmetry such as for a ring attractor).
 As you change the bifurcation parameter, you find that new solutions appear that also respect this rotational symmetry.
 The lemma tells you that these new solutions will align with specific symmetries (like different rotation angles), which are described by the irreducible representations of the symmetry group.
+
+
+
 
 \subsection{Consequences to system identification}
 Fenichel's Persistence Theorem has several significant implications for modelling and system identification in dynamical systems.
