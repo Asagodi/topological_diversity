@@ -425,8 +425,8 @@ Informally, normal hyperbolicity guarantees that the perturbations change the st
   \centering
   \includegraphics[width=0.5\textwidth]{FenichelThm}
   \caption{
-    Persistent manifold theorem applied to compact continuous attractor guarantees the flow on the slow manifold \(\manifold_\epsilon\) is locally invariant and continues to be attractive.
-    The dashed line is a trajectory ``trapped'' in the slow manifold (locally invariant). %change to forward invariant?
+    Persistent manifold theorem applied to compact continuous attractor guarantees the flow on the slow manifold \(\manifold_\epsilon\) is invariant and continues to be attractive.
+    The dashed line is a trajectory ``trapped'' in the slow manifold (which is invariant). %change to forward invariant?
     %mention topology?
   }\label{fig:fenichel}
 \end{SCfigure}
@@ -444,13 +444,15 @@ We informally present a special case due to~\citet{Jones1995}:
 \begin{theorem}[Persistent Manifold]\label{theorem:persistent}
 Let \(\manifold_0\) be a connected, compact\footnote{See \citep{eldering2013normally} for results of persistence of noncompact invariant manifolds.}, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
 For a sufficiently small perturbation \(\epsilon > 0\), there exists a manifold \(\manifold_\epsilon\) diffeomorphic to \(\manifold_0\) and locally invariant under the flow of Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}.
-Moreover, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdoff distance to \(\manifold_0\) and has the same smoothness as \(g\) and \(h\). % in (\ref{eq:fenichel:flow}).
+%Moreover, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_0\) and has the same smoothness as \(g\) and \(h\). 
 \end{theorem}
 
 The manifold \(\manifold_\epsilon\) is called the \emph{slow manifold} which is no longer necessarily a continuum of equilibria.
 However, the local invariance implies that trajectories remain within the manifold except potentially at the boundary.
 Furthermore, the non-zero flow on the slow manifold is slow and given in the \(\epsilon \to 0\) limit as \(\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)\) where \(\tau = \epsilon t\) is a rescaled time and \(c^\epsilon(\cdot)\) parameterizes the \(l\) dimensional slow manifold.
-In addition, the stable manifold of \(\manifold_0\) is similarly persistent~\cite{Jones1995}, implying the manifold \(\manifold_\epsilon\) to remain attractive.%\pscomment{\textbf{Suggestion}:implying the stability of the manifold \(\manifold_\epsilon\) is preserved.}
+In addition, the stable manifold of \(\manifold_0\) is similarly persistent~\cite{Jones1995}, implying that the manifold \(\manifold_\epsilon\) remains attractive.
+Finally, the persisting invariant manifold is very close to the original continuous attractor (see also \ref{theorem:originalpersistent}).
+%\pscomment{\textbf{Suggestion}:implying the stability of the manifold \(\manifold_\epsilon\) is preserved.}
 
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow rerparametrization of the BLA
@@ -2212,7 +2214,7 @@ Which gives a constraint on how much each of the \(k\)-th derivatives \( D^k \) 
 In summary, a perturbation \( \tilde{f} \) is considered sufficiently small in the \( C^r \) sense if the difference between \( \tilde{f} \) and \( f \), along with their derivatives up to order \( r \), is uniformly small across the domain.
 
 
-\subsection{Fenichels' Invariant Manifold Theorem}
+\subsection{Fenichels' Persistent Manifold Theorem}
 
 System \ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} can be reformulated with a change of time-scale as
 \begin{align}\label{eq:slow}
@@ -2231,9 +2233,10 @@ The functions \(g\) and \(h\)in Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenich
 Suppose that the set \(\manifold_0\)  is a subset of the set \(\{h(x, y, 0) = 0\}\) and is a compact manifold, possibly with boundary, and is normally hyperbolic relative to \ref{eq:slow}.
 
 
-\begin{theorem}[Theorem 1 in \citep{Jones1995}]
+\begin{theorem}[Theorem 1 in \citep{Jones1995}]\label{theorem:originalpersistent}
 If \(\epsilon >0\), but sufficiently small, there exists a manifold \(\manifold_\epsilon\) that lies within \(\mathcal{O}(\epsilon)\) of \(\manifold_0\) and is diffeomorphic to \(\manifold_0\).
  Moreover it is locally invariant under the flow of Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal}, and \(C^r\), including in \(\epsilon\), for any \(0<r< \infty\).
+ Finally, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_0\) and has the same smoothness as \(g\) and \(h\). 
 \end{theorem}
 
 
