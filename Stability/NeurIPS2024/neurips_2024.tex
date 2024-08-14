@@ -582,19 +582,19 @@ We examined vanilla continuous-time RNNs for this work.
 The time-discretized version of RNN network activity is given by
 \begin{equation}
   \begin{aligned}
-	\vx_t &= \sigma(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t \label{eq:RNN:discrete}\\
+	\vx_t &= \phi(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t \label{eq:RNN:discrete}\\
 	\vy_t &= \wout \vx_t + \bout
   \end{aligned}
 \end{equation}
 where \(\vx_t \in \reals^d\) is the hidden state,
 \(\vy_t \) is the readout,
 \(\vI_t \in \reals^K\) is the input,
-\(\sigma\colon \reals \to \reals\) an activation function that acts on each of the hidden dimensions,
-state noise variable \(\zeta_t\iidsample\mathcal{N}(\mathbf{0},\sigma^2 = \nicefrac{1}{100}\identity)\), and %\(\zeta\sim \mathcal{N}(0, .001)\)
+\(\phi\colon \reals \to \reals\) is an activation function that acts on each of the hidden dimensions,
+ \(\zeta_t\iidsample\mathcal{N}(\mathbf{0},\sigma^2 = \nicefrac{1}{100}\identity)\) is a state noise variable, and %\(\zeta\sim \mathcal{N}(0, .001)\)
 \(\vW, \vb, \win, \wout, \bout\) are parameters.
 Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation(see Sec.\ref{sec:discretization}):
 \begin{align}
-    \dm{\vx} &= -\vx\,\dm{t} + \sigma(\win \vI(t) + \vW \vx + \vb)\,\dm{t} + \sigma\,\dm{W}. \label{eq:RNN:continuous}
+    \dm{\vx} &= -\vx\,\dm{t} + \phi(\win \vI(t) + \vW \vx + \vb)\,\dm{t} + \sigma\,\dm{W}. \label{eq:RNN:continuous}
 \end{align}
 where \(\dm{W}\) is a Wiener process that models the intrinsic state noise in the brain.
 
@@ -607,12 +607,6 @@ with a mask \(m_{i,t}\) with \(i\) the index of the output units and \(t\)  the 
 We implemented a mask, \(m_{i,t}\), for modulating the loss with respect to certain time intervals.
 We trained vanilla RNNs with ReLU, tanh, and rectified tanh activation functions. For each activation function and each network architecture, including vanilla RNNs, LSTMs, and GRUs, we trained 10 networks per hidden size: 64, 128, and 256.
 
-
-%\subsection{Fast-slow decomposition: Unpacking the slow manifolds in trained RNNs} %from trained RNNs
-% separate the time scales to obtain the fast flow normal to the ``ghost'' continuous attractor (a.k.a. slow manifold) and the slow flow within
-%intro:
-%-goal: to identify the solution type of a trained RNN + understand it's performance/errors/generalization/closeness to a CA
-%-how through a fast-slow decomposition, based on the assumption that there is normal hyperbolicity in the system
 
 
  %method
@@ -663,13 +657,12 @@ This implies that normal hyperbolicity for these trained networks holds.
 \end{figure}
 
 \subsection{Universality amongst Good Solutions}
-
 The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
  much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
 Previously, it has been observed that fixed point analysis has a major limitation, namely, that the number of fixed points must be equal across compared networks  \citep{maheswaranathan2019universality}.
 Our methodology effectively addresses and overcomes this limitation.
 The universal structure of continuous attractor approximations as slow invariant manifolds allows us to connect different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:attractor_bif}).
-
+For results on LSTMs and GRUs and a higher dimensional task, see Fig.~\ref{fig:angular_losses_lstm_gru} and Fig.~\ref{fig:davit}, respectively.
 
 
 
