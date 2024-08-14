@@ -172,7 +172,7 @@ Observations of persistent neural activity across many brain areas, organisms, a
 %par3: problems with CAs
 Despite their widespread adoption as models of analog memory, continuous attractors are brittle mathematical objects, casting significant doubts on their ontological value and hence suitability in accurately representing biological functions.
 Even the smallest arbitrary change in recurrent dynamics can be problematic, destroying the continuum of fixed points essential for continuous-valued working memory.
-In neuroscience, this vulnerability is well-known and often referred to as the ``fine-tuning problem''~\cite{seung1996,Renart2003,chaudhuri2016,Park2023a}.
+In neuroscience, this vulnerability is well-known and often referred to as the ``fine-tuning problem''~\cite{seung1996,Renart2003,chaudhuri2016,machens2008,Park2023a}.
 There are two primary sources of perturbations in the recurrent network dynamics:
 (1) the stochastic nature of online learning signals that act via synaptic plasticity, and
 (2) spontaneous fluctuations in synaptic weights~\cite{Fusi2007-yg,shimizu2021}.
@@ -2063,6 +2063,8 @@ In contrast, our analysis involves understanding how the working memory content 
 
 
 \ascomment{TODO:}
+
+
 \citep{wu2008dynamics}
 
 
@@ -2072,7 +2074,7 @@ In contrast, our analysis involves understanding how the working memory content 
 \citep{wojtak2023robust}
 
 
-
+\citep{can2021emergence}
 
 
 %EMPJ
@@ -2945,7 +2947,6 @@ We used vanilla RNNs with different nonlinearities (ReLU, tanh and rectified tan
 
 \paragraph{LSTM}
 The number of units for the trained LSTMs was half of that of vanilla RNNs to match the number of paramters \citep{Hochreiter1997}.
-
 
 
 \paragraph{GRU}
