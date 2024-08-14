@@ -582,19 +582,19 @@ We examined vanilla continuous-time RNNs for this work.
 The time-discretized version of RNN network activity is given by
 \begin{equation}
   \begin{aligned}
-	\vx_t &= f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t \label{eq:RNN:discrete}\\
+	\vx_t &= \sigma(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t \label{eq:RNN:discrete}\\
 	\vy_t &= \wout \vx_t + \bout
   \end{aligned}
 \end{equation}
 where \(\vx_t \in \reals^d\) is the hidden state,
 \(\vy_t \) is the readout,
 \(\vI_t \in \reals^K\) is the input,
-\(f\colon \reals \to \reals\) an activation function that acts on each of the hidden dimensions,
+\(\sigma\colon \reals \to \reals\) an activation function that acts on each of the hidden dimensions,
 state noise variable \(\zeta_t\iidsample\mathcal{N}(\mathbf{0},\sigma^2 = \nicefrac{1}{100}\identity)\), and %\(\zeta\sim \mathcal{N}(0, .001)\)
 \(\vW, \vb, \win, \wout, \bout\) are parameters.
 Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation(see Sec.\ref{sec:discretization}):
 \begin{align}
-    \dm{\vx} &= -\vx\,\dm{t} + f(\win \vI(t) + \vW \vx + \vb)\,\dm{t} + \sigma\,\dm{W}. \label{eq:RNN:continuous}
+    \dm{\vx} &= -\vx\,\dm{t} + \sigma(\win \vI(t) + \vW \vx + \vb)\,\dm{t} + \sigma\,\dm{W}. \label{eq:RNN:continuous}
 \end{align}
 where \(\dm{W}\) is a Wiener process that models the intrinsic state noise in the brain.
 
@@ -605,9 +605,7 @@ We numerically minimized the loss \(L\) which was the mean squared error (MSE) b
 \(L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}, \)
 with a mask \(m_{i,t}\) with \(i\) the index of the output units and \(t\)  the index for time.
 We implemented a mask, \(m_{i,t}\), for modulating the loss with respect to certain time intervals.
-We trained 10 networks for every combination of the following parameters:
- ReLU, tanh, and rectified tanh activation functions and
- number of units/neurons (64, 128, 256).
+We trained vanilla RNNs with ReLU, tanh, and rectified tanh activation functions. For each activation function and each network architecture, including vanilla RNNs, LSTMs, and GRUs, we trained 10 networks per hidden size: 64, 128, and 256.
 
 
 %\subsection{Fast-slow decomposition: Unpacking the slow manifolds in trained RNNs} %from trained RNNs
@@ -2286,11 +2284,15 @@ with \(\theta\in[0,2\pi].\)
 The simplest type of flow on a ring is the uniform circular flow, where each point moves with a constant angular velocity \(f(\theta)=\omega\).
 If \(|f(\theta)|>0\) for all \(\theta\), there is a circular flow with a variable speed.
 
-There is a fixed point for each unique \(\theta\) for which \(f(\theta)=0\). The nature of the flow around these fixed points can be classified into:
-Stable fixed points: Points where the flow tends to as time progresses (\(f(\theta)>0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)<0\) for all \( \theta\in[\theta,2\pi]\cap V\) for some open ball \(V\) around \(\theta\)).
-Unstable fixed points: Points from which the flow diverges (\(f(\theta)<0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)>0\) for all \( \theta\in[\theta,2\pi]\cap V\) for some open ball \(V\) around \(\theta\)).
+There is a fixed point for each unique \(\theta\) for which \(f(\theta)=0\).
+The nature of the flow around these fixed points can be classified into:
+\begin{itemize}
+\item\textbf{Stable fixed points}: Points where the flow tends to as time progresses (\(f(\theta)>0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)<0\) for all \( \theta\in[\theta,2\pi]\cap V\) for some open ball \(V\) around \(\theta\)).
+\item\textbf{Unstable fixed points}: Points from which the flow diverges (\(f(\theta)<0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)>0\) for all \( \theta\in[\theta,2\pi]\cap V\) for some open ball \(V\) around \(\theta\)).
+\end{itemize}
 
-For a detailed discussion of how bifurcations of a continuous attractors depend on its symmetry see for example The Equivariant Branching Lemma (Lemma 1.31 in \citep{golubitsky2002symmetry}).
+
+For a detailed discussion of how bifurcations of a continuous attractors depend on the symmetry of the continuous attractor, see for example The Equivariant Branching Lemma (Lemma 1.31 in \citep{golubitsky2002symmetry}).
 If the solutions are symmetric under rotations (a circular symmetry such as for a ring attractor).
 As you change the bifurcation parameter, you find that new solutions appear that also respect this rotational symmetry.
 The lemma tells you that these new solutions will align with specific symmetries (like different rotation angles), which are described by the irreducible representations of the symmetry group.
@@ -2316,7 +2318,7 @@ We will give some clarifications and proofs of the claims on systems near perfec
 
 \subsection{Revival of the continuous attractor from a slow manifold}\label{sec:supp:proofprop1}
 
-We  provide a proof of Prop.~\ref{prop:revival} which is dependent on the \(\epsilon\)-Neighborhood Theorem\citep{guillemin2010differential}\footnote{Not to be confused with the perturbation parameter \(\epsilon\).}, which we state here.
+We  provide a proof of Prop.~\ref{prop:revival} which is dependent on the \(\epsilon\)-Neighborhood Theorem\footnote{Not to be confused with the perturbation parameter \(\epsilon\).}, which we state here.
 
 \begin{theorem}[\(\epsilon\)-Neighborhood Theorem\citep{guillemin2010differential}]
 Let \( Y \subseteq \mathbb{R}^n \) be a smooth, compact manifold. Then for a small enough \(\epsilon > 0\),
