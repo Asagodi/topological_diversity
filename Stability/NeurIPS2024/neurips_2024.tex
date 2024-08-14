@@ -1093,10 +1093,14 @@ A differentilable map with differentilable inverse.
 
 \paragraph{$C^1$ neighborhood of a $C^1$ function:} A set of functions that are close to the function in terms of both their values and their first derivatives.
 
-\ascomment{TODO: compact, diffeomorphism and heteroclinic/connecting orbits.}
+\paragraph{Compact Set:} A set where every sequence of points has a subsequence that converges to a point within the set. Intuitively, it means the set is closed and bounded, making it "finite" in a certain sense.
 
-\subsection{Visualization of geometric intuition of closeness in model space to behavioral similarty correspondence}
-\ascomment{TODO: we will include a subsection with a visual illustration of our claims, aiming to tap into human geometric intuition. In this visualization, we show how models that behave almost like a perfect analog memory system correspond to a volume of models in the space of dynamical systems.}
+\paragraph{Connecting Orbit:} A trajectory in a dynamical system that connects two different equilibrium points or periodic orbits. 
+ Specifically, a heteroclinic orbit connects distinct equilibrium points.
+
+
+%\subsection{Visualization of geometric intuition of closeness in model space to behavioral similarty correspondence}
+%\ascomment{TODO: we will include a subsection with a visual illustration of our claims, aiming to tap into human geometric intuition. In this visualization, we show how models that behave almost like a perfect analog memory system correspond to a volume of models in the space of dynamical systems.}
 
 
 
@@ -2062,6 +2066,10 @@ In contrast, our analysis involves understanding how the working memory content 
 
 \citep{wojtak2023robust}
 
+
+
+
+
 %EMPJ
 \subsection{Embedding Manifolds with Population-level Jacobians}\label{sec:supp:empj}
 We fit three networks with the Embedding Manifolds with Population-level Jacobians (EMPJ) method \citep{pollock2020}.
@@ -2290,7 +2298,7 @@ If the solutions are symmetric under rotations (a circular symmetry such as for 
 As you change the bifurcation parameter, you find that new solutions appear that also respect this rotational symmetry.
 The lemma tells you that these new solutions will align with specific symmetries (like different rotation angles), which are described by the irreducible representations of the symmetry group.
 
-
+\ascomment{Comment on torus}
 
 
 \subsection{Consequences to system identification}
@@ -2298,7 +2306,7 @@ Fenichel's Persistence Theorem has several significant implications for modellin
 Because the theorem provides a guarantee that small perturbations in the system do not lead to significant changes in the qualitative behavior of the system,
 we can be (slightly) wrong for example about the exact nonlinearity of a neuron's transform function.
 For example, if neurons are only approximately ReLU the theory developed in \citep{biswas2022geometric} still holds (at the behaviorally relevant timescales).
-
+More generally, when reconstructing computational system dynamics to understand how cognitive functions are implemented in the brain, our theory shows that small deviations in the identified system can still lead to behaviorally equivalent models for neural computation \citep{durstewitz2023reconstructing}.
 
 
 
@@ -2809,10 +2817,8 @@ and therefore:
 
 \newpage
 \section{Slow manifold in trained RNNs}
+We will provide a detailed description of the tasks, architectures, training methods, and analysis techniques used in our numerical experiments with trained RNNs.
 \subsection{Tasks}\label{sec:supp:tasks}
-%Inputs and outputs for an example trial on each task are shown in Supp.Fig.~\ref{fig:supp:tasks}.
-
-
 \paragraph{Memory guided saccade task}
 
 The total time length of a trial is 512 steps.
@@ -2875,6 +2881,8 @@ The output projection of the invariant manifolds and stability structures (fixed
 
 
 \subsection{Discretization}\label{sec:discretization}
+Computational neuroscientists often train RNNs as models of neural computation and interpret them as dynamical systems \citep{mante2013context,sussillo2013blackbox}.
+Our experiments connect to existing literature.
 We will shortly explain the discretization procedure, i.e., the steps for going from Eq.~\ref{eq:RNN:continuous} to Eq.~\ref{eq:RNN:discrete}.
 Let $t_n = n \Delta t$.
 
@@ -2892,6 +2900,7 @@ Now subsitute \(\Delta t = 1\):
 If we introduce the noise term \(\zeta_t = \sigma \Delta W_t\), which represents the discrete-time noise, we have derived the discrete-time equation: \[ \vx_t = \phi(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t. \]
 
 See for more detail on correspondences between discrete- and continuous-time RNNs in \citep{monfared2020transformation} and \citep{ozaki2012time}.
+Our experiments connect to existing literature. In future studies, it would be interesting to perform experiments with Neural SDEs \citep{tzen2019neural}
 
 %\subsection{Discrepancies between discrete and continuous RNNs}
 %\label{sec:discrepancies}
@@ -3130,12 +3139,21 @@ These results underline the universality of our findings beyond 1D tasks.
 
 
 
+\ascomment{Methods}
+- fps
+       look at convergence (thr=\(10^{-4}\))
+       look at unique fps (thr=\(10^{-2}\))
+       
+- mean angular error
+sum of individual ones
+
+- uniform norm of (projected) vector field
+sum of individual ones
+
 
 
 \newpage
 \subsection{Comparison to other methods}
-
-
 
 \paragraph{Fixed point analysis}
 
