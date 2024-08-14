@@ -2837,7 +2837,7 @@ with length scale \(\ell\).
 
  \begin{figure}[tbhp]
      \centering
-    \includegraphics[width=0.75\textwidth]{task_fig}
+    \includegraphics[width=\textwidth]{task_fig}
        \caption{Description of the angular velocity integration task.
         (A) The angular velocity integration task.
         (B) The output of the angular velocity integration in the output space, color coded according to the integrated angle. An example of an input is shown with constant velocity and it is provided until one turn is completed.
@@ -2870,7 +2870,7 @@ Tangentially, we would also like to point out that we assume that neural dynamic
 }\label{fig:fastslow_decomposition_otuput}
 \end{figure}
 
-The output projection of the invariant manifolds and stability structures (fixed points and limit cycles) is very close to the target output circle.
+The output projection of the invariant manifolds and stability structures (fixed points and limit cycles) is very close to the target output circle, as shown in Fig.~\ref{fig:fastslow_decomposition_otuput}.
 
 
 
@@ -2879,19 +2879,19 @@ We will shortly explain the discretization procedure, i.e., the steps for going 
 Let $t_n = n \Delta t$.
 
 The Euler-Maruyama method for a stochastic differential equation (Eq.~\ref{eq:RNN:continuous})
-\[\mathrm{d}{\mathbf{x}} = \left(-\mathbf{x} + f(\mathbf{W}_{\text{in}} \mathbf{I}(t) + \mathbf{W} \mathbf{x} + \mathbf{b})\right)\mathrm{d}{t} + \sigma\mathrm{d}{W}_t\] is given by :
-\[\mathbf{x}_{n+1} = \mathbf{x}_n + \left( -\mathbf{x}_n + f(\mathbf{W}_{\text{in}} \mathbf{I}_n + \mathbf{W} \mathbf{x}_n + \mathbf{b}) \right) \Delta t + \sigma \Delta W_n,\]
+\[\mathrm{d}{\mathbf{x}} = \left(-\mathbf{x} + \phi\mathbf{W}_{\text{in}} \mathbf{I}(t) + \mathbf{W} \mathbf{x} + \mathbf{b})\right)\mathrm{d}{t} + \sigma\mathrm{d}{W}_t\] is given by :
+\[\mathbf{x}_{n+1} = \mathbf{x}_n + \left( -\mathbf{x}_n + \phi(\mathbf{W}_{\text{in}} \mathbf{I}_n + \mathbf{W} \mathbf{x}_n + \mathbf{b}) \right) \Delta t + \sigma \Delta W_n,\]
 with \(\Delta W_{n}=W_{(n+1)\Delta t}-W_{n\Delta t}\sim \mathcal{N}(0,\Delta t).\)
 
 Now subsitute \(\Delta t = 1\):
 \begin{align}
- \mathbf{x}_{t+1} &= \mathbf{x}_t + \left( -\mathbf{x}_t + f(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) \right) + \sigma \Delta W_t, \\
- &= f(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) + \sigma \Delta W_t.
+ \mathbf{x}_{t+1} &= \mathbf{x}_t + \left( -\mathbf{x}_t + \phi(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) \right) + \sigma \Delta W_t, \\
+ &= \phi(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) + \sigma \Delta W_t.
  \end{align}
 
-If we introduce the noise term \(\zeta_t = \sigma \Delta W_t\), which represents the discrete-time noise, we have derived the discrete-time equation: \[ \vx_t = f(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t. \]
+If we introduce the noise term \(\zeta_t = \sigma \Delta W_t\), which represents the discrete-time noise, we have derived the discrete-time equation: \[ \vx_t = \phi(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t. \]
 
-\ascomment{cite?}\citep{monfared2020transformation}
+See for more detail on correspondences between discrete- and continuous-time RNNs in \citep{monfared2020transformation} and \citep{ozaki2012time}.
 
 %\subsection{Discrepancies between discrete and continuous RNNs}
 %\label{sec:discrepancies}
