@@ -199,8 +199,8 @@ We will first lay out a number of observations about the dynamics of bifurcation
 Ordinary differential equations (ODEs) are commonly used to describe the dynamical laws governing the temporal evolution of firing rates or latent population states\cite{vyas2020}.
 In this framework, neural systems are viewed as implementing the continuous time evolution of neural states to perform computations.
 We will consider a continuous attractor as a mechanism that implements analog memory computation: carrying a particular memory representation over time.
-To define it formally, let \(\vx(t) \in \reals^d\) denote the neural state, and \(\dot{\vx} = \vf(\vx)\) represent its dynamics.
-Let \(\manifold \subset \reals^d\) be a manifold.
+To define it formally, let \(\vx(t) \in \reals^{d}\) denote the neural state, and \(\dot{\vx} = \vf(\vx)\) represent its dynamics.
+Let \(\manifold \subset \reals^{d}\) be a manifold.
 We say \(\manifold\) is a continuous attractor, if (1) every state on the manifold is a fixed point, \(\forall \vx \in \manifold, \vf(\vx) = 0\), and (2) the fixed points are marginally stable tangent to the manifold and stable normal to the manifold.
 In other words, the continuous attractor is a continuum of equilibrium points such that the neural state near the manifold is attracted to it, and on the manifold, the state does not move.
 Marginal stability implies that continuous systems are structurally unstable, meaning that small perturbations or variations in the system's parameters lead to significant changes in the system's behavior or stability \citep{peixoto1959structural, palis2000structural, robbin1971structural, robinson1974structural}.
@@ -228,13 +228,12 @@ As an example, we can construct a line attractor (a continuous attractor with a 
 %Neurons exhibit complex dynamics that can be described by differential equations.
 \begin{align}\label{eq:TLN}
     \dot{\vx} = -\vx + \left[ \vW \vx + \vb \right]_{+}
-\end{align}
-where \(\vW = [0, -1; -1, 0]\) and \(\vb = [1; 1]\), and \([\cdot]_{+} = \max(0,\cdot)\) is the threshold nonlinearity per unit.
-%where \(\vx \in \reals^2\), \(\vb \in \reals^2\) is the bias, \(\vW \in \reals^{2\times 2}\) is the recurrent weight, and \([\cdot]_{+} = \max(0,\cdot)\) is the threshold nonlinearity per unit.
+\end{align}where \(\vW = [0, -1; -1, 0]\) and \(\vb = [1; 1]\), and \([\cdot]_{+} = \max(0,\cdot)\) is the threshold nonlinearity per unit.
+%where \(\vx \in \reals^{2}\), \(\vb \in \reals^{2}\) is the bias, \(\vW \in \reals^{2 \times 2}\) is the recurrent weight, and \([\cdot]_{+} = \max(0,\cdot)\) is the threshold nonlinearity per unit.
 %In discrete time, this corresponds to a ReLU RNN (see Sec.~\ref{sec:rnn:integration}).
 %The non-trivial activity of this network is limited to the (non-negative) first quadrant.
 %The second kind of continuous attractor is created through negative feedback.
-We get \(\dot{\vx} = 0\) on the \(x_1 = -x_2 + 1\) line segment in the first quadrant as the manifold (Fig.~\ref{fig:lara_bifurcations}A, left; black line).
+We get \(\dot{\vx} = 0\) on the \(x_{1} = -x_{2} + 1\) line segment in the first quadrant as the manifold (Fig.~\ref{fig:lara_bifurcations}A, left; black line).
 We refer to it as the bounded line attractor (BLA).
 Linearization of the fixed points on the manifold exhibits two eigenvalues, \(0\) and \(-2\);
 the \(0\) eigenvalue allows the continuum of fixed points, while \(-2\) makes the flow normal to the manifold attractive (Fig.~\ref{fig:lara_bifurcations}A, left; flow field).
@@ -260,8 +259,7 @@ This phenomenon, wherein a continuous attractor is approximated by a manifold wi
 %A common form of the ODE for the firing rate \( r(t) \) of a neuron is:
 %\begin{align}\label{eq:TLN2}
 %\tau \frac{d r(t)}{d t} = -r(t) + F(I(t))
-%\end{align}
-%where:
+%\end{align}%where:
 %\(\tau\) is the time constant of the neuron,
 %\(-r(t)\) represents the decay of the firing rate over time,
 %\(I(t)\) is the total input to the neuron at time \( t \) and
@@ -271,8 +269,8 @@ This phenomenon, wherein a continuous attractor is approximated by a manifold wi
 
 %Examples abound.
 
-%When \(d=2\) and \(F(\cdot)= \max(0,\cdot)\) is the threshold nonlinearity, we can build a line continuous attractor as follows.
-%First, through positive feedback, \(\vW = [0, 1; 1, 0]\) and no bias \(\vb = \mathbf{0}\), we can create a continuous attractor, i.e., \(\dot{\vx} = 0\) on the \(x_1 = x_2 \geq 0\) half-line, and surrounding attractive flow (Fig.~\ref{fig:ublabla}A left).
+%When \(d = 2\) and \(F(\cdot)= \max(0,\cdot)\) is the threshold nonlinearity, we can build a line continuous attractor as follows.
+%First, through positive feedback, \(\vW = [0, 1; 1, 0]\) and no bias \(\vb = \mathbf{0}\), we can create a continuous attractor, i.e., \(\dot{\vx} = 0\) on the \(x_{1} = x_{2} \geq 0\) half-line, and surrounding attractive flow (Fig.~\ref{fig:ublabla}A left).
 %We refer to it as an \textbf{unbounded line attractor (UBLA)}.
 %For any point on the line attractor, linearization results in eigenvalues \(0\) and \(-2\), corresponding to the zero flow and attractive flow respectively.
 %When \(\vW\) is perturbed, the null eigenvalue can easily become non-zero and the continuous line attractor disappears.
@@ -303,8 +301,8 @@ Nevertheless, the bifurcated dynamics again follow a similar pattern: the dynami
 
 \ptitle{Piecewise-linear ring attractor model of the central complex}
 Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{Noorman2022}.
-This model is composed of \(N\) heading-tuned neurons with preferred headings \(\theta_j \in \{\nicefrac{2\pi i}{N}\}_{i=1\dots N}\) radians (Sec.~\ref{sec:supp:headdirection}).
-For sufficiently strong local excitation (given by the parameter \(J_E\)) and broad inhibition (\(J_I\)), this network will generate a stable bump of activity corresponding to the head direction.
+This model is composed of \(N\) heading-tuned neurons with preferred headings \(\theta_{j} \in \{\nicefrac{2\pi i}{N}\}_{i = 1\dots N}\) radians (Sec.~\ref{sec:supp:headdirection}).
+For sufficiently strong local excitation (given by the parameter \(J_{E}\)) and broad inhibition (\(J_{I}\)), this network will generate a stable bump of activity corresponding to the head direction.
 This continuum of fixed points forms a \(N\)-sided polygon: a one-dimensional manifold homeomorphic to the circle.
 
 \begin{figure}[tbhp]
@@ -317,7 +315,7 @@ This continuum of fixed points forms a \(N\)-sided polygon: a one-dimensional ma
        }\label{fig:bio_rings}
 \end{figure}
 
-We evaluate the effect of parametric perturbations of the form \( \vW \leftarrow \vW + \vV\) with \(\vV_{i,j}\iidsample\mathcal{N}(0,\nicefrac{1}{100})\) on a network of size \(N = 6\) (forming an hexagon) with \(J_E= 4\) and \(J_I=-2.4\) by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
+We evaluate the effect of parametric perturbations of the form \( \vW \leftarrow \vW + \vV\) with \(\vV_{i, j}\iidsample\mathcal{N}(0,\nicefrac{1}{100})\) on a network of size \(N = 6\) (forming an hexagon) with \(J_{E} = 4\) and \(J_{I}=-2.4\) by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
 We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:bio_rings}A).
 As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
 The probability of each type of bifurcation was numerically estimated (Sec.~\ref{sec:supp:headdirection}).
@@ -330,7 +328,7 @@ Surprisingly, the number of fixed points is maintained throughout a range of per
 \ptitle{Bump attractor model}
 A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, involves utilizing a circulant matrix as the connectivity matrix\citep{benyishai1995theory,samsonovich1997path}.
 This type of ring attractor network can support a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
-This can be accomplished with a connection matrix \(W\) with entries that follow a circular Gaussian function of \(i-j\) \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic} (see for more details Sec.~\ref{sec:supp:goodridge}).
+This can be accomplished with a connection matrix \(W\) with entries that follow a circular Gaussian function of \(i - j\) \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic} (see for more details Sec.~\ref{sec:supp:goodridge}).
 For finite-sized networks, the dynamics are constrained to an attractive invariant ring, covered with \(N\) stable fixed points for a network of size \(N\) (Fig.~\ref{fig:bio_rings}B).
 For such networks the number of fixed points does change with the size of the perturbation (Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}).
 %Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is because they are nearby ring attractors as dynamical systems.
@@ -358,7 +356,7 @@ In conclusion, are approximate continuous attractors ubiquitous and well-behaved
  And therefore, are continuous attractors in practice still useful as an idealized model of how animals represent continuous variables? (Sec.~\ref{sec:converse}).
 
 % Our theory explains this phenomenon as follows. %MOVE TO LATER
-% We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the \(m^1, m^2\) plane (independent of the parameter \(g\) for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
+% We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the \(m^{1}, m^{2}\) plane (independent of the parameter \(g\) for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
 % %This implies that the ring attractor network
 % For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
 
@@ -405,22 +403,20 @@ Let \(l\) be the intrinsic dimension of the manifold of equilibria that defines 
 Given a perturbation \(\vp(\vx)\) to the ODE that induces a bifurcation,
 \begin{align}\label{eq:perturbation:nonparam}
 	\dot{\vx} &= \vf(\vx) + \epsilon\,\vp(\vx)
-\end{align}
-where \(\uniformNorm{\vp(\cdot)} = 1\) and \(\epsilon > 0\) is the bifurcation parameter,
-we can reparameterize the dynamics around the manifold with coordinates \(\vy \in \reals^l\) and the remaining ambient space with \(\vz \in \reals^{d-l}\).
+\end{align}where \(\uniformNorm{\vp(\cdot)} = 1\) and \(\epsilon > 0\) is the bifurcation parameter,
+we can reparameterize the dynamics around the manifold with coordinates \(\vy \in \reals^{l}\) and the remaining ambient space with \(\vz \in \reals^{d - l}\).
 To describe an arbitrary bifurcation of interest, we introduce a sufficiently smooth function \(\vg\) and \(\vh\), such that the following system is equivalent to the original ODE:
 \begin{align}
     \dot{\vy} &=           \epsilon  \vg(\vy, \vz, \epsilon) \qquad \text{(tangent)}\label{eq:fenichel:flowtangent}\\
     \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}\label{eq:fenichel:flownormal}
-\end{align}
-where \(\epsilon = 0\) gives the condition for the continuous attractor \(\dot{\vy} = \mathbf{0}\).
-We denote the corresponding manifold of \(l\) dimensions \(\manifold_0 = \{(\vy,\vz) \mid \vh(\vy,\vz,0) = \mathbf{0} \}\).
+\end{align}where \(\epsilon = 0\) gives the condition for the continuous attractor \(\dot{\vy} = \mathbf{0}\).
+We denote the corresponding manifold of \(l\) dimensions \(\manifold_{0} = \{(\vy,\vz) \mid \vh(\vy,\vz, 0) = \mathbf{0} \}\).
 
-We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic, meaning that the Jacobians \(\nabla_\vz \vh\) evaluated at any point on the \(\manifold_0\) has \(d-l\) eigenvalues with their real part uniformly bounded away from zero, and \(\nabla_\vy \vg\) has \(l\) eigenvalues with zero real part.
-%intuition for $C^1$-diffeomorphisms:
-%Roughly speaking, $f$ is normally hyperbolic at $N$ if the tangent map $Tf$, restricted to the normal direction to $N$, is hyperbolic (it expands and contracts complementary directions) and if it dominates the restriction of $Tf$ to the tangent direction $TN$ (that is, expansion and contraction in the tangent direction, if any, are weaker than those in the normal direction).
-More specifically, for continuous attractors, the real part of the eigenvalues of \(\nabla_\vz \vh\) will be negative, representing sufficiently strong attractive flow toward the manifold.
-Equivalently, for the ODE, \(\dot{\vx} = \vf(\vx)\), the variational system is of constant rank and has exactly \((d-l)\) eigenvalues with negative real parts uniformly away from zero and \(l\) eigenvalues with zero real parts everywhere along the continuous attractor.
+We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic, meaning that the Jacobians \(\nabla_{\vz} \vh\) evaluated at any point on the \(\manifold_{0}\) has \(d - l\) eigenvalues with their real part uniformly bounded away from zero, and \(\nabla_{\vy} \vg\) has \(l\) eigenvalues with zero real part.
+%intuition for \(C^{1}\)-diffeomorphisms:
+%Roughly speaking, \(f\) is normally hyperbolic at \(N\) if the tangent map \(Tf\), restricted to the normal direction to \(N\), is hyperbolic (it expands and contracts complementary directions) and if it dominates the restriction of \(Tf\) to the tangent direction \(TN\) (that is, expansion and contraction in the tangent direction, if any, are weaker than those in the normal direction).
+More specifically, for continuous attractors, the real part of the eigenvalues of \(\nabla_{\vz} \vh\) will be negative, representing sufficiently strong attractive flow toward the manifold.
+Equivalently, for the ODE, \(\dot{\vx} = \vf(\vx)\), the variational system is of constant rank and has exactly \((d - l)\) eigenvalues with negative real parts uniformly away from zero and \(l\) eigenvalues with zero real parts everywhere along the continuous attractor.
 Informally, normal hyperbolicity guarantees that the perturbations change the structure of the manifold before they can destroy the attractiveness of the manifold.
 
 \setlength\belowcaptionskip{-5ex}
@@ -428,14 +424,14 @@ Informally, normal hyperbolicity guarantees that the perturbations change the st
   \centering
   \includegraphics[width=0.5\textwidth]{FenichelThm}
   \caption{
-    Persistent manifold theorem applied to compact continuous attractor guarantees the flow on the slow manifold \(\manifold_\epsilon\) is invariant and continues to be attractive.
+    Persistent manifold theorem applied to compact continuous attractor guarantees the flow on the slow manifold \(\manifold_{\epsilon}\) is invariant and continues to be attractive.
     The dashed line is a trajectory ``trapped'' in the slow manifold (which is invariant). %change to forward invariant?
     %mention topology?
   }\label{fig:fenichel}
 \end{SCfigure}
 
 %When \(\epsilon > 0\), the continuous attractor bifurcates.
-For any parameterization $\vg$, $\epsilon > 0$ induces a bifurcation of the continuous attractor.
+For any parameterization \(\vg\), \(\epsilon > 0\) induces a bifurcation of the continuous attractor.
 What can we say about the fate of the perturbed system?
 The continuous dependence theorem~\citep{Chicone2006} says that the trajectories will change continuously as a function of \(\epsilon\) without a guarantee on how quickly they change.
 However, the topological structure and the asymptotic behavior of trajectories change discontinuously due to the bifurcation.
@@ -445,17 +441,17 @@ We informally present a special case due to~\citet{Jones1995}:
 \setlength\belowcaptionskip{2ex}
 
 \begin{theorem}[Persistent Manifold]\label{theorem:persistent}
-Let \(\manifold_0\) be a connected, compact\footnote{See \citep{eldering2013normally} for results of persistence of noncompact invariant manifolds.}, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
-For a sufficiently small perturbation \(\epsilon > 0\), there exists a manifold \(\manifold_\epsilon\) diffeomorphic to \(\manifold_0\) and locally invariant under the flow of Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}.
-%Moreover, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_0\) and has the same smoothness as \(g\) and \(h\).
+Let \(\manifold_{0}\) be a connected, compact\footnote{See \citep{eldering2013normally} for results of persistence of noncompact invariant manifolds.}, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
+For a sufficiently small perturbation \(\epsilon > 0\), there exists a manifold \(\manifold_{\epsilon}\) diffeomorphic to \(\manifold_{0}\) and locally invariant under the flow of Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}.
+%Moreover, \(\manifold_{\epsilon}\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_{0}\) and has the same smoothness as \(g\) and \(h\).
 \end{theorem}
 
-The manifold \(\manifold_\epsilon\) is called the \emph{slow manifold} which is no longer necessarily a continuum of equilibria.
+The manifold \(\manifold_{\epsilon}\) is called the \emph{slow manifold} which is no longer necessarily a continuum of equilibria.
 However, the local invariance implies that trajectories remain within the manifold except potentially at the boundary.
-Furthermore, the non-zero flow on the slow manifold is slow and given in the \(\epsilon \to 0\) limit as \(\RN{\vy}{\tau} = \vg(c^\epsilon(\vy), \vy, 0)\) where \(\tau = \epsilon t\) is a rescaled time and \(c^\epsilon(\cdot)\) parameterizes the \(l\) dimensional slow manifold.
-In addition, the stable manifold of \(\manifold_0\) is similarly persistent~\cite{Jones1995}, implying that the manifold \(\manifold_\epsilon\) remains attractive.
-Finally, the persisting invariant manifold is very close to the original continuous attractor (see also \ref{theorem:originalpersistent}).
-%\pscomment{\textbf{Suggestion}:implying the stability of the manifold \(\manifold_\epsilon\) is preserved.}
+Furthermore, the non-zero flow on the slow manifold is slow and given in the \(\epsilon \to 0\) limit as \(\RN{\vy}{\tau} = \vg(c^{\epsilon}(\vy), \vy, 0)\) where \(\tau = \epsilon t\) is a rescaled time and \(c^{\epsilon}(\cdot)\) parameterizes the \(l\) dimensional slow manifold.
+In addition, the stable manifold of \(\manifold_{0}\) is similarly persistent~\cite{Jones1995}, implying that the manifold \(\manifold_{\epsilon}\) remains attractive.
+Finally, the persisting invariant manifold is very close to the original continuous attractor (see also~\ref{theorem:originalpersistent}).
+%\pscomment{\textbf{Suggestion}:implying the stability of the manifold \(\manifold_{\epsilon}\) is preserved.}
 
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow rerparametrization of the BLA
@@ -495,14 +491,14 @@ In other words, the attractive flow normal to the manifold needs to be uniformly
 
 By taking the limit of the slow flow on the manifold to arbitrarily long time constant (i.e., to zero flow), we achieve the reversal of the persistent manifold theorem.
 \begin{prop}[Revival of continuous attractor]\label{prop:revival}
-Let \(\manifold_\epsilon\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}).
-Further, assume that the real part of the eigenvalues of \(\nabla_\vz \vh\) are negative. % in the neighborhood of a continuous attractor.
-Let the uniform norm of the flow tangent to the manifold be \(\|\dot \vy\|_\infty=\eta\).
-There exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a continuous attractor manifold. % \(\manifold_0\) diffeomorphic to \(\manifold_\epsilon\).
+Let \(\manifold_{\epsilon}\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}).
+Further, assume that the real part of the eigenvalues of \(\nabla_{\vz} \vh\) are negative. % in the neighborhood of a continuous attractor.
+Let the uniform norm of the flow tangent to the manifold be \(\|\dot \vy\|_{\infty}=\eta\).
+There exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a continuous attractor manifold. % \(\manifold_{0}\) diffeomorphic to \(\manifold_{\epsilon}\).
 \end{prop}
 
 An explicit perturbation is derived in Sec.~\ref{sec:supp:proofprop1}.
-%A perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}\), see for the proof Sec.~\ref{sec:supp:proofprop1}.
+%A perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_{\epsilon}} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}\), see for the proof Sec.~\ref{sec:supp:proofprop1}.
 This makes the uniform norm of the vector field on a (slow) manifold a useful measure to express the distance of an approximation to a continuous attractor.
 
 
@@ -515,19 +511,18 @@ Third, we relate the flow of the manifold (and through Prop.~\ref{prop:revival},
 We also discuss the implications of the theoretical insights on the memory error in the asymptotic time scale.
 
 In the short-time scale the memory performance is bounded by the uniform norm of the flow tangent to the manifold.
-Let \(\vx_0 \in \manifold\), and \(\varphi = \vp(\cdot)\vert_\manifold\) be the flow restricted to the manifold.
-The average deviation from initial memory \(\vx_0\) over time is bounded linearly (for a derivation, see Sec.~\ref{sec:supp:ub}):
+Let \(\vx_{0} \in \manifold\), and \(\varphi = \vp(\cdot)\vert_{\manifold}\) be the flow restricted to the manifold.
+The average deviation from initial memory \(\vx_{0}\) over time is bounded linearly (for a derivation, see Sec.~\ref{sec:supp:ub}):
 \begin{align}\label{eq:distance:ub}
-\frac{1}{\operatorname{vol}\manifold}\int_\manifold
+\frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
 %\frac{1}{T}\int_0^T
-\abs{\vx(t, \vx_0) - \vx_0}\,
+\abs{\vx(t, \vx_{0}) - \vx_{0}}\,
 %\dm{t}
-\dm{\vx_0}
+\dm{\vx_{0}}
 \leq t\uniformNorm{\varphi}
 \qquad
 \text{(error bound)}
-\end{align}
-Note that this bound is the worst case and tighter for sufficiently small $t \geq 0$.
+\end{align}Note that this bound is the worst case and tighter for sufficiently small \(t \geq 0\).
 Furthermore, for compact invariant manifolds the error is bounded by the diameter of the manifold and hence this bound becomes irrelevant for \(t\) large.
 
 While the uniform norm gives insight on the short-time scale behavior of the perturbed ODE, we expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
@@ -558,11 +553,11 @@ In more complex scenarios, such as a two-dimensional attractor, stable fixed poi
 Animal behavior exhibits strong resilience to changes in their neural dynamics, such as the continuous fluctuations in the synapses or slight variations in neuromodulator levels or temperature.
 Hence, any theoretical model of neural or cognitive function that requires fine-tuning, such as the continuous attractor model for analog working memory, raises concerns, as they are seemingly biologically irrelevant.
 Moreover, unbiased data-driven models of time series data and task-trained recurrent network models cannot recover such continuous attractor theories precisely.
-Our theory shows that this apparent fragility is not as devastating as previously thought: despite the "qualitative differences" in the phase portrait, the "effective behavior" of the system can be arbitrarily close, especially in the behaviorally relevant time scales.
+Our theory shows that this apparent fragility is not as devastating as previously thought: despite the ``qualitative differences'' in the phase portrait, the ``effective behavior'' of the system can be arbitrarily close, especially in the behaviorally relevant time scales.
 We show that as long as the attractive flow to the memory representation manifold is fast and the flow on the manifold is sufficiently slow, it represents an approximate continuous attractor.
 Frurthermore, our theory bounds the error in working memory incurred over time for such approximate continuous attractors.
 Therefore, the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory, even if the ideal continuous attractor is never observed in practice.
-Experimental observations that indicate the slowly changing population representations during the "delay periods" where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
+Experimental observations that indicate the slowly changing population representations during the ``delay periods'' where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
 
 For more intuitive explanations of the concepts, refer to Sec.\ref{sec:supp:simplifications}.
 
@@ -585,29 +580,27 @@ We examined vanilla continuous-time RNNs for this work.
 The time-discretized version of RNN network activity is given by
 \begin{equation}
   \begin{aligned}
-	\vx_t &= \phi(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t \label{eq:RNN:discrete}\\
-	\vy_t &= \wout \vx_t + \bout
+	\vx_{t} &= \phi(\win \vI_{t} + \vW \vx_{t - 1} + \vb) + \zeta_{t} \label{eq:RNN:discrete}\\
+	\vy_{t} &= \wout \vx_{t} + \bout
   \end{aligned}
-\end{equation}
-where \(\vx_t \in \reals^d\) is the hidden state,
-\(\vy_t \) is the readout,
-\(\vI_t \in \reals^K\) is the input,
+\end{equation}where \(\vx_{t} \in \reals^{d}\) is the hidden state,
+\(\vy_{t} \) is the readout,
+\(\vI_{t} \in \reals^{K}\) is the input,
 \(\phi\colon \reals \to \reals\) is an activation function that acts on each of the hidden dimensions,
- \(\zeta_t\iidsample\mathcal{N}(\mathbf{0},\sigma^2 = \nicefrac{1}{100}\identity)\) is a state noise variable, and %\(\zeta\sim \mathcal{N}(0, .001)\)
+ \(\zeta_{t}\iidsample\mathcal{N}(\mathbf{0},\sigma^{2} = \nicefrac{1}{100}\identity)\) is a state noise variable, and %\(\zeta\sim \mathcal{N}(0, .001)\)
 \(\vW, \vb, \win, \wout, \bout\) are parameters.
 Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation(see Sec.\ref{sec:discretization}):
 \begin{align}
     \dm{\vx} &= -\vx\,\dm{t} + \phi(\win \vI(t) + \vW \vx + \vb)\,\dm{t} + \sigma\,\dm{W}. \label{eq:RNN:continuous}
-\end{align}
-where \(\dm{W}\) is a Wiener process that models the intrinsic state noise in the brain.
+\end{align}where \(\dm{W}\) is a Wiener process that models the intrinsic state noise in the brain.
 
 Building upon prior work, which has shown their capabilities on such tasks, we trained RNNs to either
 (1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection,cueva2021continuous}
 and (2) perform a memory-guided saccade task for a ring variable \citep{wimmer2014} (details in Sec.~\ref{sec:supp:tasks}).
 We numerically minimized the loss \(L\) which was the mean squared error (MSE) between the network output \(y(t)\) and the target output \(\hat y(t)\):
-\(L_{MSE} \coloneqq \langle m_{i,t}(y_{i,t}-\hat y_{i,t})^2\rangle_{i,t}, \)
-with a mask \(m_{i,t}\) with \(i\) the index of the output units and \(t\)  the index for time.
-We implemented a mask, \(m_{i,t}\), for modulating the loss with respect to certain time intervals.
+\(L_{MSE} \coloneqq \langle m_{i, t}(y_{i, t}-\hat y_{i, t})^{2}\rangle_{i, t}, \)
+with a mask \(m_{i, t}\) with \(i\) the index of the output units and \(t\)  the index for time.
+We implemented a mask, \(m_{i, t}\), for modulating the loss with respect to certain time intervals.
 We trained vanilla RNNs with ReLU, tanh, and rectified tanh activation functions. For each activation function and each network architecture, including vanilla RNNs, LSTMs, and GRUs, we trained 10 networks per hidden size: 64, 128, and 256.
 
 
@@ -639,7 +632,7 @@ The most often found solution is of the type \emph{fixed point ring manifold} (F
 These solutions are consistent with observations that persistent activity relies on discrete attractors \citep{brody2003, inagaki2019}.
 Less commonly found topologies includes the slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
 This solution in turn is consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing, Park2023a} and neuronal circuits underlying persistent representations despite time-varying activity~\citep{druckmann2012neuronal}.
-All stability structures (fixed points and limit cycles) are mapped close to the target output circle (Figs.~\ref{fig:fastslow_decomposition_otuput}, \ref{fig:im_rep}, \ref{fig:im_all}).
+All stability structures (fixed points and limit cycles) are mapped close to the target output circle (Figs.~\ref{fig:fastslow_decomposition_otuput},~\ref{fig:im_rep},~\ref{fig:im_all}).
 
 
 
@@ -697,7 +690,7 @@ We tested all networks with a validation set and took a cutoff for the normalize
   \centering
   \includegraphics[width=\textwidth]{angular_losses2}
   \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
-  (A) The average accumulated angular error versus the uniform norm on the vector field (left and right hand side of Eq.~\ref{eq:distance:ub}, respectively), shown for finite time (time of trial length on which networks were trained, \(T_1\)) indicated with filled markers and at asymptotic time (with hollow markers).
+  (A) The average accumulated angular error versus the uniform norm on the vector field (left and right hand side of Eq.~\ref{eq:distance:ub}, respectively), shown for finite time (time of trial length on which networks were trained, \(T_{1}\)) indicated with filled markers and at asymptotic time (with hollow markers).
   (B) The memory capacity versus the average accumulated angular error.
   (C) The number of fixed points versus average accumulated angular error, with the average distance between neighbouring fixed points indicated in magenta.
   (D) The average accumulated angular error over time for two selected networks, indicated with the blue and orange arrows in (C).
@@ -710,13 +703,13 @@ We tested all networks with a validation set and took a cutoff for the normalize
 \ptitle{Finite time}
 Aside from the angular velocity integration component of the task, the trained networks learn to store a memory of an angular variable.
 We assess the performance of the network to store the memory of the angle over time.
-The networks typically perform well on the timescale on which they have been trained \(T_1=256\) time steps (Fig.~\ref{fig:angular_loss}C).
+The networks typically perform well on the timescale on which they have been trained \(T_{1} = 256\) time steps (Fig.~\ref{fig:angular_loss}C).
 This loss is, as theoretically predicted (Prop.~\ref{prop:ub}), bounded by the uniform norm of the vector field on the invariant manifold (and therefore by the distance to a continuous attractor (Prop.~\ref{prop:revival}) (Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and~\ref{sec:supp:ub}).
 
 
 \ptitle{Asymptotic time}
 Looking beyond the finite timescale provides valuable insights into the network's ability to store information.
-For the asymptotic time scale, we capture the asymptotic behavior of the system by identifying to what part of the system evolves to in the limit $t\rightarrow\infty$ (see also Sec.\ref{sec:supp:asymbehav}).
+For the asymptotic time scale, we capture the asymptotic behavior of the system by identifying to what part of the system evolves to in the limit \(t\rightarrow\infty\) (see also Sec.\ref{sec:supp:asymbehav}).
 For a one-dimensional system, this will either be fixed points or a limit cycle.
 For the fixed-point type solution, the maximal error is given by the maximal distance to the next fixed point, while for a limit cycle, this will always be \(\pi\).
 We calculate the \emph{average fixed point distance} by takeing the average of the inter-fixed-point interval for each neighbouring pair of fixed points.
@@ -731,7 +724,7 @@ Finally, we characterize the \emph{memory capacity} of the network by calculatin
 The mean accumulated error at the time at which the task was trained has an exponential relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}A).
 Furthermore, this error is bounded by the mean distance between stable and unstable fixed points (red dots in Fig.~\ref{fig:angular_loss}D).
 This is another indication that the networks rely on a ring invariant manifold to implement the task.
-Networks with different numbers of fixed points might have the same performance on the finite time scale (bounded by \(T_1\uniformNorm{\varphi}\) for the trial time \(T_1\) and the uniform norm of the vector field on the invariant slow manifold \(\uniformNorm{\varphi}\)) but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}C).
+Networks with different numbers of fixed points might have the same performance on the finite time scale (bounded by \(T_{1}\uniformNorm{\varphi}\) for the trial time \(T_{1}\) and the uniform norm of the vector field on the invariant slow manifold \(\uniformNorm{\varphi}\)) but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}C).
 
 
 \section{Approximate Slow Manifolds are near Continuous Attractors}\label{sec:converse}
@@ -778,7 +771,7 @@ This empirical evidence strongly corroborates our proposed theory of analog memo
 Training RNNs on tasks involving continuous variables resulted similarly in a great variety of solutions.
 %However, even within this variety, with our theory we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
 As the theory predicted, trained networks on a circular analog memory task all have an attractive ring invariant manifold, which allows for a more useful comparison between trained networks than existing fixed point analyses.
-This supports our theory that theoretical models that satisfy conditions \ref{converse:bijection}-\ref{converse:Dtype} will be near continuous attractors (in parameter space).
+This supports our theory that theoretical models that satisfy conditions~\ref{converse:bijection}-\ref{converse:Dtype} will be near continuous attractors (in parameter space).
 Nevertheless, the topological structure of the found solutions still determines how well a network will perform generalization for longer time scales.
 
 %limitations
@@ -1095,8 +1088,8 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 \paragraph{Normally Hyperbolic Invariant Manifold:} A behavior of a dynamical system where flow in the direction orthogonal to the manifold converges (or diverges) to the manifold significantly faster than the direction that remains on the manifold.\label{sec:supp:nhim}
 \paragraph{Diffeomorphism:} A diffeomorphism is a stretchable map that can be used to transform one shape into another without tearing or gluing.
 A differentiable map with differentiable inverse.\label{sec:supp:diffeomorphism}
-\paragraph{$C^1$ neighborhood of a $C^1$ function:} A set of functions that are close to the function in terms of both their values and their first derivatives.\label{sec:supp:c1neighborhood}
-\paragraph{Compact Set:} A set where every sequence of points has a subsequence that converges to a point within the set. Intuitively, it means the set is closed and bounded, making it "finite" in a certain sense.\label{sec:supp:compactset}
+\paragraph{\(C^{1}\) neighborhood of a \(C^{1}\) function:} A set of functions that are close to the function in terms of both their values and their first derivatives.\label{sec:supp:c1neighborhood}
+\paragraph{Compact Set:} A set where every sequence of points has a subsequence that converges to a point within the set. Intuitively, it means the set is closed and bounded, making it ``finite'' in a certain sense.\label{sec:supp:compactset}
 \paragraph{Connecting Orbit:} A trajectory in a dynamical system that connects two different equilibrium points or periodic orbits.
  Specifically, a heteroclinic orbit connects distinct equilibrium points.\label{sec:supp:connectingorbits}
 
@@ -1113,7 +1106,7 @@ Our objective is to assess the practical implications of the theoretical finding
 
 
 The BLA has a parameter that determines step size along line attractor \(\alpha\). Analogously as for UBLA, these parameters determine the capacity of the network.
-The inputs push the input along the line attractor in two opposite directions, see below. The BLA needs to be initialized at \(\beta(1,1)\) and \(\tfrac{\beta}{2}(1,1)\), respectively, for correct decoding, i.e., output projection.
+The inputs push the input along the line attractor in two opposite directions, see below. The BLA needs to be initialized at \(\beta(1, 1)\) and \(\tfrac{\beta}{2}(1, 1)\), respectively, for correct decoding, i.e., output projection.
 \begin{equation}\label{eq:bla}
 \win = \alpha
 \begin{pmatrix}
@@ -1135,8 +1128,6 @@ The inputs push the input along the line attractor in two opposite directions, s
 \end{pmatrix}, \
 \bout = 0.
 \end{equation}
-
-
 %\paragraph{Input}
 Parameter that determines step size along line attractor \(\alpha\).
 The size determines the maximum number of clicks as the difference between the two channels.
@@ -1151,23 +1142,21 @@ On the center manifold the singular perturbation problem (as is the case for con
 \subsection{Fast-slow form}\label{sec:supp:fast_slow_form}
 First of all, we will show how to transform the BLA network to the slow-fast form in Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} to explicitly demonstrate that the theory applies to it.
 To achieve this, we transform the state space so that the line attractor aligns with the \(y\)-axis.
-So, we apply the affine transformation \(R_\theta(x-\frac{1}{2})\) with the rotation matrix \(R_\theta = \begin{bmatrix}\cos\theta &-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}= \frac{1}{\sqrt{2}}\begin{bmatrix}1 &1\\-1&1\end{bmatrix}\) where we have set \(\theta=-\frac{\pi}{4}\).
-So we perform the transformation \(x\rightarrow x'= R_\theta(x-\frac{1}{2})\) and so we have \(x=R^{-1}_\theta x'+\frac{1}{2}\) with \(R^{-1}_\theta = R_{-\theta}\).
+So, we apply the affine transformation \(R_{\theta}(x-\frac{1}{2})\) with the rotation matrix \(R_{\theta} = \begin{bmatrix}\cos\theta &-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}= \frac{1}{\sqrt{2}}\begin{bmatrix}1 &1\\-1&1\end{bmatrix}\) where we have set \(\theta=-\frac{\pi}{4}\).
+So we perform the transformation \(x\rightarrow x'= R_{\theta}(x-\frac{1}{2})\) and so we have \(x = R_{\theta}^{-1} x'+\frac{1}{2}\) with \(R_{\theta}^{-1} = R_{-\theta}\).
 Then we get that
 \begin{align}
-R_{\theta}^{-1}\dot x' = \operatorname{ReLU}\left(W(R^{-1}_\theta x`+\frac{1}{2})+1\right)-R^{-1}_\theta x'-\frac{1}{2}.
-\end{align}
-For a perturbed connection matrix \(W=\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}\) we get
+R_{\theta}^{-1}\dot x' = \operatorname{ReLU}\left(W(R_{\theta}^{-1} x`+\frac{1}{2})+1\right)-R_{\theta}^{-1} x'-\frac{1}{2}.
+\end{align}For a perturbed connection matrix \(W=\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}\) we get
 \begin{align}
 R_{\theta}^{-1}\dot x' &= \operatorname{ReLU}\left(\frac{1}{\sqrt{2}}\begin{bmatrix}\epsilon &-1\\-1&0\end{bmatrix}\left(\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x`+\frac{1}{2}\right)+1\right)-\frac{1}{\sqrt{2}}\begin{bmatrix}1 &-1\\1&1\end{bmatrix} x'-\frac{1}{2}\\
-\dot x' &=\begin{bmatrix}-1 &1\\1&1\end{bmatrix}\left(\frac{1}{2}\begin{bmatrix}\epsilon-1 &-\epsilon-1\\-1&1\end{bmatrix}x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon-1 \\-1\end{bmatrix}+\begin{bmatrix}1 \\1\end{bmatrix}-\frac{1}{2}\begin{bmatrix}1 \\1\end{bmatrix}\right)-x'\\
+\dot x' &=\begin{bmatrix}-1 &1\\1&1\end{bmatrix}\left(\frac{1}{2}\begin{bmatrix}\epsilon - 1 &-\epsilon - 1\\-1&1\end{bmatrix}x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon - 1 \\-1\end{bmatrix}+\begin{bmatrix}1 \\1\end{bmatrix}-\frac{1}{2}\begin{bmatrix}1 \\1\end{bmatrix}\right)-x'\\
 \dot x' &=\left(\begin{bmatrix}-2 &0\\0&0\end{bmatrix}+\frac{\epsilon}{2}\begin{bmatrix}1 &-1\\-1&1\end{bmatrix}\right)x' + \frac{1}{2\sqrt{2}}\begin{bmatrix}\epsilon \\-\epsilon\end{bmatrix}
 \end{align}
-
 \subsection{Bifurcation analysis}
 We will now identify all possible bifurcations from the BLA, to show that indeed all perturbations preserve the continuous attractor as an invariant manifold.
 
-We consider all parametrized perturbations of the form \( \vW \leftarrow \vW + \vV\) for a random matrix \(\vV\in \mathbb{R}^{2\times 2}\) to the BLA.
+We consider all parametrized perturbations of the form \( \vW \leftarrow \vW + \vV\) for a random matrix \(\vV\in \mathbb{R}^{2 \times 2}\) to the BLA.
 The BLA can bifurcate in the following systems, characterized by their invariant sets: a system with single stable fixed point, a system with three fixed points (one unstable and two stable) and  a system with two fixed points (one stable and the other a half-stable node) and a system with a (rotated) line attractor.
 Only the first two bifurcations (Fig.~\ref{fig:lara_bifurcations}A) can happen with nonzero chance for the type of random perturbations we consider.
 The perturbations that leave the line attractor intact or to lead to a system with two fixed points have measure zero in the parameter space.
@@ -1183,9 +1172,8 @@ We investigate how perturbations to the bounded line affect the Lyapunov spectru
 We calculate the eigenspectrum of the Jacobian:
 \begin{align*}
 \det [W' -(1+\lambda)\mathbb{I}] &= (\epsilon_{11}-1-\lambda)(\epsilon_{22}-1-\lambda)-(\epsilon_{12}+1)(\epsilon_{21}+1)\\
-&=\lambda^2 - (2+\epsilon_{11}+\epsilon_{22})\lambda -\epsilon_{11}-\epsilon_{22}+\epsilon_{11}\epsilon_{22} -\epsilon_{12} - \epsilon_{21} - \epsilon_{12}\epsilon_{21}
+&=\lambda^{2} - (2+\epsilon_{11}+\epsilon_{22})\lambda -\epsilon_{11}-\epsilon_{22}+\epsilon_{11}\epsilon_{22} -\epsilon_{12} - \epsilon_{21} - \epsilon_{12}\epsilon_{21}
 \end{align*}
-
 Let
 \(u=- (2+\epsilon_{11}+\epsilon_{22})\)
 and
@@ -1221,9 +1209,8 @@ There are only two types of invariant set for the perturbations of the line attr
 %1 \\  1
 %\end{pmatrix}, \
 %\bout = 0.
-%\end{equation}
-%
-%Needs to be initialized at \(\tfrac{\beta}{2}(1,1)\) for correct decoding, i.e., output projection
+%\end{equation}%
+%Needs to be initialized at \(\tfrac{\beta}{2}(1, 1)\) for correct decoding, i.e., output projection
 
 
 
@@ -1237,7 +1224,6 @@ J = -
 1  &  1
 \end{pmatrix}
 \end{equation}
-
 We apply the perturbation
 \begin{equation}
 W' =
@@ -1246,8 +1232,7 @@ W' =
 -1  &  0
 \end{pmatrix}
 + \epsilon
-\end{equation}
-with
+\end{equation}with
 \begin{equation}
 \epsilon =
 \begin{pmatrix}
@@ -1255,42 +1240,32 @@ with
 \epsilon_{21}  &  \epsilon_{22}
 \end{pmatrix}
 \end{equation}
-
 The eigenvalues are computed as
 \begin{align*}
 \det [W' -(1+\lambda)\mathbb{I}] &= (\epsilon_{11}-1-\lambda)(\epsilon_{22}-1-\lambda)-(\epsilon_{12}-1)(\epsilon_{21}-1)\\
-&=\lambda^2 + (2-\epsilon_{11}-\epsilon_{22})\lambda -\epsilon_{11}-\epsilon_{22}+\epsilon_{11}\epsilon_{22} +\epsilon_{12} + \epsilon_{21} - \epsilon_{12}\epsilon_{21}
+&=\lambda^{2} + (2-\epsilon_{11}-\epsilon_{22})\lambda -\epsilon_{11}-\epsilon_{22}+\epsilon_{11}\epsilon_{22} +\epsilon_{12} + \epsilon_{21} - \epsilon_{12}\epsilon_{21}
 \end{align*}
-
 Let
-\(u=2-\epsilon_{11}-\epsilon_{22}\)
+\(u = 2-\epsilon_{11}-\epsilon_{22}\)
 and
 \(v=-\epsilon_{11}-\epsilon_{22}+\epsilon_{11}\epsilon_{22} + \epsilon_{12} + \epsilon_{21} - \epsilon_{12}\epsilon_{21}\)
-
 \begin{equation}
-\lambda = \frac{-u \pm \sqrt{u^2-4v}}{2}
+\lambda = \frac{-u \pm \sqrt{u^{2} - 4v}}{2}
 \end{equation}
+Case 1: \(\operatorname{Re}(\sqrt{u^{2} - 4v})<-u\), then
+\(\lambda_{1, 2}<0\)
 
 
-
-Case 1: \(\operatorname{Re}(\sqrt{u^2-4v})<-u\), then
-\(\lambda_{1,2}<0\)
-
-
-Case 2:  \(\operatorname{Re}(\sqrt{u^2-4v})>-u\), then
+Case 2:  \(\operatorname{Re}(\sqrt{u^{2} - 4v})>-u\), then
 \(\lambda_{1}<0\) and \(\lambda_{2}>0\)
 
 
-Case 3: \(v=0\), then
+Case 3: \(v = 0\), then
 \(\lambda=\tfrac{1}{2}(-u\pm u)\), i.e.,
-\(\lambda_1=0\) and  \(\lambda_2=-u\)
-
+\(\lambda_{1} = 0\) and  \(\lambda_{2}=-u\)
 \begin{align}
 \epsilon_{11} &= -\epsilon_{22}+\epsilon_{11}\epsilon_{22} + \epsilon_{12} + \epsilon_{21} - \epsilon_{12}\epsilon_{21}
 \end{align}
-
-
-
 We give some examples of the different types of perturbations to the bounded line attractor.
 The first type is when the invariant set is composed of a single fixed point, for example for the perturbation:
 \begin{equation}
@@ -1299,8 +1274,7 @@ The first type is when the invariant set is composed of a single fixed point, fo
 -2  &  1 \\
  1   &  -2
 \end{pmatrix}
-\end{equation}
-%See Figure~\ref{fig:bounded_lineattractor_allpert}, left upper.
+\end{equation}%See Figure~\ref{fig:bounded_lineattractor_allpert}, left upper.
 
 
 
@@ -1312,7 +1286,6 @@ The second type is when the invariant set is composed of three fixed points:
  -2  &  1
 \end{pmatrix}
 \end{equation}
-
 The third type is when the invariant set is composed of two fixed points, both with partial support.
 \begin{equation}
 b' =  \frac{1}{10}
@@ -1320,7 +1293,6 @@ b' =  \frac{1}{10}
 1 & -1
 \end{pmatrix}
 \end{equation}
-
 The fourth and final type is when the line attractor is maintained but rotated:
 \begin{equation}
 \epsilon =  \frac{1}{20}
@@ -1329,9 +1301,6 @@ The fourth and final type is when the line attractor is maintained but rotated:
 10 & 1
 \end{pmatrix}
 \end{equation}
-
-
-
 \subsubsection{Bifurcation landscape}\label{sec:supp:bifurcationlandscape}
 We will now state our previous observations as a Theorem that characterizes the possible bifurcations of the BLA.
 \begin{theorem}
@@ -1357,11 +1326,9 @@ General form (example):
  1   &  -2
 \end{pmatrix}
 \end{equation}
-
 One fixed point with full support:
 
 In this case we can assume \(W\) to be full rank.
-
 \begin{align*}
 \dot x =
 \relu\left[
@@ -1370,7 +1337,7 @@ In this case we can assume \(W\) to be full rank.
 \epsilon_{21}  &  \epsilon_{22}
 \end{pmatrix}
 \begin{pmatrix}
-x_1\\x_2
+x_{1}\\x_{2}
 \end{pmatrix}
 +
 \begin{pmatrix}
@@ -1379,32 +1346,29 @@ x_1\\x_2
 \right]
 -
 \begin{pmatrix}
-x_1\\x_2
+x_{1}\\x_{2}
 \end{pmatrix}
 &=0
 \end{align*}
-
-
-Note that \(x>0\) iff \(z_1\coloneqq \epsilon_{11}x_1 + (\epsilon_{12}-1)x_2-1>0\). Similarly for \(x_2>0\).
+Note that \(x>0\) iff \(z_{1}\coloneqq \epsilon_{11}x_{1} + (\epsilon_{12}-1)x_{2} - 1>0\). Similarly for \(x_{2}>0\).
 
 So for a fixed point with full support, we have
 \begin{equation}
 \begin{pmatrix}
-x_1\\x_2
+x_{1}\\x_{2}
 \end{pmatrix}
 =A^{-1}
 \begin{pmatrix}
 -1\\-1
 \end{pmatrix}
-\end{equation}
-with
+\end{equation}with
 \[A\coloneqq\begin{pmatrix}
 \epsilon_{11}-1  &  \epsilon_{12}-1 \\
 \epsilon_{21}-1  &  \epsilon_{22}-1
 \end{pmatrix}.\]
 
 
-Note that it is not possible that \(x_1=0=x_2\).
+Note that it is not possible that \(x_{1} = 0=x_{2}\).
 
 Now define
 \[
@@ -1416,7 +1380,7 @@ B\coloneqq A^{-1} = \frac{1}{\det A}
 \]
 with \[\det A = \epsilon_{11}\epsilon_{22}-\epsilon_{11}-\epsilon_{22}-\epsilon_{12}\epsilon_{21}+\epsilon_{12}+\epsilon_{21}.\]
 
-Hence, we have that \(x_1,x_2>0\) if \(B_{11}+B_{12}>0\), \(B_{21}+B_{22}>0\) and \(\det A >0\)
+Hence, we have that \(x_{1}, x_{2}>0\) if \(B_{11}+B_{12}>0\), \(B_{21}+B_{22}>0\) and \(\det A >0\)
 or if \(B_{11}+B_{12}<0\), \(B_{21}+B_{22}<0\) and \(\det A <0\).
 
 This can be satisfied in two ways,
@@ -1427,24 +1391,21 @@ This gives condition 1. %necessary condition (#1)
 
 
 Finally, we investigate the condition that specify that there are fixed points with partial support.
-%condition for no fixed points for which \(x_i=0\) for i=1 or i=2 (necessary condiiton #2)
-If \(x_1=0\) then \((\epsilon_{22}-1)x_2+1=0\) and \(z_1<0\).
+%condition for no fixed points for which \(x_{i} = 0\) for i=1 or i=2 (necessary condiiton #2)
+If \(x_{1} = 0\) then \((\epsilon_{22}-1)x_{2} + 1=0\) and \(z_{1}<0\).
 From the equality, we get that \(x_{2}=\frac{1}{1-\epsilon_{22}}\).
-From the inequality, we get  \((\epsilon_{12}-1)x_2+1\geq 0\), i.e. \(\frac{1}{1-\epsilon_{12}}\geq x_2\).
+From the inequality, we get  \((\epsilon_{12}-1)x_{2} + 1\geq 0\), i.e. \(\frac{1}{1-\epsilon_{12}}\geq x_{2}\).
 Hence,
 \begin{equation*}
 \frac{1}{1-\epsilon_{12}}\geq\frac{1}{1-\epsilon_{22}}
-\end{equation*}
-and thus
+\end{equation*}and thus
 \begin{equation}\label{eq:condition2.1}
 \epsilon_{22} \leq \epsilon_{12}.
 \end{equation}
-
-Similarly to have a fixed point \(x^*\) such that \(x_2^*=0\), we must have that
+Similarly to have a fixed point \(x^*\) such that \(x_{2}^*=0\), we must have that
 \begin{equation}\label{eq:condition2.2}
 \epsilon_{11} \leq \epsilon_{21}.
 \end{equation}
-
 Equation~\ref{eq:condition2.1} and~\ref{eq:condition2.2} together form condition 2.
 
 
@@ -1463,7 +1424,7 @@ Then, we get the following conditions for the different types of bifurcations:
 
 
 We now look at the possibility of the line attractor being preserved.
-This is the case if \(v=0\).
+This is the case if \(v = 0\).
 It is not possible to have a line attractor with a fixed point off of it for as there cannot be disjoint fixed points that are linearly dependent \citep[Lemma 5.2]{morrison2024diversity}
 \end{proof}
 
@@ -1477,17 +1438,14 @@ The conditions  that result in three fixed points are
 0 &< \epsilon_{11}\epsilon_{22}-\epsilon_{11}-\epsilon_{22}-\epsilon_{12}\epsilon_{21}-\epsilon_{12}-\epsilon_{21},\\
 \epsilon_{22} &\leq \epsilon_{12},\\
 \epsilon_{11} &\leq \epsilon_{21}.
-\end{align*}
-Therefore, because
+\end{align*}Therefore, because
 \begin{align*}
 \epsilon_{22} &\leq \epsilon_{12},\\
 \epsilon_{11} &\leq \epsilon_{21}.
-\end{align*}
-we always have that
+\end{align*}we always have that
 \begin{align*}
 0 &< \epsilon_{11}\epsilon_{22}-\epsilon_{11}-\epsilon_{22}-\epsilon_{12}\epsilon_{21}-\epsilon_{12}-\epsilon_{21}.
-\end{align*}
-This implies that this bifurcation happens with probability \(\frac{1}{4}\)  in a \(\epsilon\)-ball around the BLA neural integrator with \(\epsilon<1\).
+\end{align*}This implies that this bifurcation happens with probability \(\frac{1}{4}\)  in a \(\epsilon\)-ball around the BLA neural integrator with \(\epsilon<1\).
 We conclude that the single stable fixed point type perturbation happens with probability \(\frac{3}{4}\).
 
 
@@ -1520,7 +1478,7 @@ C2 & \xmark 		& only Eq\ref{eq:condition2.1} or~\ref{eq:condition2.2}  	 & \cmar
 
 \subsection{Smoother activation functions}
 It is well-known that activation functions (\(\sigma\) in  Eqs.~\ref{eq:RNN:discrete} and~\ref{eq:RNN:continuous}), which can take many forms, play a critical role in propagating gradients effectively through the network and backwards in time \citep{jagtap2023,ramachandran2017,hayou2019}.
-Activation functions that are \(C^r\) for \(r\geq 1\) are the ones to which the Persistence Theorem applies.
+Activation functions that are \(C^{r}\) for \(r\geq 1\) are the ones to which the Persistence Theorem applies.
 The Persistence Theorem further specifies how the smoothness of the activation can have implications on the smoothness of the persistent invariant manifold.
 For situations where smoothness of the persistent invariant manifold is of importance, smoother activation functions might be preferable, such as the Exponential Linear Unit (ELU)\citep{clevert2015} or the Continuously Differentiable Exponential Linear Units (CELU) \citep{barron2017}.
 
@@ -1549,18 +1507,17 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %        I_{s,1} - I_{s,2}
 %        \right)
 %            \qquad  & t=1,\dots, T &&  \text{(desired output)}\label{eq:output}
-%\end{align}
-%where \(m_{t,i}\) are independent Bernoulli random variables with probability \(0.2\) and \(u_{t,i}\) are independent random variables with uniform distribution on the unit interval.
+%\end{align}%where \(m_{t, i}\) are independent Bernoulli random variables with probability \(0.2\) and \(u_{t, i}\) are independent random variables with uniform distribution on the unit interval.
 %We used mean squared error (MSE) of the 1-dimensional output over time as the loss function over all time bins.
-%We used \(T=100\) time bins per trial unless specified otherwise.
+%We used \(T = 100\) time bins per trial unless specified otherwise.
 %The gradients were computed in batch mode with \(1024\) randomly generated trials.
 %% The main challenges of this task are (1) addition and subtraction and (2) maintain the accumulated clicks for an extended period of time.
 %
 %% We designed a simple integration task where one of the optimal solutions is the continuous attractor. % <== not necessarily true!
 %
-%%The inputs for the clicks task are incoming clicks in two channels (\(K=2\)) and are given as follows.
+%%The inputs for the clicks task are incoming clicks in two channels (\(K = 2\)) and are given as follows.
 %%The non-zero inputs follow a Poisson distribution with given rates.
-%%At such time points, an input is sampled from \([0,1]\).
+%%At such time points, an input is sampled from \([0, 1]\).
 %%The task is to output the difference between the two inputs in the two channels.
 %
 %%A noisy version of the task also includes noise added to a part of the input, without alternation to the target output, i.e., the noise added to the system should be ignored by the system.
@@ -1575,15 +1532,13 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %	\vx_t &= \sigma(\win \vI_t + \vW \vx_{t-1} + \vb) \label{eq:RNN:discrete}\\
 %	O_t &= \wout \vx_t + \bout
 %  \end{aligned}
-%\end{equation}
-%where \(\vx_t \in \reals^d\) is the hidden state, \(\vI_t \in \reals^K\) is the input,
+%\end{equation}%where \(\vx_{t} \in \reals^{d}\) is the hidden state, \(\vI_{t} \in \reals^{K}\) is the input,
 %\(\sigma: \reals \to \reals\) an activation function which acts on each of the hidden dimension, and
 %\(\vW, \vb, \win, \wout, \bout\) are parameters.
 %Assuming an Euler integration with unit time step, the discrete-time RNN of \eqref{eq:RNN:discrete} corresponds to the ODE:
 %\begin{align}
 %    \dot{\vx} &= -\vx + \sigma(\win \vI + \vW \vx + \vb). \label{eq:RNN:continuous}
-%\end{align}
-%%
+%\end{align}%%
 %For tractable analysis, we consider \(2\) dimensional systems with ReLU activation. %We include another continuous attractor, the identity RNN, which is also a popular initialization for RNN training \citep{le2015}.
 %We study the three different ReLU RNN implementations of a perfect integrator in a 2 dimensional system, the Identity RNN (iRNN), UBLA and BLA (we refer to the line attractors together as LA).
 %These three networks have same norm in the recurrent matrix \(\vW\) but not close in the parameter space.
@@ -1613,8 +1568,7 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %0  \\ 0
 %\end{pmatrix}, \
 %\bout = 0.
-%\end{equation}
-%
+%\end{equation}%
 %%The system has the whole state space as its invariant manifold.
 %
 %\paragraph{Unbounded line attractor}
@@ -1641,10 +1595,9 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %\end{pmatrix}, \
 %\bout = -\frac{\beta}{\alpha}.
 %\end{equation}
-
 %\subsubsection{Asymmetric loss landscape reflecting dynamics after bifurcation}\label{sec:asymmetricloss}
 %To illustrate the effect of bifurcations from the continuous attractor solution, we take a 1-dimensional slice of the loss surface, see Fig.~\ref{fig:maintenance_h0}B.
-%Specifically, we continuously vary one of the entries of the self-recurrent connection matrix: \(    \vW_{1,1} \leftarrow \vW_{1,1} + \Delta\). % with \(\Delta\in[-\tfrac{1}{10},\tfrac{1}{10}].\)
+%Specifically, we continuously vary one of the entries of the self-recurrent connection matrix: \(    \vW_{1, 1} \leftarrow \vW_{1, 1} + \Delta\). % with \(\Delta\in[-\tfrac{1}{10},\tfrac{1}{10}].\)
 %At any \(\Delta \neq 0\), the continuous attractor disappears and the spontaneous dynamics of the networks show convergent and/or divergent behavior at exponential rates.
 %Therefore, as the number of time steps in a trial increases, the error in the output also exponentially converge or diverge in a corresponding manner.
 %As can be seen in Fig.~\ref{fig:maintenance_h0}B, for UBLA and iRNN, \(\Delta > 0\)  perturbations shows exponentially increasing loss and corresponds to an exploding gradient dynamical system.
@@ -1655,15 +1608,15 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %\subsubsection{Maintaining a neural integrator}\label{sec:exp:maintaining}
 %The theory of persistent invariant manifolds for compact continuous attractors suggests that the BLA should have bounded gradients (unlike UBLA and iRNN) and hence it should be easier to maintain it in the presence of noise.
 %To investigate the differential effect of stochastic gradient descent (SGD) on the three neural integrator models, we performed three learning experiments using the continuous-valued click integration task.
-%The input and output are defined as in Eqs.~\ref{eq:input} and~\ref{eq:output} with \(I_{t,i}=0\) for \(t=11,\dots,T\).
+%The input and output are defined as in Eqs.~\ref{eq:input} and~\ref{eq:output} with \(I_{t, i}=0\) for \(t = 11,\dots, T\).
 %%T=100,500,1000
 %We investigate the effects of perturbations of the recurrent matrix on the learning of the parameters during gradient descent starting from the perfect solutions to the task.  Gradient step were taken with a fixed gradient step size \(\lambda\) (learning rate).
 %%MSE at last time step
 %%For SGD, the output of the network over \(T\) steps was taken to calculate the loss based on the mean squared error (MSE) over a batch of 1024 trials.
-% We set \(\alpha=1\) and \(\beta=20\) in Eq~\ref{eq:ubla} and~\ref{eq:bla}. The hidden state at the start of a trial is a learnable parameter.
+% We set \(\alpha = 1\) and \(\beta = 20\) in Eq~\ref{eq:ubla} and~\ref{eq:bla}. The hidden state at the start of a trial is a learnable parameter.
 %
 %In the first experiment, Gaussian random noise is injected to all parameters inducing a constant diffusion of the parameters, which emulates the biological synaptic variability.
-%This type of noise is directly applied to the weights as \( \vW \leftarrow \vW + \vV\) with \(\vV_{i,j}\sim\mathcal{N}(0,\sigma)\). To dissociate the effect of misadjustment from gradient descent and external perturbation, we measured the effect of a single perturbation on the learning dynamics.
+%This type of noise is directly applied to the weights as \( \vW \leftarrow \vW + \vV\) with \(\vV_{i, j}\sim\mathcal{N}(0,\sigma)\). To dissociate the effect of misadjustment from gradient descent and external perturbation, we measured the effect of a single perturbation on the learning dynamics.
 %Fig.~\ref{fig:maintenance_h0}C shows that for all networks, gradient descent (with constant learning rate, chosen from a grid search) was able to counter the diffusion.
 %%The distribution of MSE for the task can be used as proxy for the misadjustment from the optimal solution.
 %BLA and UBLA with learning have superior misadjustment compared to iRNN and compared to perturbations without learning, while the BLA has the broadest range of learning rates that are optimal and far away from exploding gradients (Fig.~\ref{fig:maintenance_h0}A).
@@ -1681,7 +1634,7 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %%description of finding optimal learning rate
 %For the matched noise level, we find the optimal learning rate for each network separately.
 %The optimal learning rates for the input-type noise experiments were chosen from a set of values
-%(\(\{(1+j\frac{1}{4}))10^{-i}\}_{i=4,\dots 10, j=1,2,3}\)))  based on best performance of the task, measured as mean MSE of the last ten epochs averaged over ten runs.
+%(\(\{(1 + j\frac{1}{4}))10^{-i}\}_{i = 4,\dots 10, j = 1, 2,3}\)))  based on best performance of the task, measured as mean MSE of the last ten epochs averaged over ten runs.
 %The slow manifold that is created after perturbations provides gradients that can counteract parameter diffusions for all networks (on short trials), even for the ones that have the potential for exploding gradients (Fig.~\ref{fig:maintenance_h0}A and C).
 % %new conclusions
 %We use the normed difference to the initial parameters at every gradient step as proxy for the misadjustment from the optimal solution (Fig.~\ref{fig:maintenance_h0}D and E).
@@ -1701,7 +1654,7 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %  \centering
 %  \includegraphics[width=\textwidth]{maintenance_h0_less}
 %  \caption{
-%  Comparing three continuous attractor solutions on the click integration task of \(T=100\) time steps.
+%  Comparing three continuous attractor solutions on the click integration task of \(T = 100\) time steps.
 %(A) MSE distribution during learning with different learning rates.
 %(B) Loss landscape is steeper around the attractors. The BLA has a bounded loss in its neighborhood.
 %(C) MSE distribution during learning and in the presence of noise. Learning counteracts diffusion in all three-types of initializations.
@@ -1721,9 +1674,9 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %
 %We investigate the effects of two other types of noise on the learning of the parameters during gradient descent starting from the perfect solutions to the task.
 %We investigated the effect of learning when perturbations are induced by the backpropagated gradient which is structured by the recurrent dynamics in the following two ways.
-%The second type of noise is injected into the input \(x_{i,t}+\epsilon_{i,t}\) with \(\epsilon\sim\mathcal{N}(0,\sigma)\).
-%To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output \(O_t^*\) (Eq.~\ref{eq:output}).
-%The third type of noise is injected into the hidden state \(h_{i,t}+\epsilon_{i,t}\) with \(\epsilon\sim\mathcal{N}(0,\sigma)\) for \(t=1,\dots, T\) and \(i=1,2\).
+%The second type of noise is injected into the input \(x_{i, t}+\epsilon_{i, t}\) with \(\epsilon\sim\mathcal{N}(0,\sigma)\).
+%To inject noisy gradients naturally, we added noise to the input to the first 10 time steps during the trial that were not integrated in the target output \(O_{t}^*\) (Eq.~\ref{eq:output}).
+%The third type of noise is injected into the hidden state \(h_{i, t}+\epsilon_{i, t}\) with \(\epsilon\sim\mathcal{N}(0,\sigma)\) for \(t = 1,\dots, T\) and \(i = 1, 2\).
 %
 %\begin{figure}[thbp]
 %     \centering
@@ -1740,7 +1693,7 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %  \centering
 %  \includegraphics[width=\textwidth]{maintenance_T100}
 %  \caption{
-%  Comparing three continuous attractor solutions to the click integration task for a length of \(T=100\) time steps.
+%  Comparing three continuous attractor solutions to the click integration task for a length of \(T = 100\) time steps.
 %  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps. Averages (thick lines) over 10 simulations (thin lines) are shown for each network.
 %  (B) Changes to the recurrent parameters (matrix and bias), without (upper) and with (lower) learning (with the optimal learning rates). iRNN converges to a different solution.
 % (C)  The distribution of the MSE for different learning rates. The dip in the MSE defines the optimal learning rate for each of the three neural integrators.
@@ -1755,7 +1708,7 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %  \centering
 %  \includegraphics[width=\textwidth]{maintenance_T1000}
 %  \caption{
-%  Comparing three continuous attractor solutions to the click integration task for a length of \(T=1000\) time steps.
+%  Comparing three continuous attractor solutions to the click integration task for a length of \(T = 1000\) time steps.
 %  (A) Effect of gradient descent in repairing the continuous attractor. RNNs without gradient descent (dashed line) are shown for reference. Box plots show distribution of the loss for the last 10 steps.
 %  (B) Changes to the recurrent parameters (matrix and bias), without (upper) and with (lower) learning (with the optimal learning rates). iRNN converges to a different solution.
 % (C)  The distribution of the MSE for different learning rates. The dip in the MSE defines the optimal learning rate for each of the three neural integrators.
@@ -1842,7 +1795,7 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %
 %%Compact
 %%No boundary: in- and outflowing
-%%But not \(C^1\)!
+%%But not \(C^{1}\)!
 %%
 %%
 %%discrete attractors as a trivial application?
@@ -1850,8 +1803,8 @@ For situations where smoothness of the persistent invariant manifold is of impor
 %%However, these system have fading memory: the system eventually forgets the past, since any difference between any two neural activations eventually tends zero as they both evolve to a global resting state.
 %
 %We will first of all look at a simple (non-biological) system that has a ring attractor to demonstrate the consequences of the Persistence Theorem.
-%The system we will analyse is defined by the following ODE: \(\dot r = r(1-r), \ \dot \theta = 0.\)
-%This system has as fixed points the ring with radius one centered around zero, i.e., \((0,0)\cup\{(1,\theta)\ |\ \theta\in[0,2\pi)\}\).
+%The system we will analyse is defined by the following ODE: \(\dot r = r(1 - r), \ \dot \theta = 0.\)
+%This system has as fixed points the ring with radius one centered around zero, i.e., \((0, 0)\cup\{(1,\theta)\ |\ \theta\in[0, 2\pi)\}\).
 %
 %
 %\begin{figure}[H]
@@ -1885,7 +1838,7 @@ To computationally investigate the neighborhood of recurrent dynamical systems t
 
 %\subsection{Local and global perturbations}
 %Definition of a bump perturbation
-We define a local perturbation (i.e., a change to the ODE with compact support) through the bump function \(\Psi(x) = \exp\left(\frac{1}{\|x\|^2-1}\right)\) for \(\|x\|<1\) and zero outside, by multiplying it with a uniform, unidirectional vector field. All such perturbations leave at least a part of the continuous attractor intact and preserve the invariant manifold, i.e. the parts where the fixed points disappear a slow flow appears.
+We define a local perturbation (i.e., a change to the ODE with compact support) through the bump function \(\Psi(x) = \exp\left(\frac{1}{\|x\|^{2} - 1}\right)\) for \(\|x\|<1\) and zero outside, by multiplying it with a uniform, unidirectional vector field. All such perturbations leave at least a part of the continuous attractor intact and preserve the invariant manifold, i.e. the parts where the fixed points disappear a slow flow appears.
 
 %Definition of a global perturbation
 The parametrized perturbations are characterized as the addition of a random matrix to the ODE.
@@ -1896,8 +1849,8 @@ The parametrized perturbations are characterized as the addition of a random mat
 
 \subsection{Simple ring attractor}
 %Ring attractor
-We further analyzed a simple (non-biological)  ring attractor, defined by the following ODE: \(\dot r = r(1-r), \ \dot \theta = 0\).
-This system has as fixed points the origin and the ring with radius one centered around zero, i.e., \((0,0)\cup\{(1,\theta)\ |\ \theta \in [0,2\pi)\}\). % ChkTeX 9
+We further analyzed a simple (non-biological)  ring attractor, defined by the following ODE: \(\dot r = r(1 - r), \ \dot \theta = 0\).
+This system has as fixed points the origin and the ring with radius one centered around zero, i.e., \((0, 0)\cup\{(1,\theta)\ |\ \theta \in [0, 2\pi)\}\). % ChkTeX 9
 We investigate bifurcations caused by parametric and bump perturbations of the ring invariant manifold (see Sec.~\ref{sec:supp:ring_perturbations}), which is bounded and boundaryless.
 All perturbations maintain the topological structure of the invariant manifold. %(Fig.~\ref{fig:lara_bifurcations}B).
 
@@ -1907,30 +1860,25 @@ All perturbations maintain the topological structure of the invariant manifold. 
 
 
 \subsection{Heading direction network}\label{sec:supp:headdirection}
-The networks proposed in \citep{Noorman2022} are composed of $N$ heading-tuned neurons whose preferred headings $\theta_j$ uniformly tile heading space, with an angular separation of $\Delta\theta=\nicefrac{2\pi}{N}$ radians.
+The networks proposed in \citep{Noorman2022} are composed of \(N\) heading-tuned neurons whose preferred headings \(\theta_{j}\) uniformly tile heading space, with an angular separation of \(\Delta\theta=\nicefrac{2\pi}{N}\) radians.
 These neurons can be arranged topologically in a ring according to their preferred headings, with neurons locally exciting and broadly inhibiting their neighbors.
-The total input activity $h_j$ of each neuron is governed by:
+The total input activity \(h_{j}\) of each neuron is governed by:
 \begin{equation}
-\tau \dot h_j = -h_j + \frac{1}{N} \sum_k (W^{sym}_{jk} + v_{in} W^{asym}_{jk})\phi(h_k)+c_{ff},     j=1,\dots,N,
-\end{equation}
-with
+\tau \dot h_{j} = -h_{j} + \frac{1}{N} \sum_{k} (W_{jk}^{sym} + v_{in} W_{jk}^{asym})\phi(h_{k})+c_{ff},     j = 1,\dots, N,
+\end{equation}with
 \begin{equation}
-W^{sym}_{jk} = J_I + J_E \cos(\theta_j - \theta_k)
-\end{equation}, where \(J_E\) and \(J_I\) respectively control the strength of the tuned and untuned components of recurrent connectivity between neurons with preferred headings \(\theta_j\) and \(\theta_j\)
-and \(v_{in}\) is an angular velocity input which the network receives through asymmetric, velocity-modulated weights \begin{equation}W^{asym} =\sin(\theta_j - \theta_k).\end{equation}
-
-
+W_{jk}^{sym} = J_{I} + J_{E} \cos(\theta_{j} - \theta_{k})
+\end{equation}, where \(J_{E}\) and \(J_{I}\) respectively control the strength of the tuned and untuned components of recurrent connectivity between neurons with preferred headings \(\theta_{j}\) and \(\theta_{j}\)
+and \(v_{in}\) is an angular velocity input which the network receives through asymmetric, velocity-modulated weights \begin{equation}W^{asym} =\sin(\theta_{j} - \theta_{k}).\end{equation}
 \paragraph{Fixed points}
-In the absence of an input (\(v_{in}=0\)) fixed points of the system can be found analytically by considering all submatrices \(W^{sym}_\sigma\) for all subsets \(\{\sigma\subset [n]\}\) with\([n]=\{1,\dots, N\}\).
+In the absence of an input (\(v_{in}=0\)) fixed points of the system can be found analytically by considering all submatrices \(W_{\sigma}^{sym}\) for all subsets \(\{\sigma\subset [n]\}\) with\([n]=\{1,\dots, N\}\).
 A fixed point \(x^*\) needs to satisfy
 \begin{equation}
-x^*= -(W^{sym}_\sigma)^{-1}c_{ff}
-\end{equation}
-and
+x^*= -(W_{\sigma}^{sym})^{-1}c_{ff}
+\end{equation}and
 \begin{equation}
-x^*_i<0 \text{   for  	 } i\in\sigma.
+x^*_{i}<0 \text{   for  	 } i\in\sigma.
 \end{equation}
-
 We bruteforce check all possible supports to find all fixed points.
 We use the eigenvalues of the Jacobian to identify the stability of the found fixed points.
 
@@ -1972,11 +1920,10 @@ As we can see in Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}, the topology of
 
 
 We investigated the bifurcations around the approximate ring attractor constructed with a symmetric weight matrix for a tanh network  \citep{compte2000synaptic, seeholzer2017efficient}.
-The functional form of \(W\) is the sum of a constant term plus a Gaussian centered at \(\theta_i - \theta_j =0\):
+The functional form of \(W\) is the sum of a constant term plus a Gaussian centered at \(\theta_{i} - \theta_{j} = 0\):
 \begin{equation}
-W(\theta_i - \theta_j) = J^- + (J^+ - J^-) \exp\left[ -\frac{(\theta_i - \theta_j)^2}{2\sigma^2} \right],
-\end{equation}
-with the dimensionless parameter \(J^-\) representing the strength of the weak crossdirectional connections, \(J^+\) the strength of the stronger isodirectional connections,
+W(\theta_{i} - \theta_{j}) = J^- + (J^+ - J^-) \exp\left[ -\frac{(\theta_{i} - \theta_{j})^{2}}{2\sigma^{2}} \right],
+\end{equation}with the dimensionless parameter \(J^-\) representing the strength of the weak crossdirectional connections, \(J^+\) the strength of the stronger isodirectional connections,
  and \(\sigma\) the width of the connectivity footprint.
 
 
@@ -1996,8 +1943,7 @@ The memory capacity of this initial configuration is \(N\log(N)\) for the \(2N\)
 \begin{figure}[tbhp]
   \centering
   \includegraphics[width=\textwidth]{performance2}
-  \caption{Degradation of performance across perturbation sizes. System behavior at the asymptotic time scales measured through memory capacity. }
-  \label{fig:performance}
+  \caption{Degradation of performance across perturbation sizes. System behavior at the asymptotic time scales measured through memory capacity. }\label{fig:performance}
 \end{figure}
 
 
@@ -2019,39 +1965,38 @@ The memory capacity of this initial configuration is \(N\log(N)\) for the \(2N\)
 \subsection{Ring attractor approximation with a low-rank network}\label{sec:supp:lowrank}
 The networks consisted of \(N\) firing rate units with a sigmoid inputoutput transfer function \citep{mastrogiuseppe2018}:
 \begin{equation}
-\dot \xi_i(t) = - \xi_i(t) + \sum_{j=1}^{N} J_{ij}\phi(x_j(t)) + I_i,
+\dot \xi_{i}(t) = - \xi_{i}(t) + \sum_{j = 1}^{N} J_{ij}\phi(x_{j}(t)) + I_{i},
 \label{eq:1}
-\end{equation}
-where \(x_i(t)\) is the total input current to unit \(i\),
+\end{equation}where \(x_{i}(t)\) is the total input current to unit \(i\),
 \( J_{ij} = g\chi_{ij} + P_{ij}\) is the connectivity matrix,
-\(\phi(x) = \tanh(x)\) is the current-to-rate transfer function, and \(I_i\) is the external, feedforward input to unit \(i\).
-\(g\chi\) is considered unknown except for its statistics (mean 0, variance \(g^2/N\)).
+\(\phi(x) = \tanh(x)\) is the current-to-rate transfer function, and \(I_{i}\) is the external, feedforward input to unit \(i\).
+\(g\chi\) is considered unknown except for its statistics (mean 0, variance \(g^{2}/N\)).
 A general structured component of rank \(r\ll N\) can be written as a superposition of \(r\) independent unit-rank terms
 \begin{equation}
-P_{ij} = \frac{m^{(1)}_i n^{(1)}_j}{N} + \cdots + \frac{m^{(r)}_i n^{(r)}_j}{N},
+P_{ij} = \frac{m_{i}^{(1)} n_{j}^{(1)}}{N} + \cdots + \frac{m_{i}^{(r)} n_{j}^{(r)}}{N},
 \end{equation} and is in principle characterized by \(2r\) vectors \(m^{(k)}\) and \(n^{(k)}\).
 
 
 %Rank-two structures with internal pairwise overlap
-We consider structured matrices where the two connectivity pairs \( m^{(1)} \) and \( n^{(1)} \), \( m^{(2)} \) and \( n^{(2)} \) share two different overlap directions, defined by vectors \( y_1 \) and \( y_2 \). We set:
+We consider structured matrices where the two connectivity pairs \( m^{(1)} \) and \( n^{(1)} \), \( m^{(2)} \) and \( n^{(2)} \) share two different overlap directions, defined by vectors \( y_{1} \) and \( y_{2} \). We set:
 \begin{align}
-    m^{(1)} &= \sqrt{\Sigma^2 - r_1^2} \, x_1 + r_1 y_1, \\
-    m^{(2)} &= \sqrt{\Sigma^2 - r_2^2} \, x_2 + r_2 y_2, \\
-    n^{(1)} &= \sqrt{\Sigma^2 - r_1^2} \, x_3 + r_1 y_1, \\
-    n^{(2)} &= \sqrt{\Sigma^2 - r_2^2} \, x_4 + r_2 y_2,
+    m^{(1)} &= \sqrt{\Sigma^{2} - r_{1}^{2}} \, x_{1} + r_{1} y_{1}, \\
+    m^{(2)} &= \sqrt{\Sigma^{2} - r_{2}^{2}} \, x_{2} + r_{2} y_{2}, \\
+    n^{(1)} &= \sqrt{\Sigma^{2} - r_{1}^{2}} \, x_{3} + r_{1} y_{1}, \\
+    n^{(2)} &= \sqrt{\Sigma^{2} - r_{2}^{2}} \, x_{4} + r_{2} y_{2},
 \end{align}
-where \( \Sigma^2 \) is the variance of the connectivity vectors and \( r_1^2 \) and \( r_2^2 \) quantify the overlaps along the directions \( y_1 \) and \( y_2 \).
+where \( \Sigma^{2} \) is the variance of the connectivity vectors and \( r_{1}^{2} \) and \( r_{2}^{2} \) quantify the overlaps along the directions \( y_{1} \) and \( y_{2} \).
 
 We keep the following parameters for the analysis:
-\(\Sigma=2\),
-\(\rho=1.9\) and
+\(\Sigma = 2\),
+\(\rho = 1.9\) and
 \(g\in\{0, 0.1\}\).
 
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{N100_si2_rho1.9_g0_fp4.8.12}
-\caption{Some examples of networks dynamics for sizes \(N=10,100,1000\).}\label{fig:low_rank_examples}
+\caption{Some examples of networks dynamics for sizes \(N = 10, 100, 1000\).}\label{fig:low_rank_examples}
 \end{figure}
 
 
@@ -2095,15 +2040,15 @@ In contrast, our analysis involves understanding how the working memory content 
 \subsection{Embedding Manifolds with Population-level Jacobians}\label{sec:supp:empj}
 We fit three networks with the Embedding Manifolds with Population-level Jacobians (EMPJ) method \citep{pollock2020}.
 
-The networks are RNNs of $N=10$ neurons with a $tanh$ activation function and $\tau = 0.05$ time constant.
- To use EMPJ we need to specify our desired $k$ fixed points and $m$ eigenvectors and eigenvalues per fixed point.
+The networks are RNNs of \(N = 10\) neurons with a \(tanh\) activation function and \(\tau = 0.05\) time constant.
+ To use EMPJ we need to specify our desired \(k\) fixed points and \(m\) eigenvectors and eigenvalues per fixed point.
 
-To do this we choose $k=3$ points $\{(x_i, y_i)\}_{i=1}^N$ in the 2D ring with radius $r=1$ that are equally spaced from $0.1$ to $2 \pi$ radians. Then we specify the vectors orthogonal to the ring in those points ($V_o = \{(x_i, y_i)\}_{i=1}^N$, same as the points) and tangent ($V_t = \{(-y_i, x_i)\}_{i=1}^N$).
-Finally we associate the negative eigenvalue $-1/\tau$ to the orthogonal eigenvectors and different eigenvalues to the tangent eigenvectors. We use $-1$, $0$ or $1$ depending on whether we want the points to be stable, center or unstable in the direction of the slow ring manifold.
+To do this we choose \(k = 3\) points \(\{(x_{i}, y_{i})\}_{i = 1}^{N}\) in the 2D ring with radius \(r = 1\) that are equally spaced from \(0.1\) to \(2 \pi\) radians. Then we specify the vectors orthogonal to the ring in those points (\(V_{o} = \{(x_{i}, y_{i})\}_{i = 1}^{N}\), same as the points) and tangent (\(V_{t} = \{(-y_{i}, x_{i})\}_{i = 1}^{N}\)).
+Finally we associate the negative eigenvalue \(-1/\tau\) to the orthogonal eigenvectors and different eigenvalues to the tangent eigenvectors. We use \(-1\), \(0\) or \(1\) depending on whether we want the points to be stable, center or unstable in the direction of the slow ring manifold.
 
-Since these determined dynamics are only in a 2D plane, we use a random linear mapping $D\colon\reals^2\rightarrow\reals^N$ to map the fixed points and the eigenvectors to a $10$-dimensional space. First, we sample a random from orthogonal matrix $A$ from the $O(N)$ Haar distribution and then we take the first two columns of this matrix to be $D=[A]_{12}$.
+Since these determined dynamics are only in a 2D plane, we use a random linear mapping \(D\colon\reals^{2}\rightarrow\reals^{N}\) to map the fixed points and the eigenvectors to a \(10\)-dimensional space. First, we sample a random from orthogonal matrix \(A\) from the \(O(N)\) Haar distribution and then we take the first two columns of this matrix to be \(D=[A]_{12}\).
 
-EMPJ then returns a network parameters that satisfy these constraints. Furthermore, due to the particular solver used, that regularises the magnitude of the parameters, we get that all the other eigenvalues not specified are also set to $-\nicefrac{1}{\tau}$ (for details see \citep{pollock2020}).
+EMPJ then returns a network parameters that satisfy these constraints. Furthermore, due to the particular solver used, that regularises the magnitude of the parameters, we get that all the other eigenvalues not specified are also set to \(-\nicefrac{1}{\tau}\) (for details see \citep{pollock2020}).
 
 
 \ascomment{include sphere and torus?}
@@ -2114,12 +2059,12 @@ As we remark in Sec.~\ref{sec:empjnonrobust}, EMPJ networks are not robust to S-
 We therefore find fixed points through the Newton-Raphson method.
 We iteratively solve
 \begin{align}
- \vJ(\vx_i)\vd\vx_i = \vx_i
+ \vJ(\vx_{i})\vd\vx_{i} = \vx_{i}
 \end{align}
-where \(\vJ(\vx_i)\) is the Jacobian of the system at \(\vx_i\) and \(\vx_{i+1}=\vx_i-\vd\vx_i\).
-The iteration stops when $|\vd\vx|<\delta$ for a tolerance threshold $\delta$.
-We initialize \(\vx_0\) on the invariant ring uniformly.
-The maximum number of iterations was set to 10.000 and the tolerance level to $\delta=10^{-8}$.
+where \(\vJ(\vx_{i})\) is the Jacobian of the system at \(\vx_{i}\) and \(\vx_{i + 1}=\vx_{i}-\vd\vx_{i}\).
+The iteration stops when \(|\vd\vx|<\delta\) for a tolerance threshold \(\delta\).
+We initialize \(\vx_{0}\) on the invariant ring uniformly.
+The maximum number of iterations was set to 10.000 and the tolerance level to \(\delta = 10^{-8}\).
 
 \subsubsection{Lack of S-type robustness}\label{sec:empjnonrobust}
 We remark that the resulting invariant manifold is not robust to S-type perturbations.
@@ -2131,8 +2076,8 @@ This indicates that the basin of attration is very small and hence this approxim
 
 All of the perturbations were sampled as
 \(x(0) = x(0) + \eta\) with \(x(0)\in \operatorname{span}(D)\).
-For the on-manifold perturbations \(\eta\in \operatorname{span}(D)\)  and \(\|\eta\|_2=10^{-2}\).
-For the off-manifold perturbations \(\eta\in \reals^{10}\) and \(\|\eta\|_2=10^{-5}\).
+For the on-manifold perturbations \(\eta\in \operatorname{span}(D)\)  and \(\|\eta\|_{2} = 10^{-2}\).
+For the off-manifold perturbations \(\eta\in \reals^{10}\) and \(\|\eta\|_{2} = 10^{-5}\).
 
 
 \begin{figure}[h]
@@ -2168,7 +2113,7 @@ For the off-manifold perturbations \(\eta\in \reals^{10}\) and \(\|\eta\|_2=10^{
 %\newpage
 %\section{Training RNNs on an integration task from scratch}
 %
-%We trained vanilla RNNs with a ReLU nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}. The network size varies between 50 and 200 units, initialized using a normal distribution for the parameters. Adam optimization with \(\beta_1=0.9\) and \(\beta_2=0.99\) was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 100 epochs. The task has 256 time steps for the training samples, and training was based on the mean squared error loss.
+%We trained vanilla RNNs with a ReLU nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}. The network size varies between 50 and 200 units, initialized using a normal distribution for the parameters. Adam optimization with \(\beta_{1} = 0.9\) and \(\beta_{2} = 0.99\) was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 100 epochs. The task has 256 time steps for the training samples, and training was based on the mean squared error loss.
 %
 %\begin{figure}[tbhp]
 %     \centering
@@ -2216,23 +2161,23 @@ In other words, it is locally invariant if for all \(x \in \manifold, \varphi(x,
 \end{definition}
 
 \begin{definition}
-A set \( S \) is said to be \emph{forward invariant} under a flow \( \varphi_t \) if for every point \( x \) in \( S \) and for all \( t \geq 0 \), the image of \( x \) under the flow at time \( t \), denoted \( \varphi_t(x) \), remains in \( S \). This can be written as:
+A set \( S \) is said to be \emph{forward invariant} under a flow \( \varphi_{t} \) if for every point \( x \) in \( S \) and for all \( t \geq 0 \), the image of \( x \) under the flow at time \( t \), denoted \( \varphi_{t}(x) \), remains in \( S \). This can be written as:
 
-\[ \varphi_t(x) \in S \quad \text{for all} \quad x \in S \quad \text{and} \quad t \geq 0. \]
+\[ \varphi_{t}(x) \in S \quad \text{for all} \quad x \in S \quad \text{and} \quad t \geq 0. \]
 \end{definition}
 
 \paragraph{Small perturbation}
-In the context of Fenichel's Persistence Theorem, a "sufficiently small \( C^r \) perturbation of the vector field \( f \)" refers to perturbations that are small in the \( C^r \) norm. The \( C^r \) norm measures the size of a function and its derivatives up to order \( r \).
+In the context of Fenichel's Persistence Theorem, a ``sufficiently small \( C^{r} \) perturbation of the vector field \( f \)'' refers to perturbations that are small in the \( C^{r} \) norm. The \( C^{r} \) norm measures the size of a function and its derivatives up to order \( r \).
 
-Formally, let \( f: \mathbb{R}^n \rightarrow \mathbb{R}^n \) be the original smooth vector field and let \( \tilde{f} \) be a perturbed vector field. The perturbation \( \tilde{f} \) is a sufficiently small \( C^r \) perturbation if the difference \( \tilde{f} - f \) has a small \( C^r \) norm. Mathematically, this can be expressed as:
+Formally, let \( f: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n} \) be the original smooth vector field and let \( \tilde{f} \) be a perturbed vector field. The perturbation \( \tilde{f} \) is a sufficiently small \( C^{r} \) perturbation if the difference \( \tilde{f} - f \) has a small \( C^{r} \) norm. Mathematically, this can be expressed as:
 
-\[ \| \tilde{f} - f \|_{C^r} < \epsilon, \]
-where \( \epsilon \) is a small positive number, and the \( C^r \) norm is defined as:
-\[ \| \tilde{f} - f \|_{C^r} = \max_{0 \leq k \leq r} \sup_{x \in \mathbb{R}^n} \left\| D^k (\tilde{f}(x) - f(x)) \right\|. \]
-Which gives a constraint on how much each of the \(k\)-th derivatives \( D^k \) of the perturbed vector field can differ from the original.
+\[ \left\| \tilde{f} - f \right\|_{C^{r}} < \epsilon, \]
+where \( \epsilon \) is a small positive number, and the \( C^{r} \) norm is defined as:
+\[ \left\| \tilde{f} - f \right\|_{C^{r}} = \max_{0 \leq k \leq r} \sup_{x \in \mathbb{R}^{n}} \left\| D^{k} (\tilde{f}(x) - f(x)) \right\|. \]
+Which gives a constraint on how much each of the \(k\)-th derivatives \( D^{k} \) of the perturbed vector field can differ from the original.
 
-In summary, a perturbation \( \tilde{f} \) is considered sufficiently small in the \( C^r \) sense if the difference between \( \tilde{f} \) and \( f \), along with their derivatives up to order \( r \), is uniformly small across the domain.
-For \(C^1\) perturbations, this defines a \(C^1\)  neighborhood of functions, within which the persistence of the manifold is ensured by Fenichel's theorem.
+In summary, a perturbation \( \tilde{f} \) is considered sufficiently small in the \( C^{r} \) sense if the difference between \( \tilde{f} \) and \( f \), along with their derivatives up to order \( r \), is uniformly small across the domain.
+For \(C^{1}\) perturbations, this defines a \(C^{1}\)  neighborhood of functions, within which the persistence of the manifold is ensured by Fenichel's theorem.
 
 
 
@@ -2241,16 +2186,16 @@ Finally, to formalize what is meant by that the persistent invariant manifold is
 \begin{definition}
 Let \((M, d)\) be a metric space. For each pair of non-empty subsets \(X \subset M\) and \(Y \subset M\), the \emph{Hausdorff distance} between \(X\) and \(Y\) is defined as
 \[
-d_H(X, Y) := \max \left\{ \sup_{x \in X} d(x, Y), \ \sup_{y \in Y} d(X, y) \right\},
+d_{H}(X, Y) \coloneqq \max \left\{ \sup_{x \in X} d(x, Y), \ \sup_{y \in Y} d(X, y) \right\},
 \]
 where \(\sup\) represents the supremum operator, \(\inf\) the infimum operator, and where
 \[
-d(a, B) := \inf_{b \in B} d(a, b)
+d(a, B) \coloneqq \inf_{b \in B} d(a, b)
 \]
 quantifies the distance from a point \(a \in X\) to the subset \(B \subseteq X\).
 \end{definition}
 
-In conclusion, the Hausdorff distance provides a rigorous mathematical framework to quantify the "closeness" or "similarity" between two sets.
+In conclusion, the Hausdorff distance provides a rigorous mathematical framework to quantify the ``closeness'' or ``similarity'' between two sets.
 
 
 
@@ -2262,12 +2207,12 @@ This section will introduce the original Fenichel's Persistent Manifold Theorem,
 
 In the study of dynamical systems, particularly those involving multiple time scales, understanding the behavior of solutions near invariant manifolds is crucial.
 These manifolds often determine the long-term dynamics of the system and their stability properties.
- The Fenichel's Persistent Manifold Theorem provides a powerful framework for analyzing such systems by demonstrating the persistence of normally hyperbolic invariant manifolds under small perturbations. This theorem is particularly relevant in systems where variables evolve on different time scales—typically referred to as "slow" and "fast" dynamics.
+ The Fenichel's Persistent Manifold Theorem provides a powerful framework for analyzing such systems by demonstrating the persistence of normally hyperbolic invariant manifolds under small perturbations. This theorem is particularly relevant in systems where variables evolve on different time scales--- typically referred to as ``slow'' and ``fast'' dynamics.
  By reformulating the system with a change of time-scale, we can explore how the dynamics on these manifolds behave, especially when perturbed.
-Consider the system given by Equations \ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal}, which can be rewritten using a rescaled time variable, \(\tau\), to distinguish between the fast and slow dynamics as follows:
+Consider the system given by Equations~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal}, which can be rewritten using a rescaled time variable, \(\tau\), to distinguish between the fast and slow dynamics as follows:
 \begin{align}\label{eq:slow}
 \begin{cases}
-\epsilon x' &= g ( x , y , \epsilon) \\
+\epsilon x' &= g (x, y , \epsilon) \\
 y'&= h(x, y, \epsilon)
 \end{cases}
 \end{align}
@@ -2276,20 +2221,20 @@ where  \('=\frac{d}{d\tau}\) and \(\tau=\nicefrac{t}{\epsilon}\).
 
 
 %Assumptions
-The functions \(g\) and \(h\)in Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} are both assumed to be \(C^r\) (for \(r>0\) on a set \(U\times I\) where \(U\subset\reals^d\) is open, and \(I\) is an open interval, containing \(0\).
+The functions \(g\) and \(h\)in Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal} are both assumed to be \(C^{r}\) (for \(r>0\) on a set \(U \times I\) where \(U\subset\reals^{d}\) is open, and \(I\) is an open interval, containing \(0\).
 
-Suppose that the set \(\manifold_0\)  is a subset of the set \(\{h(x, y, 0) = 0\}\) and is a compact manifold, possibly with boundary, and is normally hyperbolic relative to \ref{eq:slow}.
+Suppose that the set \(\manifold_{0}\)  is a subset of the set \(\{h(x, y, 0) = 0\}\) and is a compact manifold, possibly with boundary, and is normally hyperbolic relative to~\ref{eq:slow}.
 
 
 \begin{theorem}[Theorem 1 in \citep{Jones1995}]\label{theorem:originalpersistent}
-If \(\epsilon >0\), but sufficiently small, there exists a manifold \(\manifold_\epsilon\) that lies within \(\mathcal{O}(\epsilon)\) of \(\manifold_0\) and is diffeomorphic to \(\manifold_0\).
- Moreover it is locally invariant under the flow of Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal}, and \(C^r\), including in \(\epsilon\), for any \(0<r< \infty\).
- Finally, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_0\) and has the same smoothness as \(g\) and \(h\).
+If \(\epsilon >0\), but sufficiently small, there exists a manifold \(\manifold_{\epsilon}\) that lies within \(\mathcal{O}(\epsilon)\) of \(\manifold_{0}\) and is diffeomorphic to \(\manifold_{0}\).
+ Moreover it is locally invariant under the flow of Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal}, and \(C^{r}\), including in \(\epsilon\), for any \(0<r< \infty\).
+ Finally, \(\manifold_{\epsilon}\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_{0}\) and has the same smoothness as \(g\) and \(h\).
 \end{theorem}
 
 
-If the invariant manifold \(\manifold_0\) is attractive, then the only way trajectories can escape the invariant set \(\manifold_\epsilon\) after perturbation, is in negative time through the boundaries.
-This guarantees that the persistent manifold \(\manifold_\epsilon\) is still attractive.
+If the invariant manifold \(\manifold_{0}\) is attractive, then the only way trajectories can escape the invariant set \(\manifold_{\epsilon}\) after perturbation, is in negative time through the boundaries.
+This guarantees that the persistent manifold \(\manifold_{\epsilon}\) is still attractive.
 
 
 %-  page 6: Although we have seen numerous topologies in Sec. 2, dynamical systems theory says that they are fundamentally limited, especially in low dimensions. - it would be super useful to add a reference, or even unpack this statement a little more
@@ -2300,8 +2245,7 @@ This guarantees that the persistent manifold \(\manifold_\epsilon\) is still att
 The flow on a ring can be described by the differential equation\citep{hirsch2013differential}:
 \begin{equation}
 \frac{d\theta}{dt} = f(\theta),
-\end{equation}
-with \(\theta\in[0,2\pi].\)
+\end{equation}with \(\theta\in[0, 2\pi].\)
 
 The simplest type of flow on a ring is the uniform circular flow, where each point moves with a constant angular velocity \(f(\theta)=\omega\).
 If \(|f(\theta)|>0\) for all \(\theta\), there is a circular flow with a variable speed.
@@ -2309,8 +2253,8 @@ If \(|f(\theta)|>0\) for all \(\theta\), there is a circular flow with a variabl
 There is a fixed point for each unique \(\theta\) for which \(f(\theta)=0\).
 The nature of the flow around these fixed points can be classified into:
 \begin{itemize}
-\item\textbf{Stable fixed points}: Points where the flow tends to as time progresses (\(f(\theta)>0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)<0\) for all \( \theta\in[\theta,2\pi]\cap V\) for some open ball \(V\) around \(\theta\)).
-\item\textbf{Unstable fixed points}: Points from which the flow diverges (\(f(\theta)<0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)>0\) for all \( \theta\in[\theta,2\pi]\cap V\) for some open ball \(V\) around \(\theta\)).
+\item\textbf{Stable fixed points}: Points where the flow tends to as time progresses (\(f(\theta)>0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)<0\) for all \( \theta\in[\theta, 2\pi]\cap V\) for some open ball \(V\) around \(\theta\)).
+\item\textbf{Unstable fixed points}: Points from which the flow diverges (\(f(\theta)<0\) for all \( \theta\in[0,\theta]\cap V\) and \(f(\theta)>0\) for all \( \theta\in[\theta, 2\pi]\cap V\) for some open ball \(V\) around \(\theta\)).
 \end{itemize}
 
 
@@ -2343,61 +2287,60 @@ We will give some clarifications and proofs of the claims on systems near perfec
 We  provide a proof of Prop.~\ref{prop:revival} which is dependent on the \(\epsilon\)-Neighborhood Theorem\footnote{Not to be confused with the perturbation parameter \(\epsilon\).}, which we state here.
 
 \begin{theorem}[\(\epsilon\)-Neighborhood Theorem\citep{guillemin2010differential}]
-Let \( Y \subseteq \mathbb{R}^n \) be a smooth, compact manifold. Then for a small enough \(\epsilon > 0\),
-each \( w \in Y_\epsilon := \{ w \in \mathbb{R}^n \mid \exists y \in Y : \|y - w\| < \epsilon \} \)
+Let \( Y \subseteq \mathbb{R}^{n} \) be a smooth, compact manifold. Then for a small enough \(\epsilon > 0\),
+each \( w \in Y_{\epsilon} \coloneqq \{ w \in \mathbb{R}^{n} \mid \exists y \in Y : \|y - w\| < \epsilon \} \)
 has a unique closest point in \( Y \), denoted \( \pi(w) \).
-Moreover, \( \pi: Y_\epsilon \to Y \) is a submersion with \( \pi|_Y = \text{id} \).
+Moreover, \( \pi: Y_{\epsilon} \to Y \) is a submersion with \( \pi|_{Y} = \text{id} \).
 \end{theorem}
 
 %Use Extension Lemma for Vector Fields on Submanifolds?
 
 We now prove  Prop.~\ref{prop:revival}.
 \begin{proof}%[Prop.~\ref{prop:revival}]
-It is sufficient to show that there is a perturbation \(\vp\) that has zero flow off of \(\manifold_\epsilon\) but for which \(\vf+\vp=0\) on \(\manifold_\epsilon\) for the full system \(\vf\)  as defined in Eq.~\ref{eq:perturbation:nonparam}.
+It is sufficient to show that there is a perturbation \(\vp\) that has zero flow off of \(\manifold_{\epsilon}\) but for which \(\vf+\vp = 0\) on \(\manifold_{\epsilon}\) for the full system \(\vf\)  as defined in Eq.~\ref{eq:perturbation:nonparam}.
 Define
-\[\vp(\vx) = \int_{\manifold_\epsilon} - \delta(\vx-\vy)\vf(\vy)\vd\vy,\]
- with the Dirac delta function \(\delta(\vx)=\delta(x_1)\delta(x_2)\dots\delta(x_d)\).
-It is then easy to check that \(\vf(\vx)+\vp(\vx)=0\) for all \(\vx\in\manifold_\epsilon\) and \(\vf(\vx)+\vp(\vx)=\vf(\vx)\) for all \(\vx\not\in\manifold_\epsilon\).
-Hence, we have a continuous attractor at \(\manifold_\epsilon\).
+\[\vp(\vx) = \int_{\manifold_{\epsilon}} - \delta(\vx-\vy)\vf(\vy)\vd\vy,\]
+ with the Dirac delta function \(\delta(\vx)=\delta(x_{1})\delta(x_{2})\dots\delta(x_{d})\).
+It is then easy to check that \(\vf(\vx)+\vp(\vx)=0\) for all \(\vx\in\manifold_{\epsilon}\) and \(\vf(\vx)+\vp(\vx)=\vf(\vx)\) for all \(\vx\not\in\manifold_{\epsilon}\).
+Hence, we have a continuous attractor at \(\manifold_{\epsilon}\).
 %\end{proof}
 %
 %\begin{remark}
 If smoothness is important, we can construct the following perturbation.
-From the \(\epsilon\)-Neighborhood Theorem\citep{folland1999real}, we get that  there exists a smooth positive function \(\delta\colon \manifold_\epsilon \rightarrow \reals^+\),
- such that if we let \(N_\delta\) be the
-\(\delta\)-neighborhood of \(\manifold_\epsilon\),
+From the \(\epsilon\)-Neighborhood Theorem\citep{folland1999real}, we get that  there exists a smooth positive function \(\delta\colon \manifold_{\epsilon} \rightarrow \reals^+\),
+ such that if we let \(N_{\delta}\) be the
+\(\delta\)-neighborhood of \(\manifold_{\epsilon}\),
 \[
-M_\epsilon\coloneqq \{y  \in \reals^n : |y - x| < \delta(x) \text{ for some }  x \in M_\epsilon\},
+M_{\epsilon}\coloneqq \{y  \in \reals^{n} : |y - x| < \delta(x) \text{ for some }  x \in M_{\epsilon}\},
 \]
-then each \(y\in N_\delta\) possesses a unique closest point \(\pi_\delta(y)\) in \(\manifold_\epsilon\) with the map \(\pi_\delta\colon \manifold_\delta \rightarrow \manifold_\epsilon\) being a submersion.
+then each \(y\in N_{\delta}\) possesses a unique closest point \(\pi_{\delta}(y)\) in \(\manifold_{\epsilon}\) with the map \(\pi_{\delta}\colon \manifold_{\delta} \rightarrow \manifold_{\epsilon}\) being a submersion.
 
 We can then define a bump function
 \begin{equation}
 \psi(y) =
 \begin{cases}
-\exp\left(-\frac{1}{1-(\pi_\delta(y)-y)^2}\right) &\text{  if  } y\in(-\delta-\pi_\delta(y), \delta-\pi_\delta(y))\\
+\exp\left(-\frac{1}{1-(\pi_{\delta}(y)-y)^{2}}\right) &\text{  if  } y\in(-\delta-\pi_{\delta}(y), \delta-\pi_{\delta}(y))\\
 0 & \text{  otherwise }
 \end{cases}
 \end{equation}
-
 Then the perturbation
 \[
-\vp(\vy) = - \psi(\vy)\vf(\pi_\delta(\vy))
+\vp(\vy) = - \psi(\vy)\vf(\pi_{\delta}(\vy))
 \]
-is smooth and creates a continuous attractor at \(\manifold_\epsilon\).
+is smooth and creates a continuous attractor at \(\manifold_{\epsilon}\).
 \end{proof}
 
 %Setup for case where smoothness matters:
 %\begin{itemize}
 %\item Define tubular neighbourhood
 %\begin{itemize}
-%    \item Define the normal bundle \(N_X\) of \(X\) in \(Y\).
-%    \item Use the exponential map restricted to \(N_X\) to map small normal vectors to \(Y\).
-%    \item Ensure the map is injective on a sufficiently small neighborhood around the zero section of \(N_X\).
+%    \item Define the normal bundle \(N_{X}\) of \(X\) in \(Y\).
+%    \item Use the exponential map restricted to \(N_{X}\) to map small normal vectors to \(Y\).
+%    \item Ensure the map is injective on a sufficiently small neighborhood around the zero section of \(N_{X}\).
 %    \item The image of this neighborhood forms the tubular neighborhood \(N\).
 %    \item Define a retraction map from \(N\) to \(X\) using the projection along normal fibers.
 %\end{itemize}
-%\item Use exponential map restricted to \(N_X\) to map small normal vectors to \(Y\) to define vector field (bump around CA)
+%\item Use exponential map restricted to \(N_{X}\) to map small normal vectors to \(Y\) to define vector field (bump around CA)
 %\begin{itemize}
 %\item Scale this map with bump function
 %\item
@@ -2407,8 +2350,7 @@ is smooth and creates a continuous attractor at \(\manifold_\epsilon\).
 %\exp\left(-\frac{1}{1-(x_i-y_i)^2)}\right) &\text{  if  } y_i\in(-\delta-x_i, \delta-x_i)\\
 %0 & \text{  otherwise }
 %\end{cases}
-%\end{equation}
-%\end{itemize}
+%\end{equation}%\end{itemize}
 %\item Take a small enough neighbourhood such that
 %\begin{itemize}
 %\item Topology is unchanged
@@ -2427,7 +2369,7 @@ If there is memory degradation along the output manifold, it is not possible to 
 
 \subsection{Approximate solutions  to an analog working memory problem}\label{sec:condition_clarifications}
 We will now dicuss the conditions for when approximate solutions to an analog working memory problem are near a continuous attractor.
-We consider approximate solutions to an analog working memory problem to be systems of the form \ref{eq:RNN:discrete} or \ref{eq:RNN:continuous} (in both cases following a linear decoder), which have a small memory error over time in output space.
+We consider approximate solutions to an analog working memory problem to be systems of the form~\ref{eq:RNN:discrete} or~\ref{eq:RNN:continuous} (in both cases following a linear decoder), which have a small memory error over time in output space.
 
 %\paragraph{Approximate bijection}\label{sec:bijection}
 
@@ -2454,8 +2396,8 @@ Ma\~{n}e showed that if an invariant manifold is Lipschitz persistent then it mu
 To understand the concept of Lipschitz persistence, we need to define the Lipschitz section and Lipschitz constant.
 
 \begin{definition}
-Let \(M\) be a \(C^{\infty}\) boundaryless manifold and \(V \subset M\) a \(C^1\) compact boundaryless submanifold.
-Assume that \(M\) is a submanifold of \(\mathbb{R}^n\). Let \(NV\) be a \(C^1\) subbundle of \(TM|_V\) satisfying \(TV \oplus NV = TM|_V\).
+Let \(M\) be a \(C^{\infty}\) boundaryless manifold and \(V \subset M\) a \(C^{1}\) compact boundaryless submanifold.
+Assume that \(M\) is a submanifold of \(\mathbb{R}^{n}\). Let \(NV\) be a \(C^{1}\) subbundle of \(TM|_{V}\) satisfying \(TV \oplus NV = TM|_{V}\).
 If \(\eta\) is a section of \(NV\), define the Lipschitz constant of \(\eta\) by
 \[
 \mathrm{Lip}(\eta) = \sup \left\{ \frac{\|\eta(x) - \eta(y)\|}{\|x - y\|} \mid x, y \in V, x \neq y \right\}.
@@ -2465,22 +2407,22 @@ Let \(\Gamma_{\mathcal{L}}(NV)\) be the space of Lipschitz sections of \(NV\) en
 \[
 \|\eta\|_{\mathcal{L}} = \sup \left\{ \|\eta(x)\| \mid x \in V \right\} + \mathrm{Lip}(\eta).
 \]
-Let \(\mathrm{Diff}^1(M)\) be the space of \(C^1\) diffeomorphisms with the topology of the \(C^1\) convergence on compact subsets.
+Let \(\mathrm{Diff}^{1}(M)\) be the space of \(C^{1}\) diffeomorphisms with the topology of the \(C^{1}\) convergence on compact subsets.
 \end{definition}
 
 \begin{definition}
- Let \(f \in \mathrm{Diff}^1(M)\).
- We say that \(V\) is a Lipschitz persistent invariant manifold of \(f\) if there exists a neighborhood \(U\) of \(V\) such that for all \(\delta > 0\) there exists a neighborhood \(\mathcal{U}_\delta\) of \(f\) such that if \(g \in \mathcal{U}_\delta\) there exists \(\eta \in \Gamma_{\mathcal{L}}(NV)\) with \(\|\eta\|_{\mathcal{L}} < \delta\) satisfying \(V_g = \mathrm{graph}(\eta)\), where \(\mathrm{graph}(\eta) = \{\exp_x(\eta(x)) \mid x \in V\}\), \(V_g = g(U)\).
+ Let \(f \in \mathrm{Diff}^{1}(M)\).
+ We say that \(V\) is a Lipschitz persistent invariant manifold of \(f\) if there exists a neighborhood \(U\) of \(V\) such that for all \(\delta > 0\) there exists a neighborhood \(\mathcal{U}_{\delta}\) of \(f\) such that if \(g \in \mathcal{U}_{\delta}\) there exists \(\eta \in \Gamma_{\mathcal{L}}(NV)\) with \(\|\eta\|_{\mathcal{L}} < \delta\) satisfying \(V_{g} = \mathrm{graph}(\eta)\), where \(\mathrm{graph}(\eta) = \{\exp_{x}(\eta(x)) \mid x \in V\}\), \(V_{g} = g(U)\).
 
-Observe that this definition implies \(V_f = V\), hence \(f(V) = V\). Moreover, the Lipschitz persistence is independent of the bundle \(NV\).
+Observe that this definition implies \(V_{f} = V\), hence \(f(V) = V\). Moreover, the Lipschitz persistence is independent of the bundle \(NV\).
 \end{definition}
 
 
-For a flow \(\varphi_t\) (coming from the solutions of an ODE) we can fix \(t=\tau\in\reals_{>0}\) so that we get a homeomorphism \(\varphi_\tau\).
+For a flow \(\varphi_{t}\) (coming from the solutions of an ODE) we can fix \(t=\tau\in\reals_{>0}\) so that we get a homeomorphism \(\varphi_{\tau}\).
 This allows us to apply this result to apply to our case.
 
 
-In the case where $V$ is a point, then it is a hyperbolic fixed point and the persistence follows trivially from the implicit function theorem.
+In the case where \(V\) is a point, then it is a hyperbolic fixed point and the persistence follows trivially from the implicit function theorem.
 
 
 \begin{remark}
@@ -2489,7 +2431,7 @@ If \(V\) is persistent and uniformly locally maximal, then \(V\) has to be norma
 
 
 \begin{definition}[Uniformly locally maximal]
- There exist neighborhoods \(U\) of \(V\) in \(M\) and \(U\) of \(f\) in the space \(\mathrm{Diff}^1(M)\) of \(C^1\)-diffeomorphisms of \(M\), such that for any \(g \in U\), \(N_g = \bigcap_{k \in \mathbb{Z}} g^k(U)\) is a \(C^1\)-submanifold close to \(V\), with \(N_f = N\).
+ There exist neighborhoods \(U\) of \(V\) in \(M\) and \(U\) of \(f\) in the space \(\mathrm{Diff}^{1}(M)\) of \(C^{1}\)-diffeomorphisms of \(M\), such that for any \(g \in U\), \(N_{g} = \bigcap_{k \in \mathbb{Z}} g^{k}(U)\) is a \(C^{1}\)-submanifold close to \(V\), with \(N_{f} = N\).
  The latter property implies the uniqueness of the invariant submanifold.
 \end{definition}
 \end{remark}
@@ -2499,12 +2441,12 @@ If \(V\) is persistent and uniformly locally maximal, then \(V\) has to be norma
 \subsection{Near Perfect Analog Memory Systems are close to Decomposable Systems with a Continuous Attractor}\label{sec:near_ca}
 
 We now prove a more general statement about the kind of systems that are close to perfect analog memory systems.
-The theory guarantees that a system that satisfies conditions \ref{converse:bijection}-\ref{converse:Dtype}  will have a continuous attractor in the following sense.
+The theory guarantees that a system that satisfies conditions~\ref{converse:bijection}-\ref{converse:Dtype}  will have a continuous attractor in the following sense.
 For such a system there exists a decomposition such that the system can be effectively decomposed into a continuous attractor (attractive invariant manifold with zero flow) and a component on which a (possibly ``fast'' flow) can exist buy which get quenched by the out put projection.
 
 For this part of the theory, we need to consider the output manifold \(\manifold_{\text{output}}\), the manifold on which we determine the error over time as in Sec.~\ref{sec:supp:ub}.
-For this section, we will consider the output mapping to be a smooth (possibly nonlinear) mapping \(g\colon X\rightarrow Y\) between the neural state space \(X=\reals^{d_X}\) and the output space \(Y=\reals^{d_Y}\).
-For a circular variable this will be the ring \(S^1\).
+For this section, we will consider the output mapping to be a smooth (possibly nonlinear) mapping \(g\colon X\rightarrow Y\) between the neural state space \(X=\reals^{d_{X}}\) and the output space \(Y=\reals^{d_{Y}}\).
+For a circular variable this will be the ring \(S^{1}\).
 
 The construction of a perturbation relies on finding the necessary minimal structure in the invariant manifold for which we can guarantee closeness to a continuous attractor.
 Therefore, first of all, we need this closeness in terms of the geometry of the manifold, which we guarantee through the notion of a fibration of the output mapping.
@@ -2531,21 +2473,20 @@ that commutes with the projection onto \(U\), meaning that the following diagram
         \pi^{-1}(U_{b}) \arrow[rightarrow]{r}{\varphi}	\arrow[swap]{d}{\pi} & U_{b} \times F_{b}	\arrow[rightarrow]{d}{\operatorname{pr}_{1}} 	\\
         U_{b} \arrow[rightarrow]{r}{id}  &	 	U_{b}
       \end{tikzcd}
-\end{equation*}
-% \[
+\end{equation*}% \[
 % \begin{array}{ccc}
 % \pi^{-1}(U) & \xrightarrow{\varphi} & U \times F \\
 % \pi \downarrow &  & \downarrow \text{pr}_1 \\
 % U & = & U
 % \end{array}
 % \]
-where \(\text{pr}_1: U_{b} \times F_{b} \to U_{b}\) is the projection onto the first factor.
+where \(\text{pr}_{1}: U_{b} \times F_{b} \to U_{b}\) is the projection onto the first factor.
 \end{definition}
 
-So, around every point in the base space, you can "zoom in" and see that the bundle looks like a straightforward product of the base space and the fiber and \(\varphi\) is providing this trivialization.
+So, around every point in the base space, you can ``zoom in'' and see that the bundle looks like a straightforward product of the base space and the fiber and \(\varphi\) is providing this trivialization.
 
 \begin{definition}
-We say that a projection map \(\pi:E \rightarrow  B\) is \emph{locally trivial} if each point \(b \in B\) is contained in an open set \(U\) having the property that \(E_U\coloneqq \pi^{-1}(U)\) is trivial over \(U\).
+We say that a projection map \(\pi:E \rightarrow  B\) is \emph{locally trivial} if each point \(b \in B\) is contained in an open set \(U\) having the property that \(E_{U}\coloneqq \pi^{-1}(U)\) is trivial over \(U\).
 \end{definition}
 
 We will rely on the concept of a submersion to charaterize how the output space needs to relate to our invarinat manifold.
@@ -2572,7 +2513,7 @@ If we do not have a submersion or that the output mapping is transversal to the 
 This happens when the flow is in a singularity of the output mapping.
 \end{remark}
 
-For our statement we want that the invariant manifold can be decomposed into a space that is diffeomorphic to the output manifold and another compact manifold: \(\manifold_\epsilon= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_Y\). We can relax this to allow for the possibility of some torsion along the invariant manifold.
+For our statement we want that the invariant manifold can be decomposed into a space that is diffeomorphic to the output manifold and another compact manifold: \(\manifold_{\epsilon}= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_{Y}\). We can relax this to allow for the possibility of some torsion along the invariant manifold.
 For this to hold, it is sufficient that the output mapping must be a submersion because this makes it a locally trivial fibration.
 So we get that \(g\colon X\rightarrow Y\) defines a locally trivial fiber mapping.
 
@@ -2583,9 +2524,9 @@ We characterize the relevant maximal size of the vector field that needs to be p
 
 
 \begin{theorem}\label{thrm:near_ca}
-Let \(\manifold_\epsilon\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}) with the real part of the eigenvalues of \(\nabla_\vz \vh\) all negative. % in the neighborhood of a continuous attractor.
-Further, assume that this manifold can be decomposed \(\manifold_\epsilon= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_Y\) and that
- the uniform norm of the flow tangent to \(\manifold_\epsilon\) restricted to \(\manifold_{\text{slow}}\) be \(\|\dot{(\vy)}_{\text{slow}}\|_\infty=\eta\).
+Let \(\manifold_{\epsilon}\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}) with the real part of the eigenvalues of \(\nabla_{\vz} \vh\) all negative. % in the neighborhood of a continuous attractor.
+Further, assume that this manifold can be decomposed \(\manifold_{\epsilon}= \manifold_{\text{slow}}\times \manifold_{\text{null}}\) with \(\manifold_{slow}\simeq \manifold_{Y}\) and that
+ the uniform norm of the flow tangent to \(\manifold_{\epsilon}\) restricted to \(\manifold_{\text{slow}}\) be \(\|\dot{(\vy)}_{\text{slow}}\|_{\infty}=\eta\).
  %eta should be the uniform norm of the projected vector field on the output manifold
  %actually it should be the supremum over all possible pullback sections
 Then, there exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a system that is decomposable into a continuous attractor and a system with a non-zero flow.
@@ -2598,12 +2539,12 @@ Each fiber consists of trajectories that are mapped to the same value in \(\mani
 
 
 \begin{proof}
-Assume that the output mapping is a submersion from the invariant manifold \(\manifold_\epsilon\) to the output manifold \(\manifold_{\text{output}}\).
-Ehresmann's lemma implies that this implies that we have a locally trivial fibration \((\manifold_\epsilon, \manifold_{\text{output}}, g,\manifold_{\text{null}})\).
+Assume that the output mapping is a submersion from the invariant manifold \(\manifold_{\epsilon}\) to the output manifold \(\manifold_{\text{output}}\).
+Ehresmann's lemma implies that this implies that we have a locally trivial fibration \((\manifold_{\epsilon}, \manifold_{\text{output}}, g,\manifold_{\text{null}})\).
 We construct the perturbation \(\vp\) as the part of the vector field that us normal to the fibers \(g^{-1}(y)\) for each \(y\in\manifold_{\text{output}}\).
 By construction, this perturbation has uniform norm at most \(\eta\).
 This perturbation makes the vector field normal to each fiber zero.
-That implies that each fiber is an invariant submanifold of \(\manifold_\epsilon\).
+That implies that each fiber is an invariant submanifold of \(\manifold_{\epsilon}\).
 From the structure of the fiber bundle it follows that there is a continuum of such invariant submanifolds.
 Hence, the perturbed system is decomposable into a system that is a continuous attractor and a system with a non-zero flow.
 \end{proof}
@@ -2626,7 +2567,7 @@ In this case, the system can be perturbed slightly such that there exists a cont
 %With some implicit function theorem?
 %+the fact that the invariant manifold is compact
 %
-%This would imply that the invariant manifold \( \manifold_{\text{slow}}\times \manifold_{\text{null}}\) hold for every point because \(\manifold_X\) is a manifold
+%This would imply that the invariant manifold \( \manifold_{\text{slow}}\times \manifold_{\text{null}}\) hold for every point because \(\manifold_{X}\) is a manifold
 
 
 
@@ -2644,184 +2585,147 @@ In this case, the system can be perturbed slightly such that there exists a cont
 We will now formalize the statement about an upper bound dependent on the uniform norm of the vector field on the slow manifold in Sec.\ref{sec:revival} and provide a proof.
 \begin{prop}\label{prop:ub}
 Let \(\manifold\) be a normally hyperbolic slow manifold as in Prop.~\ref{sec:revival}.
-Let \(\vx_0 \in \manifold\), and \(\varphi = \vf\vert_\manifold\) be the flow restricted to the manifold.
-The average deviation from initial memory \(\vx_0\) over time is bounded linearly
+Let \(\vx_{0} \in \manifold\), and \(\varphi = \vf\vert_{\manifold}\) be the flow restricted to the manifold.
+The average deviation from initial memory \(\vx_{0}\) over time is bounded linearly
 \begin{align}
-\frac{1}{\operatorname{vol}\manifold}\int_\manifold
-\abs{\vx(t, \vx_0) - \vx_0}\,
-\dm{\vx_0}
+\frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
+\abs{\vx(t, \vx_{0}) - \vx_{0}}\,
+\dm{\vx_{0}}
 \leq t\uniformNorm{\varphi}.
-\end{align}
-\end{prop}
+\end{align}\end{prop}
 
 \begin{proof}
 Numerical integration of the ODE gives
 \begin{align*}
-x(t,\vx_0) &= \int_0^t\varphi(x(\tau))d\tau + \vx_0 \\
-&\leq \int_0^t\|\varphi\|_\infty d\tau + \vx_0 \\
-&= t\|\varphi\|_\infty+ \vx_0
-\end{align*}
-From this, we get
+x(t,\vx_{0}) &= \int_{0}^{t}\varphi(x(\tau))d\tau + \vx_{0} \\
+&\leq \int_{0}^{t}\|\varphi\|_{\infty} d\tau + \vx_{0} \\
+&= t\|\varphi\|_{\infty}+ \vx_{0}
+\end{align*}From this, we get
 \begin{align*}
-\frac{1}{\operatorname{vol}\manifold}\int_\manifold
-\abs{\vx(t, \vx_0) - \vx_0}\,
-\dm{\vx_0} & \leq \frac{1}{\operatorname{vol}\manifold}\int_\manifold t\|\varphi\|_\infty\\
+\frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
+\abs{\vx(t, \vx_{0}) - \vx_{0}}\,
+\dm{\vx_{0}} & \leq \frac{1}{\operatorname{vol}\manifold}\int_{\manifold} t\|\varphi\|_{\infty}\\
 &= t\uniformNorm{\varphi}.
-\end{align*}
-\end{proof}
+\end{align*}\end{proof}
 
 
 
 We formulate here a theory of continuous attractor approximations in terms of memory loss over time.
 It can be used uniform norm of vector field on the manifold to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
-Let \(\vx_0 \in \manifold\), and \(\varphi = \vp\vert_\manifold\) be the flow restricted to the manifold.
-We will show that the average deviation from initial memory \(\vx_0\) over time is bounded linearly as in Eq.~\ref{eq:distance:ub}.
+Let \(\vx_{0} \in \manifold\), and \(\varphi = \vp\vert_{\manifold}\) be the flow restricted to the manifold.
+We will show that the average deviation from initial memory \(\vx_{0}\) over time is bounded linearly as in Eq.~\ref{eq:distance:ub}.
 
 \subsection{Ring attractor}
 For a ring attractor we can give more tight bounds on the accumulated error for the angular memory.
-Suppose we have a dynamical system \(\bm{x} \in \mathbb{R}^N\) with autonomous dynamics \(\dot{ \bm{x}} = F_{\boldsymbol{\theta}} (\bm{x})\) and solutions \(\vx(t, \vx_0)\) uniquely defined for each \(\vx_0\).
+Suppose we have a dynamical system \(\bm{x} \in \mathbb{R}^{N}\) with autonomous dynamics \(\dot{ \bm{x}} = F_{\boldsymbol{\theta}} (\bm{x})\) and solutions \(\vx(t, \vx_{0})\) uniquely defined for each \(\vx_{0}\).
 Let us define the error (i.e.the  average deviation from initial memory) for an attractor as
 \begin{align}
 \mathcal{L}(T) \coloneqq
-\frac{1}{\operatorname{vol}\manifold}\int_\manifold
+\frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
 %\frac{1}{T}\int_0^T
-\abs{\vx(t, \vx_0) - \vx_0}\,
-\dm{\vx_0}
+\abs{\vx(t, \vx_{0}) - \vx_{0}}\,
+\dm{\vx_{0}}
 \end{align}
-
 If we further assume that the memory is not simply the state of the network, we need to take into consideration a decoder of the memory.
-Suppose that there is an invertible decoder mapping \(f: \mathcal{U} \rightarrow \mathbb{R}^N\). %what happens if it is not invertible?
+Suppose that there is an invertible decoder mapping \(f: \mathcal{U} \rightarrow \mathbb{R}^{N}\). %what happens if it is not invertible?
 For a ring variable, we can take this to be the projection onto the plane \(\wout\) and then applying the \(\arctan\):
 \begin{equation}
 g(x) = \arctan(\wout x). %hat alpha?
-\end{equation}
-%Then, let us define a memory loss in a time \(T\) as:
+\end{equation}%Then, let us define a memory loss in a time \(T\) as:
 %\begin{equation}
 %    \mathcal{L}(T) = \frac{1}{|\mathcal{U}|} \int_\mathcal{U}  \frac{1}{|f(\bm{\alpha})|} \int_{f(\bm{\alpha})} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\bm{\alpha}),t),\bm{\alpha}) dt df(\bm{\alpha}) d\bm{\alpha}
 %\end{equation}
-
-In the case of the ring attractor, the memory we would like to encode is \(\alpha \in \mathcal{U} = [0,2 \pi)\), the error is defined as \(|x-y|_o = o_\pi(|x-y|)\) where: % ChkTeX 9
+In the case of the ring attractor, the memory we would like to encode is \(\alpha \in \mathcal{U} = [0, 2 \pi)\), the error is defined as \(|x - y|_{o} = o_{\pi}(|x - y|)\) where: % ChkTeX 9
 \begin{equation}
-    o_\pi(x) = \begin{cases}
+    o_{\pi}(x) = \begin{cases}
     x & \text{if } x < \pi \\
     2 \pi - x & \text{if } x \geq \pi
     \end{cases}
 \end{equation}
-
-If we call \(\hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) = g(\varphi_{\bm{\theta}}(f(\alpha),t))\) we get the expression of the memory loss for this kind of memory as:
-
+If we call \(\hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) = g(\varphi_{\bm{\theta}}(f(\alpha),t))\) we get the expression of the memory loss for this kind of memory as:
 \begin{equation}
-    \mathcal{L}(T) =  \frac{1}{2 \pi} \int_0^{2 \pi}    \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right)  d\alpha_0
+    \mathcal{L}(T) =  \frac{1}{2 \pi} \int_{0}^{2 \pi}    \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) - \alpha_{0}  \right| \right)  d\alpha_{0}
 \end{equation}
-
-%Let \(\mathcal{U}\subset \mathbb{R}^D\) be a subamifold and  with metric \(d(x,y): \mathcal{U} \times \mathcal{U} \rightarrow \mathbb{R}\).
+%Let \(\mathcal{U}\subset \mathbb{R}^{D}\) be a subamifold and  with metric \(d(x, y): \mathcal{U} \times \mathcal{U} \rightarrow \mathbb{R}\).
 %%
 
-%If \(D = 1\), then without loss of generality we can take \(\mathcal{U} = [a,b]\) (or open/closed combinations and/or \(a = -\infty\) and/or \(b = +\infty\)):
+%If \(D = 1\), then without loss of generality we can take \(\mathcal{U} = [a, b]\) (or open/closed combinations and/or \(a = -\infty\) and/or \(b = +\infty\)):
 %
 %\begin{equation}
 %    \mathcal{L}(T) = \left(\lim_{a(,b) \rightarrow -\infty(,+\infty)}\right) \frac{1}{b - a} \int_a^b  \frac{1}{|f(\alpha)|} \int_{f(\alpha)} \frac{1}{T} \int_0^T d(f^{-1}(\phi_{\bm{\theta}}(f(\alpha),t)),\alpha) dt df(\alpha) d\alpha
 %\end{equation}
-
-
-
-
-
-
 %\subsubsection{Bounds}
 
 \textbf{General bounds}
 
 We can call:
-
 \begin{equation}
 \begin{split}
-    \epsilon^+(t) &= \sup_{\alpha_0} \; o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right) \geq \frac{1}{2 \pi} \int_0^{2 \pi}  o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right)  \\
-     \epsilon^{m}(t) &= \frac{1}{2 \pi} \int_0^{2 \pi}  o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right) d\alpha_0 \\
-    \epsilon^-(t) &= \inf_{\alpha_0} \; o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right) \leq \frac{1}{2 \pi} \int_0^{2 \pi}  o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right)
+    \epsilon^+(t) &= \sup_{\alpha_{0}} \; o_{\pi} \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) - \alpha_{0}  \right| \right) \geq \frac{1}{2 \pi} \int_{0}^{2 \pi}  o_{\pi} \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) - \alpha_{0}  \right| \right)  \\
+     \epsilon^{m}(t) &= \frac{1}{2 \pi} \int_{0}^{2 \pi}  o_{\pi} \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) - \alpha_{0}  \right| \right) d\alpha_{0} \\
+    \epsilon^-(t) &= \inf_{\alpha_{0}} \; o_{\pi} \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) - \alpha_{0}  \right| \right) \leq \frac{1}{2 \pi} \int_{0}^{2 \pi}  o_{\pi} \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) - \alpha_{0}  \right| \right)
 \end{split}
 \end{equation}
-
 Then we get the bounds for the loss \(\mathcal{L}(T)\) as:
-
 \begin{equation}
-    \frac{1}{T} \int_0^{T} \epsilon^-(t)dt \leq \mathcal{L}(T) = \frac{1}{T} \int_0^{T} \epsilon^{m}(t) dt \leq  \frac{1}{T} \int_0^{T} \epsilon^+(t) dt
+    \frac{1}{T} \int_{0}^{T} \epsilon^-(t)dt \leq \mathcal{L}(T) = \frac{1}{T} \int_{0}^{T} \epsilon^{m}(t) dt \leq  \frac{1}{T} \int_{0}^{T} \epsilon^+(t) dt
 \end{equation}
-
-
 \textbf{Speed bounds}
 
 We can define the maximum, average and minimum memory error speed as:
-
 \begin{equation}
 \begin{split}
-    v_{\epsilon^+} &= \sup_{\alpha_0} \; \frac{d}{dt} (o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right)) |_{t = 0}  \\
-    v_{\epsilon^m} &= \frac{1}{2 \pi} \int_0^{2 \pi} \frac{d}{dt} (o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right))|_{t = 0} d\alpha_0 \\
-    v_{\epsilon^-} &= \inf_{\alpha_0} \; \frac{d}{dt} (o_\pi \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) - \alpha_0  \right| \right))|_{t = 0}
+    v_{\epsilon^+} &= \sup_{\alpha_{0}} \; \frac{d}{dt} (o_{\pi} \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) - \alpha_{0}  \right| \right)) |_{t = 0}  \\
+    v_{\epsilon^{m}} &= \frac{1}{2 \pi} \int_{0}^{2 \pi} \frac{d}{dt} (o_{\pi} \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) - \alpha_{0}  \right| \right))|_{t = 0} d\alpha_{0} \\
+    v_{\epsilon^-} &= \inf_{\alpha_{0}} \; \frac{d}{dt} (o_{\pi} \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) - \alpha_{0}  \right| \right))|_{t = 0}
 \end{split}
 \end{equation}
-
 Notice then that since:
-
 \begin{equation}
 \begin{split}
     \epsilon^+(t) &\leq \min(t v_{\epsilon^+}, \pi) \\
     \epsilon^-(t) &\geq t v_{\epsilon^-}
 \end{split}
-\end{equation}
-then,
+\end{equation}then,
 \begin{equation}
 \begin{split}
-    \frac{1}{T} \int_0^{T} \epsilon^+(t)dt &\leq  \min \left( \frac{1}{T} \int_0^{T} t v_{\epsilon^+} dt, \pi \right) = \min \left( \frac{T v_{\epsilon^+}}{2}, \pi \right) \\
-    \frac{1}{T} \int_0^{T} \epsilon^-(t)dt &\geq  \frac{1}{T} \int_0^{T} tv_{\epsilon^-}dt  = \frac{T v_{\epsilon^-}}{2} \\
+    \frac{1}{T} \int_{0}^{T} \epsilon^+(t)dt &\leq  \min \left( \frac{1}{T} \int_{0}^{T} t v_{\epsilon^+} dt, \pi \right) = \min \left( \frac{T v_{\epsilon^+}}{2}, \pi \right) \\
+    \frac{1}{T} \int_{0}^{T} \epsilon^-(t)dt &\geq  \frac{1}{T} \int_{0}^{T} tv_{\epsilon^-}dt  = \frac{T v_{\epsilon^-}}{2} \\
 \end{split}
-\end{equation}
-and we get:
-
+\end{equation}and we get:
 \begin{equation}
-    \frac{T v_{\epsilon^-}}{2} \leq \frac{1}{T} \int_0^{T} \epsilon^-(t)dt \leq \mathcal{L}(T) = \frac{1}{T} \int_0^{T} \epsilon^{m}(t) dt \leq  \frac{1}{T} \int_0^{T} \epsilon^+(t) dt \leq \min \left( \frac{T v_{\epsilon^+}}{2}, \pi \right)
+    \frac{T v_{\epsilon^-}}{2} \leq \frac{1}{T} \int_{0}^{T} \epsilon^-(t)dt \leq \mathcal{L}(T) = \frac{1}{T} \int_{0}^{T} \epsilon^{m}(t) dt \leq  \frac{1}{T} \int_{0}^{T} \epsilon^+(t) dt \leq \min \left( \frac{T v_{\epsilon^+}}{2}, \pi \right)
 \end{equation}
-
-Finally, if the error is uniform enough we can expect \(\epsilon^{m}(t) \approx tv_{\epsilon^m}\) and
-
+Finally, if the error is uniform enough we can expect \(\epsilon^{m}(t) \approx tv_{\epsilon^{m}}\) and
 \begin{equation}
-    \mathcal{L}(T) = \frac{1}{T} \int_0^{T} \epsilon^{m}(t) dt \approx  \frac{1}{T} \int_0^{T} t v_{\epsilon^m}dt = \frac{T v_{\epsilon^m}}{2}
+    \mathcal{L}(T) = \frac{1}{T} \int_{0}^{T} \epsilon^{m}(t) dt \approx  \frac{1}{T} \int_{0}^{T} t v_{\epsilon^{m}}dt = \frac{T v_{\epsilon^{m}}}{2}
 \end{equation}
-
 \paragraph{Within manifold case}
-Let's assume that we have managed the system \(F_{\boldsymbol{\theta}}\)  have a slow manifold \(\manifold \in \mathbb{R}^N\) in bijection with \(\mathcal{U}\), i.e. \(f|_{\manifold}\) is not a mapping but a bijective function and:
-
+Let's assume that we have managed the system \(F_{\boldsymbol{\theta}}\)  have a slow manifold \(\manifold \in \mathbb{R}^{N}\) in bijection with \(\mathcal{U}\), i.e. \(f|_{\manifold}\) is not a mapping but a bijective function and:
 \begin{equation}
 \forall \bm{x} \in \manifold \quad \dot{\bm{x}} = \epsilon_{\bm{\theta}}(\bm{x})\frac{\frac{\partial f}{\partial \alpha}(f^{-1}(\bm{x}))}{||\frac{\partial f}{\partial \alpha}(f^{-1}(\bm{x}))||}
 \end{equation}
-
 % In this case:
 % \begin{equation}
 % f^{-1}(\phi_{\bm{\theta}}(f(\alpha),t)) = g(\alpha, t, \epsilon_{\bm{\theta}})
 % \end{equation}
-
 Then we have a slow manifold in the form of a ring attractor, we have \(f(0) = f(2 \pi)\) and:
-
 \begin{equation}
-    \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) = \left(\alpha_0 + \int_0^t \epsilon_{\bm{\theta}}(\alpha_0, s) ds \right)\mod 2 \pi
+    \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) = \left(\alpha_{0} + \int_{0}^{t} \epsilon_{\bm{\theta}}(\alpha_{0}, s) ds \right)\mod 2 \pi
 \end{equation}
-
-
 Then:
 \begin{equation}
 \begin{split}
-    \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_0, t) &= o_\pi \left( \left| \left(\alpha_0 + \int_0^t \epsilon_{\bm{\theta}}(\alpha_0, s) ds \right)\mod 2 \pi - \alpha_0 \right| \right)  \\
-    &= o_\pi \left( \left| \left(\alpha_0 + \int_0^t \epsilon_{\bm{\theta}}(\alpha_0, s) ds \right)\mod 2 \pi - \alpha_0 \mod 2 \pi \right| \right) \\
-    &= o_\pi \left( \left| \int_0^t \epsilon_{\bm{\theta}}(\alpha_0, s) ds \mod 2 \pi \right| \right)
+    \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) &= o_{\pi} \left( \left| \left(\alpha_{0} + \int_{0}^{t} \epsilon_{\bm{\theta}}(\alpha_{0}, s) ds \right)\mod 2 \pi - \alpha_{0} \right| \right)  \\
+    &= o_{\pi} \left( \left| \left(\alpha_{0} + \int_{0}^{t} \epsilon_{\bm{\theta}}(\alpha_{0}, s) ds \right)\mod 2 \pi - \alpha_{0} \mod 2 \pi \right| \right) \\
+    &= o_{\pi} \left( \left| \int_{0}^{t} \epsilon_{\bm{\theta}}(\alpha_{0}, s) ds \mod 2 \pi \right| \right)
 \end{split}
-\end{equation}
-where we used that \(\alpha_0 \in [0,2 \pi) \Rightarrow \alpha_0 = \alpha_0 \mod 2 \pi\) and that \(|x \mod 2 \pi - y \mod 2 \pi| = |(x-y) \mod 2 \pi|\). % ChkTeX 9
+\end{equation}where we used that \(\alpha_{0} \in [0, 2 \pi) \Rightarrow \alpha_{0} = \alpha_{0} \mod 2 \pi\) and that \(|x \mod 2 \pi - y \mod 2 \pi| = |(x - y) \mod 2 \pi|\). % ChkTeX 9
 
 The final equation of the loss in this case has the form:
 \begin{equation}
-    \mathcal{L}(T) =  \frac{1}{2 \pi} \int_0^{2 \pi} \frac{1}{T} \int_0^T o_\pi \left( \left| \int_0^t \epsilon_{\bm{\theta}}(\alpha_0, s) ds \mod 2 \pi \right| \right) dt d\alpha_0.
+    \mathcal{L}(T) =  \frac{1}{2 \pi} \int_{0}^{2 \pi} \frac{1}{T} \int_{0}^{T} o_{\pi} \left( \left| \int_{0}^{t} \epsilon_{\bm{\theta}}(\alpha_{0}, s) ds \mod 2 \pi \right| \right) dt d\alpha_{0}.
 \end{equation}
-
 \textbf{Slow manifold bounds}
 
 In this case, if we have \(N\) fixed points in the ring-like slow manifold, we know that:
@@ -2829,14 +2733,10 @@ In this case, if we have \(N\) fixed points in the ring-like slow manifold, we k
 \begin{split}
      \epsilon^+(t) &\leq \min \left( \frac{2 \pi}{N}, \pi \right),
 \end{split}
-\end{equation}
-and therefore:
+\end{equation}and therefore:
 \begin{equation}
     \mathcal{L}(T) \leq \min \left( \frac{2 \pi}{N}, \pi \right).
 \end{equation}
-
-
-
 \newpage
 \section{Slow manifold in trained RNNs}
 We will provide a detailed description of the tasks, architectures, training methods, and analysis techniques used in our numerical experiments with trained RNNs.
@@ -2847,8 +2747,7 @@ The total time length of a trial is 512 steps.
 The time delay to the output cue was sampled from
 \begin{align}
 T_{delay} \sim \mathcal{U}(50, 400).
-\end{align}
-We applied a mask \(m_{i,t}=0\) for 5 time steps (\(t=T_{delay}+j\) for \(j=0,\dots 4\)) after the go cue.
+\end{align}We applied a mask \(m_{i, t}=0\) for 5 time steps (\(t = T_{delay}+j\) for \(j = 0,\dots 4\)) after the go cue.
 
 
 
@@ -2858,9 +2757,8 @@ The input is an angular velocity and the target output is the sine and cosine of
 Velocity at every timestep  is sampled from as a Gaussian Process (GP) for smooth movement trajectories, consistent with the observed animal behavior in flies and rodents.
 %These parameters are set to roughly match the angular velocity distribution of the rat and fly (Stackman & Taube, 1998; Sharp et al., 2001; Bender & Dickinson, 2006; Raudies & Hasselmo, 2012).
 \begin{equation}
-k(x,y)=\exp\left(-\frac{\|x-y\|}{2\ell^2}\right),
-\end{equation}
-with length scale \(\ell\).
+k(x, y)=\exp\left(-\frac{\|x - y\|}{2\ell^{2}}\right),
+\end{equation}with length scale \(\ell\).
  The length scale of the kernel was fixed at 1.
 
  \begin{figure}[tbhp]
@@ -2880,7 +2778,7 @@ For each of the two angular velocities, the integration over time is performed s
 \paragraph{Unbounded tasks}
 Regarding tasks with an unbounded range, such as navigation tasks, two points bear mentioning.
 
-For planar attractors are diffeomorphic to $\reals^2$, note that they do not conform to the assumptions on normally hyperbolic invariant manifolds, since $\reals^2$ is not compact.
+For planar attractors are diffeomorphic to \(\reals^{2}\), note that they do not conform to the assumptions on normally hyperbolic invariant manifolds, since \(\reals^{2}\) is not compact.
 There are suitable generalizations of this theory to noncompact manifolds \citep{eldering2013normally}, but we do not pursue them since they require more refined tools, which would only obscure the point that we are trying to make.
 Tangentially, we would also like to point out that we assume that neural dynamics are naturally bounded (e.g. by energy constraints) and hence sufficiently well described by compact invariant manifolds.
 
@@ -2906,20 +2804,19 @@ The output projection of the invariant manifolds and stability structures (fixed
 Computational neuroscientists often train RNNs as models of neural computation and interpret them as dynamical systems \citep{mante2013context,sussillo2013blackbox}.
 Our experiments connect to existing literature.
 We will shortly explain the discretization procedure, i.e., the steps for going from Eq.~\ref{eq:RNN:continuous} to Eq.~\ref{eq:RNN:discrete}.
-Let $t_n = n \Delta t$.
+Let \(t_{n} = n \Delta t\).
 
 The Euler-Maruyama method for a stochastic differential equation (Eq.~\ref{eq:RNN:continuous})
-\[\mathrm{d}{\mathbf{x}} = \left(-\mathbf{x} + \phi\mathbf{W}_{\text{in}} \mathbf{I}(t) + \mathbf{W} \mathbf{x} + \mathbf{b})\right)\mathrm{d}{t} + \sigma\mathrm{d}{W}_t\] is given by :
-\[\mathbf{x}_{n+1} = \mathbf{x}_n + \left( -\mathbf{x}_n + \phi(\mathbf{W}_{\text{in}} \mathbf{I}_n + \mathbf{W} \mathbf{x}_n + \mathbf{b}) \right) \Delta t + \sigma \Delta W_n,\]
-with \(\Delta W_{n}=W_{(n+1)\Delta t}-W_{n\Delta t}\sim \mathcal{N}(0,\Delta t).\)
+\[\mathrm{d}{\mathbf{x}} = \left(-\mathbf{x} + \phi\mathbf{W}_{\text{in}} \mathbf{I}(t) + \mathbf{W} \mathbf{x} + \mathbf{b})\right)\mathrm{d}{t} + \sigma\mathrm{d}{W}_{t}\] is given by :
+\[\mathbf{x}_{n + 1} = \mathbf{x}_{n} + \left( -\mathbf{x}_{n} + \phi(\mathbf{W}_{\text{in}} \mathbf{I}_{n} + \mathbf{W} \mathbf{x}_{n} + \mathbf{b}) \right) \Delta t + \sigma \Delta W_{n},\]
+with \(\Delta W_{n}=W_{(n + 1)\Delta t}-W_{n\Delta t}\sim \mathcal{N}(0,\Delta t).\)
 
 Now subsitute \(\Delta t = 1\):
 \begin{align}
- \mathbf{x}_{t+1} &= \mathbf{x}_t + \left( -\mathbf{x}_t + \phi(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) \right) + \sigma \Delta W_t, \\
- &= \phi(\mathbf{W}_{\text{in}} \mathbf{I}_t + \mathbf{W} \mathbf{x}_t + \mathbf{b}) + \sigma \Delta W_t.
+ \mathbf{x}_{t + 1} &= \mathbf{x}_{t} + \left( -\mathbf{x}_{t} + \phi(\mathbf{W}_{\text{in}} \mathbf{I}_{t} + \mathbf{W} \mathbf{x}_{t} + \mathbf{b}) \right) + \sigma \Delta W_{t}, \\
+ &= \phi(\mathbf{W}_{\text{in}} \mathbf{I}_{t} + \mathbf{W} \mathbf{x}_{t} + \mathbf{b}) + \sigma \Delta W_{t}.
  \end{align}
-
-If we introduce the noise term \(\zeta_t = \sigma \Delta W_t\), which represents the discrete-time noise, we have derived the discrete-time equation: \[ \vx_t = \phi(\win \vI_t + \vW \vx_{t-1} + \vb) + \zeta_t. \]
+If we introduce the noise term \(\zeta_{t} = \sigma \Delta W_{t}\), which represents the discrete-time noise, we have derived the discrete-time equation: \[ \vx_{t} = \phi(\win \vI_{t} + \vW \vx_{t - 1} + \vb) + \zeta_{t}. \]
 
 See for more detail on correspondences between discrete- and continuous-time RNNs in \citep{monfared2020transformation} and \citep{ozaki2012time}.
 Our experiments connect to existing literature. In future studies, it would be interesting to perform experiments with Neural SDEs \citep{tzen2019neural}
@@ -2948,8 +2845,7 @@ Our experiments connect to existing literature. In future studies, it would be i
 %1  &  1
 %\end{pmatrix}, \
 %\bout = -\frac{\beta}{\alpha}.
-%\end{equation}
-%
+%\end{equation}%
 %The bias to the recurrent units is zero.
 
 \subsection{Network architectures}
@@ -2972,20 +2868,20 @@ We also trained Gated Recurrent Units (GRU) \citep{cho2014learning} for which we
 
 \subsection{Training methods}
 We trained  RNNs with PyTorch \citep{paszke2017automatic}  on the three tasks Fig.~\ref{fig:angular_task}.
-For the vanilla RNNs, we used a time step of $\Delta t=0.1$.
+For the vanilla RNNs, we used a time step of \(\Delta t = 0.1\).
 The parameters were initialized were initialized using the Xavier normal distribution \citep{Glorot2010}.
-For the recurrent weights we used \(W_{ij}\sim\mathcal{N}(0, \nicefrac{g}{\sqrt{N}})\) with a high gain \(g=1.5\).
-The initial hidden state was initialized using the output to recurrent mapping matrix \(W_{otr}\colon\reals^2\rightarrow\reals^{N}\) which was trained together with the other parameters.
+For the recurrent weights we used \(W_{ij}\sim\mathcal{N}(0, \nicefrac{g}{\sqrt{N}})\) with a high gain \(g = 1.5\).
+The initial hidden state was initialized using the output to recurrent mapping matrix \(W_{otr}\colon\reals^{2}\rightarrow\reals^{N}\) which was trained together with the other parameters.
 
-Adam optimization with \(\beta_1=0.9\) and \(\beta_2=0.999\) was employed with a batch size of 64 and training was run for 5000 gradient updates.
+Adam optimization with \(\beta_{1} = 0.9\) and \(\beta_{2} = 0.999\) was employed with a batch size of 64 and training was run for 5000 gradient updates.
 The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
 
 
-The best learning rate $10^{-2}$ was chosen from a set of values \(\{10^{-2},10^{-3},10^{-4},10^{-5}\}\) by 5 initial runs for all nonlinearity and size pairings with the lowest average loss after 100 gradient steps.
+The best learning rate \(10^{-2}\) was chosen from a set of values \(\{10^{-2},10^{-3},10^{-4},10^{-5}\}\) by 5 initial runs for all nonlinearity and size pairings with the lowest average loss after 100 gradient steps.
 Training a single network took around 10 minutes on a CPU and occupied 10 percent of an 8GB RAM.
 
 
-Although some of the models did not learn the task, most networks converged to a loss below $10^{-2}$ (Fig.~\ref{fig:training_losses}).
+Although some of the models did not learn the task, most networks converged to a loss below \(10^{-2}\) (Fig.~\ref{fig:training_losses}).
  \begin{figure}[tbhp]
      \centering
     \includegraphics[width=0.75\textwidth]{training_losses}
@@ -3004,9 +2900,8 @@ Although some of the models did not learn the task, most networks converged to a
 \subsubsection{Evaluation Metric}
 After training, we report the normalized mean squared error (NMSE) to asses the how good a found solution is:
 \begin{equation}
-\operatorname{NMSE} = \frac{\mathbb{E}[(y-\hat y)^2]}{\mathbb{E}[y]},
-\end{equation}
-where \(y\) is the target and \(\hat y\) is the prediction.
+\operatorname{NMSE} = \frac{\mathbb{E}[(y-\hat y)^{2}]}{\mathbb{E}[y]},
+\end{equation}where \(y\) is the target and \(\hat y\) is the prediction.
 
 
 \subsubsection{Asymptotic behavior and memory capacity}\label{sec:supp:asymbehav}
@@ -3014,9 +2909,8 @@ where \(y\) is the target and \(\hat y\) is the prediction.
 We determine the location of the fixed points through the local flow direction criterion as described in Sec.~\ref{sec:fastslowmethod}
 and determine the basin of attraction
 \begin{equation}
-\basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t,x)=\{x^*\}\}.
-\end{equation}
-through assesing the local flow direction for 1024 sample points in the found invariant manifold.
+\basin(x^*) \coloneqq \{x\in \manifold \ | \lim_{t\rightarrow\infty}\varphi(t, x)=\{x^*\}\}.
+\end{equation}through assesing the local flow direction for 1024 sample points in the found invariant manifold.
 
 We construct a probability distribution of what part of state space we end up in an infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
 Finally, we characterize the memory capacity of the network by calculating the entropy of this probability distribution of the network.
@@ -3062,8 +2956,7 @@ For the two example networks in Fig.\ref{fig:fastslow_decomposition}, there is a
  and then projecting it onto the output space:
  \begin{equation}
 \dot \alpha =  \wout f(\hat \alpha) %=: g(\alpha)
-\end{equation}
-for sampled points \(\hat \alpha\in \manifold\).
+\end{equation}for sampled points \(\hat \alpha\in \manifold\).
 These points \(\hat \alpha\in \manifold\) on the manifold are associated with the points on the ring through the mapping \(\alpha = \wout\hat\alpha\).
 
 
@@ -3084,7 +2977,7 @@ This vector field in the output space captures in what direction and how quickly
  There are some inconsistencies around saddle nodes, where the vector field seems to point off of the manifold.
  This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
 For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field
-\begin{equation}\|f\|_\infty = \sup_{\alpha} \wout f(\alpha),\end{equation} see also Sec.~\ref{sec:supp:ub}.
+\begin{equation}\|f\|_{\infty} = \sup_{\alpha} \wout f(\alpha),\end{equation} see also Sec.~\ref{sec:supp:ub}.
 
 For LSTMs and GRUs the  vector field was approximated by taking the differrence the initial and the next state after initializing the network from states on the identified invariant manifold.
 
@@ -3094,8 +2987,8 @@ For LSTMs and GRUs the  vector field was approximated by taking the differrence 
 \subsection{LSTM and GRU results}
 
 The trained LSTMs and GRUs share the same pattern observed in the trained vanilla RNNs: a ring slow invariant manifold (Fig.~\ref{fig:angular_losses_lstm_gru}C and D).
-The fixed point topologies in the LSTM and GRU networks show a lot of variation in the number of fixed points, paralleling the systems adjacent to continuous attractors from Fig.~\ref{fig:lara_bifurcations}, as seen in Figure \ref{fig:angular_loss}D. These variations are similar to those discussed in Figures \ref{fig:angular_losses_lstm_gru}B.
-Additionally, the angular error and memory capacity measures across different time scales are comparable to those illustrated in Figure \ref{fig:angular_losses_lstm_gru}A, highlighting the generalization properties influenced by the topology of the solutions.
+The fixed point topologies in the LSTM and GRU networks show a lot of variation in the number of fixed points, paralleling the systems adjacent to continuous attractors from Fig.~\ref{fig:lara_bifurcations}, as seen in Figure~\ref{fig:angular_loss}D. These variations are similar to those discussed in Figures~\ref{fig:angular_losses_lstm_gru}B.
+Additionally, the angular error and memory capacity measures across different time scales are comparable to those illustrated in Figure~\ref{fig:angular_losses_lstm_gru}A, highlighting the generalization properties influenced by the topology of the solutions.
 These results underline the universality of our findings beyond vanilla RNNs.
 
 \begin{figure}[tbhp]
@@ -3104,7 +2997,7 @@ These results underline the universality of our findings beyond vanilla RNNs.
   \caption{%\textbf{GRU and LSTM results.}
       The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
     \textbf{(A)} The average accumulated angular error vs. the uniform norm on the vector field shown.
-     Angular error at \(T_1 =\) trial length (filled markers) and \(\lim T_{1} \to \infty\)  (hollow markers).
+     Angular error at \(T_{1} =\) trial length (filled markers) and \(\lim T_{1} \to \infty\)  (hollow markers).
       % The number of fixed point is an integer number.
       Points are jittered to aid legibility.
     \textbf{(B)} The number of fixed points vs. average accumulated angular error, with the average distance between neighboring fixed points (magenta).
@@ -3118,23 +3011,21 @@ These results underline the universality of our findings beyond vanilla RNNs.
  \subsection{Identified invariant manifold output projections}\label{sec:inv_man_projections}
  The identified invariant manifolds in the trained networks (Fig.~\ref{fig:im_rep} and Fig.~\ref{fig:im_all}).
  However, not all solutions can be meaningfully analyzed with the slow-fast decomposition method.
- For example, the solution at the center of the \(\tanh, N=256\) block, the found invariant manifold is not correctly captured.
+ For example, the solution at the center of the \(\tanh, N = 256\) block, the found invariant manifold is not correctly captured.
  This is true for the networks that have not learned the task correctly (networks with a NMSE higher than -20dB).
 
  \begin{figure}[tbhp]
      \centering
     \includegraphics[width=\textwidth]{im_all_last2}
        \caption{Representative identified invariant manifolds (projected onto the output space, in black) with the fixed points (cyan for stable, orange for saddle and black for unstable).
-        The reference target ring is shown in grey.}
-       \label{fig:im_rep}
+        The reference target ring is shown in grey.}\label{fig:im_rep}
 \end{figure}
 
 \newpage
 \begin{figure}[tbhp]
      \centering
     \includegraphics[width=\textwidth]{im_all_3x3}
-       \caption{The identified invariant manifolds with the fixed points (cyan for stable, orange for saddle and black for unstable) for all inferred networks (except the ones in Fig~\ref{fig:im_rep}).}
-       \label{fig:im_all}
+       \caption{The identified invariant manifolds with the fixed points (cyan for stable, orange for saddle and black for unstable) for all inferred networks (except the ones in Fig~\ref{fig:im_rep}).}\label{fig:im_all}
 \end{figure}
 
 
@@ -3181,7 +3072,7 @@ sum of individual ones
 \citep{sussillo2013blackbox} and \citep{golub2018fixedpointfinder} are primarily concerned with a pointwise definition of slowness, by comparison normal hyperbolicity requires a uniform separation of timescales over the entire invariant manifold.
 In \citep{sussillo2013blackbox}, it was observed that structural perturbations  (random gaussian noise in the parameters with zero mean and standard deviation) still leads to the same approximate plane attractor dynamical structure is still in place, however no explanation is provided for these observations.
 Our theory can explain why perturbations to the trained RNN.
-The Persistence Manifold Theorem (Theorem \ref{theorem:persistent}) guarantees that for small perturbations (of size \(\epsilon\)) the persistent invariant manifold will be at the approximate same place (it will be at a distance of order \(\mathcal{O}(\epsilon)\)).
+The Persistence Manifold Theorem (Theorem~\ref{theorem:persistent}) guarantees that for small perturbations (of size \(\epsilon\)) the persistent invariant manifold will be at the approximate same place (it will be at a distance of order \(\mathcal{O}(\epsilon)\)).
 
 
 
