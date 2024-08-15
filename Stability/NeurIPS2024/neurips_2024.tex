@@ -512,7 +512,7 @@ Third, we relate the flow of the manifold (and through Prop.~\ref{prop:revival},
 We also discuss the implications of the theoretical insights on the memory error in the asymptotic time scale.
 
 In the short-time scale the memory performance is bounded by the uniform norm of the flow tangent to the manifold.
-Let \(\vx_{0} \in \manifold\), and \(\varphi = \vp(\cdot)\vert_{\manifold}\) be the flow restricted to the manifold.
+Let \(\vx_{0} \in \manifold\), and \(\varphi = \vp(\cdot)\vert_{\manifold}\) be the flow restricted to the manifold.\pscomment{I'm confused. I thought \(\mathbf{p}\) was a vector field as in~\ref{eq:perturbation:nonparam}. Also how's the sup/max-norm defined for a flow?}
 The average deviation from initial memory \(\vx_{0}\) over time is bounded linearly (for a derivation, see Sec.~\ref{sec:supp:ub}):
 \begin{align}\label{eq:distance:ub}
 \frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
@@ -523,7 +523,8 @@ The average deviation from initial memory \(\vx_{0}\) over time is bounded linea
 \leq t\uniformNorm{\varphi}
 \qquad
 \text{(error bound)}
-\end{align}Note that this bound is the worst case and tighter for sufficiently small \(t \geq 0\).
+\end{align}
+Note that this bound is the worst case and tighter for sufficiently small \(t \geq 0\).
 Furthermore, for compact invariant manifolds the error is bounded by the diameter of the manifold and hence this bound becomes irrelevant for \(t\) large.
 
 While the uniform norm gives insight on the short-time scale behavior of the perturbed ODE, we expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
