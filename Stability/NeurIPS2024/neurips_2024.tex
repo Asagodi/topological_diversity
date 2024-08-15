@@ -1082,7 +1082,7 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 
 
 \section{Intuitive definitions of several key concepts used in our paper}\label{sec:supp:simplifications}
-%
+
 \paragraph{Manifold:} A part of the state-space that locally resembles a flat, ordinary space (such as a plane or a three-dimensional space, but more generally
 -dimensional Euclidean space) but can have a more complicated global shape (such as a donut).\label{sec:supp:manifold}
 \paragraph{Invariant set:} A property of a set of points in the state space where, if you start within the set, all future states remain within the set and all past states belong to the set as well.\label{sec:supp:invset}
@@ -3056,15 +3056,19 @@ These results underline the universality of our findings beyond 1D tasks.
 
 
 \ascomment{Methods}
-- fps
-       look at convergence (thr=\(10^{-4}\))
-       look at unique fps (thr=\(10^{-2}\))
 
-- mean angular error
-sum of individual ones
+\paragraph{Fixed point search}
+In our study, we implemented a  method to analyze the convergence and uniqueness of fixed points within our data.
+ Specifically, we considered a convergence threshold of \(10^{-4}\), meaning that the iterative process was halted when the change in the solution between consecutive iterations fell below this value, indicating convergence. Additionally, to assess the uniqueness of the fixed points, we applied a broader threshold of  \(10^{-2}\), ensuring that any fixed points identified within this margin were considered distinct.
 
-- uniform norm of (projected) vector field
-sum of individual ones
+
+\paragraph{Double Mean Angular Error}
+The Mean Angular Error (MAE) was computed as the sum of the individual angular errors observed in the data. This measure provides an aggregate view of the angular discrepancies encountered during our analysis, serving as an indicator of the overall accuracy of the angular estimations.
+
+
+
+\paragraph{Uniform Norm of the (Projected) Vector Field}
+To evaluate the uniform norm of the (projected) vector field, we calculated the sum of the individual uniform norms of the vector field components. This approach allowed us to quantify the magnitude of the vector field deviations in a comprehensive manner, offering insight into the uniformity of the field's projection.
 
 
 
