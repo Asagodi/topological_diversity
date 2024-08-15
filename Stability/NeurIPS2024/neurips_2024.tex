@@ -2007,7 +2007,7 @@ We keep the following parameters for the analysis:
 \citep{spalla2021continuous}
 
 
-\citep{BBurak2009}
+\citep{Burak2009}
 
 
 
@@ -2179,7 +2179,7 @@ Which gives a constraint on how much each of the \(k\)-th derivatives \( D^{k} \
 
 In summary, a perturbation \( \tilde{f} \) is considered sufficiently small in the \( C^{r} \) sense if the difference between \( \tilde{f} \) and \( f \), along with their derivatives up to order \( r \), is uniformly small across the domain.
 For \(C^{1}\) perturbations, this defines a \(C^{1}\)  neighborhood of functions, within which the persistence of the manifold is ensured by Fenichel's theorem.
-
+For $r=0$, we get the uniform norm (defined as \(\|f\|)\infty\coloneqq \sup(|f|)\), see also Sec.\ref{sec:supp:ub}).
 
 
 \paragraph{Closeness}
@@ -2362,17 +2362,21 @@ is smooth and creates a continuous attractor at \(\manifold_{\epsilon}\).
 
 \subsection{Output mapping} %move to next subsection?
 This paper focuses on a linear output mapping for simplicity.
-Errors can be minimized with a nonlinear mapping.
-However, this can only be applied for error off of the output manifold.
-%So if there is an output that is mapped off of the manild there is a mapping that
+Errors can be minimized with a nonlinear mapping, if there is an output that is mapped off of the output manifold, we can always adjust the output mapping to correct for this, if the space of output mappings is general enough.
+However, this can only be applied for errors off of the output manifold.
 If there is memory degradation along the output manifold, it is not possible to choose another mapping that corrects for this error.
+%prove?
+Therefore, we choose a linear output mapping for our analysis.
+In some cases, linear output mappings are found to support neural computation, for example for motion direction-discrimination \citep{yates2020simple}.
 
 
 \subsection{Approximate solutions  to an analog working memory problem}\label{sec:condition_clarifications}
 We will now discuss the conditions for when approximate solutions to an analog working memory problem are near a continuous attractor.
 We consider approximate solutions to an analog working memory problem to be systems of the form~\ref{eq:RNN:discrete} or~\ref{eq:RNN:continuous} (in both cases following a linear decoder), which have a small memory error over time in output space.
 
+
 %\paragraph{Approximate bijection}\label{sec:bijection}
+
 
 
 \subsubsection{Robustness}
@@ -2658,8 +2662,7 @@ If we call \(\hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) = g(\varphi_{\bm{
 %\subsubsection{Bounds}
 
 \textbf{General bounds}
-
-We can call:
+Define the following functions:
 \begin{equation}
 \begin{split}
     \epsilon^+(t) &= \sup_{\alpha_{0}} \; o_{\pi} \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) - \alpha_{0}  \right| \right) \geq \frac{1}{2 \pi} \int_{0}^{2 \pi}  o_{\pi} \left( \left| \hat{\alpha}_{\boldsymbol{\theta}}(\alpha_{0}, t) - \alpha_{0}  \right| \right)  \\
