@@ -3055,21 +3055,21 @@ These results underline the universality of our findings beyond 1D tasks.
 
 
 
-\ascomment{Methods}
 
+\subsubsection{Methods}
 \paragraph{Fixed point search}
 In our study, we implemented a  method to analyze the convergence and uniqueness of fixed points within our data.
  Specifically, we considered a convergence threshold of \(10^{-4}\), meaning that the iterative process was halted when the change in the solution between consecutive iterations fell below this value, indicating convergence. Additionally, to assess the uniqueness of the fixed points, we applied a broader threshold of  \(10^{-2}\), ensuring that any fixed points identified within this margin were considered distinct.
 
 
 \paragraph{Double Mean Angular Error}
-The Mean Angular Error (MAE) was computed as the sum of the individual angular errors observed in the data. This measure provides an aggregate view of the angular discrepancies encountered during our analysis, serving as an indicator of the overall accuracy of the angular estimations.
+The Mean Angular Error (MAE) was computed as the sum of the individual angular errors observed in the data.
+ This measure provides an aggregate view of the angular errors for the two separate subtasks.
 
 
 
 \paragraph{Uniform Norm of the (Projected) Vector Field}
-To evaluate the uniform norm of the (projected) vector field, we calculated the sum of the individual uniform norms of the vector field components. This approach allowed us to quantify the magnitude of the vector field deviations in a comprehensive manner, offering insight into the uniformity of the field's projection.
-
+To evaluate the uniform norm of the (projected) vector field, we calculated the sum of the individual uniform norms of the vector field components. 
 
 
 \newpage
