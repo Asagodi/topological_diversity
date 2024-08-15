@@ -179,7 +179,8 @@ There are two primary sources of perturbations in the recurrent network dynamics
 Thus, additional mechanisms are necessary to compensate for the degradation in particular implementations, by bringing the short-term behavior closer to that of a continuous attractor~\cite{Lim2012,Lim2013,Boerlin2013,Koulakov2002,Renart2003,gu2022,hansel2013short}.
 However, we lack the theoretical basis to understand how much this matters in practice, i.e. what are the effects of different levels of degradation on memory. This is fundamental to justify relying on the brittle concept of continuous attractors for understanding biological analog working memory.
 
-
+\pscomment{Some papers list their contributions here. Maybe it would be a convenient place to re-write it in such a way, and then tack on\ref{sec:implications}?\\
+That way the implications stand out.}
 In this study, we explore perturbations and approximations of continuous attractors in the space of dynamical models.
 We first report on the differences and similarities between the various structurally stable dynamics in the vicinity of continuous attractors in these models.
 We observe the existence of a ``ghost'' continuous attractor (a.k.a. slow manifold) in all of them (Sec.~\ref{sec:critique}).
@@ -435,7 +436,7 @@ For any parameterization \(\vg\), \(\epsilon > 0\) induces a bifurcation of the 
 What can we say about the fate of the perturbed system?
 The continuous dependence theorem~\citep{Chicone2006} says that the trajectories will change continuously as a function of \(\epsilon\) without a guarantee on how quickly they change.
 However, the topological structure and the asymptotic behavior of trajectories change discontinuously due to the bifurcation.
-Yet, surprisingly, there is a strong connection in the geometry due to Fenichel's theorem~\cite{fenichel1971}.\footnote{These results have been succesfully applied before in neuroscience, for example to reduce the dimensionality of the original Hodgkin-Huxley model \citep{hodgkin1952quantitative} to two dimensions \citep{rinzel1985excitation} and to further simplify it as the theta neuron model \citep{ermentrout1986parabolic}. See also \citep{Kopell1996} and \citep{ermentrout2010}.}
+Yet, surprisingly, there is a strong connection in the geometry due to Fenichel's theorem~\cite{fenichel1971}.\footnote{These results have been successfully applied before in neuroscience, for example to reduce the dimensionality of the original Hodgkin-Huxley model \citep{hodgkin1952quantitative} to two dimensions \citep{rinzel1985excitation} and to further simplify it as the theta neuron model \citep{ermentrout1986parabolic}. See also \citep{Kopell1996} and \citep{ermentrout2010}.}
 We informally present a special case due to~\citet{Jones1995}:
 
 \setlength\belowcaptionskip{2ex}
@@ -555,7 +556,7 @@ Hence, any theoretical model of neural or cognitive function that requires fine-
 Moreover, unbiased data-driven models of time series data and task-trained recurrent network models cannot recover such continuous attractor theories precisely.
 Our theory shows that this apparent fragility is not as devastating as previously thought: despite the ``qualitative differences'' in the phase portrait, the ``effective behavior'' of the system can be arbitrarily close, especially in the behaviorally relevant time scales.
 We show that as long as the attractive flow to the memory representation manifold is fast and the flow on the manifold is sufficiently slow, it represents an approximate continuous attractor.
-Frurthermore, our theory bounds the error in working memory incurred over time for such approximate continuous attractors.
+Furthermore, our theory bounds the error in working memory incurred over time for such approximate continuous attractors.
 Therefore, the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory, even if the ideal continuous attractor is never observed in practice.
 Experimental observations that indicate the slowly changing population representations during the ``delay periods'' where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
 
@@ -589,7 +590,7 @@ The time-discretized version of RNN network activity is given by
 \(\phi\colon \reals \to \reals\) is an activation function that acts on each of the hidden dimensions,
  \(\zeta_{t}\iidsample\mathcal{N}(\mathbf{0},\sigma^{2} = \nicefrac{1}{100}\identity)\) is a state noise variable, and %\(\zeta\sim \mathcal{N}(0, .001)\)
 \(\vW, \vb, \win, \wout, \bout\) are parameters.
-Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation(see Sec.\ref{sec:discretization}):
+Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation (see Sec.\ref{sec:discretization}):
 \begin{align}
     \dm{\vx} &= -\vx\,\dm{t} + \phi(\win \vI(t) + \vW \vx + \vb)\,\dm{t} + \sigma\,\dm{W}. \label{eq:RNN:continuous}
 \end{align}where \(\dm{W}\) is a Wiener process that models the intrinsic state noise in the brain.
@@ -597,7 +598,7 @@ Assuming Euler-Maruyama integration with unit time step, the discrete-time RNN o
 Building upon prior work, which has shown their capabilities on such tasks, we trained RNNs to either
 (1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection,cueva2021continuous}
 and (2) perform a memory-guided saccade task for a ring variable \citep{wimmer2014} (details in Sec.~\ref{sec:supp:tasks}).
-We numerically minimized the loss \(L\) which was the mean squared error (MSE) between the network output \(y(t)\) and the target output \(\hat y(t)\):
+We numerically minimized the loss \(L\) which was the mean squared error (MSE) between the network output \(\mathbf{y}(t)\) and the target output \(\hat{\mathbf{y}(t)}\):
 \(L_{MSE} \coloneqq \langle m_{i, t}(y_{i, t}-\hat y_{i, t})^{2}\rangle_{i, t}, \)
 with a mask \(m_{i, t}\) with \(i\) the index of the output units and \(t\)  the index for time.
 We implemented a mask, \(m_{i, t}\), for modulating the loss with respect to certain time intervals.
@@ -612,7 +613,7 @@ For each trained network, we find the slow manifold by integrating the autonomou
 %https://scikit-dimension.readthedocs.io/en/latest/skdim.id.MOM.html#skdim.id.MOM
 We identify the points on the invariant manifold from the simulated trajectories that are projected closest to a set of points in the output space relevant to the task after convergence, i.e. on the target ring.
 We parametrize the one-dimensional invariant manifold \(\manifold\) by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
-Normal hyperbolicity is measured by a gap in the timescales of the system (measured from the eigenvalue spectrum of the linearization along points on the invariant manifold (Fig.~\ref{fig:fastslow_decomposition}E and F).
+Normal hyperbolicity is measured by a gap in the timescales of the system (measured from the eigenvalue spectrum of the linearization along points on the invariant manifold, Fig.~\ref{fig:fastslow_decomposition}E and F).
 %Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
 
@@ -692,7 +693,7 @@ We tested all networks with a validation set and took a cutoff for the normalize
   \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
   (A) The average accumulated angular error versus the uniform norm on the vector field (left and right hand side of Eq.~\ref{eq:distance:ub}, respectively), shown for finite time (time of trial length on which networks were trained, \(T_{1}\)) indicated with filled markers and at asymptotic time (with hollow markers).
   (B) The memory capacity versus the average accumulated angular error.
-  (C) The number of fixed points versus average accumulated angular error, with the average distance between neighbouring fixed points indicated in magenta.
+  (C) The number of fixed points versus average accumulated angular error, with the average distance between neighboring fixed points indicated in magenta.
   (D) The average accumulated angular error over time for two selected networks, indicated with the blue and orange arrows in (C).
   (E) Distribution of network performance measured on a validation dataset measured as normalized MSE (NMSE).
   }\label{fig:angular_loss}
@@ -704,7 +705,7 @@ We tested all networks with a validation set and took a cutoff for the normalize
 Aside from the angular velocity integration component of the task, the trained networks learn to store a memory of an angular variable.
 We assess the performance of the network to store the memory of the angle over time.
 The networks typically perform well on the timescale on which they have been trained \(T_{1} = 256\) time steps (Fig.~\ref{fig:angular_loss}C).
-This loss is, as theoretically predicted (Prop.~\ref{prop:ub}), bounded by the uniform norm of the vector field on the invariant manifold (and therefore by the distance to a continuous attractor (Prop.~\ref{prop:revival}) (Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and~\ref{sec:supp:ub}).
+This loss is, as theoretically predicted (Prop.~\ref{prop:ub}), bounded by the uniform norm of the vector field on the invariant manifold, and therefore by the distance to a continuous attractor (Prop.~\ref{prop:revival}) (Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and~\ref{sec:supp:ub}).
 
 
 \ptitle{Asymptotic time}
@@ -712,7 +713,7 @@ Looking beyond the finite timescale provides valuable insights into the network'
 For the asymptotic time scale, we capture the asymptotic behavior of the system by identifying to what part of the system evolves to in the limit \(t\rightarrow\infty\) (see also Sec.\ref{sec:supp:asymbehav}).
 For a one-dimensional system, this will either be fixed points or a limit cycle.
 For the fixed-point type solution, the maximal error is given by the maximal distance to the next fixed point, while for a limit cycle, this will always be \(\pi\).
-We calculate the \emph{average fixed point distance} by takeing the average of the inter-fixed-point interval for each neighbouring pair of fixed points.
+We calculate the \emph{average fixed point distance} by takeing the average of the inter-fixed-point interval for each neighboring pair of fixed points.
 We identify the location of the fixed points as described in Sec.~\ref{sec:fastslowmethod}.
 
 Besides the maximal error that the network will make in the asymptotic limit, we can also characterize how many different angles the network would confuse in the asymptotic limit.
@@ -753,7 +754,7 @@ Although the stochastic optimization cannot lead to \emph{the} continuous attrac
 \section{Discussion}
 %2 paragraph conclusion
 A manifold of equilibria in a continuous attractor network provides analog memory, making it a compelling model in theoretical neuroscience.
-However, continuous attractors almost certainly bifurcate under arbitrary perturbations except in special paramtric forms.
+However, continuous attractors almost certainly bifurcate under arbitrary perturbations except in special parametric forms.
 This makes them unsuitable as models for neural computation in noisy biological systems according to the traditional perspective on robustness.
 We will therefore never see we reach through traditional RNN training techniques and never observe a biological one.
 Nevertheless, we have shown that continuous attractors are functionally robust and therefore are an important concept to describe the neural computation underlying analog memory.
@@ -792,7 +793,7 @@ Our analysis methods can identify these limit sets, but we do not have a simple 
 
 \begin{ack}
 We would like to extend our heartfelt thanks to Sukbin Lim, Srdjan Ostojic and Daniel Durstewitz for their invaluable feedback and thoughtful suggestions which significantly refined the work.
-This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resilience Plan (PPR), through project number 62, Center for Responsible AI, and the Portuguese national funds, through FCT - Funda\c{c}\~{a}o para a Ci\^{e}ncia e a Tecnologia - in the context of the project UIDB/04443/2020.
+This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resilience Plan (PPR), through project number 62, Center for Responsible AI, and the Portuguese national funds, through FCT--- Funda\c{c}\~{a}o para a Ci\^{e}ncia e a Tecnologia--- in the context of the project UIDB/04443/2020.
 \end{ack}
 
 
@@ -2048,7 +2049,7 @@ Finally we associate the negative eigenvalue \(-1/\tau\) to the orthogonal eigen
 
 Since these determined dynamics are only in a 2D plane, we use a random linear mapping \(D\colon\reals^{2}\rightarrow\reals^{N}\) to map the fixed points and the eigenvectors to a \(10\)-dimensional space. First, we sample a random from orthogonal matrix \(A\) from the \(O(N)\) Haar distribution and then we take the first two columns of this matrix to be \(D=[A]_{12}\).
 
-EMPJ then returns a network parameters that satisfy these constraints. Furthermore, due to the particular solver used, that regularises the magnitude of the parameters, we get that all the other eigenvalues not specified are also set to \(-\nicefrac{1}{\tau}\) (for details see \citep{pollock2020}).
+EMPJ then returns a network parameters that satisfy these constraints. Furthermore, due to the particular solver used, that regularizes the magnitude of the parameters, we get that all the other eigenvalues not specified are also set to \(-\nicefrac{1}{\tau}\) (for details see \citep{pollock2020}).
 
 
 \ascomment{include sphere and torus?}
@@ -2068,7 +2069,7 @@ The maximum number of iterations was set to 10.000 and the tolerance level to \(
 
 \subsubsection{Lack of S-type robustness}\label{sec:empjnonrobust}
 We remark that the resulting invariant manifold is not robust to S-type perturbations.
-Althought the fixed points that are constrained in the fitting procedure are attractive in all directions, some of the points along the ring might not be.
+Although the fixed points that are constrained in the fitting procedure are attractive in all directions, some of the points along the ring might not be.
 For on-manifold perturbations (in the plane in which the ring is embedded), S-type perturbations do lead to flow towards the invariant ring (Fig.~\ref{fig:empj_onoff_perturbation}A).
 However, for (small) off-manifold perturbations, the trajectories typically diverge away from the invariant ring (Fig.~\ref{fig:empj_onoff_perturbation}B).
 This indicates that the basin of attration is very small and hence this approximation is not robust to S-type noise.
@@ -2368,7 +2369,7 @@ If there is memory degradation along the output manifold, it is not possible to 
 
 
 \subsection{Approximate solutions  to an analog working memory problem}\label{sec:condition_clarifications}
-We will now dicuss the conditions for when approximate solutions to an analog working memory problem are near a continuous attractor.
+We will now discuss the conditions for when approximate solutions to an analog working memory problem are near a continuous attractor.
 We consider approximate solutions to an analog working memory problem to be systems of the form~\ref{eq:RNN:discrete} or~\ref{eq:RNN:continuous} (in both cases following a linear decoder), which have a small memory error over time in output space.
 
 %\paragraph{Approximate bijection}\label{sec:bijection}
@@ -2489,7 +2490,7 @@ So, around every point in the base space, you can ``zoom in'' and see that the b
 We say that a projection map \(\pi:E \rightarrow  B\) is \emph{locally trivial} if each point \(b \in B\) is contained in an open set \(U\) having the property that \(E_{U}\coloneqq \pi^{-1}(U)\) is trivial over \(U\).
 \end{definition}
 
-We will rely on the concept of a submersion to charaterize how the output space needs to relate to our invarinat manifold.
+We will rely on the concept of a submersion to characterize how the output space needs to relate to our invariant manifold.
 \begin{definition}[Submersion]
 Let \(M\) and \(N\) be differentiable manifolds and \(f\colon M\to N\) be a differentiable map between them.
  The map \(f\) is a \emph{submersion} at a point \(p\in M\) if its differential \(Df_{p}\colon T_{p}M\to T_{f(p)}N\) is a surjective linear map.
@@ -2556,7 +2557,7 @@ We can take a\(\epsilon\)-Neighborhood around the invariant manifold on which we
 
 
 \paragraph{Example}
-An example of an approximate continous attractor solution of the form with a decomposable system of which one of the subsystems is close to a continuous attractor is the torus solution in Fig.~\ref{fig:fastslow_decomposition}D.
+An example of an approximate continuous attractor solution of the form with a decomposable system of which one of the subsystems is close to a continuous attractor is the torus solution in Fig.~\ref{fig:fastslow_decomposition}D.
 In this case, the system can be perturbed slightly such that there exists a continuum of limit cycles laid out over a ring.
 
 
@@ -2979,7 +2980,7 @@ This vector field in the output space captures in what direction and how quickly
 For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field
 \begin{equation}\|f\|_{\infty} = \sup_{\alpha} \wout f(\alpha),\end{equation} see also Sec.~\ref{sec:supp:ub}.
 
-For LSTMs and GRUs the  vector field was approximated by taking the differrence the initial and the next state after initializing the network from states on the identified invariant manifold.
+For LSTMs and GRUs the  vector field was approximated by taking the difference the initial and the next state after initializing the network from states on the identified invariant manifold.
 
 
 
@@ -3034,7 +3035,7 @@ These results underline the universality of our findings beyond vanilla RNNs.
 \subsection{Double angular integration task}
 
 The analysis of networks trained on the double angular velocity integration task indicates a torus shaped invariant slow manifold as predicted by our theory (Fig.\ref{fig:davit}A and B).
-Furthermore, the angular memory error (mesasured as the sum of the two separate angular errors) of the trained networks show the same conformity to the theoretical bound as defined by the uniform norm of the vector field on the identified invariant manifold.
+Furthermore, the angular memory error (measured as the sum of the two separate angular errors) of the trained networks show the same conformity to the theoretical bound as defined by the uniform norm of the vector field on the identified invariant manifold.
 These results underline the universality of our findings beyond 1D tasks.
 
 \begin{figure}[tbhp]
