@@ -20,7 +20,7 @@
 \usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}       % hyperlinks
 \hypersetup{breaklinks=true}
 \usepackage{pifont} 			%xmark
-\usepackage{caption} 			%\usepackage{subcaption}
+\usepackage{caption,subcaption} 			%\usepackage{subcaption}
 \usepackage{float}
 \usepackage{bm}				%bold
 \usepackage[T1]{fontenc}    		% use 8-bit T1 fonts
@@ -296,8 +296,7 @@ integration of evidence for continuous perceptual judgments, e.g. a hunting pred
 In this section, we investigate the bifurcations of various implementations of continuous attractors.
 Continuous attractor network models of the head direction are based on the interactions of neurons that (anatomically) form a ring-like overlapping neighbor connectivity~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous,knierim2012}.
 %Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
-Similarly, as with the line attractor, the ring attractor bifurcates for virtually every perturbation.
-Nevertheless, the bifurcated dynamics again follow a similar pattern: the dynamics are restricted to a ghost manifold very close to the original continuous attractor.
+Similarly to the line attractor, the ring attractor bifurcates with almost any perturbation. However, the resulting dynamics continue to follow a familiar pattern: they remain confined to a ghost manifold that closely approximates the original continuous attractor.
 
 
 \ptitle{Piecewise-linear ring attractor model of the central complex}
@@ -456,13 +455,13 @@ Finally, the persisting invariant manifold is very close to the original continu
 
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow rerparametrization of the BLA
-\footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems). So we consider systems that are at least continuous, but some extra conditions apply if a system is not differentiable (discontinuous systems are not considered in our theory).}
-).
+\footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems). So we consider systems that are at least continuous, but some extra conditions apply if a system is not differentiable (discontinuous systems are not considered in our theory).}).
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (Fig.~\ref{fig:lara_bifurcations}, dark-colored regions) that contains fixed points and connecting orbits and is overall still attractive.
 Furthermore, Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
 Because continuous ring attractors are bounded, their invariant manifold persists and it remains attractive under small perturbations~\citep{wiggins1994}.
 
 
+% region
 %\subsection{Implications on Machine Learning}\label{sec:imp:ML}
 %Extending the memory time constant of RNNs have long been an important area of research with much focus on random weights~\cite{Legenstein2007,Goldman2009,Toyoizumi2011,Kerg2019,Chen2018,Henaff2016,Rusch2021,arjovsky2016}.
 %Various initializations for the recurrent weights have been proposed to help learning: initialization with the identity matrix \citep{le2015}, with a random orthogonal matrix \citep{saxe2014,Henaff2016}, with a unitary matrix \citep{arjovsky2016} and with a block diagonal weight matrix that creates a quasi-periodic system with limit cycles \citep{Sokol2019a}.
@@ -482,6 +481,7 @@ Because continuous ring attractors are bounded, their invariant manifold persist
 %In the other case, we can find examples where the theorem does not hold, and the continuous attractor solution is at the boundary of network configurations with exploding gradients, meaning the loss landscape is very steep in some directions.
 %While exploding gradients would prevent gradient descent to correct for deviations from the optima,
 %for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
+% endregion
 
 \subsection{Fast-slow decomposition and the revival of continuous attractors}\label{sec:revival}
 Second, we relate the flow tangent to the slow manifold to the size of the perturbation needed to bring it back to a continuous attractor.
@@ -3064,7 +3064,7 @@ The Mean Angular Error (MAE) was computed as the sum of the individual angular e
 
 
 \paragraph{Uniform Norm of the (Projected) Vector Field}
-To evaluate the uniform norm of the (projected) vector field, we calculated the sum of the individual uniform norms of the vector field components. 
+To evaluate the uniform norm of the (projected) vector field, we calculated the sum of the individual uniform norms of the vector field components.
 
 
 \newpage
