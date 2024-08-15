@@ -21,7 +21,7 @@
 \hypersetup{breaklinks=true}
 \usepackage{pifont} 			%xmark
 \usepackage{caption} 			%\usepackage{subcaption}
-\usepackage{float}				
+\usepackage{float}
 \usepackage{bm}				%bold
 \usepackage[T1]{fontenc}    		% use 8-bit T1 fonts
 \usepackage{url}            			% simple URL typesetting
@@ -129,7 +129,7 @@ This fragility limits their utility especially in biological systems as their re
 We observe that the bifurcations from continuous attractors in theoretical neuroscience models display various structurally stable forms.
 Although their asymptotic behaviors to maintain memory are categorically distinct, their finite-time behaviors are similar.
 We build on the persistent manifold theory to explain the commonalities between bifurcations from and approximations of continuous attractors.
-Fast-slow decomposition analysis uncovers the existence of a persistent slow manifold that survives the seemingly destructive bifurcation, relating the flow within the manifold to the size of the perturbation. Moreover, this allows the bounding of the memory error of these approximations of continuous attractors. 
+Fast-slow decomposition analysis uncovers the existence of a persistent slow manifold that survives the seemingly destructive bifurcation, relating the flow within the manifold to the size of the perturbation. Moreover, this allows the bounding of the memory error of these approximations of continuous attractors.
 Finally, we train recurrent neural networks on analog memory tasks to support the appearance of these systems as solutions and their generalization capabilities.
 Therefore, we conclude that continuous attractors are \emph{functionally robust} and remain useful as a universal analogy for understanding analog memory.
 % to the problem of maintaining a memory of continuous-valued variables for arbitrarily long intervals.
@@ -184,9 +184,9 @@ In this study, we explore perturbations and approximations of continuous attract
 We first report on the differences and similarities between the various structurally stable dynamics in the vicinity of continuous attractors in these models.
 We observe the existence of a ``ghost'' continuous attractor (a.k.a. slow manifold) in all of them (Sec.~\ref{sec:critique}).
 By assuming normal hyperbolicity we will separate the time scales to obtain a decomposition of the dynamics by separating out the fast flow normal towards the slow manifold and the slow flow within it.
-With this we get theoretical results that ensure the existence of a slow manifold and relate their characteristics with the closeness to the continuous attractor and the memory performance of the system (Sec.~\ref{sec:theory}). 
+With this we get theoretical results that ensure the existence of a slow manifold and relate their characteristics with the closeness to the continuous attractor and the memory performance of the system (Sec.~\ref{sec:theory}).
 We then explore task-trained recurrent neural networks (RNNs) to show that these systems appear naturally as solutions to the task (Sec.~\ref{sec:experiments}) and that their generalization capabilities can easily be studied as the distance to the continuous attractor (Sec.~\ref{sec:generalization}).
-The proposed decomposition applied to theoretical models and task-trained recurrent neural networks (RNNs) reveals a ``universal motif'' of analog memory mechanism with various potential topologies. 
+The proposed decomposition applied to theoretical models and task-trained recurrent neural networks (RNNs) reveals a ``universal motif'' of analog memory mechanism with various potential topologies.
 This leads to the connection of different systems with different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:converse}).
 Our theory guarantees that systems close to a continuous attractor (in the space of vector fields) will have similar behavior to it.
 %Furthermore, our theory provides information of the generalization properties of these approximations.
@@ -347,13 +347,13 @@ The models optimized using this method also can contain an invariant ring manifo
 \ptitle{Similarity between all bifurcations and approximations of continuous attractors}
 In all discussed models of ring attractors, we verify that they suffer from the fine-tuning problem.
 However, importantly, we also observe in all the systems  the existence of ghosts of the continuous attractor (either through bifurcation or from finite-size effects) in the form of an \emph{attractive invariant manifold}.
-Therefore, while they are not strictly a continuous attractor in the mathematical sense, they are \textit{approximate} ring attractors in the sense that the fixed points and connecting orbits still form a circle. 
+Therefore, while they are not strictly a continuous attractor in the mathematical sense, they are \textit{approximate} ring attractors in the sense that the fixed points and connecting orbits still form a circle.
 
 Is this lawful degradation a universal phenomenon?
  And if so, how does it relate to the size of the perturbation? And what are the implications for the memory performance of these approximations? (Sec.~\ref{sec:theory}).
 Do these approximations appear as natural solutions to the memory storage problem? (Sec.~\ref{sec:experiments}).
  And if so, how well do they generalize to longer time requirements? (Sec.~\ref{sec:generalization}).
-In conclusion, are approximate continuous attractors ubiquitous and well-behaved? 
+In conclusion, are approximate continuous attractors ubiquitous and well-behaved?
  And therefore, are continuous attractors in practice still useful as an idealized model of how animals represent continuous variables? (Sec.~\ref{sec:converse}).
 
 % Our theory explains this phenomenon as follows. %MOVE TO LATER
@@ -393,7 +393,7 @@ In conclusion, are approximate continuous attractors ubiquitous and well-behaved
 
 %\section{Theory of gracefully degrading continuous attractors}\label{sec:theory}
 \section{Theory of Approximate Continuous Attractors}\label{sec:theory}
-In this section, we theoretically answer in an implementation-agnostic manner the degradation questions posed from the exploration. 
+In this section, we theoretically answer in an implementation-agnostic manner the degradation questions posed from the exploration.
 To do so, we apply invariant manifold theory to continuous attractor models and translate the results for the theoretical neuroscience audience.
 %Our emphasis in this paper centers on investigating the distinctive properties of continuous attractors that prove essential for specific tasks, with a deliberate exclusion of considerations related to learning chaotic dynamics.
 %\subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
@@ -446,7 +446,7 @@ We informally present a special case due to~\citet{Jones1995}:
 \begin{theorem}[Persistent Manifold]\label{theorem:persistent}
 Let \(\manifold_0\) be a connected, compact\footnote{See \citep{eldering2013normally} for results of persistence of noncompact invariant manifolds.}, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
 For a sufficiently small perturbation \(\epsilon > 0\), there exists a manifold \(\manifold_\epsilon\) diffeomorphic to \(\manifold_0\) and locally invariant under the flow of Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}.
-%Moreover, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_0\) and has the same smoothness as \(g\) and \(h\). 
+%Moreover, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_0\) and has the same smoothness as \(g\) and \(h\).
 \end{theorem}
 
 The manifold \(\manifold_\epsilon\) is called the \emph{slow manifold} which is no longer necessarily a continuum of equilibria.
@@ -486,7 +486,7 @@ Because continuous ring attractors are bounded, their invariant manifold persist
 %for gracefully degrading ones, one can apply restorative forces via gradient descent to be in the vicinity of the brittle continuous attractor solution (see Sec.~\ref{sec:exp:maintaining}).
 
 \subsection{Fast-slow decomposition and the revival of continuous attractors}\label{sec:revival}
-Second, we relate the flow tangent to the slow manifold to the size of the perturbation needed to bring it back to a continuous attractor. 
+Second, we relate the flow tangent to the slow manifold to the size of the perturbation needed to bring it back to a continuous attractor.
 Consider a behaviorally relevant timescale for working memory, for example, roughly up to a few tens of seconds.
 If the dynamical system is orders of magnitude slower, for example, 1000 sec or longer, its effect is too slow to have a practical impact on the behavior that relies on the working memory mechanism.
 This clear gap in the fast and slow time scales can be recast as \emph{normal hyperbolicity} of the slow manifold by relaxing the zero real part to a separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
@@ -510,7 +510,7 @@ In this case, we can guarantee that the system can be perturbed onto a decomposa
 
 \subsection{Relevance of dynamics on the memory performance of the slow manifold}\label{sec:attractor_bif}
 
-Third, we relate the flow of the manifold (and through Prop.~\ref{prop:revival}, the size of the perturbation) to the memory error of the approximation in short-time scale. 
+Third, we relate the flow of the manifold (and through Prop.~\ref{prop:revival}, the size of the perturbation) to the memory error of the approximation in short-time scale.
 We also discuss the implications of the theoretical insights on the memory error in the asymptotic time scale.
 
 In the short-time scale the memory performance is bounded by the uniform norm of the flow tangent to the manifold.
@@ -554,13 +554,13 @@ In more complex scenarios, such as a two-dimensional attractor, stable fixed poi
 %\mpcomment{This subsection is very dry. Make it sound cool and also explain why these are important considerations in the context of neuroscience.}
 
 \subsection{Implications on experimental neuroscience}\label{sec:implications}
-Animal behavior exhibits strong resilience to changes in their neural dynamics, such as the continuous fluctuations in the synapses or slight variations in neuromodulator levels or temperature. 
-Hence, any theoretical model of neural or cognitive function that requires fine-tuning, such as the continuous attractor model for analog working memory, raises concerns, as they are seemingly biologically irrelevant. 
-Moreover, unbiased data-driven models of time series data and task-trained recurrent network models cannot recover such continuous attractor theories precisely. 
-Our theory shows that this apparent fragility is not as devastating as previously thought: despite the "qualitative differences" in the phase portrait, the "effective behavior" of the system can be arbitrarily close, especially in the behaviorally relevant time scales. 
-We show that as long as the attractive flow to the memory representation manifold is fast and the flow on the manifold is sufficiently slow, it represents an approximate continuous attractor. 
-Frurthermore, our theory bounds the error in working memory incurred over time for such approximate continuous attractors. 
-Therefore, the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory, even if the ideal continuous attractor is never observed in practice. 
+Animal behavior exhibits strong resilience to changes in their neural dynamics, such as the continuous fluctuations in the synapses or slight variations in neuromodulator levels or temperature.
+Hence, any theoretical model of neural or cognitive function that requires fine-tuning, such as the continuous attractor model for analog working memory, raises concerns, as they are seemingly biologically irrelevant.
+Moreover, unbiased data-driven models of time series data and task-trained recurrent network models cannot recover such continuous attractor theories precisely.
+Our theory shows that this apparent fragility is not as devastating as previously thought: despite the "qualitative differences" in the phase portrait, the "effective behavior" of the system can be arbitrarily close, especially in the behaviorally relevant time scales.
+We show that as long as the attractive flow to the memory representation manifold is fast and the flow on the manifold is sufficiently slow, it represents an approximate continuous attractor.
+Frurthermore, our theory bounds the error in working memory incurred over time for such approximate continuous attractors.
+Therefore, the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory, even if the ideal continuous attractor is never observed in practice.
 Experimental observations that indicate the slowly changing population representations during the "delay periods" where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
 
 For more intuitive explanations of the concepts, refer to Sec.\ref{sec:supp:simplifications}.
@@ -712,7 +712,7 @@ This loss is, as theoretically predicted (Prop.~\ref{prop:ub}), bounded by the u
 
 \ptitle{Asymptotic time}
 Looking beyond the finite timescale provides valuable insights into the network's ability to store information.
-For the asymptotic time scale, we capture the asymptotic behavior of the system by identifying to what part of the system evolves to in the limit $t\rightarrow\infty$ (see also Sec.\ref{sec:supp:asymbehav}). 
+For the asymptotic time scale, we capture the asymptotic behavior of the system by identifying to what part of the system evolves to in the limit $t\rightarrow\infty$ (see also Sec.\ref{sec:supp:asymbehav}).
 For a one-dimensional system, this will either be fixed points or a limit cycle.
 For the fixed-point type solution, the maximal error is given by the maximal distance to the next fixed point, while for a limit cycle, this will always be \(\pi\).
 We calculate the \emph{average fixed point distance} by takeing the average of the inter-fixed-point interval for each neighbouring pair of fixed points.
@@ -1084,22 +1084,17 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 
 
 \section{Intuitive definitions of several key concepts used in our paper}\label{sec:supp:simplifications}
-
-
-\paragraph{Manifold:} A part of the state-space that locally resembles a flat, ordinary space (such as a plane or a three-dimensional space, but more generally 
--dimensional Euclidean space) but can have a more complicated global shape (such as a donut).
-\paragraph{Invariant set:} A property of a set of points in the state space where, if you start within the set, all future states remain within the set and all past states belong to the set as well.
-\paragraph{Normally Hyperbolic Invariant Manifold:} A behavior of a dynamical system where flow in the direction orthogonal to the manifold converges (or diverges) to the manifold significantly faster than the direction that remains on the manifold.
-\paragraph{Diffeomorphism:} A diffeomorphism is a stretchable map that can be used to transform one shape into another without tearing or gluing. 
-A differentilable map with differentilable inverse.
-
-\paragraph{$C^1$ neighborhood of a $C^1$ function:} A set of functions that are close to the function in terms of both their values and their first derivatives.
-
-\paragraph{Compact Set:} A set where every sequence of points has a subsequence that converges to a point within the set. Intuitively, it means the set is closed and bounded, making it "finite" in a certain sense.
-
-\paragraph{Connecting Orbit:} A trajectory in a dynamical system that connects two different equilibrium points or periodic orbits. 
- Specifically, a heteroclinic orbit connects distinct equilibrium points.
-
+%
+\paragraph{Manifold:} A part of the state-space that locally resembles a flat, ordinary space (such as a plane or a three-dimensional space, but more generally
+-dimensional Euclidean space) but can have a more complicated global shape (such as a donut).\label{sec:supp:manifold}
+\paragraph{Invariant set:} A property of a set of points in the state space where, if you start within the set, all future states remain within the set and all past states belong to the set as well.\label{sec:supp:invset}
+\paragraph{Normally Hyperbolic Invariant Manifold:} A behavior of a dynamical system where flow in the direction orthogonal to the manifold converges (or diverges) to the manifold significantly faster than the direction that remains on the manifold.\label{sec:supp:nhim}
+\paragraph{Diffeomorphism:} A diffeomorphism is a stretchable map that can be used to transform one shape into another without tearing or gluing.
+A differentiable map with differentiable inverse.\label{sec:supp:diffeomorphism}
+\paragraph{$C^1$ neighborhood of a $C^1$ function:} A set of functions that are close to the function in terms of both their values and their first derivatives.\label{sec:supp:c1neighborhood}
+\paragraph{Compact Set:} A set where every sequence of points has a subsequence that converges to a point within the set. Intuitively, it means the set is closed and bounded, making it "finite" in a certain sense.\label{sec:supp:compactset}
+\paragraph{Connecting Orbit:} A trajectory in a dynamical system that connects two different equilibrium points or periodic orbits.
+ Specifically, a heteroclinic orbit connects distinct equilibrium points.\label{sec:supp:connectingorbits}
 
 %\subsection{Visualization of geometric intuition of closeness in model space to behavioral similarty correspondence}
 %\ascomment{TODO: we will include a subsection with a visual illustration of our claims, aiming to tap into human geometric intuition. In this visualization, we show how models that behave almost like a perfect analog memory system correspond to a volume of models in the space of dynamical systems.}
@@ -2194,7 +2189,7 @@ In this section, we delve into the specifics of Fenichel's Persistence Theorem, 
 
 
 \paragraph{Invariance}
-One of the main concepts in the Persistence Theorem is the notion of an invariant manifold. 
+One of the main concepts in the Persistence Theorem is the notion of an invariant manifold.
 Intuitively, this just means that trajectories stay inside the manifold for all time.
 Local invariance is a bit more involved and allows for the possibility of leaving the manifold, but only through it's boundary.
 
@@ -2243,7 +2238,7 @@ In conclusion, the Hausdorff distance provides a rigorous mathematical framework
 
 
 
-\subsection{Fenichels' Persistent Manifold Theorem}
+\subsection{Fenichel's Persistent Manifold Theorem}
 
 This section will introduce the original Fenichel's Persistent Manifold Theorem, laying the groundwork for understanding how normally hyperbolic invariant manifolds persist under perturbations in systems with distinct time scales.
  By examining this foundational theorem, we can build a deeper understanding of the stability and behavior of complex dynamical systems.
@@ -2272,7 +2267,7 @@ Suppose that the set \(\manifold_0\)  is a subset of the set \(\{h(x, y, 0) = 0\
 \begin{theorem}[Theorem 1 in \citep{Jones1995}]\label{theorem:originalpersistent}
 If \(\epsilon >0\), but sufficiently small, there exists a manifold \(\manifold_\epsilon\) that lies within \(\mathcal{O}(\epsilon)\) of \(\manifold_0\) and is diffeomorphic to \(\manifold_0\).
  Moreover it is locally invariant under the flow of Eq.~\ref{eq:fenichel:flowtangent}-\ref{eq:fenichel:flownormal}, and \(C^r\), including in \(\epsilon\), for any \(0<r< \infty\).
- Finally, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_0\) and has the same smoothness as \(g\) and \(h\). 
+ Finally, \(\manifold_\epsilon\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_0\) and has the same smoothness as \(g\) and \(h\).
 \end{theorem}
 
 
@@ -2508,7 +2503,7 @@ A \emph{fiber bundle} is a structure \((E, B, \pi, F)\) where:
     \item \(\pi: E \to B\) is a continuous surjection called the \emph{projection map}, and
     \item \(F\) is a topological space called the \emph{fiber}.
 \end{itemize}
-This structure must satisfy the local triviality condition: for each \(b \in B\), there exists an open neighborhood \(U\) of \(b\) such that there is a homeomorphism 
+This structure must satisfy the local triviality condition: for each \(b \in B\), there exists an open neighborhood \(U\) of \(b\) such that there is a homeomorphism
 \[
 \varphi: \pi^{-1}(U_{b}) \to U_{b} \times F_{b}
 \]
@@ -2958,7 +2953,7 @@ We also trained Gated Recurrent Units (GRU) \citep{cho2014learning} for which we
 
 
 \subsection{Training methods}
-We trained  RNNs with PyTorch \citep{paszke2017automatic}  on the three tasks Fig.~\ref{fig:angular_task}.	
+We trained  RNNs with PyTorch \citep{paszke2017automatic}  on the three tasks Fig.~\ref{fig:angular_task}.
 For the vanilla RNNs, we used a time step of $\Delta t=0.1$.
 The parameters were initialized were initialized using the Xavier normal distribution \citep{Glorot2010}.
 For the recurrent weights we used \(W_{ij}\sim\mathcal{N}(0, \nicefrac{g}{\sqrt{N}})\) with a high gain \(g=1.5\).
@@ -3016,7 +3011,7 @@ Finally, we characterize the memory capacity of the network by calculating the e
  We sampled 1024 points from these points to fit a periodic, cubic spline (black line in Fig.~\ref{fig:fastslow_decomposition},~\ref{fig:im_rep},~\ref{fig:im_all}).
  %fast-slow
  % inv man
- 
+
 
 \paragraph{Finding fixed points}
  We then find fixed points by identifying where the flow reverses by sampling the direction of the local flow for 1024 sample points along the found invariant manifold.
@@ -3070,7 +3065,7 @@ This vector field in the output space captures in what direction and how quickly
 
  There are some inconsistencies around saddle nodes, where the vector field seems to point off of the manifold.
  This is probably just inaccuracies  coming from numerically calculating the vector field and the exact location of the invariant manifold.
-For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field 
+For the bound discussed in Sec.~\ref{sec:revival}, we calculate the uniform norm of the found vector field
 \begin{equation}\|f\|_\infty = \sup_{\alpha} \wout f(\alpha),\end{equation} see also Sec.~\ref{sec:supp:ub}.
 
 For LSTMs and GRUs the  vector field was approximated by taking the differrence the initial and the next state after initializing the network from states on the identified invariant manifold.
@@ -3151,7 +3146,7 @@ These results underline the universality of our findings beyond 1D tasks.
 - fps
        look at convergence (thr=\(10^{-4}\))
        look at unique fps (thr=\(10^{-2}\))
-       
+
 - mean angular error
 sum of individual ones
 
