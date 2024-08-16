@@ -2048,7 +2048,19 @@ EMPJ then returns a network parameters that satisfy these constraints. Furthermo
 
 
 \ascomment{include sphere and torus?}
-\citep{hermansen2024uncovering}
+
+\paragraph{Torus}
+%3D
+%4D
+
+
+
+
+\paragraph{Sphere}
+
+
+
+
 
 \paragraph{Finding fixed points}
 As we remark in Sec.~\ref{sec:empjnonrobust}, EMPJ networks are not robust to S-type noise, therefore we cannot apply our analysis of identifying the invariant set through the convergence criterion of numerically integrated trajectories.
@@ -2781,6 +2793,10 @@ k(x, y)=\exp\left(-\frac{\|x - y\|}{2\ell^{2}}\right),
 The Double Angular Velocity Integration Task is an extension of the Angular Velocity Integration Task, where two independent instances of the task are performed simultaneously. In this case, you have two separate angular velocities, each sampled from its own Gaussian Process, representing two distinct movement trajectories.
 
 For each of the two angular velocities, the integration over time is performed separately, resulting in two sets of outputs: one for each angular velocity, making the output space four dimensional.
+
+%\citep{Burak2009}
+Grid cells are known to exhibit periodic firing patterns that form a hexagonal grid across an environment, and these patterns are often modeled as existing on a toroidal surface (a doughnut-shaped surface)\citep{hermansen2024uncovering}. The reason for this is that the activity patterns of grid cells are continuous and wrap around seamlessly, meaning that if you move far enough in one direction, the grid pattern will repeat itself. This toroidal structure allows for the continuous representation of space without boundaries, which is crucial for efficient path integration.
+In the context of the Double Angular Velocity Integration Task, where two independent angular velocities are integrated, the resulting four-dimensional output space can be considered as two 2D subspaces (one for each angular velocity).
 
 \paragraph{Unbounded tasks}
 Regarding tasks with an unbounded range, such as navigation tasks, two points bear mentioning.
