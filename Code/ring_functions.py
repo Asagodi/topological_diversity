@@ -1494,7 +1494,7 @@ def find_fixed_points_newton(W, b, wo,
     xstars = [];
     eigenvalues_list=[]
     stabilist=[]
-    for x0 in points_init_nd:
+    for x0 in tqdm(points_init_nd):
         # print(x0)
         xstar = newton_method(x0, rnn_ode, rnn_jacobian, W, b, tau, mlrnn=mlrnn, tol=tol, max_iter=max_iter)
         # print(np.all(x0==xstar))
@@ -1512,6 +1512,41 @@ def find_fixed_points_newton(W, b, wo,
 
 # xstars, xstars_2 = find_fixed_points_newton(wrec, brec, wo, tau=10,
  # rnn_ode=tanh_ode, rnn_jacobian=tanh_jacobian, mlrnn=True, points_init_nd=csx2, max_iter=1000, tol=1e-6)]
+ 
+def load_and_find(folder, num_points=100, tau=10,
+                  max_iter=100, tol=1e-5):
+    w_path = glob.glob(folder + '/W*.json')[0]
+    with open(w_path, 'r') as f:
+        data = json.load(f)
+        W = np.array(data).T #need to transpose for consistency
+    d_path = glob.glob(folder + '/D*.json')[0]
+    with open(d_path, 'r') as f:
+        data = json.load(f)
+        D = np.array(data)
+        
+    points = sample_points_on_sphere(num_points)
+    points_init_nd = np.dot(D, points.T).T;
+    xstars, xstars_2, stabilist = find_fixed_points_newton(W, 0, D, tau=tau, points_init_nd=points_init_nd, max_iter=max_iter, tol=tol)
+    
+ 
+    
+def plot_fps(xstars_proj, folder):
+    fig = plt.figure()
+    ax = fig.add_subplot(121, projection="3d")
+    ax.view_init(elev=0,azim=0)
+    ax.scatter(xstars_proj[:,0],xstars_proj[:,1],xstars_proj[:,2], color=stab_colors[stabilist],alpha=.5)
+    ax.set_xlim([-1.2,1.2]);ax.set_ylim([-1.2,1.2]);ax.set_zlim([-1.2,1.2]);#plt.axis('off');
+    ax.set_xticklabels([]); ax.set_yticklabels([1,-1]); ax.set_yticks([1,-1]);ax.set_zticklabels([1,-1]); ax.set_zticks([1,-1])
+    ax.set_xlabel("X"); ax.set_ylabel("Y"); ax.set_zlabel("Z");
+
+    ax = fig.add_subplot(122, projection="3d")
+    ax.view_init(elev=30,azim=45)
+    ax.scatter(xstars_proj[:,0],xstars_proj[:,1],xstars_proj[:,2], color=stab_colors[stabilist],alpha=.5)
+    ax.set_xlim([-1.2,1.2]);ax.set_ylim([-1.2,1.2]);ax.set_zlim([-1.2,1.2]); 
+    ax.set_xticklabels([1,-1]); ax.set_xticks([1,-1]); ax.set_yticklabels([1,-1]); ax.set_yticks([1,-1]);ax.set_zticklabels([1,-1]); ax.set_zticks([1,-1]);
+    ax.set_xlabel("X"); ax.set_ylabel("Y"); ax.set_zlabel("Z");
+    plt.savefig(folder+'/sphere_fps.pdf') #plt.axis('off');
+    
 
 # if __name__ == "__main__": 
 #     # get_noormanring_rnn(N=8, je=4, ji=-2.4, c_ff=1, dt=.01, internal_noise_std=0)
