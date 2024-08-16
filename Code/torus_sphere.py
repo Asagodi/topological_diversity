@@ -77,6 +77,24 @@ def torus_4d_to_3d_thetas(theta1, theta2, r1=1, r2=.25):
     return x,y,z
 
 
+def torus_4d_to_thetas(theta1, theta2, r1=1, r2=.25):
+    # Convert angles to 4D Cartesian coordinates
+    x = (r1+r2*np.cos(theta1))*np.cos(theta2);
+    y = (r1+r2*np.cos(theta1))*np.sin(theta2);
+    z = r2*np.sin(theta1);
+
+    return x,y,z
+
+
+def torus_4d_to_3d(points):
+    # Convert angles to 4D Cartesian coordinates
+    x = (r1+r2*np.cos(theta1))*np.cos(theta2);
+    y = (r1+r2*np.cos(theta1))*np.sin(theta2);
+    z = r2*np.sin(theta1);
+
+    return x,y,z
+
+
 def get_manifold_from_closest_projections_torus(trajectories_flat, wo, npoints=128):
 
     n_rec = wo.shape[0]
@@ -96,3 +114,43 @@ def get_manifold_from_closest_projections_torus(trajectories_flat, wo, npoints=1
 
 
 
+def grid_on_3dtorus(R=1.0, r=0.5, u_res=20j, v_res=10j):
+    # Create a meshgrid for u and v angles
+    u, v = np.mgrid[0:2*np.pi:u_res, 0:2*np.pi:v_res]
+
+    # Parametric equations for the torus
+    x = (R + r * np.cos(v)) * np.cos(u)
+    y = (R + r * np.cos(v)) * np.sin(u)
+    z = r * np.sin(v)
+
+    # Flatten the arrays
+    x_flat = x.flatten()
+    y_flat = y.flatten()
+    z_flat = z.flatten()
+
+    # Stack and transpose to get (N, 3) points array
+    points = np.vstack((x_flat, y_flat, z_flat)).T
+    
+    return points
+
+
+def grid_on_4dtorus(R=1.0, r=0.5, u_res=20j, v_res=20j):
+    # Create a meshgrid for u1, u2, v1, v2 angles
+    u, v = np.mgrid[0:2*np.pi:u_res, 0:2*np.pi:v_res]
+
+    # Parametric equations for the 4D torus
+    w1 = R * np.cos(v)
+    w2 = R * np.sin(v)
+    w3 = r * np.cos(u) 
+    w4 = r * np.sin(u) 
+
+    # Flatten the arrays
+    w1_flat = w1.flatten()
+    w2_flat = w2.flatten()
+    w3_flat = w3.flatten()
+    w4_flat = w4.flatten()
+
+    # Stack and transpose to get (N, 4) points array
+    points = np.vstack((w1_flat, w2_flat, w3_flat, w4_flat)).T
+    
+    return points
