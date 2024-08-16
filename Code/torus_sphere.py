@@ -69,7 +69,7 @@ def grid_on_sphere():
 ########TORUS
 
 def torus_4d_to_3d_thetas(theta1, theta2, r1=1, r2=.25):
-    # Convert angles to 4D Cartesian coordinates
+    # Convert angles to 3D Cartesian coordinates
     x = (r1+r2*np.cos(theta1))*np.cos(theta2);
     y = (r1+r2*np.cos(theta1))*np.sin(theta2);
     z = r2*np.sin(theta1);
@@ -77,17 +77,19 @@ def torus_4d_to_3d_thetas(theta1, theta2, r1=1, r2=.25):
     return x,y,z
 
 
-def torus_4d_to_thetas(theta1, theta2, r1=1, r2=.25):
-    # Convert angles to 4D Cartesian coordinates
-    x = (r1+r2*np.cos(theta1))*np.cos(theta2);
-    y = (r1+r2*np.cos(theta1))*np.sin(theta2);
-    z = r2*np.sin(theta1);
-
-    return x,y,z
+def torus_4d_to_thetas(points, r1=1, r2=.25):
+    # Convert 4D Cartesian coordinates to angles
+    theta1 = np.arctan2(points[:,1],points[:,0])
+    theta2 = np.arctan2(points[:,3],points[:,2])
+    return theta1,theta2
 
 
-def torus_4d_to_3d(points):
-    # Convert angles to 4D Cartesian coordinates
+def torus_4d_to_3d(points, r1=1, r2=.25):
+    # Convert 4D Cartesian coordinates to angles
+    theta1 = np.arctan2(points[:,1],points[:,0])
+    theta2 = np.arctan2(points[:,3],points[:,2])
+    
+    # Convert angles to 3D Cartesian coordinates
     x = (r1+r2*np.cos(theta1))*np.cos(theta2);
     y = (r1+r2*np.cos(theta1))*np.sin(theta2);
     z = r2*np.sin(theta1);
