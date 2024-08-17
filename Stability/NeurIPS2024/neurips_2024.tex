@@ -450,7 +450,7 @@ The manifold \(\manifold_{\epsilon}\) is called the \emph{slow manifold} which i
 However, the local invariance implies that trajectories remain within the manifold except potentially at the boundary.
 Furthermore, the non-zero flow on the slow manifold is slow and given in the \(\epsilon \to 0\) limit as \(\RN{\vy}{\tau} = \vg(c^{\epsilon}(\vy), \vy, 0)\) where \(\tau = \epsilon t\) is a rescaled time and \(c^{\epsilon}(\cdot)\) parameterizes the \(l\) dimensional slow manifold.
 In addition, the stable manifold of \(\manifold_{0}\) is similarly persistent~\cite{Jones1995}, implying that the manifold \(\manifold_{\epsilon}\) remains attractive.
-Finally, the persisting invariant manifold is very close to the original continuous attractor (see also~\ref{theorem:originalpersistent}).
+Finally, the persisting invariant manifold is very close in space to the original continuous attractor (see also~\ref{theorem:originalpersistent}).
 %\pscomment{\textbf{Suggestion}:implying the stability of the manifold \(\manifold_{\epsilon}\) is preserved.}
 
 
@@ -508,11 +508,11 @@ In this case, we can guarantee that the system can be perturbed onto a decomposa
 
 \subsection{Relevance of dynamics on the memory performance of the slow manifold}\label{sec:attractor_bif}
 
-Third, we relate the flow of the manifold (and through Prop.~\ref{prop:revival}, the size of the perturbation) to the memory error of the approximation in short-time scale.
+Third, we relate the flow of the manifold (and, through Prop.~\ref{prop:revival}, the \emph{size} of the perturbation) to the memory error of the approximation in short-time scale.
 We also discuss the implications of the theoretical insights on the memory error in the asymptotic time scale.
 
 In the short-time scale the memory performance is bounded by the uniform norm of the flow tangent to the manifold.
-Let \(\vx_{0} \in \manifold\), and \(\varphi = \vp(\cdot)\vert_{\manifold}\) be the flow restricted to the manifold.\pscomment{I'm confused. I thought \(\mathbf{p}\) was a vector field as in~\ref{eq:perturbation:nonparam}. Also how's the sup/max-norm defined for a flow?}
+Let \(\vx_{0} \in \manifold\), and \(\varphi = \vp(\cdot)\vert_{\manifold}\) be the vector field restricted to the manifold (following the notation in Eq.\ref{eq:perturbation:nonparam}).
 The average deviation from initial memory \(\vx_{0}\) over time is bounded linearly (for a derivation, see Sec.~\ref{sec:supp:ub}):
 \begin{align}\label{eq:distance:ub}
 \frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
@@ -529,7 +529,7 @@ Furthermore, for compact invariant manifolds the error is bounded by the diamete
 
 While the uniform norm gives insight on the short-time scale behavior of the perturbed ODE, we expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
 The long-time scale behavior on the slow manifold is dominated by the stability structure, i.e., the topology of the dynamics.
-Although we have seen numerous topologies in Sec.~\ref{sec:critique}, dynamical systems theory says that they are fundamentally limited, especially in low dimensions (see for more details Sec.~\ref{persistence_extra}).
+Although we have seen numerous topologies in Sec.~\ref{sec:critique}, dynamical systems theory says that they are fundamentally limited, especially in low dimensions (see for more details Sec.~\ref{sec:supp:persistence_extra}).
 This is especially relevant as previous works have identified a low-dimensional organization of neural activity to explain the brain's ability to adapt behavioral responses to changing stimuli and environments \citep{beiran2023parametric,altan2023low,fanthomme2021low}.
 %This resilience is fundamental for cognitive functions, learning, and memory.
 %Thanks to Fenichel's Persistent Manifold Theorem, we can understand how these persistent pathways, or manifolds, survive even when the system undergoes  bifurcations.
@@ -560,7 +560,6 @@ We show that as long as the attractive flow to the memory representation manifol
 Furthermore, our theory bounds the error in working memory incurred over time for such approximate continuous attractors.
 Therefore, the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory, even if the ideal continuous attractor is never observed in practice.
 Experimental observations that indicate the slowly changing population representations during the ``delay periods'' where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
-
 For more intuitive explanations of the concepts, refer to Sec.\ref{sec:supp:simplifications}.
 
 
@@ -2149,7 +2148,7 @@ For the off-manifold perturbations \(\eta\in \reals^{10}\) and \(\|\eta\|_{2} = 
 
 
 \newpage
-\section{Persistence Theorem}\label{persistence_extra}
+\section{Persistence Theorem}\label{sec:supp:persistence_extra}
 Understanding the long-term behavior of dynamical systems is a fundamental question in various fields, including mathematical biology, ecological modeling, and neuroscience.
  Fenichel's Persistence Theorem provides critical insights into the behavior of such systems, particularly in relation to the stability and persistence of invariant manifolds under perturbations.
 
