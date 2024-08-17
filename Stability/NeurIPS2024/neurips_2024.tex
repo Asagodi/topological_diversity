@@ -2090,15 +2090,37 @@ For the off-manifold perturbations \(\eta\in \reals^{10}\) and \(\|\eta\|_{2} = 
 
 
 \subsubsection{Higher dimensional manifolds}
+We furthermore fit a torus and a sphere continuous attractor with the EMPJ.
+The networks we used have \(N = 100\) neurons.
+For finding fixed points with the Newton-Raphson method, we used 1.000  as the maximum number of iterations  and a tolerance level of \(\delta = 10^{-5}\).
 
 \paragraph{Torus}
 %3D
 %4D
-
+Figure \ref{fig:torus_empj} illustrates the stability structures of  the approximate torus attractor fitted with EMPJ.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{torus_empj}
+\caption{The approximate torus attractor.
+(A) Points initialized on a grid off of the torus (blue) converge onto the torus attractor (red).
+(B) The found fixed points on the approximate torus (green: stable, red: saddle).
+(C) The found fixed points projected onto the two 2D subspaces that defined the two rings of the torus.
+}\label{fig:torus_empj}
+\end{figure}
 
 
 
 \paragraph{Sphere}
+Figure \ref{fig:sphere_empj} illustrates the stability structures of  the approximate sphere  attractor fitted with EMPJ.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{sphere_empj}
+\caption{The approximate sphere attractor.
+(A)  Points initialized on a grid off of the sphere (blue) converge onto the torus attractor (red).
+(B) The found fixed points on the approximate sphere (green: stable, red: saddle).
+ The two subfigures show rotated versions of the location of the fixed points on the sphere.
+}\label{fig:sphere_empj}
+\end{figure}
 
 
 
