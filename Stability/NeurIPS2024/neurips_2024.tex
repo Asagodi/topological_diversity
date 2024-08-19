@@ -2008,10 +2008,6 @@ We keep the following parameters for the analysis:
 
 
 \subsubsection{Mean field approaches}
-\citep{kuhn2023information} analyzes an Ising network perturbed with a specially structured noise at the thermodynamic limit.
-Although their analysis elegantly shows that the population activity of the perturbed system does not destroy the Fisher information about the input, they do not consider a scenario where the ring attractor is used as a working memory mechanism, it is rather used to encode instantaneous representation.
-In contrast, our analysis involves understanding how the working memory content degrades over time due to the dynamics. We are not aware of any mean field analysis that covers this aspect.
-
 
 
 
@@ -2019,18 +2015,26 @@ In contrast, our analysis involves understanding how the working memory content 
 
 \ascomment{TODO:}
 
+\citep{miller2006analysis}
+\citep{wu2008dynamics}
 \citep{fung2010}
 
-\citep{wu2008dynamics}
+
+%infinite network size limit
+frozen stabilisation, which allows a family of neural networks to self-organise to a state exhibiting memory manifolds and a wide range of relaxational timescales. The principle works by spontaneously freezing/slowing the dynamics of a (random) subpopulation of neurons, thereby creating a static background input which serves to stabilise the remaining population. \citep{can2021emergence}
 
 
-\citep{battista2020capacity}
+Weak random spatial fluctuations in the connection strength are to be expected when learning the coupling function with Hebbian plasticity
+In the 1D case, it is well known that the presence of such synaptic heterogeneity causes a drift of an input-induced activity pattern to one of a finite number of attractor positions which are randomly spread over representational space \citep{Renart2003,itskov2011}S.
+%\citep{Renart2003,itskov2011} proposed additional processing mechanisms to slow this memory drift and reduce the quantization error
+Similarly, in 2D, spatial fluctuations in the connection strengths cause a slight perturbation of the bump shape \citep{wojtak2023robust}.
 
 
-\citep{wojtak2023robust}
+\citep{kuhn2023information} analyzes an Ising network perturbed with a specially structured noise at the thermodynamic limit.
+Although their analysis elegantly shows that the population activity of the perturbed system does not destroy the Fisher information about the input, they do not consider a scenario where the ring attractor is used as a working memory mechanism, it is rather used to encode instantaneous representation.
+In contrast, our analysis involves understanding how the working memory content degrades over time due to the dynamics. We are not aware of any mean field analysis that covers this aspect.
 
 
-\citep{can2021emergence}
 
 
 %EMPJ
@@ -2127,6 +2131,18 @@ Similar to the torus,  points initialized off the sphere converge onto the spher
 
 
 
+
+
+\subsection{Other fitting methods}
+
+Storing multiple continuous attractors has been worked out in \citep{battista2020capacity}, with a similar approximation as our theory suggests. The different stored patterns form a discrete approximation of the continuous map (resulting in quasicontinuous maps, which corrspond to the approximate contintuous attractors in our theory).
+
+
+\citep{darshan2022}
+
+
+
+
 %\newpage
 %%\subsection{Biswas}\label{sec:supp:biswas}
 %
@@ -2137,26 +2153,6 @@ Similar to the torus,  points initialized off the sphere converge onto the spher
 %Some concluding remarks
 
 
-
-
-
-
-
-%\newpage
-%\section{Training RNNs on an integration task from scratch}
-%
-%We trained vanilla RNNs with a ReLU nonlinearity for the recurrent layer and a linear output layer on the angular velocity integration task Fig.~\ref{fig:angular_task}. The network size varies between 50 and 200 units, initialized using a normal distribution for the parameters. Adam optimization with \(\beta_{1} = 0.9\) and \(\beta_{2} = 0.99\) was employed with a batch size of 512 and training was run until no decrease in the loss occurred for 100 epochs. The task has 256 time steps for the training samples, and training was based on the mean squared error loss.
-%
-%\begin{figure}[tbhp]
-%     \centering
-%    \includegraphics[width=\textwidth]{line_attractor_like_solutions}
-%       \caption{The two types of found solutions. A) A line attractor with hyperbolically stable fixed points at the end of the line. B) Saddle nodes at the ends of the line.
-%}
-%         \label{fig:line_att_sols}
-%\end{figure}
-%
-%From an arbitrary initialization, we find that a line attractor-like structure often (8 out of 10 runs) emerged with hyperbolically stable fixed points (Fig.\ref{fig:line_att_sols}A) when trained on a longer version of the task. For shorter trial lengths, saddle nodes are more likely to emerge (6 out of 10 runs) at the ends of the line (Fig.~\ref{fig:line_att_sols}B), meaning that the resulting structure is not an attractor.
-%
 
 
 %\newpage
