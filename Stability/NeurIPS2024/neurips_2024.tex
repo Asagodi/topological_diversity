@@ -36,8 +36,9 @@
 \usepackage[compact]{titlesec}
 \setlength{\abovedisplayskip}{2pt}
 \setlength{\belowdisplayskip}{2pt}
-\AtBeginDocument{\setlength\abovedisplayskip{2pt}}
-\AtBeginDocument{\setlength\belowdisplayskip{2pt}}
+\AtBeginDocument{ \setlength{\textfloatsep}{1pt }}
+\AtBeginDocument{\setlength\abovedisplayskip{1pt}}
+\AtBeginDocument{\setlength\belowdisplayskip{1pt}}
 \titlespacing*{\section}{0pt}{0pt}{0pt}
 \titlespacing*{\subsection}{0pt}{0pt}{0pt}
 
@@ -187,7 +188,7 @@ Our analysis reveals the presence of a ``ghost'' continuous attractor (a.k.a. sl
 By assuming normal hyperbolicity we separate the time scales to obtain a decomposition of the dynamics by separating out the fast flow normal to and the slow flow within the slow manifold.
 We derive theoretical results that ensure the existence of a slow manifold and determine its closeness to a continuous attractor (Sec.~\ref{sec:theory}).
 We explore task-trained recurrent neural networks (RNNs) to show that these systems appear naturally as solutions to the task (Sec.~\ref{sec:experiments}) and that their generalization capabilities can easily be studied as the distance to the continuous attractor (Sec.~\ref{sec:generalization}).
-The proposed decomposition applied to theoretical models and task-trained recurrent neural networks (RNNs) reveals a ``universal motif'' of analog memory mechanism with various potential topologies.
+The proposed decomposition applied to theoretical models and task-trained RNNs reveals a ``universal motif'' of analog memory mechanism with various potential topologies.
 This leads to the connection of different systems with different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:converse}).
 Our theory guarantees that systems close to a continuous attractor (in the space of vector fields) will have similar behavior to it, implying that the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory (Sec.~\ref{sec:implications}).
 
@@ -196,7 +197,6 @@ Our theory guarantees that systems close to a continuous attractor (in the space
 
 \section{A critique of pure continuous attractors}\label{sec:critique}
 We will first lay out a number of observations about the dynamics of bifurcations and approximations of continuous attractors used in theoretical neuroscience.
-
 Ordinary differential equations (ODEs) are commonly used to describe the dynamical laws governing the temporal evolution of firing rates or latent population states\cite{vyas2020}.
 In this framework, neural systems are viewed as implementing the continuous time evolution of neural states to perform computations.
 We will consider a continuous attractor as a mechanism that implements analog memory computation: carrying a particular memory representation over time.
@@ -218,7 +218,7 @@ We will now study some examples of continuous attractors and how perturbations c
     \textbf{(A)} Phase portraits for the bounded line attractor (Eq.~\eqref{eq:TLN}).
     Under perturbation of parameters, it bifurcates to systems without the continuous attractor.
     \textbf{(B)} The low-rank ring attractor approximation (Sec.~\eqref{sec:supp:lowrank}).
-    Different topologies exist for different realizations of a low-rank attractor with overlap between the left and right vectors, different numbers of fixed points (4, 8, 12), or a limit cycle (right bottom).
+    Different topologies exist for different realizations of a low-rank attractor: different numbers of fixed points (4, 8, 12), or a limit cycle (right bottom).
     Yet, they all share the existence of a ring invariant set.
 }\label{fig:lara_bifurcations}
 \end{figure}
@@ -235,25 +235,19 @@ As an example, we can construct a line attractor (a continuous attractor with a 
 %The non-trivial activity of this network is limited to the (non-negative) first quadrant.
 %The second kind of continuous attractor is created through negative feedback.
 We get \(\dot{\vx} = 0\) on the \(x_{1} = -x_{2} + 1\) line segment in the first quadrant as the manifold (Fig.~\ref{fig:lara_bifurcations}A, left; black line).
-We refer to it as the bounded line attractor (BLA).
+%We refer to it as the bounded line attractor (BLA).
 Linearization of the fixed points on the manifold exhibits two eigenvalues, \(0\) and \(-2\);
 the \(0\) eigenvalue allows the continuum of fixed points, while \(-2\) makes the flow normal to the manifold attractive (Fig.~\ref{fig:lara_bifurcations}A, left; flow field).
 
 In general, continuous attractors are not only structurally unstable \citep{mane1987proof}, they bifurcate almost certainly for an arbitrary perturbation.
-Small changes to the parameters \((\vb,\vW)\) perturb the eigenvalues.
-Specifically, any perturbation to the \(0\) eigenvalue destroys the continuous attractor as it bifurcates to either
+Small changes to the parameters \((\vb,\vW)\) perturb the eigenvalues and any perturbation to the \(0\) eigenvalue destroys the continuous attractor: it bifurcates to either
 a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A, top) or two stable fixed points separated with a saddle-node in between (Fig.~\ref{fig:lara_bifurcations}A, bottom).
 However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifold topologically equivalent to the original continuous attractor (note the slow speed).
 Furthermore, the flow after the bifurcation is contained in the ghost manifold, i.e., it is an invariant manifold.
 This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,mante2013context,schmidt2019identifying}.
 %Similar to the BLA in \citep{schmidt2019identifying} a line attractor approximation was described as a slightly detuned line attractor with arbitrarily slow time constants.
 
-%In the following, we focus on 1-dimensional ring attractors.
 
-%and perturbations cause the null eigenvalue to be non-zero and the line attractor disappears.
-%However, surprisingly, the bifurcations are qualitatively different.
-%Neither of these two cases show a divergent flow, but rather consists of one or two basins of attraction.
-%It implies only vanishing gradients for this system and \textbf{exploding gradients will not be present for an arbitrarily long time}.
 
 %The membrane potential of a neuron changes over time according to the input it receives and its intrinsic properties, which can be mathematically modeled using ODEs.
 %Consider an RNN (without input or output for now) expressed in continuous time as an ordinary differential equation:
@@ -719,9 +713,9 @@ We posit that there are four conditions (See for more detail Sec.~\ref{sec:condi
 \item robustness against dynamical (D-type) noise.\label{converse:Dtype}
 \end{enumerate*}
 The correspondence implied by~\ref{converse:bijection} translates to the existence of a manifold in the neural activity space with the same topology as the memory content.\footnote{Note that effectively feedforward solutions~\citep{Goldman2009} do not satisfy~\ref{converse:bijection}.}
-The persistence~\ref{converse:persistent} requires that the flow on the manifold is slow and bounded.
-The S-type robustness~\ref{converse:Stype} implies non-expansive flow, that is, non-positive Lyapunov exponents.
-Along with the D-type robustness~\ref{converse:Dtype}, it implies the manifold is ``attractive'', and normally hyperbolic (see also Sec.~\ref{sec:persitencempliesnh}).
+Persistence~\ref{converse:persistent} requires that the flow on the manifold is slow and bounded.
+S-type robustness~\ref{converse:Stype} implies non-expansive flow, i.e., non-positive Lyapunov exponents.
+Along with D-type robustness~\ref{converse:Dtype}, it implies the manifold is ``attractive'', and normally hyperbolic (see also Sec.~\ref{sec:persitencempliesnh}).
 
 If these four conditions hold, for example for task-trained RNNs, there exists a smooth function with a uniform norm matching the slowness on the manifold such that when added, the slow manifold becomes a continuous attractor (Prop.~\ref{prop:revival} and Theorem~\ref{thrm:near_ca}, see also Sec.~\ref{sec:near_ca}).
 For the RNN experiments, we added state-noise while training using stochastic gradient descent, satisfying~\ref{converse:Stype} and~\ref{converse:Dtype}.
@@ -733,27 +727,24 @@ Although the stochastic optimization cannot lead to \emph{the} continuous attrac
 
 \section{Discussion}
 %2 paragraph conclusion
-A manifold of equilibria in a continuous attractor network provides analog memory, making it a compelling model in theoretical neuroscience.
-However, continuous attractors almost certainly bifurcate under arbitrary perturbations except in special parametric forms.
-This makes them unsuitable as models for neural computation in noisy biological systems according to the traditional perspective on robustness.
-We will therefore never see we reach through traditional RNN training techniques and never observe a biological one.
-Nevertheless, we have shown that continuous attractors are functionally robust and therefore are an important concept to describe the neural computation underlying analog memory.
+Continuous attractors are highly prone to bifurcation under arbitrary perturbations unless they exist in special parametric forms.
+This sensitivity to perturbations has traditionally made them seem unsuitable for modeling neural computation in noisy biological systems, according to conventional views on robustness.
+Nevertheless, we demonstrate that continuous attractors can exhibit functional robustness, making them a crucial concept in explaining the neural computation underlying analog memory. 
+We show that approximations of analog memory must possess slow manifold dynamics, placing them near continuous attractors within the space of dynamical systems. This implies that both biological systems and artificial neural networks only need to be near a continuous attractor to effectively solve problems in a manner similar to the ideal theoretical model, particularly on behaviorally relevant timescales.
+Theoretical models that satisfy conditions~\ref{converse:bijection}-\ref{converse:Dtype} will be near continuous attractors (in parameter space).
+%Nevertheless, the topological structure of the found solutions still determines how well a network will perform generalization for longer time scales.
 
-We further show that under some assumptions, approximations of analog memory must have slow manifold dynamics and hence be close to a continuous attractor in the space of dynamical systems.
-So for biological system or artificial neural networks it is sufficient to be near a continuous attractor to be effectively solving the problem similar enough to how the perfect theoretical model would solve it on a behaviorally relevant timescale.
-
-
-We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in various example systems.
-Although the configurations corresponding to a continuous attractor are measure-zero in parameter space, we showed that when the persistent manifold theorem holds, the finite time behavior of the trajectories only slowly breaks down under perturbations.
-%For all perturbations and approximations there a diverse set of topologies.
-However, all systems share an essential element: an attractive invariant slow manifold.
-%This empirical evidence strongly corroborates our proposed theory of analog memory.
-
-Training RNNs on tasks involving continuous variables resulted similarly in a great variety of solutions.
-%However, even within this variety, with our theory we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
-As the theory predicted, trained networks on a circular analog memory task all have an attractive ring invariant manifold, which allows for a more useful comparison between trained networks than existing fixed point analyses.
-This supports our theory that theoretical models that satisfy conditions~\ref{converse:bijection}-\ref{converse:Dtype} will be near continuous attractors (in parameter space).
-Nevertheless, the topological structure of the found solutions still determines how well a network will perform generalization for longer time scales.
+%We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in various example systems.
+%Although the configurations corresponding to a continuous attractor are measure-zero in parameter space, we showed that when the persistent manifold theorem holds, the finite time behavior of the trajectories only slowly breaks down under perturbations.
+%%For all perturbations and approximations there a diverse set of topologies.	
+%However, all systems share an essential element: an attractive invariant slow manifold.
+%%This empirical evidence strongly corroborates our proposed theory of analog memory.
+%
+%Training RNNs on tasks involving continuous variables similarly yields a wide range of solutions.
+%%However, even within this variety, with our theory we can identify common structures that are different from the invariances highlighted previously in fixed point analyses.
+%As the theory predicted, trained networks on a circular analog memory task all have an attractive ring invariant manifold, which allows for a more useful comparison between trained networks than existing fixed point analyses.
+%This supports our theory that theoretical models that satisfy conditions~\ref{converse:bijection}-\ref{converse:Dtype} will be near continuous attractors (in parameter space).
+%Nevertheless, the topological structure of the found solutions still determines how well a network will perform generalization for longer time scales.
 
 %limitations
 \paragraph{Limitations}
@@ -2078,7 +2069,7 @@ Figure \ref{fig:torus_empj} illustrates the stability structures of  the approxi
 The ratio of the radii of the two rings is adjusted for visualization purposes.
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{torus_empj}
+\includegraphics[width=\textwidth]{torus_empj_s}
 \caption{The approximate torus attractor.
 (A) Points initialized on a grid off of the torus (blue) converge onto the torus attractor (red).
 (B) The found fixed points on the approximate torus (green: stable, red: saddle).
@@ -3075,7 +3066,7 @@ These results underline the universality of our findings beyond 1D tasks.
 
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=\textwidth]{davit}
+  \includegraphics[width=\textwidth]{davit_s}
   \caption{%\textbf{2D continuous attractor in RNNs.}
       Networks trained on a double angular velocity integration task.
     \textbf{(A)} Initializations (blue) and fixed points (orange) of an example network.
