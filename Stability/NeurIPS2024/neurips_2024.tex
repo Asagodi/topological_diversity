@@ -297,7 +297,7 @@ Similarly to the line attractor, the ring attractor bifurcates with almost any p
 Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{Noorman2022}.
 This model is composed of \(N\) heading-tuned neurons with preferred headings \(\theta_{j} \in \{\nicefrac{2\pi i}{N}\}_{i = 1\dots N}\) radians (Sec.~\ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter \(J_{E}\)) and broad inhibition (\(J_{I}\)), this network will generate a stable bump of activity corresponding to the head direction.
-This continuum of fixed points forms a \(N\)-sided polygon: a one-dimensional manifold homeomorphic to the circle.
+This continuum of fixed points forms a \(N\)-sided polygon. %: a one-dimensional manifold homeomorphic to the circle.
 
 \begin{figure}[tbhp]
      \centering
@@ -309,11 +309,11 @@ This continuum of fixed points forms a \(N\)-sided polygon: a one-dimensional ma
        }\label{fig:bio_rings}
 \end{figure}
 
-We evaluate the effect of parametric perturbations of the form \( \vW \leftarrow \vW + \vV\) with \(\vV_{i, j}\iidsample\mathcal{N}(0,\nicefrac{1}{100})\) on a network of size \(N = 6\) (forming an hexagon) with \(J_{E} = 4\) and \(J_{I}=-2.4\) by identifying all bifurcations (Sec.~\ref{sec:supp:ring_perturbations}).
+We evaluate the effect of parametric perturbations of the form \( \vW \leftarrow \vW + \vV\) with \(\vV_{i, j}\iidsample\mathcal{N}(0,\nicefrac{1}{100})\) on a network of size \(N = 6\) (forming an hexagon, see also Sec.~\ref{sec:supp:ring_perturbations}). %with \(J_{E} = 4\) and \(J_{I}=-2.4\) by identifying all bifurcations.
 We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:bio_rings}A).
 As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
 The probability of each type of bifurcation was numerically estimated (Sec.~\ref{sec:supp:headdirection}).
-There are several additional co-dim 1 bifurcations with measure zero (Fig.~\ref{fig:meaure_zero_perturbations}).
+%There are several additional co-dim 1 bifurcations with measure zero (Fig.~\ref{fig:meaure_zero_perturbations}).
 Surprisingly, the number of fixed points is maintained throughout a range of perturbation sizes and hence depends only on the direction of the perturbation (Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}).
 %The space of possible perturbations in Sec. ~\ref{sec:imt} is very large. To be able to form an image of what happens in the theorem we will work out the effect of some examples of perturbations.
 
@@ -330,7 +330,7 @@ For such networks the number of fixed points does change with the size of the pe
 \ptitle{Low-rank ring attractor model} %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
 In the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining the overlap of the right- and left-connectivity vectors (see for more details  Sec.~\ref{sec:supp:lowrank}).
-However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points arranged on a ring (Fig.~\ref{fig:lara_bifurcations}).
+However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points arranged on a ring (Fig.~\ref{fig:lara_bifurcations}B).
 
 \ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
 Approximate ring attractors can be constructed by constraining the connectivity so that the networks Jacobian satisfies certain requirements for a ring attractor to exist~\citep{pollock2020} (see for more details Sec.~\ref{sec:supp:empj}).
@@ -378,7 +378,7 @@ Do these approximations appear as natural solutions to the memory storage proble
 %\section{Theory of gracefully degrading continuous attractors}\label{sec:theory}
 \section{Theory of Approximate Continuous Attractors}\label{sec:theory}
 In this section, we theoretically answer in an implementation-agnostic manner the degradation questions posed from the exploration.
-To do so, we apply invariant manifold theory to continuous attractor models and translate the results for the neuroscience audience.
+To do so, we apply invariant manifold theory to continuous attractor models and translate the results for the neuroscience audience (see also Sec.~\ref{sec:supp:simplifications}).
 %Our emphasis in this paper centers on investigating the distinctive properties of continuous attractors that prove essential for specific tasks, with a deliberate exclusion of considerations related to learning chaotic dynamics.
 %\subsection{Invariant Continuous Attractor Manifold Theory}\label{sec:imt}
 \subsection{Persistent Manifold Theorem}\label{sec:imt}
@@ -485,11 +485,9 @@ There exists a perturbation with uniform norm at most \(\eta\) that induces a bi
 \end{prop}
 
 An explicit perturbation is derived in Sec.~\ref{sec:supp:proofprop1}.
-%A perturbation can be constructed by \(\vp(\vx) = \int_{\manifold_{\epsilon}} - \delta(\vx-\vy)\vf(\vy)\dm{\vy}\), see for the proof Sec.~\ref{sec:supp:proofprop1}.
 This makes the uniform norm of the vector field on a (slow) manifold a useful measure to express the distance of an approximation to a continuous attractor.
-%
-Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has other dynamics than just slow, as long as that is happening inside submanifolds to which the output mapping is invariant (see Theorem~\ref{thrm:near_ca}).
-In this case, we can guarantee that the system can be perturbed onto a decomposable system where one of the subsystems has a slow flow.
+Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has additional dynamics to which the output mapping is invariant (see Theorem~\ref{thrm:near_ca}).
+These systems can be perturbed onto a decomposable system where one of the subsystems has a slow flow.
 
 \subsection{Relevance of dynamics on the memory performance of the slow manifold}\label{sec:attractor_bif}
 
@@ -544,8 +542,9 @@ Our theory shows that this apparent fragility is not as devastating as previousl
 We show that as long as the attractive flow to the memory representation manifold is fast and the flow on the manifold is sufficiently slow, it represents an approximate continuous attractor.
 Furthermore, our theory bounds the error in working memory incurred over time for such approximate continuous attractors.
 Therefore, the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory, even if the ideal continuous attractor is never observed in practice.
-Experimental observations that indicate the slowly changing population representations during the ``delay periods'' where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
-For more intuitive explanations of the concepts, refer to Sec.\ref{sec:supp:simplifications}.
+Experimental observations that indicate the slowly changing population representations during the ``delay periods'' where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. 
+Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
+
 
 
 \section{Numerical Experiments on Task-optimized Recurrent Networks}\label{sec:experiments}
@@ -566,29 +565,28 @@ Building upon prior work, which has shown their capabilities on such tasks, we t
 (1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection,cueva2021continuous}
 or (2) perform a memory-guided saccade task for a ring variable \citep{wimmer2014,xie2022neural} (details in Sec.~\ref{sec:supp:tasks}).
 We numerically minimized the loss \(L\) which was the mean squared error (MSE) between the network output \(\mathbf{y}(t)\) and the target output \(\hat{\mathbf{y}(t)}\):
-\(L_{MSE} \coloneqq \langle m_{i, t}(y_{i, t}-\hat y_{i, t})^{2}\rangle_{i, t}, \)
-with a mask \(m_{i, t}\) with \(i\) the index of the output units and \(t\)  the index for time.
-We implemented a mask, \(m_{i, t}\), for modulating the loss with respect to certain time intervals.
+\(L_{MSE} \coloneqq y_{i, t}-\hat y_{i, t})^{2}, \).
+%We implemented a mask, \(m_{i, t}\), for modulating the loss with respect to certain time intervals.
 We trained vanilla RNNs with ReLU, tanh, and rectified tanh activation functions. For each activation function and each network architecture (vanilla RNN, LSTM, and GRU), we trained 10 networks per hidden size: 64, 128, and 256.
 
 
 
  %method
 \subsection{Numerical Fast-Slow Decomposition}\label{sec:fastslowmethod}
-For each trained network, we find the slow manifold by integrating the autonomous dynamics then selecting the parts of the trajectory that have a speed slower than a threshold.
+For each trained network, we find the slow manifold by integrating the autonomous dynamics, then selecting the parts of the trajectories that have speed slower than a threshold (Sec.~\ref{sec:supp:fastslowmethod}).
 %We assess the intrinsic dimensionality of the manifold with the Method Of Moments algorithm \citep{amsaleg2018extreme, altan2021estimating}.
 %https://scikit-dimension.readthedocs.io/en/latest/skdim.id.MOM.html#skdim.id.MOM
 We identify the points on the invariant manifold from the simulated trajectories that are projected closest to a set of points in the output space relevant to the task after convergence, i.e. on the target ring.
-We parametrize the one-dimensional invariant manifold \(\manifold\) by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
+We parametrize the one-dimensional invariant manifold by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}A and B).
 Normal hyperbolicity is measured by a gap in the timescales of the system (measured from the eigenvalue spectrum of the linearization along points on the invariant manifold, Fig.~\ref{fig:fastslow_decomposition}E and F).
 %Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
 
-We find the fixed points on the invariant ring by identifying regions where the direction of the flow flips for a dense set of points on the found invariant manifold.
-We assess the direction through projection onto the output mapping and calculate the angular flow.
+We find the fixed points on the invariant ring by identifying regions where the direction of the flow flips (Sec.~\ref{sec:supp:fpf}).
+%We assess the direction through projection onto the output mapping and calculate the angular flow.
 Stable fixed points are identified where the flow directions are both pointing towards this flip point,
-while saddle nodes are identified where they are pointing away (Fig.~\ref{fig:fastslow_decomposition}A and B.) % (filled and hollow circles Fig.~\ref{fig:fastslow_decomposition}A and B for stable and saddle fixed points respectively).
-We find that long integrated trajectories of the network converge to the found stable fixed points through this independent method.
+while saddle nodes are identified where they are pointing away (Fig.~\ref{fig:fastslow_decomposition}A,B.) % (filled and hollow circles Fig.~\ref{fig:fastslow_decomposition}A and B for stable and saddle fixed points respectively).
+
 
 
 \subsection{Variations in the Topologies of the Networks}\label{sec:topologies}
@@ -601,9 +599,6 @@ These solutions are consistent with observations that persistent activity relies
 Less commonly found topologies includes the slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
 This solution in turn is consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing, Park2023a} and neuronal circuits underlying persistent representations despite time-varying activity~\citep{druckmann2012neuronal}.
 All stability structures (fixed points and limit cycles) are mapped close to the target output circle (Figs.~\ref{fig:fastslow_decomposition_otuput},~\ref{fig:im_rep},~\ref{fig:im_all}).
-
-
-
 
 We verify that this gap exists in the trained networks shown in Fig.~\ref{fig:fastslow_decomposition}B and C.
 The largest  eigenvalue of the Jacobian is non-zero (the invariant manifold is not a continuous attractor), but it is removed from the second largest, see Fig.~\ref{fig:fastslow_decomposition}E and F.
@@ -629,7 +624,7 @@ The fixed point topologies show a lot of variation across networks (Fig.~\ref{fi
 Previously, it has been observed that fixed point analysis has a major limitation, namely, that the number of fixed points must be equal across compared networks  \citep{maheswaranathan2019universality}.
 Our methodology effectively addresses and overcomes this limitation.
 The universal structure of continuous attractor approximations as slow invariant manifolds allows us to connect different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:attractor_bif}).
-For results on LSTMs and GRUs and a higher dimensional task, see Fig.~\ref{fig:angular_losses_lstm_gru} and Fig.~\ref{fig:davit}, respectively.
+For results on LSTMs and GRUs and a higher dimensional task, see Sec.~\ref{sec:supp:lstmgru} and  Sec.~\ref{sec:supp:davit}, respectively.
 
 
 
@@ -649,7 +644,7 @@ Approximating the system as a limit cycle results in a memory trace that gradual
 Conversely, the alternative approximation's memory states are contingent upon the quantity and positioning of stable fixed points within the system.
 We describe in detail the generalization properties of the trained networks\footnote{We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}B).} 
 on the angular velocity integration task at two different time scales:  asymptotic and finite time.
-We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}B).
+%We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}B).
 
 %\setlength\belowcaptionskip{-3ex}
 \begin{figure}[tbhp]
@@ -1846,6 +1841,11 @@ x^*_{i}<0 \text{   for  	 } i\in\sigma.
 We bruteforce check all possible supports to find all fixed points.
 We use the eigenvalues of the Jacobian to identify the stability of the found fixed points.
 
+
+We evaluate the effect of parametric perturbations n a network of size \(N = 6\) with \(J_{E} = 4\) and \(J_{I}=-2.4\) by identifying all bifurcations (Fig.~\ref{fig:bio_rings}A).
+
+
+
 \paragraph{Connecting orbits}
 We approximate connecting orbits through numerical integration of the ODE intialized in close to the identified saddle points along the unstable manifold.
 
@@ -2747,7 +2747,7 @@ The total time length of a trial is 512 steps.
 The time delay to the output cue was sampled from
 \begin{align}
 T_{delay} \sim \mathcal{U}(50, 400).
-\end{align}We applied a mask \(m_{i, t}=0\) for 5 time steps (\(t = T_{delay}+j\) for \(j = 0,\dots 4\)) after the go cue.
+\end{align}We applied a mask \(m_{i, t}=0\) for 5 time steps (\(t = T_{delay}+j\) for \(j = 0,\dots 4\)) after the go cue (Eq.~\ref{eq:loss}).
 
 
 
@@ -2839,7 +2839,7 @@ Now subsitute \(\Delta t = 1\):
  \end{align}
 If we introduce the noise term \(\zeta_{t} = \sigma \Delta W_{t}\), which represents the discrete-time noise, we have derived the discrete-time equation: \[ \vx_{t} = \phi(\win \vI_{t} + \vW \vx_{t - 1} + \vb) + \zeta_{t}. \]
 
-So, assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation (see Sec.\ref{sec:discretization}):
+So, assuming Euler-Maruyama integration with unit time step, the discrete-time RNN of~\eqref{eq:RNN:discrete} corresponds to the stochastic differential equation:
 \begin{align}
     \dm{\vx} &= -\vx\,\dm{t} + \phi(\win \vI(t) + \vW \vx + \vb)\,\dm{t} + \sigma\,\dm{W}. \label{eq:RNN:continuous}
 \end{align}where \(\dm{W}\) is a Wiener process that models the intrinsic state noise in the brain.
@@ -2901,10 +2901,15 @@ The initial hidden state was initialized using the output to recurrent mapping m
 Adam optimization with \(\beta_{1} = 0.9\) and \(\beta_{2} = 0.999\) was employed with a batch size of 64 and training was run for 5000 gradient updates.
 The batches were generated on-line, similar to how animals are trained with a new trial instead of iterating through a dataset of trials.
 
-
 The best learning rate \(10^{-2}\) was chosen from a set of values \(\{10^{-2},10^{-3},10^{-4},10^{-5}\}\) by 5 initial runs for all nonlinearity and size pairings with the lowest average loss after 100 gradient steps.
 Training a single network took around 10 minutes on a CPU and occupied 10 percent of an 8GB RAM.
 
+We numerically minimized the loss \(L\) which was the mean squared error (MSE) between the network output \(\mathbf{y}(t)\) and the target output \(\hat{\mathbf{y}(t)}\):
+\begin{equation}\label{eq:loss}
+L_{MSE} \coloneqq \langle m_{i, t}(y_{i, t}-\hat y_{i, t})^{2}\rangle_{i, t}, 
+\end{equation}
+with a mask \(m_{i, t}\) with \(i\) the index of the output units and \(t\)  the index for time.
+We implemented a mask, \(m_{i, t}\), for modulating the loss with respect to certain time intervals for the memory guided saccade task (see Sec.~\ref{sec:supp:tasks}).
 
 Although some of the models did not learn the task, most networks converged to a loss below \(10^{-2}\) (Fig.~\ref{fig:training_losses}).
  \begin{figure}[tbhp]
@@ -2946,15 +2951,15 @@ Finally, we characterize the memory capacity of the network by calculating the e
  We took the cutoff to identify the slow manifold to be \(10^{-3}\) of the highest speed along each trajectory.
  We believe that this guarantees the identification of the slow manifold in a system that has a fast-slow decomposition.
  We sampled 1024 points from these points to fit a periodic, cubic spline (black line in Fig.~\ref{fig:fastslow_decomposition},~\ref{fig:im_rep},~\ref{fig:im_all}).
- %fast-slow
- % inv man
 
 
-\paragraph{Finding fixed points}
+
+\paragraph{Finding fixed points}\label{sec:supp:fpf}
  We then find fixed points by identifying where the flow reverses by sampling the direction of the local flow for 1024 sample points along the found invariant manifold.
+ We assess the direction through projection onto the output mapping and calculate the angular flow.
 If the flow is pointing towards a point where the flow reverses then we consider there to be a stable fixed point.
 If the flow s pointing away from a reversal point then we consider the fixed point there to be a saddle.
-
+We find that long integrated trajectories of the network converge to the found stable fixed points through this independent method.
 
 
 \paragraph{Eigenspectrum along the invariant manifold}
@@ -3009,7 +3014,7 @@ For LSTMs and GRUs the  vector field was approximated by taking the difference t
 
 
 \newpage
-\subsection{LSTM and GRU results}
+\subsection{LSTM and GRU results}\label{sec:supp:lstmgru}
 
 The trained LSTMs and GRUs share the same pattern observed in the trained vanilla RNNs: a ring slow invariant manifold (Fig.~\ref{fig:angular_losses_lstm_gru}C and D).
 The fixed point topologies in the LSTM and GRU networks show a lot of variation in the number of fixed points, paralleling the systems adjacent to continuous attractors from Fig.~\ref{fig:lara_bifurcations}, as seen in Figure~\ref{fig:angular_loss}D. These variations are similar to those discussed in Figures~\ref{fig:angular_losses_lstm_gru}B.
@@ -3056,7 +3061,7 @@ These results underline the universality of our findings beyond vanilla RNNs.
 
 
 \newpage
-\subsection{Double angular integration task}
+\subsection{Double angular integration task}\label{sec:supp:davit}
 
 The analysis of networks trained on the double angular velocity integration task indicates a torus shaped invariant slow manifold as predicted by our theory (Fig.\ref{fig:davit}A and B).
 Furthermore, the angular memory error (measured as the sum of the two separate angular errors) of the trained networks show the same conformity to the theoretical bound as defined by the uniform norm of the vector field on the identified invariant manifold.
@@ -3077,7 +3082,7 @@ These results underline the universality of our findings beyond 1D tasks.
 
 
 
-\subsubsection{Methods}
+\subsubsection{Methods}\label{sec:supp:fastslowmethod}
 \paragraph{Fixed point search}
 In our study, we implemented a  method to analyze the convergence and uniqueness of fixed points within our data.
  Specifically, we considered a convergence threshold of \(10^{-4}\), meaning that the iterative process was halted when the change in the solution between consecutive iterations fell below this value, indicating convergence. Additionally, to assess the uniqueness of the fixed points, we applied a broader threshold of  \(10^{-2}\), ensuring that any fixed points identified within this margin were considered distinct.
