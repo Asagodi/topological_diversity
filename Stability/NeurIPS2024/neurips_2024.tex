@@ -346,20 +346,11 @@ Is this lawful degradation a universal phenomenon?
  And if so, how does it relate to the size of the perturbation? And what are the implications for the memory performance of these approximations? (Sec.~\ref{sec:theory}).
 Do these approximations appear as natural solutions to the memory storage problem? (Sec.~\ref{sec:experiments}).
  And if so, how well do they generalize to longer time requirements? (Sec.~\ref{sec:generalization}).
-In conclusion, are approximate continuous attractors ubiquitous and well-behaved?
- And therefore, are continuous attractors in practice still useful as an idealized model of how animals represent continuous variables? (Sec.~\ref{sec:converse}).
+%In conclusion, are approximate continuous attractors ubiquitous and well-behaved?
+ Finally, are continuous attractors in practice still useful as an idealized model of how animals represent continuous variables? (Sec.~\ref{sec:converse}).
 
-% Our theory explains this phenomenon as follows. %MOVE TO LATER
-% We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the \(m^{1}, m^{2}\) plane (independent of the parameter \(g\) for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
-% %This implies that the ring attractor network
-% For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
 
-%\mpcomment{are we going to describe EMPJ here?}
-%how to show
-%normal hyperbolicity index: speed normal/tangent to manifold
-%fenichel brakes down
-%uniform bound approximation
-%Is this only true for ReLU parameterized RNNs, or does it generalize?
+
 
 %In this paper, we lay out a new theory of general continuous-valued memory to answer the following questions:
 %\begin{enumerate}
@@ -406,12 +397,12 @@ To describe an arbitrary bifurcation of interest, we introduce a sufficiently sm
 \end{align}where \(\epsilon = 0\) gives the condition for the continuous attractor \(\dot{\vy} = \mathbf{0}\).
 We denote the corresponding manifold of \(l\) dimensions \(\manifold_{0} = \{(\vy,\vz) \mid \vh(\vy,\vz, 0) = \mathbf{0} \}\).
 
-We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic, meaning that the Jacobians \(\nabla_{\vz} \vh\) evaluated at any point on the \(\manifold_{0}\) has \(d - l\) eigenvalues with their real part uniformly bounded away from zero, and \(\nabla_{\vy} \vg\) has \(l\) eigenvalues with zero real part.
-%intuition for \(C^{1}\)-diffeomorphisms:
+We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic: the Jacobians \(\nabla_{\vz} \vh\) evaluated at any point on the \(\manifold_{0}\) has \(d - l\) eigenvalues with their real part uniformly bounded away from zero, and \(\nabla_{\vy} \vg\) has \(l\) eigenvalues with zero real part.
 %Roughly speaking, \(f\) is normally hyperbolic at \(N\) if the tangent map \(Tf\), restricted to the normal direction to \(N\), is hyperbolic (it expands and contracts complementary directions) and if it dominates the restriction of \(Tf\) to the tangent direction \(TN\) (that is, expansion and contraction in the tangent direction, if any, are weaker than those in the normal direction).
 More specifically, for continuous attractors, the real part of the eigenvalues of \(\nabla_{\vz} \vh\) will be negative, representing sufficiently strong attractive flow toward the manifold.
 Equivalently, for the ODE, \(\dot{\vx} = \vf(\vx)\), the variational system is of constant rank and has exactly \((d - l)\) eigenvalues with negative real parts uniformly away from zero and \(l\) eigenvalues with zero real parts everywhere along the continuous attractor.
-Informally, normal hyperbolicity guarantees that the perturbations change the structure of the manifold before they can destroy the attractiveness of the manifold.
+
+
 
 \setlength\belowcaptionskip{-5ex}
 \begin{SCfigure}[10][bthp]
@@ -429,24 +420,25 @@ For any parameterization \(\vg\), \(\epsilon > 0\) induces a bifurcation of the 
 What can we say about the fate of the perturbed system?
 The continuous dependence theorem~\citep{Chicone2006} says that the trajectories will change continuously as a function of \(\epsilon\) without a guarantee on how quickly they change.
 However, the topological structure and the asymptotic behavior of trajectories change discontinuously due to the bifurcation.
-Yet, surprisingly, there is a strong connection in the geometry due to Fenichel's theorem~\cite{fenichel1971}.\footnote{The Persistent Manifold Theorem has been successfully applied previously in neuroscience, for example to reduce the dimensionality of the original Hodgkin-Huxley model \citep{hodgkin1952quantitative} to two dimensions \citep{rinzel1985excitation} and to further simplify it as the theta neuron model \citep{ermentrout1986parabolic}. See also \citep{Kopell1996} and \citep{ermentrout2010}.}
+Yet, surprisingly, there is a strong connection in the geometry due to Fenichel's theorem~\cite{fenichel1971}.\footnote{The Persistent Manifold Theorem has been successfully applied previously in neuroscience, for example to reduce the dimensionality \citep{rinzel1985excitation,ermentrout1986parabolic} of the original Hodgkin-Huxley model \citep{hodgkin1952quantitative}. See also \citep{Kopell1996} and \citep{ermentrout2010}.}
 We informally present a special case due to~\citet{Jones1995}:
 
 \setlength\belowcaptionskip{2ex}
 
 \begin{theorem}[Persistent Manifold]\label{theorem:persistent}
 Let \(\manifold_{0}\) be a connected, compact\footnote{See \citep{eldering2013normally} for results of persistence of noncompact invariant manifolds.}, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
-For a sufficiently small perturbation \(\epsilon > 0\), there exists a manifold \(\manifold_{\epsilon}\) diffeomorphic to \(\manifold_{0}\) and locally invariant under the flow of Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}.
+For a sufficiently small perturbation \(\epsilon > 0\), there exists a manifold \(\manifold_{\epsilon}\) diffeomorphic to \(\manifold_{0}\) and  invariant under the flow of Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}. %locally
 %Moreover, \(\manifold_{\epsilon}\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_{0}\) and has the same smoothness as \(g\) and \(h\).
 \end{theorem}
 
 The manifold \(\manifold_{\epsilon}\) is called the \emph{slow manifold} which is no longer necessarily a continuum of equilibria.
-However, the local invariance implies that trajectories remain within the manifold except potentially at the boundary.
+However, the  invariance implies that trajectories remain within the manifold except potentially at the boundary. %local
 Furthermore, the non-zero flow on the slow manifold is slow and given in the \(\epsilon \to 0\) limit as \(\RN{\vy}{\tau} = \vg(c^{\epsilon}(\vy), \vy, 0)\) where \(\tau = \epsilon t\) is a rescaled time and \(c^{\epsilon}(\cdot)\) parameterizes the \(l\) dimensional slow manifold.
 In addition, the stable manifold of \(\manifold_{0}\) is similarly persistent~\cite{Jones1995}, implying that the manifold \(\manifold_{\epsilon}\) remains attractive.
 Finally, the persisting invariant manifold is very close in space to the original continuous attractor (see also Theorem ~\ref{theorem:originalpersistent}).
 %\pscomment{\textbf{Suggestion}:implying the stability of the manifold \(\manifold_{\epsilon}\) is preserved.}
 
+%Informally, normal hyperbolicity guarantees that the perturbations change the structure of the manifold before they can destroy the attractiveness of the manifold.
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow rerparametrization of the BLA
 \footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems). So we consider systems that are at least continuous, but some extra conditions apply if a system is not differentiable (discontinuous systems are not considered in our theory).}).
@@ -655,8 +647,7 @@ We will investigate to what extent the networks have the intended memory necessa
 The two possible approximations of a ring attractor discussed in Sec.~\ref{sec:critique} exhibit markedly distinct generalization characteristics.
 Approximating the system as a limit cycle results in a memory trace that gradually diminishes over time.
 Conversely, the alternative approximation's memory states are contingent upon the quantity and positioning of stable fixed points within the system.
-We describe in detail the generalization properties of the trained networks%
-\footnote{We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}B).}%
+We describe in detail the generalization properties of the trained networks\footnote{We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}B).} 
 on the angular velocity integration task at two different time scales:  asymptotic and finite time.
 We tested all networks with a validation set and took a cutoff for the normalized MSE for the networks we consider for the analysis at -20 dB (Fig.~\ref{fig:angular_loss}B).
 
@@ -679,7 +670,7 @@ We tested all networks with a validation set and took a cutoff for the normalize
 Aside from the angular velocity integration component of the task, the trained networks learn to store a memory of an angular variable.
 We assess the performance of the network to store the memory of the angle over time.
 The networks typically perform well on the timescale on which they have been trained \(T_{1} = 256\) time steps (Fig.~\ref{fig:angular_loss}C).
-This loss is, as theoretically predicted (Prop.~\ref{prop:ub}), bounded by the uniform norm of the vector field on the invariant manifold, and therefore by the distance to a continuous attractor (Prop.~\ref{prop:revival}) (Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and~\ref{sec:supp:ub}).
+This loss is, as theoretically predicted (Prop.~\ref{prop:ub}), bounded by the uniform norm of the vector field on the invariant manifold, and therefore by the distance to a continuous attractor (Prop.~\ref{prop:revival}, Fig.~\ref{fig:angular_loss}A,  see Sec.~\ref{sec:supp:vf} and~\ref{sec:supp:ub}).
 
 
 \ptitle{Asymptotic time}
@@ -699,7 +690,8 @@ Finally, we characterize the \emph{memory capacity} of the network by calculatin
 The mean accumulated error at the time at which the task was trained has an exponential relationship with the number of fixed points (Fig.~\ref{fig:angular_loss}A).
 Furthermore, this error is bounded by the mean distance between stable and unstable fixed points (red dots in Fig.~\ref{fig:angular_loss}D).
 This is another indication that the networks rely on a ring invariant manifold to implement the task.
-Networks with different numbers of fixed points might have the same performance on the finite time scale (bounded by \(T_{1}\uniformNorm{\varphi}\) for the trial time \(T_{1}\) and the uniform norm of the vector field on the invariant slow manifold \(\uniformNorm{\varphi}\)) but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}C).
+Networks with different numbers of fixed points might have the same performance on the finite time scale (bounded by \(T_{1}\uniformNorm{\varphi}\)) %for the trial time \(T_{1}\) and the uniform norm of the vector field on the invariant slow manifold \(\uniformNorm{\varphi}\))
+ but have vastly different generalization properties because they differ in the number of fixed points (Fig.~\ref{fig:angular_loss}C).
 
 
 \section{Approximate Slow Manifolds are near Continuous Attractors}\label{sec:converse}
@@ -1970,6 +1962,9 @@ P_{ij} = \frac{m_{i}^{(1)} n_{j}^{(1)}}{N} + \cdots + \frac{m_{i}^{(r)} n_{j}^{(
 \end{equation} and is in principle characterized by \(2r\) vectors \(m^{(k)}\) and \(n^{(k)}\).
 
 
+
+
+
 %Rank-two structures with internal pairwise overlap
 We consider structured matrices where the two connectivity pairs \( m^{(1)} \) and \( n^{(1)} \), \( m^{(2)} \) and \( n^{(2)} \) share two different overlap directions, defined by vectors \( y_{1} \) and \( y_{2} \). We set:
 \begin{align}
@@ -1995,7 +1990,10 @@ We keep the following parameters for the analysis:
 
 
 
-
+ Our theory explains the phenomenon of the existence of a ring invariant manifold in these low-rank networks as follows. %MOVE TO LATER
+ We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the \(m^{1}, m^{2}\) plane (independent of the parameter \(g\) for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
+This implies that the ring attractor network
+ For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
 
 
 
