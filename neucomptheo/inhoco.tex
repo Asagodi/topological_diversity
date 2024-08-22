@@ -133,6 +133,15 @@ Flexibility: Both computers and brains are general‑purpose devices: they can o
 cognition requires not only flexibility, which in turn requires universality, but also that semantic interpretability requires universality.\footnote{Note we mean ‘interpretability’ in a dynamical system sense, i.e. such that the relevant topological and geometrical properties of the system can be understood.}
  In other words, \citep{pylyshyn1984} has claimed that finite‑state machines (FSM) cannot be semantically interpretable.	
 %This is exactly why Newell and Simon made \emph{universal computation} part of their hypothesis.
+
+
+\subsection{Input}
+Inputs: finite length sequences + ``fast'' compared to autonomous dynamics
+
+
+
+\subsection{Abstracting out time}
+
 We define the implemented (neural) computation as an input-output mapping for times $t\in T\subset\reals$ defined by the function $\varphi:\reals^T\rightarrow\reals^K$:\footnote{We discuss some restrictions on the type of mapping we consider in Sec.~\ref{sec:jar}.}
 \begin{equation}
 o(t) = \varphi(\{u(t)\}_{t\in T})
@@ -150,6 +159,8 @@ where $f:\reals^N\rightarrow\reals^N$, is a Lipschitz continuous function w.r.t.
 while the output is given a simple (linear, monotonic) mapping $g:\reals^N\rightarrow\reals^K$.
 
 
+
+
 \begin{definition}
 Infinite horizon: agnostic to decoding time
 \end{definition}
@@ -159,7 +170,7 @@ Infinite horizon: agnostic to decoding time
 
 
 
-
+\subsection{Output}
 \begin{remark}
 The output can only change if there is a change in the input. 
 So cued output is allowed, but timing tasks are excluded.
@@ -228,6 +239,13 @@ E.g.  FSM equivalent DS: only stable fixed points as memory states (because of e
 but also CAs are not allowed (because of error/perturbation effect)
 
 
+Equivalence with $\epsilon$-pseudoattractors in \citep{casey1996}
+
+
+\paragraph{S-type robustness requires $\epsilon$-pseudoattractors}
+
+
+
 \section{Theorems on infinite horizon neural computation on a compact domain}\label{sec:theorems}
 
 
@@ -235,13 +253,13 @@ but also CAs are not allowed (because of error/perturbation effect)
 Q: What form can the states in the finite-state machine take?
 A: They are the Morse sets.
 
-Young’s account of basic memory unitsmnemons in his terminology—is not entirely loose, as the mnemon is supposed to “record one bit of information” \citep{young1978}. %p.87
+Young’s account of basic memory unitsmnemons in his terminology—is not entirely loose, as the mnemon is supposed to ``record one bit of information''\citep{young1978}. %p.87
 Memory Units in Cephalopods (Sec.4.1 in \citep{milkowski2018})
-Gifford Lectures (Young 1978), instead of framing memory in terms of static models or representations, he uses the term “program.”: expresses a concept of hierarchical and dynamical control
+Gifford Lectures (Young 1978), instead of framing memory in terms of static models or representations, he uses the term ``program'': expresses a concept of hierarchical and dynamical control
 
-“programs of the brain” are related to cyclical operations of the nervous system, as driven by physiological rhythms
+``programs of the brain'' are related to cyclical operations of the nervous system, as driven by physiological rhythms
 
-Young framed the computational principles of two memory systems of the octopus in terms of distributed processing in “serial networks, with recurrent circuits” (Young 1991, p. 200).
+%Young framed the computational principles of two memory systems of the octopus in terms of distributed processing in “serial networks, with recurrent circuits” (Young 1991, p. 200).
 
 \begin{theorem}
 Asymptotic neural computation that is bounded (that happens on a compact domain) has to rely on Morse sets to represent (input, internal and output states).
@@ -391,11 +409,16 @@ d_{\infty,x_0}(LA, ALA) \coloneqq \lim_{T\rightarrow\infty} \frac{1}{T} \int_0^T
 \end{equation}
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%
+ \newpage
+ \addcontentsline{toc}{section}{References}
+ \bibliographystyle{ieeetr}
+ \bibliography{ref.bib}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \section{Appendix}
 \subsection{Dynamical systems theory}\label{sec:dst}
 
@@ -459,8 +482,7 @@ A subset of $\mathcal{R}_\epsilon(f)$, $\mathcal{A}$, is an$\epsilon$-pseudoattr
 
 \subsubsection{Equivalence}
 \paragraph{Bisimulation}
-Bisimulation of dynamical systems is shown to be a concept which unifies the system-theoretic concepts of state space
-equivalence and state space reduction, and which allows to study equivalence of systems with non-minimal state space dimension. 
+Bisimulation of dynamical systems is shown to be a concept which unifies the system-theoretic concepts of state space equivalence and state space reduction, and which allows to study equivalence of systems with non-minimal state space dimension. 
 %same computation, different implementations
 The notion of bisimulation is especially powerful for ’non-deterministic’ dynamical systems, and leads in this case to a notion of equivalence which is finer than equality of external behavior.
 
@@ -513,9 +535,5 @@ To locate stable fixed points used for task computations, we arrest trials at re
 
 
 
- \newpage
- \addcontentsline{toc}{section}{References}
- \bibliographystyle{ieeetr}
- \bibliography{ref.bib}
 
 \end{document}
