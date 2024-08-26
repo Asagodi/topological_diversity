@@ -212,7 +212,7 @@ We will now study some examples of continuous attractors and how perturbations c
 \subsection{Motivating example: bounded line attractor}\label{sec:motivating:line}
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=\textwidth]{lara_bifurcations_simple}
+  \includegraphics[width=\textwidth]{lara_bifurcations_s}
   \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
   Some of the structure seems to remain; there is an invariant manifold that is topologically equivalent to the original continuous attractor.
     \textbf{(A)} Phase portraits for the bounded line attractor (Eq.~\eqref{eq:TLN}).
@@ -301,7 +301,7 @@ This continuum of fixed points forms a \(N\)-sided polygon. %: a one-dimensional
 
 \begin{figure}[tbhp]
      \centering
-  \includegraphics[width=\textwidth]{bio_rings}
+  \includegraphics[width=\textwidth]{bio_rings_s}
        \caption{ Perturbations of different implementations and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact. For each model, the network dynamics is constrained to a ring which in turn is populated by stable fixed points (green) and saddle nodes (red).
        (A) 	Perturbations to the ring attractor \citep{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to \(2N\) (stable and saddle points are paired).
        (B) 	Perturbations to a tanh approximation of a ring attractor \citep{seeholzer2017efficient}.
@@ -607,7 +607,7 @@ This implies that normal hyperbolicity for these trained networks holds.
 %Fig 4
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=.95\textwidth]{fastslow_decomposition_m_normhyp}
+  \includegraphics[width=.95\textwidth]{fastslow_decomposition_normhyp_s}
   \caption{Slow manifold approximation of different trained networks on the memory-guided saccade and angular velocity integration tasks.
  (A1) Output of an example trajectory on the angular velocity integration task.
  (A2) Output of a example trajectories on the memory-guided saccade task.
@@ -2082,7 +2082,7 @@ Fig.~\ref{fig:sphere_empj} illustrates the stability structures of  the approxim
 Similar to the torus,  points initialized off the sphere converge onto the sphere attractor (Fig.~\ref{fig:sphere_empj}).
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{sphere_empj}
+\includegraphics[width=\textwidth]{sphere_empj_s}
 \caption{The approximate sphere attractor.
 (A)  Points initialized on a grid off of the sphere (blue) converge onto the torus attractor (red).
 (B) The found fixed points on the approximate sphere (green: stable, red: saddle).
@@ -2792,7 +2792,7 @@ Tangentially, we would also like to point out that we assume that neural dynamic
 
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=\textwidth]{fastslow_decomposition_outputs2}
+  \includegraphics[width=\textwidth]{fastslow_decomposition_outputs_s}
   \caption{Output projection of slow manifold approximation of the trained networks of Fig.~\ref{fig:fastslow_decomposition}. All stability strutures are colored according to the decoded angle shown in Fig.~\ref{fig:angular_task}B, target output circle shown in red.
  (A) An example fixed-point type solution to the memory-guided saccade task (Fig.~\ref{fig:fastslow_decomposition}B).
  (B) An example of a found solution to the angular velocity integration task (Fig.~\ref{fig:fastslow_decomposition}C).
@@ -2914,7 +2914,7 @@ We implemented a mask, \(m_{i, t}\), for modulating the loss with respect to cer
 Although some of the models did not learn the task, most networks converged to a loss below \(10^{-2}\) (Fig.~\ref{fig:training_losses}).
  \begin{figure}[tbhp]
      \centering
-    \includegraphics[width=0.75\textwidth]{training_losses}
+    \includegraphics[width=0.75\textwidth]{training_losses_s}
        \caption{Training loss across gradient steps.}\label{fig:training_losses}
 \end{figure}
 
@@ -3054,7 +3054,7 @@ These results underline the universality of our findings beyond vanilla RNNs.
 \newpage
 \begin{figure}[tbhp]
      \centering
-    \includegraphics[width=\textwidth]{im_all_3x3}
+    \includegraphics[width=\textwidth]{im_all_3x3_s}
        \caption{The identified invariant manifolds with the fixed points (cyan for stable, orange for saddle and black for unstable) for all inferred networks (except the ones in Fig~\ref{fig:im_rep}).}\label{fig:im_all}
 \end{figure}
 
