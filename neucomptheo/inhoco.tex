@@ -44,18 +44,69 @@
 \maketitle
 
 
+\section*{Abstract}
+We present a novel framework for characterizing computations in neural networks operating on compact domains, utilizing Conley’s decomposition theorem to analyze the asymptotic dynamics of these systems. Our approach elucidates the role of chain-recurrent sets in shaping the nature of computations and identifies memory states as Morse sets, which are crucial for understanding neural network behavior.
+
+The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time.
+We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains, where memory states are the Morse sets of the system.
+The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by the preimage of the input. 
+Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
+
+
+
+
+\section*{Background}%{Relevant literature}
+
+generalized theory for neural time-invariant computing \citep{jaeger2021,jaeger2023theory}:
+DSs
+
+
+
+\paragraph{Perfect}
+- Memory 
+- Integration of input with memory
+- Generation of output
+
+
+\paragraph{Robustness}
+\citep{Park2023a}
+
+
+
+\paragraph{Memory states}
+Similar: \citep{casey1996}
+
+%1142-1143:
+For the sake of understanding the results in this paper, one can think of attractors rather than $\epsilon$-pseudoattractors since it follows from the definition that the existence of an $\epsilon$-pseudoattractor will imply the existence of an attractor for the noiseless system, and if the noiseless system's attractor is sufficiently robust (as attracting fixed points, in particular, generally are) then there will be a corresponding $\epsilon$-pseudoattractorfor sufficiently low levels of noise.
+
+Intuitively, an $\epsilon$-pseudoattractor is just a very robust attractor, and corresponds to an oscillation or a steady state of the system that is robust in the sense that a slightly perturbed system will settle to one of these asymptotic behaviors that is stable in the sense that once the system has been perturbed into one of these behaviors the ambient noise in the system will not be sufficient to kick the system out of that behavior [though changing the input to the system will often do so (and will necessarily do so in RNNs performing certain types of computation which we will describe).
+
+$\epsilon$-pseudoattractors have S-type robustness
+
+$\epsilon$-pseudoattractors have D-type robustness iff they are normally-hyperbolic
+
+
+
+Slightly related: 
+\citep{cotteret2024vector}
+\citep{oliva2019}
+
+
+
+
+
 \section*{Goal}
 The goal is to give a framework to be able to characterize and describe all possible computations that can be implemented in neural networks with asymptotic dynamics and robustly in the language of dynamical systems (at a level that is understandable for humans).
 
-Why: to represent the computation performed by a dynamical system throught a mapping to a finite state machine.
+Why: to represent the computation performed by a dynamical system throught a mapping to a finite state machine.
 For asymptotic dynamics one can formulate a surjective mapping to finite-state machines (FSMs) if MSs are fixed points or one restricts what effects the input can have.
 If no continua are allowed (because they are not robust) there is a surjective mapping to nondeterministic FSMs. 
 But this framework is more expressive because it can deal with infinite states as long as they are on a continuum.
 See Sec.\ref{sec:fsm}
 
-\section*{Abstract}
-This document presents a comprehensive framework for characterizing and describing computations realizable within the asymptotic dynamics of neural networks on compact domains in the language of dynamical systems,  leveraging Conley's decomposition theorem to elucidate the nature of flows in compact phase portraits. The scope of the possible computations corresponds to infinite horizon computations with respect to decoding time. We state theorems to describe the indispensable reliance on chain-recurrent sets in asymptotic neural computations on compact domains. Memory states are identified as the Morse sets of the system. The interplay between meaningful memory states and neural computation with linear decoders is analyzed, emphasizing the requirement of linear separability for sets of trajectories grouped by the preimage of the input. 
-Additionally, we describe the syntax of neural computation, providing insights into input-driven dynamics under diverse modeling conditions. 
+
+generalized theory for neural time-invariant computing \citep{jaeger2021,jaeger2023theory}
+
 
 
 
@@ -103,28 +154,19 @@ Inference:
 
 \section*{Issues}
 
-
 Representation: for models in different classes (can be lossy or lossless).
 Abstraction: for models in the same class but one is a lossy representation of the other.
 
-\section*{Relevant literature}
-Similar: \citep{casey1996}
 
-1142-1143:
-or the sake of understanding the results in this paper, one can think of attractors rather than $\epsilon$-pseudoattractors since it follows from the definition that the existence of an $\epsilon$-pseudoattractor will imply the existence of an attractor for the noiseless system, and if the noiseless system's attractor is sufficiently robust (as attracting fixed points, in particular, generally are) then there will be a corresponding $\epsilon$-pseudoattractorfor sufficiently low levels of noise.
-
-Intuitively, an $\epsilon$-pseudoattractor is just a very robust attractor, and corresponds to an oscillation or a steady state of the system that is robust in the sense that a slightly perturbed system will settle to one of these asymptotic behaviors that is stable in the sense that once the system has been perturbed into one of these behaviors the ambient noise in the system will not be sufficient to kick the system out of that behavior [though changing the input to the system will often do so (and will necessarily do so in RNNs performing certain types of computation which we will describe).
-
-
-
-
+\paragraph{LCs}
 \emph{Hysteretic computation} is computation that can be performed using periodic orbits
 
+LCs need (re)setting/initializing
+
+\paragraph{CAs}
+CAs need initializing (for neural integration)
 
 
-Slightly related: 
-\citep{cotteret2024}
-\citep{oliva2019}
 
 \newpage
 \section{Introduction to Infinite horizon computation with ODEs}	
@@ -242,6 +284,10 @@ but also CAs are not allowed (because of error/perturbation effect)
 Equivalence with $\epsilon$-pseudoattractors in \citep{casey1996}
 
 
+Random Dynamical Systems
+\citep{homburg2013bifurcations}
+
+
 \paragraph{S-type robustness requires $\epsilon$-pseudoattractors}
 
 
@@ -319,6 +365,12 @@ Such sets to be used as a neural integrator we state the following constraint on
 There is an input value that pushes the internal state along $M$.
 
 On the other hand if $M$ is  mapped onto a single output, then the integrated information is either not used or used only internally in the computation.
+
+
+
+\subsection{Decomposition of attractors}
+
+
 
 \subsection{Syntax}%how words and morphemes combine to form larger units
 %how information is integrated
@@ -413,7 +465,7 @@ d_{\infty,x_0}(LA, ALA) \coloneqq \lim_{T\rightarrow\infty} \frac{1}{T} \int_0^T
  \newpage
  \addcontentsline{toc}{section}{References}
  \bibliographystyle{ieeetr}
- \bibliography{ref.bib}
+ \bibliography{ref.bib,../Stability/catniplab.bib}
 
 
 
