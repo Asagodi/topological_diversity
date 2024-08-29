@@ -57,7 +57,7 @@
 \newcommand{\iidsample}{\stackrel{iid}{\sim}}
 
 \newcommand{\probP}{\text{I\kern-0.15em P}}
-\newcommand{\cmark}{\ding{51}}%
+\newcommand{\cmark}{\ding{51}}%	
 \newcommand{\xmark}{\ding{55}}%
 
 \newtheorem{theorem}{Theorem}
@@ -157,6 +157,7 @@ However, surprisingly, the bifurcations are  qualitatively different.
 It either bifurcates into a single stable fixed point (Fig.~\ref{fig:ublabla}B top) or two stable fixed points separated with a saddle node in between (Fig.~\ref{fig:ublabla}B bottom).
 Neither of these two cases show a divergent flow, but rather consists of one or two basins of attraction.
 It implies only vanishing gradients for this system and \textbf{exploding gradients will not be present for an arbitrarily long time}.
+%overcoming vanishing gradients \citep{hochreiter1998vanishing,hu2018overcoming}
 
 \begin{figure}[tbhp]
   \centering
@@ -245,7 +246,7 @@ Importantly, the ``slow'' flow on the perturbed system is not bounded.
 
 % the compact case is that you have that the invariant manifolds are diffeomorphic to the original one. So neural states aren’t too far off from where they would have been before the perturbation.
 
-In practice, the sufficient conditions for RNNs implementing continuous attractors to have this graceful breakdown (like BLA but not UBLA) is for the continuous attractor manifold to be of finite dimension throughout, connected, and bounded.
+In practice, the sufficient conditions for RNNs implementing continuous attractors to have this graceful breakdown (like BLA but not UBLA) is for the continuous attractor manifold to be of finite dimension, connected, and bounded. %and normally hyperbolic
 However, in systems with an invariant manifold with dimension at least three, it is possible that a slow manifold with chaotic dynamics is created through a perturbation. This would have as consequence that the perturbed system acquires positive Lyapunov exponents (corresponding to the chaotic orbit), which then can still lead to exploding gradients albeit with very slow flow that has little practical consequence in finite time experiments.
 
 \subsection{Implications on Machine Learning}\label{sec:imp:ML}
