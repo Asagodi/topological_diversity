@@ -27,8 +27,8 @@ import torch.nn as nn
 import torch.optim as optim
 
 from models import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget, LSTM_noforget2, LSTM
-from network_initialization import qpta_rec_weights, bla_rec_weights
-from tasks import angularintegration_task, double_angularintegration_task, sphere_integration_task, eyeblink_task, poisson_clicks_task, bernouilli_noisy_integration_task, contbernouilli_noisy_integration_task, center_out_reaching_task, addition_task, multiplication_task, integration_2d_task
+from network_initialization import qpta_rec_weights, bla_rec_weights, perfect_params, perfect_initialization
+from tasks import *
 from qpta_initializers import _qpta_tanh_hh
 from plot_losses import get_params_exp
 
@@ -38,10 +38,13 @@ def makedirs(dirname):
 
 def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None,
              input_length=0, task_noise_sigma=0., final_loss=False, random_angle_init=True, max_input=None,
-             cue_output_durations=[5,5,75,5,5], time_until_cue_range=None):
+             cue_output_durations=[5,5,75,5,5], time_until_cue_range=None,input_noise_level=0):
     
     if task_name == 'eyeblink':
         task =  eyeblink_task(input_length=T, t_delay=t_delay)
+        
+    elif task_name == 'bernoulli_integration':
+        task = bernouilli_noisy_integration_task(T=T, dt=dt, input_length=input_length, final_loss=final_loss, input_noise_level=input_noise_level)
 
     elif task_name == 'angular_integration':
         task =  angularintegration_task(T=T, dt=dt, sparsity=sparsity,
@@ -77,6 +80,9 @@ def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsit
         
     elif task_name == 'integration_2d':
         task = integration_2d_task(T, dt, threshold=1)
+        
+    elif task_name == 'integration_2d_gridinit':
+        task = integration_2d_task(T, dt, threshold=1, random_angle_init='equally_spaced')
         
     else:
         raise Exception("Task not known.")
@@ -130,7 +136,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
                         input_length=training_kwargs['input_length'], sparsity=training_kwargs['sparsity'],
                         task_noise_sigma=training_kwargs['task_noise_sigma'], last_mses=training_kwargs['last_mses'],
                         random_angle_init=training_kwargs['random_angle_init'], max_input=training_kwargs['max_input'], 
-                        time_until_cue_range=training_kwargs['time_until_cue_range'])
+                        time_until_cue_range=training_kwargs['time_until_cue_range'], input_noise_level=training_kwargs['input_noise_level'])
 
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
     
@@ -173,6 +179,16 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
             wrec_init =  np.identity(training_kwargs['N_rec'])
             brec_init = np.zeros((training_kwargs['N_rec']))
             
+        elif training_kwargs['initialization_type'] == 'perfect_irnn':
+            wi_init, wrec_init, wo_init, brec_init, bo_init, h0_init  = perfect_params(1, ouput_bias_value=training_kwargs['b_a'], a=training_kwargs['alpha'])
+             
+        elif training_kwargs['initialization_type'] == 'perfect_ubla':
+            wi_init, wrec_init, wo_init, brec_init, bo_init, h0_init  = perfect_params(2, ouput_bias_value=training_kwargs['b_a'], a=training_kwargs['alpha'])
+             
+        elif training_kwargs['initialization_type'] == 'perfect_bla':
+            wi_init, wrec_init, wo_init, brec_init, bo_init, h0_init  = perfect_params(3, ouput_bias_value=training_kwargs['b_a'], a=training_kwargs['alpha'])
+            #net = perfect_initialization(2, ouput_bias_value=training_kwargs['b_a'], a=training_kwargs['alpha'])
+            
         elif training_kwargs['initialization_type'] == 'bla':
             wrec_init, brec_init =  bla_rec_weights(training_kwargs['N_in'],
                                                     int(training_kwargs['N_rec']/2),
@@ -207,7 +223,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         
         net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'], g_in=training_kwargs['g_in'],
                   nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-                  wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init, oth_init=oth_init,
+                  wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, bo_init=bo_init, h0_init=h0_init, oth_init=oth_init,
                   ML_RNN=training_kwargs['ml_rnn'], save_inputs=training_kwargs['save_inputs'],
                   map_output_to_hidden=training_kwargs['map_output_to_hidden'], input_nonlinearity=training_kwargs['input_nonlinearity'])
 
@@ -414,26 +430,26 @@ if __name__ == "__main__":
     gammas = [1., 0.5, 0.75, 0.75, 1.]
     nrecs = [115, 200, 200, 200, 200]
         
-    main_exp_name = 'integration_2d/' #poisson_clicks_task' # angular_integration'
-
-    training_kwargs['task'] = 'integration_2d'
-    training_kwargs['random_angle_init'] = True
-    training_kwargs['map_output_to_hidden'] = True
-    training_kwargs['T'] = 12.8 # 12.8*2
+    main_exp_name = 'bernoulli_integration/' #poisson_clicks_task' # angular_integration'
+    training_kwargs['task'] = 'bernoulli_integration'
+    
+    training_kwargs['random_angle_init'] = False
+    training_kwargs['map_output_to_hidden'] = False
+    training_kwargs['T'] = 1024 # 12.8*2
 
     training_kwargs['N_in'] = 2
-    training_kwargs['N_out'] = 2
-    training_kwargs['N_rec'] = 128
-
-    training_kwargs['nonlinearity'] = 'rect_tanh'
+    training_kwargs['N_out'] = 1
+    training_kwargs['N_rec'] = 2
+    
+    training_kwargs['nonlinearity'] = 'relu'
     training_kwargs['input_nonlinearity'] = 'recurrent'
     training_kwargs['readout_nonlinearity'] = 'id'
     training_kwargs['sparsity'] = 'variable'
-    training_kwargs['noise_std'] = 0.0001
+    training_kwargs['noise_std'] = 0.0
     training_kwargs['task_noise_sigma'] = 0 #1e-1
     training_kwargs['act_reg_lambda'] = 0 #1e-3    
-    training_kwargs['h0_init'] = 'random'
-    training_kwargs['hidden_initial_variance'] = 1e-3
+    training_kwargs['h0_init'] = 'set'
+    training_kwargs['hidden_initial_variance'] = 0
     # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
     
     # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
@@ -442,7 +458,7 @@ if __name__ == "__main__":
     training_kwargs['drouput'] = .0
     training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
     training_kwargs['verbose'] = True
-    training_kwargs['learning_rate'] = 0.01
+    training_kwargs['learning_rate'] = 0.001
     training_kwargs['n_epochs'] = 5000
     training_kwargs['stop_patience'] = 5000
     training_kwargs['stop_min_delta'] = 0
@@ -451,10 +467,10 @@ if __name__ == "__main__":
     training_kwargs['adam_beta1'] = 0.9
     training_kwargs['adam_beta2'] = 0.999
     training_kwargs['network_type'] = network_types[2]
-    training_kwargs['initialization_type'] = 'gain' #initialization_type_list[model_i]
+    training_kwargs['initialization_type'] = 'bla' #initialization_type_list[model_i]
     training_kwargs['loss_function'] = 'mse_loss_masked' #loss_functions[model_i]
     training_kwargs['rnn_init_gain'] = 1.5 # g_list[model_i]        ##########
-    training_kwargs['scheduler_step_size'] = 250 # scheduler_step_sizes[model_i]
+    training_kwargs['scheduler_step_size'] = 100 # scheduler_step_sizes[model_i]
     training_kwargs['scheduler_gamma'] = .75 #gammas[model_i]
     
     # if training_kwargs['task'] == 'integration_2d':
@@ -478,5 +494,5 @@ if __name__ == "__main__":
     training_kwargs['trained_exp_i'] = 0
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
-                                                          model_name="", trials=10, training_kwargs=training_kwargs)
+                                                          model_name="", trials=1, training_kwargs=training_kwargs)
 
