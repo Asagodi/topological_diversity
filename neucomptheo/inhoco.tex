@@ -54,12 +54,27 @@ Additionally, we describe the syntax of neural computation, providing insights i
 
 
 
-
+\newpage
 \section{Background}%{Relevant literature}
 
 generalized theory for neural time-invariant computing \citep{jaeger2021,jaeger2023theory}:
 DSs
 
+
+
+\paragraph{Neural computation}
+
+
+
+\paragraph{Approximation theory for sequence modeling}
+\citep{jiang2023brief}
+
+\citep{li2020curse}
+\citep{li2022approximation}
+
+
+\paragraph{Hopfield networks}
+\citep{bernstein2017markov}
 
 
 \paragraph{Perfect}
@@ -87,25 +102,55 @@ $\epsilon$-pseudoattractors have D-type robustness iff they are normally-hyperbo
 
 
 
+\paragraph{RNN behavior}
+\citep{ceni2020interpreting}
+
+\paragraph{Other}
+Iterated Function Systems \citep{kalinke1998computation}
+
+
+
+\paragraph{Fading memory}
+Fading memory echo state networks are universal \citep{gonon2021fading}
+
+\citep{ortega2024fading}
+
+
+\paragraph{Memory capacity}
+\citep{ballarin2023memory}
+
+
+\paragraph{Metastable}
+\citep{recanatesi2022metastable}
 
 \paragraph{FSMs}
+\citep{cleeremans1989finite}
+
+
 \citep{casey1996}
 Slightly related: 
 \citep{cotteret2024vector}
 \citep{oliva2019}
 
+Spiking RNNs + Moore machines \citep{tino2006learning}
 
 
+\paragraph{Learning}
+\citep{hardt2018}
 
 
 \section*{Goal}
 The goal is to give a framework to be able to characterize and describe all possible computations that can be implemented in neural networks with asymptotic dynamics and robustly in the language of dynamical systems (at a level that is understandable for humans).
 
-Why: to represent the computation performed by a dynamical system throught a mapping to a finite state machine.
+Why: to represent the computation performed by a dynamical system 
+
+We do this by abstracting away transitions between attractors.
+
+What we get is a system that can be mapped to a finite state machine. %an extension thereof
 For asymptotic dynamics one can formulate a surjective mapping to finite-state machines (FSMs) if MSs are fixed points or one restricts what effects the input can have.
-If no continua are allowed (because they are not robust) there is a surjective mapping to nondeterministic FSMs. 
-But this framework is more expressive because it can deal with infinite states as long as they are on a continuum.
-See Sec.\ref{sec:fsm}
+If no continua are allowed (because they are not robust) there is a surjective mapping to nondeterministic FSMs (see Sec.\ref{sec:fsm}). 
+But this framework is more expressive because it can deal with infinite states.
+
 
 
 generalized theory for neural time-invariant computing \citep{jaeger2021,jaeger2023theory}
@@ -134,7 +179,7 @@ Define allowable I/O mappings.
 
 
 Metrics:
-- ASD-FSM approximations
+- ASD-FSM approximations	
 -- Zero for inhoco, nonzero for non-inhoco
 - CA approximations 
 
@@ -565,6 +610,8 @@ A finite-state machine has the same computational power as a Turing machine that
 
 
 \subsubsection{Moore machines}% FSM + output
+
+Used in \citep{tino2006learning}
 
 A Moore machine can be defined as a 6-tuple  $(S,s_{0},\Sigma ,O,\delta ,G)$ where $(\Sigma ,S,s_{0},\delta ,F)$ are the same as for an FSM and 
 an output function $G:S\rightarrow O$ mapping each state to the output alphabet.
