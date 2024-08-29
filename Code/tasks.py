@@ -335,7 +335,7 @@ def sphere_integration_task(T, dt, length_scale=1, r=1, random_angle_init=True, 
     return task
 
 
-##############LINEAR INTEGRATION
+
 def simplestep_integration_task(T, dt, amplitude=1, pulse_time=1, delay=1):
     """
     Creates a trial with a positive and negative step with length step_length and amplitude
@@ -361,20 +361,25 @@ def simplestep_integration_task(T, dt, amplitude=1, pulse_time=1, delay=1):
 
     return task
 
-def bernouilli_integration_task(T, input_length, final_loss):
+
+##############LINEAR INTEGRATION
+def singlepulse_integration_task(T, dt, final_loss, steps_size=1):
     """
     Creates a trial with a positive and negative step with length step_length and amplitude
     Inputs are left and right angular velocity and 
-    target output is sine and cosine of integrated angular velocity.
-    Returns inputs, outputs
+    target output is the summed inputs.
+    Returns inputs, outputs, mask
     -------
     """
 
     def task(batch_size):
         
         inputs = np.zeros((batch_size,T,2))
-        inputs[:,:input_length,:] = np.random.binomial(1, p=.2, size=(batch_size,input_length,2))
-        outputs = np.cumsum(inputs[:,:,1], axis=1) - np.cumsum(inputs[:,:,0], axis=1)
+        input_side = np.random.binomial(1, p=.5, size=(batch_size))
+        inputs[:,0,0] = input_side*steps_size
+        inputs[:,0,1] = np.where(input_side,0,1)*steps_size
+
+        outputs = np.cumsum(inputs[:,:,1], axis=1)*dt - np.cumsum(inputs[:,:,0], axis=1)*dt
         mask = np.zeros((batch_size, T, 1))
         if final_loss:
             mask[:,-1,:] = 1
@@ -386,12 +391,37 @@ def bernouilli_integration_task(T, input_length, final_loss):
 
     return task
 
-def bernouilli_noisy_integration_task(T, input_length, sigma, final_loss):
+def bernoulli_integration_task(T, dt, input_length, final_loss, p=1):
     """
     Creates a trial with a positive and negative step with length step_length and amplitude
     Inputs are left and right angular velocity and 
-    target output is sine and cosine of integrated angular velocity.
-    Returns inputs, outputs
+    target output is the summed inputs.
+    Returns inputs, outputs, mask
+    -------
+    """
+
+    def task(batch_size):
+        
+        inputs = np.zeros((batch_size,T,2))
+        inputs[:,:input_length,:] = np.random.binomial(1, p=p, size=(batch_size,input_length,2))
+        outputs = np.cumsum(inputs[:,:,1], axis=1)*dt - np.cumsum(inputs[:,:,0], axis=1)*dt
+        mask = np.zeros((batch_size, T, 1))
+        if final_loss:
+            mask[:,-1,:] = 1
+        else:
+            mask[:,:,:] = 1
+
+
+        return inputs, outputs.reshape((batch_size,T,1)), mask
+
+    return task
+
+def bernouilli_noisy_integration_task(T, dt, input_length, input_noise_level, final_loss):
+    """
+    Creates a trial with a positive and negative step with length step_length and amplitude
+    Inputs are left and right angular velocity and 
+    target output is the summed inputs.
+    Returns inputs, outputs, mask
     -------
     """
 
@@ -399,8 +429,11 @@ def bernouilli_noisy_integration_task(T, input_length, sigma, final_loss):
         
         inputs = np.zeros((batch_size,T,2))
         inputs[:,:input_length,:] = np.random.binomial(1, p=.2, size=(batch_size,input_length,2))
-        outputs = np.cumsum(inputs[:,:,1], axis=1) - np.cumsum(inputs[:,:,0], axis=1)
-        inputs[:,:input_length,:] += np.random.uniform(-sigma, sigma, size=(batch_size,input_length,2))
+        outputs = np.cumsum(inputs[:,:,1], axis=1)*dt - np.cumsum(inputs[:,:,0], axis=1)*dt
+        
+        inputs[:,:input_length,:] += np.random.uniform(-input_noise_level, input_noise_level, size=(batch_size,input_length,2))
+
+        #inputs[:,:input_length,:] += np.random.normal(0, input_noise_level, size=(batch_size,input_length,2))
 
         mask = np.zeros((batch_size, T, 1))
         if final_loss:
@@ -416,7 +449,7 @@ def contbernouilli_noisy_integration_task(T, input_length, sigma, final_loss):
     """
     Creates a trial with a positive and negative step with length step_length and amplitude
     Inputs are left and right angular velocity and 
-    target output is sine and cosine of integrated angular velocity.
+    target output is the summed inputs.
     Returns inputs, outputs
     -------
     """
