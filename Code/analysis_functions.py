@@ -31,22 +31,25 @@ from matplotlib import cm
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 
-import conley_functions as cf
+#import conley_functions as cf
 import networkx as nx
 import subprocess
 from tqdm import tqdm
 
-import skdim
+#import skdim
 # functions = [skdim.id.CorrInt(), skdim.id.DANCo(), skdim.id.ESS(), skdim.id.Fishers(), skdim.id.KNN(), skdim.id.lPCA(), skdim.id.MADA(), skdim.id.MiND_ML(), skdim.id.MLE(), skdim.id.MOM(), skdim.id.TLE(), skdim.id.TwoNN()]
 # function_names = ["CorrInt", "DANCo", "ESS", "FisherS", "KNN", "lPCA", "MADA", "MiND_ML", "MLE", "MOM", "TLE", "TwoNN"]
 # for fi, function in enumerate(functions):
     # dim=function.fit(trajectories[:,from_t:to_t,:].reshape((-1,trajectories.shape[-1]))).dimension_
     # print(function_names[fi], ":", dim)
 
-
-# from psychrnn.tasks.perceptual_discrimination import PerceptualDiscrimination
 # from tasks import PerceptualDiscrimination, PoissonClicks   
+from odes import relu_step_input
 #analysis
+
+def db(x):
+    return 10*np.log10(x)
+
 def pd_accuracy_function(y, yhat, output_mask):
     chosen = np.argmax(np.mean(yhat*output_mask, axis=1), axis = 1)
     truth = np.argmax(np.mean(y*output_mask, axis = 1), axis = 1)
@@ -249,7 +252,7 @@ def powerset(iterable):
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 
-def find_analytic_fixed_points(W_hh, b, W_ih=None, I=None, tol=10**-4):
+def find_analytic_fixed_points(W_hh, b, W_ih=None, I=None, tol=10**-4, verbose=False):
     """
     Takes as argument all the parameters of the recurrent part of the model (W_hh, b) with a possible input I that connects into the RNN throught the weight matrix W_ih
     """
@@ -262,7 +265,13 @@ def find_analytic_fixed_points(W_hh, b, W_ih=None, I=None, tol=10**-4):
     subsets = powerset(range(Nrec))
     # length = sum(1 for _ in subsets)
     # print("Number of supports to check", length)
-    for support in tqdm(subsets):
+    
+    if verbose:
+        iterator = tqdm(subsets)
+    else:
+        iterator = subsets
+    
+    for support in iterator:
 
         if support == ():
             continue
@@ -608,7 +617,7 @@ def find_periodic_orbits(traj, traj_pca, limcyctol=1e-2, mindtol=1e-10):
         idx, mind = identify_limit_cycle(traj[trial_i,:,:], tol=limcyctol) #find recurrence
         # print(idx, mind)
         if mind<mindtol: #for fixed point
-            recurrences.append([traj[trial_i,-1,:]])
+            recurrences.append(np.array([traj[trial_i,-1,:]]))
             recurrences_pca.append([traj_pca[trial_i,-1,:]])
             
         elif idx: #for closed orbit
@@ -625,7 +634,7 @@ def get_slow_manifold(net, task, T, h_init='random', from_t=300, batch_size=256,
     pca = PCA(n_components=n_components)
     invariant_manifold = trajectories[:,from_t:,:].reshape((-1,n_rec))
     pca.fit(invariant_manifold)
-    traj_pca = pca.transform(trajectories.reshape((-1,n_rec))).reshape((batch_size,-1,n_components))
+    traj_pca = pca.transform(trajectories[:,from_t:,:].reshape((-1,n_rec))).reshape((batch_size,-1,n_components))
     recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
     fxd_pnts = np.array([recurrence for recurrence in recurrences if len(recurrence)==1]).reshape((-1,n_rec))    
     
@@ -1153,6 +1162,70 @@ def get_fps_fpf():
 def is_nonnormal(A):
     A_star = A.conj().T
     return not np.allclose(np.dot(A, A_star), np.dot(A_star, A))
+
+
+
+
+
+
+##############DSA
+###all
+# exp_path = parent_dir + '/experiments//angular_integration_old/N128_T128_noisy/relu/';
+# relu_all_trajs = []
+# T=128
+# for exp_i in tqdm(range(10)):
+#     print(exp_i)
+#     params_path = glob.glob(exp_path + '/param*.yml')[0];
+#     training_kwargs = yaml.safe_load(Path(params_path).read_text()); 
+#     exp_list = glob.glob(exp_path + "/res*")
+#     exp = exp_list[exp_i]
+#     net, result = load_net_path(exp, which='post')
+#     n_rec = net.dims[1]
+#     wi, wrec, wo, brec, h0, oth = result['weights_last']
+#     net.noise_std*=10;
+    
+#     output, trajectories_0 = get_autonomous_dynamics(net, T=T, dt=.1, batch_size=batch_size)
+
+#     net.map_output_to_hidden = False
+#     output, trajectories = get_autonomous_dynamics_from_hinit(net, trajectories_0[:,100,:], T=int(T*4))
+#     relu_all_trajs.append(trajectories)
+
+
+######TORUS
+#task_cor = center_out_reaching_task(T=T*500, dt=dt, time_until_cue_range=[10, 10+1], angles_random=False);
+# exp_path = parent_dir + '/experiments/center_out/mask_after_saccade_N50_T500_noisy_actreg/tanh/'
+# exp_i=0
+# params_path = glob.glob(exp_path + '/param*.yml')[0]; training_kwargs = yaml.safe_load(Path(params_path).read_text()); 
+# exp_list = glob.glob(exp_path + "/res*")
+# params_folder = exp_path
+# wi, wrec, wo, brec, h0, oth, training_kwargs, losses = get_params_exp(params_folder, exp_i)
+# net = load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs)
+# n_rec = net.dims[1]
+# wi, wrec, wo, brec, h0, oth = result['weights_last']
+# net.noise_std = 0
+# input, target, mask, output, trajectories_torus = simulate_rnn_with_task(net, task_cor, T, 'random', batch_size=batch_size)
+
+
+#exp_path = parent_dir + '/experiments/double_angular_test/N128_T128_noisy/recttanh/';
+#exp_i=0
+#T=12.8*2; dt=.1; double_task = double_angularintegration_task(T=T, dt=dt,  sparsity=1, random_angle_init='equally_spaced');
+#input, target, mask, output, trajectories_double = simulate_rnn_with_task(net, double_task, T, h_init, batch_size)
+
+
+def grid_search_dsa():
+    n_delays_list = [5,10,25,50,100]
+    rank_list = [5,10,25,50,75]
+    ds_scores = np.zeros((len(n_delays_list), len(rank_list)))
+    for i,n_delays in enumerate(n_delays_list):
+        if i<3:
+            continue
+        for j,rank in enumerate(rank_list):
+            print(n_delays,rank)
+            ds = DSA(tanh_all_trajs[0], tanh_all_trajs[1], n_delays=n_delays, rank=rank);
+            score = ds.fit_score()
+            ds_scores[i,j] = score
+            print(score)
+
 
 #MORSE
 def get_connection_matrix(fixed_point_cubes, RCs, cds_full):
