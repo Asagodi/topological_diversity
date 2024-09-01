@@ -573,6 +573,12 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             # [print(p.grad) for p in net.parameters() if p.requires_grad]
             gradient_norm_sq = sum([(p.grad ** 2).sum() for p in net.parameters() if p.requires_grad and p.grad!=None])
             
+            if any(torch.isnan(p.grad).any() or torch.isinf(p.grad).any() for p in net.parameters() if p.grad is not None):
+                if verbose:
+                    print("NaN or Inf detected in gradients. Stopping training.")
+                
+                break
+            
             # Update weights
             optimizer.step()
             if scheduler:
