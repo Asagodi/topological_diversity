@@ -16,6 +16,11 @@ from models import RNN
 from tasks import singlepulse_integration_task
 from network_initialization import perfect_params
 from angular_loss_analysis import simulate_rnn_with_task
+from analysis_functions import find_analytic_fixed_points
+from odes import relu_ode, tanh_ode, recttanh_ode, relu_jacobian, tanh_jacobian, recttanh_jacobian_point, relu_step_input
+
+exp_path = parent_dir+'/experiments/expgrad/'
+labels = ['irnn', 'ubla', 'bla']
 
 def remove_nans(data):
     return [group[~np.isnan(group)] for group in data]
@@ -26,21 +31,33 @@ def function():
     dims = (2, 2, 1)
     T=int(1e3)
     dt=.1
-    task = singlepulse_integration_task(T, dt, final_loss=True,steps_size=1)
+    task = singlepulse_integration_task(T, dt, final_loss=True, step_size=1, fixed_step=False)
     np.random.seed(100)
     eps=1e-1
     all_mses_01 = []
+    all_eigs = []
     for v in tqdm([1,2,3]):
 
-        wi_init, wrec_init, wo_init, brec_init, bo_init, h0_init  = perfect_params(v, ouput_bias_value=1, a=alpha, output_bias_value=beta); 
+        wi_init, wrec_init, wo_init, brec_init, bo_init, h0_init  = perfect_params(v, ouput_bias_value=beta, a=alpha); 
         oth_init=None
         
         mses = []
+        eigs = []
         for i in range(100):
             wrec_init_p = wrec_init+ np.random.normal(0,eps, (2,2))
+            
+            fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(wrec_init_p, brec_init)
+            
+            idx=np.where(stabilist==-1)[0]
+            if len(idx)<1:
+                eigs.append(np.max(np.real(eigenvalues_list[-1])))
+            else:
+                print(eigenvalues_list[idx[0]])
+                eigs.append(np.max(np.real(eigenvalues_list[idx[0]])))
+            
             net = RNN(dims=dims, noise_std=rnn_noise_std, dt=dt,g=1, g_in=1,
                   nonlinearity='relu', readout_nonlinearity='id',
-                  wi_init=wi_init, wrec_init=wrec_init_p, wo_init=wo_init, brec_init=brec_init, bo_init=bo_init, h0_init=h0_init, oth_init=oth_init,
+                  wi_init=wi_init.T, wrec_init=wrec_init_p, wo_init=wo_init, brec_init=brec_init, bo_init=bo_init, h0_init=h0_init, oth_init=oth_init,
                   ML_RNN=True, save_inputs=False,
                   map_output_to_hidden=False, input_nonlinearity='');
 
