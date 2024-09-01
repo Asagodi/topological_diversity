@@ -49,12 +49,7 @@ def add_parameter_noise(rnn_model, std):
 
     return rnn_model
 
-def perfect_initialization(version, output_dim=1, random_winout=False, ouput_bias_value=100, a=1, eps=.01):
-    """
-    Returns RNN model with recurrent weights suitable for perfect integration.
-    Can be initialized with random input and output weights.
-    2D version (i.e. a single line (or plane) attractor)
-    """
+def perfect_params(version, output_dim=1, random_winout=False, ouput_bias_value=100, a=1, eps=.01):
     N_in = 2
     N_rec = 2
     N_out = output_dim
@@ -68,7 +63,7 @@ def perfect_initialization(version, output_dim=1, random_winout=False, ouput_bia
         b_out = np.array([0])
         hidden_offset = np.array([0,0])
         
-    elif version==2: # V2
+    elif version==2: # V2 (UBLA)
         W_in = a*np.array([[-1,1],[-1,1]], dtype=float)
         W_hh = np.array([[0,1],[1,0]])
         b_hh = np.array([0,0])
@@ -76,7 +71,7 @@ def perfect_initialization(version, output_dim=1, random_winout=False, ouput_bia
         b_out = np.array([-ouput_bias_value])/a
         hidden_offset = ouput_bias_value*np.array([1,1])
     
-    elif version==3: # V3
+    elif version==3: # V3 (BLA)
         W_in = a*np.array([[-1,1],[1,-1]], dtype=float)
         W_hh = np.array([[0,-1],[-1,0]])
         b_hh = ouput_bias_value*np.array([1,1])
@@ -100,6 +95,17 @@ def perfect_initialization(version, output_dim=1, random_winout=False, ouput_bia
         
     elif random_winout=="small_winout":
         W_in += np.random.normal(0, eps/4., (2,2))
+        
+    return W_in, W_hh, W_out.T, b_hh, b_out, hidden_offset 
+    
+
+def perfect_initialization(version, output_dim=1, random_winout=False, ouput_bias_value=100, a=1, eps=.01):
+    """
+    Returns RNN model with recurrent weights suitable for perfect integration.
+    Can be initialized with random input and output weights.
+    2D version (i.e. a single line (or plane) attractor)
+    """
+    W_in, W_hh, W_out, b_hh, b_out, hidden_offset = perfect_params(version, output_dim=output_dim, random_winout=random_winout, ouput_bias_value=ouput_bias_value, a=a, eps=eps)
 
     rnn_model = make_rnn_from_networkparameters(W_in, W_hh, W_out, b_hh, b_out, hidden_offset, nonlinearity='relu', output_activation='identity', hidden_initial_activations="offset")
     return rnn_model
