@@ -802,5 +802,159 @@ class LSTM_noforget2(nn.Module):
             hidden_seq.append(h_t.unsqueeze(0))
         
         return output, hidden
+    
+    
+def train_lstm(net, task, n_epochs, batch_size=32, learning_rate=1e-2, clip_gradient=None, cuda=False,
+          loss_function='mse', init_states=None, final_loss=True, last_mses=None,
+          optimizer='sgd', momentum=0, weight_decay=.0, adam_betas=(0.9, 0.999), adam_eps=1e-8, #optimizers 
+          scheduler=None, scheduler_step_size=100, scheduler_gamma=0.3, 
+          verbose=True, record_step=1):
+    
+    # CUDA management
+    if cuda:
+        if not torch.cuda.is_available():
+            print("Warning: CUDA not available on this machine, switching to CPU")
+            device = torch.device('cpu')
+        else:
+            device = torch.device('cuda')
+    else:
+        device = torch.device('cpu')
+    net.to(device=device)
+    
+    # Optimizer
+    optimizer = get_optimizer(net, optimizer, learning_rate, weight_decay, momentum, adam_betas, adam_eps)
+    scheduler = get_scheduler(net, optimizer, scheduler, scheduler_step_size, scheduler_gamma, n_epochs)
+    loss_function = get_loss_function(net, loss_function)
+    
+    # Save initial weights
+    # w_init = net.W.cpu().detach().numpy().copy()
+    # u_init = net.U.cpu().detach().numpy().copy()
+    # bias_init = net.bias.cpu().detach().numpy().copy()
+    # wo_init = net.wo.cpu().detach().numpy().copy()
+    # weights_init = [w_init, u_init, bias_init, wo_init]
+    weights_init = []
+    for name, param in net.named_parameters():
+        weights_init.append(param.cpu().detach().numpy().copy())
+    
+    
+    # Record
+    losses = np.zeros((n_epochs), dtype=np.float32)
+    gradient_norm_sqs = np.zeros((n_epochs), dtype=np.float32)
+    epochs = np.zeros((n_epochs))
+    
+    dim_rec = net.hidden_size
+    dim_in = net.input_size
+    dim_out = net.output_size
+    n_rec_epochs = n_epochs // record_step
+    
+    #TODO: write in general form (loop over params)
+    rec_epochs = np.zeros((n_rec_epochs))
+    # ws = np.zeros((n_rec_epochs, dim_in, dim_rec*3), dtype=np.float32)
+    # us = np.zeros((n_rec_epochs, dim_rec, dim_rec*3), dtype=np.float32)
+    # biases = np.zeros((n_rec_epochs, dim_rec*3), dtype=np.float32)
+    # wos = np.zeros((n_rec_epochs, dim_rec, dim_out), dtype=np.float32)
+    
+    time0 = time.time()
+    if verbose:
+        print("Training...")
+    for i in range(n_epochs):
+        # Save weights (before update)
+        # if i % record_step == 0:
+        #     k = i // record_step
+        #     rec_epochs[k] = i
+        #     ws[k] = net.W.cpu().detach().numpy()
+        #     us[k] = net.U.cpu().detach().numpy()
+        #     biases[k] = net.bias.cpu().detach().numpy()
+        #     wos[k] = net.wo.cpu().detach().numpy()
+        
+        # Generate batch
+        _input, _target, _mask = task(batch_size)
+        # Convert training data to pytorch tensors
+        _input = torch.from_numpy(_input)
+        _target = torch.from_numpy(_target)
+        _mask = torch.from_numpy(_mask)
+        # Allocate
+        input = _input.to(device=device).float() 
+        target = _target.to(device=device).float() 
+        # mask = _mask.to(device=device).float() 
+        
+        optimizer.zero_grad()
+        try:        #TODO: write general forward pass
+            output, _, _ = net(input, init_states=init_states)
+        except:
+            output = net(input)
+        if final_loss:
+            if not last_mses:
+                last_mses = output.shape[1]
+            fin_int = np.random.randint(1,last_mses,size=batch_size)
+            loss = loss_function(output[:,-fin_int,:], target[:,-fin_int,:])
+        else:
+            loss = loss_function(output, target)
+              
+        # Gradient descent
+        loss.backward()
+        if clip_gradient is not None:
+            torch.nn.utils.clip_grad_norm_(net.parameters(), clip_gradient)
+        gradient_norm_sq = sum([(p.grad ** 2).sum() for p in net.parameters() if p.requires_grad])
+        
+        # Update weights
+        optimizer.step()
+        
+        scheduler.step()
+        
+        #To prevent memory leaks
+        loss.detach()
+        output.detach()
+        
+        # Save
+        epochs[i] = i
+        losses[i] = loss.item()
+        gradient_norm_sqs[i] = gradient_norm_sq
+        
+        if verbose:
+            print("epoch %d / %d:  loss=%.6f \n" % (i+1, n_epochs, np.mean(losses[i])))
+            
+    if verbose:
+        print("\nDone. Training took %.1f sec." % (time.time() - time0))
+    
+    # Obtain gradient norm
+    gradient_norms = np.sqrt(gradient_norm_sqs)
+    
+    # Weights throughout training: 
+    weights_train = {}
+    # weights_train["w"] = ws
+    # weights_train["u"] = us
+    # weights_train["wo"] = wos
+    # weights_last =  [net.W, net.U, net.bias, net.wo]
+    weights_last = []
+    for name, param in net.named_parameters():
+        weights_last.append(param.cpu().detach().numpy().copy())
+    
+    # res = [losses, gradient_norms, weights_last, epochs]
+    # return res
+    res = [losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs]
+    return res
+        
+
+
+def run_lstm(net, task, batch_size=32, return_dynamics=False, init_states=None):
+    loss_fn = nn.MSELoss()
+
+    # Generate batch
+    input, target, mask = task(batch_size)
+    # Convert training data to pytorch tensors
+    input = torch.from_numpy(input).float() 
+    target = torch.from_numpy(target).float() 
+    mask = torch.from_numpy(mask).float() 
+    with torch.no_grad():
+        # Run dynamics
+        output, hidden_seq, _ = net(input, init_states=init_states)
+
+        loss = loss_fn(output, target)
+    res = [input, target, mask, output, loss]
+    if return_dynamics:
+        res.append(hidden_seq)
+    res = [r.numpy() for r in res]
+    return res
 
 # df = run_all_lstm()
