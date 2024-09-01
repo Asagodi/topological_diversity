@@ -63,11 +63,12 @@ def get_scheduler(model, optimizer, scheduler_name, scheduler_step_size, schedul
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=scheduler_step_size, gamma=scheduler_gamma)
     elif scheduler_name == "cosineannealing":
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max_epochs)
-    elif scheduler == 'reduceonplateau':
+    elif scheduler_name == 'reduceonplateau':
         scheduler = torch.optim.lr_scheduler.REDUCELRONPLATEAU(optimizer, mode='min', factor=scheduler_gamma, patience=10,
                                                                threshold=1e-4, threshold_mode='rel', cooldown=0, min_lr=0)
     elif scheduler_name == None:
-        pass
+        return None     
+
     else:
         raise Exception("Scheduler not known.")
     return scheduler    
@@ -103,10 +104,10 @@ class RectifiedTanh(nn.Module):
 class RNN(nn.Module):
     def __init__(self, dims, noise_std=0., dt=0.5, 
                  nonlinearity='tanh', readout_nonlinearity='id',
-                 g=None, g_in=1, wi_init=None, wrec_init=None, wo_init=None, brec_init=None,
+                 g=None, g_in=1, wi_init=None, wrec_init=None, wo_init=None, brec_init=None, bo_init=None,
                  h0_init=None, hidden_initial_variance=0., oth_init=None,
-                 train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_h0=True, save_inputs=False,
-                 ML_RNN=True, map_output_to_hidden=False, input_nonlinearity=None):
+                 train_wi=True, train_wrec=True, train_wo=True, train_brec=True, train_bo=True, train_h0=True,
+                 ML_RNN=True, map_output_to_hidden=False, input_nonlinearity=None, save_inputs=False):
         """
         :param dims: list = [input_size, hidden_size, output_size]
         :param noise_std: float
@@ -207,15 +208,21 @@ class RNN(nn.Module):
             self.wi = nn.Parameter(torch.Tensor(hidden_size, hidden_size))
         if not train_wi:
             self.wi.requires_grad = False
+            
         self.wrec = nn.Parameter(torch.Tensor(hidden_size, hidden_size))
         if not train_wrec:
             self.wrec.requires_grad = False
-        self.wo = nn.Parameter(torch.Tensor(hidden_size, output_size))
-        if not train_wo:
-            self.wo.requires_grad = False
         self.brec = nn.Parameter(torch.Tensor(hidden_size))
         if not train_brec:
             self.brec.requires_grad = False
+            
+        self.wo = nn.Parameter(torch.Tensor(hidden_size, output_size))
+        if not train_wo:
+            self.wo.requires_grad = False
+        self.bo = nn.Parameter(torch.Tensor(output_size, 1))
+        if not train_bo:
+                self.bo.requires_grad = False
+        
         self.h0 = nn.Parameter(torch.Tensor(hidden_size))
         if not train_h0:
             self.h0.requires_grad = False
@@ -242,13 +249,20 @@ class RNN(nn.Module):
                 self.wo.copy_(wo_init)
             if brec_init is None:
                 self.brec.zero_()
+                torch.nn.init.uniform_(self.brec, a=-np.sqrt(hidden_size), b=np.sqrt(hidden_size))
             else:
                 if type(brec_init) == np.ndarray:
                     brec_init = torch.from_numpy(brec_init)
                 self.brec.copy_(brec_init)
+                
+            if bo_init is None:
+                self.bo.zero_()
+            else:
+                if type(bo_init) == np.ndarray:
+                    bo_init = torch.from_numpy(bo_init)
+                self.bo.copy_(bo_init)
             if h0_init is None:
                 torch.nn.init.uniform_(self.h0, a=-1, b=1)
-                # self.h0.zero_()
             else:
                 if type(h0_init) == np.ndarray:
                     h0_init = torch.from_numpy(h0_init)
@@ -292,24 +306,22 @@ class RNN(nn.Module):
             with torch.no_grad():
                 h = h_init_torch#.copy_(h_init_torch)
                 
-        elif h_init == 'random':
-            # hidden_initial_variance==0...
-            h = torch.normal(mean=0, std=self.hidden_initial_variance, size=(1, batch_size, self.hidden_size)).to(self.wrec.device)
-            self.h0.requires_grad = False
-
-        elif h_init is None:
-            h = self.h0
-            
-        else:
+        elif type(h_init) == np.ndarray or isinstance(h_init, torch.Tensor):
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
             h_init_torch.requires_grad = False
-            # Initialize parameters
-
+            # Initialize parameters 
             with torch.no_grad():
                 if type(h_init) == np.ndarray:
                     h = h_init_torch.copy_(torch.from_numpy(h_init))
                 else:
                     h = h_init_torch.copy_(h_init)
+                
+        elif h_init == 'random':
+            h = torch.normal(mean=0, std=self.hidden_initial_variance, size=(1, batch_size, self.hidden_size)).to(self.wrec.device)
+            self.h0.requires_grad = False
+
+        elif h_init == 'self_h':
+             h = self.h0
                 
         noise = torch.randn(batch_size, seq_len, self.hidden_size, device=self.wrec.device)
         output = torch.zeros(batch_size, seq_len, self.output_size, device=self.wrec.device)
@@ -329,7 +341,7 @@ class RNN(nn.Module):
                 h = ((1 - self.dt) * h 
                      + self.dt * rec_input
                      + np.sqrt(self.dt) * self.noise_std * noise[:, i, :])
-                out_i = self.readout_nonlinearity(h.matmul(self.wo))
+                out_i = self.readout_nonlinearity(h.matmul(self.wo))+self.bo
                 
             else:
                 rec_input = (
@@ -339,7 +351,7 @@ class RNN(nn.Module):
                 h = ((1 - self.dt) * h 
                      + self.dt * rec_input
                      + np.sqrt(self.dt) * self.noise_std * noise[:, i, :])
-                out_i = self.readout_nonlinearity(h).matmul(self.wo)
+                out_i = self.readout_nonlinearity(h).matmul(self.wo)+self.bo
 
             output[:, i, :] = out_i
 
@@ -682,6 +694,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                 h_init=trajectories[:,-1,:]
             elif h_init_type=='prev_last':
                 h_init='random'
+                
             _input, _target, _mask = task(batch_size)
 
             # Convert training data to pytorch tensors
@@ -697,7 +710,7 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             #apply mask after output
             
             
-            if np.any(_mask-1):
+            if np.any(_mask):
                 _mask = torch.from_numpy(_mask)
                 mask = _mask.to(device=device).float() 
                 loss = loss_function(output, target, mask)
@@ -732,7 +745,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
             
             # Update weights
             optimizer.step()
-            scheduler.step()
+            if scheduler:
+                scheduler.step()
             
             # Important to prevent memory leaks:
             loss.detach()
@@ -753,7 +767,8 @@ def train(net, task=None, data=None, n_epochs=10, batch_size=32, learning_rate=1
                 # Update weights
                 optimizer.step()
                 
-                scheduler.step()
+                if scheduler:
+                    scheduler.step()
                 
                 # These 2 lines important to prevent memory leaks
                 loss.detach()
