@@ -96,7 +96,7 @@ def perfect_params(version, output_dim=1, random_winout=False, ouput_bias_value=
     elif random_winout=="small_winout":
         W_in += np.random.normal(0, eps/4., (2,2))
         
-    return W_in, W_hh, W_out.T, b_hh, b_out, hidden_offset 
+    return W_in.T, W_hh, W_out.T, b_hh, b_out, hidden_offset 
     
 
 def perfect_initialization(version, output_dim=1, random_winout=False, ouput_bias_value=100, a=1, eps=.01):
