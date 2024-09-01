@@ -14,11 +14,15 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import pandas as pd
+from sklearn.cluster import DBSCAN
 
 import matplotlib.pyplot as plt; from matplotlib.ticker import MaxNLocator
 
+from analysis_functions import calculate_lyapunov_spectrum, participation_ratio, identify_limit_cycle, find_periodic_orbits, find_analytic_fixed_points, powerset
+
+
 # from analysis_functions import db
-def db(x):
+def decibel(x):
     return 10*np.log10(x)
 
 plt.rc('text', usetex=True)
@@ -192,7 +196,7 @@ def test_model(model, task, batch_size):
     from_t=0; to_t=None; target_power = np.mean(targets[:,from_t:to_t,:]**2)
     mse = np.mean((targets[:,from_t:to_t,:] - outputs[:,from_t:to_t,:])**2)
     mse_normalized = mse/target_power
-    return db(mse_normalized), outputs, trajectories
+    return decibel(mse_normalized), outputs, trajectories
 
 def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001, 
                 clip_norm=0., output_noise_level=0.01, weight_decay=0.01, scale_factor=1.):
@@ -232,20 +236,21 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
         
         # Check for NaNs in loss
         if torch.isnan(loss):
-            if epoch == 0:
-                print(f'NaN detected in loss at epoch {epoch + 1}. Reinitializing model parameters.')
-                model.apply(init_weights)
-                optimizer = optim.Adam([
-                            {'params': model.lstm.parameters(), 'weight_decay': weight_decay},
-                            {'params': model.fc.parameters(), 'weight_decay': 0.0},
-                            {'params': model.output_to_hidden, 'weight_decay': 0.0},
-                            {'params': model.output_to_cell, 'weight_decay': 0.0}
-                        ], lr=learning_rate)
-            else:
-                print(f'NaN detected in loss at epoch {epoch + 1}. Rolling back to previous state.')
-                model.load_state_dict(model_state_dict)
-                optimizer.load_state_dict(optimizer_state_dict)
-            continue
+            return False
+            # if epoch == 0:
+            #     print(f'NaN detected in loss at epoch {epoch + 1}. Reinitializing model parameters.')
+            #     model.apply(init_weights)
+            #     optimizer = optim.Adam([
+            #                 {'params': model.lstm.parameters(), 'weight_decay': weight_decay},
+            #                 {'params': model.fc.parameters(), 'weight_decay': 0.0},
+            #                 {'params': model.output_to_hidden, 'weight_decay': 0.0},
+            #                 {'params': model.output_to_cell, 'weight_decay': 0.0}
+            #             ], lr=learning_rate)
+            # else:
+            #     print(f'NaN detected in loss at epoch {epoch + 1}. Rolling back to previous state.')
+            #     model.load_state_dict(model_state_dict)
+            #     optimizer.load_state_dict(optimizer_state_dict)
+            # continue
         
         optimizer.zero_grad()
         loss.backward()
@@ -277,7 +282,7 @@ def train_n(n, task, input_size = 1, hidden_size = 64,  output_size = 2,
     while i<n:
         model = LSTMModel(input_size, hidden_size, output_size, dropout=dropout)
         losses = train_model(model, task, num_epochs=num_epochs, batch_size=batch_size, learning_rate=learning_rate, clip_norm=clip_norm);
-        if not losses:
+        if not losses.any():
             continue
         torch.save(model.state_dict(), exp_path+f'/model_{i}.pth')
         i+=1
@@ -323,15 +328,91 @@ def grid_search(task, input_size = 1, hidden_size = 64, output_size = 2,
 
 
 
+# fig, ax = plt.subplots(figsize=(2,3))
+# all_data = []
+# largest = []; second=[]; rest=[]
+# for exp_i in range(len(df)):
+#     eigenspectrum = np.array(df['eigenspectrum'][exp_i])-1
+#     largest.extend(eigenspectrum[:, -1])
+#     second.extend(eigenspectrum[:, -2])
+#     rest.extend(eigenspectrum[:, :-2].flatten())
+# largest = np.array(largest)
+# second = np.array(second)
+# rest = np.array(rest)
+
+# all_data = [largest[~np.isnan(largest)],second[~np.isnan(second)],rest[~np.isnan(rest)]]
+# labels = ['largest', 'second largest', 'rest']
+# colors = ['b', 'purple', 'k']
+
+# # Plot each violin plot with a slight offset on the x-axis
+# positions = [1, 1., 1.]  # Slightly offset positions for each violin plot
+# violin_parts = ax.violinplot(all_data, positions=positions, showmeans=False, showmedians=True)
+
+# # Set colors and labels for each violin
+# for i, pc in enumerate(violin_parts['bodies']):
+#     pc.set_facecolor(colors[i])
+#     pc.set_edgecolor(colors[i])
+#     pc.set_alpha(0.5)
+
+# # Create custom legend
+# for i in range(len(labels)):
+#     ax.plot([], [], color=colors[i], label=labels[i], alpha=0.5)
+
+# ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+
+# # Set x-ticks to a single value
+# ax.set_xticks([])
+# ax.set_ylabel("eigenvalues")
+# plt.savefig(exp_path+'/all_eigenvalue_spectra.pdf',bbox_inches="tight", pad_inches=0.0)
 
 
+######################################PLOT NFPS vs MAE
+# fig, ax = plt.subplots(1, 1, figsize=(5, 3))
+# N_color_dict = {64: 'b', 128: 'g', 256: 'orange'}
+# np.random.seed(12111)
+# for N in [64, 128, 256]:
+#     df_N = df[df['N'] == int(N / 2)]
+#     error_T1 = np.array(df_N['mean_error_0'].tolist())[:, 127]
+#     jittered_nfps = add_jitter(np.array(df_N['nfps']))
+#     ax.plot(jittered_nfps, error_T1, 'X', color=N_color_dict[N],alpha=.7)
+#     error_10T1 = np.array(df_N['mean_error_0'].tolist())[:, -1]
+#     ax.plot(jittered_nfps, error_10T1, 'X', color=N_color_dict[N], fillstyle='none',alpha=.7)
+
+#     ax.plot(jittered_nfps, df_N['mean_fp_dist'], '.', color='magenta')
+
+# ax.set_ylim([0, 1.25])
+
+# lines = [Line2D([0], [0], color=c, linewidth=2, linestyle='-') for c in ['b', 'g', 'orange']]
+# first_legend = plt.legend(lines, N_color_dict.keys(), title='Network Size', loc='upper right')
+# ax.add_artist(first_legend)
+
+# plt.xlabel("number of fixed points")
+# plt.ylabel("angular error (rad)")
+# plt.savefig('C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/angular_integration_old/lstm_npfs_vs_mae.pdf');
 
 
+######################################PLOT VFNorm vs MAE
+# fig, ax = plt.subplots(1, 1, figsize=(5, 3));
+# N_color_dict = {64:'b', 128:'g', 256:'orange'}
+# for N in [64,128,256]:
+#     df_N = df[df['N'] == int(N/2)]
+#     error_T1 = np.array(df_N['mean_error_0'].tolist())[:,127]
+#     ax.plot(df_N['vf_infty'], error_T1, 'X', color=N_color_dict[N])
+#     error_10T1 = np.array(df_N['mean_error_0'].tolist())[:,-1]
+#     ax.plot(df_N['vf_infty'], error_10T1, 'X', color=N_color_dict[N], fillstyle='none')
+    
+#     #ax.plot(df_N['nfps'], df_N['mean_fp_dist'], '.', color='magenta')
+# varphis = np.linspace(0,0.04)
+# ax.plot(varphis, 12.8*varphis, 'r--')
+# ax.set_xlim([0,.04])
+# ax.set_ylim([0,1.25])
 
+# lines = [Line2D([0], [0], color=c, linewidth=2, linestyle='-') for c in ['b', 'g', 'orange']]
+# first_legend = plt.legend(lines, N_color_dict.keys(), title='Network Size', loc='upper right')
+# ax.add_artist(first_legend)
 
-
-
-
+# plt.xlabel(r"$\|\varphi\|_\infty$"); plt.ylabel("angular error (rad)");
+# plt.savefig('C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/angular_integration_old/lstm_vfnorm_vs_mae.pdf');
 
 
 
@@ -358,7 +439,7 @@ def nmse(targets, outputs, from_t=0, to_t=None):
     target_power = np.mean(targets[:,from_t:to_t,:]**2)
     mse = np.mean((targets[:,from_t:to_t,:] - outputs[:,from_t:to_t,:])**2)
     mse_normalized = mse/target_power
-    return mse, mse_normalized, db(mse_normalized)
+    return mse, mse_normalized, decibel(mse_normalized)
 
 
 def angluar_error(target, output):
@@ -371,9 +452,9 @@ def angluar_error(target, output):
     max_error = np.max(angle_error,axis=0)
     min_error = np.min(angle_error,axis=0)
 
-    eps_mean_int = np.cumsum(mean_error) / np.arange(mean_error.shape[0])
-    eps_plus_int = np.cumsum(max_error) / np.arange(mean_error.shape[0])
-    eps_min_int = np.cumsum(min_error) / np.arange(mean_error.shape[0])
+    eps_mean_int = np.cumsum(mean_error) / np.arange(1,1+mean_error.shape[0])
+    eps_plus_int = np.cumsum(max_error) / np.arange(1,1+mean_error.shape[0])
+    eps_min_int = np.cumsum(min_error) / np.arange(1,1+mean_error.shape[0])
     
     return min_error, mean_error, max_error, eps_min_int, eps_mean_int, eps_plus_int
  
@@ -396,11 +477,16 @@ def find_fixed_point(outputs):
     theta_unwrapped = np.unwrap(thetas_sorted, period=2*np.pi);
     theta_unwrapped = np.roll(theta_unwrapped, -1, axis=0);
     arr = np.sign(theta_unwrapped[:,-1]-theta_unwrapped[:,0]);
-    idx=[i for i, t in enumerate(zip(arr, arr[1:])) if t[0] != t[1]];
+    idx=np.array([i for i, t in enumerate(zip(arr, arr[1:])) if t[0] != t[1]]).astype(int)  
     stabilities=-arr[idx].astype(int)
 
     fxd_pnt_output = outputs_sorted[:,-1,:][idx]
     fxd_pnt_thetas = thetas_init[idx]
+    
+    if idx.shape[0]%2==1:
+        fxd_pnt_thetas=np.hstack([fxd_pnt_thetas,0])
+        fxd_pnt_output=np.hstack([fxd_pnt_output,[1,0]])
+        stabilities=np.append(stabilities, -np.sum(stabilities))
 
     return fxd_pnt_output, fxd_pnt_thetas, stabilities
 
@@ -433,7 +519,7 @@ def lstm_jacobian(model, h0, c0):
     hidden_size = model.hidden_size
     
     # Input tensor at the origin
-    x = torch.zeros(1, 1, 1)
+    x = torch.zeros(1, 1, 2)
     
     # Forward pass through the LSTM
     out, (hn, cn) = model.lstm(x, (h0, c0))
@@ -455,7 +541,7 @@ def lstm_jacobian(model, h0, c0):
     jacobian_matrix = jacobian.detach().numpy()
     return jacobian_matrix
 
-def eigenspectrum_invman(model, hs, cs):
+def eigenspectrum_invman_lstm(model, hs, cs):
     hidden_size = model.hidden_size
 
     eigenspectrum = []
@@ -512,7 +598,7 @@ def plot_outputs_fps(outputs, fxd_pnt_output, stabilities,
     
     
 #OVERALL
-def run_all():
+def run_all_lstm():
     df = pd.DataFrame(columns=['path', 'T', 'N'])
     T = 12.8
     dt = 0.1
@@ -553,7 +639,7 @@ def run_all():
             vf_infty = vf_norm_from_outtraj(thetas[:,126], thetas[:,127])
             
             #eigenspec
-            eigenspectrum = eigenspectrum_invman(model, hs[:,127,:], cs[:,127,:])
+            eigenspectrum = eigenspectrum_invman_lstm(model, hs[:,127,:], cs[:,127,:])
         
             df = df.append({'path':model_path,
             'T': T, 'N': hidden_size, 'scale_factor': .5,  'dropout': 0., 'M': True, 'clip_gradient':1,
@@ -577,3 +663,144 @@ def run_all():
                             }, ignore_index=True)
             
     return df
+
+
+
+   
+class LSTM_noforget(nn.Module):
+    def __init__(self, dims, readout_nonlinearity='id', w_init=None, u_init=None, wo_init=None, bias_init=None, dropout=0.):
+        super(LSTM_noforget, self).__init__()
+        self.dims = dims
+        input_size, hidden_size, output_size = dims
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        self.readout_nonlinearity = readout_nonlinearity
+        
+        self.W = nn.Parameter(torch.Tensor(input_size, hidden_size * 3))
+        self.U = nn.Parameter(torch.Tensor(hidden_size, hidden_size * 3))
+        self.bias = nn.Parameter(torch.Tensor(hidden_size * 3))
+        self.wo = nn.Parameter(torch.Tensor(hidden_size, output_size))
+        
+        self.drop = nn.Dropout(p=dropout)
+        
+        # Initialize parameters
+        with torch.no_grad():
+            k = np.sqrt(1/hidden_size)
+            if w_init is None:
+                torch.nn.init.uniform_(self.W, a=-k, b=k)
+                # torch.nn.init.normal_(self.W, std=1/hidden_size)
+            else:
+                if type(w_init) == np.ndarray:
+                    w_init = torch.from_numpy(w_init)
+                self.W.copy_(w_init)
+            if u_init is None:
+               torch.nn.init.uniform_(self.U, a=-k, b=k)
+            else:
+                if type(u_init) == np.ndarray:
+                    u_init = torch.from_numpy(u_init)
+            if bias_init is None:
+                # self.bias.normal_(std=1 / hidden_size)
+                torch.nn.init.uniform_(self.bias, a=-k, b=k)
+            else:
+                if type(bias_init) == np.ndarray:
+                    bias_init = torch.from_numpy(bias_init)
+                self.bias.copy_(bias_init)
+            
+            if wo_init is None:
+                # self.wo.normal_(std=1 / hidden_size)
+                torch.nn.init.uniform_(self.wo, a=-k, b=k)
+
+            else:
+                if type(wo_init) == np.ndarray:
+                    wo_init = torch.from_numpy(wo_init)
+                self.wo.copy_(wo_init)
+
+        
+        # Readout nonlinearity
+        if readout_nonlinearity == 'tanh':
+            self.readout_nonlinearity = torch.tanh
+        elif readout_nonlinearity == 'logistic':
+            # Note that the range is [0, 1]. otherwise, 'logistic' is a scaled and shifted tanh
+            self.readout_nonlinearity = lambda x: 1. / (1. + torch.exp(-x))
+        elif readout_nonlinearity == 'id':
+            self.readout_nonlinearity = lambda x: x
+        elif type(readout_nonlinearity) == str:
+            raise NotImplementedError("readout_nonlinearity not yet implemented.")
+        else:
+            self.readout_nonlinearity = readout_nonlinearity
+                
+         
+    def forward(self, x, init_states=None):
+        """Assumes x is of shape (batch, sequence, feature)"""
+        batch_size, sequence_length, _ = x.size()
+        hidden_seq = []
+        out_seq = []
+        if init_states is None:
+            h_t, c_t = (torch.zeros(batch_size, self.hidden_size).to(x.device), 
+                        torch.zeros(batch_size, self.hidden_size).to(x.device))
+        else:
+            h_t, c_t = init_states
+         
+        HS = self.hidden_size
+        for t in range(sequence_length):
+            x_t = x[:, t, :]
+            # batch the computations into a single matrix multiplication
+            gates = x_t @ self.W + h_t @ self.U + self.bias
+            i_t, g_t, o_t = (
+                torch.sigmoid(gates[:, :HS]), # input
+                torch.tanh(gates[:, HS:HS*2]),
+                torch.sigmoid(gates[:, HS*2:]), # output
+            )
+            c_t = i_t * g_t
+            h_t = o_t * torch.tanh(c_t)
+            
+            hidden_seq.append(h_t.unsqueeze(0))
+            
+            # print(i_t, g_t, o_t, h_t)
+            
+            # out_t = self.readout_nonlinearity(h_t.matmul(self.wo))
+            # out_seq.append(o_t.unsqueeze(0))
+            
+            
+        hidden_seq = torch.cat(hidden_seq, dim=0)
+        # hidden_seq = self.drop(hidden_seq)
+        out_seq = self.readout_nonlinearity(hidden_seq.matmul(self.wo))
+
+        # reshape from shape (sequence, batch, feature) to (batch, sequence, feature)
+        hidden_seq = hidden_seq.transpose(0, 1).contiguous()
+        out_seq = out_seq.transpose(0, 1).contiguous()
+
+        # print(hidden_seq)
+        return out_seq, hidden_seq, (h_t, c_t, 0)
+    
+    
+class LSTM_noforget2(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(LSTM_noforget2, self).__init__()
+        self.hidden_size = hidden_size
+        
+        self.input_gate = nn.Linear(input_size + hidden_size, hidden_size)
+        self.output_gate = nn.Linear(input_size + hidden_size, hidden_size)
+        self.cell_gate = nn.Linear(input_size + hidden_size, hidden_size)
+        self.output_layer = nn.Linear(hidden_size, output_size)
+        
+    def forward(self, x, hidden):
+        bs, sequence_length, _ = x.size()
+        h_t = torch.zeros(1, self.hidden_size)
+        hidden_seq = []
+        for t in range(sequence_length):
+            combined = torch.cat((x[:,t,:], h_t), dim=1)
+            
+            i_t = torch.sigmoid(self.input_gate(combined))
+            g_t = torch.tanh(self.cell_gate(combined))
+            o_t = torch.sigmoid(self.output_gate(combined))
+            c_t = i_t * g_t
+            h_t = o_t * torch.tanh(c_t)
+            
+            output = self.output_layer(h_t)
+            hidden_seq.append(h_t.unsqueeze(0))
+        
+        return output, hidden
+
+# df = run_all_lstm()
