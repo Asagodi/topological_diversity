@@ -1,0 +1,190 @@
+%\documentclass{article}
+\documentclass{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb, amsmath, amsthm}
+\usepackage{thmtools, mathtools, mathrsfs}
+\usepackage{amsfonts}
+\usepackage[sort&compress,numbers]{natbib}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{positioning,matrix,arrows,decorations.pathmorphing}
+\usepackage{tikz-cd} 
+\definecolor{processblue}{cmyk}{0.8,0,0,0}
+\definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
+\newcommand{\mpcomment}[1]{(\textbf{MP:\ }\textcolor{mpcolor}{#1})}
+
+\newcommand{\mb}[1]{\mathbb{#1}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\DeclareMathOperator{\Inv}{Inv}
+\DeclareMathOperator{\innt}{int}
+\newcommand{\probP}{\text{I\kern-0.15em P}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{prop}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\reals}{\mathbb{R}}
+
+ \usepackage{thmtools, thm-restate} \newtheorem{conjecture}[theorem]{Conjecture}
+ \newtheorem{corollary}[theorem]{Corollary}
+
+\title{Abstracting out time from neural computation} %Fast-slow systems are equivalent to Moore machines
+\author{\'Abel S\'agodi}
+\date{September 1, 2024}	
+
+\begin{document}
+\maketitle
+
+\section*{Abstract}
+
+
+\newpage
+
+
+\section{Introduction}
+
+Understanding the mechanisms of neural computation has been a central goal in cognitive science and neuroscience.
+Over the years, various hypotheses and models have been proposed to explain how the brain processes information, makes decisions, and generates behavior.
+Among these, the dynamicist hypothesis offers a compelling framework.
+
+
+\subsection{Neural computation}
+
+Neural computation refers to the processes by which neural circuits in the brain carry out operations on information to produce thought, perception, and action.
+It involves understanding how networks of neurons encode, process, and transmit information through complex interactions.
+
+\subsubsection{Neuroscience}
+\paragraph{Persistent activity}
+
+\paragraph{Decision-making}
+
+delayed discrimination \citep{barak2013fixed}
+
+Drosophila \citep{zhao2020neural, li2023dynamics}
+
+\paragraph{Accumulation} %Evidence
+
+%%%
+\paragraph{Categorization}
+\citep{zhou2022compression}
+
+
+
+\subsubsection{Dynamicist hypothesis}
+The dynamicist hypothesis posits that cognitive processes are best understood as dynamic systems, where the state of the system evolves continuously over time  \citep{vangelder1995cognition, vangelder1995motion, vangelder1998dynamical}.
+ Unlike traditional computational models that emphasize discrete symbolic manipulation, the dynamicist perspective focuses on the continuous and often non-linear nature of cognitive processes.
+
+
+Recent \citep{beer2023dynamics}
+
+For motor \citep{wang2022representation}
+
+
+\subsubsection{Memory as attractors}
+%The beginnings: Hopfield networks \citep{hopfield1982neural}
+Memory is a fundamental aspect of cognitive processes, and early models sought to understand how memories are stored and retrieved in neural networks.
+ One of the seminal contributions to this field was the introduction of Hopfield networks by \cite{hopfield1982neural}.
+ These networks demonstrated how memories could be encoded as stable states within a network, providing a foundational model for understanding associative memory in neural systems.
+
+\citep{ashwin2024network}
+
+
+\paragraph{Fixed points}
+
+\paragraph{Oscillations}
+\citep{winder2009oscillatory}
+\citep{duecker2023oscillations, pals2024trained}
+
+LCs 
+
+Tori
+
+\subsubsection{Integration and processing}
+Building on the concepts of memory, the integration and processing of information in neural networks were further explored by \cite{hopfield1985decisions}.
+ This work delved into how neural networks can be used to model decision-making processes, highlighting the ability of such systems to integrate multiple inputs and converge on a decision, much like biological brains.
+
+
+we must also consider circuits with time-varying inputs
+State-dependent computation \citep{buonomano2009state}
+
+Time-invariant \citep{goudar2018encoding}
+
+Such nonautonomous circuits are important for at least two reasons. 
+First, any agent will have sensors that provide time-varying signals from its environment.
+Second, when trying to understand the operation of larger networks, it is sometimes useful to decompose them into sets of smaller circuits that provide time-varying inputs to one another.
+Unfortunately, there is little that can be said in general about the response of nonlinear dynamical systems to arbitrary time-varying inputs.
+
+
+
+\subsection{Describing recurrant neural network behavior}
+
+Recurrent neural networks (RNNs) have been extensively studied for their ability to model time-dependent behaviors and processes.
+ The behavior of these networks can be complex, and several approaches have been proposed to describe and analyze them.
+ % Key contributions to this field include the Neural Engineering Framework (NEF) by \cite{eliasmith2003neuralengineering, eliasmith2010describe}, which provides a structured approach to understanding and implementing neural networks.
+ \cite{beer1995ctrnn, beer1995interaction, beer1995computational, beer2006parameterspace} explored the behavior of continuous-time recurrent neural networks (CTRNNs), offering insights into their dynamics and the role they play in cognitive processes.
+   
+   
+   \citep{ceni2020interpreting}
+
+
+\subsection{Interpreting neural networks and dynamical systems}
+The interpretation of neural networks, particularly in the context of their behavior as dynamical systems, has been a topic of considerable debate and research. \cite{lipton2018mythos} discussed the challenges and myths surrounding the interpretability of neural networks, particularly in understanding the complex, often non-linear behaviors that emerge from these systems. This work underscores the importance of developing methodologies for interpreting neural networks to ensure that their decisions and processes are comprehensible to researchers and practitioners.
+
+
+
+
+
+
+\subsubsection{Proposals}
+To address some of the challenges in interpreting and understanding neural networks, several proposals have been made. \cite{casey1996} offered an early proposal for integrating insights from dynamical systems theory into the study of neural networks. This approach advocates for viewing neural networks not just as dynamical systems while abstracting out time, providing a richer understanding of their capabilities and limitations.
+
+
+\paragraph{Nonautonomous}
+A simple strategy for understanding the behavior of nonautonomous CTRNNs is to think of the time-varying inputs to a circuit as parameters that take on fixed values at any given point in time. \citep{beer1995ctrnn}
+By studying how the autonomous dynamics of a circuit vary as a function of its input parameters and then decomposing a trajectory of the nonautonomous circuit in these terms, we can sometimes gain significant qualitative insight into the response of a nonautonomous circuit to a given family of input signals.
+
+
+When the inputs change relatively slowly compared to the timescale of the autonomous dynamics, then the system state will always be found near an attractor of these dynamics.
+
+if attractor is an equilibrium point 
++and the inputs are changing very slowly: singular perturbation or quasistatic methods \citep{hoppensteadt2012weakly,hoppensteadt2013analysis}
+
++input is changing fast: 
+When I(t) varies more quickly, the state of the neuron always lags behind the moving attractors, but we can still understand the resulting trajectory qualitatively in terms of the changing autonomous dynamics
+
+%when the attractors are not equilibrium points or the inputs change very quickly
+
+
+
+
+Recent HNs
+\citep{bernstein2017markov}
+\citep{ramsauer2020hopfield}
+\citep{haputhanthri2023cue}
+
+
+\paragraph{Decision-making}
+\citep{zoltowski2020unifying, zoltowski2020general}
+
+\paragraph{Liquid State Machines}%without stable states
+Real-Time Computing Without Stable States \citep{maass2002real}
+If a reservoir has fading memory and input separability, with help of a readout, it can be proven the liquid state machine is a universal function approximator using Stone–Weierstrass theorem\citep{maass2004computationalpower}.
+
+Robustness \citep{hazan2012topological}
+
+ \newpage
+ \addcontentsline{toc}{section}{References}
+ \bibliographystyle{plain}
+ \bibliography{ref.bib,../Stability/catniplab.bib}
+
+\end{document}
+
+
