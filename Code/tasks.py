@@ -363,7 +363,7 @@ def simplestep_integration_task(T, dt, amplitude=1, pulse_time=1, delay=1):
 
 
 ##############LINEAR INTEGRATION
-def singlepulse_integration_task(T, dt, final_loss, steps_size=1):
+def singlepulse_integration_task(T, dt, final_loss, step_size=1, fixed_step=False):
     """
     Creates a trial with a positive and negative step with length step_length and amplitude
     Inputs are left and right angular velocity and 
@@ -376,10 +376,14 @@ def singlepulse_integration_task(T, dt, final_loss, steps_size=1):
         
         inputs = np.zeros((batch_size,T,2))
         input_side = np.random.binomial(1, p=.5, size=(batch_size))
-        inputs[:,0,0] = input_side*steps_size
-        inputs[:,0,1] = np.where(input_side,0,1)*steps_size
+        if not fixed_step:
+            step_sizes = np.random.uniform(0, step_size, size=(batch_size))
+        else:
+            step_sizes = np.ones(batch_size)*step_size
+        inputs[:,0,0] = step_sizes*input_side
+        inputs[:,0,1] = step_sizes*np.where(input_side,0,1)
 
-        outputs = np.cumsum(inputs[:,:,1], axis=1)*dt - np.cumsum(inputs[:,:,0], axis=1)*dt
+        outputs = dt*(np.cumsum(inputs[:,:,1], axis=1) - np.cumsum(inputs[:,:,0], axis=1))
         mask = np.zeros((batch_size, T, 1))
         if final_loss:
             mask[:,-1,:] = 1
