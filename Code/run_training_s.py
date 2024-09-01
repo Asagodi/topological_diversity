@@ -37,19 +37,25 @@ def makedirs(dirname):
         os.makedirs(dirname)
 
 def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None,
-             input_length=0, task_noise_sigma=0., final_loss=False, random_angle_init=True, max_input=None,
+             input_length=0, task_noise_sigma=0., final_loss=False, random_angle_init=True, max_input=None, fixed_step=False, step_size=1,
              cue_output_durations=[5,5,75,5,5], time_until_cue_range=None,input_noise_level=0):
     
     if task_name == 'eyeblink':
         task =  eyeblink_task(input_length=T, t_delay=t_delay)
         
+    #1D linear integration
     elif task_name == 'bernoulli_integration':
         task = bernouilli_noisy_integration_task(T=T, dt=dt, input_length=input_length, final_loss=final_loss, input_noise_level=input_noise_level)
-
+        
+    elif task_name == 'single_pulse':
+        task = singlepulse_integration_task(T=T, dt=dt, input_length=input_length, final_loss=final_loss, fixed_step=fixed_step, step_size=step_size)
+        
+    #1D circular integration
     elif task_name == 'angular_integration':
         task =  angularintegration_task(T=T, dt=dt, sparsity=sparsity,
                                         last_mses=last_mses, random_angle_init=random_angle_init)
-        
+    
+    #2D
     elif task_name == 'double_angular_integration':
         task =  double_angularintegration_task(T=T, dt=dt, sparsity=sparsity,
                                         last_mses=last_mses, random_angle_init=random_angle_init)
