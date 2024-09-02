@@ -7,18 +7,17 @@ Created on Fri Jul 28 12:25:35 2023
 
 import os, sys
 import glob 
-current_dir = os.path.dirname(os.path.realpath('__file__')) 
-parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir)) 
-pparent_dir = os.path.abspath(os.path.join(parent_dir, os.pardir)) 
-sys.path.insert(0, parent_dir)
-sys.path.insert(0, pparent_dir)
+from pathlib import Path
+current_dir = Path().resolve()
+parent_dir = current_dir.parent
+sys.path.insert(0, str(parent_dir))
+#print(parent_dir, pparent_dir, current_dir)
 
 import pickle
 import time
 
 import yaml
 import shutil
-from pathlib import Path
 from scipy.linalg import qr, block_diag
 
 import numpy as np
@@ -37,7 +36,6 @@ from qpta_initializers import _qpta_tanh_hh
 from plot_losses import get_params_exp
 from run_training_s import *
 
-print(current_dir)
 parameter_file_name = 'params.yml'
 training_kwargs = yaml.safe_load(Path(parent_dir + '/experiments/expgrad/'+ parameter_file_name).read_text())
     
