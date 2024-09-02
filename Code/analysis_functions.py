@@ -36,6 +36,10 @@ import networkx as nx
 import subprocess
 from tqdm import tqdm
 
+#from FixedPointFinderTorch import *
+from plot_utils import plot_fps
+from odes import relu_step_input
+
 #import skdim
 # functions = [skdim.id.CorrInt(), skdim.id.DANCo(), skdim.id.ESS(), skdim.id.Fishers(), skdim.id.KNN(), skdim.id.lPCA(), skdim.id.MADA(), skdim.id.MiND_ML(), skdim.id.MLE(), skdim.id.MOM(), skdim.id.TLE(), skdim.id.TwoNN()]
 # function_names = ["CorrInt", "DANCo", "ESS", "FisherS", "KNN", "lPCA", "MADA", "MiND_ML", "MLE", "MOM", "TLE", "TwoNN"]
@@ -43,9 +47,8 @@ from tqdm import tqdm
     # dim=function.fit(trajectories[:,from_t:to_t,:].reshape((-1,trajectories.shape[-1]))).dimension_
     # print(function_names[fi], ":", dim)
 
-# from tasks import PerceptualDiscrimination, PoissonClicks   
-from odes import relu_step_input
-#analysis
+
+
 
 def db(x):
     return 10*np.log10(x)
@@ -1122,8 +1125,7 @@ def angle_error_folder():
     fig.savefig(folder+"/angle_error.pdf", bbox_inches="tight");
 
 sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder"); 
-from FixedPointFinderTorch import *
-from plot_utils import plot_fps
+
     #from plot_losses import *; from analysis_functions import *
 
 #Fixed point finder
