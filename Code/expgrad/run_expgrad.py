@@ -38,7 +38,7 @@ from plot_losses import get_params_exp
 from run_training_s import *
 
 parameter_file_name = 'params.yml'
-training_kwargs = yaml.safe_load(Path(parent_dir + '/experiments/expgrad/'+ parameter_file_name).read_text())
+training_kwargs = yaml.safe_load(Path(pparent_dir + '/experiments/expgrad/'+ parameter_file_name).read_text())
     
 training_kwargs['wrec_init_std'] =  1e-1
 
