@@ -37,7 +37,7 @@ import subprocess
 from tqdm import tqdm
 
 #from FixedPointFinderTorch import *
-from plot_utils import plot_fps
+#from plot_utils import plot_fps
 from odes import relu_step_input
 
 #import skdim
