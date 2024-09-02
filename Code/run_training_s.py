@@ -48,7 +48,7 @@ def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsit
         task = bernouilli_noisy_integration_task(T=T, dt=dt, input_length=input_length, final_loss=final_loss, input_noise_level=input_noise_level)
         
     elif task_name == 'single_pulse':
-        task = singlepulse_integration_task(T=T, dt=dt, input_length=input_length, fixed_step=fixed_step, 
+        task = singlepulse_integration_task(T=T, dt=dt, input_length=input_length, 
                                             final_loss=final_loss, fixed_step=fixed_step, step_size=step_size)
         
     #1D circular integration
