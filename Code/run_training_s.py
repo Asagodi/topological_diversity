@@ -26,7 +26,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from models import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN, train_lstm, LSTM_noforget, LSTM_noforget2, LSTM
+from models import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN
 from network_initialization import qpta_rec_weights, bla_rec_weights, perfect_params, perfect_initialization
 from tasks import *
 from qpta_initializers import _qpta_tanh_hh
@@ -48,7 +48,8 @@ def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsit
         task = bernouilli_noisy_integration_task(T=T, dt=dt, input_length=input_length, final_loss=final_loss, input_noise_level=input_noise_level)
         
     elif task_name == 'single_pulse':
-        task = singlepulse_integration_task(T=T, dt=dt, input_length=input_length, final_loss=final_loss, fixed_step=fixed_step, step_size=step_size)
+        task = singlepulse_integration_task(T=T, dt=dt, input_length=input_length, fixed_step=fixed_step, 
+                                            final_loss=final_loss, fixed_step=fixed_step, step_size=step_size)
         
     #1D circular integration
     elif task_name == 'angular_integration':
@@ -142,6 +143,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
                         input_length=training_kwargs['input_length'], sparsity=training_kwargs['sparsity'],
                         task_noise_sigma=training_kwargs['task_noise_sigma'], last_mses=training_kwargs['last_mses'],
                         random_angle_init=training_kwargs['random_angle_init'], max_input=training_kwargs['max_input'], 
+                        fixed_step=training_kwargs['fixed_step'], step_size=training_kwargs['step_size'],
                         time_until_cue_range=training_kwargs['time_until_cue_range'], input_noise_level=training_kwargs['input_noise_level'])
 
     dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
@@ -226,6 +228,10 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         else:
             raise Exception("Recurrent weight initialization not known.")
             
+        
+        if training_kwargs['wrec_perturbation']:
+            wrec_init = wrec_init.astype(np.float64)
+            wrec_init += np.random.normal(0,training_kwargs['wrec_init_std'])
         
         net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'], g_in=training_kwargs['g_in'],
                   nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
@@ -495,6 +501,7 @@ if __name__ == "__main__":
     training_kwargs['max_input'] = None
     training_kwargs['dt_rnn'] = .1
     training_kwargs['dt_task'] = .1
+    training_kwargs['wrec_perturbation']=False
 
     training_kwargs['network_folder'] = parent_dir + '/experiments/center_out/variable_N200_T2000/tanh'
     training_kwargs['trained_exp_i'] = 0
