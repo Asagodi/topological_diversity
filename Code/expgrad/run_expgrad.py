@@ -10,6 +10,7 @@ import glob
 from pathlib import Path
 current_dir = Path().resolve()
 parent_dir = current_dir.parent
+pparent_dir = parent_dir.parent
 sys.path.insert(0, str(parent_dir))
 #print(parent_dir, pparent_dir, current_dir)
 
