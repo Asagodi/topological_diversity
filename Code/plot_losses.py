@@ -2020,8 +2020,8 @@ def fixed_point_analysis():
             print(nearest_to_zero)
         
         
-from ripser import ripser
-from persim import plot_diagrams
+#from ripser import ripser
+#from persim import plot_diagrams
 def tda_trajectories(trajectories):
     
     data = trajectories.reshape((-1,trajectories.shape[-1]))
