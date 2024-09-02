@@ -20,6 +20,7 @@ import pandas as pd
 from numpy.linalg import svd 
 from sklearn.decomposition import PCA
 from scipy.optimize import minimize
+from itertools import chain, combinations, permutations
 from tqdm import tqdm
 
 import matplotlib.pyplot as plt
@@ -28,6 +29,7 @@ import matplotlib.patches as mpatches
 import matplotlib.colors as mplcolors
 import matplotlib.cm as cmx
 import matplotlib as mpl
+from matplotlib.ticker import MaxNLocator
 from matplotlib import transforms
 from pylab import rcParams
 from matplotlib.collections import LineCollection
@@ -35,9 +37,13 @@ from mpl_toolkits.mplot3d.art3d import Line3DCollection
 from matplotlib.colors import Normalize
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-from models import RNN, run_net, LSTM_noforget, run_lstm
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
+from models import RNN, run_net
 from tasks import angularintegration_task, angularintegration_delta_task, simplestep_integration_task, poisson_clicks_task, center_out_reaching_task
-from analysis_functions import calculate_lyapunov_spectrum, tanh_jacobian, participation_ratio, identify_limit_cycle, find_periodic_orbits
+from analysis_functions import calculate_lyapunov_spectrum, participation_ratio, identify_limit_cycle, find_periodic_orbits, find_analytic_fixed_points, powerset
+from odes import tanh_jacobian, relu_step_input
 
 def makedirs(dirname):
     if not os.path.exists(dirname):
@@ -1965,8 +1971,7 @@ def get_stabilities(fxd, wrec, brec, tau):
     return h_stabilities
 
 
-from itertools import chain, combinations, permutations
-from analysis_functions import find_analytic_fixed_points, powerset, relu_step_input
+
 def fixed_point_analysis():
     T = 2000
     batch_size = 1000
