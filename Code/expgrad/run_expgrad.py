@@ -9,6 +9,9 @@ import os, sys
 import glob 
 current_dir = os.path.dirname(os.path.realpath('__file__')) 
 parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir)) 
+pparent_dir = os.path.abspath(os.path.join(parent_dir, os.pardir)) 
+sys.path.insert(0, parent_dir)
+sys.path.insert(0, pparent_dir)
 
 import pickle
 import time
