@@ -1947,14 +1947,14 @@ In contrast, our analysis involves understanding how the working memory content 
 
 
 \subsection{Ring attractor approximation with a low-rank network}\label{sec:supp:lowrank}
-The networks consisted of \(N\) firing rate units with a sigmoid inputoutput transfer function \citep{mastrogiuseppe2018}:
+The networks consisted of \(N\) firing rate units with a sigmoid input-output transfer function \citep{mastrogiuseppe2018}:
 \begin{equation}
 \dot \xi_{i}(t) = - \xi_{i}(t) + \sum_{j = 1}^{N} J_{ij}\phi(x_{j}(t)) + I_{i},
 \label{eq:1}
 \end{equation}where \(x_{i}(t)\) is the total input current to unit \(i\),
 \( J_{ij} = g\chi_{ij} + P_{ij}\) is the connectivity matrix,
 \(\phi(x) = \tanh(x)\) is the current-to-rate transfer function, and \(I_{i}\) is the external, feedforward input to unit \(i\).
-\(g\chi\) is considered unknown except for its statistics (mean 0, variance \(g^{2}/N\)).
+The random component \(g\chi\) is considered unknown except for its statistics (mean 0, variance \(g^{2}/N\)).
 A general structured component of rank \(r\ll N\) can be written as a superposition of \(r\) independent unit-rank terms
 \begin{equation}
 P_{ij} = \frac{m_{i}^{(1)} n_{j}^{(1)}}{N} + \cdots + \frac{m_{i}^{(r)} n_{j}^{(r)}}{N},
@@ -1965,7 +1965,7 @@ P_{ij} = \frac{m_{i}^{(1)} n_{j}^{(1)}}{N} + \cdots + \frac{m_{i}^{(r)} n_{j}^{(
 
 
 %Rank-two structures with internal pairwise overlap
-We consider structured matrices where the two connectivity pairs \( m^{(1)} \) and \( n^{(1)} \), \( m^{(2)} \) and \( n^{(2)} \) share two different overlap directions, defined by vectors \( y_{1} \) and \( y_{2} \). We set:
+To approximate a ring attractor we can consider structured matrices where the two connectivity pairs \( m^{(1)} \) and \( n^{(1)} \), \( m^{(2)} \) and \( n^{(2)} \) share two different overlap directions, defined by vectors \( y_{1} \) and \( y_{2} \). We set:
 \begin{align}
     m^{(1)} &= \sqrt{\Sigma^{2} - r_{1}^{2}} \, x_{1} + r_{1} y_{1}, \\
     m^{(2)} &= \sqrt{\Sigma^{2} - r_{2}^{2}} \, x_{2} + r_{2} y_{2}, \\
@@ -1977,7 +1977,7 @@ where \( \Sigma^{2} \) is the variance of the connectivity vectors and \( r_{1}^
 We keep the following parameters for the analysis:
 \(\Sigma = 2\),
 \(\rho = 1.9\) and
-\(g\in\{0, 0.1\}\).
+\(g=0.1\).
 
 
 \begin{figure}[h]
@@ -1989,10 +1989,10 @@ We keep the following parameters for the analysis:
 
 
 
- Our theory explains the phenomenon of the existence of a ring invariant manifold in these low-rank networks as follows. %MOVE TO LATER
- We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the \(m^{1}, m^{2}\) plane (independent of the parameter \(g\) for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
-This implies that the ring attractor network
- For very small networks the ring structure is destroyed and only the plane persist as a slow manifold.
+Our theory explains the phenomenon of the existence of a ring invariant manifold in these low-rank networks as follows. %MOVE TO LATER
+We can think of the finite size realization as a small perturbation to the infinite size network on the reduced dynamics in the \(m^{1}, m^{2}\) plane (independent of the parameter \(g\) for the random part of the matrix)  (Fig.~\ref{fig:bio_rings}B).
+%This implies that the ring attractor network
+ For very small networks the ring structure is destroyed and only the plane persists as a slow manifold.
 
 
 
