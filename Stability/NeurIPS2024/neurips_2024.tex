@@ -149,7 +149,7 @@ Biological systems exhibit robust behaviors that require neural information proc
 Virtually all neural models of working memory for continuous-valued information rely on persistent internal representations through recurrent dynamics.
 The continuous attractor structure in their recurrent dynamics has been a pivotal theoretical tool due to their ability to maintain activity patterns indefinitely through neural population states~\cite{vyas2020,dayan2001,Khona2022,durstewitz2023reconstructing}.
 They are hypothesized to be the neural mechanism for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, and decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
-Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,Noorman2022,Nair2023,petrucco2023neural,yang2022brainstem,constantinidis2018persistent}.
+Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,Noorman2022,petrucco2023neural,yang2022brainstem,constantinidis2018persistent,nair2023approximate,mountoufaris2024line,vinograd2024causal}.
 %and anatomy?
 
 %par1: animals can represent CVs
@@ -189,7 +189,7 @@ By assuming normal hyperbolicity we separate the time scales to obtain a decompo
 We derive theoretical results that ensure the existence of a slow manifold and determine its closeness to a continuous attractor (Sec.~\ref{sec:theory}).
 We explore task-trained recurrent neural networks (RNNs) to show that these systems appear naturally as solutions to the task (Sec.~\ref{sec:experiments}) and that their generalization capabilities can easily be studied as the distance to the continuous attractor (Sec.~\ref{sec:generalization}).
 The proposed decomposition applied to theoretical models and task-trained RNNs reveals a ``universal motif'' of analog memory mechanism with various potential topologies.
-This leads to the connection of different systems with different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:converse}).
+This leads to the connection of different systems with different topologies as \textbf{approximate continuous attractors}\footnote{This correspond a type of ``ideal pattern'' in the vocabulary of \citet{chirimuuta2024brain}.} (Sec.~\ref{sec:converse}).
 Our theory guarantees that systems close to a continuous attractor (in the space of vector fields) will have similar behavior to it, implying that the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory (Sec.~\ref{sec:implications}).
 
 
@@ -1062,7 +1062,6 @@ A differentiable map with differentiable inverse.\label{sec:supp:diffeomorphism}
 \section{The bounded line attractor}\label{sec:supp:bla}
 In order to demonstrate the implications of the theory of the persistence of  continuous attractors, we rigorously test the predictions of the theory on the stability of the Bounded Line Attractor (BLA).
 Our objective is to assess the practical implications of the theoretical findings of bounded continuous attractors in a small and tractable system, and second, to contribute empirical evidence that can help refine and extend existing theoretical frameworks.
-
 
 The BLA has a parameter that determines step size along line attractor \(\alpha\). Analogously as for UBLA, these parameters determine the capacity of the network.
 The inputs push the input along the line attractor in two opposite directions, see below. The BLA needs to be initialized at \(\beta(1, 1)\) and \(\tfrac{\beta}{2}(1, 1)\), respectively, for correct decoding, i.e., output projection.
