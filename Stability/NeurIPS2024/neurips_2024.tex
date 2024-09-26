@@ -1823,10 +1823,11 @@ These neurons can be arranged topologically in a ring according to their preferr
 The total input activity \(h_{j}\) of each neuron is governed by:
 \begin{equation}
 \tau \dot h_{j} = -h_{j} + \frac{1}{N} \sum_{k} (W_{jk}^{sym} + v_{in} W_{jk}^{asym})\phi(h_{k})+c_{ff},     j = 1,\dots, N,
-\end{equation}with
+\end{equation}
+with
 \begin{equation}
-W_{jk}^{sym} = J_{I} + J_{E} \cos(\theta_{j} - \theta_{k})
-\end{equation}, where \(J_{E}\) and \(J_{I}\) respectively control the strength of the tuned and untuned components of recurrent connectivity between neurons with preferred headings \(\theta_{j}\) and \(\theta_{j}\)
+W_{jk}^{sym} = J_{I} + J_{E} \cos(\theta_{j} - \theta_{k}),
+\end{equation} where \(J_{E}\) and \(J_{I}\) respectively control the strength of the tuned and untuned components of recurrent connectivity between neurons with preferred headings \(\theta_{j}\) and \(\theta_{j}\)
 and \(v_{in}\) is an angular velocity input which the network receives through asymmetric, velocity-modulated weights \begin{equation}W^{asym} =\sin(\theta_{j} - \theta_{k}).\end{equation}
 \paragraph{Fixed points}
 In the absence of an input (\(v_{in}=0\)) fixed points of the system can be found analytically by considering all submatrices \(W_{\sigma}^{sym}\) for all subsets \(\{\sigma\subset [n]\}\) with\([n]=\{1,\dots, N\}\).
