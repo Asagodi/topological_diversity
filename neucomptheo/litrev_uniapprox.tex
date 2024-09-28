@@ -23,7 +23,6 @@
 
 \maketitle
 
-
 \section{Approximation theory for sequence modeling}
 %\subsection{Universality of approximation}
 
@@ -33,21 +32,12 @@ This section is based on \citep{li2022approximation} and \citep{jiang2023brief}.
 
 
 
-\paragraph{Internal and external approximation}
-External approximation is the construction of a dynamical system of a certain class/category that approximates a given dynamical system that is not necessarily in that category.
-
-
-\paragraph{Autonomous vs Input driven}
-
-\paragraph{Approximation guarantee in limit of infinite units or bounded error at every step along the way}
-Limit \citep{podlaski2024approximating}
 
 
 
 \subsection{The problem of approximation} %{Problem statement}
-For behaving agents we can formalize their behavior as sequence-to-sequence input-output mappings.
-We will call $\mathcal{X}$ the space of input sequences
-and $\mathcal{Y}$ the space of output sequences.
+For behaving agents we can formalize their behavior as sequence-to-sequence or input-output mappings.
+We will call $\mathcal{X}$ the space of input sequences and $\mathcal{Y}$ the space of output sequences.
 
 We consider a family of target functions, or simply targets, which is a subset \(\mathcal{C} \) of all mappings \( \mathcal{X} \rightarrow \mathcal{Y} \), i.e., \( \mathcal{C} \subset \mathcal{Y}^\mathcal{X} \). 
 These are the relationships we wish to approximate (or ``learn"), by some (simpler or at least parameterized) candidate functions.
@@ -55,7 +45,7 @@ Let us denote this set of \textbf{candidates} by \( \mathcal{H} \subset \mathcal
 In learning theory, this is often called a \textbf{hypothesis space}.
 The problem of approximation concerns how well functions in \( \mathcal{H} \) can resolve functions in \( \mathcal{C} \).
 This is typically formulated in terms of a bound on the (maximal) error between the approximation and the target mapping.
-
+We describe 
 
 
 \paragraph{Functional formulation} 
@@ -83,7 +73,7 @@ Let $\{H_t : t \in \mathbb{R}\}$ be a sequence of functionals.
     
     \item $H_t$ is \textbf{regular} if for any sequence $\{x^{(n)} \in X : n \in \mathbb{N}\}$ such that $x^{(n)}_t \to 0$ for Lebesgue almost every $t \in \mathbb{R}$, we have $\lim_{n \to \infty} H_t(x^{(n)}) = 0$.
     
-    \item $\{H_t : t \in \mathbb{R}\}$ is \textbf{time-homogeneous} if $H_t(x) = H_{t+\tau}(x^{(\tau)})$ for any $t, \tau \in \mathbb{R}$, where $x^{(\tau)}_s = x_{s-\tau}$ for all $s \in \mathbb{R}$, i.e., $x^{(\tau)}$ is $x$ whose time index is shifted to the right by $\tau$.
+    \item $\{H_t : t \in \mathbb{R}\}$ is \textbf{time-homogeneous} or \textbf{time-invariant} if $H_t(x) = H_{t+\tau}(x^{(\tau)})$ for any $t, \tau \in \mathbb{R}$, where $x^{(\tau)}_s = x_{s-\tau}$ for all $s \in \mathbb{R}$, i.e., $x^{(\tau)}$ is $x$ whose time index is shifted to the right by $\tau$.
 \end{enumerate}
 \end{definition}
 
@@ -93,9 +83,9 @@ E.g. \citet{grigoryeva2018universal}.
 
 
 \subparagraph{Simulation formulation}
-This is a special case of the functional formulation. % (?). can be seen as...
+This is a special case of the functional formulation for $H_t$ being time-invariant. % (?). can be seen as...
 
-\begin{definition}[Sec.2.3 in \citep{sontag1992neural}]
+\begin{definition}[Sec.2.3 in \citep{sontag1992neural}]\label{def:simulation}
 Consider two systems $\Sigma$ and $\tilde\Sigma$ described by the following dynamics 
 \begin{equation}
     \Sigma: \begin{cases}
@@ -145,9 +135,39 @@ One can distinguish between three types of approximation results\citep{jiang2023
     \item Inverse approximation results (Bernstein-type): Inverse approximation results are converse statements. It identifies properties that $H$ ought to possess if one starts with the assumption that it can be well-approximated (in a sense to be made precise in each case) by $\mathcal{H}$.
 \end{itemize}
 
+We furthermore distinguish between the following kinds results.
+%Some useful distinctions for approximation results:
+\begin{itemize}
+\item \textbf{Finite vs infinite time}
+\item \textbf{Internal and external approximation}
+External approximation is the construction of a dynamical system of a certain class/category that approximates a given dynamical system that is not necessarily in that category.
+\item  \textbf{Autonomous vs Input driven}
+\item \textbf{Approximation guarantee in limit of infinite units or bounded error at every step along the way}
+Limit: e.g. \citep{podlaski2024approximating}
+\end{itemize}
+
+
+\paragraph{Accuracy measures}
+Uniform accuracy means that we require high accuracy on every input value, that is, with respect to the uniform norm. 
+
 %%
 \paragraph{Relationship with system identification}
 \citep{ljung2010perspectives, nelles2020nonlinear}
+
+
+
+\subsection{Inputs}
+%from \citep{pavlov2006uniform}
+Piecewise continuous vector functions \( w(t) \in \mathbb{R}^m \) are defined and bounded on \( t \in \mathbb{R} \). This class of inputs is denoted by \( \text{PC}^m \). The second class \( \text{PC}(W) \) is defined in the following way. Let \( W \) be some subset of \( \mathbb{R}^m \). A function \( w(\cdot) : \mathbb{R} \to W \) belongs to the class \( \text{PC}(W) \) if it is piecewise continuous and if there exists a compact set \( K_w \subset W \) such that \( w(t) \in K_w \) for all \( t \in \mathbb{R} \). In particular, we obtain that \( \text{PC}(\mathbb{R}^m) = \text{PC}^m \).
+
+Another important class of inputs considered in the book is related to solutions of the system
+\[
+\dot{w} = s(w), \quad w \in \mathbb{R}^m, \tag{2.20}
+\]
+with a locally Lipschitz function \( s(w) \). Let the set \( W \subset \mathbb{R}^m \) be invariant with respect to system (2.20). The class of inputs \( \mathcal{I}_s(W) \) consists of solutions \( w(t) = w(t, w_0) \) of system (2.20) starting in \( w(0) = w_0 \in W \). Note that since the set \( W \) is invariant, we have for \( w(\cdot) \in \mathcal{I}_s(W) \) that \( w(t) \in W \) for all \( t \in \mathbb{R} \).
+
+
+%others:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -159,7 +179,7 @@ A finite size recurrent net model (units with linear and Heaviside transfer func
 
 A finite-sized recurrent neural network with sigmoidal activation functions can simulate a universal Turing machine \citep{siegelmann1992computational}.
 
-Discrete networks with polynomially bounded weights can simulate any finite automata (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
+Discrete networks with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
 
 Sigmoidal neural networks can be used to compute any recursive (Turing) function\citep{kilian1996}.
 
@@ -173,7 +193,24 @@ Most of these results rely on Gr\:onwall’s inequality to control the differenc
 
 %%%%%%%%%%%%%%%%%%%%%
 % Open dynamical system
-\paragraph{Non-autonomous dynamical system with RNNs by \citet{schafer2007}} %they call them open DSs
+%Non-autonomous dynamical system with RNNs by
+\paragraph{Discrete sequence-to-sequence mapping} %they call them open DSs
+
+%with DRNNs
+\subparagraph{With DRNNs}
+\begin{definition}[DNNs]
+DNNs are made of interconnected dynamic neurons. The class of neuron of interest in this letter is described by the following differential equation:
+\[
+\dot{x}_i = \alpha_i x_i + \sum_{j=1}^{N} \omega_{ij} \sigma(x_j) + \sum_{j=1}^{m} \beta_{ij} u_j \tag{1}
+\]
+where \( \alpha_i \), \( \omega_{ij} \), and \( \beta_{ij} \) are adjustable weights, with \( \frac{1}{\alpha_i} \) a positive time constant and \( x_i \) the activation state of the \( i \)-th unit, \( \sigma \) is a sigmoid function, and \( u_1, \dots, u_m \) are the input signals.
+\end{definition}
+
+Uniform approximation of a state space trajectory (with time-varying inputs) produced by either a discrete-time nonlinear system or a continuous function on a closed discrete-time interval \citep{jin1995universal}.
+
+The first $p$ output neural units of a dynamic $n$-dimensional neural model approximate at a desired proximity a $p$-dimensional dynamic system with $n > p$ \citep{kambhampati2000approximation}.
+
+%\subparagrap{\citep{schafer2007}}
 \begin{definition}\label{def:rnn}
 For any (Borel-)measurable function \( f(\cdot): \mathbb{R}^J \rightarrow \mathbb{R}^J \) and \( I, N, T \in \mathbb{N} \), let \(\operatorname{RNN}^{I,N}(f) \) be the class of functions defined by the following relations:
 \begin{align}  \label{eq:ssm}
@@ -201,26 +238,83 @@ Since the results concern a compact time interval, to approximate dynamics it is
 This is in general not true for the unbounded case, as the approximation error can be magnified by the dynamics.
 
 
+Discrete-time RNNs are universal approximators of discrete-time systems \citep{aguiar2023}.
 
-\paragraph{Sequence-to-sequence maps with recurrent linear layers}
+\subparagraph{With recurrent linear layers}
 A family of sequence models based on recurrent linear layers (including S4, S5 and the LRU) interleaved with position-wise multi-layer perceptrons (MLPs) can approximate arbitrarily well any sufficiently regular non-linear sequence-to-sequence map \citep{orvieto2023a}.
 
-Training ReLU networks to high uniform accuracy is intractable \citep{berner2022}.
-Uniform accuracy: high accuracy on every input value, that is, with respect to the uniform norm 
-
-any finite trajectory of an n-dimensional continuous dynamical system can be approximated by the internal state of the hidden units and n output units of an LTC network \citep{hasani2018liquid}
-
-\paragraph{Others}
-\citep{jin1995universal}
-\citep{kimura1998learning}
-\citep{kambhampati2000approximation}
-\citep{hwang2022minimal}
-\citep{hasani2022closed}
+Training ReLU networks to high uniform accuracy is intractable, the size of the network needs to grow exponentially \citep{berner2022}.
 
 
 
-\paragraph{Flows}
-A flow $\varphi$ can be approximated by a function $\hat\varphi$ on a finite time interval, where $\hat \varphi(t, x, u)$ is computed by an RNN \citep{aguiar2023}.
+
+\paragraph{Continuous seq2seq/ODEs}
+Autonomous: \citep{funahashi1993approximation}
+
+\subparagraph{NonAutonomous}
+The following result was proven in \citet{garces2012strategies}.
+\[
+\dot{x}(t) = f(x(t); u(t)) 
+\]
+is defined on \( I = [0, T] \) with \( 0 < T < 1 \), for \( u(t) \in U \) with \( t \in I \), and is included in \( \tilde{K} \) for any \( t \in I \).
+Then, for an arbitrary \( \epsilon > 0 \), there exists a nonautonomous DNN with \( n \) output units with states \( x_o \in \mathbb{R}^n \) and \( N_h \) hidden units with states \( x_h \in \mathbb{R}^{N_h} \), of the form
+\[
+\dot{z} = Az + B \sigma(z) + C u
+\]
+such that for a solution \( x(t) \) satisfying (3), and an appropriate initial state, the states of the output units of the network, \( x_o(t) \), approximate the solution of the nonautonomous system
+\[
+\max_{t \in I} \| x(t) - x_o(t) \| < \epsilon
+\]
+where \( I = [0, T] \) with \( 0 < T < 1 \).
+
+
+Any DS on $\reals^n$ can be approximated by an affine neural dynamical system (A-NDS) on $\reals^n$ in any finite time-interval and compact subset of $\reals^n$ with any precision \citep{kimura1998learning}.
+Let \( w \) be a dynamical system (DS) on \( \mathbb{R}^n \) and \( V \) the corresponding complete vector field on \( \mathbb{R} \). We fix a positive constant \( \epsilon \), a bounded closed interval \( J \) containing 0, and a compact subset \( K \) of \( \mathbb{R}^n \). Our purpose is to construct an A-NDS \( J_{h,m} \) that uniformly approximates within error \( \epsilon \) the DS \( w \) in \( J \times K \), that is,
+\begin{equation}\label{eq:kimurabound}
+\| w_t(x) - J_t^{h,m}(x) \| < \epsilon, \quad (t \in J, x \in K)
+\end{equation}
+where \( \|\cdot\| \) is the Euclidean norm on \( \mathbb{R}^n \).
+
+\begin{theorem}[Theorem 2. in \citep{kimura1998learning}]%\textbf{Theorem 2.}
+Given a dynamical system (DS) \( w \) on \( \mathbb{R}^n \), a positive constant \( \epsilon \), a bounded closed interval \( J \), and a compact set \( K \subset \mathbb{R}^n \), there exists an A-NDS \( J_{h,m} \) on \( \mathbb{R}^n \) such that condition Eq.~\ref{eq:kimurabound} is satisfied. 
+\end{theorem}
+Note that this approximation method is viewed as a phase-space learning of a DS \citep{tsung1993phase} using our RNN, where the phase-space learning of a DS is the learning by an FNN of the vector field defining the DS.
+
+\paragraph{NODEs}
+Any finite trajectory of an $n$-dimensional continuous dynamical system can be approximated by the internal state of the hidden units and $n$ output units of an Liquid time-constant (LTC) network \citep{hasani2018liquid}.
+
+\citep{chen2018neural}
+
+%\subparagraph{Latent}
+Latent ODE-RNN\citep{rubanova2019latent}
+Latent ODE-LSTM \citep{coelho2024enhancing}
+
+\subparagraph{Neural oscillators}
+\citep{lanthaler2023}
+\begin{definition}[General Form of Neural Oscillators]
+Given \( u : [0, T ] \to \mathbb{R}^p \) as an input signal, for any final time \( T \in \mathbb{R}^+ \), we consider the following system of neural ODEs for the evolution of dynamic hidden variables \( y \in \mathbb{R}^m \), coupled to a linear read-out to yield the output \( z \in \mathbb{R}^q \):
+\begin{equation}\label{eq:neuraloscillator}
+\begin{aligned}
+    \ddot{y}(t) &= \sigma(W y(t) + V u(t) + b), \\
+    y(0) &= \dot{y}(0) = 0, \\
+    z(t) &= A y(t) + c.
+\end{aligned}
+\end{equation}
+\end{definition}
+
+\textbf{Theorem 3.1. [Universality of the multi-layer neural oscillator]}
+\begin{theorem}
+Let \( \Phi : C^0([0, T ]; \mathbb{R}^p) \to C^0([0, T ]; \mathbb{R}^q) \) be a causal and continuous operator. Let \( K \subset C^0([0, T ]; \mathbb{R}^p) \) be compact. Then for any \( \epsilon > 0 \), there exist hyperparameters \( L, m_1, \dots, m_L \), weights \( w^\ell \in \mathbb{R}^{m_\ell} \), \( V^\ell \in \mathbb{R}^{m_\ell \times m_{\ell-1}} \), \( A \in \mathbb{R}^{q \times m_L} \), and bias vectors \( b^\ell \in \mathbb{R}^{m_\ell} \), \( c \in \mathbb{R}^q \), for \( \ell = 1, \dots, L \), such that the output \( z : [0, T] \to \mathbb{R}^q \) of the multi-layer neural oscillator (\ref{eq:neuraloscillator}) satisfies
+\[
+\sup_{t \in [0, T]} | \Phi(u)(t) - z(t) | \leq \epsilon, \quad \forall u \in K.
+\]
+\end{theorem}
+
+
+
+\subparagraph{Flows}
+RNNs are universal approximators of flow  functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023}.
+A flow $\varphi$ can be approximated by a function $\hat\varphi$ on a finite time interval, where $\hat \varphi(t, x, u)$ is computed by an RNN \citep{aguiar2023}. 
 \citet{aguiar2023} covers systems with trajectories $t\mapsto\varphi(t, x, u)$ that are continuous in time $t$.
 This applies when $\varphi$ arises from a differential equation, differential algebraic equation, but excludes e.g. hybrid systems with state jumps.
 
@@ -237,7 +331,7 @@ u(t) = \alpha(\omega_k, t/\Delta), \quad k\Delta \leq t < (k + 1)\Delta.
 
 
 \paragraph{Spiking}
-\citep{thalmeier2016learning}
+Continuous signal coding spiking neural networks (CSNs) are computational reservoirs \citep{thalmeier2016learning}.
 
 \subparagraph{SCN}
 In limit $N\rightarrow\infty$ spiking network (ODE with jumps) approximates a continuous ODE \citep{podlaski2024approximating}. 
@@ -259,27 +353,16 @@ The computation of the resulting networks can be understood as the difference of
 
 %%%%%%%%%%%%%%%%%%%
 \subsubsection{Infinite sequences}
-
-
 \paragraph{Reservoir computing}
-\citep{grigoryeva2024forecasting}
-\citep{pathak2017using}
 \citep{li2024simple}
+\citep{grigoryeva2024forecasting}
 
 
 %ESN
 \paragraph{Exponential decaying memory or Fading memory property or Echo state property}
 
 To handle unbounded $T$ (e.g. $T = \mathbb{R}$), one strategy is to introduce some decay properties to the targets.
-One such property is the fading memory property (FMP) \citep{boyd1985fading}.
-
-
-
-
-
-\citep{matthews1993approximating}
-
-the fading memory property is not a metric property, as it is usually presented in the literature, but a topological one \citep{grigoryeva2018universal}. 
+One way to do this is to impose the so called  fading memory property (FMP) \citep{boyd1985fading}.
 
 \begin{definition}[Fading memory Property (FMP)]
 Let $x_1, x_2$ be bounded sequences indexed by $\mathbb{R}$, and let $H$ be a sequence of causal, shift-equivariant (also called time-homogeneous) functionals.
@@ -290,24 +373,51 @@ We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing func
 \]
 \end{definition}
 
+\begin{remark}
+The fading memory property is not a metric property, as it is usually presented in the literature, but a topological one \citep{grigoryeva2018universal}. 
+\end{remark}
+
+
+Every fading-memory system could be uniformly approximated arbitrarily closely over the set of systems with 'linear dynamics'\citep{matthews1993approximating}. %Theorem 3+4
+Using the perceptron to uniformly approximate the external representation of a fading-memory system results in a finite-memory system model, called the perceptron filter \citep{matthews1993approximating}.
+
+
+\citet{gonon2021fading} use the FMP to reduce the approximation problem to one over a finite, bounded index set, and then appeal to the density of fully connected neural network to obtain approximation.
+
+%ESN
+\subparagraph{Echo-state networks}
+Many of the aforementioned density-results stem from the reservoir computing literature with the internal weights $(W, U, b)$ being random variables. 
+This random version of the RNN is called an echo-state network (ESN).
+These models have the nice property that the hypothesis space is linear and training these networks is a convex problem, since only the output mapping $c$ needs to be trained.
+
+%Echo state networks can approximate any fading memory filter (echo state networks are universal) \citep{grigoryeva2018echo, grigoryeva2018universal}.
+Echo state networks are universal uniform approximants in the category of discrete-time fading memory filters with uniformly bounded inputs\citep{grigoryeva2018echo,grigoryeva2018universal}. 
 The set \( \mathcal{C}_{HD} \) is dense in \(  \mathcal{C}_{FMP} \) in the norm 
 \[
 \|H\| = \sup_{t \in \mathbb{R}, x \in K} |H_t(x)|,
 \]
 where \( K \) is a bounded equicontinuous set in \( C(\mathbb{R}) \) \citep{boyd1985fading, grigoryeva2018echo}.\footnote{The idea relies on approximation of FMP functionals by a Volterra series. Proof without Volterra series \citep{grigoryeva2019differentiable}.}
+%Theorem 4.1 in\citep{grigoryeva2018universal}
+Achieved through a probabilistic definition of Barron-type functions \citep{barron1992neural} via an expectation in place of a moment condition on its Fourier transform \citep{ma2018priori,ma2020towards}.
 
-\citet{gonon2021fading} use the FMP to reduce the approximation problem to one over a finite, bounded index set, and then appeal to the density of fully connected neural network to obtain approximation.
-
-%ESN
-Many of the aforementioned density-results stem from the reservoir computing literature with the internal weights (W, U, b) being random variables. 
-This random version of the RNN is called an echo-state network (ESN).
-These models have the nice property that the hypothesis space is linear and training these networks is a convex problem, since only c needs to be trained.
+\begin{theorem}
+Let \( U : \mathbb{I}\mathbb{Z}_{-}^n \to (\mathbb{R}^d)^{\mathbb{Z}_{-}} \) be a causal and time-invariant filter that has the fading memory property. Then, for any \( \epsilon > 0 \) and any weighting sequence \( w \), there exists an echo state network:
+\[
+\begin{aligned}
+    x_t &= \sigma(A x_{t-1} + C z_t + \zeta), \quad \text{(a)} \\
+    y_t &= W x_t, \quad \text{(b)}
+\end{aligned}
+\tag{4.1}
+\]
+whose associated generalized filters \( U_{\text{ESN}} : \mathbb{I}\mathbb{Z}_{-}^n \to (\mathbb{R}^d)^{\mathbb{Z}_{-}} \) satisfy
+\[
+\| U - U_{\text{ESN}} \|_{\infty} < \epsilon.
+\]
+\end{theorem}
 
 \citet{gonon2023approximation} studies the approximation of classes of $\mathbf{H}$ by choosing only $c$ and using a common random realization of $(W, U, b)$ by constraining the target functionals to a subset of $\mathcal{C}_{FMP}$ whose Fourier transform has finite third moment.
 
-Through a probabilistic definition of Barron-type functions \citep{barron1992neural} via an expectation in place of a moment condition on its Fourier transform \citep{ma2018priori,ma2020towards,weinan2020banach}.
 
-Echo state networks are universal uniform approximants in the category of discrete-time fading memory filters with uniformly bounded inputs\citep{grigoryeva2018universal}. (Theorem 4.1)
 
 
 \subparagraph{Embedding and approximation theorems for echo state networks}
@@ -317,6 +427,61 @@ Now let \( K \subset \Omega \) be a compact manifold containing \( \tilde{f}(M) 
 \emph{Topologically conjugacy is \textbf{not} guaranteed by the Invariant Manifold Theorem.}
 
 
+
+
+\paragraph{Uniform asymptotic incremental stability}%Simulating  stable systems with recurrent neural nets
+\citep{hanson2020universal}: one can find a recurrent neural net, such that the trajectories generated by this net are arbitrarily close to the trajectories generated by the system it approximates (must be a uniformly asymptotically incrementally stable system) on an infinite time horizon.
+(Def.\ref{def:simulation})
+
+\citep{pavlov2006uniform}
+
+
+\begin{definition}
+A function \( \beta : \mathbb{R}^+ \times \mathbb{R}^+ \to \mathbb{R}^+ \) is of class \(\mathcal{KL}\) if:
+\begin{enumerate}
+    \item For any \( t \), the map \( h \mapsto \beta(h, t) \) is continuous, strictly increasing, and \( \beta(0, t) = 0 \).
+    \item For any \( h \), the map \( t \mapsto \beta(h, t) \) is continuous, strictly decreasing, and \( \lim_{t \to \infty} \beta(h, t) = 0 \).
+\end{enumerate}
+\end{definition}
+
+
+\begin{definition}[uniformly asymptotically incrementally stable]   
+A dynamical system is uniformly asymptotically incrementally stable for inputs in $U$ on a positively invariant set $X$ if there exists a function $\beta : \mathbb{R}^+ \times \mathbb{R}^+ \to \mathbb{R}^+$ of class $\mathcal{KL}_1$ such that 
+\[
+|\phi^u_{s,t}(\xi) - \phi^u_{s,t}(\xi')| \leq \beta(|\xi - \xi'|, t - s)
+\]
+holds for all $u \in U$, all $\xi, \xi' \in X$, and all $0 \leq s \leq t$.
+\end{definition}
+\begin{remark}
+This roughly says that the flow maps of $\dot h=f(h,x)$ are uniformly continuous, uniformly in $x$, and that $h(t)$ is independent of initial condition at large $t$.
+One can understand this as again a memory decay condition, as any initial condition on $h$ is forgotten in the large time limit.
+This allows one to localize the approximation of $f$ and $g$ to a compact set, which then allows one to appeal to standard approximation results from the feed-forward networks.
+\end{remark}
+
+This property quantitatively captures the idea that perturbations to the initial condition have asymptotically negligible influence on the long-term behavior of the system trajectory.
+This implies that imperfect system models may still be able of generating outputs that uniformly approximate the outputs of the original system over infinite time intervals.
+In contrast, for systems not satisfying this stability condition, a sharp bound on the approximation error degrades exponentially with time \citep{hirsch1974nonautonomous, sontag2013mathematical}.
+
+\citet{li2020curse} is \textbf{not} assuming that the target functionals \(\{H_t : t \in \mathbb{R}\}\) are themselves generated from an underlying dynamical system of the form \(H_t(x) = y_t\) where \(\dot{h}_t = f(h_t, x_t)\), \(y_t = g(h_t)\).
+They investigate Linear RNNs in continuous time and therefore linear functionals.
+
+SSMs with layer-wise nonlinearity are universal approximators with exponential decaying memory \citep{wang2024state}
+
+%external approximation of non-causal or time-invariant systems
+No assumption about the functional $\mathcal{H}_t$ being causal or time-invariant, approximation with causal and time-invariant system\citep{hanson2021learning}. 
+
+
+\paragraph{Stability implies FNNs are enough}
+When Recurrent Models Don't Need to Be Recurrent \citep{miller2018stable}
+
+
+\paragraph{Memory}
+To characterize smoothness and memory of linear functionals, we may pass to investigating the properties of their actions on constant input signals $e_{i,t} = e_i \mathds{1}_{t\geq 0}$.
+smoothness and memory is characterized by the regularity and decay rate of the maps $t\mapsto H_t(e_i)$, respectively.
+These two properties are intimately tied with the approximation rate.
+
+
+%link to learning?\paragraph{Learning}learning dynamics, plateauing behavior \citep{hanson2020universal,hanson2021learning}
 
 %LO? very different?
 \subparagraph{Memory capacity}
@@ -334,37 +499,6 @@ where \( \langle z \rangle_T = \frac{1}{T} \sum_{t=1}^{T} z_t \).
 If \( C^T(X, z) \geq 0 \), the dynamical system \( X \) can, with capacity \( C(X, z) \), approximate the function \( z \).
 \end{definition}
 
-
-\paragraph{Uniform asymptotic incremental stability}
-\citep{pavlov2006uniform}
-\citep{hanson2020universal}: one can find a recurrent neural net, such that the trajectories generated by this net are arbitrarily close to the trajectories generated by the system it approximates on an infinite time horizon
-
-\begin{definition}[uniformly asymptotically incrementally stable]
-A dynamical system is uniformly asymptotically incrementally stable for inputs in $U$ on a positively invariant set $X$ if there exists a function $\beta : \mathbb{R}^+ \times \mathbb{R}^+ \to \mathbb{R}^+$ of class $\mathcal{KL}_1$ such that 
-\[
-|\phi^u_{s,t}(\xi) - \phi^u_{s,t}(\xi')| \leq \beta(|\xi - \xi'|, t - s)
-\]
-holds for all $u \in U$, all $\xi, \xi' \in X$, and all $0 \leq s \leq t$.
-
-\end{definition}
-This property quantitatively captures the idea that perturbations to the initial condition have asymptotically negligible influence on the long-term behavior of the system trajectory.
-This implies that imperfect system models may still be able of generating outputs that uniformly approximate the outputs of the original system over infinite time intervals.
-In contrast, for systems not satisfying this stability condition, a sharp bound on the approximation error degrades exponentially with time \citep{hirsch1974nonautonomous, sontag2013mathematical}.
-
-\citet{li2020curse} is \textbf{not} assuming that the target functionals \(\{H_t : t \in \mathbb{R}\}\) are themselves generated from an underlying dynamical system of the form \(H_t(x) = y_t\) where \(\dot{h}_t = f(h_t, x_t)\), \(y_t = g(h_t)\).
-They investigate Linear RNNs in continuous time and therefore linear functionals.
-
-SSMs with layer-wise nonlinearity are universal approximators with exponential decaying memory \citep{wang2024state}
-
-
-
-\paragraph{Memory}
-To characterize smoothness and memory of linear functionals, we may pass to investigating the properties of their actions on constant input signals $e_{i,t} = e_i \mathds{1}_{t\geq 0}$.
-smoothness and memory is characterized by the regularity and decay rate of the maps $t\mapsto H_t(e_i)$, respectively.
-These two properties are intimately tied with the approximation rate.
-
-learning dynamics, plateauing behavior \citep{hanson2020universal}
-\citep{hanson2021learning}
 
 
 
@@ -462,15 +596,18 @@ where $\hat{\rho}(s) = [c^\top e^{W s} U]^\top$.
 
 estimates on the sufficient number of neurons needed to achieve a specified error tolerance (Proposition 11 \citep{hanson2020universal}). 
 
+
+\paragraph{Nonautonomous, ODE}
+\citep{becerra2005efficient} improves \citep{garces2012strategies}
+
+
+\citep{hwang2022minimal}
+
+
 \subsection{Bernstein-type}
 Maximum capacity of a dynamical system\citep{dambre2012}
 
 
-
-
-\newpage
-\section{Uncat}
-Factorial hidden Markov Models \citep{ghahramani1995factorial}
 
 \newpage
 \bibliography{../all_ref.bib}
