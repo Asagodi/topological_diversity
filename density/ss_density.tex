@@ -1,0 +1,143 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amssymb, amsmath, amsthm, amsfonts}
+\usepackage{thmtools, mathtools, mathrsfs, dsfont}
+\usepackage[square,numbers]{natbib}
+\bibliographystyle{abbrvnat}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\sep}{\operatorname{sep}}
+\newcommand{\cl}{\operatorname{cl}}
+
+\title{Approximation of structurally stable dynamical systems}
+\author{Abel Sagodi and Il Memming Park}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+We seek to extend approximation results for dynamical systems to multistable systems.
+
+
+Existing results focus on stable dynamical systems.
+
+
+\section{Approximation with FNNs}
+
+\subsection{MLP}%3layer FNN
+\citep{funahashi1989}
+
+
+
+\section{Approximation of dynamical systems}
+
+\subsection{Targets}
+Autonomous
+Structurally stable+Fixed points = hyperbolic fixed points
+The dynamics is globally attractive / There exist a compact set that with the fixed points inside that is forward invariant 
+
+\begin{equation}
+\dot x = f(x)
+\end{equation}
+$f\in C^1$.
+
+\subsection{Hypothesis class}
+The hypothesis class $\mathcal{G}$ is composed of
+\begin{equation}
+\dot x = g(x) = A\sigma(Bx+\theta)
+\end{equation}
+
+
+\subsection{Metric}
+
+Uniform norm over time (given the same initial starting point)
+\begin{equation}
+\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty = \sup_t|\varphi(t,x_0)-\hat \varphi(t,x_0)|
+\end{equation}
+
+
+Expectation of the error over all initial points
+\begin{equation}
+\|\varphi-\hat \varphi\| = \int_{x_0\in X}\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty
+\end{equation}
+
+
+\subsection{Separatrices}
+
+Denote the basin of attraction for an attractor $A$ as $BOA(A)$.
+
+\begin{definition}	
+Define the separatrix between the basins of attraction of attractors $A_i$ and $A_j$ as 
+\begin{equation}
+\sep(A_i,A_j) = \cl(BOA(A_i)\cap \cl(BOA(A_j)).
+\end{equation}
+\end{definition}
+
+\subsection{Theorem}
+\begin{theorem}
+Let $D$ be an open subset of $\mathbb{R}^n$, $F : D \to \mathbb{R}^m$ be a $C^1$-mapping, and $I_\epsilon$ be a compact subset of $D$.
+Suppose that there is a subset $K \subset I_\epsilon$ such that any solution $x(t)$ with initial value $x(0) \in K$ of an ordinary differential equation
+\begin{equation}\label{eq:5}
+    \dot{x} = F(x), \quad x(0) \in K
+\end{equation}
+is defined on $I = [0, T]$ $(0 < T < \infty)$ and $x(t)$ is included in $I_\epsilon$ for any $t \in I$.
+
+with flow $\varphi_t$ 
+
+
+ Then, for an arbitrary $\epsilon > 0$, there exist an MLP recurrent neural network 
+ \begin{equation}
+\dot x = \hat f(x) = \sigma(A\sigma(Bx+b)+a)
+\end{equation}
+%such that for a solution $\hat \varphi(t,x_0)$ satisfying Eq~\ref{eq:5} with initial state $x_0$ of the network
+such that its flow $\hat \varphi$ satisfies
+\begin{equation}
+\|\varphi-\hat \varphi\| = \int_{x_0\in X}\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty<\epsilon.
+\end{equation}
+\end{theorem}
+
+
+\begin{proof}
+Because of the density of the hypothesis class $\mathcal{G}$ we have that for any $f\in C^1$ and any $\delta_1>0$
+there exists $\hat f\in\mathcal{G}$ such that 
+
+
+Structural stability implies that there exists a $\delta_2>0$ such that for all $g$ that are $\delta_2$ $C^1$ close to $f$ the flow is topologically equivalent to that of $f$.
+
+So we can choose $\delta = \min\{\delta_1,\delta_2\}$ such that the flow of $\hat f\in\mathcal{G}$ is topologically equivalent to that of $f$.
+
+
+
+We can distinguish wo types of errors:
+$x_0\in BOA(A_i^f,A_i^g)$ flow deviates along the trajectories
+We can use van Handel 2007 to bound this
+
+
+$x_0\in BOA(A_i^f,A_j^g)$ for $i\neq j$
+flow error because trajectories go to different attractors
+We can bound this by reducing the mismatch between the separatrices (proportional to the distance between the attractors).
+
+(Conj.) For each pair $i\neq j$ the connected component of $\sep(A_i,A_j)$ is a normally hyperbolic backward invariant manifold.
+
+Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has an  normally hyperbolic backward invariant manifold that is diffeomorphic to and at most at $\mathcal{\delta_{ij}}$ Hausdorff distance from $\sep(A_i,A_j)$.
+
+
+Now we need to sum all the different errors together.
+\end{proof}
+
+
+
+
+\end{document}
