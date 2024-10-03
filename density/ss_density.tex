@@ -40,12 +40,16 @@ Why do we care about infinite horizon?
 - (little) noise doesn't make approximation increase suddenly in error (only smoothly)
 
 
+It could be that existing theorems could be interpreted that in the limit $N\rightarrow\infty$ the approximation holds.
+Here we do it for finite $N$.
 
 
-\section{Approximation with FNNs}%Universal approximation with 
+\subsection{Approximation of dynamics on compact time intervals}
+An RNN with a sufficient number of hidden units and appropriate non-linear activation functions (such as tanh or sigmoid) can approximate any dynamic system or time-dependent function to arbitrary precision, provided the system operates on compact time intervals.
 
-\subsection{MLP}%3layer FNN
-\citep{cybenko1989approximation,hornik1989multilayer,funahashi1989approximate}
+
+\subsection{Approximation of fading memory systems}
+ Jaeger (2001) primarily focused on Echo State Networks (ESNs), demonstrating their universal approximation capabilities specifically for fading memory systems. Fading memory refers to the property where the influence of past inputs diminishes over time, allowing the network to focus more on recent inputs while still retaining some memory of older inputs. Let’s clarify the role of fading memory systems in the context of infinite horizon approximations and the broader discussion on RNNs.
 
 
 
@@ -185,5 +189,83 @@ This construction is immensely
 
 \newpage
 \bibliography{../all_ref.bib}
+
+
+\section{Appendix}
+\section{Universal Approximation with Feedforward Neural Networks (FNNs)}
+
+The foundation of our approach lies in leveraging the \textit{universal approximation property} of feedforward neural networks (FNNs), a powerful result that makes neural networks exceptional for a broad array of tasks. This property allows FNNs to approximate complex functions with remarkable flexibility, providing the theoretical basis for their widespread success in machine learning.
+
+\subsection{The Universal Approximation Theorem}
+
+The universal approximation theorem states that a \textit{feedforward neural network} with at least one hidden layer, using a non-linear activation function (such as the sigmoid or ReLU), and equipped with enough neurons, can approximate \textit{any continuous function} defined on a compact subset of \(\mathbb{R}^n\) to arbitrary precision.
+
+Formally, for any continuous function \(f(x)\) and any \(\epsilon > 0\), there exists an FNN such that:
+\[
+| f(x) - f_{\text{MLP}}(x) | < \epsilon \quad \forall x \in K
+\]
+where \(K \subset \mathbb{R}^n\) is compact. This guarantees that given sufficient resources (neurons, depth), the FNN can approximate \(f(x)\) as closely as desired within this bounded region.
+
+The importance of the compact domain assumption is that it constrains the input space to a finite region, ensuring the approximation remains well-behaved.
+This is where the theorem’s beauty shines: while we often don’t know the explicit form of the target function, neural networks learn it purely from data, making them excellent for tasks like regression, classification, and pattern recognition.
+
+
+
+\subsection{Activation functions} %Sigmoidal 
+At the heart of the theorem lies the activation function. Any non-linear, continuous, and non-constant function enables the network to approximate continuous functions universally.
+A classic example is the \textit{sigmoidal function}, defined by the property:
+\[
+\lim_{x \to -\infty} \sigma(x) = 0 \quad \text{and} \quad \lim_{x \to +\infty} \sigma(x) = 1
+\]
+Many popular activation functions, such as the logistic sigmoid and tanh, fall into this category.
+These functions introduce the necessary non-linearity, enabling the network to break free from the constraints of purely linear transformations.
+
+%non-sigmoidal activations like the \textit{Rectified Linear Unit (ReLU)} 
+Despite ReLU's unbounded nature, it still supports the universal approximation property, as shown in \citep{yarotsky2017error}.
+
+
+
+\subsection{The Multi-layer Perceptron (MLP)}
+
+The universal approximation property of FNNs was first proven by \citep{cybenko1989approximation} for sigmoidal activation functions. This was followed by significant generalizations by \citep{hornik1989multilayer} and \citep{funahashi1989approximate}, which extended the result to broader classes of activation functions, including the popular ReLU.
+These results serve as the cornerstone of modern neural network theory, supporting the use of deep architectures across diverse machine learning applications.
+
+%all above are 3 layer FNNs? right?
+
+Let’s now focus on the structure of a \textit{multi-layer perceptron (MLP)}, a common form of FNN. For a simple 3-layer MLP, the output can be expressed as:
+\[
+h^{(1)} = \sigma(W^{(1)} x + b^{(1)})
+\]
+\[
+f_{\text{MLP}}(x) = W^{(2)} h^{(1)} + b^{(2)}
+\]
+Here, \(h^{(1)}\) represents the hidden layer, while \(W^{(1)}, W^{(2)}\) and \(b^{(1)}, b^{(2)}\) are the weights and biases learned during training. The activation function \(\sigma(\cdot)\) introduces the necessary non-linearity.
+
+
+
+
+In a more general case, for a deeper MLP with \(L\) layers, we have:
+\[
+h^{(1)} = \sigma(W^{(1)} x + b^{(1)})
+\]
+\[
+h^{(2)} = \sigma(W^{(2)} h^{(1)} + b^{(2)})
+\]
+\[
+\vdots
+\]
+\[
+h^{(L-1)} = \sigma(W^{(L-1)} h^{(L-2)} + b^{(L-1)})
+\]
+\[
+f(x) = W^{(L)} h^{(L-1)} + b^{(L)}
+\]
+
+This architecture allows the MLP to progressively build complex representations, layer by layer, transforming raw input data into rich feature hierarchies.
+
+
+
+
+
 
 \end{document}
