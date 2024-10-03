@@ -19,8 +19,8 @@
 \newcommand{\sep}{\operatorname{sep}}
 \newcommand{\cl}{\operatorname{cl}}
 
-\title{Approximation of structurally stable dynamical systems}
-\author{Abel Sagodi and Il Memming Park}
+\title{Approximation of multi-stable dynamical systems on infinite horizons}
+\author{\'Abel S\'agodi and Il Memming Park}
 \date{\today}
 
 \begin{document}
@@ -28,13 +28,21 @@
 \maketitle
 
 \section{Introduction}
-We seek to extend approximation results for dynamical systems to multistable systems.
+Recurrent Neural Networks (RNNs) are believed to be universal approximators.
+However, RNNs are not universal approximators 
+Existing results about approximating dynamical systems either focus on finite time horizon approximation or on approximating stable dynamical systems on an infinite horizon.
+We seek to extend approximation results for dynamical systems to multi-stable systems (systems without chaos) on an infinite horizon through Neural ODEs (NODEs).
 
 
-Existing results focus on stable dynamical systems.
+
+Why do we care about infinite horizon?
+- approximation gives us qualitative behavior
+- (little) noise doesn't make approximation increase suddenly in error (only smoothly)
 
 
-\section{Approximation with FNNs}
+
+
+\section{Approximation with FNNs}%Universal approximation with 
 
 \subsection{MLP}%3layer FNN
 \citep{cybenko1989approximation,hornik1989multilayer,funahashi1989approximate}
@@ -121,9 +129,9 @@ So we can choose $\delta = \min\{\delta_1,\delta_2\}$ such that the flow of $\ha
 
 
 
-We can distinguish wo types of errors:
+We can distinguish two types of errors:
 $x_0\in BOA(A_i^f,A_i^g)$ flow deviates along the trajectories
-We can use van Handel 2007 to bound this
+We can use \citep{vanhandel2007filtering} to bound this
 
 
 $x_0\in BOA(A_i^f,A_j^g)$ for $i\neq j$
@@ -138,6 +146,42 @@ Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij
 Now we need to sum all the different errors together.
 \end{proof}
 
+
+
+\subsection{Approximating a limit cycle}
+
+
+We can use the fact that the tubular neighbourhood around the LC is an inflowing normally hyperbolic invariant manifold.
+This implies that there is a 3 layer FNN that approximates the vector field x a bump function around the LC (similar idea as in paper but this would be an actual possible implementation).
+Then we know that the this NHIM will persist.
+We also know that there is a maximal perturbation size ($\epsilon_{LC}$) for which the LC persists.
+So we have to guarantee that the LC approximation is already close enough so that this perturbation does not destroy the LC.
+We can now rescale the perturbation so that the period of approximation LC matches the target's. This is the case if 
+\[\frac{\ell}{\int_{LC}f(x)} =  \frac{\hat \ell}{\int_{LC}\hat f(x)}\] for the length of the LC $\ell$ and the integrated vector field along the LC $\int_{LC}f(x)$.
+We just increase or decrease  the above perturbation by multiplying with a scalar so that this equality holds.
+The only thing we now need to worry about is how the length of the LC changes as a result of this perturbation and whether we can indeed get the equality 
+
+Fenichel's PMT guarantees that the perturbed LC lies within $\mathcal{O}(\epsilon)$ the original LC approximation.
+The integral will be growing as $\epsilon * \hat \ell(\epsilon)$
+Is it true that $\hat \ell(\epsilon) = \hat \ell + g(\epsilon) where |g(\epsilon)|<|\epsilon|$?
+
+Then we still need to worry about whether the fixed point happens at an epsilon that is small enough for the persistence of the other parts
+
+
+So if it gets longer because of the perturbation (i.e. $\hat \ell(\epsilon)$ is an increasing function) as long as $1/(\hat \ell+g(\epsilon))$ is not decreasing at the same rate there should exist a value $\epsilon$ for which the equality holds
+
+
+\section{Implications for understanding neural computation}
+
+Use of NODEs \citep{kim2021inferring}
+
+
+
+
+\section{Discussion}
+
+
+This construction is immensely 
 
 \newpage
 \bibliography{../all_ref.bib}
