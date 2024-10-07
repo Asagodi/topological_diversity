@@ -41,8 +41,22 @@ Why do we care about infinite horizon?
 
 
 It could be that existing theorems could be interpreted that in the limit $N\rightarrow\infty$ the approximation holds.
+ie $\lim_{N\rightarrow\infty} error = 0$
 Here we do it for finite $N$.
+ie for each $\epsilon>0$ $\exists N$ such that $error(N) < \epsilon$
+(implies the above limit)
 
+
+
+\subsubsection{Neural ODEs (NODEs)}
+\citep{chen2018neural}
+
+NODEs in neuroscience\citep{kim2021inferring}
+
+\paragraph{Latent}
+Latent ODE-RNN\citep{rubanova2019latent}
+
+Latent ODE-LSTM \citep{coelho2024enhancing}
 
 \subsection{Approximation of dynamics on compact time intervals}
 An RNN with a sufficient number of hidden units and appropriate non-linear activation functions (such as tanh or sigmoid) can approximate any dynamic system or time-dependent function to arbitrary precision, provided the system operates on compact time intervals.
@@ -55,6 +69,16 @@ An RNN with a sufficient number of hidden units and appropriate non-linear activ
 
 \section{Approximation of dynamical systems}
 For an overview of the literature, see [litrev]
+
+Main points:
+Finite time \citep{funahashi1993approximation}
+
+
+Fading memory \citep{boyd1985fading}
+
+
+Topological equivalency \citep{hart2020recurrent}
+
 
 \subsection{Targets}
 Autonomous
@@ -144,6 +168,8 @@ We can bound this by reducing the mismatch between the separatrices (proportiona
 
 (Conj.) For each pair $i\neq j$ the connected component of $\sep(A_i,A_j)$ is a normally hyperbolic backward invariant manifold.
 
+- For ReLU NNs all invariant manifolds are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.
+
 Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has an  normally hyperbolic backward invariant manifold that is diffeomorphic to and at most at $\mathcal{\delta_{ij}}$ Hausdorff distance from $\sep(A_i,A_j)$.
 
 
@@ -167,7 +193,7 @@ The only thing we now need to worry about is how the length of the LC changes as
 
 Fenichel's PMT guarantees that the perturbed LC lies within $\mathcal{O}(\epsilon)$ the original LC approximation.
 The integral will be growing as $\epsilon * \hat \ell(\epsilon)$
-Is it true that $\hat \ell(\epsilon) = \hat \ell + g(\epsilon) where |g(\epsilon)|<|\epsilon|$?
+Is it true that $\hat \ell(\epsilon) = \hat \ell + g(\epsilon)$ where $|g(\epsilon)|<|\epsilon|$?
 
 Then we still need to worry about whether the fixed point happens at an epsilon that is small enough for the persistence of the other parts
 
@@ -185,12 +211,19 @@ Use of NODEs \citep{kim2021inferring}
 \section{Discussion}
 
 
-This construction is immensely 
+\paragraph{The price of universality}
+This construction is immensely inefficient
+
+Better to just look at RNNs.
+
+
 
 \newpage
 \bibliography{../all_ref.bib}
 
 
+
+\newpage
 \section{Appendix}
 \section{Universal Approximation with Feedforward Neural Networks (FNNs)}
 
