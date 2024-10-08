@@ -1,5 +1,5 @@
 \documentclass{article} % For LaTeX2e
-\usepackage[preprint]{neurips_2024}
+\usepackage[final]{neurips_2024}
 \pdfminorversion=6
 %\usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath,amsthm}
@@ -149,7 +149,7 @@ Biological systems exhibit robust behaviors that require neural information proc
 Virtually all neural models of working memory for continuous-valued information rely on persistent internal representations through recurrent dynamics.
 The continuous attractor structure in their recurrent dynamics has been a pivotal theoretical tool due to their ability to maintain activity patterns indefinitely through neural population states~\cite{vyas2020,dayan2001,Khona2022,durstewitz2023reconstructing}.
 They are hypothesized to be the neural mechanism for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, and decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
-Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,Noorman2022,petrucco2023neural,yang2022brainstem,constantinidis2018persistent,nair2023approximate,mountoufaris2024line,vinograd2024causal}.
+Observations of persistent neural activity across many brain areas, organisms, and tasks have corroborated the existence of continuous attractors~\cite{Romo1999,noorman2024accurate,petrucco2023neural,yang2022brainstem,constantinidis2018persistent,nair2023approximate,mountoufaris2024line,vinograd2024causal,liu2024encoding}.
 %and anatomy?
 
 %par1: animals can represent CVs
@@ -166,8 +166,8 @@ Observations of persistent neural activity across many brain areas, organisms, a
 % Continuous attractors are the ideal solution to the problem of how to hold continuous valued variables~\cite{Dayan2001,Burak2009,Khona2022}.
 % Continuous attractors are biologically plausible, theoretically elegant, consistent with neural recordings, and avoids the asymptotic exploding and vanishing gradient problem~\cite{Park2023a}.
 % When used to accumulate stimuli, continuous attractors are also called neural integrators that are hypothesized to be the underlying computation for the maintenance of eye positions, heading direction, self-location, target location, sensory evidence, working memory, decision variables, to name a few~\cite{seung1996,Seung2000,Romo1999}.
-% Neural representation of continuous values have been observed as persistent activity in the prefrontal cortex of primates, ellipsoid body of the fly, and hypothalamus~\cite{Romo1999,Noorman2022,Nair2023}.
-% A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} or finite sized networks with threshold linear units \cite{Noorman2022,Spalla2021}, see also Sec.~\ref{sec:ras}.
+% Neural representation of continuous values have been observed as persistent activity in the prefrontal cortex of primates, ellipsoid body of the fly, and hypothalamus~\cite{Romo1999,noorman2024accurate,Nair2023}.
+% A typical computational implementation of a continuous attractor is a bump attractor network model which requires a mean-field limit~\cite{Skaggs1995,Camperi1998,Renart2003} or finite sized networks with threshold linear units \cite{noorman2024accurate,Spalla2021}, see also Sec.~\ref{sec:ras}.
 
 
 %par3: problems with CAs
@@ -189,7 +189,7 @@ By assuming normal hyperbolicity we separate the time scales to obtain a decompo
 We derive theoretical results that ensure the existence of a slow manifold and determine its closeness to a continuous attractor (Sec.~\ref{sec:theory}).
 We explore task-trained recurrent neural networks (RNNs) to show that these systems appear naturally as solutions to the task (Sec.~\ref{sec:experiments}) and that their generalization capabilities can easily be studied as the distance to the continuous attractor (Sec.~\ref{sec:generalization}).
 The proposed decomposition applied to theoretical models and task-trained RNNs reveals a ``universal motif'' of analog memory mechanism with various potential topologies.
-This leads to the connection of different systems with different topologies as \textbf{approximate continuous attractors}\footnote{This correspond a type of ``ideal pattern'' in the vocabulary of \citet{chirimuuta2024brain}.} (Sec.~\ref{sec:converse}).
+This leads to the connection of different systems with different topologies as \textbf{approximate continuous attractors} (Sec.~\ref{sec:converse}).
 Our theory guarantees that systems close to a continuous attractor (in the space of vector fields) will have similar behavior to it, implying that the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory (Sec.~\ref{sec:implications}).
 
 
@@ -212,7 +212,7 @@ We will now study some examples of continuous attractors and how perturbations c
 \subsection{Motivating example: bounded line attractor}\label{sec:motivating:line}
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=\textwidth]{lara_bifurcations_s}
+  \includegraphics[width=.9\textwidth]{lara_bifurcations_s}
   \caption{The critical weakness of continuous attractors is their inherent brittleness as they are rare in the parameter space, i.e., infinitesimal changes in parameters destroy the continuous attractor implemented in RNNs~\cite{seung1996,Renart2003}.
   Some of the structure seems to remain; there is an invariant manifold that is topologically equivalent to the original continuous attractor.
     \textbf{(A)} Phase portraits for the bounded line attractor (Eq.~\eqref{eq:TLN}).
@@ -279,7 +279,7 @@ This phenomenon, wherein a continuous attractor is approximated by a manifold wi
 \subsection{Theoretical models of ring attractors}\label{sec:ras}
 % Furthermore, an invariant ring manifold with fixed points on it has been observed in finite dimensional low-rank attractors which converge to a ring attractor in the infinite unit limit~\citep{mastrogiuseppe2018,beiran2021}.
 % We show some examples of such continuous attractor approximations in Fig.~\ref{fig:lara_bifurcations}B.
-% Similarly, this has been observed in ring attractors with a finite number of units \citep{Noorman2022}, see also Fig.~\ref{fig:bio_rings}A.
+% Similarly, this has been observed in ring attractors with a finite number of units \citep{noorman2024accurate}, see also Fig.~\ref{fig:bio_rings}A.
 
 %\subsubsection{Angular integration networks}\label{sec:hd}
 For circular variables such as the goal-direction (e.g. for home navigation and working memory for communication	 in bees \citep{frisch1993dance}) %home navigation + dance in bees: the angle of the waggle phase relative to gravity reflects the angle of the food source relative to the sun
@@ -288,22 +288,22 @@ or head-direction, the temporal integration, and working memory functions are na
 Other examples include
 integration of evidence for continuous perceptual judgments, e.g. a hunting predator that needs to compute the net direction of motion of a large group of prey \citep{esnaola2022flexible}.
 In this section, we investigate the bifurcations of various implementations of continuous attractors.
-Continuous attractor network models of the head direction are based on the interactions of neurons that (anatomically) form a ring-like overlapping neighbor connectivity~\citep{zhang1996,Noorman2022,ajabi2023,vafidis2022,boucheny2005continuous,knierim2012,song2005angular,xie2002double}.
+Continuous attractor network models of the head direction are based on the interactions of neurons that (anatomically) form a ring-like overlapping neighbor connectivity~\citep{zhang1996,noorman2024accurate,ajabi2023,vafidis2022,boucheny2005continuous,knierim2012,song2005angular,xie2002double}.
 %Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
 Similarly to the line attractor, the ring attractor bifurcates with almost any perturbation. However, the resulting dynamics continue to follow a familiar pattern: they remain confined to a ghost manifold that closely approximates the original continuous attractor.
 
 
 \ptitle{Piecewise-linear ring attractor model of the central complex}
-Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{Noorman2022}.
+Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{noorman2024accurate}.
 This model is composed of \(N\) heading-tuned neurons with preferred headings \(\theta_{j} \in \{\nicefrac{2\pi i}{N}\}_{i = 1\dots N}\) radians (Sec.~\ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter \(J_{E}\)) and broad inhibition (\(J_{I}\)), this network will generate a stable bump of activity corresponding to the head direction.
 This continuum of fixed points forms a \(N\)-sided polygon. %: a one-dimensional manifold homeomorphic to the circle.
 
 \begin{figure}[tbhp]
      \centering
-  \includegraphics[width=\textwidth]{bio_rings_ss}
+  \includegraphics[width=.8\textwidth]{bio_rings_ss}
        \caption{ Perturbations of different implementations and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact. For each model, the network dynamics is constrained to a ring which in turn is populated by stable fixed points (green) and saddle nodes (red).
-       (A) 	Perturbations to the ring attractor \citep{Noorman2022}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to \(2N\) (stable and saddle points are paired).
+       (A) 	Perturbations to the ring attractor \citep{noorman2024accurate}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to \(2N\) (stable and saddle points are paired).
        (B) 	Perturbations to a tanh approximation of a ring attractor \citep{seeholzer2017efficient}.
        (C) 	Different Embedding Manifolds with Population-level Jacobians (EMPJ) approximations of a ring attractor \citep{pollock2020}.
        }\label{fig:bio_rings}
@@ -441,7 +441,7 @@ Finally, the persisting invariant manifold is very close in space to the origina
 %Informally, normal hyperbolicity guarantees that the perturbations change the structure of the manifold before they can destroy the attractiveness of the manifold.
 
 These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow rerparametrization of the BLA
-\footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems). So we consider systems that are at least continuous, but some extra conditions apply if a system is not differentiable (discontinuous systems are not considered in our theory).}).
+	\footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems). Therefore, we consider systems that are at least continuous, but some extra conditions apply if a system is not differentiable.}). %
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (Fig.~\ref{fig:lara_bifurcations}, dark-colored regions) that contains fixed points and connecting orbits and is overall still attractive.
 Furthermore, Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
 Because continuous ring attractors are bounded, they persist as invariant manifold and remain attractive under small perturbations~\citep{wiggins1994}.
@@ -483,7 +483,7 @@ Further, assume that the real part of the eigenvalues of \(\nabla_{\vz} \vh\) ar
 Let the uniform norm of the flow tangent to the manifold be \(\|\dot \vy\|_{\infty}=\eta\).
 There exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a continuous attractor manifold. % \(\manifold_{0}\) diffeomorphic to \(\manifold_{\epsilon}\).
 \end{prop}
-
+\vspace{-.1cm}
 An explicit perturbation is derived in Sec.~\ref{sec:supp:proofprop1}.
 This makes the uniform norm of the vector field on a (slow) manifold a useful measure to express the distance of an approximation to a continuous attractor.
 Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has additional dynamics to which the output mapping is invariant (see Theorem~\ref{thrm:near_ca}).
@@ -512,18 +512,14 @@ Furthermore, for compact invariant manifolds the error is bounded by the diamete
 
 While the uniform norm gives insight on the short-time scale behavior of the perturbed ODE, we expect that working memory tasks generalize to longer durations~\citep{Park2023a}.
 The long-time scale behavior on the slow manifold is dominated by the stability structure, i.e., the topology of the dynamics.
-Although we have seen numerous topologies in Sec.~\ref{sec:critique}, dynamical systems theory says that they are fundamentally limited, especially in low dimensions (see for more details Sec.~\ref{sec:supp:persistence_extra}).
+Although we have seen numerous topologies in Sec.~\ref{sec:critique}, the Persistent Manifold Theorem says that this variability is fundamentally limited, especially in low dimensions (see for more details Sec.~\ref{sec:supp:persistence_extra}).
 This is especially relevant as previous works have identified a low-dimensional organization of neural activity to explain the brain's ability to adapt behavioral responses to changing stimuli and environments \citep{beiran2023parametric,altan2023low,fanthomme2021low}.
-%This resilience is fundamental for cognitive functions, learning, and memory.
-%Thanks to Fenichel's Persistent Manifold Theorem, we can understand how these persistent pathways, or manifolds, survive even when the system undergoes  bifurcations.
-%Essentially, this theorem assures us that the underlying structure of continuous attractors remains intact, maintaining a consistent topology despite the changes.
-%The theory implies that in the space of dynamical systems, all systems in the neighbourhood of a continuous attractor all share the same topology for the attractive persistent invariant manifold and that the flow on the manifold is slow.
 For a ring attractor, this implies that the stability structure of the invariant manifold is either
 (1) composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits, or (2) a limit cycle.
 These different strability structures have different generalization properties (see Sec.~\ref{sec:generalization}).
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 %For 2 dimensional attractors, stable fixed points and saddle nodes can coexist with limit cycles.
-In more complex scenarios, such as a two-dimensional attractor, stable fixed points and saddle nodes can coexist with limit cycles, creating a rich tapestry of possible neural states.
+In more complex scenarios, such as two-dimensional attractors, fixed points can coexist with limit cycles, creating a rich tapestry of possible neural states.
 %The persistence of hyperbolic tori in Hamiltonian systems was described in \citep{li2005persistence}.
 %\pscomment{Technically, only parallel translations, and KAM gives a type of structural stability result.}
 %For higher dimensional attractors, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
@@ -539,7 +535,7 @@ Animal behavior exhibits strong resilience to changes in their neural dynamics, 
 Hence, any theoretical model of neural or cognitive function that requires fine-tuning, such as the continuous attractor model for analog working memory, raises concerns, as they are seemingly biologically irrelevant.
 Moreover, unbiased data-driven models of time series data and task-trained recurrent network models cannot recover such continuous attractor theories precisely.
 Our theory shows that this apparent fragility is not as devastating as previously thought: despite the ``qualitative differences'' in the phase portrait, the ``effective behavior'' of the system can be arbitrarily close, especially in the behaviorally relevant time scales.
-We show that as long as the attractive flow to the memory representation manifold is fast and the flow on the manifold is sufficiently slow, it represents an approximate continuous attractor.
+We show that as long as the attractive flow to the memory representation manifold is fast and the flow on the manifold is sufficiently slow, it represents an \textbf{approximate continuous attractor}\footnote{This correspond a type of ``ideal pattern'' in the vocabulary of \citet{chirimuuta2024brain}. Our framework proposes general approach to abstract away irrelevant details in models for analog memory \citep{potochnik2017idealization}.}.
 Furthermore, our theory bounds the error in working memory incurred over time for such approximate continuous attractors.
 Therefore, the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory, even if the ideal continuous attractor is never observed in practice.
 Experimental observations that indicate the slowly changing population representations during the ``delay periods'' where working memory is presumably required, do not necessarily contradict the continuous attractor hypothesis. 
@@ -561,13 +557,14 @@ We therefore investigated to what extent training RNNs on a task uniquely determ
 We see that all the solutions have a slow invariant manifold, making all of them an instatiation of approximate continuous attractors.
 
 \subsection{Model Architectures and Training Procedure}
-Building upon prior work, which has shown their capabilities on such tasks, we trained RNNs\footnote{ See Sec.\ref{sec:supp:discretization} for how this relates to Eq.~\ref{eq:perturbation:nonparam}.} to either
+Building upon prior work, which has shown their capabilities on such tasks, we trained RNNs to either
 (1) estimate head direction through integration of angular velocity \citep{cueva2019headdirection,cueva2021continuous}
-or (2) perform a memory-guided saccade task for a ring variable \citep{wimmer2014,xie2022neural} (details in Sec.~\ref{sec:supp:tasks}).
-We numerically minimized the loss \(L\) which was the mean squared error (MSE) between the network output \(\mathbf{y}(t)\) and the target output \(\hat{\mathbf{y}(t)}\):
-\(L_{MSE} \coloneqq y_{i, t}-\hat y_{i, t})^{2}, \).
+or (2) perform a memory-guided saccade task for a ring variable \citep{wimmer2014,xie2022neural} (details in Sec.~\ref{sec:supp:tasks} and see Sec.~\ref{sec:supp:discretization} for how RNNs relate to Eq.~\ref{eq:perturbation:nonparam}.).
+We numerically minimized the mean squared error loss \(L_{\operatorname{MSE}}\)  between the network output \(\mathbf{y}(t)\) and the target output \(\hat{\mathbf{y}}(t)\):
+\(L_{\operatorname{MSE}} \coloneqq y_{i, t}-\hat y_{i, t})^{2}\).
 %We implemented a mask, \(m_{i, t}\), for modulating the loss with respect to certain time intervals.
-We trained vanilla RNNs with ReLU, tanh, and rectified tanh activation functions. For each activation function and each network architecture (vanilla RNN, LSTM, and GRU), we trained 10 networks per hidden size: 64, 128, and 256.
+%We trained vanilla RNNs with ReLU, tanh, and rectified tanh activation functions. 
+For each activation function and each network architecture (vanilla RNN with ReLU, tanh, and rectified tanh activation functions, LSTM, and GRU), we trained 10 networks per hidden size: 64, 128, and 256 with state noise.
 
 
 
@@ -618,6 +615,8 @@ This implies that normal hyperbolicity for these trained networks holds.
 }\label{fig:fastslow_decomposition}
 \end{figure}
 
+\vspace{-.8cm}
+
 \subsection{Universality amongst Good Solutions}
 The fixed point topologies show a lot of variation across networks (Fig.~\ref{fig:fastslow_decomposition}A and B),
  much like the systems next to continuous attractors (Fig.~\ref{fig:lara_bifurcations} and Fig.~\ref{fig:bio_rings}).
@@ -634,9 +633,14 @@ For results on LSTMs and GRUs and a higher dimensional task, see Sec.~\ref{sec:s
 
 \section{Generalization Analysis}\label{sec:generalization}
 
-Finally, in this section, we use the task-trained RNNs to study the relationship between the dynamics and the generalization capabilities.
-When neuroscientists study neural computations in animals, the animals are trained on tasks with finite durations. As a result, it is unclear whether the animals learn the intended computation or merely a finite-time approximation of it. The same issue arises with trained neural networks.
-We will investigate to what extent the networks have the intended memory necessary for perfect memory or whether they implement the task only on the timescale on which they have been trained.
+%Finally, in this section, we use the task-trained RNNs to study the relationship between the dynamics and the generalization capabilities.
+%When neuroscientists study neural computations in animals, the animals are trained on tasks with finite durations. As a result, it is unclear whether the animals learn the intended computation or merely a finite-time approximation of it. The same issue arises with trained neural networks.
+%We will investigate to what extent the networks have the intended memory necessary for perfect memory or whether they implement the task only on the timescale on which they have been trained.
+
+In this section, we use task-trained RNNs to study the relationship between dynamics and generalization capabilities.
+ When neuroscientists study neural computations in animals, tasks have finite durations, leaving it unclear whether animals learn the intended computation or a finite-time approximation.
+  The same issue applies to trained neural networks.
+   We will explore whether the networks possess the necessary memory for perfect recall or only perform the task within the timescale of their training.
 
 
 The two possible approximations of a ring attractor discussed in Sec.~\ref{sec:critique} exhibit markedly distinct generalization characteristics.
@@ -660,7 +664,7 @@ on the angular velocity integration task at two different time scales:  asymptot
 \end{figure}
 %\setlength\belowcaptionskip{2ex}
 
-
+\vspace{-.5cm}
 \ptitle{Finite time}
 Aside from the angular velocity integration component of the task, the trained networks learn to store a memory of an angular variable.
 We assess the performance of the network to store the memory of the angle over time.
@@ -717,8 +721,8 @@ Although the stochastic optimization cannot lead to \emph{the} continuous attrac
 Continuous attractors are highly prone to bifurcation under arbitrary perturbations unless they exist in special parametric forms.
 This sensitivity to perturbations has traditionally made them seem unsuitable for modeling neural computation in noisy biological systems, according to conventional views on robustness.
 Nevertheless, we demonstrate that continuous attractors can exhibit functional robustness, making them a crucial concept in explaining the neural computation underlying analog memory. 
-We show that approximations of analog memory must possess slow manifold dynamics, placing them near continuous attractors within the space of dynamical systems. This implies that both biological systems and artificial neural networks only need to be near a continuous attractor to effectively solve problems in a manner similar to the ideal theoretical model, particularly on behaviorally relevant timescales.
-Theoretical models that satisfy conditions~\ref{converse:bijection}-\ref{converse:Dtype} will be near continuous attractors (in parameter space).
+We show that approximations of analog memory (i.e., theoretical models that satisfy conditions~\ref{converse:bijection}-\ref{converse:Dtype}) must possess slow manifold dynamics, placing them near continuous attractors within the space of dynamical systems.
+This implies that both biological systems and artificial neural networks only need to be near a continuous attractor to effectively solve problems in a manner similar to the ideal theoretical model, on behaviorally relevant timescales.
 %Nevertheless, the topological structure of the found solutions still determines how well a network will perform generalization for longer time scales.
 
 %We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in various example systems.
@@ -1818,7 +1822,7 @@ All perturbations maintain the topological structure of the invariant manifold. 
 
 
 \subsection{Heading direction network}\label{sec:supp:headdirection}
-The networks proposed in \citep{Noorman2022} are composed of \(N\) heading-tuned neurons whose preferred headings \(\theta_{j}\) uniformly tile heading space, with an angular separation of \(\Delta\theta=\nicefrac{2\pi}{N}\) radians.
+The networks proposed in \citep{noorman2024accurate} are composed of \(N\) heading-tuned neurons whose preferred headings \(\theta_{j}\) uniformly tile heading space, with an angular separation of \(\Delta\theta=\nicefrac{2\pi}{N}\) radians.
 These neurons can be arranged topologically in a ring according to their preferred headings, with neurons locally exciting and broadly inhibiting their neighbors.
 The total input activity \(h_{j}\) of each neuron is governed by:
 \begin{equation}
@@ -1855,7 +1859,7 @@ Measure zero co-dimension 1 bifurcations of the ring attractor network fall into
 \begin{figure}[tbhp]
      \centering
     \includegraphics[width=.9\textwidth]{ring_n6_perturbations_schematic}
-       \caption{Measure zero co-dimension 1 bifurcations of the ring attractor network \citep{Noorman2022}.}\label{fig:meaure_zero_perturbations}
+       \caption{Measure zero co-dimension 1 bifurcations of the ring attractor network \citep{noorman2024accurate}.}\label{fig:meaure_zero_perturbations}
 \end{figure}
 
 
@@ -1957,10 +1961,6 @@ A general structured component of rank \(r\ll N\) can be written as a superposit
 \begin{equation}
 P_{ij} = \frac{m_{i}^{(1)} n_{j}^{(1)}}{N} + \cdots + \frac{m_{i}^{(r)} n_{j}^{(r)}}{N},
 \end{equation} and is in principle characterized by \(2r\) vectors \(m^{(k)}\) and \(n^{(k)}\).
-
-
-
-
 
 %Rank-two structures with internal pairwise overlap
 To approximate a ring attractor we can consider structured matrices where the two connectivity pairs \( m^{(1)} \) and \( n^{(1)} \), \( m^{(2)} \) and \( n^{(2)} \) share two different overlap directions, defined by vectors \( y_{1} \) and \( y_{2} \). We set:
