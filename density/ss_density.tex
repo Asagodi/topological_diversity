@@ -9,7 +9,7 @@
 \usepackage{algpseudocode}
 
 \newtheorem{theorem}{Theorem}
-\newtheorem{prop}{Proposition}
+\newtheorem{proposition}{Proposition}
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
 \theoremstyle{remark}
@@ -18,6 +18,7 @@
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\sep}{\operatorname{sep}}
 \newcommand{\cl}{\operatorname{cl}}
+\newcommand{\vol}{\operatorname{vol}}
 
 \title{Approximation of multi-stable dynamical systems on infinite horizons}
 \author{\'Abel S\'agodi and Il Memming Park}
@@ -47,37 +48,100 @@ ie for each $\epsilon>0$ $\exists N$ such that $error(N) < \epsilon$
 (implies the above limit)
 
 
+\section{Approximation of dynamical systems}
+For an overview of the literature, see [litrev]
 
-\subsubsection{Neural ODEs (NODEs)}
-\citep{chen2018neural}
 
-NODEs in neuroscience\citep{kim2021inferring}
+\subsection{Approximation of dynamics on compact time intervals}
+%An RNN with a sufficient number of hidden units and appropriate non-linear activation functions (such as tanh or sigmoid) can approximate any dynamic system or time-dependent function to arbitrary precision, provided the system operates on compact time intervals.
+
+The universal approximation theorem for RNNs, which extends the classical result for feedforward neural networks, guarantees that RNNs can approximate the mapping from a sequence of inputs to outputs for any continuous-time process, including those governed by differential equations.
+
+% \citep{funahashi1993approximation}
+This property has been formally proven for systems operating over finite time intervals. Specifically, \citet{funahashi1993approximation} showed that RNNs can approximate the time-dependent behaviors of dynamical systems, making them suitable for tasks like time-series prediction, control systems, and the modeling of sequential data.
+
+
+\subsection{Approximation of fading memory systems}
+Fading memory \citep{boyd1985fading}
+
+\begin{definition}[Fading memory Property (FMP)]
+Let $x_1, x_2$ be bounded sequences indexed by $\mathbb{R}$, and let $H$ be a sequence of causal, shift-equivariant (also called time-homogeneous) functionals.
+Here, causal means $H_t(x) = H_t(x(-\infty,t])$ for all $t$.
+We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing function $w : \mathbb{R}^+ \to (0, 1]$ such that for any $\varepsilon > 0$ there exists $\delta > 0$ with 
+\[
+|H_t(x_1) - H_t(x_2)| < \varepsilon \quad \text{whenever} \quad \sup_{s \in (-\infty, t]} |x_1(s) - x_2(s)| w(t - s) < \delta.
+\]
+\end{definition}
+
+ Typically, the FMP is used to reduce the approximation problem to one over a finite, bounded index set, and then appeal to the density of fully connected neural network to obtain approximation \citep{gonon2021fading}. %more examples
+
+
+\begin{remark}
+Every fading-memory system could be uniformly approximated arbitrarily closely over the set of systems with 'linear dynamics'\citep{matthews1993approximating}. %Theorem 3+4
+Using the perceptron to uniformly approximate the external representation of a fading-memory system results in a finite-memory system model, called the perceptron filter \citep{matthews1993approximating}.
+\end{remark}
+ 
+
+\paragraph{ESN}
+ \citet{jaeger2001echo} proposed Echo State Networks (ESNs), demonstrating their universal approximation capabilities specifically for fading memory systems.
+Fading memory refers to the property where the influence of past inputs diminishes over time, allowing the network to focus more on recent inputs while still retaining some memory of older inputs.
+ Let’s clarify the role of fading memory systems in the context of infinite horizon approximations and the broader discussion on RNNs.
+ 
+
+\subsection{Topological equivalency}
+Topological equivalency \citep{hart2020recurrent}
+This is trivial for structurally stable systems!
+
+
+\subsection{Neural ODEs (NODEs)}
+Neural ODEs\citep{chen2018neural} model the continuous trajectory of the hidden state \( \mathbf{h}(t) \) as the solution to an ordinary differential equation parameterized by a neural network. Mathematically, the dynamics are defined by:
+
+\[
+\frac{d \mathbf{h}(t)}{dt} = f(\mathbf{h}(t), t, \theta)
+\]
+
+where \( \mathbf{h}(t) \) is the hidden state at time \( t \), \( f \) is a neural network with parameters \( \theta \), and \( t \) represents time. Given an initial condition \( \mathbf{h}(t_0) = \mathbf{h}_0 \), the evolution of the hidden state over time is computed by solving the ODE using numerical solvers, allowing the model to capture complex, continuous transformations.
+
+
+NODEs in neuroscience\citep{kim2021inferring, sedler2023expressive}
+
+
+
+
+Theoretical Guarantees for Dynamical Systems
+ Proofs of Universal Approximation for Dynamical Systems
+ 
+ 
+ Any finite trajectory of an $n$-dimensional continuous dynamical system can be approximated by the internal state of the hidden units and $n$ output units of an Liquid time-constant (LTC) network \citep{hasani2018liquid}.
+ 
+ 
+\citep{tabuada2020universal}
+
+
 
 \paragraph{Latent}
 Latent ODE-RNN\citep{rubanova2019latent}
 
 Latent ODE-LSTM \citep{coelho2024enhancing}
 
-\subsection{Approximation of dynamics on compact time intervals}
-An RNN with a sufficient number of hidden units and appropriate non-linear activation functions (such as tanh or sigmoid) can approximate any dynamic system or time-dependent function to arbitrary precision, provided the system operates on compact time intervals.
+
+\subsection{Flows}
+RNNs are universal approximators of flow  functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023}.
+
+\subsection{Misc.}
+
+\subparagraph{Neural oscillators}
+\citep{lanthaler2023neuraloscillators}
 
 
-\subsection{Approximation of fading memory systems}
- Jaeger (2001) primarily focused on Echo State Networks (ESNs), demonstrating their universal approximation capabilities specifically for fading memory systems. Fading memory refers to the property where the influence of past inputs diminishes over time, allowing the network to focus more on recent inputs while still retaining some memory of older inputs. Let’s clarify the role of fading memory systems in the context of infinite horizon approximations and the broader discussion on RNNs.
 
 
+\section{Approximation of dynamical systems on infinite time intervals}
+Let's get started.
+We will need to consider what the space is of target dynamical systems that we can approximate.
+Furthermore, these can be approximated in a particular way, i.e. with a specific difference between the approximant and the target system.
+This difference is measured as the expectation of the uniform norm difference between the flows. We can make the probability of finding a 
 
-\section{Approximation of dynamical systems}
-For an overview of the literature, see [litrev]
-
-Main points:
-Finite time \citep{funahashi1993approximation}
-
-
-Fading memory \citep{boyd1985fading}
-
-
-Topological equivalency \citep{hart2020recurrent}
 
 
 \subsection{Targets}
@@ -89,6 +153,17 @@ The dynamics is globally attractive / There exist a compact set that with the fi
 \dot x = f(x)
 \end{equation}
 $f\in C^1$.
+
+
+
+Later: Limit cycles (or just one?)
+
+
+
+Different metric: Chaotic orbits
+mention: we can guarantee finite time approximation
+prove: we can never do infinite time approximation 
+
 
 \subsection{Hypothesis class}
 The hypothesis class $\mathcal{G}$ is composed of
@@ -104,23 +179,16 @@ Uniform norm over time (given the same initial starting point)
 \|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty = \sup_t|\varphi(t,x_0)-\hat \varphi(t,x_0)|
 \end{equation}
 
+We consider a compact $X$ on which we measure the difference between the target and our approximation.
+\footnote{FNN approximation universality is also on compact intervals.}
 
 Expectation of the error over all initial points
 \begin{equation}
-\|\varphi-\hat \varphi\| = \int_{x_0\in X}\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty
+\|\varphi-\hat \varphi\| = \frac{1}{\vol X}\mathbb{E}[ \int_{x_0\in X}   \mathbb{1}[\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty>\epsilon]
 \end{equation}
 
 
-\subsection{Separatrices}
 
-Denote the basin of attraction for an attractor $A$ as $BOA(A)$.
-
-\begin{definition}	
-Define the separatrix between the basins of attraction of attractors $A_i$ and $A_j$ as 
-\begin{equation}
-\sep(A_i,A_j) = \cl(BOA(A_i)\cap \cl(BOA(A_j)).
-\end{equation}
-\end{definition}
 
 \subsection{Theorem}
 \begin{theorem}
@@ -162,6 +230,36 @@ $x_0\in BOA(A_i^f,A_i^g)$ flow deviates along the trajectories
 We can use \citep{vanhandel2007filtering} to bound this
 
 
+\begin{proposition}[Proposition 3.1.3. in \citep{vanhandel2007filtering}]
+Define 
+\[
+\frac{d x_t}{d t} = f(t; x_t), \quad x_t \in \mathbb{R}^n.
+\]
+We denote by $\varphi_{s,t}(x)$ the solution $x_t$ of this equation when it is started at the initial condition $x_s = x$ ($s \leq t$). We will suppose that $f$ is sufficiently regular so that the flow $\varphi_{s,t}(x)$ exists, is unique, and is a diffeomorphism for all $0 \leq s \leq t < \infty$.
+
+Now consider another differential equation 
+\[
+\frac{d \tilde{x}_t}{d t} = \tilde{f}(t; \tilde{x}_t), \quad \tilde{x}_t \in \mathbb{R}^n,
+\]
+where again we assume that $\tilde{f}$ is sufficiently regular so that this equation generates a nice flow $\tilde{\varphi}_{s,t}(x)$ as above.
+
+
+The following error bound holds:
+\[
+\|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - f(s; \tilde{\varphi}_{0,s}(x))\| \, ds.
+\]
+\end{proposition}
+
+
+
+Note that the above error bound depends on two separate quantities: the local error 
+$\| f(s; \tilde{\varphi}_0, s(x)) - f(s; \tilde{\varphi}_0, s(x)) \|$ 
+(compare with the quantity $\epsilon(y_n; \varphi p_n)$ in section 0.1.5) and the term 
+$\| D\varphi_{s,t}(\tilde{\varphi}_0, s(x)) \|$, 
+which bounds the sensitivity of the flow $\varphi_{s,t}(x)$ to an infinitesimal perturbation of its initial condition.
+
+
+
 $x_0\in BOA(A_i^f,A_j^g)$ for $i\neq j$
 flow error because trajectories go to different attractors
 We can bound this by reducing the mismatch between the separatrices (proportional to the distance between the attractors).
@@ -171,6 +269,9 @@ We can bound this by reducing the mismatch between the separatrices (proportiona
 - For ReLU NNs all invariant manifolds are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.
 
 Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has an  normally hyperbolic backward invariant manifold that is diffeomorphic to and at most at $\mathcal{\delta_{ij}}$ Hausdorff distance from $\sep(A_i,A_j)$.
+
+
+
 
 
 Now we need to sum all the different errors together.
@@ -207,6 +308,30 @@ Or we can perhaps achieve this by choosing the size of the tubular neighbourhood
 
 
 
+\subsection{Approximating a chaotic orbit}
+We cannot approximate according to our above criteria.
+Every small discrepancy in the vector field will lead to 
+(analogous to perturbing initial start of the chaotic orbit 
+
+
+What we can do is minimize the Hausdorff distance between the chaotic invariant manifolds and match the Lyapunov exponents of the target system
+The first because of structural stability
+The second because of ??
+
+
+Symbolic dynamics
+Mapping onto the same discrete dynamical shift dynamical system?
+
+
+
+
+
+\subsection{Input driven dynamics}
+
+This can be only done by also calculating in the probability of making an error on a given input.
+So the approximation probability guarantee will need to be formulated in terms of the probability of making an error bigger than a threshold calculated over the function of input sequences and initial points.
+
+
 \section{Implications for understanding neural computation}
 
 Use of NODEs \citep{kim2021inferring}
@@ -217,10 +342,13 @@ Use of NODEs \citep{kim2021inferring}
 \section{Discussion}
 
 
+\paragraph{Limit cycles}
+Approximable but approximation is not robust! (period will change under almost all perturbations)
+
 \paragraph{The price of universality}
 This construction is immensely inefficient
 
-Better to just look at RNNs.
+Better to just look at RNNs. 
 
 
 
@@ -230,7 +358,7 @@ Better to just look at RNNs.
 
 
 \newpage
-\section{Appendix}
+\section*{Appendix}
 \section{Universal Approximation with Feedforward Neural Networks (FNNs)}
 
 The foundation of our approach lies in leveraging the \textit{universal approximation property} of feedforward neural networks (FNNs), a powerful result that makes neural networks exceptional for a broad array of tasks. This property allows FNNs to approximate complex functions with remarkable flexibility, providing the theoretical basis for their widespread success in machine learning.
@@ -303,7 +431,17 @@ f(x) = W^{(L)} h^{(L-1)} + b^{(L)}
 This architecture allows the MLP to progressively build complex representations, layer by layer, transforming raw input data into rich feature hierarchies.
 
 
+\section{Support for the proof}
+\subsection{Separatrices}
 
+Denote the basin of attraction for an attractor $A$ as $BOA(A)$.
+
+\begin{definition}	
+Define the separatrix between the basins of attraction of attractors $A_i$ and $A_j$ as 
+\begin{equation}
+\sep(A_i,A_j) = \cl(BOA(A_i)\cap \cl(BOA(A_j)).
+\end{equation}
+\end{definition}
 
 
 
