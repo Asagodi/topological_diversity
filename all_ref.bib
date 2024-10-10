@@ -55,7 +55,7 @@
   abstract = 	 {Can models with particular structure avoid being biased towards spurious correlation in out-of-distribution (OOD) generalization? Peters et al. (2016) provides a positive answer for linear cases. In this paper, we use a functional modular probing method to analyze deep model structures under OOD setting. We demonstrate that even in biased models (which focus on spurious correlation) there still exist unbiased functional subnetworks. Furthermore, we articulate and confirm the functional lottery ticket hypothesis: the full network contains a subnetwork with proper structure that can achieve better OOD performance. We then propose Modular Risk Minimization to solve the subnetwork selection problem. Our algorithm learns the functional structure from a given dataset, and can be combined with any other OOD regularization methods. Experiments on various OOD generalization tasks corroborate the effectiveness of our method.}
 }
 
-@article{lim2021,
+@article{lim2021noisy,
   title={Noisy recurrent neural networks},
   author={Lim, Soon Hoe and Erichson, N Benjamin and Hodgkinson, Liam and Mahoney, Michael W},
   journal={Advances in Neural Information Processing Systems},
@@ -78,7 +78,7 @@
   year={2023}
 }
 
-@article{cueva2020,
+@article{cueva2020lowdim,
   title={Low-dimensional dynamics for working memory and time encoding},
   author={Cueva, Christopher J and Saez, Alex and Marcos, Encarni and Genovesio, Aldo and Jazayeri, Mehrdad and Romo, Ranulfo and Salzman, C Daniel and Shadlen, Michael N and Fusi, Stefano},
   journal={Proceedings of the National Academy of Sciences},
@@ -517,7 +517,7 @@
   publisher={APS}
 }
 
-@article{gao2015,
+@article{gao2015simplicity,
   title={On simplicity and complexity in the brave new world of large-scale neuroscience},
   author={Gao, Peiran and Ganguli, Surya},
   journal={Current opinion in neurobiology},
@@ -525,6 +525,15 @@
   pages={148--155},
   year={2015},
   publisher={Elsevier}
+}
+
+@article{gao2017theory,
+  title={A theory of multineuronal dimensionality, dynamics and measurement},
+  author={Gao, Peiran and Trautmann, Eric and Yu, Byron and Santhanam, Gopal and Ryu, Stephen and Shenoy, Krishna and Ganguli, Surya},
+  journal={bioRxiv},
+  pages={214262},
+  year={2017},
+  doi={10.1101/214262}
 }
 
 @inproceedings{trinh2018,
@@ -1655,7 +1664,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   publisher={Elsevier}
 }
 
-@article{chatham2015,
+@article{chatham2015wm,
   title={Multiple gates on working memory},
   author={Chatham, Christopher H and Badre, David},
   journal={Current opinion in behavioral sciences},
@@ -1665,7 +1674,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   publisher={Elsevier}
 }
 
-@article{miller2018,
+@article{miller2018wm,
   title={Working Memory 2.0},
   author={Miller, Earl K and Lundqvist, Mikael and Bastos, Andr{\'e} M},
   journal={Neuron},
@@ -1676,7 +1685,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   publisher={Elsevier}
 }
 
-@article{vyas2020,
+@article{vyas2020ctd,
   title={Computation through neural population dynamics},
   author={Vyas, Saurabh and Golub, Matthew D and Sussillo, David and Shenoy, Krishna V},
   journal={Annual review of neuroscience},
@@ -1686,7 +1695,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   publisher={Annual Reviews}
 }
 
-@article{balleine2019,
+@article{balleine2019behavior,
   title={The meaning of behavior: Discriminating reflex and volition in the brain},
   author={Balleine, Bernard W},
   journal={Neuron},
@@ -1708,7 +1717,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   publisher={Wiley Online Library}
 }
 
-@article{soo2023,
+@article{soo2023training,
   title={Training biologically plausible recurrent neural networks on cognitive tasks with long-term dependencies},
   author={Soo, Wayne WM and Goudar, Vishwa and Wang, Xiao-Jing},
   journal={bioRxiv},
@@ -2198,7 +2207,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   year = {2022},
 }
 
-@article{knierim2012,
+@article{knierim2012attractor,
   author = {Knierim, James J. and Zhang, Kechen},
   title = {Attractor Dynamics of Spatially Correlated Neural Activity in the Limbic System},
   journal = {Annual Review of Neuroscience},
@@ -2207,7 +2216,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   year = {2012},
 }
 
-@article{hulse2020,
+@article{hulse2020hd,
   author = {Hulse, Benjamin K. and Jayaraman, Vivek},
   title = {Mechanisms Underlying the Neural Computation of Head Direction},
   journal = {Annual Review of Neuroscience},
@@ -2216,7 +2225,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   year = {2020},
 }
 
-@article{noorman2022,
+@article{noorman2022accurate,
   title={Accurate angular integration with only a handful of neurons},
   author={Noorman, Marcella and Hulse, Brad K and Jayaraman, Vivek and Romani, Sandro and Hermundstad, Ann M},
   journal={bioRxiv},
@@ -2224,6 +2233,18 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   year={2022},
   publisher={Cold Spring Harbor Laboratory}
 }
+
+@article{noorman2024accurate,
+  author       = {Noorman, Myrthe and Hulse, Brad K. and Jayaraman, Vivek and Romani, Sandro and Hermundstad, Ann M.},
+  title        = {Maintaining and updating accurate internal representations of continuous variables with a handful of neurons},
+  journal      = {Nature Neuroscience},
+  year         = {2024},
+  month        = {Oct},
+  note         = {Epub ahead of print},
+  doi          = {10.1038/s41593-024-01766-5},
+  pmid         = {39363052}
+}
+
 
 @article{bicanski2016,
   author = {Bicanski, Andre and Burgess, Neil},
@@ -2390,7 +2411,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   year={2022}
 }
 
-@article{cueva2018,
+@article{cueva2018emergence,
   author = {Cueva, Carlos J. and Wei, Xinxin X.},
   title = {Emergence of Grid-Like Representations by Training Recurrent Neural Networks to Perform Spatial Localization},
   journal = {arXiv preprint},
@@ -2398,7 +2419,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   year = {2018},
 }
 
-@article{cueva2019headdirection,
+@article{cueva2019hd,
   author = {Cueva, Carlos J. and Wang, Pei Y. and Chin, Mable and Wei, Xinxin X.},
   title = {Emergence of Functional and Structural Properties of the Head Direction System by Optimization of Recurrent Neural Networks},
   journal = {arXiv preprint},
@@ -2522,7 +2543,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   year      = {2023},
 }
 
-@article{jarne2023a,
+@article{jarne2023ei,
   author    = {Jarne, C. and Caruso, M.},
   title     = {Effect in the Spectra of Eigenvalues and Dynamics of {RNNs} Trained with Excitatory–Inhibitory Constraint},
   journal   = {Cognitive Neurodynamics},
@@ -2530,7 +2551,7 @@ url={https://openreview.net/forum?id=rDiMgZulwi}
   year      = {2023},
 }
 
-@article{jarne2023b,
+@article{jarne2023initialization,
   title={Exploring weight initialization, diversity of solutions, and degradation in recurrent neural networks trained for temporal and decision-making tasks},
   author={Jarne, Cedric and Laje, Rodrigo},
   journal={Journal of Computational Neuroscience},
@@ -2639,23 +2660,14 @@ year = {2018}
   organization={PMLR}
 }
 
-@article{le2015,
+@article{le2015initialize,
   title={A simple way to initialize recurrent networks of rectified linear units},
   author={Le, Quoc V and Jaitly, Navdeep and Hinton, Geoffrey E},
   journal={arXiv preprint arXiv:1504.00941},
   year={2015}
 }
 
-@inproceedings{vorontsov2017,
-  title={On orthogonality and learning recurrent networks with long term dependencies},
-  author={Vorontsov, Eugene and Trabelsi, Chiheb and Kadoury, Samuel and Pal, Chris},
-  booktitle={International Conference on Machine Learning},
-  pages={3570--3578},
-  year={2017},
-  organization={PMLR}
-}
-
-@article{jaeger2021,
+@article{jaeger2021theory,
   title={Towards a generalized theory comprising digital, neuromorphic and unconventional computing},
   author={Jaeger, Herbert},
   journal={Neuromorphic Computing and Engineering},
@@ -2789,7 +2801,7 @@ year = {2018}
   publisher={APS}
 }
 
-@article{orhan2017,
+@article{orhan2017skip,
   title={Skip connections eliminate singularities},
   author={Orhan, A Emin and Pitkow, Xaq},
   journal={arXiv preprint arXiv:1701.09175},
@@ -2816,7 +2828,7 @@ year = {2018}
 }
 
 @article{martin2019,
-  title={Predicate learning in neural systems: using oscillations to discover latent structure},
+  title={Predicate learning in neural systems: Using oscillations to discover latent structure},
   author={Martin, Andrea E and Doumas, Leonidas AA},
   journal={Current Opinion in Behavioral Sciences},
   volume={29},
@@ -2836,7 +2848,7 @@ year = {2018}
   publisher={Nature Publishing Group UK London}
 }
 
-@article{chirimuuta2014,
+@article{chirimuuta2014minimal,
   title={Minimal models and canonical neural computations: The distinctness of computational explanation in neuroscience},
   author={Chirimuuta, Mazviita},
   journal={Synthese},
@@ -2845,6 +2857,18 @@ year = {2018}
   year={2014},
   publisher={Springer}
 }
+
+@article{chirimuuta2016vision,
+  title={Vision, perspectivism, and haptic realism},
+  author={Chirimuuta, M.},
+  journal={Philosophy of Science},
+  volume={83},
+  number={5},
+  pages={746--756},
+  year={2016},
+  publisher={University of Chicago Press}
+}
+
 
 @article{chirimuuta2018mmm,
   title={{Marr, Mayr, and MR}: What functionalism should now be about},
@@ -2874,6 +2898,17 @@ year = {2018}
   number={1-2},
   pages={767--790},
   year={2021},
+  publisher={Springer}
+}
+
+@article{chirimuuta2023haptic,
+  title={Haptic realism for neuroscience},
+  author={Chirimuuta, M.},
+  journal={Synthese},
+  volume={202},
+  number={3},
+  pages={63},
+  year={2023},
   publisher={Springer}
 }
 
@@ -3032,7 +3067,7 @@ year = {2018}
 }
 
 @article{arnold1998b,
-  title={Order-preserving random dynamical systems: equilibria, attractors, applications},
+  title={Order-preserving random dynamical systems: Equilibria, attractors, applications},
   author={Arnold, Ludwig and Chueshov, Igor},
   journal={Dynamics and Stability of systems},
   volume={13},
@@ -3042,8 +3077,8 @@ year = {2018}
   publisher={Taylor \& Francis}
 }
 
-@article{pennington2017,
-  title={Resurrecting the sigmoid in deep learning through dynamical isometry: theory and practice},
+@article{pennington2017resurrecting,
+  title={Resurrecting the sigmoid in deep learning through dynamical isometry: Theory and practice},
   author={Pennington, Jeffrey and Schoenholz, Samuel and Ganguli, Surya},
   journal={Advances in neural information processing systems},
   volume={30},
@@ -3058,7 +3093,7 @@ year = {2018}
   year={2019}
 }
 
-@article{dubey2022,
+@article{dubey2022activation,
   title={Activation functions in deep learning: A comprehensive survey and benchmark},
   author={Dubey, Shiv Ram and Singh, Satish Kumar and Chaudhuri, Bidyut Baran},
   journal={Neurocomputing},
@@ -3078,7 +3113,7 @@ year = {2018}
 }
 
 @article{sinitskiy2023,
-  title={Simplest Model of Nervous System. I. Formalism},
+  title={Simplest Model of Nervous System. {I}. Formalism},
   author={Sinitskiy, Anton V},
   journal={bioRxiv},
   pages={2023--11},
@@ -3154,7 +3189,7 @@ year = {2018}
 }
 
 @article{sani2021,
-  title={Where is all the nonlinearity: flexible nonlinear modeling of behaviorally relevant neural dynamics using recurrent neural networks},
+  title={Where is all the nonlinearity: Flexible nonlinear modeling of behaviorally relevant neural dynamics using recurrent neural networks},
   author={Sani, Omid G and Pesaran, Bijan and Shanechi, Maryam M},
   journal={bioRxiv},
   pages={2021--09},
@@ -3291,7 +3326,7 @@ year = {2018}
 }
 
 @article{kozachkov2022b,
-  title={Generalization as Dynamical Robustness--The Role of Riemannian Contraction in Supervised Learning},
+  title={Generalization as Dynamical Robustness--The Role of {Riemannian} Contraction in Supervised Learning},
   author={Kozachkov, Leo and Wensing, Patrick and Slotine, Jean-Jacques},
   journal={Transactions on Machine Learning Research},
   year={2022}
@@ -3333,8 +3368,8 @@ year = {2018}
   year={2021}
 }
 
-@article{barrett2019,
-  title={Analyzing biological and artificial neural networks: challenges with opportunities for synergy?},
+@article{barrett2019synergy,
+  title={Analyzing biological and artificial neural networks: Challenges with opportunities for synergy?},
   author={Barrett, David GT and Morcos, Ari S and Macke, Jakob H},
   journal={Current opinion in neurobiology},
   volume={55},
@@ -3343,8 +3378,8 @@ year = {2018}
   publisher={Elsevier}
 }
 
-@article{gomezmarin2012,
-  title={Active sensation during orientation behavior in the Drosophila larva: more sense than luck},
+@article{gomezmarin2012active,
+  title={Active sensation during orientation behavior in the Drosophila larva: More sense than luck},
   author={Gomez-Marin, Alex and Louis, Matthieu},
   journal={Current opinion in neurobiology},
   volume={22},
@@ -3390,8 +3425,8 @@ year = {2018}
   organization={PMLR}
 }
 
-@article{he2020,
-  title={Why resnet works? Residuals generalize},
+@article{he2020resnet,
+  title={Why resnet works? {Residuals} generalize},
   author={He, Fengxiang and Liu, Tongliang and Tao, Dacheng},
   journal={IEEE transactions on neural networks and learning systems},
   volume={31},
@@ -3423,7 +3458,7 @@ year = {2018}
   publisher={Nature Publishing Group UK London}
 }
 
-@article{suarez2021,
+@article{suarez2021learning,
   author    = {Suárez, Luis E. and Richards, Blake A. and Lajoie, Guillaume and Misic, Bratislav},
   title     = {Learning Function from Structure in Neuromorphic Networks},
   journal   = {Nature Machine Intelligence},
@@ -3433,7 +3468,7 @@ year = {2018}
   year      = {2021},
 }
 
-@article{vasa2022,
+@article{vasa2022null,
   author    = {Váša, František and Mišić, Bratislav},
   title     = {Null Models in Network Neuroscience},
   journal   = {Nature Reviews Neuroscience},
@@ -3453,7 +3488,7 @@ year = {2018}
   year      = {2017},
 }
 
-@article{barak2014,
+@article{barak2014wm,
   title={Working models of working memory},
   author={Barak, Omri and Tsodyks, Misha},
   journal={Current opinion in neurobiology},
@@ -3607,7 +3642,7 @@ year = {2018}
   year      = {2018},
 }
 
-@article{fort2019,
+@article{fort2019stiffness,
   author    = {Fort, Stanisław and Nowak, Piotr K. and Jastrzebski, Stanisław and Narayanan, Sanjay},
   title     = {Stiffness: A new perspective on generalization in neural networks},
   journal   = {arXiv preprint},
@@ -3771,24 +3806,13 @@ year = {2018}
   organization={PMLR}
 }
 
-@inproceedings{lezcano2019,
+@inproceedings{lezcano2019orthogonal,
   title={Cheap orthogonal constraints in neural networks: A simple parametrization of the orthogonal and unitary group},
   author={Lezcano-Casado, Mario and Mart{\'\i}nez-Rubio, David},
   booktitle={International Conference on Machine Learning},
   pages={3794--3803},
   year={2019},
   organization={PMLR}
-}
-
-@article{nair2023,
-  title={An approximate line attractor in the hypothalamus encodes an aggressive state},
-  author={Nair, Abhilasha and Karigo, Tomomi and Yang, Bing and Ganguli, Surya and Schnitzer, Mark J and Linderman, Scott W and Anderson, David J and Kennedy, Ann},
-  journal={Cell},
-  volume={186},
-  number={1},
-  pages={178--193. e15},
-  year={2023},
-  publisher={Elsevier}
 }
 
 @article{nieder2016,
@@ -3858,7 +3882,7 @@ year = {2018}
 }
 
 @misc{hurwitz2021building,
-      title={Building population models for large-scale neural recordings: opportunities and pitfalls}, 
+      title={Building population models for large-scale neural recordings: Opportunities and pitfalls}, 
       author={Cole Hurwitz and Nina Kudryashova and Arno Onken and Matthias H. Hennig},
       year={2021},
       eprint={2102.01807},
@@ -3885,7 +3909,7 @@ year = {2018}
   note={Preprint, doi: 10.1101/2023.05.10.443513}
 }
 
-@inproceedings{kanai2017,
+@inproceedings{kanai2017preventing,
   title={Preventing gradient explosions in gated recurrent units},
   author={Kanai, Shuntaro and Fujiwara, Yusuke and Iwamura, Shuichi},
   booktitle={Advances in neural information processing systems},
@@ -3987,14 +4011,14 @@ year = {2018}
   doi={10.1016/j.bpsc.2021.02.011}
 }
 
-@article{ahn2022,
+@article{ahn2022learning,
   title={Learning threshold neurons via the 'edge of stability'},
   author={Ahn, Kihong and Bubeck, Sebastien and Chewi, Siddhartha and Lee, Yannic T and Suarez, Favyen and Zhang, Yuchen},
   journal={arXiv preprint arXiv:2212.07469},
   year={2022}
 }
 
-@article{safaie2022,
+@article{safaie2022preserved,
   title={Preserved neural population dynamics across animals performing similar behaviour},
   author={Safaie, Mehrdad and Chang, Joshua C and Park, Jungseo and Miller, Lee E and Dudman, Joshua T and Perich, Matthew G and Gallego, Juan A},
   journal={BioRxiv},
@@ -4003,7 +4027,7 @@ year = {2018}
   publisher={Cold Spring Harbor Laboratory}
 }
 
-@inproceedings{goyal2020,
+@inproceedings{goyal2020independent,
   title={Recurrent Independent Mechanisms},
   author={Goyal, Anirudh and Lamb, Alex and Hoffmann, Jordan and Sodhani, Shagun and Levine, Sergey and Bengio, Yoshua and Sch{\"o}lkopf, Bernhard},
   booktitle={International Conference on Learning Representations},
@@ -4011,14 +4035,14 @@ year = {2018}
   url={http://arxiv.org/abs/1909.10893}
 }
 
-@article{madan2021,
+@article{madan2021independent,
   title={Fast and Slow Learning of Recurrent Independent Mechanisms},
   author={Madan, Kshitij and Ke, Norman R. and Goyal, Anirudh and Sch{\"o}lkopf, Bernhard and Bengio, Yoshua},
   journal={arXiv preprint arXiv:arXiv:2109.05249},
   year={2021}
 }
 
-@article{molanomazon2023,
+@article{molanomazon2023priorz,
   title={Recurrent networks endowed with structural priors explain suboptimal animal behavior},
   author={Molano-Maz{\'o}n, Manuel and Shao, Yuanjun and Duque, Daniel and Yang, Guangyu Robert and Ostojic, Srdjan and de la Rocha, Jaime},
   journal={Current Biology: CB},
@@ -4026,7 +4050,7 @@ year = {2018}
   doi={10.1016/j.cub.2022.12.044}
 }
 
-@article{lanthaler2023,
+@article{lanthaler2023neuraloscillators,
   title={Neural Oscillators are Universal},
   author={Lanthaler, Samuel and Rusch, Konstantin and Mishra, Sascha},
   journal={arXiv preprint arXiv:2305.08753},
@@ -4035,7 +4059,7 @@ year = {2018}
   archivePrefix={arXiv}
 }
 
-@article{gumbsch2021,
+@article{gumbsch2021sparsely,
   title={Sparsely Changing Latent States for Prediction and Planning in Partially Observable Domains},
   author={Gumbsch, Christian and Butz, Martin V and Martius, Georg},
   journal={arXiv preprint arXiv:2110.15949},
@@ -4045,7 +4069,7 @@ year = {2018}
   primaryClass={cs.LG}
 }
 
-@article{yang2022,
+@article{yang2022brainstem,
   title={A brainstem integrator for self-location memory and positional homeostasis in zebrafish},
   author={Yang, Ekin and Zwart, Maarten F and James, Brielle and Rubinov, Mikail and Wei, Zhiyuan and Narayan, Sujay and Vladimirov, Nikita and Mensh, Brett D and Fitzgerald, James E and Ahrens, Misha B},
   journal={Cell},
@@ -4056,7 +4080,7 @@ year = {2018}
   publisher={Elsevier}
 }
 
-@article{claudi2022,
+@article{claudi2022differential,
   title={Differential Geometry Methods for Constructing Manifold-Targeted Recurrent Neural Networks},
   author={Claudi, Fabio and Branco, Tiago},
   journal={Neural Computation},
@@ -4067,7 +4091,7 @@ year = {2018}
   publisher={MIT Press}
 }
 
-@article{beer2015,
+@article{beer2015information,
   title={Information processing and dynamics in minimally cognitive agents},
   author={Beer, Randall D. and Williams, Paul L.},
   journal={Cognitive Science},
@@ -4078,7 +4102,7 @@ year = {2018}
   publisher={Wiley}
 }
 
-@article{hardt2018,
+@article{hardt2018gradient,
   title={Gradient descent learns linear dynamical systems},
   author={Hardt, Moritz and Ma, Tengyu and Recht, Benjamin},
   journal={Journal of Machine Learning Research},
@@ -4088,7 +4112,7 @@ year = {2018}
   year={2018}
 }
 
-@article{hass2022,
+@article{hass2022persistent,
   title={Constraints on persistent activity in a biologically detailed network model of the prefrontal cortex with heterogeneities},
   author={Hass, Johanna and Ardid, Salva and Sherfey, Jason and Kopell, Nancy},
   journal={Progress in Neurobiology},
@@ -4097,7 +4121,7 @@ year = {2018}
   year={2022}
 }
 
-@inproceedings{teshima2020,
+@inproceedings{teshima2020coupling,
   title={Coupling-based Invertible Neural Networks Are Universal Diffeomorphism Approximators},
   author={Teshima, Tatsuo and Ishikawa, Issei and Tojo, Kenta and Oono, Kenta and Ikeda, Masatoshi and Sugiyama, Masashi},
   booktitle={Advances in Neural Information Processing Systems},
@@ -4105,14 +4129,14 @@ year = {2018}
   note={34th Conference on Neural Information Processing Systems (NeurIPS 2020)}
 }
 
-@inproceedings{berger2020,
+@inproceedings{berger2020taskrepresentation,
   title={Compact task representations as a normative model for higher-order brain activity},
-  author={Berger, Sarah and Machens, Christian K},
+  author={Berger, Severin and Machens, Christian K},
   booktitle={Advances in Neural Information Processing Systems},
   year={2020}
 }
 
-@article{vandenberg2023,
+@article{vandenberg2023l2l,
   title={Biologically plausible gated recurrent neural networks for working memory and learning-to-learn},
   author={van den Berg, A. R. and Roelfsema, P. R. and Bohte, S. M.},
   journal={bioRxiv},
@@ -4605,17 +4629,6 @@ and in real neural data.},
   number={1},
   pages={128--142},
   year={2016},
-  publisher={Elsevier}
-}
-
-@article{pascanu2011,
-  title={A neurodynamical model for working memory},
-  author={Pascanu, Razvan and Jaeger, Herbert},
-  journal={Neural networks},
-  volume={24},
-  number={2},
-  pages={199--207},
-  year={2011},
   publisher={Elsevier}
 }
 
@@ -5716,11 +5729,18 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={American Physiological Society Rockville, MD}
 }
 
-@book{deregt2017,
+@book{deregt2017understanding,
   title={Understanding scientific understanding},
   author={De Regt, Henk W},
   year={2017},
   publisher={Oxford University Press}
+}
+
+@book{elgin2017true,
+  title={True enough},
+  author={Elgin, Catherine Z},
+  year={2017},
+  publisher={MIT press}
 }
 
 @article{erasmus2021,
@@ -6418,17 +6438,6 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={SIAM}
 }
 
-@article{franci2018,
-  title={Robust and tunable bursting requires slow positive feedback},
-  author={Franci, Alessio and Drion, Guillaume and Sepulchre, Rodolphe},
-  journal={Journal of neurophysiology},
-  volume={119},
-  number={3},
-  pages={1222--1234},
-  year={2018},
-  publisher={American Physiological Society Bethesda, MD}
-}
-
 @misc{chaudhry2023,
       title={Long Sequence {Hopfield} Memory}, 
       author={Hamza Tahir Chaudhry and Jacob A. Zavatone-Veth and Dmitry Krotov and Cengiz Pehlevan},
@@ -6724,13 +6733,13 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={Elsevier}
 }
 
-@article{potochnik2021,
+@article{potochnik2021levels,
   title={Our World Isn't Organized into Levels},
   author={Potochnik, Angela},
   year={2021}
 }
 
-@article{potochnik2020,
+@article{potochnik2020idealization,
   title={Idealization and many aims},
   author={Potochnik, Angela},
   journal={Philosophy of science},
@@ -6834,7 +6843,7 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={Springer}
 }
 
-@article{romani2010,
+@article{romani2010ca,
   title={Continuous attractors with morphed/correlated maps},
   author={Romani, Sandro and Tsodyks, Misha},
   journal={PLoS computational biology},
@@ -6845,7 +6854,7 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={Public Library of Science San Francisco, USA}
 }
 
-@article{si2014,
+@article{si2014gc,
   title={Continuous attractor network model for conjunctive position-by-velocity tuning of grid cells},
   author={Si, Bailu and Romani, Sandro and Tsodyks, Misha},
   journal={Plos computational biology},
@@ -6856,7 +6865,7 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={Public Library of Science San Francisco, USA}
 }
 
-@article{gupta2024,
+@article{gupta2024biases,
   title={Trial-history biases in evidence accumulation can give rise to apparent lapses in decision-making},
   author={Gupta, Diksha and DePasquale, Brian and Kopec, Charles D and Brody, Carlos D},
   journal={Nature Communications},
@@ -6896,7 +6905,7 @@ editor={Alur, Rajeev and Pappas, George J.},
   year={2021}
 }
 
-@article{flesch2021,
+@article{flesch2021rich,
   title={Rich and lazy learning of task representations in brains and neural networks},
   author={Flesch, Timo and Juechems, Keno and Dumbalska, Tsvetomira and Saxe, Andrew and Summerfield, Christopher},
   journal={BioRxiv},
@@ -6905,7 +6914,7 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={Cold Spring Harbor Laboratory}
 }
 
-@article{flesch2022,
+@article{flesch2022orthogonal,
   title={Orthogonal representations for robust context-dependent task performance in brains and neural networks},
   author={Flesch, Timo and Juechems, Keno and Dumbalska, Tsvetomira and Saxe, Andrew and Summerfield, Christopher},
   journal={Neuron},
@@ -6935,7 +6944,7 @@ editor={Alur, Rajeev and Pappas, George J.},
   year = {2023},
 }
 
-@article{liu2023,
+@article{liu2023connectivity,
   title={How connectivity structure shapes rich and lazy learning in neural circuits},
   author={Liu, Yuhan Helena and Baratin, Aristide and Cornford, Jonathan and Mihalas, Stefan and Shea-Brown, Eric and Lajoie, Guillaume},
   journal={ArXiv},
@@ -6943,7 +6952,7 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={arXiv}
 }
 
-@article{braun2022,
+@article{braun2022exact,
   title={Exact learning dynamics of deep linear networks with prior knowledge},
   author={Braun, Lukas and Domin{\'e}, Cl{\'e}mentine and Fitzgerald, James and Saxe, Andrew},
   journal={Advances in Neural Information Processing Systems},
@@ -7801,7 +7810,7 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={Cold Spring Harbor Laboratory}
 }
 
-@article{laurent2016,
+@article{laurent2016chaos,
   title={A recurrent neural network without chaos},
   author={Laurent, Thomas and von Brecht, James},
   journal={arXiv preprint arXiv:1612.06212},
@@ -7901,7 +7910,7 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={Public Library of Science San Francisco, CA USA}
 }
 
-@article{massaroli2020,
+@article{massaroli2020nodes,
   title={Dissecting neural {ODEs}},
   author={Massaroli, Stefano and Poli, Michael and Park, Jinkyoo and Yamashita, Atsushi and Asama, Hajime},
   journal={Advances in Neural Information Processing Systems},
@@ -7910,7 +7919,7 @@ editor={Alur, Rajeev and Pappas, George J.},
   year={2020}
 }
 
-@article{kelly2020,
+@article{kelly2020learning,
   title={Learning differential equations that are easy to solve},
   author={Kelly, Jacob and Bettencourt, Jesse and Johnson, Matthew J and Duvenaud, David K},
   journal={Advances in Neural Information Processing Systems},
@@ -7919,7 +7928,7 @@ editor={Alur, Rajeev and Pappas, George J.},
   year={2020}
 }
 
-@article{herron2023,
+@article{herron2023robust,
   title={Robust retrieval of dynamic sequences through interaction modulation},
   author={Herron, Lukas and Sartori, Pablo and Xue, BingKan},
   journal={PRX Life},
@@ -8406,6 +8415,15 @@ editor={Alur, Rajeev and Pappas, George J.},
   author={Rusch, T Konstantin and Mishra, Siddhartha and Erichson, N Benjamin and Mahoney, Michael W},
   journal={arXiv preprint arXiv:2110.04744},
   year={2021}
+}
+
+@inproceedings{rusch2021unicornn,
+  title={Unicornn: A recurrent model for learning very long time dependencies},
+  author={Rusch, T Konstantin and Mishra, Siddhartha},
+  booktitle={International Conference on Machine Learning},
+  pages={9168--9178},
+  year={2021},
+  organization={PMLR}
 }
 
 @article{kruff2021algorithmic,
@@ -9354,7 +9372,7 @@ editor={Alur, Rajeev and Pappas, George J.},
 }
 
 @article{zelik2022attractors,
-  title={Attractors. Then and now},
+  title={Attractors. {T}hen and now},
   author={Zelik, Sergey},
   journal={arXiv preprint arXiv:2208.12101},
   year={2022}
@@ -9757,13 +9775,6 @@ editor={Alur, Rajeev and Pappas, George J.},
   author={Liu, Fusheng and Li, Qianxiao},
   journal={arXiv preprint arXiv:2405.02670},
   year={2024}
-}
-
-@article{li2022deep,
-  title={Deep neural network approximation of invariant functions through dynamical systems},
-  author={Li, Qianxiao and Lin, Ting and Shen, Zuowei},
-  journal={arXiv preprint arXiv:2208.08707},
-  year={2022}
 }
 
 @article{hanin2018neural,
@@ -10427,6 +10438,17 @@ editor={Alur, Rajeev and Pappas, George J.},
   year={1992}
 }
 
+@article{siegelmann1994analog,
+  title={Analog computation via neural networks},
+  author={Siegelmann, Hava T and Sontag, Eduardo D},
+  journal={Theoretical Computer Science},
+  volume={131},
+  number={2},
+  pages={331--360},
+  year={1994},
+  publisher={Elsevier}
+}
+
 @article{schmidt2019recurrent,
   title={Recurrent neural networks {(RNNs)}: A gentle introduction and overview},
   author={Schmidt, Robin M},
@@ -10967,7 +10989,6 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={MIT Press One Rogers Street, Cambridge, MA 02142-1209, USA journals-info~…}
 }
 
-
 @InProceedings{irie2022selfreferential,
   title = 	 {A Modern Self-Referential Weight Matrix That Learns to Modify Itself},
   author =       {Irie, Kazuki and Schlag, Imanol and Csord{\'a}s, R{\'o}bert and Schmidhuber, J{\"u}rgen},
@@ -11020,3 +11041,1292 @@ editor={Alur, Rajeev and Pappas, George J.},
   publisher={Springer}
 }
 
+@article{becerra2005efficient,
+  title={An efficient parameterization of dynamic neural networks for nonlinear system identification},
+  author={Becerra, Victor M and Garces, Freddy R and Nasuto, Slawomir J and Holderbaum, William},
+  journal={IEEE Transactions on neural networks},
+  volume={16},
+  number={4},
+  pages={983--988},
+  year={2005},
+  publisher={IEEE}
+}
+
+@book{garces2012strategies,
+  title={Strategies for feedback linearisation: A dynamic neural network approach},
+  author={Garces, Freddy Rafael and Becerra, Victor Manuel and Kambhampati, Chandrasekhar and Warwick, Kevin},
+  year={2012},
+  publisher={Springer Science \& Business Media}
+}
+
+@book{tsung1993phase,
+  title={Phase-space learning for recurrent networks},
+  author={Tsung, Fu-Sheng and Cottrell, Garrison Weeks},
+  year={1993},
+  publisher={Department of Computer Science and Engineering, University of California~…}
+}
+
+@article{augustine2024survey,
+  title={A Survey on Universal Approximation Theorems},
+  author={Augustine, Midhun T},
+  journal={arXiv preprint arXiv:2407.12895},
+  year={2024}
+}
+
+@article{khrulkov2017expressive,
+  title={Expressive power of recurrent neural networks},
+  author={Khrulkov, Valentin and Novikov, Alexander and Oseledets, Ivan},
+  journal={arXiv preprint arXiv:1711.00811},
+  year={2017}
+}
+
+@article{merrill2019sequential,
+  title={Sequential neural networks as automata},
+  author={Merrill, William},
+  journal={arXiv preprint arXiv:1906.01615},
+  year={2019}
+}
+
+@inproceedings{vorontsov2017orthogonality,
+  title={On orthogonality and learning recurrent networks with long term dependencies},
+  author={Vorontsov, Eugene and Trabelsi, Chiheb and Kadoury, Samuel and Pal, Chris},
+  booktitle={International Conference on Machine Learning},
+  pages={3570--3578},
+  year={2017},
+  organization={PMLR}
+}
+
+@article{haber2022computational,
+  title={The computational and learning benefits of {Daleian} neural networks},
+  author={Haber, Adam and Schneidman, Elad},
+  journal={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={5194--5206},
+  year={2022}
+}
+
+@article{jeon2023distinctive,
+  title={Distinctive properties of biological neural networks and recent advances in bottom-up approaches toward a better biologically plausible neural network},
+  author={Jeon, Ikhwan and Kim, Taegon},
+  journal={Frontiers in Computational Neuroscience},
+  volume={17},
+  pages={1092185},
+  year={2023},
+  publisher={Frontiers Media SA}
+}
+
+@article{bernaez2023incorporate,
+  title={How to incorporate biological insights into network models and why it matters},
+  author={Bern{\'a}ez Tim{\'o}n, Laura and Ekelmans, Pierre and Kraynyukova, Nataliya and Rose, Tobias and Busse, Laura and Tchumatchenko, Tatjana},
+  journal={The Journal of Physiology},
+  volume={601},
+  number={15},
+  pages={3037--3053},
+  year={2023},
+  publisher={Wiley Online Library}
+}
+
+@article{schmidgall2024brain,
+  title={Brain-inspired learning in artificial neural networks: A review},
+  author={Schmidgall, Samuel and Ziaei, Rojin and Achterberg, Jascha and Kirsch, Louis and Hajiseyedrazi, S and Eshraghian, Jason},
+  journal={APL Machine Learning},
+  volume={2},
+  number={2},
+  year={2024},
+  publisher={AIP Publishing}
+}
+
+@article{narkhede2022review,
+  title={A review on weight initialization strategies for neural networks},
+  author={Narkhede, Meenal V and Bartakke, Prashant P and Sutaone, Mukul S},
+  journal={Artificial intelligence review},
+  volume={55},
+  number={1},
+  pages={291--322},
+  year={2022},
+  publisher={Springer}
+}
+
+@article{khosla2024privileged,
+  title={Privileged representational axes in biological and artificial neural networks},
+  author={Khosla, Meenakshi and Williams, Alex H and McDermott, Josh and Kanwisher, Nancy},
+  journal={bioRxiv},
+  pages={2024--06},
+  year={2024},
+  publisher={Cold Spring Harbor Laboratory}
+}
+
+@article{merrill2020formal,
+  title={A formal hierarchy of {RNN} architectures},
+  author={Merrill, William and Weiss, Gail and Goldberg, Yoav and Schwartz, Roy and Smith, Noah A and Yahav, Eran},
+  journal={arXiv preprint arXiv:2004.08500},
+  year={2020}
+}
+
+@article{kanamori2017robustness,
+  title={Robustness of learning algorithms using hinge loss with outlier indicators},
+  author={Kanamori, Takafumi and Fujiwara, Shuhei and Takeda, Akiko},
+  journal={Neural Networks},
+  volume={94},
+  pages={173--191},
+  year={2017},
+  publisher={Elsevier}
+}
+
+@InProceedings{wang2020orthogonal,
+author = {Wang, Jiayun and Chen, Yubei and Chakraborty, Rudrasis and Yu, Stella X.},
+title = {Orthogonal Convolutional Neural Networks},
+booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+month = {June},
+year = {2020}
+}
+
+@article{durstewitz2008computational,
+  title={Computational significance of transient dynamics in cortical networks},
+  author={Durstewitz, Daniel and Deco, Gustavo},
+  journal={European Journal of Neuroscience},
+  volume={27},
+  number={1},
+  pages={217--227},
+  year={2008},
+  publisher={Wiley Online Library}
+}
+
+@article{cavanaugh1996computing,
+  title={On computing the expected {Fisher} information matrix for state-space model parameters},
+  author={Cavanaugh, Joseph E and Shumway, Robert H},
+  journal={Statistics \& probability letters},
+  volume={26},
+  number={4},
+  pages={347--355},
+  year={1996},
+  publisher={Elsevier}
+}
+
+@inproceedings{kag2020rnns,
+  title={{RNNs} incrementally evolving on an equilibrium manifold: A panacea for vanishing and exploding gradients?},
+  author={Kag, Anil and Zhang, Ziming and Saligrama, Venkatesh},
+  booktitle={International Conference on Learning Representations},
+  year={2020}
+}
+
+@inproceedings{kag2021training,
+  title={Training recurrent neural networks via forward propagation through time},
+  author={Kag, Anil and Saligrama, Venkatesh},
+  booktitle={International Conference on Machine Learning},
+  pages={5189--5200},
+  year={2021},
+  organization={PMLR}
+}
+
+@article{qin2023long,
+  title={Long short-term memory with activation on gradient},
+  author={Qin, Chuan and Chen, Liangming and Cai, Zangtai and Liu, Mei and Jin, Long},
+  journal={Neural Networks},
+  volume={164},
+  pages={135--145},
+  year={2023},
+  publisher={Elsevier}
+}
+
+@article{hammer2000approximation,
+  title={On the approximation capability of recurrent neural networks},
+  author={Hammer, Barbara},
+  journal={Neurocomputing},
+  volume={31},
+  number={1-4},
+  pages={107--123},
+  year={2000},
+  publisher={Elsevier}
+}
+
+@article{philipp2017exploding,
+  title={The exploding gradient problem demystified-definition, prevalence, impact, origin, tradeoffs, and solutions},
+  author={Philipp, George and Song, Dawn and Carbonell, Jaime G},
+  journal={arXiv preprint arXiv:1712.05577},
+  year={2017}
+}
+
+@article{rehmer2020vanishing,
+  title={On the vanishing and exploding gradient problem in {Gated Recurrent Units}},
+  author={Rehmer, Alexander and Kroll, Andreas},
+  journal={IFAC-PapersOnLine},
+  volume={53},
+  number={2},
+  pages={1243--1248},
+  year={2020},
+  publisher={Elsevier}
+}
+
+@inproceedings{siami2019performance,
+  title={The performance of {LSTM} and {BiLSTM} in forecasting time series},
+  author={Siami-Namini, Sima and Tavakoli, Neda and Namin, Akbar Siami},
+  booktitle={2019 IEEE International conference on big data (Big Data)},
+  pages={3285--3292},
+  year={2019},
+  organization={IEEE}
+}
+
+@article{kingma2019introduction,
+  title={An introduction to variational autoencoders},
+  author={Kingma, Diederik P and Welling, Max and others},
+  journal={Foundations and Trends{\textregistered} in Machine Learning},
+  volume={12},
+  number={4},
+  pages={307--392},
+  year={2019},
+  publisher={Now Publishers, Inc.}
+}
+
+@article{pascanu2013difficulty,
+  title={On the difficulty of training recurrent neural networks},
+  author={Pascanu, R},
+  journal={arXiv preprint arXiv:1211.5063},
+  year={2013}
+}
+
+@inproceedings{xiao2020disentangling,
+  title={Disentangling trainability and generalization in deep neural networks},
+  author={Xiao, Lechao and Pennington, Jeffrey and Schoenholz, Samuel},
+  booktitle={International Conference on Machine Learning},
+  pages={10462--10472},
+  year={2020},
+  organization={PMLR}
+}
+
+@article{noh2021analysis,
+  title={Analysis of gradient vanishing of {RNNs} and performance comparison},
+  author={Noh, Seol-Hyun},
+  journal={Information},
+  volume={12},
+  number={11},
+  pages={442},
+  year={2021},
+  publisher={MDPI}
+}
+
+@article{arpit2018h,
+  title={h-detach: Modifying the {LSTM} gradient towards better optimization},
+  author={Arpit, Devansh and Kanuparthi, Bhargav and Kerg, Giancarlo and Ke, Nan Rosemary and Mitliagkas, Ioannis and Bengio, Yoshua},
+  journal={arXiv preprint arXiv:1810.03023},
+  year={2018}
+}
+
+@article{klein2000direct,
+  title={A direct derivation of the exact {Fisher} information matrix of {Gaussian} vector state space models},
+  author={Klein, A and Neudecker, H},
+  journal={Linear Algebra and its Applications},
+  volume={321},
+  number={1-3},
+  pages={233--238},
+  year={2000},
+  publisher={Elsevier}
+}
+
+@article{alselwi2023lstm,
+  title={{LSTM} inefficiency in long-term dependencies regression problems},
+  author={Al-Selwi, Safwan Mahmood and Hassan, Mohd Fadzil and Abdulkadir, Said Jadid and Muneer, Amgad},
+  journal={Journal of Advanced Research in Applied Sciences and Engineering Technology},
+  volume={30},
+  number={3},
+  pages={16--31},
+  year={2023}
+}
+
+@article{klambauer2017self,
+  title={Self-normalizing neural networks},
+  author={Klambauer, G{\"u}nter and Unterthiner, Thomas and Mayr, Andreas and Hochreiter, Sepp},
+  journal={Advances in neural information processing systems},
+  volume={30},
+  year={2017}
+}
+
+@article{rubanova2019latent,
+  title={Latent ordinary differential equations for irregularly-sampled time series},
+  author={Rubanova, Yulia and Chen, Ricky TQ and Duvenaud, David K},
+  journal={Advances in neural information processing systems},
+  volume={32},
+  year={2019}
+}
+
+@article{coelho2024enhancing,
+  title={Enhancing continuous time series modelling with a latent {ODE-LSTM} approach},
+  author={Coelho, C and Costa, M Fernanda P and Ferr{\'a}s, Luis L},
+  journal={Applied Mathematics and Computation},
+  volume={475},
+  pages={128727},
+  year={2024},
+  publisher={Elsevier}
+}
+
+@article{chen2018neural,
+  title={Neural ordinary differential equations},
+  author={Chen, Ricky TQ and Rubanova, Yulia and Bettencourt, Jesse and Duvenaud, David K},
+  journal={Advances in neural information processing systems},
+  volume={31},
+  year={2018}
+}
+
+@article{hendrycks2016gaussian,
+  title={Gaussian error linear units ({GELUs})},
+  author={Hendrycks, Dan and Gimpel, Kevin},
+  journal={arXiv preprint arXiv:1606.08415},
+  year={2016}
+}
+
+@article{mishkin2015all,
+  title={All you need is a good init},
+  author={Mishkin, Dmytro and Matas, Jiri},
+  journal={arXiv preprint arXiv:1511.06422},
+  year={2015}
+}
+
+@article{cavanaugh1996computing,
+  title={On computing the expected {Fisher} information matrix for state-space model parameters},
+  author={Cavanaugh, Joseph E and Shumway, Robert H},
+  journal={Statistics \& probability letters},
+  volume={26},
+  number={4},
+  pages={347--355},
+  year={1996},
+  publisher={Elsevier}
+}
+
+@article{lazar2009sorn,
+  title={{SORN}: A self-organizing recurrent neural network},
+  author={Lazar, Andreea and Pipa, Gordon and Triesch, Jochen},
+  journal={Frontiers in computational neuroscience},
+  volume={3},
+  pages={800},
+  year={2009},
+  publisher={Frontiers}
+}
+
+@article{kovachki2024operator,
+  title={Operator learning: Algorithms and analysis},
+  author={Kovachki, Nikola B and Lanthaler, Samuel and Stuart, Andrew M},
+  journal={arXiv preprint arXiv:2402.15715},
+  year={2024}
+}
+
+@article{yu2019symmetrical,
+  title={Symmetrical gaussian error linear units (SGELUs)},
+  author={Yu, Chao and Su, Zhiguo},
+  journal={arXiv preprint arXiv:1911.03925},
+  year={2019}
+}
+
+@inproceedings{clevert2015elu,
+  title = {Fast and Accurate Deep Network Learning by {{Exponential Linear Units}} ({{ELUs}})},
+  author={Clevert, Djork-Arn{\'e} and Unterthiner, Thomas and Hochreiter, Sepp},
+  journal={arXiv preprint arXiv:1511.07289},
+  year={2015}
+}
+
+@article{barron2017celu,
+  title={Continuously differentiable exponential linear units},
+  author={Barron, Jonathan T},
+  journal={arXiv preprint arXiv:1704.07483},
+  year={2017}
+}
+
+@article{jagtap2023activation,
+  title={How important are activation functions in regression and classification? {A} survey, performance comparison, and future directions},
+  author={Jagtap, Ameya D and Karniadakis, George Em},
+  journal={Journal of Machine Learning for Modeling and Computing},
+  volume={4},
+  number={1},
+  year={2023},
+  publisher={Begel House Inc.}
+}
+
+@article{ramachandran2017activation,
+  title={Searching for activation functions},
+  author={Ramachandran, Prajit and Zoph, Barret and Le, Quoc V},
+  journal={arXiv preprint arXiv:1710.05941},
+  year={2017}
+}
+
+@inproceedings{hayou2019activation,
+  title={On the impact of the activation function on deep neural networks training},
+  author={Hayou, Soufiane and Doucet, Arnaud and Rousseau, Judith},
+  booktitle={International conference on machine learning},
+  pages={2672--2680},
+  year={2019},
+  organization={PMLR}
+}
+
+@book{palis2012geometric,
+  title={Geometric theory of dynamical systems: an introduction},
+  author={Palis, J Jr and De Melo, Welington},
+  year={2012},
+  publisher={Springer Science \& Business Media}
+}
+
+@article{berglund2001geometrical,
+  title={Geometrical theory of dynamical systems},
+  author={Berglund, Nils},
+  journal={arXiv preprint math/0111177},
+  year={2001}
+}
+
+@article{pennington2017resurrecting,
+  title={Resurrecting the sigmoid in deep learning through dynamical isometry: Theory and practice},
+  author={Pennington, Jeffrey and Schoenholz, Samuel and Ganguli, Surya},
+  journal={Advances in neural information processing systems},
+  volume={30},
+  year={2017}
+}
+
+@inproceedings{carlini2017towards,
+  title={Towards evaluating the robustness of neural networks},
+  author={Carlini, Nicholas and Wagner, David},
+  booktitle={2017 ieee symposium on security and privacy (sp)},
+  pages={39--57},
+  year={2017},
+  organization={Ieee}
+}
+
+@article{park2000adaptive,
+  title={Adaptive natural gradient learning algorithms for various stochastic models},
+  author={Park, Hyeyoung and Amari, S-I and Fukumizu, Kenji},
+  journal={Neural Networks},
+  volume={13},
+  number={7},
+  pages={755--764},
+  year={2000},
+  publisher={Elsevier}
+}
+
+@article{martens2020new,
+  title={New insights and perspectives on the natural gradient method},
+  author={Martens, James},
+  journal={Journal of Machine Learning Research},
+  volume={21},
+  number={146},
+  pages={1--76},
+  year={2020}
+}
+
+@article{gilboa2019isometry,
+  title={Dynamical isometry and a mean field theory of {LSTMs and GRUs}},
+  author={Gilboa, Dar and Chang, Bo and Chen, Minmin and Yang, Greg and Schoenholz, Samuel S and Chi, Ed H and Pennington, Jeffrey},
+  journal={arXiv preprint arXiv:1901.08987},
+  year={2019}
+}
+
+
+@InProceedings{tarnowski19isometry,
+  title = 	 {Dynamical Isometry is Achieved in Residual Networks in a Universal Way for any Activation Function},
+  author =       {Tarnowski, Wojciech and Warcho\l, Piotr and Jastrz\c{e}bski, Stanis{\l}aw and Tabor, Jacek and Nowak, Maciej},
+  booktitle = 	 {Proceedings of the Twenty-Second International Conference on Artificial Intelligence and Statistics},
+  pages = 	 {2221--2230},
+  year = 	 {2019},
+  editor = 	 {Chaudhuri, Kamalika and Sugiyama, Masashi},
+  volume = 	 {89},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {16--18 Apr},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v89/tarnowski19a/tarnowski19a.pdf},
+  url = 	 {https://proceedings.mlr.press/v89/tarnowski19a.html},
+  abstract = 	 {We demonstrate that in residual neural networks (ResNets) dynamical isometry is achievable irrespective of the activation function used. We do that by deriving, with the help of Free Probability and Random Matrix Theories, a universal formula for the spectral density of the input-output Jacobian at initialization, in the large network width and depth limit. The resulting singular value spectrum depends on a single parameter, which we calculate for a variety of popular activation functions, by analyzing the signal propagation in the artificial neural network. We corroborate our results with numerical simulations of both random matrices and ResNets applied to the CIFAR-10 classification problem. Moreover, we study consequences of this universal behavior for the initial and late phases of the learning processes.  We conclude by drawing attention to the simple fact, that initialization acts as a confounding factor between the choice of activation function and the rate of learning. We propose that in ResNets this can be resolved based on our results by ensuring the same level of dynamical isometry at initialization.}
+}
+
+
+@InProceedings{schaul2013pesky,
+  title = 	 {No more pesky learning rates},
+  author = 	 {Schaul, Tom and Zhang, Sixin and LeCun, Yann},
+  booktitle = 	 {Proceedings of the 30th International Conference on Machine Learning},
+  pages = 	 {343--351},
+  year = 	 {2013},
+  editor = 	 {Dasgupta, Sanjoy and McAllester, David},
+  volume = 	 {28},
+  number =       {3},
+  series = 	 {Proceedings of Machine Learning Research},
+  address = 	 {Atlanta, Georgia, USA},
+  month = 	 {17--19 Jun},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v28/schaul13.pdf},
+  url = 	 {https://proceedings.mlr.press/v28/schaul13.html},
+  abstract = 	 {The performance of stochastic gradient descent (SGD) depends critically on how learning rates are tuned and decreased over time. We propose a method to automatically adjust multiple learning rates so as to minimize the expected error at any one time. The method relies on local gradient variations across samples. In our approach, learning rates can increase as well as decrease, making it suitable for non-stationary problems. Using a number of convex and non-convex learning tasks, we show that the resulting algorithm matches the performance of the best settings obtained through systematic search, and effectively removes the need for learning rate tuning.}
+}
+
+@article{kuan1994convergence,
+  title={A convergence result for learning in recurrent neural networks},
+  author={Kuan, Chung-Ming and Hornik, Kurt and White, Halbert},
+  journal={Neural Computation},
+  volume={6},
+  number={3},
+  pages={420--440},
+  year={1994},
+  publisher={MIT Press}
+}
+
+@article{yu2004nonlinear,
+  title={Nonlinear system identification using discrete-time recurrent neural networks with stable learning algorithms},
+  author={Yu, Wen},
+  journal={Information sciences},
+  volume={158},
+  pages={131--147},
+  year={2004},
+  publisher={Elsevier}
+}
+
+@article{haschke2005input,
+  title={Input space bifurcation manifolds of recurrent neural networks},
+  author={Haschke, Robert and Steil, Jochen J},
+  journal={Neurocomputing},
+  volume={64},
+  pages={25--38},
+  year={2005},
+  publisher={Elsevier}
+}
+
+@article{talathi2015improving,
+  title={Improving performance of recurrent neural network with {ReLU} nonlinearity},
+  author={Talathi, Sachin S and Vartak, Aniket},
+  journal={arXiv preprint arXiv:1511.03771},
+  year={2015}
+}
+
+@article{zaremba2014recurrent,
+  title={Recurrent neural network regularization},
+  author={Zaremba, Wojciech},
+  journal={arXiv preprint arXiv:1409.2329},
+  year={2014}
+}
+
+@InProceedings{li2018indrnn,
+author = {Li, Shuai and Li, Wanqing and Cook, Chris and Zhu, Ce and Gao, Yanbo},
+title = {{Independently Recurrent Neural Network} ({IndRNN}): Building a Longer and Deeper {RNN}},
+booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+month = {June},
+year = {2018}
+}
+
+@article{miller2018stable,
+  title={Stable recurrent models},
+  author={Miller, John and Hardt, Moritz},
+  journal={arXiv preprint arXiv:1805.10369},
+  year={2018}
+}
+
+@inproceedings{zhao2020rnn,
+  title={Do {RNN and LSTM} have long memory?},
+  author={Zhao, Jingyu and Huang, Feiqing and Lv, Jia and Duan, Yanjie and Qin, Zhen and Li, Guodong and Tian, Guangjian},
+  booktitle={International Conference on Machine Learning},
+  pages={11365--11375},
+  year={2020},
+  organization={PMLR}
+}
+
+@article{revay2023recurrent,
+  title={Recurrent equilibrium networks: Flexible dynamic models with guaranteed stability and robustness},
+  author={Revay, M. and Wang, R. and Manchester, I.R.},
+  journal={IEEE Transactions on Automatic Control},
+  year={2023},
+  publisher={IEEE}
+}
+
+@inproceedings{hardt2016train,
+  title={Train faster, generalize better: Stability of stochastic gradient descent},
+  author={Hardt, Moritz and Recht, Benjamin and Singer, Yoram},
+  booktitle={International conference on machine learning},
+  pages={1225--1234},
+  year={2016},
+  organization={PMLR}
+}
+
+@inproceedings{nugaliyadde2019language,
+  title={Language modeling through Long-Term memory network},
+  author={Nugaliyadde, Anupiya and Sohel, Ferdous and Wong, Kok Wai and Xie, Hong},
+  booktitle={2019 international joint conference on neural networks (IJCNN)},
+  pages={1--6},
+  year={2019},
+  organization={IEEE}
+}
+
+@article{bellec2018long,
+  title={Long short-term memory and learning-to-learn in networks of spiking neurons},
+  author={Bellec, Guillaume and Salaj, Darjan and Subramoney, Anand and Legenstein, Robert and Maass, Wolfgang},
+  journal={Advances in neural information processing systems},
+  volume={31},
+  year={2018}
+}
+
+@article{bikic2024pragmatist,
+  title={Pragmatist Intelligence: Where the Principle of Usefulness Can Take ANNs},
+  author={Biki{\'c}, Antonio and Mukherjee, Sayan},
+  journal={arXiv preprint arXiv:2405.04386},
+  year={2024}
+}
+
+@inproceedings{mhammedi2017efficient,
+  title={Efficient orthogonal parametrisation of recurrent neural networks using householder reflections},
+  author={Mhammedi, Zakaria and Hellicar, Andrew and Rahman, Ashfaqur and Bailey, James},
+  booktitle={International Conference on Machine Learning},
+  pages={2401--2409},
+  year={2017},
+  organization={PMLR}
+}
+
+
+@InProceedings{revay2020contracting,
+  title = 	 {Contracting Implicit Recurrent Neural Networks: Stable Models with Improved Trainability},
+  author =       {Revay, Max and Manchester, Ian},
+  booktitle = 	 {Proceedings of the 2nd Conference on Learning for Dynamics and Control},
+  pages = 	 {393--403},
+  year = 	 {2020},
+  editor = 	 {Bayen, Alexandre M. and Jadbabaie, Ali and Pappas, George and Parrilo, Pablo A. and Recht, Benjamin and Tomlin, Claire and Zeilinger, Melanie},
+  volume = 	 {120},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {10--11 Jun},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v120/revay20a/revay20a.pdf},
+  url = 	 {https://proceedings.mlr.press/v120/revay20a.html},
+  abstract = 	 {Stability of recurrent models is closely linked with trainability, generalizability and in some applications,safety. Methods that train stable recurrent neural networks, however, do so at a significant cost to expressibility. We propose an implicit model structure that allows for a convex parametrization of stable models using contraction analysis of non-linear systems. Using these stability conditions we propose a new approach to model initialization and then provide a number of empirical results comparing the performance of our proposed model set to previous stable RNNs and vanilla RNNs. By carefully controlling stability in the model, we observe a significant increase in the speed of training and model performance.}
+}
+
+@article{nair2023approximate,
+  title={An approximate line attractor in the hypothalamus encodes an aggressive state},
+  author={Nair, Abhilasha and Karigo, Tomomi and Yang, Bing and Ganguli, Surya and Schnitzer, Mark J and Linderman, Scott W and Anderson, David J and Kennedy, Ann},
+  journal={Cell},
+  volume={186},
+  number={1},
+  pages={178--193. e15},
+  year={2023},
+  publisher={Elsevier}
+}
+
+@article{vinograd2024causal,
+  title={Causal evidence of a line attractor encoding an affective state},
+  author={Vinograd, Amit and Nair, Aditya and Kim, Joseph and Linderman, Scott W and Anderson, David J},
+  journal={Nature},
+  pages={1--3},
+  year={2024},
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{mountoufaris2024line,
+  title={A line attractor encoding a persistent internal state requires neuropeptide signaling},
+  author={Mountoufaris, George and Nair, Aditya and Yang, Bin and Kim, Dong-Wook and Vinograd, Amit and Kim, Samuel and Linderman, Scott W and Anderson, David J},
+  journal={Cell},
+  year={2024},
+  publisher={Elsevier}
+}
+
+@article{huh2024platonic,
+  title={The platonic representation hypothesis},
+  author={Huh, Minyoung and Cheung, Brian and Wang, Tongzhou and Isola, Phillip},
+  journal={arXiv preprint arXiv:2405.07987},
+  year={2024}
+}
+
+@article{bush2014hybrid,
+  title={A hybrid oscillatory interference/continuous attractor network model of grid cell firing},
+  author={Bush, Daniel and Burgess, Neil},
+  journal={Journal of Neuroscience},
+  volume={34},
+  number={14},
+  pages={5065--5079},
+  year={2014},
+  publisher={Soc Neuroscience}
+}
+
+@article{liu2024encoding,
+  title={Encoding of female mating dynamics by a hypothalamic line attractor},
+  author={Liu, Mengyu and Nair, Aditya and Coria, Nestor and Linderman, Scott W and Anderson, David J},
+  journal={Nature},
+  pages={1--3},
+  year={2024},
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{lyapunov1992general,
+  title={The general problem of the stability of motion},
+  author={Lyapunov, Aleksandr Mikhailovich},
+  journal={International journal of control},
+  volume={55},
+  number={3},
+  pages={531--534},
+  year={1992},
+  publisher={Taylor \& Francis}
+}
+
+@article{ijspeert2013dynamical,
+  title={Dynamical movement primitives: Learning attractor models for motor behaviors},
+  author={Ijspeert, Auke Jan and Nakanishi, Jun and Hoffmann, Heiko and Pastor, Peter and Schaal, Stefan},
+  journal={Neural computation},
+  volume={25},
+  number={2},
+  pages={328--373},
+  year={2013},
+  publisher={MIT Press One Rogers Street, Cambridge, MA 02142-1209, USA journals-info~…}
+}
+
+@article{niculescu1998stability,
+  title={Stability and robust stability of time-delay systems: A guided tour},
+  author={Niculescu, Silviu-Iulian and Verriest, Erik I and Dugard, Luc and Dion, Jean-Michel},
+  journal={Stability and control of time-delay systems},
+  pages={1--71},
+  year={1998},
+  publisher={Springer}
+}
+
+@article{xiao2017cusps,
+  title={Cusps enable line attractors for neural computation},
+  author={Xiao, Zhuocheng and Zhang, Jiwei and Sornborger, Andrew T and Tao, Louis},
+  journal={Physical Review E},
+  volume={96},
+  number={5},
+  pages={052308},
+  year={2017},
+  publisher={APS}
+}
+
+@article{cybenko1989approximation,
+  title={Approximation by superpositions of a sigmoidal function},
+  author={Cybenko, George},
+  journal={Mathematics of control, signals and systems},
+  volume={2},
+  number={4},
+  pages={303--314},
+  year={1989},
+  publisher={Springer}
+}
+
+@article{hornik1989multilayer,
+  title={Multilayer feedforward networks are universal approximators},
+  author={Hornik, Kurt and Stinchcombe, Maxwell and White, Halbert},
+  journal={Neural networks},
+  volume={2},
+  number={5},
+  pages={359--366},
+  year={1989},
+  publisher={Elsevier}
+}
+
+@article{funahashi1989approximate,
+  title={On the approximate realization of continuous mappings by neural networks},
+  author={Funahashi, Ken-Ichi},
+  journal={Neural networks},
+  volume={2},
+  number={3},
+  pages={183--192},
+  year={1989},
+  publisher={Elsevier}
+}
+
+@phdthesis{vanhandel2007filtering,
+  title={Filtering, stability, and robustness},
+  author={Van Handel, Ramon},
+  year={2007},
+  school={California Institute of Technology}
+}
+
+@article{yarotsky2017error,
+  title={Error bounds for approximations with deep {ReLU} networks},
+  author={Yarotsky, Dmitry},
+  journal={Neural networks},
+  volume={94},
+  pages={103--114},
+  year={2017},
+  publisher={Elsevier}
+}
+
+@misc{goodfellow2016deep,
+  title={Deep learning},
+  author={Goodfellow, Ian},
+  year={2016},
+  publisher={MIT press}
+}
+
+@book{bishop2006pattern,
+  title={Pattern recognition and machine learning},
+  author={Bishop, Christopher M and Nasrabadi, Nasser M},
+  volume={4},
+  number={4},
+  year={2006},
+  publisher={Springer}
+}
+
+@misc{stincheombe1989universal,
+  title={Universal approximation using feedforward networks with non-sigmoid hidden layer activation functions},
+  author={Stincheombe, M and White, H},
+  year={1989},
+  publisher={IJCNN Proceedings}
+}
+
+@article{marshall2022flexible,
+  title={Flexible neural control of motor units},
+  author={Marshall, Najja J and Glaser, Joshua I and Trautmann, Eric M and Amematsro, Elom A and Perkins, Sean M and Shadlen, Michael N and Abbott, LF and Cunningham, John P and Churchland, Mark M},
+  journal={Nature neuroscience},
+  volume={25},
+  number={11},
+  pages={1492--1504},
+  year={2022},
+  publisher={Nature Publishing Group US New York}
+}
+
+@article{bishop1995training,
+  title={Training with noise is equivalent to {Tikhonov} regularization},
+  author={Bishop, Chris M},
+  journal={Neural computation},
+  volume={7},
+  number={1},
+  pages={108--116},
+  year={1995},
+  publisher={MIT Press}
+}
+
+@article{koch2024biological,
+  title={Biological computations: Limitations of attractor-based formalisms and the need for transients},
+  author={Koch, Daniel and Nandan, Akhilesh and Ramesan, Gayathri and Koseska, Aneta},
+  journal={Biochemical and Biophysical Research Communications},
+  volume={720},
+  pages={150069},
+  year={2024},
+  publisher={Elsevier}
+}
+
+@article{franci2018bursting,
+  title={Robust and tunable bursting requires slow positive feedback},
+  author={Franci, Alessio and Drion, Guillaume and Sepulchre, Rodolphe},
+  journal={Journal of neurophysiology},
+  volume={119},
+  number={3},
+  pages={1222--1234},
+  year={2018},
+  publisher={American Physiological Society Bethesda, MD}
+}
+
+@article{franci2020positive,
+  title={Positive dynamical networks in neuronal regulation: How tunable variability coexists with robustness},
+  author={Franci, Alessio and O’Leary, Timothy and Golowasch, Jorge},
+  journal={IEEE Control Systems Letters},
+  volume={4},
+  number={4},
+  pages={946--951},
+  year={2020},
+  publisher={IEEE}
+}
+
+@article{secer2024continuous,
+  title={Continuous Bump Attractor Networks Require Explicit Error Coding for Gain Recalibration},
+  author={Secer, Gorkem and Knierim, James J and Cowan, Noah J},
+  journal={bioRxiv},
+  year={2024},
+  publisher={Cold Spring Harbor Laboratory Preprints}
+}
+
+@InProceedings{simsek2021geometry,
+  title = 	 {Geometry of the Loss Landscape in Overparameterized Neural Networks: Symmetries and Invariances},
+  author =       {Simsek, Berfin and Ged, Fran{\c{c}}ois and Jacot, Arthur and Spadaro, Francesco and Hongler, Clement and Gerstner, Wulfram and Brea, Johanni},
+  booktitle = 	 {Proceedings of the 38th International Conference on Machine Learning},
+  pages = 	 {9722--9732},
+  year = 	 {2021},
+  editor = 	 {Meila, Marina and Zhang, Tong},
+  volume = 	 {139},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {18--24 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v139/simsek21a/simsek21a.pdf},
+  url = 	 {https://proceedings.mlr.press/v139/simsek21a.html}
+}
+
+@article{brea2019weight,
+  title={Weight-space symmetry in deep networks gives rise to permutation saddles, connected by equal-loss valleys across the loss landscape},
+  author={Brea, Johanni and Simsek, Berfin and Illing, Bernd and Gerstner, Wulfram},
+  journal={arXiv preprint arXiv:1907.02911},
+  year={2019}
+}
+
+@article{menendez2024theory,
+  title={A theory of brain-computer interface learning via low-dimensional control},
+  author={Menendez, Jorge Aurelio and Hennig, Jay A and Golub, Matthew D and Oby, Emily R and Sadtler, Patrick T and Batista, Aaron P and Chase, Steven M and Yu, Byron M and Latham, Peter E},
+  journal={bioRxiv},
+  pages={2024--04},
+  year={2024},
+  publisher={Cold Spring Harbor Laboratory}
+}
+
+@article{toyoizumi2012nearly,
+  title={Nearly extensive sequential memory lifetime achieved by coupled nonlinear neurons},
+  author={Toyoizumi, Taro},
+  journal={Neural computation},
+  volume={24},
+  number={10},
+  pages={2678--2699},
+  year={2012},
+  publisher={MIT Press One Rogers Street, Cambridge, MA 02142-1209, USA journals-info~…}
+}
+
+@article{schmutz2023emergent,
+  title={Emergent rate-based dynamics in duplicate-free populations of spiking neurons},
+  author={Schmutz, Valentin and Brea, Johanni and Gerstner, Wulfram},
+  journal={arXiv preprint arXiv:2303.05174},
+  year={2023}
+}
+
+@article{nachstedt2017working,
+  title={Working memory requires a combination of transient and attractor-dominated dynamics to process unreliably timed inputs},
+  author={Nachstedt, Timo and Tetzlaff, Christian},
+  journal={Scientific reports},
+  volume={7},
+  number={1},
+  pages={2473},
+  year={2017},
+  publisher={Nature Publishing Group UK London}
+}
+
+@inproceedings{dong2020towards,
+  title={Towards interpreting recurrent neural networks through probabilistic abstraction},
+  author={Dong, Guoliang and Wang, Jingyi and Sun, Jun and Zhang, Yang and Wang, Xinyu and Dai, Ting and Dong, Jin Song and Wang, Xingen},
+  booktitle={Proceedings of the 35th IEEE/ACM International Conference on Automated Software Engineering},
+  pages={499--510},
+  year={2020}
+}
+
+@article{wei2024weighted,
+  title={Weighted automata extraction and explanation of recurrent neural networks for natural language tasks},
+  author={Wei, Zeming and Zhang, Xiyue and Zhang, Yihao and Sun, Meng},
+  journal={Journal of Logical and Algebraic Methods in Programming},
+  volume={136},
+  pages={100907},
+  year={2024},
+  publisher={Elsevier}
+}
+
+@article{jaurigue2024reducing,
+  title={Reducing reservoir computer hyperparameter dependence by external timescale tailoring},
+  author={Jaurigue, Lina and L{\"u}dge, Kathy},
+  journal={Neuromorphic Computing and Engineering},
+  volume={4},
+  number={1},
+  pages={014001},
+  year={2024},
+  publisher={IOP Publishing}
+}
+
+@article{jaeger2001echo,
+  title={The “echo state” approach to analysing and training recurrent neural networks-with an erratum note},
+  author={Jaeger, Herbert},
+  journal={Bonn, Germany: German National Research Center for Information Technology GMD Technical Report},
+  volume={148},
+  number={34},
+  pages={13},
+  year={2001},
+  publisher={Bonn}
+}
+
+@article{tabuada2020universal,
+  title={Universal approximation power of deep residual neural networks via nonlinear control theory},
+  author={Tabuada, Paulo and Gharesifard, Bahman},
+  journal={arXiv preprint arXiv:2007.06007},
+  year={2020}
+}
+
+@article{goebel2009hybrid,
+  title={Hybrid dynamical systems},
+  author={Goebel, Rafal and Sanfelice, Ricardo G and Teel, Andrew R},
+  journal={IEEE control systems magazine},
+  volume={29},
+  number={2},
+  pages={28--93},
+  year={2009},
+  publisher={IEEE}
+}
+
+@InProceedings{kidger2020universal,
+  title = 	 {{Universal Approximation with Deep Narrow Networks}},
+  author =       {Kidger, Patrick and Lyons, Terry},
+  booktitle = 	 {Proceedings of Thirty Third Conference on Learning Theory},
+  pages = 	 {2306--2327},
+  year = 	 {2020},
+  editor = 	 {Abernethy, Jacob and Agarwal, Shivani},
+  volume = 	 {125},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {09--12 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v125/kidger20a/kidger20a.pdf},
+  url = 	 {https://proceedings.mlr.press/v125/kidger20a.html}
+}
+
+@article{sedler2023expressive,
+  title={Expressive architectures enhance interpretability of dynamics-based neural population models},
+  author={Sedler, Andrew R and Versteeg, Christopher and Pandarinath, Chethan},
+  journal={Neurons, behavior, data analysis, and theory},
+  volume={2023},
+  year={2023},
+  publisher={NIH Public Access}
+}
+
+@inproceedings{karakida2019universal,
+  title={Universal statistics of {Fisher} information in deep neural networks: Mean field approach},
+  author={Karakida, Ryo and Akaho, Shotaro and Amari, Shun-ichi},
+  booktitle={The 22nd International Conference on Artificial Intelligence and Statistics},
+  pages={1032--1041},
+  year={2019},
+  organization={PMLR}
+}
+
+@article{girard2007approximation,
+  title={Approximation metrics for discrete and continuous systems},
+  author={Girard, Antoine and Pappas, George J},
+  journal={IEEE Transactions on Automatic Control},
+  volume={52},
+  number={5},
+  pages={782--798},
+  year={2007},
+  publisher={IEEE}
+}
+
+@article{girard2008approximate,
+  title={Approximate simulation relations for hybrid systems},
+  author={Girard, Antoine and Julius, A Agung and Pappas, George J},
+  journal={Discrete event dynamic systems},
+  volume={18},
+  number={2},
+  pages={163--179},
+  year={2008},
+  publisher={Springer}
+}
+
+@inproceedings{pola2004bisimulation,
+  title={Bisimulation theory for switching linear systems},
+  author={Pola, Giordano and van der Schaft, Arjan J and Di Benedetto, Maria Domenica},
+  booktitle={2004 43rd IEEE Conference on Decision and Control (CDC)(IEEE Cat. No. 04CH37601)},
+  volume={2},
+  pages={1406--1411},
+  year={2004},
+  organization={IEEE}
+}
+
+@inproceedings{haghverdi2002unifying,
+  title={Unifying bisimulation relations for discrete and continuous systems},
+  author={Haghverdi, Esfandiar and Tabuada, Paulo and Pappas, George J},
+  booktitle={Proc. Mathematical Theory of Networks and Systems},
+  year={2002},
+  organization={Citeseer}
+}
+
+@article{girard2011approximate,
+  title={Approximate bisimulation: A bridge between computer science and control theory},
+  author={Girard, Antoine and Pappas, George J},
+  journal={European Journal of Control},
+  volume={17},
+  number={5-6},
+  pages={568--578},
+  year={2011},
+  publisher={Elsevier}
+}
+
+@inproceedings{haghverdi2002unifying,
+  title={Unifying bisimulation relations for discrete and continuous systems},
+  author={Haghverdi, Esfandiar and Tabuada, Paulo and Pappas, George J},
+  booktitle={Proc. Mathematical Theory of Networks and Systems},
+  year={2002},
+  organization={Citeseer}
+}
+
+@article{pola2006equivalence,
+  title={Equivalence of switching linear systems by bisimulation},
+  author={Pola, G and Van der Schaft, AJ and Di Benedetto, MD},
+  journal={International Journal of Control},
+  volume={79},
+  number={1},
+  pages={74--92},
+  year={2006},
+  publisher={Taylor \& Francis}
+}
+
+@article{lafferriere2000minimal,
+  title={O-minimal hybrid systems},
+  author={Lafferriere, Gerardo and Pappas, George J and Sastry, Shankar},
+  journal={Mathematics of control, signals and systems},
+  volume={13},
+  pages={1--21},
+  year={2000},
+  publisher={Springer}
+}
+
+@article{xiao2024structure,
+  title={Structure-preserving recurrent neural networks for a class of {Birkhoffian} systems},
+  author={Xiao, Shanshan and Chen, Mengyi and Zhang, Ruili and Tang, Yifa},
+  journal={Journal of Systems Science and Complexity},
+  volume={37},
+  number={2},
+  pages={441--462},
+  year={2024},
+  publisher={Springer}
+}
+
+@article{daniels2024continuous,
+  title={Continuous Attractor Networks for {Laplace} Neural Manifolds},
+  author={Daniels, Bryan C and Howard, Marc W},
+  journal={arXiv preprint arXiv:2406.04545},
+  year={2024}
+}
+
+@article{howard2014unified,
+  title={A unified mathematical framework for coding time, space, and sequences in the hippocampal region},
+  author={Howard, Marc W and MacDonald, Christopher J and Tiganj, Zoran and Shankar, Karthik H and Du, Qian and Hasselmo, Michael E and Eichenbaum, Howard},
+  journal={Journal of Neuroscience},
+  volume={34},
+  number={13},
+  pages={4692--4707},
+  year={2014},
+  publisher={Soc Neuroscience}
+}
+
+@article{sarkar2024wm,
+  title={``What'' x ``When'' working memory representations using {Laplace} Neural Manifolds},
+  author={Sarkar, Aakash and Wang, Chenyu and Zuo, Shangfu and Howard, Marc W},
+  journal={arXiv preprint arXiv:2409.20484},
+  year={2024}
+}
+
+@article{chen2017minimalrnn,
+  title={Minimalrnn: Toward more interpretable and trainable recurrent neural networks},
+  author={Chen, Minmin},
+  journal={arXiv preprint arXiv:1711.06788},
+  year={2017}
+}
+
+@article{aichernig2024learning,
+  title={Learning minimal automata with recurrent neural networks},
+  author={Aichernig, Bernhard K and K{\"o}nig, Sandra and Mateis, Cristinel and Pferscher, Andrea and Tappler, Martin},
+  journal={Software and Systems Modeling},
+  pages={1--31},
+  year={2024},
+  publisher={Springer}
+}
+
+@article{luo2022transformer,
+  title={Your transformer may not be as powerful as you expect},
+  author={Luo, Shengjie and Li, Shanda and Zheng, Shuxin and Liu, Tie-Yan and Wang, Liwei and He, Di},
+  journal={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={4301--4315},
+  year={2022}
+}
+
+
+@InProceedings{zhang2020approximation,
+  title = 	 {Approximation Capabilities of Neural {ODE}s and Invertible Residual Networks},
+  author =       {Zhang, Han and Gao, Xi and Unterman, Jacob and Arodz, Tom},
+  booktitle = 	 {Proceedings of the 37th International Conference on Machine Learning},
+  pages = 	 {11086--11095},
+  year = 	 {2020},
+  editor = 	 {III, Hal Daumé and Singh, Aarti},
+  volume = 	 {119},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {13--18 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v119/zhang20h/zhang20h.pdf},
+  url = 	 {https://proceedings.mlr.press/v119/zhang20h.html},
+  abstract = 	 {Recent interest in invertible models and normalizing flows has resulted in new architectures that ensure invertibility of the network model. Neural ODEs and i-ResNets are two recent techniques for constructing models that are invertible, but it is unclear if they can be used to approximate any continuous invertible mapping. Here, we show that out of the box, both of these architectures are limited in their approximation capabilities. We then show how to overcome this limitation: we prove that any homeomorphism on a $p$-dimensional Euclidean space can be approximated by a Neural ODE or an i-ResNet operating on a $2p$-dimensional Euclidean space. We conclude by showing that capping a Neural ODE or an i-ResNet with a single linear layer is sufficient to turn the model into a universal approximator for non-invertible continuous functions.}
+}
+
+@article{dupont2019augmented,
+  title={Augmented neural {ODEs}},
+  author={Dupont, Emilien and Doucet, Arnaud and Teh, Yee Whye},
+  journal={Advances in neural information processing systems},
+  volume={32},
+  year={2019}
+}
+
+@article{li2022deeparxiv,
+  title={Deep neural network approximation of invariant functions through dynamical systems},
+  author={Li, Qianxiao and Lin, Ting and Shen, Zuowei},
+  journal={arXiv preprint arXiv:2208.08707},
+  year={2022}
+}
+
+@article{li2022deep,
+  title={Deep learning via dynamical systems: An approximation perspective},
+  author={Li, Qianxiao and Lin, Ting and Shen, Zuowei},
+  journal={Journal of the European Mathematical Society},
+  volume={25},
+  number={5},
+  pages={1671--1709},
+  year={2022}
+}
+
+@article{lu2021deep,
+  title={Deep network approximation for smooth functions},
+  author={Lu, Jianfeng and Shen, Zuowei and Yang, Haizhao and Zhang, Shijun},
+  journal={SIAM Journal on Mathematical Analysis},
+  volume={53},
+  number={5},
+  pages={5465--5506},
+  year={2021},
+  publisher={SIAM}
+}
+
+@article{li2024universal,
+  title={Universal Approximation of Dynamical Systems by Semi-Autonomous Neural {ODEs} and Applications},
+  author={Li, Ziqian and Liu, Kang and Liverani, Lorenzo and Zuazua, Enrique},
+  journal={arXiv preprint arXiv:2407.17092},
+  year={2024}
+}
+
+@article{elgazzar2024universal,
+  title={Universal Differential Equations as a Common Modeling Language for Neuroscience},
+  author={ElGazzar, Ahmed and van Gerven, Marcel},
+  journal={arXiv preprint arXiv:2403.14510},
+  year={2024}
+}
+
+@article{geenjaar2023learning,
+  title={Learning low-dimensional dynamics from whole-brain data improves task capture},
+  author={Geenjaar, Eloy and Kim, Donghyun and Ohib, Riyasat and Duda, Marlena and Kashyap, Amrit and Plis, Sergey and Calhoun, Vince},
+  journal={arXiv preprint arXiv:2305.14369},
+  year={2023}
+}
+
+@article{chung2014empirical,
+  title={Empirical evaluation of gated recurrent neural networks on sequence modeling},
+  author={Chung, Junyoung and Gulcehre, Caglar and Cho, KyungHyun and Bengio, Yoshua},
+  journal={arXiv preprint arXiv:1412.3555},
+  year={2014}
+}
+
+@article{taylor2015global,
+  title={The global landscape of cognition: hierarchical aggregation as an organizational principle of human cortical networks and functions},
+  author={Taylor, P and Hobbs, J Nicholas and Burroni, Javier and Siegelmann, Hava T},
+  journal={Scientific reports},
+  volume={5},
+  number={1},
+  pages={18112},
+  year={2015},
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{zakwan2023universal,
+  title={Universal approximation property of {Hamiltonian} deep neural networks},
+  author={Zakwan, Muhammad and d’Angelo, Massimiliano and Ferrari-Trecate, Giancarlo},
+  journal={IEEE Control Systems Letters},
+  volume={7},
+  pages={2689--2694},
+  year={2023},
+  publisher={IEEE}
+}
+
+@article{wei2022statistically,
+  title={Statistically meaningful approximation: A case study on approximating turing machines with transformers},
+  author={Wei, Colin and Chen, Yining and Ma, Tengyu},
+  journal={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={12071--12083},
+  year={2022}
+}
+
+@article{chirimuuta2024reflex,
+  title={From the Reflex Machine to the Changeable Brain},
+  author={Chirimuuta, Mazviita},
+  journal={Human Arenas},
+  pages={1--14},
+  year={2024},
+  publisher={Springer}
+}

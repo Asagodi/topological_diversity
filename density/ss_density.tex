@@ -1,8 +1,10 @@
 \documentclass{article}
+\usepackage{arxiv}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{amssymb, amsmath, amsthm, amsfonts}
 \usepackage{thmtools, mathtools, mathrsfs, dsfont}
+\usepackage{bbm}
 \usepackage[square,numbers]{natbib}
 \bibliographystyle{abbrvnat}
 \usepackage{algorithm}
@@ -30,26 +32,32 @@
 
 \section{Introduction}
 Recurrent Neural Networks (RNNs) are believed to be universal approximators.
-However, RNNs are not universal approximators 
+However, universal approximation results with RNNs are limited in scope.
 Existing results about approximating dynamical systems either focus on finite time horizon approximation or on approximating stable dynamical systems on an infinite horizon.
-We seek to extend approximation results for dynamical systems to multi-stable systems (systems without chaos) on an infinite horizon through Neural ODEs (NODEs).
+This misses important behavior of the system (e.g. temporal generalization of the approximation).
+
+
+A key motivation for extending approximation results to the infinite horizon lies in its ability to capture qualitative behaviors over time. For example, infinite horizon approximation allows us to better understand how a system's behavior unfolds over extended periods, providing insights into stability, transitions, and equilibrium states.
+ Furthermore, an effective infinite horizon approximation ensures robustness: small perturbations, such as noise, do not result in abrupt increases in approximation error, but instead produce gradual, smooth deviations in the system's trajectory.
+%the second point needs to be worked out: with added noise the error would jump for trajectories at separatrices
+
+%We seek to extend approximation results for dynamical systems to multi-stable systems (systems without chaos) on an infinite horizon through Neural ODEs (NODEs).
+Our work aims to bridge this gap by extending the approximation of dynamical systems to multi-stable systems—those with multiple equilibrium states but no chaotic behavior—over an infinite horizon. 
+To achieve this, we leverage Neural Ordinary Differential Equations (NODEs) as a framework for constructing such approximations.
+% By using NODEs, we can model continuous-time dynamical systems while ensuring that key properties, such as stability and smooth error bounds under perturbations, are maintained.
+This framework allows us to rigorously study the approximation of multi-stable systems in settings where classical RNNs may struggle, laying the groundwork for future advances in both theory and applications of neural approximators in long-term dynamical modeling.
+
+%mention that vanilla RNNs are not universal approximators?
 
 
 
-Why do we care about infinite horizon?
-- approximation gives us qualitative behavior
-- (little) noise doesn't make approximation increase suddenly in error (only smoothly)
-
-
-It could be that existing theorems could be interpreted that in the limit $N\rightarrow\infty$ the approximation holds.
-ie $\lim_{N\rightarrow\infty} error = 0$
-Here we do it for finite $N$.
-ie for each $\epsilon>0$ $\exists N$ such that $error(N) < \epsilon$
-(implies the above limit)
 
 
 \section{Approximation of dynamical systems}
 For an overview of the literature, see [litrev]
+
+See also \citep{li2022approximation} and \citep{jiang2023brief}.
+
 
 
 \subsection{Approximation of dynamics on compact time intervals}
@@ -61,8 +69,26 @@ The universal approximation theorem for RNNs, which extends the classical result
 This property has been formally proven for systems operating over finite time intervals. Specifically, \citet{funahashi1993approximation} showed that RNNs can approximate the time-dependent behaviors of dynamical systems, making them suitable for tasks like time-series prediction, control systems, and the modeling of sequential data.
 
 
+Existing results have established that recurrent nets are capable of generating simulated trajectories that approximate true system trajectories within arbitrary error tolerance over a finite time interval.
+Most of these results rely on Gr\:onwall’s inequality to control the difference between the trajectories of the original system and its approximation, which incurs an exponential degradation of approximation accuracy over time
+\citep{sontag1992neural, sontag1998learning, funahashi1993approximation,chow2000modeling, li2005approximation}.
+
+\paragraph{Discrete sequence-to-sequence mapping}
+
+Uniform approximation of a state space trajectory (with time-varying inputs) produced by either a discrete-time nonlinear system or a continuous function on a closed discrete-time interval \citep{jin1995universal}.
+
+The first $p$ output neural units of a dynamic $n$-dimensional neural model approximate at a desired proximity a $p$-dimensional dynamic system with $n > p$ \citep{kambhampati2000approximation}.
+
+Any function can be approximated arbitrarily well in probability with a recurrent neural network\citep{hammer2000approximation}. %
+% where ... can be computed by one neuron whose activation function $\sigma$ possesses a local linearity.\citep{hammer2000approximation}
+
+
+\paragraph{Neural oscillators}
+\citep{lanthaler2023neuraloscillators}
+
 \subsection{Approximation of fading memory systems}
 Fading memory \citep{boyd1985fading}
+
 
 \begin{definition}[Fading memory Property (FMP)]
 Let $x_1, x_2$ be bounded sequences indexed by $\mathbb{R}$, and let $H$ be a sequence of causal, shift-equivariant (also called time-homogeneous) functionals.
@@ -80,17 +106,54 @@ We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing func
 Every fading-memory system could be uniformly approximated arbitrarily closely over the set of systems with 'linear dynamics'\citep{matthews1993approximating}. %Theorem 3+4
 Using the perceptron to uniformly approximate the external representation of a fading-memory system results in a finite-memory system model, called the perceptron filter \citep{matthews1993approximating}.
 \end{remark}
+
+
+\paragraph{Linear RNNs}
+\citet{li2020curse} investigate Linear RNNs in continuous time. % and therefore linear functionals
  
+ \citep{li2022approximation}
 
 \paragraph{ESN}
  \citet{jaeger2001echo} proposed Echo State Networks (ESNs), demonstrating their universal approximation capabilities specifically for fading memory systems.
 Fading memory refers to the property where the influence of past inputs diminishes over time, allowing the network to focus more on recent inputs while still retaining some memory of older inputs.
  Let’s clarify the role of fading memory systems in the context of infinite horizon approximations and the broader discussion on RNNs.
  
+ 
+\paragraph{Exponential decaying memory}%
+%{SMMs}
+SSMs with layer-wise nonlinearity are universal approximators with exponential decaying memory \citep{wang2024state}
+
+\citep{dubinin2024fading}
+
+\paragraph{Uniform asymptotic incremental stability}
+Uniform asymptotic incremental stability was introduced in \citep{pavlov2006uniform}.
+\citep{hanson2020universal}: one can find a recurrent neural net, such that the trajectories generated by this net are arbitrarily close to the trajectories generated by the system it approximates (must be a uniformly asymptotically incrementally stable system) on an infinite time horizon.
+
+
+\paragraph{Stability implies FNNs are enough}%crit
+When Recurrent Models Don't Need to Be Recurrent \citep{miller2018stable}
+
 
 \subsection{Topological equivalency}
-Topological equivalency \citep{hart2020recurrent}
+Topological equivalency \citep{hart2020embedding}
 This is trivial for structurally stable systems!
+
+
+\subsection{Diffeomorphisms}
+%diff/flow
+Invertible neural networks have a universal approximation property for a  large class of diffeomorphisms   \citep{ishikawa2023universal}.
+
+
+
+\subsection{Spiking neural network}
+In limit $N\rightarrow\infty$ spiking network (ODE with jumps) approximates a continuous ODE \citep{podlaski2024approximating}. 
+%only approximates vector field 
+%so of type diffeomorphism?
+
+\subsection{Flows}
+RNNs are universal approximators of flow  functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023}.
+
+
 
 
 \subsection{Neural ODEs (NODEs)}
@@ -102,49 +165,68 @@ Neural ODEs\citep{chen2018neural} model the continuous trajectory of the hidden 
 
 where \( \mathbf{h}(t) \) is the hidden state at time \( t \), \( f \) is a neural network with parameters \( \theta \), and \( t \) represents time. Given an initial condition \( \mathbf{h}(t_0) = \mathbf{h}_0 \), the evolution of the hidden state over time is computed by solving the ODE using numerical solvers, allowing the model to capture complex, continuous transformations.
 
+%example of f
+\textbf{Fully Connected Neural Network (Feedforward Network)}:
 
-NODEs in neuroscience\citep{kim2021inferring, sedler2023expressive}
+\[
+f(\mathbf{h}(t), t, \theta) = W_2 \sigma(W_1 \mathbf{h}(t) + \mathbf{b}_1) + \mathbf{b}_2
+\]
 
-
-
-
-Theoretical Guarantees for Dynamical Systems
- Proofs of Universal Approximation for Dynamical Systems
- 
- 
- Any finite trajectory of an $n$-dimensional continuous dynamical system can be approximated by the internal state of the hidden units and $n$ output units of an Liquid time-constant (LTC) network \citep{hasani2018liquid}.
- 
- 
-\citep{tabuada2020universal}
+Here, \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( W_1, W_2 \) are weight matrices, and \( \mathbf{b}_1, \mathbf{b}_2 \) are bias vectors.
+ This form models the ODE dynamics using a simple two-layer feedforward network.
 
 
 
-\paragraph{Latent}
+\paragraph{Applications}
+%NODEs in neuroscience%
+Neural ordinary differential equations (NODEs) are being increasingly adopted in computational and systems neuroscience, showing improved performance compared to current approaches \citep{kim2021inferring,geenjaar2023learning,sedler2023expressive,elgazzar2024universal}.
+
+%\paragraph{Latent}
 Latent ODE-RNN\citep{rubanova2019latent}
 
 Latent ODE-LSTM \citep{coelho2024enhancing}
 
 
-\subsection{Flows}
-RNNs are universal approximators of flow  functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023}.
+\paragraph{Theoretical Guarantees for Dynamical Systems}
+ Proofs of Universal Approximation for Dynamical Systems
+ 
+ Any finite trajectory of an $n$-dimensional continuous dynamical system can be approximated by the internal state of the hidden units and $n$ output units of an Liquid time-constant (LTC) network \citep{hasani2018liquid}.
+ 
+control \citep{tabuada2020universal}
 
-\subsection{Misc.}
+\citep{zhang2020approximation}
 
-\subparagraph{Neural oscillators}
-\citep{lanthaler2023neuraloscillators}
+\citep{li2022deep}
+
+Universal approximation of dynamical systems by semi-autonomous NODEs \citep{li2024universal}
+
+
+
+
 
 
 
 
 \section{Approximation of dynamical systems on infinite time intervals}
-Let's get started.
-We will need to consider what the space is of target dynamical systems that we can approximate.
-Furthermore, these can be approximated in a particular way, i.e. with a specific difference between the approximant and the target system.
-This difference is measured as the expectation of the uniform norm difference between the flows. We can make the probability of finding a 
+
+\subsection{The problem of approximation} %{Problem statement}
+For behaving agents we can formalize their behavior as sequence-to-sequence or input-output mappings.
+We will call $\mathcal{X}$ the space of input sequences and $\mathcal{Y}$ the space of output sequences.
+
+We consider a family of target functions, or simply targets, which is a subset \(\mathcal{C} \) of all mappings \( \mathcal{X} \rightarrow \mathcal{Y} \), i.e., \( \mathcal{C} \subset \mathcal{Y}^\mathcal{X} \). 
+These are the relationships we wish to approximate (or ``learn"), by some (simpler or at least parameterized) candidate functions.
+Let us denote this set of \textbf{candidates} by \( \mathcal{H} \subset \mathcal{Y}^\mathcal{X} \).
+In learning theory, this is often called a \textbf{hypothesis space}.
+The problem of approximation concerns how well functions in \( \mathcal{H} \) can resolve functions in \( \mathcal{C} \).
+This is typically formulated in terms of a bound on the (maximal) error between the approximation and the target mapping.
+
+We will discuss what the space is of target dynamical systems that we can approximate.
+Furthermore, these can be approximated in a particular way, i.e. with a specific difference between the approximant and the target system (the metric).
+This difference is measured as the expectation of the uniform norm difference between the flows. 
+We can make the probability of finding a trajectory of the approximation to be off by a certain arbitrary threshold arbitrarily small. 
 
 
-
-\subsection{Targets}
+\subsubsection{Targets}
 Autonomous
 Structurally stable+Fixed points = hyperbolic fixed points
 The dynamics is globally attractive / There exist a compact set that with the fixed points inside that is forward invariant 
@@ -165,14 +247,18 @@ mention: we can guarantee finite time approximation
 prove: we can never do infinite time approximation 
 
 
-\subsection{Hypothesis class}
+This is a Bernstein-type result (in the classification of approximation result types made in \citep{jiang2023brief}).
+
+
+\subsubsection{Hypothesis class}
 The hypothesis class $\mathcal{G}$ is composed of
 \begin{equation}
-\dot x = g(x) = A\sigma(Bx+\theta)
+\dot x = g(x) 
 \end{equation}
+where $g$ is an FNN with the universal approximation property.
 
 
-\subsection{Metric}
+\subsubsection{Metric}
 
 Uniform norm over time (given the same initial starting point)
 \begin{equation}
@@ -184,32 +270,43 @@ We consider a compact $X$ on which we measure the difference between the target 
 
 Expectation of the error over all initial points
 \begin{equation}
-\|\varphi-\hat \varphi\| = \frac{1}{\vol X}\mathbb{E}[ \int_{x_0\in X}   \mathbb{1}[\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty>\epsilon]
+%\|\varphi-\hat \varphi\|_\epsilon \coloneqq \frac{1}{\vol X}\mathbb{E}\left[ \int_{x_0\in X}   \mathds{1}[\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty>\epsilon]\right],
+\|\varphi-\hat \varphi\|_\epsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0)-\hat \varphi(\cdot,x_0)\|_\infty>\epsilon\right),
 \end{equation}
+where $\mathds{1}[\cdot]$ is the indicator function. 
+This is similar to the metric in \citep{hammer2000approximation}.
 
 
+%why we cannot stricten the metric
+For a multistable system it is not possible to find a universal approximation result if we consider a more strict notion of difference between the target and approximant.
+For example, if we take the uniform norm of the uniform norm, it can be shown that there is always a system with a separatrix that can not be exactly matched which would lead to an error that is the distance between the two $\omega$-limit sets.
+
+\subsubsection{Guarantee in $N\rightarrow\infty$ or at finite $N$}
+It could be that existing theorems could be interpreted that in the limit $N\rightarrow\infty$ the approximation holds. %e.g.\citep{podlaski2024approximating}
+ie $\lim_{N\rightarrow\infty} error = 0$
+Here we do it for finite $N$.
+ie for each $\epsilon>0$ $\exists N$ such that $error(N) < \epsilon$
+(implies the above limit)
 
 
 \subsection{Theorem}
 \begin{theorem}
-Let $D$ be an open subset of $\mathbb{R}^n$, $F : D \to \mathbb{R}^m$ be a $C^1$-mapping, and $I_\epsilon$ be a compact subset of $D$.
-Suppose that there is a subset $K \subset I_\epsilon$ such that any solution $x(t)$ with initial value $x(0) \in K$ of an ordinary differential equation
+Let $D$ be an open subset of $\mathbb{R}^n$, $f\colon D \to \mathbb{R}^m$ be a $C^1$-mapping, and $I$ be a compact subset of $D$ such that any solution $x(t)$ with initial value $x(0) \in I$ of an ordinary differential equation
 \begin{equation}\label{eq:5}
-    \dot{x} = F(x), \quad x(0) \in K
+    \dot{x} = f(x), \quad x(0) \in K
 \end{equation}
-is defined on $I = [0, T]$ $(0 < T < \infty)$ and $x(t)$ is included in $I_\epsilon$ for any $t \in I$.
+is defined for $t\in\reals_{+}$ and $x(t)$ is included in $I$.
+This defines a flow $\varphi(\cdot, \cdot)$.
 
-with flow $\varphi_t$ 
 
-
- Then, for an arbitrary $\epsilon > 0$, there exist an MLP recurrent neural network 
+ Then, for an arbitrary $\epsilon, \delta > 0$, there exist an MLP recurrent neural network 
  \begin{equation}
 \dot x = \hat f(x) = \sigma(A\sigma(Bx+b)+a)
 \end{equation}
 %such that for a solution $\hat \varphi(t,x_0)$ satisfying Eq~\ref{eq:5} with initial state $x_0$ of the network
 such that its flow $\hat \varphi$ satisfies
 \begin{equation}
-\|\varphi-\hat \varphi\| = \int_{x_0\in X}\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty<\epsilon.
+\|\varphi-\hat \varphi\|_\epsilon < \delta.
 \end{equation}
 \end{theorem}
 
@@ -224,47 +321,29 @@ Structural stability implies that there exists a $\delta_2>0$ such that for all 
 So we can choose $\delta = \min\{\delta_1,\delta_2\}$ such that the flow of $\hat f\in\mathcal{G}$ is topologically equivalent to that of $f$.
 
 
-
-We can distinguish two types of errors:
-$x_0\in BOA(A_i^f,A_i^g)$ flow deviates along the trajectories
-We can use \citep{vanhandel2007filtering} to bound this
-
-
-\begin{proposition}[Proposition 3.1.3. in \citep{vanhandel2007filtering}]
-Define 
-\[
-\frac{d x_t}{d t} = f(t; x_t), \quad x_t \in \mathbb{R}^n.
-\]
-We denote by $\varphi_{s,t}(x)$ the solution $x_t$ of this equation when it is started at the initial condition $x_s = x$ ($s \leq t$). We will suppose that $f$ is sufficiently regular so that the flow $\varphi_{s,t}(x)$ exists, is unique, and is a diffeomorphism for all $0 \leq s \leq t < \infty$.
-
-Now consider another differential equation 
-\[
-\frac{d \tilde{x}_t}{d t} = \tilde{f}(t; \tilde{x}_t), \quad \tilde{x}_t \in \mathbb{R}^n,
-\]
-where again we assume that $\tilde{f}$ is sufficiently regular so that this equation generates a nice flow $\tilde{\varphi}_{s,t}(x)$ as above.
-
-
-The following error bound holds:
-\[
-\|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - f(s; \tilde{\varphi}_{0,s}(x))\| \, ds.
-\]
-\end{proposition}
-
-
-
 Note that the above error bound depends on two separate quantities: the local error 
 $\| f(s; \tilde{\varphi}_0, s(x)) - f(s; \tilde{\varphi}_0, s(x)) \|$ 
-(compare with the quantity $\epsilon(y_n; \varphi p_n)$ in section 0.1.5) and the term 
+ and the term 
 $\| D\varphi_{s,t}(\tilde{\varphi}_0, s(x)) \|$, 
 which bounds the sensitivity of the flow $\varphi_{s,t}(x)$ to an infinitesimal perturbation of its initial condition.
 
 
+We can bound these two types of errors:
+\paragraph{errors inside a BOA}
+$x_0\in BOA(A_i^f,A_i^g)$ flow deviates along the trajectories
+We can use \citep{vanhandel2007filtering} to bound this:
+Prop.~\ref{prop:313} from \citep{vanhandel2007filtering}
 
+
+
+
+
+\paragraph{errors on the boundary of a BOA}
 $x_0\in BOA(A_i^f,A_j^g)$ for $i\neq j$
 flow error because trajectories go to different attractors
 We can bound this by reducing the mismatch between the separatrices (proportional to the distance between the attractors).
 
-(Conj.) For each pair $i\neq j$ the connected component of $\sep(A_i,A_j)$ is a normally hyperbolic backward invariant manifold.
+(Conj.) For each pair $i\neq j$ the connected component of $\sep(A_i,A_j)$ is a normally hyperbolic invariant manifold (repellant).
 
 - For ReLU NNs all invariant manifolds are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.
 
@@ -279,33 +358,45 @@ Now we need to sum all the different errors together.
 
 
 
+
+
 \subsection{Approximating a limit cycle}
 
+We have a difference in period $T-\hat T = \delta$
+with $T\coloneqq\frac{1}{\int_{LC}f(x)}$ and $\hat T\coloneqq\frac{1}{\int_{\hat{LC}}\hat f(x)}$.
 
-We can use the fact that the tubular neighbourhood around the LC is an inflowing normally hyperbolic invariant manifold.
+
+We will apply a perturbation $\hat{\hat{f}}$ that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough), 
+the resulting perturbation is $\tilde{f}=\hat{f}+\hat{\hat{f}}$.
+
+We can use the fact that the tubular neighborhood around the limit cycle (LC) is an (inflowing) normally hyperbolic invariant manifold.
 This implies that there is a 3 layer FNN that approximates the vector field x a bump function around the LC (similar idea as in paper but this would be an actual possible implementation).
 Then we know that the this NHIM will persist.
-We also know that there is a maximal perturbation size ($\epsilon_{LC}$) for which the LC persists.
-So we have to guarantee that the LC approximation is already close enough so that this perturbation does not destroy the LC.
-We can now rescale the perturbation so that the period of approximation LC matches the target's. This is the case if 
-\[\frac{\ell}{\int_{LC}f(x)} =  \frac{\hat \ell}{\int_{LC}\hat f(x)}\] for the length of the LC $\ell$ and the integrated vector field along the LC $\int_{LC}f(x)$.
+We also know that there is a maximal perturbation size ($\epsilon_{LC}$) for which the limit cycle persists.
+So we have to guarantee that the LC approximation is already close enough so that this perturbation does not destroy the limit cycle.
+We can now rescale the perturbation so that the period of approximation limit cycle matches the target's. This is the case if 
+\[\frac{1}{\int_{LC}f(x)} =  \frac{1}{\int_{\tilde{LC}}\tilde{f}(x)}\] for the length of the limit cycle $\ell$ and the integrated vector field along the limit cycle $\int_{LC}f(x)$.
 We just increase or decrease  the above perturbation by multiplying with a scalar so that this equality holds.
-The only thing we now need to worry about is how the length of the LC changes as a result of this perturbation and whether we can indeed get the equality 
+The only thing we now need to worry about is how the length of the limit cycle changes as a result of this perturbation and whether we can indeed get the equality.
 
-Fenichel's PMT guarantees that the perturbed LC lies within $\mathcal{O}(\epsilon)$ the original LC approximation.
-The integral will be growing as $\epsilon * \hat \ell(\epsilon)$
-Is it true that $\hat \ell(\epsilon) = \hat \ell + g(\epsilon)$ where $|g(\epsilon)|<|\epsilon|$?
-
-Then we still need to worry about whether the fixed point happens at an epsilon that is small enough for the persistence of the other parts
-
+Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O}(\epsilon)$ the original limit cycle approximation.
 
 So if it gets longer because of the perturbation (i.e. $\hat \ell(\epsilon)$ is an increasing function) as long as $1/(\hat \ell+g(\epsilon))$ is not decreasing at the same rate there should exist a value $\epsilon$ for which the equality holds
+
+%the fixed point happens at an epsilon that is small enough for the persistence of the other parts: TODO
+
+
 
 Conj: we can keep g(epsilon) small so that the speed changes more quickly and we can adjust the period
 For this we might need an additional constraint on the flow normal to the approximate limit cycle
 Or we can perhaps achieve this by choosing the size of the tubular neighbourhood!
 
 
+
+
+
+\subsubsection{QPTA}
+\citep{Park2023a}
 
 
 \subsection{Approximating a chaotic orbit}
@@ -323,7 +414,9 @@ Symbolic dynamics
 Mapping onto the same discrete dynamical shift dynamical system?
 
 
+\subsection{Approximating a continuous attractors}
 
+See \citep{Sagodi2024a}
 
 
 \subsection{Input driven dynamics}
@@ -353,12 +446,13 @@ Better to just look at RNNs.
 
 
 \newpage
-\bibliography{../all_ref.bib}
+\bibliography{../all_ref.bib,../catniplab.bib}
 
 
 
 \newpage
-\section*{Appendix}
+\appendix 
+
 \section{Universal Approximation with Feedforward Neural Networks (FNNs)}
 
 The foundation of our approach lies in leveraging the \textit{universal approximation property} of feedforward neural networks (FNNs), a powerful result that makes neural networks exceptional for a broad array of tasks. This property allows FNNs to approximate complex functions with remarkable flexibility, providing the theoretical basis for their widespread success in machine learning.
@@ -431,12 +525,29 @@ f(x) = W^{(L)} h^{(L-1)} + b^{(L)}
 This architecture allows the MLP to progressively build complex representations, layer by layer, transforming raw input data into rich feature hierarchies.
 
 
-\section{Support for the proof}
-\subsection{Separatrices}
+For the approximations, we either need to let the width or depth of the MLP grow.
 
+\section{Support for the proof}
+
+\subsection{Basins of attraction}
 Denote the basin of attraction for an attractor $A$ as $BOA(A)$.
 
-\begin{definition}	
+\begin{proposition}
+\[\dim BOA(A_i) = \dim X\] for each attractor $A_i$.
+\end{proposition}
+
+\begin{proposition}
+\[\dim\cl BOA(A_i) \cap BOA(A_i) = \dim X - 1 \] for each attractor $A_i$.
+\end{proposition}
+
+\begin{proposition}
+Each connected component of $\bigcup_i\cl BOA(A_i) \cap BOA(A_i) $ is a connected, compact normally hyperbolic invariant manifold. %repelling/outflowing?
+\end{proposition}
+
+
+\subsection{Separatrices}
+
+\begin{definition}[Separatrix]\label{def:separatrix}
 Define the separatrix between the basins of attraction of attractors $A_i$ and $A_j$ as 
 \begin{equation}
 \sep(A_i,A_j) = \cl(BOA(A_i)\cap \cl(BOA(A_j)).
@@ -444,5 +555,81 @@ Define the separatrix between the basins of attraction of attractors $A_i$ and $
 \end{definition}
 
 
+
+
+\subsection{In basin bound}
+\begin{proposition}[Proposition 3.1.3. in \citep{vanhandel2007filtering}]\label{prop:313}
+Define 
+\[
+\frac{d x(t)}{d t} = f(t; x_t), \quad x(t) \in \mathbb{R}^n.
+\]
+We denote by $\varphi_{s,t}(x)$ the solution $x_t$ of this equation when it is started at the initial condition $x(s) = x$ ($s \leq t$). We will suppose that $f$ is sufficiently regular so that the flow $\varphi_{s,t}(x)$ exists, is unique, and is a diffeomorphism for all $0 \leq s \leq t < \infty$.
+
+Now consider another differential equation 
+\[
+\frac{d \tilde{x}_t}{d t} = \tilde{f}(t; \tilde{x}_t), \quad \tilde{x}_t \in \mathbb{R}^n,
+\]
+where again we assume that $\tilde{f}$ is sufficiently regular so that this equation generates a unique flow $\tilde{\varphi}_{s,t}(x)$ as above.
+
+
+The following error bound holds:
+\[
+\|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - f(s; \tilde{\varphi}_{0,s}(x))\| \, ds.
+\]
+\end{proposition}
+
+
+
+\subsection{Perturbing limit cycles}
+If the limit cycle is hyperbolic, the Hausdorff distance between the original and perturbed limit cycles tends to scale linearly with \(\epsilon\), the size of the perturbation. That is,
+
+\[
+d_H(\gamma_0, \gamma_\epsilon) = O(\epsilon),
+\]
+
+where \(d_H\) denotes the Hausdorff distance. The linear dependence arises because small changes in the vector field result in small changes in the trajectories of the system, which leads to a nearby limit cycle.
+
+
+\subsubsection{Applying Melnikov’s Method to Limit Cycles}
+
+To understand the period change due to a perturbation of a limit cycle, let’s consider the following:
+
+Suppose we have an unperturbed system
+\[
+\dot{x} = f(x)
+\]
+with a limit cycle \(\gamma_0\) of period \(T_0\).
+
+Now we apply a small perturbation to the system:
+\[
+\dot{x} = f(x) + \epsilon g(x),
+\]
+where \(g(x)\) represents the perturbation, and \(\epsilon\) is a small parameter.
+
+The Melnikov function \(M(t)\) measures the first-order effect of the perturbation on the limit cycle, and it is given by:
+\[
+M(t) = \int_0^{T_0} \langle \nabla H(x_0(t)), g(x_0(t)) \rangle \, dt,
+\]
+where:
+\begin{itemize}
+    \item \(x_0(t)\) is the trajectory along the limit cycle \(\gamma_0\),
+    \item \(H(x)\) is the Hamiltonian (or energy function) associated with the unperturbed system,
+    \item \(g(x)\) is the perturbation vector field,
+    \item \(\langle \cdot, \cdot \rangle\) denotes the dot product.
+\end{itemize}
+
+The Melnikov function tells us how the perturbation influences the distance between stable and unstable manifolds in the phase space. It is closely related to the splitting of separatrices, but in the context of limit cycles, it helps predict changes in the period and persistence of the limit cycle.
+
+For small perturbations:
+
+\(M(\gamma_0)\) represents the sensitivity of the period or structure of the limit cycle to the perturbation.
+
+If \(M(\gamma_0) \neq 0\), the limit cycle may shift slightly, but it will persist, and the change in the period can be approximated as:
+\[
+\Delta T \approx \epsilon M(\gamma_0),
+\]
+meaning that the period change is proportional to \(\epsilon\), the size of the perturbation, with \(M(\gamma_0)\) determining the proportionality constant.
+
+If \(M(\gamma_0) = 0\), the system is at a critical point where a bifurcation may occur, and the limit cycle may undergo a qualitative change (e.g., it could disappear or bifurcate).
 
 \end{document}
