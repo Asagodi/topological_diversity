@@ -21,6 +21,7 @@
 \newcommand{\sep}{\operatorname{sep}}
 \newcommand{\cl}{\operatorname{cl}}
 \newcommand{\vol}{\operatorname{vol}}
+\newcommand{\boa}{\operatorname{BoA}}
 
 \title{Approximation of multi-stable dynamical systems on infinite horizons}
 \author{\'Abel S\'agodi and Il Memming Park}
@@ -182,7 +183,7 @@ Here, \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( 
 Neural ordinary differential equations (NODEs) are being increasingly adopted in computational and systems neuroscience, showing improved performance compared to current approaches \citep{kim2021inferring,geenjaar2023learning,sedler2023expressive,elgazzar2024universal}.
 
 %\paragraph{Latent}
-Latent ODE-RNN\citep{rubanova2019latent}
+Latent ODE-RNN  \citep{rubanova2019latent}
 
 Latent ODE-LSTM \citep{coelho2024enhancing}
 
@@ -329,10 +330,12 @@ which bounds the sensitivity of the flow $\varphi_{s,t}(x)$ to an infinitesimal 
 
 
 We can bound these two types of errors:
-\paragraph{errors inside a BOA}
-$x_0\in BOA(A_i^f,A_i^g)$ flow deviates along the trajectories
-We can use \citep{vanhandel2007filtering} to bound this:
-Prop.~\ref{prop:313} from \citep{vanhandel2007filtering}
+\paragraph{Errors inside a the intersection of the Basins of Attraction (BoA) of the target systems and the approximation}
+So if we have $x_0\in BOA(A_i^f) \cap BOA(A_i^g)$, the flow deviates along the trajectories up to 
+\[
+\|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - f(s; \tilde{\varphi}_{0,s}(x))\| \, ds.
+\]
+Prop.~\ref{prop:313} from \citep{vanhandel2007filtering}, see Supp.Sec.~\ref{sec:313}.
 
 
 
@@ -361,35 +364,36 @@ Now we need to sum all the different errors together.
 
 
 \subsection{Approximating a limit cycle}
+We will get convergence onto a limit cycle that is close in Hausdorff distance to the target limit cycle. %$\omega$-limit set?
+But, for an approximation of the vector field we will in general have a small discrepancy in the periods between the two limit cycles that will lead to a uniform norm difference between the flows that is the maximal distance between all pairs of points on the two limit cycles.
+This would make our method fail!
 
+However, we can correct this discrepancy.
 We have a difference in period $T-\hat T = \delta$
-with $T\coloneqq\frac{1}{\int_{LC}f(x)}$ and $\hat T\coloneqq\frac{1}{\int_{\hat{LC}}\hat f(x)}$.
+with \[T\coloneqq\frac{1}{\int_{LC}\|f(x)\|dx} \text{ and } \hat T\coloneqq\frac{1}{\int_{\hat{LC}}\|\hat f(x)\|dx}.\]
+%
+We will apply a perturbation $\hat{\hat{f}}$ to our approximations that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
+so that 
+\[\int_{\tilde{LC}}\|\tilde{f}(x)\| dx = \frac{1}{T}	\] for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
 
-
-We will apply a perturbation $\hat{\hat{f}}$ that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough), 
-the resulting perturbation is $\tilde{f}=\hat{f}+\hat{\hat{f}}$.
+the resulting total approximation is $\tilde{f}=\hat{f}+\hat{\hat{f}}$.
 
 We can use the fact that the tubular neighborhood around the limit cycle (LC) is an (inflowing) normally hyperbolic invariant manifold.
 This implies that there is a 3 layer FNN that approximates the vector field x a bump function around the LC (similar idea as in paper but this would be an actual possible implementation).
 Then we know that the this NHIM will persist.
 We also know that there is a maximal perturbation size ($\epsilon_{LC}$) for which the limit cycle persists.
-So we have to guarantee that the LC approximation is already close enough so that this perturbation does not destroy the limit cycle.
-We can now rescale the perturbation so that the period of approximation limit cycle matches the target's. This is the case if 
-\[\frac{1}{\int_{LC}f(x)} =  \frac{1}{\int_{\tilde{LC}}\tilde{f}(x)}\] for the length of the limit cycle $\ell$ and the integrated vector field along the limit cycle $\int_{LC}f(x)$.
+So we have to guarantee that the limit cycle approximation is already close enough so that this perturbation does not destroy the limit cycle.
+We can now rescale the perturbation so that the period of approximation limit cycle matches the target's. 
 We just increase or decrease  the above perturbation by multiplying with a scalar so that this equality holds.
 The only thing we now need to worry about is how the length of the limit cycle changes as a result of this perturbation and whether we can indeed get the equality.
 
 Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O}(\epsilon)$ the original limit cycle approximation.
 
-So if it gets longer because of the perturbation (i.e. $\hat \ell(\epsilon)$ is an increasing function) as long as $1/(\hat \ell+g(\epsilon))$ is not decreasing at the same rate there should exist a value $\epsilon$ for which the equality holds
+%So if it gets longer because of the perturbation (i.e. $\hat \ell(\epsilon)$ is an increasing function) as long as $1/(\hat \ell+g(\epsilon))$ is not decreasing at the same rate there should exist a value $\epsilon$ for which the equality holds
 
 %the fixed point happens at an epsilon that is small enough for the persistence of the other parts: TODO
 
-
-
-Conj: we can keep g(epsilon) small so that the speed changes more quickly and we can adjust the period
-For this we might need an additional constraint on the flow normal to the approximate limit cycle
-Or we can perhaps achieve this by choosing the size of the tubular neighbourhood!
+%choosing the size of the tubular neighbourhood
 
 
 
@@ -416,6 +420,10 @@ Mapping onto the same discrete dynamical shift dynamical system?
 
 \subsection{Approximating a continuous attractors}
 
+We can tile the continuous attractor with a uniform grid of stable fixed points.
+Each of the neighbouring stable fixed points can be at most $\epsilon$ apart.
+This is structurally stable dynamics, so we can approximate its vector field with $\epsilon$ accuracy and we are guaranteed to have a topologically equivalent system to it with the fixed points being moved at most $\mathcal{O}(\epsilon)$.
+
 See \citep{Sagodi2024a}
 
 
@@ -423,6 +431,12 @@ See \citep{Sagodi2024a}
 
 This can be only done by also calculating in the probability of making an error on a given input.
 So the approximation probability guarantee will need to be formulated in terms of the probability of making an error bigger than a threshold calculated over the function of input sequences and initial points.
+
+
+
+For non-autonomous we need another Bernstein-type result:
+we can only approximate input driven dynamics (in our metric) if a forward attractor exists for each input sequence 
+This allows us to formulate approximation in terms of attractors and separatrices (but now in input space)
 
 
 \section{Implications for understanding neural computation}
@@ -529,6 +543,9 @@ For the approximations, we either need to let the width or depth of the MLP grow
 
 \section{Support for the proof}
 
+\subsection{Fenichel's Persistent Manifold Theorem}
+
+
 \subsection{Basins of attraction}
 Denote the basin of attraction for an attractor $A$ as $BOA(A)$.
 
@@ -557,7 +574,7 @@ Define the separatrix between the basins of attraction of attractors $A_i$ and $
 
 
 
-\subsection{In basin bound}
+\subsection{In basin bound}\label{sec:313}
 \begin{proposition}[Proposition 3.1.3. in \citep{vanhandel2007filtering}]\label{prop:313}
 Define 
 \[
@@ -631,5 +648,37 @@ If \(M(\gamma_0) \neq 0\), the limit cycle may shift slightly, but it will persi
 meaning that the period change is proportional to \(\epsilon\), the size of the perturbation, with \(M(\gamma_0)\) determining the proportionality constant.
 
 If \(M(\gamma_0) = 0\), the system is at a critical point where a bifurcation may occur, and the limit cycle may undergo a qualitative change (e.g., it could disappear or bifurcate).
+
+
+
+\subsubsection{Homeomorphism and homotopy}
+
+A homeomorphism \( f \) between the two limit cycles is a continuous, bijective map that transforms points on \( \gamma_1(t) \) to points on \( \gamma_2(s) \) while preserving the topological structure. Mathematically, this is expressed as:
+\[
+f: \gamma_1(t) \rightarrow \gamma_2(s), \quad \text{where} \quad s = h(t)
+\]
+Here, \( h(t) \) is a continuous, bijective, and periodic function that maps the time variable \( t \) in System 1 to the time variable \( s \) in System 2, i.e.,
+\[
+h: [0, T_1] \rightarrow [0, T_2]
+\]
+with the condition that \( h(0) = 0 \) and \( h(T_1) = T_2 \).
+
+The map \( f \) in terms of the coordinates can be written as:
+\[
+f(x_1(t), y_1(t)) = (x_2(h(t)), y_2(h(t)))
+\]
+
+
+
+The homotopy \( H \) between two limit cycles \( \gamma_1(t) \) and \( \gamma_2(t) \) is expressed as:
+\[
+H: [0,1] \times [0, T] \rightarrow \mathbb{R}^n
+\]
+where \( H(\tau, t) \) gives the position of a point on the limit cycle at time \( t \) and for a given \( \tau \). The transformation satisfies:
+\[
+H(0, t) = \gamma_1(t), \quad H(1, t) = \gamma_2(t)
+\]
+This means that at \( \tau = 0 \), the homotopy corresponds to the first limit cycle \( \gamma_1 \), and at \( \tau = 1 \), the homotopy corresponds to the second limit cycle \( \gamma_2 \). For intermediate values of \( \tau \), \( H(\tau, t) \) represents a continuous deformation between \( \gamma_1 \) and \( \gamma_2 \).
+
 
 \end{document}
