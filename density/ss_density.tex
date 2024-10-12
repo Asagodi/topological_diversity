@@ -55,9 +55,33 @@ This framework allows us to rigorously study the approximation of multi-stable s
 
 
 \section{Approximation of dynamical systems}
-For an overview of the literature, see [litrev]
+%sota 
 
+Accurately approximating dynamical systems is essential for understanding and predicting complex behaviors across a range of applications, from robotics to climate modeling.
+Recent advances in machine learning have enabled data-driven approaches to approximating these systems, providing new ways to model complex dynamics over extended periods.
+Here, we review key approaches in the literature and highlight emerging techniques that address these challenges, before we introduce our method that extends to multi-stable and complex systems over infinite horizons.
+
+For an overview of the literature, see [litrev]
 See also \citep{li2022approximation} and \citep{jiang2023brief}.
+
+
+
+
+%vector fields (which is just FNN setting)
+\subsection{Approximating vector fields}
+Neural networks, particularly FNNs, can approximate smooth functions effectively, making them suitable for approximating vector fields.
+
+\subsubsection{Spiking neural network}
+%only approximates vector field 
+In limit $N\rightarrow\infty$ spiking network (ODE with jumps) approximates a vector field (for a continuous ODE) \citep{podlaski2024approximating}. 
+
+%so of type diffeomorphism?
+
+
+\subsection{Diffeomorphisms}
+%diff/flow
+Invertible neural networks have a universal approximation property for a  large class of diffeomorphisms   \citep{ishikawa2023universal}.
+
 
 
 
@@ -69,24 +93,33 @@ The universal approximation theorem for RNNs, which extends the classical result
 % \citep{funahashi1993approximation}
 This property has been formally proven for systems operating over finite time intervals. Specifically, \citet{funahashi1993approximation} showed that RNNs can approximate the time-dependent behaviors of dynamical systems, making them suitable for tasks like time-series prediction, control systems, and the modeling of sequential data.
 
-
+Since the results concern a compact time interval, to approximate dynamics it is enough to approximate $f$, i.e., these approaches convert RNN approximation to FNN approximation.
+This is in general not true for the unbounded case, as the approximation error can be magnified by the dynamics.
+%merge
 Existing results have established that recurrent nets are capable of generating simulated trajectories that approximate true system trajectories within arbitrary error tolerance over a finite time interval.
 Most of these results rely on Gr\:onwall’s inequality to control the difference between the trajectories of the original system and its approximation, which incurs an exponential degradation of approximation accuracy over time
 \citep{sontag1992neural, sontag1998learning, funahashi1993approximation,chow2000modeling, li2005approximation}.
 
 \paragraph{Discrete sequence-to-sequence mapping}
-
 Uniform approximation of a state space trajectory (with time-varying inputs) produced by either a discrete-time nonlinear system or a continuous function on a closed discrete-time interval \citep{jin1995universal}.
 
 The first $p$ output neural units of a dynamic $n$-dimensional neural model approximate at a desired proximity a $p$-dimensional dynamic system with $n > p$ \citep{kambhampati2000approximation}.
 
-Any function can be approximated arbitrarily well in probability with a recurrent neural network\citep{hammer2000approximation}. %
+Any function can be approximated arbitrarily well in probability with a recurrent neural network\citep{hammer2000approximation}. 
 % where ... can be computed by one neuron whose activation function $\sigma$ possesses a local linearity.\citep{hammer2000approximation}
 
 
-\paragraph{Neural oscillators}
-\citep{lanthaler2023neuraloscillators}
+RNNs with continuous sigmoidal activation function have the UAP for finite number of time steps \citep{schafer2007}.
 
+Discrete-time RNNs are universal approximators of discrete-time systems \citep{aguiar2023universal}.
+
+%\paragraph{Neural oscillators}
+\paragraph{Continuous time}
+Neural oscillators have the universal approximation property on compact time intervals \citep{lanthaler2023neuraloscillators}.
+
+
+
+%FPS%fading
 \subsection{Approximation of fading memory systems}
 Fading memory \citep{boyd1985fading}
 
@@ -135,21 +168,20 @@ Uniform asymptotic incremental stability was introduced in \citep{pavlov2006unif
 When Recurrent Models Don't Need to Be Recurrent \citep{miller2018stable}
 
 
+
+
+
+
 \subsection{Topological equivalency}
 Topological equivalency \citep{hart2020embedding}
 This is trivial for structurally stable systems!
 
 
-\subsection{Diffeomorphisms}
-%diff/flow
-Invertible neural networks have a universal approximation property for a  large class of diffeomorphisms   \citep{ishikawa2023universal}.
 
 
 
-\subsection{Spiking neural network}
-In limit $N\rightarrow\infty$ spiking network (ODE with jumps) approximates a continuous ODE \citep{podlaski2024approximating}. 
-%only approximates vector field 
-%so of type diffeomorphism?
+
+
 
 \subsection{Flows}
 RNNs are universal approximators of flow  functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023}.
@@ -329,7 +361,9 @@ $\| D\varphi_{s,t}(\tilde{\varphi}_0, s(x)) \|$,
 which bounds the sensitivity of the flow $\varphi_{s,t}(x)$ to an infinitesimal perturbation of its initial condition.
 
 
-We can bound these two types of errors:
+
+%%%
+We can bound these two types of errors:%error^I and error^II
 \paragraph{Errors inside a the intersection of the Basins of Attraction (BoA) of the target systems and the approximation}
 So if we have $x_0\in BOA(A_i^f) \cap BOA(A_i^g)$, the flow deviates along the trajectories up to 
 \[
@@ -341,19 +375,36 @@ Prop.~\ref{prop:313} from \citep{vanhandel2007filtering}, see Supp.Sec.~\ref{sec
 
 
 
-\paragraph{errors on the boundary of a BOA}
-$x_0\in BOA(A_i^f,A_j^g)$ for $i\neq j$
-flow error because trajectories go to different attractors
-We can bound this by reducing the mismatch between the separatrices (proportional to the distance between the attractors).
+\paragraph{Errors at the boundary of a BoA}%type II
+The other type of error arises because trajectories go to different attractors, i.e., $x_0\in BOA(A_i^f,A_j^g)$ for $i\neq j$.
+For such initial points the error along the flow cannot be bounded.
+Eliminating this type of error would constitute perfectly matching the separatrices which can not be guaranteed.
+We can reduce the volume in of initial points for which this type of error arises, by reducing the mismatch between the separatrices (proportional to the distance between the attractors).
 
-(Conj.) For each pair $i\neq j$ the connected component of $\sep(A_i,A_j)$ is a normally hyperbolic invariant manifold (repellant).
+The volume for which type II error arises is 
+\[\sum\boa(A_i^f)\cap\boa(A_i^g).\]
 
-- For ReLU NNs all invariant manifolds are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.
+The boundary of the BoA of attractor $A_i^f$ is %BoAs are open sets
+\[\partial\boa(A_i) = \cl\boa(A_i^f)\cap A_i^f.\]
 
-Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has an  normally hyperbolic backward invariant manifold that is diffeomorphic to and at most at $\mathcal{\delta_{ij}}$ Hausdorff distance from $\sep(A_i,A_j)$.
+Then for some value $\epsilon_{\operatorname{sep}}$ we have that 
+\[\bigcup_i \boa(A_i^f)\cap\boa(A_i^g) \subset \bigcup_i B_{\epsilon_{\operatorname{sep}}}(\partial\boa(A_i^f)). \]
+
+The right hand side's volume is at most $\mathbb{O}(\delta)$ with $\leq\epsilon_{\operatorname{sep}}$ the Hausdorff distance between the total separatrix submanifolds.
+This $\delta$ can be made arbitrarily low because of the FNN universal approximation results.
+
+%
+For each pair $i\neq j$ the connected component of $\sep(A_i,A_j)$ is a normally hyperbolic invariant manifold (repellent). 
+%(this follows from structural stability)
+%for the extension of continuous attractors we need to assume that all maximally invariant sets are normally hyperbolic
+For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.
+%
+Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has an normally hyperbolic invariant manifold that is diffeomorphic to and at most at $\mathcal{\delta_{ij}}$ Hausdorff distance from $\sep(A_i,A_j)$.
 
 
-
+%simplifying?
+%we can consider $\cl\boa(A_i) to be an invariant manifold with boundary
+%is it normally hyperbolic?
 
 
 Now we need to sum all the different errors together.
@@ -397,9 +448,8 @@ Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O
 
 
 
-
-
-\subsubsection{QPTA}
+%%%QPTA
+\subsubsection{QPTA}%more generally: doing this for multiple limit cycles
 \citep{Park2023a}
 
 
@@ -418,6 +468,8 @@ Symbolic dynamics
 Mapping onto the same discrete dynamical shift dynamical system?
 
 
+
+%%%CA
 \subsection{Approximating a continuous attractors}
 
 We can tile the continuous attractor with a uniform grid of stable fixed points.
