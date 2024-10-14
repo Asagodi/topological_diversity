@@ -9,6 +9,10 @@
 \bibliographystyle{abbrvnat}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage[pdftex]{graphicx}  %remove demo option in your document
+\usepackage{sidecap}
+
+\graphicspath{{figures}}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
@@ -390,7 +394,7 @@ The boundary of the BoA of attractor $A_i^f$ is %BoAs are open sets
 Then for some value $\epsilon_{\operatorname{sep}}$ we have that 
 \[\bigcup_i \boa(A_i^f)\cap\boa(A_i^g) \subset \bigcup_i B_{\epsilon_{\operatorname{sep}}}(\partial\boa(A_i^f)). \]
 
-The right hand side's volume is at most $\mathbb{O}(\delta)$ with $\leq\epsilon_{\operatorname{sep}}$ the Hausdorff distance between the total separatrix submanifolds.
+The right hand side's volume is at most $\mathcal{O}(\delta)$ with $\leq\epsilon_{\operatorname{sep}}$ the Hausdorff distance between the total separatrix submanifolds.
 This $\delta$ can be made arbitrarily low because of the FNN universal approximation results.
 
 %
@@ -410,6 +414,17 @@ Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij
 Now we need to sum all the different errors together.
 \end{proof}
 
+
+
+\setlength\belowcaptionskip{-5ex}
+\begin{SCfigure}[10][bthp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{separatrices}
+  \caption{
+	A mismatching pair of separatrices between attractors $A_i$ and $A_j$.
+	
+  }\label{fig:separatrices}
+\end{SCfigure}
 
 
 
@@ -461,7 +476,9 @@ Every small discrepancy in the vector field will lead to
 
 What we can do is minimize the Hausdorff distance between the chaotic invariant manifolds and match the Lyapunov exponents of the target system
 The first because of structural stability
-The second because of ??
+%The second because of ??
+
+Alternatively, we can guarantee that 
 
 
 Symbolic dynamics
