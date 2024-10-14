@@ -442,7 +442,8 @@ We will apply a perturbation $\hat{\hat{f}}$ to our approximations that is small
 so that 
 \[\int_{\tilde{LC}}\|\tilde{f}(x)\| dx = \frac{1}{T}	\] for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
 
-the resulting total approximation is $\tilde{f}=\hat{f}+\hat{\hat{f}}$.
+the resulting total approximation is \[\tilde{f}=\hat{f}+\hat{\hat{f}} = \hat{f} + \epsilon_T(\hat{f} + \hat{\epsilon}\]
+
 
 We can use the fact that the tubular neighborhood around the limit cycle (LC) is an (inflowing) normally hyperbolic invariant manifold.
 This implies that there is a 3 layer FNN that approximates the vector field x a bump function around the LC (similar idea as in paper but this would be an actual possible implementation).
@@ -461,6 +462,10 @@ Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O
 
 %choosing the size of the tubular neighbourhood
 
+
+
+\paragraph{Multiple limit cycles}
+Just make sure that 
 
 
 %%%QPTA
@@ -520,6 +525,12 @@ Use of NODEs \citep{kim2021inferring}
 
 \paragraph{Limit cycles}
 Approximable but approximation is not robust! (period will change under almost all perturbations)
+
+
+\paragraph{Link to MSE loss}
+In the limit that $\delta\rightarrow 0$ we have that 
+\[\operatorname{MSE}(\varphi, \hat{\varphi}) \coloneqq \int_{x_0\in X} \|\varphi_t(x_0) - \hat{\varphi_t(x_0)}\|_\infty \rightarrow 0.\]
+
 
 \paragraph{The price of universality}
 This construction is immensely inefficient
