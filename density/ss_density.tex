@@ -70,6 +70,10 @@ See also \citep{li2022approximation} and \citep{jiang2023brief}.
 
 
 
+\subsection{Universal approximation for mappings}
+
+See Sec.~\ref{sec:uniapproxffn}.
+
 
 %vector fields (which is just FNN setting)
 \subsection{Approximating vector fields}
@@ -86,22 +90,21 @@ In limit $N\rightarrow\infty$ spiking network (ODE with jumps) approximates a ve
 %diff/flow
 Invertible neural networks have a universal approximation property for a  large class of diffeomorphisms   \citep{ishikawa2023universal}.
 
-
+	
 
 
 \subsection{Approximation of dynamics on compact time intervals}
 %An RNN with a sufficient number of hidden units and appropriate non-linear activation functions (such as tanh or sigmoid) can approximate any dynamic system or time-dependent function to arbitrary precision, provided the system operates on compact time intervals.
-
 The universal approximation theorem for RNNs, which extends the classical result for feedforward neural networks, guarantees that RNNs can approximate the mapping from a sequence of inputs to outputs for any continuous-time process, including those governed by differential equations.
 
-% \citep{funahashi1993approximation}
+
 This property has been formally proven for systems operating over finite time intervals. Specifically, \citet{funahashi1993approximation} showed that RNNs can approximate the time-dependent behaviors of dynamical systems, making them suitable for tasks like time-series prediction, control systems, and the modeling of sequential data.
 
 Since the results concern a compact time interval, to approximate dynamics it is enough to approximate $f$, i.e., these approaches convert RNN approximation to FNN approximation.
 This is in general not true for the unbounded case, as the approximation error can be magnified by the dynamics.
 %merge
 Existing results have established that recurrent nets are capable of generating simulated trajectories that approximate true system trajectories within arbitrary error tolerance over a finite time interval.
-Most of these results rely on Gr\:onwall’s inequality to control the difference between the trajectories of the original system and its approximation, which incurs an exponential degradation of approximation accuracy over time
+Most of these results rely on Gr\"{o}nwall’s inequality to control the difference between the trajectories of the original system and its approximation, which incurs an exponential degradation of approximation accuracy over time
 \citep{sontag1992neural, sontag1998learning, funahashi1993approximation,chow2000modeling, li2005approximation}.
 
 \paragraph{Discrete sequence-to-sequence mapping}
@@ -246,6 +249,18 @@ Universal approximation of dynamical systems by semi-autonomous NODEs \citep{li2
 
 \section{Approximation of dynamical systems on infinite time intervals}
 
+TODO: mention what density results are
+
+\paragraph{Roadmap}
+First we describe the target (the systems we can approximate) and hypothesis classes (the systems that we approximate with) and the metric for the density result (way we measure how wrong our approximation is to our target system).
+Then, we prove our universal approximation property for this setting by step-wise constructing the target class:
+starting with autonomous systems with a finite number of hyperbolic fixed points,
+then systems with (additionally) a finite number of hyperbolic limit cycles
+and finally, covering approximation of chaotic orbits.
+We then extend these results to non-autonomous dynamical systems.
+
+
+
 \subsection{The problem of approximation} %{Problem statement}
 For behaving agents we can formalize their behavior as sequence-to-sequence or input-output mappings.
 We will call $\mathcal{X}$ the space of input sequences and $\mathcal{Y}$ the space of output sequences.
@@ -285,7 +300,7 @@ prove: we can never do infinite time approximation
 
 
 This is a Bernstein-type result (in the classification of approximation result types made in \citep{jiang2023brief}).
-
+%analogy with realization of transfer functions in state space models
 
 \subsubsection{Hypothesis class}
 The hypothesis class $\mathcal{G}$ is composed of
@@ -296,14 +311,14 @@ where $g$ is an FNN with the universal approximation property.
 
 
 \subsubsection{Metric}
-
 Uniform norm over time (given the same initial starting point)
 \begin{equation}
 \|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty = \sup_t|\varphi(t,x_0)-\hat \varphi(t,x_0)|
 \end{equation}
 
 We consider a compact $X$ on which we measure the difference between the target and our approximation.
-\footnote{FNN approximation universality is also on compact intervals.}
+\footnote{FNN approximation universality is also on compact intervals.
+The results can be extended to systems that diverge to infinite in a finite number of orbits (all orbits that diverge converge in uniform norm to one of these divergent orbits).}
 
 Expectation of the error over all initial points
 \begin{equation}
@@ -442,7 +457,8 @@ We will apply a perturbation $\hat{\hat{f}}$ to our approximations that is small
 so that 
 \[\int_{\tilde{LC}}\|\tilde{f}(x)\| dx = \frac{1}{T}	\] for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
 
-the resulting total approximation is \[\tilde{f}=\hat{f}+\hat{\hat{f}} = \hat{f} + \epsilon_T(\hat{f} + \hat{\epsilon}\]
+the resulting total approximation is \[\tilde{f}=%\hat{f}+\hat{\hat{f}} = 
+ \hat{f} + \epsilon_T(\hat{f} + \hat{\epsilon}\hat{\hat{f}})\]
 
 
 We can use the fact that the tubular neighborhood around the limit cycle (LC) is an (inflowing) normally hyperbolic invariant manifold.
@@ -465,7 +481,8 @@ Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O
 
 
 \paragraph{Multiple limit cycles}
-Just make sure that 
+We can perform the same procedure for a finite set of limit cycles.
+We have to make sure that all the $\hat{\epsilon}_i$ are step-wise small enough so that $\epsilon_{T_i}$ is small enough. 
 
 
 %%%QPTA
@@ -529,7 +546,17 @@ Approximable but approximation is not robust! (period will change under almost a
 
 \paragraph{Link to MSE loss}
 In the limit that $\delta\rightarrow 0$ we have that 
-\[\operatorname{MSE}(\varphi, \hat{\varphi}) \coloneqq \int_{x_0\in X} \|\varphi_t(x_0) - \hat{\varphi_t(x_0)}\|_\infty \rightarrow 0.\]
+\[\operatorname{MSE}(\varphi, \hat{\varphi}) \coloneqq \int_{x_0\in X} \|\varphi_t(x_0) - \hat{\varphi}_t(x_0)\|_\infty \rightarrow 0.\]
+
+
+\paragraph{}
+NODEs Simulate RNNs 
+- Each NODE is state space equivalent to an RNN that is split into a part for which the equivalence holds and a hidden part
+-Each RNN is state space equivalent to an RNN
+
+
+
+NNs as controllers \citep{sontag1992neural}
 
 
 \paragraph{The price of universality}
@@ -547,12 +574,15 @@ Better to just look at RNNs.
 \newpage
 \appendix 
 
-\section{Universal Approximation with Feedforward Neural Networks (FNNs)}
+\section{Universal Approximation with Feedforward Neural Networks (FNNs)}\label{sec:uniapproxffn}
 
-The foundation of our approach lies in leveraging the \textit{universal approximation property} of feedforward neural networks (FNNs), a powerful result that makes neural networks exceptional for a broad array of tasks. This property allows FNNs to approximate complex functions with remarkable flexibility, providing the theoretical basis for their widespread success in machine learning.
+The foundation of our approach lies in leveraging the \textit{universal approximation property} of feedforward neural networks (FNNs) \citep{poggio1990networks}, a powerful result that makes neural networks exceptional for a broad array of tasks. This property allows FNNs to approximate complex functions with remarkable flexibility, providing the theoretical basis for their widespread success in machine learning.
+For an overview see \citep{scarselli1998universal} and \citep{augustine2024survey}.
+
+
+
 
 \subsection{The Universal Approximation Theorem}
-
 The universal approximation theorem states that a \textit{feedforward neural network} with at least one hidden layer, using a non-linear activation function (such as the sigmoid or ReLU), and equipped with enough neurons, can approximate \textit{any continuous function} defined on a compact subset of \(\mathbb{R}^n\) to arbitrary precision.
 
 Formally, for any continuous function \(f(x)\) and any \(\epsilon > 0\), there exists an FNN such that:
@@ -643,6 +673,10 @@ Each connected component of $\bigcup_i\cl BOA(A_i) \cap BOA(A_i) $ is a connecte
 
 
 \subsection{Separatrices}
+The boundaries between basins of attraction are exactly the stable manifolds of dimension $n-1$ (e.g.originating from a saddle point with $n-1$ stable directions 
+or from a closed orbit with $n-2$ stable directions) \citep{gruemm1975stable}.
+These separatrices are invariant, so without  perturbation the system cannot cross them.
+When the system under some perturbations (S-type) crosses the separatrices, it moves into another basin and its long-range behavior changes drastically.
 
 \begin{definition}[Separatrix]\label{def:separatrix}
 Define the separatrix between the basins of attraction of attractors $A_i$ and $A_j$ as 
