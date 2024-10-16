@@ -78,11 +78,11 @@ See also \citep{li2022approximation} and \citep{jiang2023brief}.
 
 \begin{table}[h]
 \begin{tabular}{l|l|l|l|l}
-In &  Time interval & FMP & Finite size &  \\\hline
-\citep{cybenko1989approximation} & Yes & No & Yes &  \\\hline
-\citep{funahashi1993approximation} & Yes & No & Yes &  \\\hline
-\citep{hornik1989multilayer} & Yes & No & Yes & \\\hline
-\citep{bai2019deq} & No & Yes & No
+ &  Time interval & FMP & Finite size							 			 &  \\\hline
+\citet{cybenko1989approximation} & Finite & No 			& Yes 					 &  \\\hline
+\citet{funahashi1993approximation} & Finite & No			 & Yes				 	 &  \\\hline
+\citet{hornik1989multilayer} & Finite & No 				& Yes					 & \\\hline
+\citet{bai2019deq} & Infinite & Yes					 & No				 	 &
 \end{tabular}
 \end{table}
 
@@ -91,6 +91,8 @@ In &  Time interval & FMP & Finite size &  \\\hline
 %vector fields (which is just FNN setting)
 \subsection{Approximating vector fields}
 Neural networks, particularly FNNs, can approximate smooth functions effectively, making them suitable for approximating vector fields.
+
+\citep{doya1993universality}
 
 Vector field radial basis function \citep{smolik2018vfrbfapprox}
 
@@ -112,6 +114,10 @@ In limit $N\rightarrow\infty$ spiking network (ODE with jumps) approximates a ve
 Invertible neural networks have a universal approximation property for a  large class of diffeomorphisms   \citep{ishikawa2023universal}.
 
 	
+\subsection{Functionals}
+
+\citep{chen1995uap,chen1993uap}
+
 
 
 \subsection{Approximation of dynamics on compact time intervals}
@@ -259,12 +265,12 @@ Here, \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( 
 
 \paragraph{Applications}
 %NODEs in neuroscience%
-Neural ordinary differential equations (NODEs) are being increasingly adopted in computational and systems neuroscience, showing improved performance compared to current approaches \citep{kim2021inferring,geenjaar2023learning,sedler2023expressive,elgazzar2024universal}.
+Neural ordinary differential equations (NODEs) are being increasingly adopted in computational and systems neuroscience, showing improved performance compared to current approaches \citep{kim2021inferring,geenjaar2023learning,sedler2023expressive,elgazzar2024universal,rubanova2019latent,coelho2024enhancing}.
+
 
 %\paragraph{Latent}
-Latent ODE-RNN  \citep{rubanova2019latent}
-
-Latent ODE-LSTM \citep{coelho2024enhancing}
+%Latent ODE-RNN  \citep{rubanova2019latent}
+%Latent ODE-LSTM \citep{coelho2024enhancing}
 
 
 \paragraph{Theoretical Guarantees for Dynamical Systems}
@@ -272,7 +278,9 @@ Latent ODE-LSTM \citep{coelho2024enhancing}
  
  Any finite trajectory of an $n$-dimensional continuous dynamical system can be approximated by the internal state of the hidden units and $n$ output units of an Liquid time-constant (LTC) network \citep{hasani2018liquid}.
  
-control \citep{tabuada2020universal}
+%control 
+\citep{chen1992adaptive}
+Universal approximation of monotone analytic functions homotopic to the identity\citep{tabuada2020universal}
 
 \citep{zhang2020approximation}
 
@@ -430,7 +438,7 @@ We can bound these two types of errors:%error^I and error^II
 \paragraph{Errors inside a the intersection of the Basins of Attraction (BoA) of the target systems and the approximation}
 So if we have $x_0\in BOA(A_i^f) \cap BOA(A_i^g)$, the flow deviates along the trajectories up to 
 \[
-\|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - f(s; \tilde{\varphi}_{0,s}(x))\| \, ds.
+\|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\| \, ds.
 \]
 Prop.~\ref{prop:313} from \citep{vanhandel2007filtering}, see Supp.Sec.~\ref{sec:313}.
 
@@ -462,7 +470,7 @@ For each pair $i\neq j$ the connected component of $\sep(A_i,A_j)$ is a normally
 %for the extension of continuous attractors we need to assume that all maximally invariant sets are normally hyperbolic
 For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.
 %
-Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has an normally hyperbolic invariant manifold that is diffeomorphic to and at most at $\mathcal{\delta_{ij}}$ Hausdorff distance from $\sep(A_i,A_j)$.
+Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has an normally hyperbolic invariant manifold that is diffeomorphic to and at most at $\delta_{ij}$ Hausdorff distance from $\sep(A_i,A_j)$.
 
 
 %simplifying?
@@ -471,6 +479,11 @@ Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij
 
 
 Now we need to sum all the different errors together.
+
+
+We get a bunch of $\epsilon_j$'s and $\delta_i$'s.
+Take $\epsilon_i<$.??
+Then $\delta_i< \frac{\delta}{N}$ for each $i$ and hence $\sum_i\delta_i<\delta$.
 \end{proof}
 
 
@@ -488,7 +501,10 @@ Now we need to sum all the different errors together.
 
 
 
-\subsection{Approximating a limit cycle}
+\subsection{Approximating limit cycles}
+%
+%
+\subsubsection{A single stable limit cycle}
 We will get convergence onto a limit cycle that is close in Hausdorff distance to the target limit cycle. %$\omega$-limit set?
 But, for an approximation of the vector field we will in general have a small discrepancy in the periods between the two limit cycles that will lead to a uniform norm difference between the flows that is the maximal distance between all pairs of points on the two limit cycles.
 This would make our method fail!
@@ -523,15 +539,28 @@ Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O
 %choosing the size of the tubular neighbourhood
 
 
+\paragraph{The effect of the correction on the flow inside the basins}
 
-\paragraph{Multiple limit cycles}
+- Tubular neighbourhood: $\epsilon_1$ effect
+
+- Outside $\epsilon_2$ effect
+
+\paragraph{The effect of the correction on the separatrices}
+
+
+
+
+\subsubsection{Multiple limit cycles}
 We can perform the same procedure for a finite set of limit cycles.
 We have to make sure that all the $\hat{\epsilon}_i$ are step-wise small enough so that $\epsilon_{T_i}$ is small enough. 
 
 
 %%%QPTA
-\subsubsection{QPTA}%more generally: doing this for multiple limit cycles
+\paragraph{QPTA}%more generally: doing this for multiple limit cycles
 \citep{Park2023a}
+
+
+
 
 
 \subsection{Approximating a chaotic orbit}
@@ -588,6 +617,16 @@ Use of NODEs \citep{kim2021inferring}
 \paragraph{Limit cycles}
 Approximable but approximation is not robust! (period will change under almost all perturbations)
 
+
+\paragraph{Total integrated error}
+We can look at the total integrated error between the target and the approximant and derive a similar UAP theorem.
+
+Error is then defined as 
+\begin{equation}
+\operatorname{TIE}(\varphi, \hat{\varphi}) = \int_{x_0\in X}\|\varphi(t,x_0) - \hat{\varphi}(t, x_0)\|_\infty.
+\end{equation}
+
+It is then easy to show that $\forall\epsilon>0$ there exists a NODE such that $\operatorname{TIE}(\varphi, \hat{\varphi})<\epsilon$.
 
 \paragraph{Link to MSE loss}
 In the limit that $\delta\rightarrow 0$ and $\epsilon\rightarrow 0$  we have that 
