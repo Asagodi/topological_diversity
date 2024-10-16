@@ -12,6 +12,7 @@
 \usepackage[pdftex]{graphicx}  %remove demo option in your document
 \usepackage{sidecap}
 
+
 \graphicspath{{figures}}
 
 \newtheorem{theorem}{Theorem}
@@ -27,7 +28,8 @@
 \newcommand{\vol}{\operatorname{vol}}
 \newcommand{\boa}{\operatorname{BoA}}
 
-\title{Approximation of multi-stable dynamical systems on infinite horizons}
+\title{Finally, an \emph{actual} universal approximation result for multi-stable dynamical systems}
+%\title{Approximation of multi-stable dynamical systems on infinite horizons}
 \author{\'Abel S\'agodi and Il Memming Park}
 \date{\today}
 
@@ -50,9 +52,13 @@ A key motivation for extending approximation results to the infinite horizon lie
 Our work aims to bridge this gap by extending the approximation of dynamical systems to multi-stable systems—those with multiple equilibrium states but no chaotic behavior—over an infinite horizon. 
 To achieve this, we leverage Neural Ordinary Differential Equations (NODEs) as a framework for constructing such approximations.
 % By using NODEs, we can model continuous-time dynamical systems while ensuring that key properties, such as stability and smooth error bounds under perturbations, are maintained.
-This framework allows us to rigorously study the approximation of multi-stable systems in settings where classical RNNs may struggle, laying the groundwork for future advances in both theory and applications of neural approximators in long-term dynamical modeling.
+We provide a fist-of-its-kind \textbf{approximation result for multi-stable systems on the infinite time horizon}, laying the groundwork for future advances in both theory and applications of neural approximators in long-term dynamical modeling.
 
 %mention that vanilla RNNs are not universal approximators?
+
+
+
+
 
 
 
@@ -70,14 +76,29 @@ See also \citep{li2022approximation} and \citep{jiang2023brief}.
 
 
 
-\subsection{Universal approximation for mappings}
+\begin{table}[h]
+\begin{tabular}{l|l|l|l|l}
+In &  Time interval & FMP & Finite size &  \\\hline
+\citep{cybenko1989approximation} & Yes & No & Yes &  \\\hline
+\citep{funahashi1993approximation} & Yes & No & Yes &  \\\hline
+\citep{hornik1989multilayer} & Yes & No & Yes & \\\hline
+\citep{bai2019deq} & No & Yes & No
+\end{tabular}
+\end{table}
 
-See Sec.~\ref{sec:uniapproxffn}.
 
 
 %vector fields (which is just FNN setting)
 \subsection{Approximating vector fields}
 Neural networks, particularly FNNs, can approximate smooth functions effectively, making them suitable for approximating vector fields.
+
+Vector field radial basis function \citep{smolik2018vfrbfapprox}
+
+
+\subsection{Universal approximation for mappings}
+
+See Sec.~\ref{sec:uniapproxffn}.
+
 
 \subsubsection{Spiking neural network}
 %only approximates vector field 
@@ -123,6 +144,25 @@ Discrete-time RNNs are universal approximators of discrete-time systems \citep{a
 %\paragraph{Neural oscillators}
 \paragraph{Continuous time}
 Neural oscillators have the universal approximation property on compact time intervals \citep{lanthaler2023neuraloscillators}.
+
+
+
+
+\subsubsection{Looking beyond the finite horizon} %put in prev section?
+
+What goes wrong after $T$?
+%Why should we care?
+
+\setlength\belowcaptionskip{-5ex}
+\begin{SCfigure}[10][bthp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{lc_period_div}
+  \caption{Divergence of orbits at limit cycles after $T$.
+  Even though an approximation (red) might have an orbit that stays $\epsilon$ close to a target system with a stable limit cycle with period $T$ (blue), if the periods are not exactly matched, the two systems will diverge from each other.
+  In this example, the approximation has period $\hat{T} = T+\epsilon$ and will hence be above the approximation guarantee at time $t=2T$.
+  }\label{fig:lc_period_div}
+\end{SCfigure}
+
 
 
 
@@ -246,8 +286,12 @@ Universal approximation of dynamical systems by semi-autonomous NODEs \citep{li2
 
 
 
+\subsubsection{FMP makes DSs trivial} %put in prev section?
 
-\section{Approximation of dynamical systems on infinite time intervals}
+
+
+
+\section{Approximation of multi-stable dynamical systems on infinite time intervals}
 
 TODO: mention what density results are
 
@@ -529,6 +573,7 @@ For non-autonomous we need another Bernstein-type result:
 we can only approximate input driven dynamics (in our metric) if a forward attractor exists for each input sequence 
 This allows us to formulate approximation in terms of attractors and separatrices (but now in input space)
 
+If an input sequence doesn't converge (i.e. it has a mixing property) we get the same issue with approximating the system as with chaotic orbits.
 
 \section{Implications for understanding neural computation}
 
@@ -545,13 +590,19 @@ Approximable but approximation is not robust! (period will change under almost a
 
 
 \paragraph{Link to MSE loss}
-In the limit that $\delta\rightarrow 0$ we have that 
+In the limit that $\delta\rightarrow 0$ and $\epsilon\rightarrow 0$  we have that 
 \[\operatorname{MSE}(\varphi, \hat{\varphi}) \coloneqq \int_{x_0\in X} \|\varphi_t(x_0) - \hat{\varphi}_t(x_0)\|_\infty \rightarrow 0.\]
 
 
-\paragraph{}
+Limit $\delta\rightarrow 0$: error of type II goes to zero, i.e., perfectly matching separatrices
+
+
+Limit $\epsilon\rightarrow 0$: error of type I goes to zero (apart from small mismatch around separatrices), i.e., perfectly matching in-basin dynamics
+
+
+\paragraph{NODEs vs RNNs}
 NODEs Simulate RNNs 
-- Each NODE is state space equivalent to an RNN that is split into a part for which the equivalence holds and a hidden part
+- Each NODE is state space equivalent to an RNN that is split into a part for which the equivalence holds and a hidden part (Boltzmann Machine-like)
 -Each RNN is state space equivalent to an RNN
 
 
