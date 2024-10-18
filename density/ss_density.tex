@@ -9,6 +9,7 @@
 \bibliographystyle{abbrvnat}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{forloop}
 \usepackage[pdftex]{graphicx}  %remove demo option in your document
 \usepackage{sidecap}
 
@@ -29,6 +30,30 @@
 \newcommand{\cl}{\operatorname{cl}}
 \newcommand{\vol}{\operatorname{vol}}
 \newcommand{\boa}{\operatorname{BoA}}
+\newcommand{\mcN}{\mathcal{N}}
+\newcommand{\mcK}{\mathcal{K}}
+\newcommand{\mcU}{\mathcal{U}}
+\newcommand{\mcX}{\mathcal{X}}
+\newcommand{\T}{\operatorname{T}}
+\newcommand{\TR}{\T\!\mathbb{R}}
+\newcommand{\TM}{\T\!M}
+\newcommand{\TpM}{\T_p\!M}
+\newcommand{\Diffeo}{\operatorname{Diffeo}}
+\newcommand{\Hpert}{H^{\text{pert}}}
+
+\newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
+\newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
+\newcounter{ct}
+\forLoop{1}{26}{ct}{
+    \edef\letter{\alph{ct}}
+    \expandafter\defvec\letter
+}
+
+% captial \vA
+\forLoop{1}{26}{ct}{
+    \edef\letter{\Alph{ct}}
+    \expandafter\defvec\letter
+}
 
 \title{Finally, an \emph{actual} universal approximation result for multi-stable dynamical systems}
 %\title{Approximation of multi-stable dynamical systems on infinite horizons}
@@ -838,10 +863,147 @@ semiautonomous NODEs (SA-NODEs) \citep{li2024universal}
 
 \section{Support for the proof}
 
+\subsection{Structural stability}
+\citep{peixoto1959ss, mane1987ss, hu1994ss, hayashi1997invariant, robbin1971ss, robinson1974ss, palis1970ss}
+
+Structural stability is a fundamental concept in the study of dynamical systems. A structurally stable system is one for which small perturbations in the system's parameters do not lead to drastic qualitative changes in the system's behavior.
+% In other words, if a system is structurally stable, its behavior remains robust under perturbations.
+
+\begin{definition}[Flow of an autonomous system of ODEs]
+Let $\vF: \reals^n\rightarrow \reals^n$ be a (time-independent) vector field and $\vx\colon\reals\rightarrow\reals^n$  the solution of the initial value problem
+\[
+\dot\vx(t) =  \vF(\vx(t)), \ \ \ \vx(0) = \vx_0.
+\]
+Then $ \phi (\vx_{0},t)=\vx(t)$ is the flow of the vector field $\vF$.
+We will use the notation $\mathcal {O}(x,\phi)\coloneqq \{\phi(x,t)\ |\ t\in\reals\}$ to denote an orbit.
+\end{definition}
+
+
+\begin{definition}[Closed orbit]
+A \emph{closed orbit} of a flow is a solution $\vx(t)$ such that there exists $t_1, t_2\in\reals$ with  $t_1\neq t_2$ for which $\vx(t_1) = \vx(t_2)$.
+\end{definition}
+
+\begin{definition}[Topological equivalence]
+Let $X,Y$ be two topological spaces. Let $\phi$ be a flow on $X$, and $\psi$ be a flow on $Y$.
+Then $\phi$ and $\psi$ are \emph{topologically equivalent} if there is a homeomorphism $h\colon X\to Y$ mapping orbits of  $\phi$  to orbits of $\psi$  homeomorphically, and preserving the orientation of the orbits. In other words, there must be  an increasing map $\tau\colon X\times\reals\rightarrow\reals$ such that 
+\begin{equation}\label{eq:topeq}
+h(\phi_{\tau(t,x)}(x)) = \psi_t(h(x)).
+\end{equation}
+\end{definition}
+
+
+\subsubsection{Dynamical systems on manifolds}
+For a more general setting one might study flows on manifolds.
+\begin{definition}
+Let $M$ be a compact Riemannian manifold without boundary. For each $r\geq 1$, let $\mcX^r(M)$ denote the set of $C^r$ vector fields of $M$, endowed with the $C^r$ topology. Every $S\in \mcX^r(M)$ generates a $C^r$ flow $\phi=\phi^S\colon M\times \reals\rightarrow M$.
+Two flows are topologically equivalent if there is a homeomorphism $h\colon M\rightarrow M$ that maps the orbits of one flow onto those of the other flow while preserving the orientation. 
+ We say $S$ is $C^r$ structurally stable if $S$ has a $C^r$ neighborhood $\mcU$ in $\mcX^r(M)$ such that every $X \in \mcU$ generates a flow $\phi^X$ that is topologically equivalent to $\phi^S$ (i.e. it sends the orbits of $X$ to the orbits of $Y$, preserving the orientation of the orbits.
+\end{definition}
+
+\begin{remark}
+For every manifold, structurally stable flows form non-empty open subsets of $\mcX^r(M)$ \citep{palis1970ss}.
+\end{remark}
+
+\subsubsection{Hyperbolicity}
+The fixed point $x$ of the flow $\phi_t\colon M\rightarrow M$ is hyperbolic if $x$ is a hyperbolic fixed point of the diffeomorphism $\phi_1: M\rightarrow M$.
+ An alternate way of saying this is as follows: If $x$ is a fixed point of the flow $\phi_t\colon M\rightarrow M$, then the derivative $D\phi_t(x)\colon T_x(M)\rightarrow T_x(M)$ defines a linear representation of the real line and so can be written in the form $D\phi_t(x)=e^{tA}$ where $A$ is a linear endomorphism of $T_x(M)$.
+
+
+Hyperbolicity for $M=\reals^n$ is an eigenvalue condition.
+The eigenvalues of the linear part of a vector field at a hyperbolic singularity have nonzero real part.
+In the case of a closed orbit $\gamma=\mathcal{O}(x,\phi)$, we choose a point $p\in\gamma$ and a transversal $\tau$ to $\gamma$ at $p$.
+The vector field's flow defines a local diffeomorphism (the first-return map) of $\tau$ to itself having $p$ as a fixed point.
+Hyperbolicity of $\gamma$ means that the eigenvalues of the linear part of the first return map at $p$ have nonzero real part.
+   
+Hyperbolicity of an invariant manifold can be defined in terms of stable and unstable subspaces. Let $M$ be an invariant manifold, and let $\TM$  denote the tangent space at $M$. Hyperbolicity implies that there exist complementary subspaces $E^s$  and $E^u$  of $\T_M$  such that for all $x\in M$, the linearization of the flow at $x$ has the following properties:
+\begin{itemize}
+\item Stable Subspace: For all $v\in E^s$, the linearized flow contracts in the $E^s$  direction, i.e., \[\lim_{t \to \infty} \frac{\|D\Phi_t(x)v\|}{\|v\|} = 0.\]
+\item Unstable Subspace: For all $u\in E^u$ , the linearized flow expands in the $E^u$ direction, i.e., \[\lim_{t \to -\infty} \frac{\|D\Phi_t(x)w\|}{\|w\|} = 0.\]
+\end{itemize}
+
+
+
+
+\subsection{Structural stability in dimensions greater than two}
+\begin{theorem}[\cite{robbin1971ss}, \cite{robinson1974ss}]
+A vector field $S$ is structurally stable if it satisfies Axiom A and the Strong Transversality conditions.
+\end{theorem}
+
+\subsubsection{Axiom A}
+A point $x\in M$ is \emph{nonwandering} of the vector field $S$ if for any neighborhood $V$ of $x$ in $M$, there is $t\geq 1$ such that $\phi_t(V) \cap V\neq \emptyset$. The set of \emph{nonwandering} points of $S$ is the nonwandering set of $S$, and denoted by $\Omega(S)$. 
+
+\begin{definition}
+$S$ is an axiom A flow if the following two conditions hold:
+\begin{enumerate}
+\item The nonwandering set of $S, \Omega(S)$, is a hyperbolic set and compact.
+\item The set of periodic points of $S$ is dense in $\Omega(S)$.
+\end{enumerate}
+\end{definition}
+
+Singularities (i.e. points where $S(x)=0$) and points of periodic orbits are all nonwandering.
+% An $S$-invariant set $\Lambda$ is \emph{hyperbolic} if the restricted tangent bundle $\T_\Lambda\! M$ has a continuous $S$-invariant splitting $E^s\oplus S \oplus E^u$ such that for some constants $\lambda> 0$ and $T>0$, the inequalities
+
+\begin{definition}
+ Suppose $M$ is a manifold, $\phi_t\colon M\rightarrow M$ is a flow.
+  We say that $\phi_t$ is \emph{hyperbolic} %(also called an Anosov flow)
+   if for every $p\in M$ there is a splitting of the tangent space $\TpM=E^s(x)\oplus E^0(x)\oplus E^u(x)$, where $E^0=\langle \dot\phi_t\rangle$ is the flow direction and there are constants $C>0$ and $\lambda\in(0,1)$ such that for every $t>0$ one has \[\|D\phi_t(v)\|\leq C\lambda^t\|v\|\]
+for $v\in E^s(x)$ and \[\|D\phi_{-t}(v)\|\leq C\lambda^t\|v\|\] for $v\in E^u(x)$ . 
+\end{definition}
+
+\subsubsection{Strong Transversality Condition}
+%An axiom A diffeomorphism satisfies the strong transversality condition if for any non-wandering points $x$ and $y$, the stable manifold of $x$ is transverse to the unstable manifold of $y$.
+
+If a vector field $S$ satisfies Axiom A, then for any $x \in M$, the stable manifold 
+\[W^s(x)=\left\{ y \in M \colon \lim_{t\rightarrow+\infty} d(\phi_t( y), \phi_t(x))=0\right\}\]
+of $x$ and the unstable manifold
+\[W^u(x)=\left\{ y \in M \colon \lim_{t\rightarrow-\infty} d(\phi_t( y), \phi_t(x))=0\right\}\]
+of $x$ are each an injectively immersed $C^r$ submanifold of $M$, if $S$ is $C^r$.
+
+An Axiom A system $S$ satisfies the strong transversality condition if $W^s(x)$ is transverse to $W^u(x)$ at all $x\in M$.
+Roughly, this requires that the stable and unstable manifolds cross when they intersect. 
+
+Two submanifolds $M_1$ and $M_2$ are transverse if their tangent spaces span $\mathbb{R}^n$.
+
+\begin{remark}
+The stability and genericity of transversality make it a very powerful condition, and give rise to a number of applications, in many branches of science which might not initially seem related to
+differentiable manifolds. If a data set can be represented as a manifold, which is transverse to some condition that we care about, then we know that any (small) perturbations of the data set will not effect its relation to this important condition.
+\end{remark}
+
+
+\begin{remark}
+For higher than 2 dimensional systems saddle-to-saddle connections can be structurally stable, and can be hence used for robust neural computation with transients, see also \cite{rabinovich2008}.
+\end{remark}
+
 \subsection{Fenichel's Persistent Manifold Theorem}
+
+\citep{hirsch1970invariant}
+\citep{wiggins1994nhim}
+\citep{jones1995gspt}
+\citep{kuehn2015multipletimescale}
+
+
+\begin{theorem}[\citep{fenichel1971persistence}; see also \citep{kuehn2015multipletimescale}]
+%\textbf{Theorem 2.2.2} ().%
+ Consider
+\begin{equation}\label{eq:fenichelode}
+\dot{z} = H(z) \quad \text{with } H \in C^r \text{ and } z \in \mathbb{R}^N. 
+\end{equation}
+Let \( M \) be a \( C^r \) compact connected manifold that is overflowing invariant under the flow \( \phi_t \) defined by Eq.~\ref{eq:fenichelode}. Assume that
+\begin{equation}
+\nu(p) < 1 \quad \text{and} \quad \sigma(p) < \frac{1}{r} \quad \text{for all } p \in M. 
+\end{equation}
+Then for every \( C^r \) vector field \( H_{\text{pert}} \) that is \( C^1 \theta \)-close to \( H \), with \( \theta \) sufficiently small, there is a manifold \( M_{\text{pert}} \) that is overflowing invariant under \( H_{\text{pert}} \) and \( C^r \)-diffeomorphic to \( M \).
+\end{theorem}
+
+
+
 
 
 \subsection{Basins of attraction}
+\citep{milnor1985attractor}
+\citep{hirsch1995computing}
+
+
 Denote the basin of attraction for an attractor $A$ as $BOA(A)$.
 
 \begin{proposition}
@@ -873,6 +1035,8 @@ Define the separatrix between the basins of attraction of attractors $A_i$ and $
 
 
 
+
+
 \subsection{In basin bound}\label{sec:313}
 \begin{proposition}[Proposition 3.1.3. in \citep{vanhandel2007filtering}]\label{prop:313}
 Define 
@@ -894,6 +1058,10 @@ The following error bound holds:
 \]
 \end{proposition}
 
+
+\subsection{Boundaries of basins of attraction}
+The boundary of a basin of attraction is composed of points that do not belong to the basin of the periodic orbit but are arbitrarily close to it. Any trajectory starting exactly on this boundary will not enter the basin of the periodic orbit nor escape to another basin.
+This implies that if a trajectory starts on the boundary, it will remain on the boundary for all future times. Therefore, the boundary is invariant under the flow of the system.
 
 
 \subsection{Perturbing limit cycles}
@@ -980,6 +1148,10 @@ H(0, t) = \gamma_1(t), \quad H(1, t) = \gamma_2(t)
 This means that at \( \tau = 0 \), the homotopy corresponds to the first limit cycle \( \gamma_1 \), and at \( \tau = 1 \), the homotopy corresponds to the second limit cycle \( \gamma_2 \). For intermediate values of \( \tau \), \( H(\tau, t) \) represents a continuous deformation between \( \gamma_1 \) and \( \gamma_2 \).
 
 
+
+\subsection{Non-autonomous}
+\subsubsection{Asymptotically autonomous dynamical systems}
+\citep{wieczorek2021compactification}
 
 \section{Fading memory}
 \begin{definition}[Fading memory Property (FMP)]
