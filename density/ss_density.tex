@@ -489,6 +489,38 @@ So if we have $x_0\in BOA(A_i^f) \cap BOA(A_i^g)$, the flow deviates along the t
 \]
 Prop.~\ref{prop:313} from \citep{vanhandel2007filtering}, see Supp.Sec.~\ref{sec:313}.
 
+See Rem.~\ref{rem:313}.
+
+The first term \[\|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|\]
+is bounded. %?
+Define $M\coloneqq \sup \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|<\infty$. 
+
+Additionally:
+\[\|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|\rightarrow 0\] for \(t\rightarrow\infty\).
+
+This guarantees that the integral is finite.
+
+The second term
+\[\|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\|\]
+can be made arbitrarily small because of the UAP for mappings.
+
+
+TODO:
+orbits from these initial conditions converge to $\omega$-limit sets that are at most $\epsilon_i$ Hausdorff distance from each other.
+
+
+
+This guarantees that the integral can be made arbitrarily small.
+
+	
+%conclusion about Type I errors
+There exists an FNN that defines a vector field for which for each attractor we have $\epsilon_i<\epsilon$. 
+
+
+
+%Consider separately ?
+%1 orbits to fixed points: path starting at $x_0$ is finite
+%2 orbits to stable limit cycles.
 
 
 
@@ -503,22 +535,26 @@ The volume for which type II error arises is
 \[\sum\boa(A_i^f)\cap\boa(A_i^g).\]
 
 The boundary of the BoA of attractor $A_i^f$ is %BoAs are open sets
-\[\partial\boa(A_i) = \cl\boa(A_i^f)\cap A_i^f.\]
+\[\partial\boa(A_i) = \overline{\boa(A_i^f)} \cap (X - \overline{\boa(A_i^f)}).\]\footnote{We will use \(\overline{\cdot}\) to denote the closure of a set. Same as \(\cl\).}% =\cl\boa(A_i^f)-\boa(A_i^f)\.\]%this should hold for an open set...
 
 Then for some value $\epsilon_{\operatorname{sep}}$ we have that 
-\[\bigcup_i \boa(A_i^f)\cap\boa(A_i^g) \subset \bigcup_i B_{\epsilon_{\operatorname{sep}}}(\partial\boa(A_i^f)). \]
+\begin{equation}\label{eq:separatrixoverlap}
+\bigcup_i \boa(A_i^f)\cap\boa(A_i^g) \subset \bigcup_i B_{\epsilon_{\operatorname{sep}}}(\partial\boa(A_i^f)). 
+\end{equation}
 
 The right hand side's volume is at most $\mathcal{O}(\delta)$ with $\leq\epsilon_{\operatorname{sep}}$ the Hausdorff distance between the total separatrix submanifolds.
 This $\delta$ can be made arbitrarily low because of the FNN universal approximation results.
 
 %
-For each pair $i\neq j$ the connected component of $\sep(A_i,A_j)$ is a normally hyperbolic invariant manifold (repellent). 
-%(this follows from structural stability)
-%for the extension of continuous attractors we need to assume that all maximally invariant sets are normally hyperbolic
-For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.
-%
-Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has an normally hyperbolic invariant manifold that is diffeomorphic to and at most at $\delta_{ij}$ Hausdorff distance from $\sep(A_i,A_j)$.
-
+For each attractor $A_i$ we have that the boundary of the basin of attraction $\partial(\boa(A_i^f))$ is a compact normally hyperbolic invariant manifold (See Supp.Sec.~\ref{sec:boaboundary}).
+Consider the connected components $B^f_{ij}$ of $\partial(\boa(A_i^f))$.
+%\footnote{For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.}
+Then, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has a normally hyperbolic invariant manifold  $B^g_{ij}$ that is diffeomorphic to and at most at $\mathcal{\delta_{ij}}$ Hausdorff distance from $B^f_{ij}$.
+Therefore, by Eq.~\ref{eq:separatrixoverlap}, the overlap of the separatrices is less than $\mathcal{O}\epsilon_{\operatorname{sep}}$.%TODO: figure out bound on the volume
+%compactness should imply that the volume is at most $\mathcal{\epsilon_{\operatorname{sep}}$.
+Therefore, there is $k_{ij}\in\reals$ such that the Hausdorff distance between $B^f_{ij}$ and $B^g_{ij}$ is $k_{ij}\delta_{ij}$.
+Choose $\delta_{ij}<k_{ij}\delta/N_{\operatorname{cc}}$.\footnote{$N_{\operatorname{cc}}$ is the number of connected components of $\partial(\boa(A_i^f))$.}%the global \delta....
+Define $\delta_i\coloneqq\sum_{i=1}{N_{\operatorname{cc}}}\delta_{ij}$.
 
 %simplifying?
 %we can consider $\cl\boa(A_i) to be an invariant manifold with boundary
@@ -526,11 +562,9 @@ Therefore, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij
 
 
 Now we need to sum all the different errors together.
-
-
-We get a bunch of $\epsilon_j$'s and $\delta_i$'s.
-Take $\epsilon_i<$.??
-Then $\delta_i< \frac{\delta}{N}$ for each $i$ and hence $\sum_i\delta_i<\delta$.
+We get a bunch of $\delta_i$'s.
+%Take $\epsilon_i<$.??
+Then $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each $i$ and hence $\sum_i\delta_i<\delta$.
 \end{proof}
 
 
@@ -548,7 +582,7 @@ Then $\delta_i< \frac{\delta}{N}$ for each $i$ and hence $\sum_i\delta_i<\delta$
 
 
 
-\subsection{Approximating limit cycles}
+\subsection{Approximation of stable limit cycles}
 %
 %
 \subsubsection{A single stable limit cycle}
@@ -557,7 +591,7 @@ But, for an approximation of the vector field we will in general have a small di
 This would make our method fail!
 
 However, we can correct this discrepancy.
-We have a difference in period $T-\hat T = \delta$
+We have a difference in period $T-\hat T = \delta T$
 with \[T\coloneqq\frac{1}{\int_{LC}\|f(x)\|dx} \text{ and } \hat T\coloneqq\frac{1}{\int_{\hat{LC}}\|\hat f(x)\|dx}.\]
 %
 We will apply a perturbation $\hat{\hat{f}}$ to our approximations that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
@@ -568,7 +602,7 @@ the resulting total approximation is \[\tilde{f}=%\hat{f}+\hat{\hat{f}} =
  \hat{f} + \epsilon_T(\hat{f} + \hat{\epsilon}\hat{\hat{f}})\]
 
 
-We can use the fact that the tubular neighborhood around the limit cycle (LC) is an (inflowing) normally hyperbolic invariant manifold.
+We can use the fact that the tubular neighborhood of diameter $\delta_T$ around the limit cycle (LC) is an (inflowing) normally hyperbolic invariant manifold.
 This implies that there is a 3 layer FNN that approximates the vector field x a bump function around the LC (similar idea as in paper but this would be an actual possible implementation).
 Then we know that the this NHIM will persist.
 We also know that there is a maximal perturbation size ($\epsilon_{LC}$) for which the limit cycle persists.
@@ -585,14 +619,24 @@ Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O
 
 %choosing the size of the tubular neighbourhood
 
+\textbf{Knobs}
+\begin{itemize}
+\item $\epsilon_T$: small enough so that limit cycle is structurally stable
+\item $\hat\epsilon$: needs to be small enough so that effect of correction outside of the tubular neighbourhood doesn't affect attractors and separatrices
+\item $\delta_T$: needs to be small enough so that no other attractor or separatrix is included (will this have an effect on the inside-basin flow error?)
+\end{itemize}
+
+TODO: show that if $\delta T$ is small enough then $\epsilon_T$ is small
 
 \paragraph{The effect of the correction on the flow inside the basins}
+- Tubular neighbourhood: $\epsilon_T$ effect
+- Outside $\hat\epsilon$ effect
 
-- Tubular neighbourhood: $\epsilon_1$ effect
-
-- Outside $\epsilon_2$ effect
 
 \paragraph{The effect of the correction on the separatrices}
+See note on  $\hat\epsilon$ Knob.
+
+
 
 
 
@@ -601,11 +645,9 @@ Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O
 We can perform the same procedure for a finite set of limit cycles.
 We have to make sure that all the $\hat{\epsilon}_i$ are step-wise small enough so that $\epsilon_{T_i}$ is small enough. 
 
-
 %%%QPTA
-\paragraph{QPTA}%more generally: doing this for multiple limit cycles
-\citep{Park2023a}
-
+\paragraph{Quasi-periodic toroidal attractors (QPTA)}%more generally: doing this for multiple limit cycles
+Important!\citep{Park2023a}
 
 
 
@@ -617,25 +659,30 @@ Every small discrepancy in the vector field will lead to
 
 
 What we can do is minimize the Hausdorff distance between the chaotic invariant manifolds and match the Lyapunov exponents of the target system
-The first because of structural stability
-%The second because of ??
-
-Alternatively, we can guarantee that 
+The first because of structural stability.
+%%The second because of ???
 
 
-Symbolic dynamics
-Mapping onto the same discrete dynamical shift dynamical system?
+Alternatively, we can guarantee that the shift representation of the dynamics is persistent.
+%
+Symbolic dynamics: Mapping onto the same discrete dynamical shift dynamical system
 
 
 
 %%%CA
 \subsection{Approximating a continuous attractors}
+%for the extension of continuous attractors we need to assume that all maximally invariant sets are normally hyperbolic
 
 We can tile the continuous attractor with a uniform grid of stable fixed points.
 Each of the neighbouring stable fixed points can be at most $\epsilon$ apart.
 This is structurally stable dynamics, so we can approximate its vector field with $\epsilon$ accuracy and we are guaranteed to have a topologically equivalent system to it with the fixed points being moved at most $\mathcal{O}(\epsilon)$.
 
 See \citep{Sagodi2024a}
+
+
+
+\subsection{Center manifolds}
+
 
 
 \subsection{Input driven dynamics}
@@ -974,7 +1021,13 @@ differentiable manifolds. If a data set can be represented as a manifold, which 
 For higher than 2 dimensional systems saddle-to-saddle connections can be structurally stable, and can be hence used for robust neural computation with transients, see also \cite{rabinovich2008}.
 \end{remark}
 
-\subsection{Fenichel's Persistent Manifold Theorem}
+
+
+
+
+\subsection{Invariant manifolds}
+\citep{roberts1989invariant,
+kalitin2021attractors}
 
 \citep{hirsch1970invariant}
 \citep{wiggins1994nhim}
@@ -982,6 +1035,8 @@ For higher than 2 dimensional systems saddle-to-saddle connections can be struct
 \citep{kuehn2015multipletimescale}
 
 
+
+\subsubsection{Fenichel's Persistent Manifold Theorem}
 \begin{theorem}[\citep{fenichel1971persistence}; see also \citep{kuehn2015multipletimescale}]
 %\textbf{Theorem 2.2.2} ().%
  Consider
@@ -997,6 +1052,26 @@ Then for every \( C^r \) vector field \( H_{\text{pert}} \) that is \( C^1 \thet
 
 
 
+
+
+\subsection{Attractors}
+Consider the autonomous system
+\begin{equation}\label{eq:attractorode}
+\dot x = f(x)
+\end{equation}
+with \(f \in C^1(E)\) where E is an open subset of \(\reals^n\). 
+
+\begin{definition}[\(\omega\)- and \(\alpha\)-limit sets]
+A point \( p \in E \) is a \(\omega\)-limit point of the trajectory \( \varphi(t, x) \) of the system Eq.~\ref{eq:attractorode} if there exists a sequence \( t_n \to +\infty \) such that
+\[
+\varphi(t_n, x) = p.
+\]
+Similarly, if there exists a sequence \( t_n \to -\infty \) such that
+\[
+\varphi(t_n, x) = q,
+\]
+and the point \( q \in E \), then the point \( q \) is called an \(\alpha\)-limit point of the trajectory \( \varphi(t, x) \) of  Eq.~\ref{eq:attractorode}. The set of all \(\omega\)-limit points of a trajectory \( r \) is called the \(\omega\)-limit set of \( r \) and is denoted by \( \omega(r) \). The set of all \(\alpha\)-limit points of a trajectory \( r \) is called the \(\alpha\)-limit set of \( r \) and is denoted by \( \alpha(r) \). The set of all limit points of \( r \), \( \alpha(r) \cup \omega(r) \), is called the limit set of \( r \).
+\end{definition}
 
 
 \subsection{Basins of attraction}
@@ -1059,10 +1134,62 @@ The following error bound holds:
 \end{proposition}
 
 
-\subsection{Boundaries of basins of attraction}
-The boundary of a basin of attraction is composed of points that do not belong to the basin of the periodic orbit but are arbitrarily close to it. Any trajectory starting exactly on this boundary will not enter the basin of the periodic orbit nor escape to another basin.
+\begin{remark}\label{rem:313}
+Note that the above error bound depends on two separate quantities: 
+the local error \( \| f(s; \tilde{\phi}_{0,s}(x)) - f(s; \phi_{0,s}(x)) \| \) 
+and 
+the term \( \| D\phi_{s,t}(\tilde{\phi}_{0,s}(x)) \| \), which bounds the sensitivity of the flow \( \phi_{s,t}(x) \) to an infinitesimal perturbation of its initial condition.
+\end{remark}
+
+
+
+\subsection{Boundaries of basins of attraction}\label{sec:boaboundary}
+
+\begin{proposition}
+The BoA of an stable attractor is an connected open set of dimension $n$. %forward invariant manifold
+\end{proposition}
+
+
+\begin{proposition}
+The boundary of a BoA of an stable attractor is an compact normally hyperbolic invariant manifold of dimension $n-1$. %doesnt need to be connected, e.g. 
+\end{proposition}
+
+\begin{proof}
+\textbf{Invariance}
+The boundary of a basin of attraction is composed of points that do not belong to the basin of the periodic orbit but are arbitrarily close to it.
+ Any trajectory starting exactly on this boundary will not enter the basin of the periodic orbit nor escape to another basin.
 This implies that if a trajectory starts on the boundary, it will remain on the boundary for all future times. Therefore, the boundary is invariant under the flow of the system.
 
+
+\textbf{Corollary. p.194 in \citep{perko2013differential}} \( \alpha(r) \) and \( \omega(r) \) are invariant with respect to the flow \( \phi_t \) of \(\dot x = f(X)\). %(1) \dot x = f(X) f \in C1(E) where E is an open subset of Rn.
+
+\textbf{Compactness}
+\textit{Bounded} Because we consider bounded dynamics.
+
+\textit{Closed} 
+The boundary of a BoA of an stable attractor:
+\[\partial(BoA) = \cl(BoA) -  BoA\]
+is closed.
+
+The boundary of a set \( A \) is defined as 
+\[
+\partial A = \overline{A} \cap (X - \overline{A}).
+\]
+It is the intersection of two closed sets and hence is closed.
+
+
+\footnote{
+The boundary is made up of 
+$\alpha$-limit sets 
+and
+connecting orbits between unstable periodic orbits.
+(unstable manifolds of unstable periodic orbits).
+}
+
+
+\textbf{Normal hyperbolicity}
+Implied by structural stability.
+\end{proof}
 
 \subsection{Perturbing limit cycles}
 If the limit cycle is hyperbolic, the Hausdorff distance between the original and perturbed limit cycles tends to scale linearly with \(\epsilon\), the size of the perturbation. That is,
