@@ -584,6 +584,7 @@ Then $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each $i$ and h
 
 
 \subsection{Approximation of stable limit cycles}
+%TODO:  name for type III error: L-type (limit cycle) P-type (period)
 %
 %
 \subsubsection{A single stable limit cycle}
@@ -654,6 +655,7 @@ Important!\citep{Park2023a}
 
 
 \subsection{Approximating a chaotic orbit}
+%TODO:  name for type IV error: C-type (chaos)
 We cannot approximate according to our above criteria.
 Every small discrepancy in the vector field will lead to 
 (analogous to perturbing initial start of the chaotic orbit 
@@ -672,18 +674,23 @@ Symbolic dynamics: Mapping onto the same discrete dynamical shift dynamical syst
 
 %%%CA
 \subsection{Approximating a continuous attractors}
+%TODO:  name for type V error: D-type (discretization) 
 %for the extension of continuous attractors we need to assume that all maximally invariant sets are normally hyperbolic
 
+%continuous attractor (zero flow)
 We can tile the continuous attractor with a uniform grid of stable fixed points.
 Each of the neighbouring stable fixed points can be at most $\epsilon$ apart.
 This is structurally stable dynamics, so we can approximate its vector field with $\epsilon$ accuracy and we are guaranteed to have a topologically equivalent system to it with the fixed points being moved at most $\mathcal{O}(\epsilon)$.
 
-See \citep{Sagodi2024a}
+See \citep{Sagodi2024a}.
 
 
+%continuum of attractors (nonzero flow): e.g. torus
+We can tile the continuous attractor with a uniform grid of stable limit cycles.
 
-\subsection{Center manifolds}
 
+%\subsection{Center manifolds}
+%???
 
 
 \subsection{Input driven dynamics}
