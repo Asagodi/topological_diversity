@@ -87,10 +87,6 @@ We provide a fist-of-its-kind \textbf{approximation result for multi-stable syst
 
 
 
-
-
-
-
 \section{Approximation of dynamical systems}
 %sota 
 
@@ -101,7 +97,8 @@ Here, we review key approaches in the literature and highlight emerging techniqu
 %For an overview of the literature, see [litrev]
 See also \citep{li2022approximation} and \citep{jiang2023brief}.
 
-
+TODO: mention what density results are
+TODO: unify terminology: UAP, density result...
 
 \begin{table}[h]
 \begin{tabular}{|l|l|l|l|l|l|}
@@ -139,10 +136,10 @@ For example, in limit $N\rightarrow\infty$ spiking network (ODE with jumps) appr
 The solutions to ODEs can generate smooth transformations on manifolds.
 The flow \( \phi_t \) of the vector field \( X \) defines a map from \( M \) to itself for each fixed time \( t \). Under appropriate conditions (such as \( X \) being complete), \( \phi_t \) is a diffeomorphism of \( M \) for each \( t \). In other words, \( \phi_t \) is smooth, bijective, and its inverse \( \phi_{-t} \) is also smooth.
 Thus, the solutions (flows) of ODEs associated with smooth vector fields give rise to a one-parameter family of diffeomorphisms.
-
+%
 Neural ODEs (NODEs) and Invertible neural networks (INNs) are a sup-universal approximator for a fairly large class of diffeomorphisms, i.e., smooth invertible maps with smooth inverse \citep{teshima2020uap, teshima2020coupling, ishikawa2023universal}.
 
-
+%rem
 For dynamical systems, however, this only guarantees a finite time approximation.
 We will now consider compact time interval approximation results in more detail.
 
@@ -151,10 +148,10 @@ We will now consider compact time interval approximation results in more detail.
 \subsection{Approximation of dynamics on compact time intervals}\label{sec:compacttime}
 %An RNN with a sufficient number of hidden units and appropriate non-linear activation functions (such as tanh or sigmoid) can approximate any dynamic system or time-dependent function to arbitrary precision, provided the system operates on compact time intervals.
 The universal approximation theorem for RNNs, which extends the classical result for feedforward neural networks, guarantees that RNNs can approximate the mapping from a sequence of inputs to outputs for any continuous-time process, including those governed by differential equations.
-
-
+%
 This property has been formally proven for systems operating over finite time intervals. Specifically, \citet{funahashi1993approximation} showed that RNNs can approximate the time-dependent behaviors of dynamical systems, making them suitable for tasks like time-series prediction, control systems, and the modeling of sequential data.
 
+%rem
 Since the results concern a compact time interval, to approximate dynamics it is enough to approximate $f$, i.e., these approaches convert RNN approximation to FNN approximation.
 %merge
 Existing results have established that recurrent nets are capable of generating simulated trajectories that approximate true system trajectories within arbitrary error tolerance over a finite time interval.
@@ -168,15 +165,16 @@ This is in general not true for the unbounded time case, as the approximation er
 \subsubsection{Discrete sequence-to-sequence mapping}\label{sec:discrete}
 
 RNNs can approximate a state space trajectory (with time-varying inputs) uniformly  produced by either a discrete-time nonlinear system a closed discrete-time interval \citep{jin1995universal}.
-
+%
 Any function can be approximated arbitrarily well in probability with a recurrent neural network\citep{hammer2000approximation}. 
 % where ... can be computed by one neuron whose activation function $\sigma$ possesses a local linearity.\citep{hammer2000approximation}
-
+%
 RNNs with continuous sigmoidal activation function have the UAP for finite number of time steps \citep{schafer2006recurrent, schafer2007uap}.
-
-Discrete-time RNNs are universal approximators of discrete-time systems \citep{aguiar2023universal}.
-
-\citep{patan2008approximation}
+%
+Furthermore, locally recurrent networks with two hidden layers is able to approximate a state-space trajectory produced by any Lipschitz continuous function with arbitrary accuracy\citep{patan2008approximation}.
+%
+Finally, more recently it was shown that discrete-time RNNs are universal approximators of discrete-time systems \citep{aguiar2023universal}.
+%
 
 
 
@@ -189,7 +187,6 @@ Discrete-time RNNs are universal approximators of discrete-time systems \citep{a
 
 \subsubsection{Continuous time sequence-to-sequence mapping}
 Autonomous: \citep{funahashi1993approximation}
-
 
 Non-autonomous:
 the states of the output units of the network, \( x_o(t) \), approximate the solution of the nonautonomous system \citet{garces2012strategies}:
@@ -243,7 +240,8 @@ What goes wrong after $T$?
 
 %FPS%fading
 \subsection{Approximation of fading memory systems}\label{sec:fadingmemory}
-The concept of fading memory (FM) has been a cornerstone in the study of dynamical systems, providing a framework where the system’s output depends on past inputs with gradually diminishing influence \citep{boyd1985fading}.
+%On the general theory of fading memory \citep{coleman1968general}
+The concept of a system having the fading memory property (FMP) has been a cornerstone in the study of dynamical systems\citep{coleman1968general}, providing a framework where the system’s output depends on past inputs with gradually diminishing influence \citep{boyd1985fading}.
 That the output of a dynamical relationship should depend only on the recent past of its input and that the effect of the distant past should fade away is intuitively clear  \citep{sepulchre2021fading}.
 %-APPROXIMATION BY VOLTERRA SERIES: A simplified interpretation of the N -th Volterra Series expansion is the “N -th Taylor expansion in the sequence variable x”.
 %-APPROXIMATION BY FINITE-DIMENSIONAL DYNAMICAL SYSTEMS
@@ -255,13 +253,7 @@ Many real-world systems exhibit behaviors where the influence of past inputs doe
 A very simple example is a system with two stable fixed points.
 We now discuss existing universal approximation results that are confined to fading memory systems and critically assess their limitations.
 
-\begin{remark}
-The notion of fading memory is strictly an input/output property, that is, it refers only to the operator N which maps inputs into outputs; the realization of N (there need not even be one) is irrelevant.
-If N does have a realization as a dynamical system, then the fading memory property is related to the unique steady-state property for dynamical systems \citep{chua1976qualitative}.
-The fading memory assumption implies that the state will be “asymptotically independent” of the initial condition.
-\end{remark}
 
-On the general theory of fading memory \citep{coleman1968general}
 
 \begin{definition}[Fading memory Property (FMP)]
 Let $x_1, x_2$ be bounded sequences indexed by $\mathbb{R}$, and let $H$ be a sequence of causal, shift-equivariant (also called time-homogeneous) functionals.
@@ -274,51 +266,60 @@ We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing func
 
 Typically, the FMP is used to reduce the approximation problem to one over a finite, bounded index set, and then appeal to the density of fully connected neural network to obtain approximation \citep{gonon2021fading}. %more examples
 
-
-\begin{remark}
-Every fading-memory system could be uniformly approximated arbitrarily closely over the set of systems with 'linear dynamics'\citep{matthews1993approximating}. %Theorem 3+4
-Using the perceptron to uniformly approximate the external representation of a fading-memory system results in a finite-memory system model, called the perceptron filter \citep{matthews1993approximating}.
-\end{remark}
-
-
 \paragraph{Linear RNNs}
 \citet{li2020curse} and \citet{li2022approximation} investigate Linear RNNs in continuous time, % and therefore linear functionals
 proving that linear RNNs can approximate continuous, linear, causal, regular and time-homogeneous functionals. % on $\mathcal{X}$ .
 Of course, regular linear functionals have fading memory: their dynamics converge to zero at infinite time ($\lim_{n\rightarrow\infty} H(x(n)) = 0$) and therefore such results are trivial.
-
-\paragraph{ESN}
-\citet{jaeger2001echo} proposed Echo State Networks (ESNs), demonstrating their universal approximation capabilities specifically for fading memory systems.
  
 \paragraph{Exponential decaying memory}
-State Space Models (SSMs) with layer-wise nonlinearity are universal approximators with exponential decaying memory \citep{wang2024state}.
+State Space Models (SSMs) with layer-wise nonlinearity are universal approximators of systems with exponential decaying memory \citep{wang2024state}.
 
 
 \paragraph{Uniform asymptotic incremental stability}
 Uniform asymptotic incremental stability was introduced in \citep{pavlov2006uniform}.
 UAP of RNNs for uniformly asymptotically incrementally stable systems on an infinite time horizon\citep{hanson2020universal}.
 
+%\paragraph{ESN}
+
+
+\paragraph{Reservoir computing}
+%Echo state networks are universal uniform approximators  for discrete-time fading memory filters with uniformly bounded inputs \citep{grigoryeva2018echo,grigoryeva2018universal}. 
+
+%\citep{grigoryeva2024forecasting}
+%if the domain of the functional H is restricted to a space of uniformly bounded sequences of the type KM := y ∈ (Rd)Z− | ∥yt∥ ≤ M, t ∈ Z− 	 for some M > 0 and, additionally, it has a continuity condition called the fading memory property then various families of state-space transformations of the type (2.2)-(2.3) can be used to approximate it uniformly.
+%This is the case for linear systems with polynomial or neural network readouts [Boyd 85, Grig 18b, Gono 20b], state-affine systems with linear readouts [Grig 18b], or echo state networks [Grig 18a, Gono 20b, Gono 23a, Gono 21].
+%In other words, any of these families exhibit universality properties in the fading memory category.
+
+\citet{jaeger2001echo} proposed Echo State Networks (ESNs), demonstrating their universal approximation capabilities specifically for fading memory systems.
+If the domain of the functional $H$ is restricted to a space of uniformly bounded sequences with the fading memory property then various families of state-space transformations can be used to approximate it uniformly: 
+ linear systems with polynomial or neural network readouts \citep{boyd1985fading,grigoryeva2018universal,gonon2019reservoir}, state-affine systems with linear readouts \citep{grigoryeva2018universal}, or echo state networks \citep{grigoryeva2018echo,gonon2019reservoir,gonon2021fading,gonon2023approximation}.
+ More recently, Simple Cycle Reservoirs were shown to be universal for this set of systems \citep{li2023simple}.
+% In other words, any of these families exhibit universality properties in the fading memory category.
+
+%Echo state networks are universal \citep{grigoryeva2018echo} [Grig 18a]
+%Universal discrete-time reservoir computers with stochastic inputs and linear readouts using non-homogeneous state-affine systems \citep{grigoryeva2018universal} [Grig 18b]
+%Risk bounds for reservoir computing \citep{gonon2020risk} [Gono 20a]
+%Reservoir computing universality with stochastic inputs \citep{gonon2019reservoir} [Gono 20b]
+%Fading memory echo state networks are universal \citep{gonon2021fading} [Gono 21]
+%Approximation error estimates for random neural networks and reservoir systems \citep{gonon2023approximation} [Gono 23a]
 
 
 %\paragraph{Stability implies FNNs are enough}%crit
 %When Recurrent Models Don't Need to Be Recurrent \citep{miller2018stable}.
 
-
-\subsubsection{FMP makes DSs trivial} %put in prev section?
- The input forgetting property (also referred to in the literature as the unique steady-state property) is a modeling feature that appears profusely in applications and that can be obtained out of the so-called fading memory property
-
-
-%%%%%%%%%%%%%%%%%%%
-\subsection{Topological equivalency}
-Topological equivalency \citep{hart2020embedding}
-This is trivial for structurally stable systems!
-
-%the autonomous ESN ψ ∈ C 1(Rd) with parameters ( A,  W in, W out,  φ) has a normally hyperbolic attracting submanifold on which ψ is topologically conjugate to φ.
-
+\begin{remark}[FMP makes approximation results trivial] %put in prev section?
+ The input forgetting property (also referred to in the literature as the unique steady-state property) is a modeling feature that appears profusely in applications and that can be obtained out of the so-called fading memory property.
+In fact, every fading-memory system could be uniformly approximated arbitrarily closely over the set of systems with 'linear dynamics'\citep{matthews1993approximating}. %Theorem 3+4
+Using the perceptron to uniformly approximate the external representation of a fading-memory system results in a finite-memory system model, called the perceptron filter \citep{matthews1993approximating}.
+%
+%The notion of fading memory is strictly an input/output property, that is, it refers only to the operator N which maps inputs into outputs; the realization of N (there need not even be one) is irrelevant.
+If  input/output sequence target has a realization\footnote{See Supp.Sec.~\ref{sec:realization}.} as a dynamical system, then the fading memory property is related to the unique steady-state property for dynamical systems \citep{chua1976qualitative}.
+Hence, the fading memory assumption implies that the state will be “asymptotically independent” of the initial condition.
+Therefore, FPM systems cannot have multi-stability which makes this framework exclude many real-world systems.
+ \end{remark}
 
 
-
-
-\subsection{Flows}
+\subsection{Approximation of flows}
 Any continuous dynamical nonlinear systems can be approximately realized\footnote{The finite time trajectories of a given dynamical continuous system can be approximated by the first $n$ internal state out of the $n + N$ neural units in an RNN.} by RNN on finite time interval \citep{chow2000modeling}.
 %fixed initial state!: initial state $x(0)\in X$
 %$\dot z = -\alpha z + W_1\sigma(W_2u+z)$
@@ -333,22 +334,17 @@ More recently, it was shown that RNNs are universal approximators of flow functi
 
 
 
+%%%%%%%%%%%%%%%%%%%
+\paragraph{Topological equivalency}
+ESNs can be trained to have  topologically conjugate dynamics to structurally stable dynamical systems \citep{hart2020embedding}.
+This is trivial for approximation of structurally stable systems with NODEs!
+It is true by virtue of Theorem.~\ref{theorem:ss} that vector fields that are close to the vector field of a dynamical system will have dynamics that are topologically conjugate to it.
+Because it is well known that vector fields can be approximated to arbitrary precision with FNN, this result immediately follows for NODEs.
 
-
-
-
-\paragraph{Reservoir computing}
-Echo state networks are universal uniform approximants in the category of discrete-time fading memory filters with uniformly bounded inputs\citep{grigoryeva2018echo,grigoryeva2018universal}. 
-
-Simple Cycle Reservoirs are Universal \citep{li2023simple}
-
-
-\citep{grigoryeva2024forecasting}
+%the autonomous ESN ψ ∈ C 1(Rd) with parameters ( A,  W in, W out,  φ) has a normally hyperbolic attracting submanifold on which ψ is topologically conjugate to φ.
 
 
 \section{Approximation of multi-stable dynamical systems on infinite time intervals}
-
-TODO: mention what density results are
 
 \paragraph{Roadmap}
 First we describe the target (the systems we can approximate) and hypothesis classes (the systems that we approximate with) and the metric for the density result (way we measure how wrong our approximation is to our target system).
@@ -378,25 +374,19 @@ We can make the probability of finding a trajectory of the approximation to be o
 
 
 \subsubsection{Targets}
-Autonomous
-Structurally stable+Fixed points = hyperbolic fixed points
-The dynamics is globally attractive / There exist a compact set that with the fixed points inside that is forward invariant 
-
+%Autonomous
+%Structurally stable+Fixed points = hyperbolic fixed points
+%The dynamics is globally attractive / There exist a compact set that with the fixed points inside that is forward invariant 
+For our approximation results, we consider the following dynamics:
 \begin{equation}
-\dot x = f(x)
+\dot x = f(x)   \ \ \ f\in C^1.
 \end{equation}
-$f\in C^1$.
 
-
-
-Later: Limit cycles (or just one?)
-
-
-
-Different metric: Chaotic orbits
-mention: we can guarantee finite time approximation
-prove: we can never do infinite time approximation 
-
+We start by showing the UAP for our hypothesis class (see next Section) for structurally stable systems with a finite set of fixed points.
+Then we extend this results where we consider systems with a finite set of periodic orbits.
+We then also include systems that additionally have a finite set of continuous attractors.
+We conclude with how these results extend to a class of non-autonomous dynamical systems and some remarks about approximation of chaotic orbits.
+Each of these results considers approximation of a system on a compact space that is globally attractive. %explain what this entails
 
 This is a Bernstein-type result (in the classification of approximation result types made in \citep{jiang2023brief}).
 %analogy with realization of transfer functions in state space models
@@ -407,6 +397,7 @@ The hypothesis class $\mathcal{G}$ is composed of
 \dot x = g(x) 
 \end{equation}
 where $g$ is an FNN with the universal approximation property.
+In essence, by setting up $g$ as a neural network, you are equipping the NODE with a highly flexible model for $g$, which can approximate a vast variety of continuous functions. 
 
 
 \subsubsection{Metric}
@@ -438,6 +429,12 @@ ie $\lim_{N\rightarrow\infty} error = 0$
 Here we do it for finite $N$.
 ie for each $\epsilon>0$ $\exists N$ such that $error(N) < \epsilon$
 (implies the above limit)
+
+
+\subsubsection{Chaotic orbits}
+Different metric: Chaotic orbits
+mention: we can guarantee finite time approximation
+prove: we can never do infinite time approximation 
 
 
 \subsection{Theorem}
@@ -823,7 +820,7 @@ Here, \(h^{(1)}\) represents the hidden layer, while \(W^{(1)}, W^{(2)}\) and \(
 \begin{theorem}[Universal Approximation Theorem for Feedforward Neural Networks\citep{hornik1989multilayer,schafer2007uap}]
 %\textbf{Theorem 1 (Universal Approximation Theorem for Feedforward Neural Networks).} 
 For any sigmoid activation function \( f \), any dimension \( I \), and any probability measure \( \mu \) on \( (\mathbb{R}^I, \mathcal{B}^I) \), \( \Sigma_I(f) \) is uniformly dense on a compact domain in \( C^I \) and \( \rho_{\mu} \)-dense in \( M^I \).
-\end{theorem}•
+\end{theorem}
 
 \begin{corollary}%[in \citep{schafer2007uap}]
 Theorem 1 holds for the approximation of functions in \( C^{I,N} \) and \( M^{I,N} \) by the extended function class \( \Sigma^{I,N} \). Thereby, the metric \( \rho_{\mu} \) is replaced by \( \rho_{\mu}^N := \sum_{k=1}^{N} \rho_{\mu}(f_k, g_k) \).
@@ -980,7 +977,7 @@ Hyperbolicity of an invariant manifold can be defined in terms of stable and uns
 
 
 \subsection{Structural stability in dimensions greater than two}
-\begin{theorem}[\cite{robbin1971ss}, \cite{robinson1974ss}]
+\begin{theorem}[\cite{robbin1971ss}, \cite{robinson1974ss}]\label{theorem:ss}
 A vector field $S$ is structurally stable if it satisfies Axiom A and the Strong Transversality conditions.
 \end{theorem}
 
@@ -1288,7 +1285,8 @@ This means that at \( \tau = 0 \), the homotopy corresponds to the first limit c
 \subsubsection{Asymptotically autonomous dynamical systems}
 \citep{wieczorek2021compactification}
 
-\section{Fading memory}
+\section{Dynamical systems concepts}
+\subsection{Fading memory}
 \begin{definition}[Fading memory Property (FMP)]
 Let $x_1, x_2$ be bounded sequences indexed by $\mathbb{R}$, and let $H$ be a sequence of causal, shift-equivariant (also called time-homogeneous) functionals.
 Here, causal means $H_t(x) = H_t(x(-\infty,t])$ for all $t$.
@@ -1297,4 +1295,26 @@ We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing func
 |H_t(x_1) - H_t(x_2)| < \varepsilon \quad \text{whenever} \quad \sup_{s \in (-\infty, t]} |x_1(s) - x_2(s)| w(t - s) < \delta.
 \]
 \end{definition}
+
+\subsection{Realization}\label{sec:realization}
+
+Infinite sequences \( y = (y_t)_{t \in \mathbb{Z}} \), where \( y_t \in \mathbb{R}^d \) for all \( t \in \mathbb{Z} \), for which there exists a functional \( H : (\mathbb{R}^d)^{\mathbb{Z}^-} \rightarrow \mathbb{R}^d \) such that 
+\begin{equation}\label{eq:filter}
+y_t = H(\ldots, y_{t-2}, y_{t-1}) = H\left( y_{t-1} \right), \quad \text{for all } t \in \mathbb{Z},
+\end{equation}
+and where the symbol \( y_{t-1} \in (\mathbb{R}^d)^{\mathbb{Z}^-} \) denotes the semi-infinite sequence \( y_{t-1} = (\ldots, y_{t-2}, y_{t-1}) \).
+
+A canonical causal and time-invariant filter \( U_H : (\mathbb{R}^d)^{\mathbb{Z}} \rightarrow (\mathbb{R}^d)^{\mathbb{Z}} \) is associated and determined by the equality 
+\[
+U_H(y)_t := H\left( y_{t-1} \right), \quad \text{for all } y \in (\mathbb{R}^d)^{\mathbb{Z}} \text{ and } t \in \mathbb{Z}.
+\]
+
+A classical problem in control and systems theory is the realization of filters like \ref{eq:filter} as the unique solution (when it exists) of a state-space transformation:
+\begin{equation}
+x_t = F(x_{t-1}, y_{t-1}),
+\end{equation}
+\begin{equation}
+y_t = h(x_t),
+\end{equation}
+where \( F : \mathbb{R}^L \times \mathbb{R}^d \rightarrow \mathbb{R}^L \) and \( h : \mathbb{R}^L \rightarrow \mathbb{R}^d \) are a state and a readout map, respectively. \( \mathbb{R}^L \) is, in this case, the state space and, typically, \( L \) is much bigger than \( d \).
 \end{document}
