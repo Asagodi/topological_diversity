@@ -423,15 +423,15 @@ This is similar to the metric in \citep{hammer2000approximation}.
 For a multistable system it is not possible to find a universal approximation result if we consider a more strict notion of difference between the target and approximant.
 For example, if we take the uniform norm of the uniform norm, it can be shown that there is always a system with a separatrix that can not be exactly matched which would lead to an error that is the distance between the two $\omega$-limit sets.
 
-\subsubsection{Guarantee in $N\rightarrow\infty$ or at finite $N$}
-It could be that existing theorems could be interpreted that in the limit $N\rightarrow\infty$ the approximation holds. %e.g.\citep{podlaski2024approximating}
-ie $\lim_{N\rightarrow\infty} error = 0$
-Here we do it for finite $N$.
-ie for each $\epsilon>0$ $\exists N$ such that $error(N) < \epsilon$
-(implies the above limit)
+%\subsubsection{Guarantee in $N\rightarrow\infty$ or at finite $N$}
+%It could be that existing theorems could be interpreted that in the limit $N\rightarrow\infty$ the approximation holds. %e.g.\citep{podlaski2024approximating}
+%ie $\lim_{N\rightarrow\infty} error = 0$
+%Here we do it for finite $N$.
+%ie for each $\epsilon>0$ $\exists N$ such that $error(N) < \epsilon$
+%(implies the above limit)
 
 
-\subsubsection{Chaotic orbits}
+\paragraph{Chaotic orbits}
 Different metric: Chaotic orbits
 mention: we can guarantee finite time approximation
 prove: we can never do infinite time approximation 
@@ -461,32 +461,29 @@ such that its flow $\hat \varphi$ satisfies
 
 \begin{proof}
 Because of the density of the hypothesis class $\mathcal{G}$ we have that for any $f\in C^1$ and any $\delta_1>0$
-there exists $\hat f\in\mathcal{G}$ such that 
-
-
+there exists $\hat f\in\mathcal{G}$ such that $\|f-\hat f\|<\epsilon$.
+%
 Structural stability implies that there exists a $\delta_2>0$ such that for all $g$ that are $\delta_2$ $C^1$ close to $f$ the flow is topologically equivalent to that of $f$.
-
+%
 So we can choose $\delta = \min\{\delta_1,\delta_2\}$ such that the flow of $\hat f\in\mathcal{G}$ is topologically equivalent to that of $f$.
 
 
-Note that the above error bound depends on two separate quantities: the local error 
-$\| f(s; \tilde{\varphi}_0, s(x)) - f(s; \tilde{\varphi}_0, s(x)) \|$ 
- and the term 
-$\| D\varphi_{s,t}(\tilde{\varphi}_0, s(x)) \|$, 
-which bounds the sensitivity of the flow $\varphi_{s,t}(x)$ to an infinitesimal perturbation of its initial condition.
-
-
-
+%Note that the above error bound depends on two separate quantities: the local error 
+%$\| f(s; \tilde{\varphi}_0, s(x)) - f(s; \tilde{\varphi}_0, s(x)) \|$ 
+% and the term 
+%$\| D\varphi_{s,t}(\tilde{\varphi}_0, s(x)) \|$, 
+%which bounds the sensitivity of the flow $\varphi_{s,t}(x)$ to an infinitesimal perturbation of its initial condition.
 %%%
 %TODO: more catchy name for type I error: F-type (Flow)
-We can bound these two types of errors:%error^I and error^II
+We can bound these two types of errors as follows.%error^I and error^II
+
 \paragraph{Errors inside a the intersection of the Basins of Attraction (BoA) of the target systems and the approximation}
 So if we have $x_0\in BOA(A_i^f) \cap BOA(A_i^g)$, the flow deviates along the trajectories up to 
 \[
 \|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\| \, ds.
 \]
 Prop.~\ref{prop:313} from \citep{vanhandel2007filtering}, see Supp.Sec.~\ref{sec:313}.
-
+%
 See Rem.~\ref{rem:313}.
 
 The first term \[\|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|\]
@@ -494,8 +491,8 @@ is bounded. %?
 Define $M\coloneqq \sup \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|<\infty$. 
 
 Additionally:
-\[\|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|\rightarrow 0\] for \(t\rightarrow\infty\).
-
+\(\|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|\rightarrow 0\) for \(t\rightarrow\infty\).
+%
 This guarantees that the integral is finite.
 
 The second term
@@ -522,7 +519,7 @@ There exists an FNN that defines a vector field for which for each attractor we 
 
 
 
-%TODO: more catchy name for type II error: B-type (Basin)
+%TODO: more catchy name for type II error: B-type (Basin) 
 \paragraph{Errors at the boundary of a BoA}%type II
 The other type of error arises because trajectories go to different attractors, i.e., $x_0\in BOA(A_i^f,A_j^g)$ for $i\neq j$.
 For such initial points the error along the flow cannot be bounded.
@@ -573,7 +570,12 @@ Then $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each $i$ and h
   \includegraphics[width=0.5\textwidth]{separatrices}
   \caption{
 	A mismatching pair of separatrices between attractors $A_i$ and $A_j$.
-	
+	The target subsystem has two stable fixed points ($A_i^f$ and $A_j^f$) with separation between the basins of attraction by the separatrix (black line).
+	The approximation also has two stable fixed points ($A_i^g$ and $A_j^g$ at slightly different locations) but with a separatrix that is close to the target one but is not perfectly on it (dashed line).
+	All the points in the red region go to $A_i^f$ for the target system and to $A_i^g$ (that is at an $\epsilon_i$ distance) for the approximation. Similarly for the other stable fixed point for initial points in the blue region.
+	This target system will have a set of points (in the green region) that if the flow is initialized there it has $A_i^f$ as the $\omega$-limit set (magenta line), however for the approximation the flow will approach $A_i^g$ (green line).
+	The opposite mismatch is true for the purple region.
+	%(such a model can be found in e.g. \citep{wong2007evidence})
   }\label{fig:separatrices}
 \end{SCfigure}
 
@@ -705,7 +707,7 @@ If an input sequence doesn't converge (i.e. it has a mixing property) we get the
 
 \section{Implications for understanding neural computation}
 
-Use of NODEs \citep{kim2021inferring}
+Use of NODEs in neuroscience \citep{kim2021inferring}.
 
 
 
