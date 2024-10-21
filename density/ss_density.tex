@@ -103,16 +103,26 @@ TODO: unify terminology: UAP, density result...
 \begin{table}[h]
 \begin{tabular}{|l|l|l|l|l|l|}
 \hline
- &  Time interval & FMP & Finite size							 			 &  Input     &     Discrete/Continuous   \\\hline\hline
-\citet{cybenko1989approximation} & Finite & No 			& Yes 					 &  &\\\hline
-\citet{funahashi1993approximation} & Finite & No			 & Yes				 	 &  &\\\hline
-\citet{hornik1989multilayer} & Finite & No 				& Yes					 & &\\\hline
-\citet{bai2019deq} & Infinite & Yes					 & No				 	 & &\\\hline
-\citet{schafer2007uap} & Infinite & Yes					 & No				 	 & &\\\hline
+ 						&  Time interval & FMP	& Finite size 		&  Input     	&     Discrete/Continuous   \\\hline\hline
+\citet{cybenko1989approximation} 	& Finite	 & No 		& Yes 			&  Yes		&		Continuous\\\hline
+\citet{funahashi1989approximate} 	& Finite	 & No		& Yes			&  Yes		&		Continuous\\\hline
+\citet{hornik1989multilayer} 		& Finite	 & No 		& Yes			& Yes		&		Continuous\\\hline
+\citet{funahashi1993approximation} 	& Finite	 & No		& Yes			&  Yes		&		Continuous\\\hline
+\citet{jin1995approximation}		& Finite	& No		& Yes			& Yes		&		Continuous	\\\hline
+\citet{jin1995universal}			& Finite	& No		& Yes			& Yes		&		Discrete	\\\hline
+\citet{bai2019deq} 				& Infinite	& Yes		& No		 	& Yes 		&				\\\hline
+\citet{schafer2007uap} 			& Infinite 	& Yes		& No			& Yes 		&		Discrete\\\hline
 \end{tabular}
 \end{table}
 
 
+TODO
+\citep{li1992approximation}
+
+
+\subsection{Learning sequences}
+ A critical review of recurrent neural networks for sequence learning \citep{lipton2015rnn}
+ \citep{pearlmutter1989learning}
 
 \subsection{Universal approximation for mappings}\label{sec:uapmappings}
 See Supp.Sec.~\ref{sec:uniapproxffn}.
@@ -163,10 +173,9 @@ This is in general not true for the unbounded time case, as the approximation er
 
 
 \subsubsection{Discrete sequence-to-sequence mapping}\label{sec:discrete}
-
 RNNs can approximate a state space trajectory (with time-varying inputs) uniformly  produced by either a discrete-time nonlinear system a closed discrete-time interval \citep{jin1995universal}.
 %
-Any function can be approximated arbitrarily well in probability with a recurrent neural network\citep{hammer2000approximation}. 
+Any function can be approximated arbitrarily well in probability with a recurrent neural network\citep{hammer2000approximation}.  %%any function???
 % where ... can be computed by one neuron whose activation function $\sigma$ possesses a local linearity.\citep{hammer2000approximation}
 %
 RNNs with continuous sigmoidal activation function have the UAP for finite number of time steps \citep{schafer2006recurrent, schafer2007uap}.
@@ -413,9 +422,9 @@ The results can be extended to systems that diverge to infinite in a finite numb
 Expectation of the error over all initial points
 \begin{equation}
 %\|\varphi-\hat \varphi\|_\epsilon \coloneqq \frac{1}{\vol X}\mathbb{E}\left[ \int_{x_0\in X}   \mathds{1}[\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty>\epsilon]\right],
-\|\varphi-\hat \varphi\|_\epsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0)-\hat \varphi(\cdot,x_0)\|_\infty>\epsilon\right),
+\|\varphi-\hat \varphi\|_\epsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0)-\hat \varphi(\cdot,x_0)\|_\infty>\epsilon\right).
 \end{equation}
-where $\mathds{1}[\cdot]$ is the indicator function. 
+%where $\mathds{1}[\cdot]$ is the indicator function. 
 This is similar to the metric in \citep{hammer2000approximation}.
 
 
@@ -597,7 +606,7 @@ with \[T\coloneqq\frac{1}{\int_{LC}\|f(x)\|dx} \text{ and } \hat T\coloneqq\frac
 %
 We will apply a perturbation $\hat{\hat{f}}$ to our approximations that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
 so that 
-\[\int_{\tilde{LC}}\|\tilde{f}(x)\| dx = \frac{1}{T}	\] for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
+\[\int_{\tilde{LC}}\|\tilde{f}(x)\| dx = \frac{1}{T}. 	\]% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
 
 the resulting total approximation is \[\tilde{f}=%\hat{f}+\hat{\hat{f}} = 
  \hat{f} + \epsilon_T(\hat{f} + \hat{\epsilon}\hat{\hat{f}})\]
@@ -627,7 +636,42 @@ Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O
 \item $\delta_T$: needs to be small enough so that no other attractor or separatrix is included (will this have an effect on the inside-basin flow error?)
 \end{itemize}
 
-TODO: show that if $\delta T$ is small enough then $\epsilon_T$ is small
+%TODO: 
+\begin{proposition}%For a limit cycle from
+Take a vector field $f\in C^1$.
+If $\dot x = f(x)$ has a hyperbolic limit cycle with period $T_f$ then there is $\epsilon$ for which all $g$ in a $\epsilon$ $C^1$ neighbourhood will have a limit cycle (with the same stability) with period $T_g$ such that  $|T_f-T_g| = \mathcal{O}(\epsilon)$.
+\end{proposition}
+
+\begin{proof}
+Existence and Hausdorff distance of $\mathcal{O}(\epsilon)$ follows from PMT.
+Parametrize the limit cycle orbit by $\theta$.
+Then $T_f = \frac{1}{\int_{\theta=0}^{2\pi}f(\gamma_f(\theta))d\theta}$.
+There if a $k\in\reals$ such that $\gamma_{\text{Arc Length}} - \gamma_{\text{Arc Length}}<k\epsilon$.
+
+\[\text{Arc Length} = \int_a^b \sqrt{1 + [f'(x)]^2} \, dx.\]
+%\begin{align}
+%\int_{\gamma_f}\sqrt{1 + [f(x)]^2}dx\\
+%\int_{\gamma_g}\sqrt{1 + [g(x)]^2}dx
+%\end{align}
+
+$\gamma_f(\theta)-\gamma_g(\theta) = \mathcal{O}(\epsilon) \leq m\epsilon$ %use homeomorphism for mapping! from PMT
+
+
+USE LIPSCHITZ! 
+$\|f(x)-f(y)\|\leq L_f\|x-y\|$
+$\|g(x)-g(y)\|\leq L_g\|x-y\|$
+
+
+\begin{align}
+f(\gamma_f(\theta)) - g(\gamma_g(\theta)) \leq  L_fL_gm\epsilon.
+\end{align}
+
+So \[\int_{\theta=0}^{2\pi}f(\gamma_f(\theta))d\theta-g(\gamma_g(\theta))d\theta\leq L_fL_gm\epsilon\theta.\]
+\end{proof}
+
+
+
+this implies that if $\delta T$ is small enough then $\epsilon_T$ is small
 
 \paragraph{The effect of the correction on the flow inside the basins}
 - Tubular neighbourhood: $\epsilon_T$ effect
@@ -638,7 +682,8 @@ TODO: show that if $\delta T$ is small enough then $\epsilon_T$ is small
 See note on  $\hat\epsilon$ Knob.
 
 
-
+\paragraph{Summary}
+We can choose the initial approximation $\hat{f}$ such that the 
 
 
 
@@ -916,6 +961,19 @@ semiautonomous NODEs (SA-NODEs) \citep{li2024universal}
 
 
 \section{Support for the proof}
+
+\subsection{Some Preliminaries}
+To construct the infinite horixon approximation theory of the NODEs, some preliminaries will be provided in this section.
+
+\begin{definition}[Lipschitz]
+ Let both $S \subset \mathbb{S}^n$ and $U \subset \mathbb{R}^m$ be open subsets.
+ A mapping $f: S \times U \rightarrow \mathbb{R}^n$ is said to be Lipschitz in $x$ on $S \times U$ if there exists a constant $L$ such that
+\[
+|f(x_1, u) - f(x_2, u)| \leq L |x_1 - x_2|
+\]
+for all $x_1, x_2 \in S$, and any $u \in U$, and $L$ is a Lipschitz constant of $f(x, u)$ in $x$. $f$ is locally Lipschitz in $x$ if each point of $S$ has a neighborhood $S_0 \subset S$ such that the restriction $f$ is Lipschitz in $x$ on $S_0 \times U$.
+\end{definition}
+
 
 \subsection{Structural stability}
 \citep{peixoto1959ss, mane1987ss, hu1994ss, hayashi1997invariant, robbin1971ss, robinson1974ss, palis1970ss}
