@@ -65,11 +65,13 @@
 \maketitle
 
 \section{Introduction}
+The versatility or flexibility of a given machine learning paradigm is usually established by proving its universality.
+We say that a family of transformations is universal when its elements can approximate as accurately as one wants all the elements of a sufficiently rich class containing, for example, all continuous or even all measurable transformations.
+
 Recurrent Neural Networks (RNNs) are believed to be universal approximators.
 However, universal approximation results with RNNs are limited in scope.
 Existing results about approximating dynamical systems either focus on finite time horizon approximation or on approximating stable dynamical systems on an infinite horizon.
-This misses important behavior of the system (e.g. temporal generalization of the approximation).
-
+This misses important behavior of the system (e.g. temporal generalization of the approximation, see Fig.~\ref{fig:lc_period_div}).
 
 A key motivation for extending approximation results to the infinite horizon lies in its ability to capture qualitative behaviors over time. For example, infinite horizon approximation allows us to better understand how a system's behavior unfolds over extended periods, providing insights into stability, transitions, and equilibrium states.
  Furthermore, an effective infinite horizon approximation ensures robustness: small perturbations, such as noise, do not result in abrupt increases in approximation error, but instead produce gradual, smooth deviations in the system's trajectory.
@@ -83,11 +85,11 @@ We provide a fist-of-its-kind \textbf{approximation result for multi-stable syst
 
 %mention that vanilla RNNs are not universal approximators?
 
+%how we will do this
 
 
 
-
-\section{Approximation of dynamical systems}
+\section{Approximation of dynamical systems: A vast literature with limited results}
 %sota 
 
 Accurately approximating dynamical systems is essential for understanding and predicting complex behaviors across a range of applications, from robotics to climate modeling.
@@ -147,7 +149,7 @@ The solutions to ODEs can generate smooth transformations on manifolds.
 The flow \( \phi_t \) of the vector field \( X \) defines a map from \( M \) to itself for each fixed time \( t \). Under appropriate conditions (such as \( X \) being complete), \( \phi_t \) is a diffeomorphism of \( M \) for each \( t \). In other words, \( \phi_t \) is smooth, bijective, and its inverse \( \phi_{-t} \) is also smooth.
 Thus, the solutions (flows) of ODEs associated with smooth vector fields give rise to a one-parameter family of diffeomorphisms.
 %
-Neural ODEs (NODEs) and Invertible neural networks (INNs) are a sup-universal approximator for a fairly large class of diffeomorphisms, i.e., smooth invertible maps with smooth inverse \citep{teshima2020uap, teshima2020coupling, ishikawa2023universal}.
+Neural ODEs (NODEs) and Invertible neural networks (INNs) are a sup-universal approximator for a fairly large class of diffeomorphisms, i.e., smooth invertible maps with smooth inverse \citep{huang2018neural, jaini2019sum, teshima2020uap, teshima2020coupling, ishikawa2023universal}.
 
 %rem
 For dynamical systems, however, this only guarantees a finite time approximation.
@@ -173,6 +175,22 @@ This is in general not true for the unbounded time case, as the approximation er
 
 
 \subsubsection{Discrete sequence-to-sequence mapping}\label{sec:discrete}
+\paragraph{Discrete tokes: Turing completeness}
+%A finite size recurrent net model (with linear and Heaviside transfer functions) is Turing universal (Dynamical Recognizer) \citep{pollack1991induction}.
+% Induction by phase transition. A small weight adjustment causes a "bifurcation" in the limit behavior of the network. 
+% phase transition corresponds to the onset of the network’s capacity for generalizing to arbitrary-length strings
+%A finite-sized recurrent neural network with sigmoidal activation functions can simulate a universal Turing machine \citep{siegelmann1992computational}.
+%Sigmoidal neural networks can be used to compute any recursive (Turing) function\citep{kilian1996universality}.
+
+A finite-sized RNN with either linear and Heaviside or sigmoidal activation functions is Turing universal \citep{pollack1991induction, siegelmann1992computational,kilian1996universality}.
+%
+RNNs with activation function is for any point Lipschitz continuous in some neighborhood can be simulated by a family of nonuniform Boolean circuits\citep{siegelmann1994analog}.
+%
+Finally, RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
+
+
+
+\paragraph{Continuous tokens}
 RNNs can approximate a state space trajectory (with time-varying inputs) uniformly  produced by either a discrete-time nonlinear system a closed discrete-time interval \citep{jin1995universal}.
 %
 Any function can be approximated arbitrarily well in probability with a recurrent neural network\citep{hammer2000approximation}.  %%any function???
@@ -184,6 +202,7 @@ Furthermore, locally recurrent networks with two hidden layers is able to approx
 %
 Finally, more recently it was shown that discrete-time RNNs are universal approximators of discrete-time systems \citep{aguiar2023universal}.
 %
+
 
 
 
@@ -234,6 +253,9 @@ Any finite trajectory of an $n$-dimensional continuous dynamical system can be a
 What goes wrong after $T$?
 %Why should we care?
 
+For example, a target limit cycle and its approximation will diverge no matter how close the approximation is (if there is a non-perfect match between the periods, see Fig.~\ref{fig:lc_period_div}).
+We will refer to this as P-type error (for Period).
+
 \setlength\belowcaptionskip{-5ex}
 \begin{SCfigure}[10][bthp]
   \centering
@@ -244,6 +266,8 @@ What goes wrong after $T$?
   }\label{fig:lc_period_div}
 \end{SCfigure}
 
+Points near a separatrix will converge to different attractors if there is a non-perfect match of separatrices (see Fig.~\ref{fig:separatrices}).
+We will refer to this as B-type error (for Basin).
 
 
 
@@ -300,6 +324,9 @@ UAP of RNNs for uniformly asymptotically incrementally stable systems on an infi
 %In other words, any of these families exhibit universality properties in the fading memory category.
 
 \citet{jaeger2001echo} proposed Echo State Networks (ESNs), demonstrating their universal approximation capabilities specifically for fading memory systems.
+This result was extended to include approximation of systems with an input \citep{manjunath2013echo}.
+
+
 If the domain of the functional $H$ is restricted to a space of uniformly bounded sequences with the fading memory property then various families of state-space transformations can be used to approximate it uniformly: 
  linear systems with polynomial or neural network readouts \citep{boyd1985fading,grigoryeva2018universal,gonon2019reservoir}, state-affine systems with linear readouts \citep{grigoryeva2018universal}, or echo state networks \citep{grigoryeva2018echo,gonon2019reservoir,gonon2021fading,gonon2023approximation}.
  More recently, Simple Cycle Reservoirs were shown to be universal for this set of systems \citep{li2023simple}.
@@ -312,6 +339,11 @@ If the domain of the functional $H$ is restricted to a space of uniformly bounde
 %Fading memory echo state networks are universal \citep{gonon2021fading} [Gono 21]
 %Approximation error estimates for random neural networks and reservoir systems \citep{gonon2023approximation} [Gono 23a]
 
+
+One fixed point \citep{bai2019deq} DEQ (infinitly deep)
+
+
+Invariant set \citep{konishi2023stable} DEQ
 
 %\paragraph{Stability implies FNNs are enough}%crit
 %When Recurrent Models Don't Need to Be Recurrent \citep{miller2018stable}.
@@ -326,6 +358,14 @@ If  input/output sequence target has a realization\footnote{See Supp.Sec.~\ref{s
 Hence, the fading memory assumption implies that the state will be “asymptotically independent” of the initial condition.
 Therefore, FPM systems cannot have multi-stability which makes this framework exclude many real-world systems.
  \end{remark}
+ 
+ \begin{remark}
+ This property quantitatively captures the idea that perturbations to the initial condition have asymptotically negligible influence on the long-term behavior of the system trajectory.
+This implies that imperfect system models may still be able of generating outputs that uniformly approximate the outputs of the original system over infinite time intervals.
+In contrast, for systems not satisfying this stability condition, a sharp bound on the approximation error degrades exponentially with time \citep{hirsch1974nonautonomous, sontag2013mathematical}.
+\end{remark}
+
+Stability and memory-loss go hand-in-hand \citep{manjunath2020stability}
 
 
 \subsection{Approximation of flows}
@@ -351,6 +391,8 @@ It is true by virtue of Theorem.~\ref{theorem:ss} that vector fields that are cl
 Because it is well known that vector fields can be approximated to arbitrary precision with FNN, this result immediately follows for NODEs.
 
 %the autonomous ESN ψ ∈ C 1(Rd) with parameters ( A,  W in, W out,  φ) has a normally hyperbolic attracting submanifold on which ψ is topologically conjugate to φ.
+
+Fixed point matching \citep{cohen1992construction}.
 
 
 \section{Approximation of multi-stable dynamical systems on infinite time intervals}
@@ -441,6 +483,14 @@ For example, if we take the uniform norm of the uniform norm, it can be shown th
 
 
 \paragraph{Chaotic orbits}
+Forecasting
+\citep{jaeger2004harnessing}
+\citep{fan2020long}
+\citep{vlachas2020backpropagation}
+\citep{grigoryeva2024forecasting}
+
+
+
 Different metric: Chaotic orbits
 mention: we can guarantee finite time approximation
 prove: we can never do infinite time approximation 
@@ -607,8 +657,9 @@ with \[T\coloneqq\frac{1}{\int_{LC}\|f(x)\|dx} \text{ and } \hat T\coloneqq\frac
 We will apply a perturbation $\hat{\hat{f}}$ to our approximations that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
 so that 
 \[\int_{\tilde{LC}}\|\tilde{f}(x)\| dx = \frac{1}{T}. 	\]% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
-
-the resulting total approximation is \[\tilde{f}=%\hat{f}+\hat{\hat{f}} = 
+The existence of such a perturbation (i.e. that indeed it will be \emph{small} enough) requires that the initial difference between the periods is small.
+If the approximation vector field is close enough to the target vector field, then the periods will be guaranteed to be close (see for the precise statement and proof Supp.Sec.~\ref{sec:}).
+The resulting total approximation is \[\tilde{f}=%\hat{f}+\hat{\hat{f}} = 
  \hat{f} + \epsilon_T(\hat{f} + \hat{\epsilon}\hat{\hat{f}})\]
 
 
@@ -636,38 +687,6 @@ Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O
 \item $\delta_T$: needs to be small enough so that no other attractor or separatrix is included (will this have an effect on the inside-basin flow error?)
 \end{itemize}
 
-%TODO: 
-\begin{proposition}%For a limit cycle from
-Take a vector field $f\in C^1$.
-If $\dot x = f(x)$ has a hyperbolic limit cycle with period $T_f$ then there is $\epsilon$ for which all $g$ in a $\epsilon$ $C^1$ neighbourhood will have a limit cycle (with the same stability) with period $T_g$ such that  $|T_f-T_g| = \mathcal{O}(\epsilon)$.
-\end{proposition}
-
-\begin{proof}
-Existence and Hausdorff distance of $\mathcal{O}(\epsilon)$ follows from PMT.
-Parametrize the limit cycle orbit by $\theta$.
-Then $T_f = \frac{1}{\int_{\theta=0}^{2\pi}f(\gamma_f(\theta))d\theta}$.
-There if a $k\in\reals$ such that $\gamma_{\text{Arc Length}} - \gamma_{\text{Arc Length}}<k\epsilon$.
-
-\[\text{Arc Length} = \int_a^b \sqrt{1 + [f'(x)]^2} \, dx.\]
-%\begin{align}
-%\int_{\gamma_f}\sqrt{1 + [f(x)]^2}dx\\
-%\int_{\gamma_g}\sqrt{1 + [g(x)]^2}dx
-%\end{align}
-
-$\gamma_f(\theta)-\gamma_g(\theta) = \mathcal{O}(\epsilon) \leq m\epsilon$ %use homeomorphism for mapping! from PMT
-
-
-USE LIPSCHITZ! 
-$\|f(x)-f(y)\|\leq L_f\|x-y\|$
-$\|g(x)-g(y)\|\leq L_g\|x-y\|$
-
-
-\begin{align}
-f(\gamma_f(\theta)) - g(\gamma_g(\theta)) \leq  L_fL_gm\epsilon.
-\end{align}
-
-So \[\int_{\theta=0}^{2\pi}f(\gamma_f(\theta))d\theta-g(\gamma_g(\theta))d\theta\leq L_fL_gm\epsilon\theta.\]
-\end{proof}
 
 
 
@@ -750,10 +769,17 @@ This allows us to formulate approximation in terms of attractors and separatrice
 
 If an input sequence doesn't converge (i.e. it has a mixing property) we get the same issue with approximating the system as with chaotic orbits.
 
+
+
+
 \section{Implications for understanding neural computation}
+
+Reconstructing Computational Dynamics from Neural Measurements with Recurrent Neural Networks \citep{durstewitz2023reconstructing}.
 
 Use of NODEs in neuroscience \citep{kim2021inferring}.
 
+\subsection{Robust neural computation}
+Idea: Two dynamical phenomena are isolated into primitive architectural components which perform the operations of continuous nonlinear transformation and autoassociative recall \citep{pineda1988dynamics}.
 
 
 
@@ -863,6 +889,7 @@ f_{\text{MLP}}(x) = W^{(2)} h^{(1)} + b^{(2)}
 Here, \(h^{(1)}\) represents the hidden layer, while \(W^{(1)}, W^{(2)}\) and \(b^{(1)}, b^{(2)}\) are the weights and biases learned during training. The activation function \(\sigma(\cdot)\) introduces the necessary non-linearity.
 
 
+Three-layered multi-output Feedforward Networks are universal approximators for vector-valued functions.
 
 \begin{theorem}[Universal Approximation Theorem for Feedforward Neural Networks\citep{hornik1989multilayer,schafer2007uap}]
 %\textbf{Theorem 1 (Universal Approximation Theorem for Feedforward Neural Networks).} 
@@ -873,36 +900,32 @@ For any sigmoid activation function \( f \), any dimension \( I \), and any prob
 Theorem 1 holds for the approximation of functions in \( C^{I,N} \) and \( M^{I,N} \) by the extended function class \( \Sigma^{I,N} \). Thereby, the metric \( \rho_{\mu} \) is replaced by \( \rho_{\mu}^N := \sum_{k=1}^{N} \rho_{\mu}(f_k, g_k) \).
 \end{corollary}
 
-Three-layered multi-output Feedforward Networks are universal approximators for vector-valued functions.
+%In a more general case, for a deeper MLP with \(L\) layers, we have:
+%\[
+%h^{(1)} = \sigma(W^{(1)} x + b^{(1)})
+%\]
+%\[
+%h^{(2)} = \sigma(W^{(2)} h^{(1)} + b^{(2)})
+%\]
+%\[
+%\vdots
+%\]
+%\[
+%h^{(L-1)} = \sigma(W^{(L-1)} h^{(L-2)} + b^{(L-1)})
+%\]
+%\[
+%f(x) = W^{(L)} h^{(L-1)} + b^{(L)}
+%\]
 
-
-
-In a more general case, for a deeper MLP with \(L\) layers, we have:
-\[
-h^{(1)} = \sigma(W^{(1)} x + b^{(1)})
-\]
-\[
-h^{(2)} = \sigma(W^{(2)} h^{(1)} + b^{(2)})
-\]
-\[
-\vdots
-\]
-\[
-h^{(L-1)} = \sigma(W^{(L-1)} h^{(L-2)} + b^{(L-1)})
-\]
-\[
-f(x) = W^{(L)} h^{(L-1)} + b^{(L)}
-\]
-
-This architecture allows the MLP to progressively build complex representations, layer by layer, transforming raw input data into rich feature hierarchies.
-
-
-For the approximations, we either need to let the width or depth of the MLP grow.
+%This architecture allows the MLP to progressively build complex representations, layer by layer, transforming raw input data into rich feature hierarchies.%
+%For the approximations, we either need to let the width or depth of the MLP grow.
 
 It is not the specific choice of the activation function but rather the multilayer feed-forward architecture itself that gives neural networks the potential of being universal approximators\citep{hornik1991approximation}.
+%
+The universal approximation propert is equivalent to having a nonpolynomial activation function \citep{pinkus1999approximation}.
 
-the universal approximation property is equivalent to having a nonpolynomial activation function \citep{pinkus1999approximation}
 
+Function+Derivatives \citep{hornik1990universal}.
 
 
 \subsection{Other results on UAP for mappings}
@@ -913,11 +936,14 @@ The universal approximation property with respect to the $L^p$-norm can be insuf
  $L^p$ approximation may still hold even if the approximator largely differs from the target function on a small region of the input space.
 \end{remark}
 
-Homeomorphisms \citep{zhang2020approximation}
 
-Universal approximation of monotone analytic functions homotopic to the identity\citep{tabuada2020universal}
+Universal approximation of 
+\begin{itemize}
+\item Homeomorphisms \citep{zhang2020approximation}
+\item Invariant functions\citep{li2022deep}
+\item Monotone analytic functions homotopic to the identity\citep{tabuada2020universal}
+\end{itemize}
 
-Invariant functions\citep{li2022deep}
 
 
 
@@ -974,6 +1000,30 @@ To construct the infinite horixon approximation theory of the NODEs, some prelim
 for all $x_1, x_2 \in S$, and any $u \in U$, and $L$ is a Lipschitz constant of $f(x, u)$ in $x$. $f$ is locally Lipschitz in $x$ if each point of $S$ has a neighborhood $S_0 \subset S$ such that the restriction $f$ is Lipschitz in $x$ on $S_0 \times U$.
 \end{definition}
 
+
+\begin{lemma}
+Let a mapping \( F : D \to \mathbb{R}^n \) be \( C^t \). 
+Then \( F \) is locally Lipschitz. Moreover, if \( A \subset D \) is compact, then the restriction \( F|_A \) is Lipschitz.
+(For proof see Hirsch \& Smale, 1974, chap. 8, §3. Lemma and §6. Lemma.)
+\end{lemma}	
+
+
+\begin{lemma}
+%LEMMA 3.
+Let \( D \) be an open subset of \( \mathbb{R}^n \) and \( F : D \to \mathbb{R}^n \) be a \( C^t \)-mapping. 
+Let \( x(t) \) be a solution on a maximal open interval \( J = (a, \beta) \subset \mathbb{R} \) with \( \beta < \infty \). 
+Then for any given compact subset \( K \subset D \), there is some \( t \in (a, \beta) \) with \( x(t) \notin K \). 
+(For proof see Hirsch \& Smale, 1974, chap. 8, §5. Theorem).
+\end{lemma}	
+
+
+\begin{lemma}[Lemma 4 in \citep{funahashi1993approximation}]
+Let \( F: \mathbb{R}^n \to \mathbb{R}^n \) be a bounded \( C^t \)-mapping. Then, the differential equation
+\[
+\dot{x} = -\frac{1}{r} x + F(x), \quad r > 0
+\]
+has a unique solution on \([0, \infty)\).
+\end{lemma}	
 
 \subsection{Structural stability}
 \citep{peixoto1959ss, mane1987ss, hu1994ss, hayashi1997invariant, robbin1971ss, robinson1974ss, palis1970ss}
@@ -1254,7 +1304,22 @@ connecting orbits between unstable periodic orbits.
 
 \textbf{Normal hyperbolicity}
 Implied by structural stability.
+
 \end{proof}
+
+
+
+\subsubsection{Nontrivial examples}
+
+\setlength\belowcaptionskip{-5ex}
+\begin{SCfigure}[10][bthp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{unstab_lc_3fps}
+  \caption{Separatrix between two stable fixed points inside an unstable limit cycle.
+  }\label{fig:unstab_lc_3fps}
+\end{SCfigure}
+
+
 
 \subsection{Perturbing limit cycles}
 If the limit cycle is hyperbolic, the Hausdorff distance between the original and perturbed limit cycles tends to scale linearly with \(\epsilon\), the size of the perturbation. That is,
@@ -1266,6 +1331,43 @@ d_H(\gamma_0, \gamma_\epsilon) = O(\epsilon),
 where \(d_H\) denotes the Hausdorff distance. The linear dependence arises because small changes in the vector field result in small changes in the trajectories of the system, which leads to a nearby limit cycle.
 
 
+\subsubsection{Period matching}
+%TODO: 
+\begin{proposition}%For a limit cycle from
+Take a vector field $f\in C^1$.
+If $\dot x = f(x)$ has a hyperbolic limit cycle with period $T_f$ then there is $\epsilon$ for which all $g$ in a $\epsilon$ $C^1$ neighbourhood will have a limit cycle (with the same stability) with period $T_g$ such that  $|T_f-T_g| = \mathcal{O}(\epsilon)$.
+\end{proposition}
+
+\begin{proof}
+Existence and Hausdorff distance of $\mathcal{O}(\epsilon)$ follows from PMT.
+Parametrize the limit cycle orbit by $\theta$.
+Then $T_f = \frac{1}{\int_{\theta=0}^{2\pi}f(\gamma_f(\theta))d\theta}$.
+There if a $k\in\reals$ such that $\gamma_{\text{Arc Length}} - \gamma_{\text{Arc Length}}<k\epsilon$.
+
+\[\text{Arc Length} = \int_a^b \sqrt{1 + [f'(x)]^2} \, dx.\]
+%\begin{align}
+%\int_{\gamma_f}\sqrt{1 + [f(x)]^2}dx\\
+%\int_{\gamma_g}\sqrt{1 + [g(x)]^2}dx
+%\end{align}
+
+$\gamma_f(\theta)-\gamma_g(\theta) = \mathcal{O}(\epsilon) \leq m\epsilon$ %use homeomorphism for mapping! from PMT
+
+
+USE LIPSCHITZ! 
+$\|f(x)-f(y)\|\leq L_f\|x-y\|$
+$\|g(x)-g(y)\|\leq L_g\|x-y\|$
+
+
+\begin{align}
+f(\gamma_f(\theta)) - g(\gamma_g(\theta)) \leq  L_fL_gm\epsilon.
+\end{align}
+
+So \[\int_{\theta=0}^{2\pi}f(\gamma_f(\theta))d\theta-g(\gamma_g(\theta))d\theta\leq L_fL_gm\epsilon\theta.\]
+\end{proof}
+
+
+
+%obsolete
 \subsubsection{Applying Melnikov’s Method to Limit Cycles}
 
 To understand the period change due to a perturbation of a limit cycle, let’s consider the following:
