@@ -104,8 +104,10 @@ TODO: unify terminology: UAP, density result...
 
 \begin{table}[h]
 \begin{tabular}{|l|l|l|l|l|l|}
-\hline
- 						&  Time interval & FMP	& Finite size 		&  Input     	&     Discrete/Continuous   \\\hline\hline
+%\hline
+\cline{2-6}
+    \multicolumn{1}{c|}{}
+ 						&  Time interval & FMP	& Finite size 		&  Input     	&     Discrete/Continuous   \\\cline{2-6}\hline
 \citet{cybenko1989approximation} 	& Finite	 & No 		& Yes 			&  Yes		&		Continuous\\\hline
 \citet{funahashi1989approximate} 	& Finite	 & No		& Yes			&  Yes		&		Continuous\\\hline
 \citet{hornik1989multilayer} 		& Finite	 & No 		& Yes			& Yes		&		Continuous\\\hline
@@ -122,7 +124,7 @@ TODO
 \citep{li1992approximation}
 
 
-\subsection{Learning sequences}
+\paragraph{Learning sequences}
  A critical review of recurrent neural networks for sequence learning \citep{lipton2015rnn}
  \citep{pearlmutter1989learning}
 
@@ -658,7 +660,7 @@ We will apply a perturbation $\hat{\hat{f}}$ to our approximations that is small
 so that 
 \[\int_{\tilde{LC}}\|\tilde{f}(x)\| dx = \frac{1}{T}. 	\]% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
 The existence of such a perturbation (i.e. that indeed it will be \emph{small} enough) requires that the initial difference between the periods is small.
-If the approximation vector field is close enough to the target vector field, then the periods will be guaranteed to be close (see for the precise statement and proof Supp.Sec.~\ref{sec:}).
+If the approximation vector field is close enough to the target vector field, then the periods will be guaranteed to be close (see for the precise statement and proof Supp.Sec.~\ref{sec:periodcloseness}).
 The resulting total approximation is \[\tilde{f}=%\hat{f}+\hat{\hat{f}} = 
  \hat{f} + \epsilon_T(\hat{f} + \hat{\epsilon}\hat{\hat{f}})\]
 
@@ -701,6 +703,10 @@ this implies that if $\delta T$ is small enough then $\epsilon_T$ is small
 See note on  $\hat\epsilon$ Knob.
 
 
+\paragraph{The basin of attraction for a stable limit cycle}
+Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension, with a scalar circle coordinate \citep{structure}.
+
+
 \paragraph{Summary}
 We can choose the initial approximation $\hat{f}$ such that the 
 
@@ -709,6 +715,9 @@ We can choose the initial approximation $\hat{f}$ such that the
 \subsubsection{Multiple limit cycles}
 We can perform the same procedure for a finite set of limit cycles.
 We have to make sure that all the $\hat{\epsilon}_i$ are step-wise small enough so that $\epsilon_{T_i}$ is small enough. 
+
+%can we really do this sequentially?
+%when we change \epsilon_T_i we have to adjust the other \epsilon_T_j s
 
 %%%QPTA
 \paragraph{Quasi-periodic toroidal attractors (QPTA)}%more generally: doing this for multiple limit cycles
@@ -876,6 +885,8 @@ Despite ReLU's unbounded nature, it still supports the universal approximation p
 
 The universal approximation property of FNNs was first proven by \citep{cybenko1989approximation} for sigmoidal activation functions. This was followed by significant generalizations by \citep{hornik1989multilayer}, \citep{funahashi1989approximate} and \citep{hechtnielsen1992backpropagation}, which extended the result to broader classes of activation functions, including the popular ReLU.
 These results serve as the cornerstone of modern neural network theory, supporting the use of deep architectures across diverse machine learning applications.
+
+% There is a single hidden layer feedforward network that approximates any measurable function to any desired degree of accuracy on some compact set K \citep{hornik1989multilayer}.
 
 %all above are 3 layer FNNs? right?
 
@@ -1331,9 +1342,9 @@ d_H(\gamma_0, \gamma_\epsilon) = O(\epsilon),
 where \(d_H\) denotes the Hausdorff distance. The linear dependence arises because small changes in the vector field result in small changes in the trajectories of the system, which leads to a nearby limit cycle.
 
 
-\subsubsection{Period matching}
+\subsubsection{Period closeness}\label{sec:periodcloseness}
 %TODO: 
-\begin{proposition}%For a limit cycle from
+\begin{proposition}\label{prop:periodcloseness}%For a limit cycle from
 Take a vector field $f\in C^1$.
 If $\dot x = f(x)$ has a hyperbolic limit cycle with period $T_f$ then there is $\epsilon$ for which all $g$ in a $\epsilon$ $C^1$ neighbourhood will have a limit cycle (with the same stability) with period $T_g$ such that  $|T_f-T_g| = \mathcal{O}(\epsilon)$.
 \end{proposition}
@@ -1363,11 +1374,45 @@ f(\gamma_f(\theta)) - g(\gamma_g(\theta)) \leq  L_fL_gm\epsilon.
 \end{align}
 
 So \[\int_{\theta=0}^{2\pi}f(\gamma_f(\theta))d\theta-g(\gamma_g(\theta))d\theta\leq L_fL_gm\epsilon\theta.\]
+
+
+Use Davis-Kahan theorem. 
+This states that the largest eigenvalues (0 for a stable limit cycle) are at most 
 \end{proof}
 
 
+\begin{theorem}[Davis-Kahan]
+Let \( A \) and \( B \) be \( n \times n \) Hermitian matrices with eigenvalues \( \lambda_1 \leq \lambda_2 \leq \dots \leq \lambda_n \) for \( A \), and \( \mu_1 \leq \mu_2 \leq \dots \leq \mu_n \) for \( B \). Let \( \Delta = A - B \), and let \( \delta = \| \Delta \| \) be the operator norm of \( \Delta \). Then, for any eigenvalue \( \lambda_i \) of \( A \) and \( \mu_j \) of \( B \), the Davis-Kahan theorem gives the following bound on the difference between the eigenvalues of \( A \) and \( B \):
+\[
+|\lambda_i - \mu_i| \leq \frac{\| \Delta \|}{\sin \theta_i}
+\]
+where \( \theta_i \) is the angle between the eigenvectors corresponding to \( \lambda_i \) and \( \mu_i \). That is, if \( v_i \) is the eigenvector of \( A \) corresponding to \( \lambda_i \) and \( w_i \) is the eigenvector of \( B \) corresponding to \( \mu_i \), then
+\[
+\cos \theta_i = | \langle v_i, w_i \rangle |.
+\]
+\end{theorem}
 
-%obsolete
+For a discussion and proofs of this theorem see for example Section V.3 of \citet{stewart1990matrix}.
+
+
+\begin{theorem}[Wedin's Theorem]
+Let \( A \in \mathbb{C}^{m \times n} \) and \( \tilde{A} \in \mathbb{C}^{m \times n} \) be two matrices such that \( \| A - \tilde{A} \| \) is small, where \( \| \cdot \| \) denotes a matrix norm. Then, for the singular values \( \sigma_i(A) \) and \( \sigma_i(\tilde{A}) \), and corresponding singular vectors \( \mathbf{u}_i(A) \), \( \mathbf{v}_i(A) \), \( \mathbf{u}_i(\tilde{A}) \), \( \mathbf{v}_i(\tilde{A}) \), the following bounds hold:
+\[
+\left| \sigma_i(A) - \sigma_i(\tilde{A}) \right| \leq \| A - \tilde{A} \| \cdot \max_{j \neq i} \frac{\sigma_j(A)}{\sigma_i(A)}
+\]
+and for the singular vectors:
+\[
+\| \mathbf{u}_i(A) - \mathbf{u}_i(\tilde{A}) \| \leq \frac{\| A - \tilde{A} \|}{\sigma_i(A)} \cdot \max_{j \neq i} \frac{\sigma_j(A)}{\sigma_i(A)}
+\]
+\[
+\| \mathbf{v}_i(A) - \mathbf{v}_i(\tilde{A}) \| \leq \frac{\| A - \tilde{A} \|}{\sigma_i(A)} \cdot \max_{j \neq i} \frac{\sigma_j(A)}{\sigma_i(A)}
+\]
+\end{theorem}
+
+
+
+\subsubsection{Period matching}
+%obsolete?
 \subsubsection{Applying Melnikov’s Method to Limit Cycles}
 
 To understand the period change due to a perturbation of a limit cycle, let’s consider the following:
