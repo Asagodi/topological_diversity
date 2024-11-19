@@ -108,14 +108,16 @@ TODO: unify terminology: UAP, density result...
 \cline{2-6}
     \multicolumn{1}{c|}{}
  						&  Time interval & FMP	& Finite size 		&  Input     	&     Discrete/Continuous   \\\cline{2-6}\hline
-\citet{cybenko1989approximation} 	& Finite	 & No 		& Yes 			&  Yes		&		Continuous\\\hline
-\citet{funahashi1989approximate} 	& Finite	 & No		& Yes			&  Yes		&		Continuous\\\hline
-\citet{hornik1989multilayer} 		& Finite	 & No 		& Yes			& Yes		&		Continuous\\\hline
+\citet{cybenko1989approximation} 	& Finite	 & No 		& Yes 			&  Yes		&		Continuous\\\hline  %vf
+\citet{funahashi1989approximate} 	& Finite	 & No		& Yes			&  Yes		&		Continuous\\\hline  %vf
+\citet{hornik1989multilayer} 		& Finite	 & No 		& Yes			& Yes		&		Continuous\\\hline  %
 \citet{funahashi1993approximation} 	& Finite	 & No		& Yes			&  Yes		&		Continuous\\\hline
 \citet{jin1995approximation}		& Finite	& No		& Yes			& Yes		&		Continuous	\\\hline
+%\citet{hammer2000...
 \citet{jin1995universal}			& Finite	& No		& Yes			& Yes		&		Discrete	\\\hline
-\citet{bai2019deq} 				& Infinite	& Yes		& No		 	& Yes 		&				\\\hline
+\citet{bai2019deq} 				& Infinite	& Yes		& No		 	& Yes 		&		Discrete		\\\hline
 \citet{schafer2007uap} 			& Infinite 	& Yes		& No			& Yes 		&		Discrete\\\hline
+\dots&\dots &\dots&\dots&\dots&\dots\\
 \end{tabular}
 \end{table}
 
@@ -190,6 +192,13 @@ RNNs with activation function is for any point Lipschitz continuous in some neig
 %
 Finally, RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
 
+
+\citep{perez2019turing}
+\citep{dehghani2018universal, yun2019transformers}
+\citep{chung2021turing}
+\citep{perez2021attention}
+\citep{giannou2023looped}
+\citep{stogin2024provably}
 
 
 \paragraph{Continuous tokens}
@@ -454,6 +463,7 @@ In essence, by setting up $g$ as a neural network, you are equipping the NODE wi
 
 
 \subsubsection{Metric}
+\citep{girard2007approximation}
 Uniform norm over time (given the same initial starting point)
 \begin{equation}
 \|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty = \sup_t|\varphi(t,x_0)-\hat \varphi(t,x_0)|
@@ -704,7 +714,7 @@ See note on  $\hat\epsilon$ Knob.
 
 
 \paragraph{The basin of attraction for a stable limit cycle}
-Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension, with a scalar circle coordinate \citep{structure}.
+Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension, with a scalar circle coordinate \citep{wilson1967structure}.
 
 
 \paragraph{Summary}
@@ -729,8 +739,7 @@ Important!\citep{Park2023a}
 \subsection{Approximating a chaotic orbit}
 %TODO:  name for type IV error: C-type (chaos)
 We cannot approximate according to our above criteria.
-Every small discrepancy in the vector field will lead to 
-(analogous to perturbing initial start of the chaotic orbit 
+Every small discrepancy in the vector field will lead to orbits starting at same position to diverge over time, analogous to perturbing initial start of the chaotic orbit.
 
 
 What we can do is minimize the Hausdorff distance between the chaotic invariant manifolds and match the Lyapunov exponents of the target system
@@ -739,8 +748,7 @@ The first because of structural stability.
 
 
 Alternatively, we can guarantee that the shift representation of the dynamics is persistent.
-%
-Symbolic dynamics: Mapping onto the same discrete dynamical shift dynamical system
+% Symbolic dynamics: Mapping onto the same shift dynamical system
 
 
 
@@ -769,8 +777,6 @@ We can tile the continuous attractor with a uniform grid of stable limit cycles.
 
 This can be only done by also calculating in the probability of making an error on a given input.
 So the approximation probability guarantee will need to be formulated in terms of the probability of making an error bigger than a threshold calculated over the function of input sequences and initial points.
-
-
 
 For non-autonomous we need another Bernstein-type result:
 we can only approximate input driven dynamics (in our metric) if a forward attractor exists for each input sequence 
@@ -933,8 +939,9 @@ Theorem 1 holds for the approximation of functions in \( C^{I,N} \) and \( M^{I,
 
 It is not the specific choice of the activation function but rather the multilayer feed-forward architecture itself that gives neural networks the potential of being universal approximators\citep{hornik1991approximation}.
 %
-The universal approximation propert is equivalent to having a nonpolynomial activation function \citep{pinkus1999approximation}.
+The universal approximation property is equivalent to having a nonpolynomial activation function \citep{pinkus1999approximation}.
 
+UA with Deep narrow \citep{kidger2020universal}
 
 Function+Derivatives \citep{hornik1990universal}.
 
