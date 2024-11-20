@@ -171,7 +171,7 @@ This property has been formally proven for systems operating over finite time in
 Since the results concern a compact time interval, to approximate dynamics it is enough to approximate $f$, i.e., these approaches convert RNN approximation to FNN approximation.
 %merge
 Existing results have established that recurrent nets are capable of generating simulated trajectories that approximate true system trajectories within arbitrary error tolerance over a finite time interval.
-Most of these results rely on Gr\"{o}nwall’s inequality to control the difference between the trajectories of the original system and its approximation, which incurs an exponential degradation of approximation accuracy over time
+Most of these results rely on Gr\"{o}nwall’s inequality (see Supp.Sec.\ref{sec:gronwall}) to control the difference between the trajectories of the original system and its approximation, which incurs an exponential degradation of approximation accuracy over time
 \citep{sontag1992neural, sontag1998learning, funahashi1993approximation,chow2000modeling, li2005approximation}.
 This is in general not true for the unbounded time case, as the approximation error can be magnified by the dynamics.
 
@@ -188,7 +188,7 @@ This is in general not true for the unbounded time case, as the approximation er
 
 A finite-sized RNN with either linear and Heaviside or sigmoidal activation functions is Turing universal \citep{pollack1991induction, siegelmann1992computational,kilian1996universality}.
 %
-RNNs with activation function is for any point Lipschitz continuous in some neighborhood can be simulated by a family of nonuniform Boolean circuits\citep{siegelmann1994analog}.
+RNNs with activation function that is for any point Lipschitz continuous in some neighborhood can be simulated by a family of nonuniform Boolean circuits\citep{siegelmann1994analog}.
 %
 Finally, RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
 
@@ -652,6 +652,9 @@ Then $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each $i$ and h
 
 
 
+\subsubsection{Alternative: stable and unstable manifolds as persistent}
+stable and unstable manifolds of a normally hyperbolic manifold persist under perturbation Theorem 2.3.6 in \citep{kuehn2015multipletimescale}.
+
 
 \subsection{Approximation of stable limit cycles}
 %TODO:  name for type III error: L-type (limit cycle) P-type (period)
@@ -663,16 +666,16 @@ But, for an approximation of the vector field we will in general have a small di
 This would make our method fail!
 
 However, we can correct this discrepancy.
-We have a difference in period $T-\hat T = \delta T$
+We have a difference in period $T-\hat T = \epsilon_T$
 with \[T\coloneqq\frac{1}{\int_{LC}\|f(x)\|dx} \text{ and } \hat T\coloneqq\frac{1}{\int_{\hat{LC}}\|\hat f(x)\|dx}.\]
 %
-We will apply a perturbation $\hat{\hat{f}}$ to our approximations that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
+We will apply a perturbation $\bar{f}$ to our approximations that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
 so that 
 \[\int_{\tilde{LC}}\|\tilde{f}(x)\| dx = \frac{1}{T}. 	\]% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
 The existence of such a perturbation (i.e. that indeed it will be \emph{small} enough) requires that the initial difference between the periods is small.
 If the approximation vector field is close enough to the target vector field, then the periods will be guaranteed to be close (see for the precise statement and proof Supp.Sec.~\ref{sec:periodcloseness}).
 The resulting total approximation is \[\tilde{f}=%\hat{f}+\hat{\hat{f}} = 
- \hat{f} + \epsilon_T(\hat{f} + \hat{\epsilon}\hat{\hat{f}})\]
+ \hat{f} + \epsilon_T(\hat{f} + \hat{\epsilon}\bar{f})\]
 
 
 We can use the fact that the tubular neighborhood of diameter $\delta_T$ around the limit cycle (LC) is an (inflowing) normally hyperbolic invariant manifold.
@@ -726,6 +729,9 @@ We can choose the initial approximation $\hat{f}$ such that the
 We can perform the same procedure for a finite set of limit cycles.
 We have to make sure that all the $\hat{\epsilon}_i$ are step-wise small enough so that $\epsilon_{T_i}$ is small enough. 
 
+
+\[ \tilde f_i = (1+ \epsilon_{T_i})\hat{f}_i + \epsilon_{T_i}\hat{\epsilon}_i\bar{f}_i + \sum_{j\neq i}\epsilon_{T_j}\hat{\epsilon}_j\bar{f}_j\]
+
 %can we really do this sequentially?
 %when we change \epsilon_T_i we have to adjust the other \epsilon_T_j s
 
@@ -733,22 +739,6 @@ We have to make sure that all the $\hat{\epsilon}_i$ are step-wise small enough 
 \paragraph{Quasi-periodic toroidal attractors (QPTA)}%more generally: doing this for multiple limit cycles
 Important!\citep{Park2023a}
 
-
-
-
-\subsection{Approximating a chaotic orbit}
-%TODO:  name for type IV error: C-type (chaos)
-We cannot approximate according to our above criteria.
-Every small discrepancy in the vector field will lead to orbits starting at same position to diverge over time, analogous to perturbing initial start of the chaotic orbit.
-
-
-What we can do is minimize the Hausdorff distance between the chaotic invariant manifolds and match the Lyapunov exponents of the target system
-The first because of structural stability.
-%%The second because of ???
-
-
-Alternatively, we can guarantee that the shift representation of the dynamics is persistent.
-% Symbolic dynamics: Mapping onto the same shift dynamical system
 
 
 
@@ -772,6 +762,20 @@ We can tile the continuous attractor with a uniform grid of stable limit cycles.
 %\subsection{Center manifolds}
 %???
 
+
+\subsection{Approximating a chaotic orbit}
+%TODO:  name for type IV error: C-type (chaos)
+We cannot approximate according to our above criteria.
+Every small discrepancy in the vector field will lead to orbits starting at same position to diverge over time, analogous to perturbing initial start of the chaotic orbit.
+
+
+What we can do is minimize the Hausdorff distance between the chaotic invariant manifolds and match the Lyapunov exponents of the target system
+The first because of structural stability.
+%%The second because of ???
+
+
+Alternatively, we can guarantee that the shift representation of the dynamics is persistent.
+% Symbolic dynamics: Mapping onto the same shift dynamical system
 
 \subsection{Input driven dynamics}
 
@@ -1043,6 +1047,13 @@ Let \( F: \mathbb{R}^n \to \mathbb{R}^n \) be a bounded \( C^t \)-mapping. Then,
 has a unique solution on \([0, \infty)\).
 \end{lemma}	
 
+\subsection{The Fundamental Theorem of Dynamical Systems}
+\citep{conley1978morse, norton1995fundamental}
+
+\begin{theorem}[\citep{conley1978morse}]
+ Any flow on a compact metric space decomposes into a chain recurrent part and a gradient-like part.
+\end{theorem}
+
 \subsection{Structural stability}
 \citep{peixoto1959ss, mane1987ss, hu1994ss, hayashi1997invariant, robbin1971ss, robinson1974ss, palis1970ss}
 
@@ -1243,6 +1254,11 @@ Define the separatrix between the basins of attraction of attractors $A_i$ and $
 
 
 
+
+\subsection{Gronwall's lemma}\label{sec:gronwall}
+\begin{lemma}\label{lemma:gronwall}
+
+\end{lemma}
 
 
 \subsection{In basin bound}\label{sec:313}
