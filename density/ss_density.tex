@@ -83,11 +83,14 @@ To achieve this, we leverage Neural Ordinary Differential Equations (NODEs) as a
 % By using NODEs, we can model continuous-time dynamical systems while ensuring that key properties, such as stability and smooth error bounds under perturbations, are maintained.
 We provide a fist-of-its-kind \textbf{approximation result for multi-stable systems on the infinite time horizon}, laying the groundwork for future advances in both theory and applications of neural approximators in long-term dynamical modeling.
 
++extensions \citep{mei2024controlsynth}
+
 %mention that vanilla RNNs are not universal approximators?
 
 %how we will do this
 
-
+Modeling dynamics examples 
+gene regulation \citep{paczko2024neural}
 
 \section{Approximation of dynamical systems: A vast literature with limited results}
 %sota 
@@ -99,7 +102,9 @@ Here, we review key approaches in the literature and highlight emerging techniqu
 %For an overview of the literature, see [litrev]
 See also \citep{li2022approximation} and \citep{jiang2023brief}.
 
-TODO: mention what density results are
+Density results describe the completeness of a hypothesis class relative to a target class, emphasizing the extent to which the hypothesis class can approximate every element in the target class with arbitrary precision.
+
+
 TODO: unify terminology: UAP, density result...
 
 \begin{table}[h]
@@ -122,13 +127,9 @@ TODO: unify terminology: UAP, density result...
 \end{table}
 
 
-TODO
-\citep{li1992approximation}
-
-
 \paragraph{Learning sequences}
- A critical review of recurrent neural networks for sequence learning \citep{lipton2015rnn}
- \citep{pearlmutter1989learning}
+ A critical review of recurrent neural networks for sequence learning \citep{williams1989learning, pearlmutter1989learning, lipton2015rnn}.
+
 
 \subsection{Universal approximation for mappings}\label{sec:uapmappings}
 See Supp.Sec.~\ref{sec:uniapproxffn}.
@@ -145,7 +146,6 @@ This is a direct consequence of the UAP of FNNs for mappings, see Supp.Sec.~\ref
 %only approximates vector field 
 It is possible to approximate vector fields with other architectures.
 For example, in limit $N\rightarrow\infty$ spiking network (ODE with jumps) approximates a vector field (for a continuous ODE) \citep{podlaski2024approximating}. 
-
 
 
 \subsection{Diffeomorphisms}%move to \ref{sec:compacttime}?
@@ -165,7 +165,8 @@ We will now consider compact time interval approximation results in more detail.
 %An RNN with a sufficient number of hidden units and appropriate non-linear activation functions (such as tanh or sigmoid) can approximate any dynamic system or time-dependent function to arbitrary precision, provided the system operates on compact time intervals.
 The universal approximation theorem for RNNs, which extends the classical result for feedforward neural networks, guarantees that RNNs can approximate the mapping from a sequence of inputs to outputs for any continuous-time process, including those governed by differential equations.
 %
-This property has been formally proven for systems operating over finite time intervals. Specifically, \citet{funahashi1993approximation} showed that RNNs can approximate the time-dependent behaviors of dynamical systems, making them suitable for tasks like time-series prediction, control systems, and the modeling of sequential data.
+This property has been formally proven for systems operating over finite time intervals \citep{li1992approximation}. %first result 
+Specifically, \citet{funahashi1993approximation} showed that RNNs can approximate the time-dependent behaviors of dynamical systems, making them suitable for tasks like time-series prediction, control systems, and the modeling of sequential data.
 
 %rem
 Since the results concern a compact time interval, to approximate dynamics it is enough to approximate $f$, i.e., these approaches convert RNN approximation to FNN approximation.
@@ -192,7 +193,9 @@ RNNs with activation function that is for any point Lipschitz continuous in some
 %
 Finally, RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
 
+Any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuoustime symmetric Hopfield nets \citep{sima2003continuous}.
 
+\citep{cabessa2019turing}
 \citep{perez2019turing}
 \citep{dehghani2018universal, yun2019transformers}
 \citep{chung2021turing}
@@ -200,6 +203,9 @@ Finally, RNNs with polynomially bounded weights can simulate any finite automato
 \citep{giannou2023looped}
 \citep{stogin2024provably}
 
+
+Probabilistic \citep{nowak2023representational, nowak2024representational}
++Bernstein-type \citep{veeravalli2023nonlinear}
 
 \paragraph{Continuous tokens}
 RNNs can approximate a state space trajectory (with time-varying inputs) uniformly  produced by either a discrete-time nonlinear system a closed discrete-time interval \citep{jin1995universal}.
@@ -282,7 +288,7 @@ We will refer to this as B-type error (for Basin).
 
 
 
-%FPS%fading
+%FPS%fading%FMS%FMP
 \subsection{Approximation of fading memory systems}\label{sec:fadingmemory}
 %On the general theory of fading memory \citep{coleman1968general}
 The concept of a system having the fading memory property (FMP) has been a cornerstone in the study of dynamical systems\citep{coleman1968general}, providing a framework where the system’s output depends on past inputs with gradually diminishing influence \citep{boyd1985fading}.
@@ -321,7 +327,7 @@ State Space Models (SSMs) with layer-wise nonlinearity are universal approximato
 
 \paragraph{Uniform asymptotic incremental stability}
 Uniform asymptotic incremental stability was introduced in \citep{pavlov2006uniform}.
-UAP of RNNs for uniformly asymptotically incrementally stable systems on an infinite time horizon\citep{hanson2020universal}.
+UAP of RNNs for uniformly asymptotically incrementally stable systems on an infinite time horizon\citep{hanson2020universal, hanson2021learning}.
 
 %\paragraph{ESN}
 
@@ -350,11 +356,13 @@ If the domain of the functional $H$ is restricted to a space of uniformly bounde
 %Fading memory echo state networks are universal \citep{gonon2021fading} [Gono 21]
 %Approximation error estimates for random neural networks and reservoir systems \citep{gonon2023approximation} [Gono 23a]
 
+Attractor reconstruction \citep{hart2024attractor}
 
 One fixed point \citep{bai2019deq} DEQ (infinitly deep)
 
-
 Invariant set \citep{konishi2023stable} DEQ
+
+Approximating FMS with kernels \citep{huo2024kernel}
 
 %\paragraph{Stability implies FNNs are enough}%crit
 %When Recurrent Models Don't Need to Be Recurrent \citep{miller2018stable}.
@@ -479,8 +487,7 @@ Expectation of the error over all initial points
 \|\varphi-\hat \varphi\|_\epsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0)-\hat \varphi(\cdot,x_0)\|_\infty>\epsilon\right).
 \end{equation}
 %where $\mathds{1}[\cdot]$ is the indicator function. 
-This is similar to the metric in \citep{hammer2000approximation}.
-
+This is similar to the metric in \citep{hammer2000approximation} and \citep{hanson2021learning}.
 
 %why we cannot stricten the metric
 For a multistable system it is not possible to find a universal approximation result if we consider a more strict notion of difference between the target and approximant.
@@ -655,6 +662,9 @@ Then $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each $i$ and h
 \subsubsection{Alternative: stable and unstable manifolds as persistent}
 stable and unstable manifolds of a normally hyperbolic manifold persist under perturbation Theorem 2.3.6 in \citep{kuehn2015multipletimescale}.
 
+Laminations: The collection of global stable/unstable manifolds. The same for the local stable/unstable manifolds or the local unstable manifolds for the geodesic flow on a compact manifolds with nonzero Lyapunov exponents almost everywhere. 
+Persistence of laminations \citep{berger2010persistence}
+
 
 \subsection{Approximation of stable limit cycles}
 %TODO:  name for type III error: L-type (limit cycle) P-type (period)
@@ -675,7 +685,7 @@ so that
 The existence of such a perturbation (i.e. that indeed it will be \emph{small} enough) requires that the initial difference between the periods is small.
 If the approximation vector field is close enough to the target vector field, then the periods will be guaranteed to be close (see for the precise statement and proof Supp.Sec.~\ref{sec:periodcloseness}).
 The resulting total approximation is \[\tilde{f}=%\hat{f}+\hat{\hat{f}} = 
- \hat{f} + \epsilon_T(\hat{f} + \hat{\epsilon}\bar{f})\]
+ \hat{f} + a(\epsilon_T)(\hat{f} + \hat{\epsilon}\bar{f}).\]
 
 
 We can use the fact that the tubular neighborhood of diameter $\delta_T$ around the limit cycle (LC) is an (inflowing) normally hyperbolic invariant manifold.
@@ -729,11 +739,12 @@ We can choose the initial approximation $\hat{f}$ such that the
 We can perform the same procedure for a finite set of limit cycles.
 We have to make sure that all the $\hat{\epsilon}_i$ are step-wise small enough so that $\epsilon_{T_i}$ is small enough. 
 
-
 \[ \tilde f_i = (1+ \epsilon_{T_i})\hat{f}_i + \epsilon_{T_i}\hat{\epsilon}_i\bar{f}_i + \sum_{j\neq i}\epsilon_{T_j}\hat{\epsilon}_j\bar{f}_j\]
 
-%can we really do this sequentially?
-%when we change \epsilon_T_i we have to adjust the other \epsilon_T_j s
+%can we really do this sequentially? no, we have to do it in parallel
+%when we change a_T_i we have to adjust the other a_T_j s
+
+ ReLU networks which can be made to be zero outside of the tubular neighbourhood as a method to make things work for multiple stable limit cycles?
 
 %%%QPTA
 \paragraph{Quasi-periodic toroidal attractors (QPTA)}%more generally: doing this for multiple limit cycles
@@ -858,7 +869,8 @@ Better to just look at RNNs.
 \section{Universal Approximation with Feedforward Neural Networks (FNNs)}\label{sec:uniapproxffn}
 
 The foundation of our approach lies in leveraging the \textit{universal approximation property} of feedforward neural networks (FNNs) \citep{poggio1990networks}, a powerful result that makes neural networks exceptional for a broad array of tasks. This property allows FNNs to approximate complex functions with remarkable flexibility, providing the theoretical basis for their widespread success in machine learning.
-For an overview see \citep{scarselli1998universal} and \citep{augustine2024survey}.
+For an overview see \citep{blum1991approximation,scarselli1998universal,augustine2024survey}.
+
 
 
 
@@ -949,6 +961,7 @@ UA with Deep narrow \citep{kidger2020universal}
 
 Function+Derivatives \citep{hornik1990universal}.
 
+with WTA networks \citep{maass2000wta}
 
 \subsection{Other results on UAP for mappings}
 NODEs are $L^p$-universal approximators \citep{li2022deep,li2022deeparxiv}
@@ -966,7 +979,8 @@ Universal approximation of
 \item Monotone analytic functions homotopic to the identity\citep{tabuada2020universal}
 \end{itemize}
 
-
+\citep{tabuada2022universal}
+\citep{marchi2021training}
 
 
 \section{Neural ODEs (NODEs)}
@@ -989,6 +1003,8 @@ f(\mathbf{h}(t), t, \theta) = W_2 \sigma(W_1 \mathbf{h}(t) + \mathbf{b}_1) + \ma
 Here, \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( W_1, W_2 \) are weight matrices, and \( \mathbf{b}_1, \mathbf{b}_2 \) are bias vectors.
  This form models the ODE dynamics using a simple two-layer feedforward network.
 
+
+Universal approximation properties of neural operator architectures \citep{lu2021learning, kissas2022learning, kovachki2021universal}.
 
 \paragraph{Applications}
 %NODEs in neuroscience%
