@@ -40,6 +40,7 @@
 \newcommand{\TpM}{\T_p\!M}
 \newcommand{\Diffeo}{\operatorname{Diffeo}}
 \newcommand{\Hpert}{H^{\text{pert}}}
+\newcommand{\inv}{\operatorname{Inv}}
 
 \newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
 \newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
@@ -884,7 +885,7 @@ Formally, for any continuous function \(f(x)\) and any \(\epsilon > 0\), there e
 \]
 where \(K \subset \mathbb{R}^n\) is compact. This guarantees that given sufficient resources (neurons, depth), the FNN can approximate \(f(x)\) as closely as desired within this bounded region.
 
-The importance of the compact domain assumption is that it constrains the input space to a finite region, ensuring the approximation remains well-behaved.
+The importance of the compact domain assumption is that it constrains the input space to a finite region, ensuring the approximation remains well-behaved.	
 This is where the theorem’s beauty shines: while we often don’t know the explicit form of the target function, neural networks learn it purely from data, making them excellent for tasks like regression, classification, and pattern recognition.
 
 
@@ -1024,7 +1025,40 @@ semiautonomous NODEs (SA-NODEs) \citep{li2024universal}
 
 
 
-\section{Support for the proof}
+
+
+\section{Dynamical systems concepts}
+\subsection{Fading memory}
+\begin{definition}[Fading memory Property (FMP)]
+Let $x_1, x_2$ be bounded sequences indexed by $\mathbb{R}$, and let $H$ be a sequence of causal, shift-equivariant (also called time-homogeneous) functionals.
+Here, causal means $H_t(x) = H_t(x(-\infty,t])$ for all $t$.
+We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing function $w : \mathbb{R}^+ \to (0, 1]$ such that for any $\varepsilon > 0$ there exists $\delta > 0$ with 
+\[
+|H_t(x_1) - H_t(x_2)| < \varepsilon \quad \text{whenever} \quad \sup_{s \in (-\infty, t]} |x_1(s) - x_2(s)| w(t - s) < \delta.
+\]
+\end{definition}
+
+\subsection{Realization}\label{sec:realization}
+
+Infinite sequences \( y = (y_t)_{t \in \mathbb{Z}} \), where \( y_t \in \mathbb{R}^d \) for all \( t \in \mathbb{Z} \), for which there exists a functional \( H : (\mathbb{R}^d)^{\mathbb{Z}^-} \rightarrow \mathbb{R}^d \) such that 
+\begin{equation}\label{eq:filter}
+y_t = H(\ldots, y_{t-2}, y_{t-1}) = H\left( y_{t-1} \right), \quad \text{for all } t \in \mathbb{Z},
+\end{equation}
+and where the symbol \( y_{t-1} \in (\mathbb{R}^d)^{\mathbb{Z}^-} \) denotes the semi-infinite sequence \( y_{t-1} = (\ldots, y_{t-2}, y_{t-1}) \).
+
+A canonical causal and time-invariant filter \( U_H : (\mathbb{R}^d)^{\mathbb{Z}} \rightarrow (\mathbb{R}^d)^{\mathbb{Z}} \) is associated and determined by the equality 
+\[
+U_H(y)_t := H\left( y_{t-1} \right), \quad \text{for all } y \in (\mathbb{R}^d)^{\mathbb{Z}} \text{ and } t \in \mathbb{Z}.
+\]
+
+A classical problem in control and systems theory is the realization of filters like \ref{eq:filter} as the unique solution (when it exists) of a state-space transformation:
+\begin{equation}
+x_t = F(x_{t-1}, y_{t-1}),
+\end{equation}
+\begin{equation}
+y_t = h(x_t),
+\end{equation}
+where \( F : \mathbb{R}^L \times \mathbb{R}^d \rightarrow \mathbb{R}^L \) and \( h : \mathbb{R}^L \rightarrow \mathbb{R}^d \) are a state and a readout map, respectively. \( \mathbb{R}^L \) is, in this case, the state space and, typically, \( L \) is much bigger than \( d \).
 
 \subsection{Some Preliminaries}
 To construct the infinite horixon approximation theory of the NODEs, some preliminaries will be provided in this section.
@@ -1064,7 +1098,7 @@ has a unique solution on \([0, \infty)\).
 \end{lemma}	
 
 \subsection{The Fundamental Theorem of Dynamical Systems}
-\citep{conley1978morse, norton1995fundamental}
+See, for example\citep{conley1978morse, norton1995fundamental} it is also refered to as Conley's Decomposition Theorem \citep{mischaikow1999cit}.
 
 \begin{theorem}[\citep{conley1978morse}]
  Any flow on a compact metric space decomposes into a chain recurrent part and a gradient-like part.
@@ -1277,6 +1311,43 @@ Define the separatrix between the basins of attraction of attractors $A_i$ and $
 \end{lemma}
 
 
+
+\subsection{Conley Index Theory}
+From \citet{mischaikow1999cit}.
+
+Let $\varphi$ be a flow. A compact set $N$ is called an \emph{isolating neighborhood} if 
+\[
+\inv(N,\varphi) \coloneqq \{x\in N\ | \ \varphi(\reals,x)\subset N\} \subset \int N,
+\]
+where $\int N$ denoted the interior of $N$. 
+$S$ is an \emph{isolated invariant set} if $S=\inv(N)$ for some isolating neighborhood $N$.
+
+The important property of the isolating neighborhood that we will need is that it is robust with respect to perturbations. To state this more precisely, consider a continuous family of dynamical systems
+\begin{equation}
+\varphi_\lambda\colon \reals\times X\rightarrow X, \ \ \ \lambda\in[-1,1].
+\end{equation}
+
+\begin{proposition}[Proposition 1.1 in \citep{mischaikow1999cit}]
+Let $N$ be an isolating neighborhood for the flow $\varphi_0$. Then, for sufficiently small $\delta>0$, $N$ is an isolating neighborhood for all $\varphi_\lambda, |\lambda|<\delta$.
+\end{proposition}
+
+%Def 1.2: continuation
+\begin{definition}
+Let $N\subset X$ be a compact set. 
+Let $S_\lambda = \inv(N,\varphi_\lambda).$
+Two isolated invariant sets $S_{\lambda_0}$ and $S_{\lambda_1}$ are \emph{related by continuation} if $N$ is an isolating neighborhood for all $\varphi_\lambda, \lambda\in[\lambda_0,\lambda_1$.
+\end{definition}
+
+%Continuation Property
+\begin{theorem}[Continuation Proprty, Theorem 3.10 in \citep{mischaikow1999cit}]
+Let $S_{\lambda_0}$ and $S_{\lambda_1}$ be isolated invaraint sets that are related by continuation. 
+Then they have the same Conley Index, i.e.,
+\[
+\operatorname{CH}_*(S_{\lambda_0})\approx \operatorname{CH}_*(S_{\lambda_1}).
+\]
+\end{theorem}
+
+\section{Support for the proof}
 \subsection{In basin bound}\label{sec:313}
 \begin{proposition}[Proposition 3.1.3. in \citep{vanhandel2007filtering}]\label{prop:313}
 Define 
@@ -1531,36 +1602,5 @@ This means that at \( \tau = 0 \), the homotopy corresponds to the first limit c
 \subsubsection{Asymptotically autonomous dynamical systems}
 \citep{wieczorek2021compactification}
 
-\section{Dynamical systems concepts}
-\subsection{Fading memory}
-\begin{definition}[Fading memory Property (FMP)]
-Let $x_1, x_2$ be bounded sequences indexed by $\mathbb{R}$, and let $H$ be a sequence of causal, shift-equivariant (also called time-homogeneous) functionals.
-Here, causal means $H_t(x) = H_t(x(-\infty,t])$ for all $t$.
-We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing function $w : \mathbb{R}^+ \to (0, 1]$ such that for any $\varepsilon > 0$ there exists $\delta > 0$ with 
-\[
-|H_t(x_1) - H_t(x_2)| < \varepsilon \quad \text{whenever} \quad \sup_{s \in (-\infty, t]} |x_1(s) - x_2(s)| w(t - s) < \delta.
-\]
-\end{definition}
 
-\subsection{Realization}\label{sec:realization}
-
-Infinite sequences \( y = (y_t)_{t \in \mathbb{Z}} \), where \( y_t \in \mathbb{R}^d \) for all \( t \in \mathbb{Z} \), for which there exists a functional \( H : (\mathbb{R}^d)^{\mathbb{Z}^-} \rightarrow \mathbb{R}^d \) such that 
-\begin{equation}\label{eq:filter}
-y_t = H(\ldots, y_{t-2}, y_{t-1}) = H\left( y_{t-1} \right), \quad \text{for all } t \in \mathbb{Z},
-\end{equation}
-and where the symbol \( y_{t-1} \in (\mathbb{R}^d)^{\mathbb{Z}^-} \) denotes the semi-infinite sequence \( y_{t-1} = (\ldots, y_{t-2}, y_{t-1}) \).
-
-A canonical causal and time-invariant filter \( U_H : (\mathbb{R}^d)^{\mathbb{Z}} \rightarrow (\mathbb{R}^d)^{\mathbb{Z}} \) is associated and determined by the equality 
-\[
-U_H(y)_t := H\left( y_{t-1} \right), \quad \text{for all } y \in (\mathbb{R}^d)^{\mathbb{Z}} \text{ and } t \in \mathbb{Z}.
-\]
-
-A classical problem in control and systems theory is the realization of filters like \ref{eq:filter} as the unique solution (when it exists) of a state-space transformation:
-\begin{equation}
-x_t = F(x_{t-1}, y_{t-1}),
-\end{equation}
-\begin{equation}
-y_t = h(x_t),
-\end{equation}
-where \( F : \mathbb{R}^L \times \mathbb{R}^d \rightarrow \mathbb{R}^L \) and \( h : \mathbb{R}^L \rightarrow \mathbb{R}^d \) are a state and a readout map, respectively. \( \mathbb{R}^L \) is, in this case, the state space and, typically, \( L \) is much bigger than \( d \).
 \end{document}
