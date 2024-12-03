@@ -93,6 +93,10 @@ We provide a fist-of-its-kind \textbf{approximation result for multi-stable syst
 Modeling dynamics examples 
 gene regulation \citep{paczko2024neural}
 
+
+example of a wrong implication:
+Thus, a library of basis functions33,120 or a neural network121–126 may be used to closely approximate the vector field or the trajectories of any given DS. \citep{durstewitz2023reconstruction}
+
 \section{Approximation of dynamical systems: A vast literature with limited results}
 %sota 
 
@@ -190,9 +194,11 @@ This is in general not true for the unbounded time case, as the approximation er
 
 A finite-sized RNN with either linear and Heaviside or sigmoidal activation functions is Turing universal \citep{pollack1991induction, siegelmann1992computational,kilian1996universality}.
 %
-RNNs with activation function that is for any point Lipschitz continuous in some neighborhood can be simulated by a family of nonuniform Boolean circuits\citep{siegelmann1994analog}.
+More generally, RNNs with an activation function that is for any point Lipschitz continuous in some neighborhood can be simulated by a family of nonuniform Boolean circuits\citep{siegelmann1994analog}.
 %
-Finally, RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
+Furthermore, smooth ODES in $\reals^3$ can simulate arbitrary Turing machines \citep{branicky1995universal}. %DSs are computationally universal in the sense that they can mimic the operations of any computer algorithm
+%
+RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
 
 Any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuoustime symmetric Hopfield nets \citep{sima2003continuous}.
 
@@ -888,7 +894,7 @@ where \(K \subset \mathbb{R}^n\) is compact. This guarantees that given sufficie
 The importance of the compact domain assumption is that it constrains the input space to a finite region, ensuring the approximation remains well-behaved.	
 This is where the theorem’s beauty shines: while we often don’t know the explicit form of the target function, neural networks learn it purely from data, making them excellent for tasks like regression, classification, and pattern recognition.
 
-
+ For example, sums of polynomial functions are known to have this property\citep{llavona1986approximation}
 
 \subsection{Activation functions} %Sigmoidal 
 At the heart of the theorem lies the activation function. Any non-linear, continuous, and non-constant function enables the network to approximate continuous functions universally.
