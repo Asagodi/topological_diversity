@@ -27,7 +27,8 @@
 
 %TODO: f is Lipschitz and structural stability, normal hyperbolicity etc
 
-\title{RNNs can approximate multistable dynamical systems on an infinite time horizon}
+%\title{RNNs can approximate multistable dynamical systems on an infinite time horizon}
+\title{A taxonomy for errors for models of neural computation}
 %\author{}
 %\date{\today}
 %\maketitle
@@ -37,6 +38,7 @@
 \end{center}
 
 %\section*{Abstract}
+\noindent
 Deep-learning techniques used for modeling neural dynamics are commonly based on universal dynamics approximators \citep{durstewitz2023reconstructing}.
 There is an immense list of results about universal approximation claims of RNNs in the space of dynamical systems \citep{li2022approximation,jiang2023brief}.
 The existing results about the universality of RNNs for dynamical systems can be divided into two groups.
@@ -76,7 +78,7 @@ Let $D$ be an open subset of $\mathbb{R}^n$, $f\colon D \to \mathbb{R}^m$ be a $
 such that its flow $\hat \varphi$ satisfies $\|\varphi-\hat \varphi\|_\epsilon < \delta.$
 \end{theorem}
 
-Normally hyperbolic continuous attractors can be approximated as well \citep{Sagodi2024a}.
+Normally hyperbolic continuous attractors can be approximated by covering them with a gird stable fixed points or limit cycles that are at most $\epsilon$ far apart \citep{Sagodi2024a}.
 
 \begin{figure}[tbhp]
   \centering
