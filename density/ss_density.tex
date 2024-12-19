@@ -69,6 +69,9 @@
 The versatility or flexibility of a given machine learning paradigm is usually established by proving its universality.
 We say that a family of transformations is universal when its elements can approximate as accurately as one wants all the elements of a sufficiently rich class containing, for example, all continuous or even all measurable transformations.
 
+%Modeling/Reconstructing dynamics examples. mention?
+%gene regulation \citep{paczko2024neural}
+
 Recurrent Neural Networks (RNNs) are believed to be universal approximators.
 For example, \citet{durstewitz2023reconstructing} claims that 
 %a library of basis functions or
@@ -89,9 +92,7 @@ We provide a fist-of-its-kind \textbf{approximation result for multi-stable syst
 
 %mention that vanilla RNNs are not universal approximators?
 %how we will do this
-
-Modeling/Reconstructing dynamics examples 
-gene regulation \citep{paczko2024neural}
+%outlay of paper
 
 
 \paragraph{Formulation: lack of theory on time generalization/forecasting}
@@ -101,7 +102,6 @@ ANNs can generalize. After learning the data presented to them (a sample), ANNs 
 
 \section{Approximation of dynamical systems: A vast literature with limited results}
 %sota 
-
 Accurately approximating dynamical systems is essential for understanding and predicting complex behaviors across a range of applications, from robotics to climate modeling.
 Recent advances in machine learning have enabled data-driven approaches to approximating these systems, providing new ways to model complex dynamics over extended periods.
 Here, we review key approaches in the literature and highlight emerging techniques that address these challenges, before we introduce our method that extends to multi-stable and complex systems over infinite horizons.
@@ -113,24 +113,25 @@ Density results describe the completeness of a hypothesis class relative to a ta
 
 
 %TODO: unify terminology: UAP, density result...
-It is important to realize that a class of models (a hypothesis class) can have the universal approximation property (UAP) \emph{for a specific target class} given \emph{a specific metric to compare} (see also Sec.~\ref{approximationtheory}).
+It is important to realize that a class of models (a hypothesis class) can have the universal approximation property (UAP) \emph{for a specific target class} given \emph{a specific metric to compare} (see also Sec.~\ref{sec:approximationtheory}).
 This property implies that the hypothesis class is dense in the target class, hence such results are also referred to as \emph{density results}.
 
 \begin{table}[h]
 \begin{tabular}{|l|l|l|l|l|l|}
 %\hline
 \cline{2-6}
-    \multicolumn{1}{c|}{}
- 						&  Time interval & FMP	& Finite size 		&  Input     	&     Discrete/Continuous   \\\cline{2-6}\hline
-\citet{cybenko1989approximation} 	& Finite	 & No 		& Yes 			&  Yes		&		Continuous\\\hline  %vf
-\citet{funahashi1989approximate} 	& Finite	 & No		& Yes			&  Yes		&		Continuous\\\hline  %vf
-\citet{hornik1989multilayer} 		& Finite	 & No 		& Yes			& Yes		&		Continuous\\\hline  %vf
-\citet{funahashi1993approximation} 	& Finite	 & No		& Y-es			&  Yes		&		Continuous\\\hline
-\citet{jin1995approximation}		& Finite	& No		& Yes			& Yes		&		Continuous	\\\hline
-%\citet{hammer2000...
-\citet{jin1995universal}			& Finite	& No		& Yes			& Yes		&		Discrete	\\\hline
-\citet{bai2019deq} 				& Infinite	& Yes		& No		 	& Yes 		&		Discrete		\\\hline
-\citet{schafer2007uap} 			& Infinite 	& Yes		& No			& Yes 		&		Discrete\\\hline
+    \multicolumn{1}{c|}{}							%leave out size?
+ 						&  Time interval & FMP	& Finite size 		&  Input     	&     Time   \\\cline{2-6}\hline
+\citet{cybenko1989approximation} 	& Finite	& No 	& Yes 			&  Yes		&	Continuous\\\hline  %vf
+\citet{funahashi1989approximate} 	& Finite	& No		& Yes			&  Yes		&	Continuous\\\hline  %vf
+\citet{hornik1989multilayer} 		& Finite	& No 	& Yes			& Yes		&	Continuous\\\hline  %vf
+\citet{funahashi1993approximation} 	& Finite	& No		& Yes			&  Yes		&	Continuous\\\hline
+\citet{jin1995approximation}		& Finite	& No		& Yes			& Yes		&	Continuous	\\\hline
+\citet{hammer2000approximation}	& Finite     & No 	& Yes			& Yes		& 	Discrete	\\\hline
+\citet{jin1995universal}			& Finite	& No		& Yes			& Yes		&	Discrete	\\\hline
+\citet{bai2019deq} 				& Infinite	& Yes	& No		 	& Yes 			&	Discrete		\\\hline
+\citet{schafer2007uap} 			& Infinite 	& Yes	& No			& Yes 			&	Discrete\\\hline
+\citet{wang2024state}			& Infinite   & Yes 	& No 		& Yes			& 	Continuous\\\hline % FMP type: (exp. decay) 
 \dots&\dots &\dots&\dots&\dots&\dots\\
 \end{tabular}
 \end{table}
@@ -139,9 +140,9 @@ This property implies that the hypothesis class is dense in the target class, he
 \paragraph{Learning sequences}
  A critical review of recurrent neural networks for sequence learning \citep{williams1989learning, pearlmutter1989learning, lipton2015rnn}.
 
-
 \subsection{Universal approximation for mappings}\label{sec:uapmappings}
-See Supp.Sec.~\ref{sec:uniapproxffn}.
+This is the basic ingredient for many of the UAP results in the literature and will be the starting point for our proof.
+See for the  Supp.Sec.~\ref{sec:uniapproxffn}.
 
 
 %vector fields (which is just FNN setting)
@@ -189,7 +190,7 @@ This is in general not true for the unbounded time case, as the approximation er
 
 
 \subsubsection{Discrete sequence-to-sequence mapping}\label{sec:discrete}
-\paragraph{Discrete tokes: Turing completeness}
+\paragraph{Discrete valued tokes: Turing completeness}
 %A finite size recurrent net model (with linear and Heaviside transfer functions) is Turing universal (Dynamical Recognizer) \citep{pollack1991induction}.
 % Induction by phase transition. A small weight adjustment causes a "bifurcation" in the limit behavior of the network. 
 % phase transition corresponds to the onset of the network’s capacity for generalizing to arbitrary-length strings
@@ -218,7 +219,11 @@ Any polynomially space-bounded Turing machine can be simulated by a family of po
 Probabilistic \citep{nowak2023representational, nowak2024representational}
 +Bernstein-type \citep{veeravalli2023nonlinear}
 
-\paragraph{Continuous tokens}
+
+
+
+
+\paragraph{Continuous valued tokens}
 RNNs can approximate a state space trajectory (with time-varying inputs) uniformly  produced by either a discrete-time nonlinear system a closed discrete-time interval \citep{jin1995universal}.
 %
 Any function can be approximated arbitrarily well in probability with a recurrent neural network\citep{hammer2000approximation}.  %%any function???
@@ -240,7 +245,7 @@ Finally, more recently it was shown that discrete-time RNNs are universal approx
 
 \subsubsection{Continuous time sequence-to-sequence mapping}
 For an overview, see \citep{garces2012strategies}.
-
+%
 The universal approximation properties of static neural networks \citep{funahashi1989approximate} made them a useful tool for modeling nonlinear systems. 
 The problem of nonlinear modeling using static neural networks has been extensively researched \citep{narendra1990identification,warwick1992neural} and many approaches have used multilayer perceptrons and radial basis functions \citep{chen1992neural,choi1996constructive,tan1995efficient}. 
 
@@ -255,11 +260,8 @@ For non-autonomous systems, where the dynamics explicitly depend on external inp
 This result broadens the applicability of continuous-time RNNs to a wide variety of systems influenced by external signals.
 A fundamental result in this domain is that any given trajectory of a dynamical system can be approximately realized by a properly configured continuous-time recurrent network on a finite time interval \citep{nakamura2009approximation}. 
 %u : R → RNu be a C1 mapping, f : W → E be a C1 mapping, and suppose that x′ = f (u(t),x(t)) defines a non-autonomous dynamical system.
-	
-	
-	
-NODEs
-\citep{ko2023homotopy}
+	%
+Finally,  approximation results for input-driven systems with NODEs have been developed more recently \citep{ko2023homotopy}.
 	
 %time-variant	
 \paragraph{Time variant systems}
@@ -295,10 +297,10 @@ Any finite trajectory of an $n$-dimensional continuous dynamical system can be a
 
 
 
-\subsubsection{Looking beyond the finite horizon} %put in prev section?
-
-What goes wrong after $T$?
+\subsubsection{Looking beyond the finite-time horizon} %
 %Why should we care?
+
+For UAP results which consider a finite-time horizon $T$, we can wonder: What goes wrong after $T$?
 
 For example, a target limit cycle and its approximation will diverge no matter how close the approximation is (if there is a non-perfect match between the periods, see Fig.~\ref{fig:lc_period_div}).
 We will refer to this as P-type error (for Period).
@@ -313,6 +315,8 @@ We will refer to this as P-type error (for Period).
   }\label{fig:lc_period_div}
 \end{SCfigure}
 
+
+Another example of divergence after $T$ arises around separatrices.
 Points near a separatrix will converge to different attractors if there is a non-perfect match of separatrices (see Fig.~\ref{fig:separatrices}).
 We will refer to this as \textbf{B-type error} (for \textbf{B}asin).
 
@@ -366,15 +370,9 @@ UAP of RNNs for uniformly asymptotically incrementally stable systems on an infi
 
 \paragraph{Reservoir computing}
 %\paragraph{ESN}
-%Echo state networks are universal uniform approximators  for discrete-time fading memory filters with uniformly bounded inputs \citep{grigoryeva2018echo,grigoryeva2018universal}. 
-
-%\citep{grigoryeva2024forecasting}
-%if the domain of the functional H is restricted to a space of uniformly bounded sequences of the type KM := y ∈ (Rd)Z− | ∥yt∥ ≤ M, t ∈ Z− 	 for some M > 0 and, additionally, it has a continuity condition called the fading memory property then various families of state-space transformations of the type (2.2)-(2.3) can be used to approximate it uniformly.
-%This is the case for linear systems with polynomial or neural network readouts [Boyd 85, Grig 18b, Gono 20b], state-affine systems with linear readouts [Grig 18b], or echo state networks [Grig 18a, Gono 20b, Gono 23a, Gono 21].
-%In other words, any of these families exhibit universality properties in the fading memory category.
-
 \citet{jaeger2001echo} proposed Echo State Networks (ESNs), demonstrating their universal approximation capabilities specifically for fading memory systems.
 This result was extended to include approximation of systems with an input \citep{manjunath2013echo}.
+%ESNs are universal uniform approximators  for discrete-time fading memory filters with uniformly bounded inputs \citep{grigoryeva2018echo,grigoryeva2018universal}. 
 
 If the domain of the functional $H$ is restricted to a space of uniformly bounded sequences with the fading memory property then various families of state-space transformations can be used to approximate it uniformly: 
  linear systems with polynomial or neural network readouts \citep{boyd1985fading,grigoryeva2018universal,gonon2019reservoir}, state-affine systems with linear readouts \citep{grigoryeva2018universal}, or echo state networks \citep{grigoryeva2018echo,gonon2019reservoir,gonon2021fading,gonon2023approximation}.
@@ -390,11 +388,11 @@ If the domain of the functional $H$ is restricted to a space of uniformly bounde
 
 Attractor reconstruction \citep{hart2024attractor}
 
+Approximating FMS with kernels \citep{huo2024kernel}
+
 One fixed point \citep{bai2019deq} DEQ (infinitly deep)
 
 Invariant set \citep{konishi2023stable} DEQ
-
-Approximating FMS with kernels \citep{huo2024kernel}
 
 \paragraph{FMP makes approximation results trivial} %put in prev section?
  The input forgetting property (also referred to in the literature as the unique steady-state property) is a modeling feature that appears profusely in applications and that can be obtained out of the so-called fading memory property.
@@ -441,7 +439,7 @@ Because it is well known that vector fields can be approximated to arbitrary pre
 
 %the autonomous ESN ψ ∈ C 1(Rd) with parameters ( A,  W in, W out,  φ) has a normally hyperbolic attracting submanifold on which ψ is topologically conjugate to φ.
 
-Fixed point matching \citep{cohen1992construction}.
+Fixed point and limit cycle matching \citep{cohen1992construction}.
 
 
 \section{Approximation of multi-stable dynamical systems on infinite time intervals}\
@@ -699,6 +697,28 @@ Isolating neighborhood with boundary that is transversal to flow.
 The boundary can be taken to be arbitrarily close to the boundary of the BoA.
 
 By taking the isolating neighborhood to be closer and closer to the BoA, we can prove persistence of separatrix.
+
+
+Step 1: create inflowing isolated neighborhood
+$\{\varphi(t,s) \mid s\in \reals\}$ forms a connected 1D manifold for each $t$
+For each \( t \in \reals \), the image \( \{ \varphi(t, s) \mid s \in I \} \) remains a connected 1D manifold because:
+
+\begin{enumerate}
+    \item The initial family \( \gamma(I) \) is a 1D manifold.
+    \item The map \( \phi(t, \cdot) \) is \( C^1 \) and thus an immersion.
+    \item The image of a connected set under a continuous map remains connected.
+\end{enumerate}
+
+This forms the boundary of the isolating neighborhood
+
+1.2: For limit cycles this is a torus-shaped 2D manifold
+
+These manifolds are persistent for each $t$
+
+2: Let $t\rightarrow\infty$, then this isolating neighborhood fills up the basin of attraction
+
+3: 
+
 
 \subsection{Approximation of stable limit cycles}
 %TODO:  name for type III error: L-type (limit cycle) P-type (period)
