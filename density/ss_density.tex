@@ -205,7 +205,7 @@ Furthermore, smooth ODES in $\reals^3$ can simulate arbitrary Turing machines \c
 %
 RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
 
-Any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuoustime symmetric Hopfield nets \citep{sima2003continuous}.
+Any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuous time symmetric Hopfield nets \citep{sima2003continuous}.
 
 \citep{cabessa2019turing}
 \citep{perez2019turing}
@@ -214,7 +214,6 @@ Any polynomially space-bounded Turing machine can be simulated by a family of po
 \citep{perez2021attention}
 \citep{giannou2023looped}
 \citep{stogin2024provably}
-
 
 Probabilistic \citep{nowak2023representational, nowak2024representational}
 +Bernstein-type \citep{veeravalli2023nonlinear}
@@ -225,14 +224,10 @@ Probabilistic \citep{nowak2023representational, nowak2024representational}
 
 \paragraph{Continuous valued tokens}
 RNNs can approximate a state space trajectory (with time-varying inputs) uniformly  produced by either a discrete-time nonlinear system a closed discrete-time interval \citep{jin1995universal}.
-%
 Any function can be approximated arbitrarily well in probability with a recurrent neural network\citep{hammer2000approximation}.  %%any function???
 % where ... can be computed by one neuron whose activation function $\sigma$ possesses a local linearity.\citep{hammer2000approximation}
-%
 RNNs with continuous sigmoidal activation function have the UAP for finite number of time steps \citep{schafer2006recurrent, schafer2007uap}.
-%
 Furthermore, locally recurrent networks with two hidden layers is able to approximate a state-space trajectory produced by any Lipschitz continuous function with arbitrary accuracy\citep{patan2008approximation}.
-%
 Finally, more recently it was shown that discrete-time RNNs are universal approximators of discrete-time systems \citep{aguiar2023universal}.
 
 \paragraph{RBF neural networks}
@@ -244,10 +239,9 @@ Finally, more recently it was shown that discrete-time RNNs are universal approx
 
 
 \subsubsection{Continuous time sequence-to-sequence mapping}
-For an overview, see \citep{garces2012strategies}.
-%
 The universal approximation properties of static neural networks \citep{funahashi1989approximate} made them a useful tool for modeling nonlinear systems. 
 The problem of nonlinear modeling using static neural networks has been extensively researched \citep{narendra1990identification,warwick1992neural} and many approaches have used multilayer perceptrons and radial basis functions \citep{chen1992neural,choi1996constructive,tan1995efficient}. 
+For an overview, see \citep{garces2012strategies}.
 
 \paragraph{Autonomous systems}
 The universal approximation capabilities of continuous-time recurrent networks for autonomous systems were first demonstrated by \citet{funahashi1993approximation}. 
@@ -258,15 +252,12 @@ These networks can approximate the trajectories of autonomous dynamical systems,
 \paragraph{Non-autonomous systems}
 For non-autonomous systems, where the dynamics explicitly depend on external inputs, it has been shown that nonlinear dynamical systems can be approximated on compact time intervals (Lemma 5.3.2 in \citep{garces2012strategies}, similar to Lemma 5.3.1 in \citep{smale1974differential}).
 This result broadens the applicability of continuous-time RNNs to a wide variety of systems influenced by external signals.
-A fundamental result in this domain is that any given trajectory of a dynamical system can be approximately realized by a properly configured continuous-time recurrent network on a finite time interval \citep{nakamura2009approximation}. 
-%u : R → RNu be a C1 mapping, f : W → E be a C1 mapping, and suppose that x′ = f (u(t),x(t)) defines a non-autonomous dynamical system.
-	%
+A fundamental result in this domain is that any given trajectory of a dynamical system can be approximately realized by a properly configured continuous-time recurrent network on a finite time interval \citep{nakamura2009approximation}.  %u : R → RNu be a C1 mapping, f : W → E be a C1 mapping, and suppose that x′ = f (u(t),x(t)) defines a non-autonomous dynamical system.
 Finally,  approximation results for input-driven systems with NODEs have been developed more recently \citep{ko2023homotopy}.
 	
 %time-variant	
 \paragraph{Time variant systems}
 Recent advancements in neural ordinary differential equations (NODEs) have expanded these approximation results to include time variant systems. For instance, \citet{li2024universal} established the universal approximation property for semi-autonomous NODEs, demonstrating their ability to approximate a broad class of dynamical systems with time-varying dynamics. Further extensions to control synthesis problems, leveraging continuous-time frameworks, have been proposed by \citet{mei2024controlsynth}, offering new perspectives for integrating control and learning in neural architectures.
-
 
 These developments illustrate the versatility of continuous-time recurrent networks and NODEs in approximating both autonomous and non-autonomous systems, paving the way for new applications in dynamical systems modeling and sequence-to-sequence learning.
 
@@ -301,6 +292,7 @@ Any finite trajectory of an $n$-dimensional continuous dynamical system can be a
 %Why should we care?
 
 For UAP results which consider a finite-time horizon $T$, we can wonder: What goes wrong after $T$?
+%two cases: period-matching and separatrix-matching
 
 For example, a target limit cycle and its approximation will diverge no matter how close the approximation is (if there is a non-perfect match between the periods, see Fig.~\ref{fig:lc_period_div}).
 We will refer to this as P-type error (for Period).
@@ -314,7 +306,6 @@ We will refer to this as P-type error (for Period).
   In this example, the approximation has period $\hat{T} = T+\epsilon$ and will hence be above the approximation guarantee at time $t=2T$.
   }\label{fig:lc_period_div}
 \end{SCfigure}
-
 
 Another example of divergence after $T$ arises around separatrices.
 Points near a separatrix will converge to different attractors if there is a non-perfect match of separatrices (see Fig.~\ref{fig:separatrices}).
@@ -347,7 +338,6 @@ We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing func
 |H_t(x_1) - H_t(x_2)| < \varepsilon \quad \text{whenever} \quad \sup_{s \in (-\infty, t]} |x_1(s) - x_2(s)| w(t - s) < \delta.
 \]
 \end{definition}
-
 %The notion of fading memory is strictly an input/output property, that is, it refers only to the operator $\mathcal{H}$ which maps inputs into outputs; the realization of $\mathcal{H}$ (there need not even be one) is irrelevant.
 
 Typically, the FMP is used to reduce the approximation problem to one over a finite, bounded index set, and then appeal to the density of fully connected neural network to obtain approximation \citep{gonon2021fading}. %more examples
@@ -378,6 +368,7 @@ If the domain of the functional $H$ is restricted to a space of uniformly bounde
  linear systems with polynomial or neural network readouts \citep{boyd1985fading,grigoryeva2018universal,gonon2019reservoir}, state-affine systems with linear readouts \citep{grigoryeva2018universal}, or echo state networks \citep{grigoryeva2018echo,gonon2019reservoir,gonon2021fading,gonon2023approximation}.
  More recently, Simple Cycle Reservoirs were shown to be universal for this set of systems \citep{li2023simple}.
 % In other words, any of these families exhibit universality properties in the fading memory category.
+Finally, a new method was developed to approximate Fading Memory Systems (FMS) by using a kernel representation (instead of a state-space representation) of the model \citep{huo2024kernel}. %approximate all fading memory functionals
 
 %Echo state networks are universal \citep{grigoryeva2018echo} [Grig 18a]
 %Universal discrete-time reservoir computers with stochastic inputs and linear readouts using non-homogeneous state-affine systems \citep{grigoryeva2018universal} [Grig 18b]
@@ -386,13 +377,13 @@ If the domain of the functional $H$ is restricted to a space of uniformly bounde
 %Fading memory echo state networks are universal \citep{gonon2021fading} [Gono 21]
 %Approximation error estimates for random neural networks and reservoir systems \citep{gonon2023approximation} [Gono 23a]
 
-Attractor reconstruction \citep{hart2024attractor}
+%Universal Transformer
+ \citet{dehghani2018universal} introduce a recurrently-stacked universal transformer and demonstrate its effectiveness on text understanding and generation and subsequently, transformer models are universal approximators of continuous permutation equivariant sequence-to-sequence functions with compact support \citep{yun2019transformers}.
 
-Approximating FMS with kernels \citep{huo2024kernel}
 
-One fixed point \citep{bai2019deq} DEQ (infinitly deep)
-
-Invariant set \citep{konishi2023stable} DEQ
+% Deep Equilibrium Sequence Model (encapsulates universal transformer) and are themselves an instance of the so-called implicit-depth models such as neural ordinary differential equations
+Recently, \citet{bai2019deq} proposed the deep equilibrium model (DEQ) which is equivalent to running an infinite depth (weight-tied) feedforward network and which was shown to be able to approximate any sequence whose underlying dynamics is determined by a model that converge to a fixed point.
+This model was further extended to be able to capture systems with arbitrary invariant sets, but the UAP has not been established \citep{konishi2023stable}. %some remarks: p.397
 
 \paragraph{FMP makes approximation results trivial} %put in prev section?
  The input forgetting property (also referred to in the literature as the unique steady-state property) is a modeling feature that appears profusely in applications and that can be obtained out of the so-called fading memory property.
@@ -411,6 +402,11 @@ In contrast, for systems not satisfying this stability condition, a sharp bound 
 \end{remark}
 
 Stability and memory-loss go hand-in-hand \citep{manjunath2020stability}
+
+
+Assumption that the underlying dynamics determined by the models converge to a fixed point and neuroscience.
+ models of neural computation: broader class of convergence such as oscillations \citep{townley2000existence, kag2020rnns, chang2019antisymmetricrnn}. %could convey preferred capabilities in learning 
+
 
 %\paragraph{Stability implies FNNs are enough}%crit
 %When Recurrent Models Don't Need to Be Recurrent \citep{miller2018stable}.
@@ -535,6 +531,8 @@ Forecasting
 \citep{fan2020long}
 \citep{vlachas2020backpropagation}
 \citep{grigoryeva2024forecasting}
+
+Attractor reconstruction, reconstructing the full Lyapunov spectrum of a dynamical system using reservoir computing \citep{hart2024attractor}
 
 Different metric: Chaotic orbits
 mention: we can guarantee finite time approximation
@@ -868,7 +866,7 @@ If an input sequence doesn't converge (i.e. it has a mixing property) we get the
 
 
 %%%%
-\section{Implications for understanding neural computation}
+\section{Implications for understanding neural computation} 
 
 Reconstructing Computational Dynamics from Neural Measurements with Recurrent Neural Networks \citep{durstewitz2023reconstructing}.
 
@@ -877,6 +875,8 @@ Use of NODEs in neuroscience \citep{kim2021inferring}.
 
 \subsection{Models that generalize over time}
 
+
+\subsection{Interpretability}%move to anti-truncated koopman operator paper?
 
 %\subsection{Convergent realism}
 
@@ -1085,8 +1085,8 @@ f(\mathbf{h}(t), t, \theta) = W_2 \sigma(W_1 \mathbf{h}(t) + \mathbf{b}_1) + \ma
 Here, \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( W_1, W_2 \) are weight matrices, and \( \mathbf{b}_1, \mathbf{b}_2 \) are bias vectors.
  This form models the ODE dynamics using a simple two-layer feedforward network.
 
-
 Universal approximation properties of neural operator architectures \citep{lu2021learning, kissas2022learning, kovachki2021universal}.
+
 
 \paragraph{Applications}
 %NODEs in neuroscience%
