@@ -56,7 +56,8 @@
 }
 
 %\title{Finally, an \emph{actual} universal approximation result for multi-stable dynamical systems}
-\title{RNNs can approximate multistable dynamical systems on an infinite time horizon}
+%\title{RNNs can approximate multistable dynamical systems on an infinite time horizon}
+\title{Universal approximation of multistable dynamical systems on an infinite time horizon by RNNs}
 %\title{Approximation of multi-stable dynamical systems on infinite horizons}
 \author{\'Abel S\'agodi and Il Memming Park}
 \date{\today}
@@ -420,7 +421,7 @@ Any continuous dynamical nonlinear systems can be approximately realized\footnot
 %
 This has been extended to time-variant systems but with a fixed initial state \citep{li2005approximation}. %approx of time variant systems with fixed initial state
 %
-More recently, it was shown that RNNs are universal approximators of flow functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023universal}\footnote{This is direct simulation instead of indirect realization}. %not realization, but direct simulation
+More recently, it was shown that RNNs are universal approximators of flow functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023universal}\footnote{This is direct simulation (for a definition, see Sec.~\ref{sec:simulation}, instead of indirect realization}. %not realization, but direct simulation
 %periodic inputs
 %+Universal approximation for discrete-time dynamical systems
 
@@ -650,7 +651,8 @@ Then, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ su
 Therefore, by Eq.~\ref{eq:separatrixoverlap}, the overlap of the separatrices is less than $\mathcal{O}\epsilon_{\operatorname{sep}}$.%TODO: figure out bound on the volume
 %compactness should imply that the volume is at most $\mathcal{\epsilon_{\operatorname{sep}}$.
 Therefore, there is $k_{ij}\in\reals$ such that the Hausdorff distance between $B^f_{ij}$ and $B^g_{ij}$ is $k_{ij}\delta_{ij}$.
-Choose $\delta_{ij}<k_{ij}\delta/N_{\operatorname{cc}}$.\footnote{$N_{\operatorname{cc}}$ is the number of connected components of $\partial(\boa(A_i^f))$.}%the global \delta....
+Let  $N_{\operatorname{cc}}$ be the number of connected components of $\partial(\boa(A_i^f))$.
+Choose $\delta_{ij}<k_{ij}\delta/N_{\operatorname{cc}}$.%the global \delta....
 Define $\delta_i\coloneqq\sum_{i=1}{N_{\operatorname{cc}}}\delta_{ij}$.
 
 %simplifying?
@@ -698,7 +700,8 @@ By taking the isolating neighborhood to be closer and closer to the BoA, we can 
 
 
 Step 1: create inflowing isolated neighborhood
-$\{\varphi(t,s) \mid s\in \reals\}$ forms a connected 1D manifold for each $t$
+%2D DS
+$\{\varphi(t,x_0) \mid x_0\in S^1\}$ forms a connected 1D manifold for each $t$
 For each \( t \in \reals \), the image \( \{ \varphi(t, s) \mid s \in I \} \) remains a connected 1D manifold because:
 
 \begin{enumerate}
@@ -709,13 +712,27 @@ For each \( t \in \reals \), the image \( \{ \varphi(t, s) \mid s \in I \} \) re
 
 This forms the boundary of the isolating neighborhood
 
-1.2: For limit cycles this is a torus-shaped 2D manifold
 
-These manifolds are persistent for each $t$
+1.2: For limit cycles this is a torus-shaped 2D manifold (in 3D, in 2D it is union of 2 $S^1$s): 
+
+
+1.3: These manifolds are forward invariant for each $t$
+
+
+
+1: More generally, take a section in the tubular neighborhood for $t=0$: $I_0 = \{\varphi(0,x_0) \mid x_0\in X_0\}$
+The initial set of points is a connected manifold.
+
+For each $t\in\reals$ the set $I_t = \{\varphi(t,x_0) \mid x_0 \in X_0 \}$ is a manifold.
+
+For each $t\in\reals$ the set $\bigcup_{s<t}I_s$ is an isolating neighborhood.
+
 
 2: Let $t\rightarrow\infty$, then this isolating neighborhood fills up the basin of attraction
 
-3: 
+3: Separatrix is persistent
+
+
 
 
 \subsection{Approximation of stable limit cycles}
@@ -977,7 +994,7 @@ These functions introduce the necessary non-linearity, enabling the network to b
 %non-sigmoidal activations like the \textit{Rectified Linear Unit (ReLU)} 
 Despite ReLU's unbounded nature, it still supports the universal approximation property, as shown in \citep{yarotsky2017error}.
 
-
+\citep{mhaskar2019function}
 
 \subsection{The Multi-layer Perceptron (MLP)}
 
@@ -1401,15 +1418,33 @@ Define the separatrix between the basins of attraction of attractors $A_i$ and $
 \end{definition}
 
 
-
-
-
 \subsection{Gronwall's lemma}\label{sec:gronwall}
 \begin{lemma}\label{lemma:gronwall}
 
 \end{lemma}
 
 
+\subsection{Simulation}\label{sec:simulation}
+\citep{sontag1992neural}
+
+\begin{definition}[Sec.2.3 in \citep{sontag1992neural}]\label{def:simulation}
+Consider two systems $\Sigma$ and $\tilde\Sigma$ described by the following dynamics 
+\begin{equation}
+    \Sigma: \begin{cases}
+        \dot x = f (x, u)\\ y = Hx
+    \end{cases}
+    \ \ \ 
+    \tilde\Sigma: \begin{cases}
+        \dot{\tilde x} = \tilde f (\tilde x, u)\\ \tilde y = \tilde H\tilde x
+    \end{cases}
+\end{equation} 
+with inputs $u(t) \in \mathbb{R}^m$, outputs $y(t) \in \mathbb{R}^p$, and states $x(t) \in \mathbb{R}^n$ and $\tilde{x}(t) \in \mathbb{R}^{\tilde{n}}$. Suppose we are given a compact set $K \subset \mathbb{R}^n$, a set $U$ of admissible inputs, and a time interval $T \subseteq \mathbb{R}^+$.
+
+$\Sigma$ \emph{simulates} $\tilde{\Sigma}$ on sets $K$ and $U$ up to accuracy $\varepsilon$ for times $t \in \mathbb{T}$ if there exist two continuous maps $\alpha : \mathbb{R}^{\tilde{n}} \to \mathbb{R}^n$ and $\gamma : \mathbb{R}^n \to \mathbb{R}^{\tilde{n}}$ such that, when $\Sigma$ is initialized at $x(s) = \xi \in K$, $\tilde{\Sigma}$ is initialized at $\tilde{x}(s) = \gamma(\xi)$, where $s := \inf \mathbb{T}$, and any common input $u(\cdot) \in U$ is supplied to both $\Sigma$ and $\tilde{\Sigma}$, then
+\[
+|x(t) - \alpha(\tilde{x}(t))| < \varepsilon \quad \text{and} \quad |y(t) - \tilde{y}(t)| < \varepsilon \quad \text{for all } t \in \mathbb{T}.
+\]
+\end{definition}
 
 \subsection{Conley Index Theory}
 From \citet{mischaikow1999cit}.
