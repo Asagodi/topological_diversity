@@ -140,6 +140,8 @@ This property implies that the hypothesis class is dense in the target class, he
 
 \paragraph{Learning sequences}
  A critical review of recurrent neural networks for sequence learning \citep{williams1989learning, pearlmutter1989learning, lipton2015rnn}.
+ 
+ %\paragraph{Operators}%approximation of an operator
 
 \subsection{Universal approximation for mappings}\label{sec:uapmappings}
 This is the basic ingredient for many of the UAP results in the literature and will be the starting point for our proof.
@@ -205,8 +207,8 @@ More generally, RNNs with an activation function that is for any point Lipschitz
 Furthermore, smooth ODES in $\reals^3$ can simulate arbitrary Turing machines \citep{branicky1995universal}. %DSs are computationally universal in the sense that they can mimic the operations of any computer algorithm
 %
 RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
-
-Any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuous time symmetric Hopfield nets \citep{sima2003continuous}.
+%
+Finally, any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuous time symmetric Hopfield nets \citep{sima2003continuous}.
 
 \citep{cabessa2019turing}
 \citep{perez2019turing}
@@ -216,10 +218,11 @@ Any polynomially space-bounded Turing machine can be simulated by a family of po
 \citep{giannou2023looped}
 \citep{stogin2024provably}
 
-Probabilistic \citep{nowak2023representational, nowak2024representational}
+
+
+\paragraph{Probabilistic}
+ \citep{nowak2023representational, nowak2024representational}
 +Bernstein-type \citep{veeravalli2023nonlinear}
-
-
 
 
 
@@ -234,9 +237,6 @@ Finally, more recently it was shown that discrete-time RNNs are universal approx
 \paragraph{RBF neural networks}
 \citep{tan1995efficient}
 
-
-%\paragraph{Operators}%approximation of an operator}
-%\citep{lanthaler2023neuraloscillators}
 
 
 \subsubsection{Continuous time sequence-to-sequence mapping}
@@ -259,7 +259,7 @@ Finally,  approximation results for input-driven systems with NODEs have been de
 %time-variant	
 \paragraph{Time variant systems}
 Recent advancements in neural ordinary differential equations (NODEs) have expanded these approximation results to include time variant systems. For instance, \citet{li2024universal} established the universal approximation property for semi-autonomous NODEs, demonstrating their ability to approximate a broad class of dynamical systems with time-varying dynamics. Further extensions to control synthesis problems, leveraging continuous-time frameworks, have been proposed by \citet{mei2024controlsynth}, offering new perspectives for integrating control and learning in neural architectures.
-
+%
 These developments illustrate the versatility of continuous-time recurrent networks and NODEs in approximating both autonomous and non-autonomous systems, paving the way for new applications in dynamical systems modeling and sequence-to-sequence learning.
 
 
@@ -286,15 +286,28 @@ Neural oscillators have the universal approximation property on compact time int
 Any finite trajectory of an $n$-dimensional continuous dynamical system can be approximated by the internal state of the hidden units and $n$ output units of an Liquid time-constant (LTC) network \citep{hasani2018liquid}.
 
 
+\subsubsection{Approximation of flows}%paragraph?
+Any continuous dynamical nonlinear systems can be approximately realized\footnote{The finite time trajectories of a given dynamical continuous system can be approximated by the first $n$ internal state out of the $n + N$ neural units in an RNN.} by RNN on finite time interval \citep{chow2000modeling}.
+%fixed initial state!: initial state $x(0)\in X$
+%$\dot z = -\alpha z + W_1\sigma(W_2u+z)$
+%where $\sigma(\cdot)$ is a $C^1$-sigmoid nonlinear activation function, and $z \in \reals^L$ .
+%Euclidian norm
+%
+This has been extended to time-variant systems but with a fixed initial state \citep{li2005approximation}. %approx of time variant systems with fixed initial state
+%
+More recently, it was shown that RNNs are universal approximators of flow functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023universal}\footnote{This is direct simulation (for a definition, see Sec.~\ref{sec:simulation}, instead of indirect realization}. %not realization, but direct simulation
+%periodic inputs
+%+Universal approximation for discrete-time dynamical systems
 
 
 
-\subsubsection{Looking beyond the finite-time horizon} %
+
+\subsection{Looking beyond the finite-time horizon} %
 %Why should we care?
 
 For UAP results which consider a finite-time horizon $T$, we can wonder: What goes wrong after $T$?
 %two cases: period-matching and separatrix-matching
-
+%
 For example, a target limit cycle and its approximation will diverge no matter how close the approximation is (if there is a non-perfect match between the periods, see Fig.~\ref{fig:lc_period_div}).
 We will refer to this as P-type error (for Period).
 
@@ -315,7 +328,7 @@ We will refer to this as \textbf{B-type error} (for \textbf{B}asin).
 
 
 %FPS%fading%FMS%FMP
-\subsection{Approximation of fading memory systems}\label{sec:fadingmemory}
+\subsubsection{Approximation of fading memory systems}\label{sec:fadingmemory}
 %On the general theory of fading memory \citep{coleman1968general}
 The concept of a system having the fading memory property (FMP) has been a cornerstone in the study of dynamical systems\citep{coleman1968general}, providing a framework where the system’s output depends on past inputs with gradually diminishing influence \citep{boyd1985fading}.
 That the output of a dynamical relationship should depend only on the recent past of its input and that the effect of the distant past should fade away is intuitively clear  \citep{sepulchre2021fading}.
@@ -349,6 +362,7 @@ Typically, the FMP is used to reduce the approximation problem to one over a fin
 proving that linear RNNs can approximate continuous, linear, causal, regular and time-homogeneous functionals. % on $\mathcal{X}$ .
 Of course, regular linear functionals have fading memory: their dynamics converge to zero at infinite time ($\lim_{n\rightarrow\infty} H(x(n)) = 0$) and therefore such results are trivial.
  
+
 \paragraph{Exponential decaying memory}
 State Space Models (SSMs) with layer-wise nonlinearity are universal approximators of systems with exponential decaying memory \citep{wang2024state}.
 
@@ -356,7 +370,6 @@ State Space Models (SSMs) with layer-wise nonlinearity are universal approximato
 \paragraph{Uniform asymptotic incremental stability}
 Uniform asymptotic incremental stability was introduced in \citep{pavlov2006uniform}.
 UAP of RNNs for uniformly asymptotically incrementally stable systems on an infinite time horizon\citep{hanson2020universal, hanson2021learning}.
-
 
 
 \paragraph{Reservoir computing}
@@ -386,7 +399,8 @@ Finally, a new method was developed to approximate Fading Memory Systems (FMS) b
 Recently, \citet{bai2019deq} proposed the deep equilibrium model (DEQ) which is equivalent to running an infinite depth (weight-tied) feedforward network and which was shown to be able to approximate any sequence whose underlying dynamics is determined by a model that converge to a fixed point.
 This model was further extended to be able to capture systems with arbitrary invariant sets, but the UAP has not been established \citep{konishi2023stable}. %some remarks: p.397
 
-\paragraph{FMP makes approximation results trivial} %put in prev section?
+
+\subsubsection{FMP makes approximation results trivial} %put in prev section?
  The input forgetting property (also referred to in the literature as the unique steady-state property) is a modeling feature that appears profusely in applications and that can be obtained out of the so-called fading memory property.
 In fact, every fading-memory system could be uniformly approximated arbitrarily closely over the set of systems with 'linear dynamics'\citep{matthews1993approximating}. %Theorem 3+4
 Using the perceptron to uniformly approximate the external representation of a fading-memory system results in a finite-memory system model, called the perceptron filter \citep{matthews1993approximating}.
@@ -402,35 +416,25 @@ This implies that imperfect system models may still be able of generating output
 In contrast, for systems not satisfying this stability condition, a sharp bound on the approximation error degrades exponentially with time \citep{hirsch1974nonautonomous, sontag2013mathematical}.
 \end{remark}
 
-Stability and memory-loss go hand-in-hand \citep{manjunath2020stability}
+%Stability and memory-loss go hand-in-hand \citep{manjunath2020stability}
 
 
-Assumption that the underlying dynamics determined by the models converge to a fixed point and neuroscience.
- models of neural computation: broader class of convergence such as oscillations \citep{townley2000existence, kag2020rnns, chang2019antisymmetricrnn}. %could convey preferred capabilities in learning 
+Why should we assume that the underlying dynamics in neural networks converge to a fixed point?
+Models of neural computation should cover a broader class of dynamics, e.g, oscillations \citep{townley2000existence, kag2020rnns, chang2019antisymmetricrnn}. %could convey preferred capabilities in learning 
 
 
 %\paragraph{Stability implies FNNs are enough}%crit
 %When Recurrent Models Don't Need to Be Recurrent \citep{miller2018stable}.
 
-\subsection{Approximation of flows}
-Any continuous dynamical nonlinear systems can be approximately realized\footnote{The finite time trajectories of a given dynamical continuous system can be approximated by the first $n$ internal state out of the $n + N$ neural units in an RNN.} by RNN on finite time interval \citep{chow2000modeling}.
-%fixed initial state!: initial state $x(0)\in X$
-%$\dot z = -\alpha z + W_1\sigma(W_2u+z)$
-%where $\sigma(\cdot)$ is a $C^1$-sigmoid nonlinear activation function, and $z \in \reals^L$ .
-%Euclidian norm
-%
-This has been extended to time-variant systems but with a fixed initial state \citep{li2005approximation}. %approx of time variant systems with fixed initial state
-%
-More recently, it was shown that RNNs are universal approximators of flow functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023universal}\footnote{This is direct simulation (for a definition, see Sec.~\ref{sec:simulation}, instead of indirect realization}. %not realization, but direct simulation
-%periodic inputs
-%+Universal approximation for discrete-time dynamical systems
+
 
 
 
 %%%%%%%%%%%%%%%%%%%
 \paragraph{Topological equivalency}
 ESNs can be trained to have  topologically conjugate dynamics to structurally stable dynamical systems \citep{hart2020embedding}.
-This is trivial for approximation of structurally stable systems with NODEs!
+This does guarantee knowledge of the dynamics beyond a finite time horizon.
+However, this is trivial for approximation of structurally stable systems with NODEs.
 It is true by virtue of Theorem.~\ref{theorem:ss} that vector fields that are close to the vector field of a dynamical system will have dynamics that are topologically conjugate to it.
 Because it is well known that vector fields can be approximated to arbitrary precision with FNN, this result immediately follows for NODEs.
 
@@ -439,8 +443,7 @@ Because it is well known that vector fields can be approximated to arbitrary pre
 Fixed point and limit cycle matching \citep{cohen1992construction}.
 
 
-\section{Approximation of multi-stable dynamical systems on infinite time intervals}\
-
+\section{Approximation of multi-stable dynamical systems on infinite time intervals}
 \paragraph{Roadmap}
 First we describe the target (the systems we can approximate) and hypothesis classes (the systems that we approximate with) and the metric for the density result (way we measure how wrong our approximation is to our target system).
 Then, we prove our universal approximation property for this setting by step-wise constructing the target class:
@@ -541,11 +544,13 @@ prove: we can never do infinite time approximation
 
 See further Sec.~\ref{sec:chaos}.
 
-\subsection{Theorem}
+\subsection{Hyperbolic stable fixed points}
 \begin{theorem}
-Let $D$ be an open subset of $\mathbb{R}^n$, $f\colon D \to \mathbb{R}^m$ be a $C^1$-mapping, and $I$ be a compact subset of $D$ such that any solution $x(t)$ with initial value $x(0) \in I$ of an ordinary differential equation
+Let $D$ be an open subset of $\mathbb{R}^n$,
+ $f\colon D \to \mathbb{R}^m$ be a $C^1$-mapping,
+  and $I$ be a compact subset of $D$ such that any solution $x(t)$ with initial value $x(0) \in I$ of an ordinary differential equation
 \begin{equation}\label{eq:5}
-    \dot{x} = f(x), \quad x(0) \in K
+    \dot{x} = f(x), \quad x(0) \in D
 \end{equation}
 is defined for $t\in\reals_{+}$ and $x(t)$ is included in $I$.
 This defines a flow $\varphi(\cdot, \cdot)$.
@@ -563,7 +568,7 @@ such that its flow $\hat \varphi$ satisfies
 \end{theorem}
 
 
-\begin{proof}
+\begin{proof}%move to end of section? establish necessary pieces as propositions
 Because of the density of the hypothesis class $\mathcal{G}$ we have that for any $f\in C^1$ and any $\delta_1>0$
 there exists $\hat f\in\mathcal{G}$ such that $\|f-\hat f\|<\epsilon$.
 %
@@ -685,11 +690,11 @@ Then $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each $i$ and h
 
 
 
-\subsubsection{Alternative: stable and unstable manifolds as persistent}
-stable and unstable manifolds of a normally hyperbolic manifold persist under perturbation Theorem 2.3.6 in \citep{kuehn2015multipletimescale}.
-
-Laminations: The collection of global stable/unstable manifolds. The same for the local stable/unstable manifolds or the local unstable manifolds for the geodesic flow on a compact manifolds with nonzero Lyapunov exponents almost everywhere. 
-Persistence of laminations \citep{berger2010persistence}
+%\subsubsection{Alternative: stable and unstable manifolds as persistent}
+%stable and unstable manifolds of a normally hyperbolic manifold persist under perturbation Theorem 2.3.6 in \citep{kuehn2015multipletimescale}.
+%
+%Laminations: The collection of global stable/unstable manifolds. The same for the local stable/unstable manifolds or the local unstable manifolds for the geodesic flow on a compact manifolds with nonzero Lyapunov exponents almost everywhere. 
+%Persistence of laminations \citep{berger2010persistence}
 
 
 \subsubsection{Alternative: isolating neighborhoods as persistent}
@@ -882,25 +887,6 @@ If an input sequence doesn't converge (i.e. it has a mixing property) we get the
 
 
 
-%%%%
-\section{Implications for understanding neural computation} 
-
-Reconstructing Computational Dynamics from Neural Measurements with Recurrent Neural Networks \citep{durstewitz2023reconstructing}.
-
-Use of NODEs in neuroscience \citep{kim2021inferring}.
-
-
-\subsection{Models that generalize over time}
-
-
-\subsection{Interpretability}%move to anti-truncated koopman operator paper?
-
-%\subsection{Convergent realism}
-
-\subsection{Robust neural computation}
-Idea: Two dynamical phenomena are isolated into primitive architectural components which perform the operations of continuous nonlinear transformation and autoassociative recall \citep{pineda1988dynamics}.
-
-
 
 
 
@@ -948,6 +934,26 @@ NNs as controllers \citep{sontag1992neural}
 This construction is immensely inefficient
 
 Better to just look at RNNs. 
+
+
+%%%%
+\subsection{Implications for understanding neural computation} 
+
+Reconstructing Computational Dynamics from Neural Measurements with Recurrent Neural Networks \citep{durstewitz2023reconstructing}.
+
+Use of NODEs in neuroscience \citep{kim2021inferring}.
+
+
+\paragraph{Models that generalize over time}
+
+
+\paragraph{Interpretability}%move to anti-truncated koopman operator paper?
+
+%\subsection{Convergent realism}
+
+\paragraph{Robust neural computation}
+Idea: Two dynamical phenomena are isolated into primitive architectural components which perform the operations of continuous nonlinear transformation and autoassociative recall \citep{pineda1988dynamics}.
+
 
 
 
