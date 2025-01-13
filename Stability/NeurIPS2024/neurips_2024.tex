@@ -430,7 +430,7 @@ Finally, the persisting invariant manifold is very close in space to the origina
 
 %Informally, normal hyperbolicity guarantees that the perturbations change the structure of the manifold before they can destroy the attractiveness of the manifold.
 
-These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow rerparametrization of the BLA
+These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow reparametrization of the BLA
 	\footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems). Therefore, we consider systems that are at least continuous, but some extra conditions apply if a system is not differentiable.}). %
 As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (Fig.~\ref{fig:lara_bifurcations}, dark-colored regions) that contains fixed points and connecting orbits and is overall still attractive.
 Furthermore, Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
@@ -506,7 +506,7 @@ Although we have seen numerous topologies in Sec.~\ref{sec:critique}, the Persis
 This is especially relevant as previous works have identified a low-dimensional organization of neural activity to explain the brain's ability to adapt behavioral responses to changing stimuli and environments \citep{beiran2023parametric,altan2023low,fanthomme2021low}.
 For a ring attractor, this implies that the stability structure of the invariant manifold is either
 (1) composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits, or (2) a limit cycle.
-These different strability structures have different generalization properties (see Sec.~\ref{sec:generalization}).
+These different stability structures have different generalization properties (see Sec.~\ref{sec:generalization}).
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 %For 2 dimensional attractors, stable fixed points and saddle nodes can coexist with limit cycles.
 In more complex scenarios, such as two-dimensional attractors, fixed points can coexist with limit cycles, creating a rich tapestry of possible neural states.
@@ -544,7 +544,7 @@ Researchers have analyzed task-optimized RNNs through nonlinear dynamical system
 Previously, systematic analysis of the variability in network dynamics has been surveyed in vanilla RNNs, and variations in dynamical solutions over architecture and nonlinearity have been quantified~\citep{sussillo2013blackbox,mante2013context,yang2019task,maheswaranathan2019universality,driscoll2022}.
 Furthermore, working memory mechanisms in RNNs had tendencies to find sequential or persistent representations through training depending on the task specification~\citep{orhan2019diverse}.
 We therefore investigated to what extent training RNNs on a task uniquely determines the low-dimensional dynamics, independent of neural architectures.
-We see that all the solutions have a slow invariant manifold, making all of them an instatiation of approximate continuous attractors.
+We see that all the solutions have a slow invariant manifold, making all of them an instantiation of approximate continuous attractors.
 
 \subsection{Model Architectures and Training Procedure}
 Building upon prior work, which has shown their capabilities on such tasks, we trained RNNs to either
@@ -666,7 +666,7 @@ Looking beyond the finite timescale provides valuable insights into the network'
 For the asymptotic time scale, we capture the asymptotic behavior of the system by identifying to what part of the system evolves to in the limit \(t\rightarrow\infty\) (see also Sec.\ref{sec:supp:asymbehav}).
 For a one-dimensional system, this will either be fixed points or a limit cycle.
 For the fixed-point type solution, the maximal error is given by the maximal distance to the next fixed point, while for a limit cycle, this will always be \(\pi\).
-We calculate the \emph{average fixed point distance} by takeing the average of the inter-fixed-point interval for each neighboring pair of fixed points.
+We calculate the \emph{average fixed point distance} by taking the average of the inter-fixed-point interval for each neighboring pair of fixed points.
 We identify the location of the fixed points as described in Sec.~\ref{sec:fastslowmethod}.
 
 Besides the maximal error that the network will make in the asymptotic limit, we can also characterize how many different angles the network would confuse in the asymptotic limit.
@@ -735,12 +735,6 @@ To identify solutions with a fast-slow decomposition only rely on the generaliza
 The possible solutions that the networks can find are restricted by having a linear output mapping.
 For a nonlinear output mapping, a possible solution for analog memory is the quasi-periodic toroidal attractor, but this is not possible for a linear output mapping.
 Our analysis methods can identify these limit sets, but we do not have a simple way to parametrize the two dimensional torus invariant manifold.
-
-
-
-
-
-
 
 \begin{ack}
 We would like to extend our heartfelt thanks to Sukbin Lim, Srdjan Ostojic and Daniel Durstewitz for their invaluable feedback and thoughtful suggestions which significantly refined the work.
