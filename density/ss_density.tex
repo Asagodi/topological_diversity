@@ -58,7 +58,6 @@
 %\title{Finally, an \emph{actual} universal approximation result for multi-stable dynamical systems}
 %\title{RNNs can approximate multistable dynamical systems on an infinite time horizon}
 \title{Universal approximation of multistable dynamical systems on an infinite time horizon by RNNs}
-%\title{Approximation of multi-stable dynamical systems on infinite horizons}
 \author{\'Abel S\'agodi and Il Memming Park}
 \date{\today}
 
@@ -81,15 +80,15 @@ For example, \citet{durstewitz2023reconstructing} claims that
 %a library of basis functions or
  a neural network may be used to closely approximate the vector field or the trajectories of any given dynamical system.
 However, universal approximation results based on vector fields are limited in scope, as the behavior of the ODE they support might deviate from the target.
-Existing results about approximating dynamical systems either focus on finite time horizon approximation or on approximating stable dynamical systems on an infinite horizon.
+Existing results about approximating dynamical systems either focus on finite time horizon approximation or on approximating stable dynamical systems on an infinite time horizon.
 This misses important behavior of the system (e.g. temporal generalization of the approximation, see Fig.~\ref{fig:lc_period_div}).
 
-A key motivation for extending approximation results to the infinite horizon lies in its ability to capture qualitative behaviors over time. For example, infinite horizon approximation allows us to better understand how a system's behavior unfolds over extended periods, providing insights into stability, transitions, and equilibrium states.
- Furthermore, an effective infinite horizon approximation ensures robustness: small perturbations, such as noise, do not result in abrupt increases in approximation error, but instead produce gradual, smooth deviations in the system's trajectory.
+A key motivation for extending approximation results to the infinite time horizon lies in its ability to capture qualitative behaviors over time. For example, infinite time horizon approximation allows us to better understand how a system's behavior unfolds over extended periods, providing insights into stability, transitions, and equilibrium states.
+ Furthermore, an effective infinite time horizon approximation ensures robustness: small perturbations, such as noise, do not result in abrupt increases in approximation error, but instead produce gradual, smooth deviations in the system's trajectory.
 %the second point needs to be worked out: with added noise the error would jump for trajectories at separatrices
 
-%We seek to extend approximation results for dynamical systems to multi-stable systems (systems without chaos) on an infinite horizon through Neural ODEs (NODEs).
-Our work aims to bridge this gap by extending the approximation of dynamical systems to multi-stable systems—those with multiple equilibrium states but no chaotic behavior—over an infinite horizon. 
+%We seek to extend approximation results for dynamical systems to multi-stable systems (systems without chaos) on an infinite time horizon through Neural ODEs (NODEs).
+Our work aims to bridge this gap by extending the approximation of dynamical systems to multi-stable systems—those with multiple equilibrium states but no chaotic behavior—over an infinite time horizon. 
 To achieve this, we leverage Neural Ordinary Differential Equations (NODEs) as a framework for constructing such approximations.
 % By using NODEs, we can model continuous-time dynamical systems while ensuring that key properties, such as stability and smooth error bounds under perturbations, are maintained.
 We provide a fist-of-its-kind \textbf{approximation result for multi-stable systems on the infinite time horizon}, laying the groundwork for future advances in both theory and applications of neural approximators in long-term dynamical modeling.
@@ -108,7 +107,7 @@ ANNs can generalize. After learning the data presented to them (a sample), ANNs 
 %sota 
 Accurately approximating dynamical systems is essential for understanding and predicting complex behaviors across a range of applications, from robotics to climate modeling.
 Recent advances in machine learning have enabled data-driven approaches to approximating these systems, providing new ways to model complex dynamics over extended periods.
-Here, we review key approaches in the literature and highlight emerging techniques that address these challenges, before we introduce our method that extends to multi-stable and complex systems over infinite horizons.
+Here, we review key approaches in the literature and highlight emerging techniques that address these challenges, before we introduce our method that extends to multi-stable and complex systems over infinite time horizons.
 %
 %For an overview of the literature, see [litrev]
 See also \citep{li2022approximation} and \citep{jiang2023brief}.
@@ -792,7 +791,8 @@ See note on  $\hat\epsilon$ Knob.
 
 
 \paragraph{The basin of attraction for a stable limit cycle}
-Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension, with a scalar circle coordinate \citep{wilson1967structure}.
+Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension $n-1$, with a scalar circle coordinate \citep{wilson1967structure}.
+
 
 
 \paragraph{Summary}
@@ -890,6 +890,20 @@ If an input sequence doesn't converge (i.e. it has a mixing property) we get the
 
 \subsection{Contractive dynamics}
 
+\begin{theorem}[Theorem 2 in \citep{lohmiller1998contraction}]\label{thrm:contractive}
+Given the system equations $\dot x = f(x,t)$, any trajectory, which starts in a ball of constant radius with respect to the metric $M(x,t)$, centered at a given trajectory and contained at all times in a contraction region with respect to $M(x,t)$,  remains in that ball and converges exponentially to this trajectory.
+\end{theorem}
+
+\begin{remark}
+Theorem \ref{thrm:contractive} actually corresponds to a necessary and sufficient condition for exponential convergence of a system. In this sense it generalizes and simplifies a number of previous results in dynamic systems theory.
+\end{remark}
+
+\begin{remark}
+A convex contraction region contains at most one equilibrium point, since any length between two trajectories is shrinking exponentially in that region.
+\end{remark}
+
+
+
 
 \subsection{Finite-time horizon approximation + asymptotically autonomous = Infinite-time horizon approximation}
 
@@ -906,7 +920,7 @@ If an input sequence doesn't converge (i.e. it has a mixing property) we get the
 
 
 \paragraph{Limit cycles}
-Approximable but approximation is not robust! (period will change under almost all perturbations)
+Stable limit cycles are approximable but their approximation is not robust! (period will change under almost all perturbations)
 
 
 \paragraph{Link to Total integrated error (TIE)}
@@ -1176,7 +1190,7 @@ y_t = h(x_t),
 where \( F : \mathbb{R}^L \times \mathbb{R}^d \rightarrow \mathbb{R}^L \) and \( h : \mathbb{R}^L \rightarrow \mathbb{R}^d \) are a state and a readout map, respectively. \( \mathbb{R}^L \) is, in this case, the state space and, typically, \( L \) is much bigger than \( d \).
 
 \subsection{Some Preliminaries}
-To construct the infinite horixon approximation theory of the NODEs, some preliminaries will be provided in this section.
+To construct the infinite time horizon approximation theory of the NODEs, some preliminaries will be provided in this section.
 
 \begin{definition}[Lipschitz]
  Let both $S \subset \mathbb{S}^n$ and $U \subset \mathbb{R}^m$ be open subsets.
