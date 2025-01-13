@@ -194,7 +194,7 @@ To define it formally, let \(\vx(t) \in \reals^{d}\) denote the neural state, an
 Let \(\manifold \subset \reals^{d}\) be a manifold.
 We say \(\manifold\) is a continuous attractor, if (1) every state on the manifold is a fixed point, \(\forall \vx \in \manifold, \vf(\vx) = 0\), and (2) the fixed points are marginally stable tangent to the manifold and stable normal to the manifold.
 In other words, the continuous attractor is a continuum of equilibrium points such that the neural state near the manifold is attracted to it, and on the manifold, the state does not move.
-Marginal stability implies that continuous systems are structurally unstable, meaning that small perturbations or variations in the system's parameters lead to significant changes in the system's behavior or stability \citep{peixoto1959structural, palis2000structural, robbin1971structural, robinson1974structural}.
+Marginal stability implies that continuous systems are \emph{structurally unstable}, meaning that small perturbations or variations in the system's parameters lead to significant changes in the system's behavior or stability \citep{peixoto1959structural, palis2000structural, robbin1971structural, robinson1974structural}.
 We will now study some examples of continuous attractors and how perturbations change their dynamics.
 
 % noise-instability is a problem for all CAN types in the literature
@@ -214,7 +214,7 @@ We will now study some examples of continuous attractors and how perturbations c
 \end{figure}
 
 
-As an example, we can construct a line attractor (a continuous attractor with a line manifold) as follows:
+As an illustrative example, we can construct a line attractor (a continuous attractor with a line manifold) as follows:
 %We will describe the bifurcation space of some continuous attractors.
 %Neurons exhibit complex dynamics that can be described by differential equations.
 \begin{align}\label{eq:TLN}
@@ -229,12 +229,12 @@ We get \(\dot{\vx} = 0\) on the \(x_{1} = -x_{2} + 1\) line segment in the first
 Linearization of the fixed points on the manifold exhibits two eigenvalues, \(0\) and \(-2\);
 the \(0\) eigenvalue allows the continuum of fixed points, while \(-2\) makes the flow normal to the manifold attractive (Fig.~\ref{fig:lara_bifurcations}A, left; flow field).
 
-In general, continuous attractors are not only structurally unstable \citep{mane1987proof}, they bifurcate almost certainly for an arbitrary perturbation.
-Small changes to the parameters \((\vb,\vW)\) perturb the eigenvalues and any perturbation to the \(0\) eigenvalue destroys the continuous attractor: it bifurcates to either
+In general, continuous attractors are not only structurally unstable \citep{mane1987proof}, they bifurcate almost certainly for an \emph{arbitrary} perturbation of $\vf$.
+In this example, small changes to the parameters \((\vb,\vW)\) perturb the eigenvalues and any to the \(0\) eigenvalue destroys the continuous attractor: it bifurcates to either
 a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A, top) or two stable fixed points separated with a saddle-node in between (Fig.~\ref{fig:lara_bifurcations}A, bottom).
 However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifold topologically equivalent to the original continuous attractor (note the slow speed).
 Furthermore, the flow after the bifurcation is contained in the ghost manifold, i.e., it is an invariant manifold.
-This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,mante2013context,schmidt2019identifying}.
+This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been discussed~\citep{seung1997learning,mante2013context,schmidt2019identifying}.
 %Similar to the BLA in \citep{schmidt2019identifying} a line attractor approximation was described as a slightly detuned line attractor with arbitrarily slow time constants.
 
 
@@ -274,17 +274,17 @@ This phenomenon, wherein a continuous attractor is approximated by a manifold wi
 %\subsubsection{Angular integration networks}\label{sec:hd}
 For circular variables such as the goal-direction (e.g. for navigation \citep{sun2020decentralised, westeinde2024transforming} and working memory for communication in bees \citep{frisch1993dance}) %home navigation + dance in bees: the angle of the waggle phase relative to gravity reflects the angle of the food source relative to the sun
 %duration of the waggle phse reflects the distance to the food source from the hive
-or head-direction, the temporal integration, and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology) \citep{kim2017ring,kim2019generation,turner2017angular,turner2020neuroanatomical,hulse2020mechanisms,taube2003persistent,taube2007head,angelaki2020head,fisher2022flexible}.
+or head direction, the temporal integration, and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology) \citep{kim2017ring,kim2019generation,turner2017angular,turner2020neuroanatomical,hulse2020mechanisms,taube2003persistent,taube2007head,angelaki2020head,fisher2022flexible}.
 Other examples include
 integration of evidence for continuous perceptual judgments, e.g. a hunting predator that needs to compute the net direction of motion of a large group of prey \citep{esnaola2022flexible}.
 In this section, we investigate the bifurcations of various implementations of continuous attractors.
 Continuous attractor network models of the head direction are based on the interactions of neurons that (anatomically) form a ring-like overlapping neighbor connectivity~\citep{zhang1996,noorman2024accurate,ajabi2023,vafidis2022,boucheny2005continuous,knierim2012,song2005angular,xie2002double}.
 %Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
-Similarly to the line attractor, the ring attractor bifurcates with almost any perturbation. However, the resulting dynamics continue to follow a familiar pattern: they remain confined to a ghost manifold that closely approximates the original continuous attractor.
+Similarly to the line attractor, the ring attractor bifurcates with almost any perturbation to the network dynamics. However, the resulting dynamics continue to follow a familiar pattern: they remain confined to a ghost manifold that closely approximates the original continuous attractor.
 
 
 \ptitle{Piecewise-linear ring attractor model of the central complex}
-Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{noorman2024accurate}.
+Firstly, we discuss perturbations of a continuous ring attractor recently proposed as a model for the head direction representation in fruit flies~\citep{noorman2024accurate}.
 This model is composed of \(N\) heading-tuned neurons with preferred headings \(\theta_{j} \in \{\nicefrac{2\pi i}{N}\}_{i = 1\dots N}\) radians (Sec.~\ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter \(J_{E}\)) and broad inhibition (\(J_{I}\)), this network will generate a stable bump of activity corresponding to the head direction.
 This continuum of fixed points forms a \(N\)-sided polygon. %: a one-dimensional manifold homeomorphic to the circle.
