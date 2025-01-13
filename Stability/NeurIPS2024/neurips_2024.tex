@@ -42,6 +42,8 @@
 \AtBeginDocument{\setlength\belowdisplayskip{2pt}}
 \titlespacing*{\section}{0pt}{0pt}{0pt}
 \titlespacing*{\subsection}{0pt}{0pt}{0pt}
+\widowpenalty=10000
+\clubpenalty=10000
 
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
@@ -213,6 +215,9 @@ We will now study some examples of continuous attractors and how perturbations c
 }\label{fig:lara_bifurcations}
 \end{figure}
 
+% now that the neurips 2024 noticestring is added, we can reduce the float separation
+\setlength{\floatsep}{3pt plus 1pt minus 1pt}
+\setlength{\textfloatsep}{3pt plus 1pt minus 1pt}
 
 As an illustrative example, we can construct a line attractor (a continuous attractor with a line manifold) as follows:
 %We will describe the bifurcation space of some continuous attractors.
@@ -319,11 +324,11 @@ For such networks the number of fixed points can change with the size of the per
 
 \ptitle{Low-rank ring attractor model} %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
-In the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining the overlap of the right- and left-connectivity vectors (see for more details  Sec.~\ref{sec:supp:lowrank}).
+In the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining the overlap of the right- and left-connectivity vectors (see Sec.~\ref{sec:supp:lowrank}).
 However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points arranged on a ring (Fig.~\ref{fig:lara_bifurcations}B).
 
 \ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
-Approximate ring attractors can be constructed by constraining the connectivity so that the networks Jacobian satisfies certain requirements for a ring attractor to exist~\citep{pollock2020} (see for more details Sec.~\ref{sec:supp:empj}).
+Approximate ring attractors can be constructed by constraining the connectivity so that the networks Jacobian satisfies certain requirements for a ring attractor to exist~\citep{pollock2020} (see Sec.~\ref{sec:supp:empj}).
 The models constructed with this method also can contain an invariant ring manifold on which the dynamics contain stable and saddle fixed points (Fig.~\ref{fig:bio_rings}C).
 It has been observed that approximate continuous attractor emerge in networks trained on sampled points with other methods as well \citep{darshan2022}.
 
