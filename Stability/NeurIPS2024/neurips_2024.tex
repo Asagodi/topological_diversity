@@ -398,12 +398,12 @@ We denote the corresponding manifold of \(l\) dimensions as \(\manifold_{0} \col
 
 We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic, i.e.\ the Jacobians \(\nabla_{\vz} \vh\) evaluated at any point on the \(\manifold_{0}\) has \(d - l\) eigenvalues with their real part uniformly bounded away from zero, and \(\nabla_{\vy} \vg\) has \(l\) eigenvalues with zero real part.
 %Roughly speaking, \(f\) is normally hyperbolic at \(N\) if the tangent map \(Tf\), restricted to the normal direction to \(N\), is hyperbolic (it expands and contracts complementary directions) and if it dominates the restriction of \(Tf\) to the tangent direction \(TN\) (that is, expansion and contraction in the tangent direction, if any, are weaker than those in the normal direction).
-More specifically, for continuous attractors, the real part of the eigenvalues of \(\nabla_{\vz} \vh\) will be negative, representing sufficiently strong attractive flow toward the manifold.
+More specifically, for continuous attractors, the real parts of the eigenvalues of \(\nabla_{\vz} \vh\) are strictly negative, representing sufficiently strong attractive flow toward the manifold.
 Equivalently, for the ODE, \(\dot{\vx} = \vf(\vx)\), the variational system is of constant rank and has exactly \((d - l)\) eigenvalues with negative real parts uniformly away from zero and \(l\) eigenvalues with zero real parts everywhere along the continuous attractor.
 
 
 
-\setlength\belowcaptionskip{-5ex}
+%\setlength\belowcaptionskip{-5ex}
 \begin{SCfigure}[10][bthp]
   \centering
   \includegraphics[width=0.5\textwidth]{FenichelThm}
@@ -422,7 +422,7 @@ However, the topological structure and the asymptotic behavior of trajectories c
 Yet, surprisingly, there is a strong connection in the geometry due to Fenichel's theorem~\cite{fenichel1971}.\footnote{The Persistent Manifold Theorem has been successfully applied previously in neuroscience\citep{Kopell1996,ermentrout2010}, for example to reduce the dimensionality of the Hodgkin-Huxley model\citep{rinzel1985excitation,ermentrout1986parabolic}.}
 We informally present a special case due to~\citet{Jones1995}:
 
-\setlength\belowcaptionskip{2ex}
+%\setlength\belowcaptionskip{2ex}
 
 \begin{theorem}[Persistent Manifold]\label{theorem:persistent}
 Let \(\manifold_{0}\) be a connected, compact\footnote{See \citet{eldering2013normally} for results of persistence of noncompact invariant manifolds.}, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
@@ -439,7 +439,7 @@ Finally, the persisting invariant manifold is very close in space to the origina
 
 %Informally, normal hyperbolicity guarantees that the perturbations change the structure of the manifold before they can destroy the attractiveness of the manifold.
 
-These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow reparametrization%
+These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the corresponding fast-slow reparametrization%
 	\footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems). Therefore, we consider systems that are at least continuous, but some extra conditions apply if a system is not differentiable.}).%
 As the theory predicts, it bifurcates into a 1-dimensional slow manifold (Fig.~\ref{fig:lara_bifurcations}, dark-colored regions) that contains fixed points and connecting orbits and is overall still attractive.
 Furthermore, Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
@@ -468,23 +468,23 @@ Because continuous ring attractors are bounded, they persist as an invariant man
 % endregion
 
 \subsection{Fast-slow decomposition and the revival of continuous attractors}\label{sec:revival}
-Second, we relate the flow tangent to the slow manifold to the size of the perturbation needed to bring it back to a continuous attractor.
+%Can we quantify the size of the modification needed to bring a slow manifold back to the ideal continuous attractor?
 Consider a behaviorally relevant timescale for working memory, for example, roughly up to a few tens of seconds.
-If the dynamical system is orders of magnitude slower, for example, 1000 sec or longer, its effect is too slow to have a practical impact on the behavior that relies on the working memory mechanism.
+If the relevant dynamical system is orders of magnitude slower, for example, 1000 sec or longer, its effect is too slow to have a practical impact on the behavior. % that relies on the working memory mechanism.
 This clear gap in the fast and slow time scales can be recast as \emph{normal hyperbolicity} of the slow manifold by relaxing the zero real part to a separation of time scales (reciprocal of eigenvalues or Lyapunov exponents).
 In other words, the attractive flow normal to the manifold needs to be uniformly faster than the flow on the slow manifold.
 %
 By taking the limit of the slow flow on the manifold to arbitrarily long time constant (i.e., to zero flow), we achieve the reversal of the persistent manifold theorem.
 \begin{prop}[Revival of continuous attractor]\label{prop:revival}
-Let \(\manifold_{\epsilon}\) be a connected, compact, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}).
-Further, assume that the real part of the eigenvalues of \(\nabla_{\vz} \vh\) are negative. % in the neighborhood of a continuous attractor.
+Let \(\manifold_{\epsilon}\) be a connected, compact, attractive, normally hyperbolic slow manifold  (as parametrized by Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}).
+%Further, assume that the real part of the eigenvalues of \(\nabla_{\vz} \vh\) are negative. % in the neighborhood of a continuous attractor.
 Let the uniform norm of the flow tangent to the manifold be \(\|\dot \vy\|_{\infty}=\eta\).
 There exists a perturbation with uniform norm at most \(\eta\) that induces a bifurcation to a continuous attractor manifold. % \(\manifold_{0}\) diffeomorphic to \(\manifold_{\epsilon}\).
 \end{prop}
 \vspace{-.1cm}
 An explicit perturbation is derived in Sec.~\ref{sec:supp:proofprop1}.
-This makes the uniform norm of the vector field on a (slow) manifold a useful measure to express the distance of an approximation to a continuous attractor.
-Prop.~\ref{prop:revival}  can be extended to the case where the invariant manifold has additional dynamics to which the output mapping is invariant (see Theorem~\ref{thrm:near_ca}).
+This makes the uniform norm of the vector field on a (slow) manifold a useful measure of the distance of an approximation to a continuous attractor.
+Prop.~\ref{prop:revival} can be extended to the case where the invariant manifold has additional dynamics to which the output mapping is invariant (see Theorem~\ref{thrm:near_ca}).
 These systems can be perturbed onto a decomposable system where one of the subsystems has a slow flow.
 
 \subsection{Relevance of dynamics on the memory performance of the slow manifold}\label{sec:attractor_bif}
@@ -493,8 +493,8 @@ Third, we relate the flow of the manifold (and, through Prop.~\ref{prop:revival}
 We also discuss the implications of the theoretical insights on the memory error in the asymptotic time scale.
 
 In the short-time scale the memory performance is bounded by the uniform norm of the flow tangent to the manifold.
-Let \(\vx_{0} \in \manifold\), and \(\varphi = \vp(\cdot)\vert_{\manifold}\) be the vector field restricted to the manifold (following the notation in Eq.\ref{eq:perturbation:nonparam}).
-The average deviation from initial memory \(\vx_{0}\) over time is bounded linearly (for a derivation, see Sec.~\ref{sec:supp:ub}):
+Let \(\vx_{0} \in \manifold\), and \(\varphi = \vp(\cdot)\vert_{\manifold}\) be the vector field restricted to the manifold (following the notation in Eq.~\ref{eq:perturbation:nonparam}).
+The average deviation from the initial memory \(\vx_{0}\) over time is bounded linearly (derivation in Sec.~\ref{sec:supp:ub}):
 \begin{align}\label{eq:distance:ub}
 \frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
 %\frac{1}{T}\int_0^T
@@ -517,7 +517,7 @@ For a ring attractor, this implies that the stability structure of the invariant
 These different stability structures have different generalization properties (see Sec.~\ref{sec:generalization}).
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 %For 2 dimensional attractors, stable fixed points and saddle nodes can coexist with limit cycles.
-In more complex scenarios, such as two-dimensional attractors, fixed points can coexist with limit cycles, creating a rich tapestry of possible neural states.
+In more complex scenarios, such as two-dimensional attractors, fixed points can coexist with limit cycles, creating a rich tapestry of possible attractors.
 %The persistence of hyperbolic tori in Hamiltonian systems was described in \citep{li2005persistence}.
 %\pscomment{Technically, only parallel translations, and KAM gives a type of structural stability result.}
 %For higher dimensional attractors, there is the possibility of chaos emerging, but we conjuncture that the bifurcations leading to such behavior are a measure zero set.
@@ -2326,7 +2326,7 @@ We will now formalize the statement about an upper bound dependent on the unifor
 \begin{prop}\label{prop:ub}
 Let \(\manifold\) be a normally hyperbolic slow manifold as in Prop.~\ref{sec:revival}.
 Let \(\vx_{0} \in \manifold\), and \(\varphi = \vf\vert_{\manifold}\) be the flow restricted to the manifold.
-The average deviation from initial memory \(\vx_{0}\) over time is bounded linearly
+The average deviation from the initial memory \(\vx_{0}\) over time is bounded linearly
 \begin{align}
 \frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
 \abs{\vx(t, \vx_{0}) - \vx_{0}}\,
@@ -2353,12 +2353,12 @@ x(t,\vx_{0}) &= \int_{0}^{t}\varphi(x(\tau))d\tau + \vx_{0} \\
 We formulate here a theory of continuous attractor approximations in terms of memory loss over time.
 It can be used uniform norm of vector field on the manifold to bound the memory performance on the short-time scale. % based on the uniform bound of the slow flow.
 Let \(\vx_{0} \in \manifold\), and \(\varphi = \vp\vert_{\manifold}\) be the flow restricted to the manifold.
-We will show that the average deviation from initial memory \(\vx_{0}\) over time is bounded linearly as in Eq.~\ref{eq:distance:ub}.
+We will show that the average deviation from the initial memory \(\vx_{0}\) over time is bounded linearly as in Eq.~\ref{eq:distance:ub}.
 
 \subsection{Ring attractor}
 For a ring attractor we can give more tight bounds on the accumulated error for the angular memory.
 Suppose we have a dynamical system \(\bm{x} \in \mathbb{R}^{N}\) with autonomous dynamics \(\dot{ \bm{x}} = F_{\boldsymbol{\theta}} (\bm{x})\) and solutions \(\vx(t, \vx_{0})\) uniquely defined for each \(\vx_{0}\).
-Let us define the error (i.e.the  average deviation from initial memory) for an attractor as
+Let us define the error (i.e.\ the  average deviation from the initial memory) for an attractor as
 \begin{align}
 \mathcal{L}(T) \coloneqq
 \frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
