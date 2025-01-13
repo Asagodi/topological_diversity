@@ -292,15 +292,15 @@ This continuum of fixed points forms a \(N\)-sided polygon. %: a one-dimensional
 \begin{figure}[tbhp]
      \centering
   \includegraphics[width=.8\textwidth]{bio_rings_ss}
-       \caption{ Perturbations of different implementations and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact. For each model, the network dynamics is constrained to a ring which in turn is populated by stable fixed points (green) and saddle nodes (red).
-       (A) 	Perturbations to the ring attractor \citep{noorman2024accurate}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to \(2N\) (stable and saddle points are paired).
-       (B) 	Perturbations to a tanh approximation of a ring attractor \citep{seeholzer2017efficient}.
+       \caption{ Perturbations of different implementations and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact. For each model, the network dynamics is constrained to a ring manifold with stable fixed points (green) and saddle nodes (red).
+       (A) 	Perturbations to \citet{noorman2024accurate}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to \(2N\) (stable and saddle points are paired).
+       (B) 	Perturbations to a tanh approximation of a ring attractor \citet{seeholzer2017efficient}.
        (C) 	Different Embedding Manifolds with Population-level Jacobians (EMPJ) approximations of a ring attractor \citep{pollock2020}.
        }\label{fig:bio_rings}
 \end{figure}
 
 We evaluate the effect of parametric perturbations of the form \( \vW \leftarrow \vW + \vV\) with \(\vV_{i, j}\iidsample\mathcal{N}(0,\nicefrac{1}{100})\) on a network of size \(N = 6\) (forming an hexagon, see also Sec.~\ref{sec:supp:ring_perturbations}). %with \(J_{E} = 4\) and \(J_{I}=-2.4\) by identifying all bifurcations.
-We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:bio_rings}A).
+We found that the continuum of fixed points can collapse to between 2 and 12 isolated fixed points (Fig.~\ref{fig:bio_rings}A).
 As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
 The probability of each type of bifurcation was numerically estimated (Sec.~\ref{sec:supp:headdirection}).
 %There are several additional co-dim 1 bifurcations with measure zero (Fig.~\ref{fig:meaure_zero_perturbations}).
@@ -310,11 +310,11 @@ Surprisingly, the number of fixed points is maintained throughout a range of per
 
 %In modeling neural dynamics, ensuring biological plausibility is paramount.
 \ptitle{Bump attractor model}
-A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, involves utilizing a circulant matrix as the connectivity matrix\citep{benyishai1995theory,samsonovich1997path}.
-This type of ring attractor network can support a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
-This can be accomplished with a connection matrix \(W\) with entries that follow a circular Gaussian function of \(i - j\) \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic} (see for more details Sec.~\ref{sec:supp:goodridge}).
+A well-established approach to form a ring attractor in the limit of large network is with a connection matrix \(W\) with entries that follow a circular Gaussian function of \(i - j\)\citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic} (Sec.~\ref{sec:supp:goodridge}).
+%, consistent with the principles observed in the fly head direction network\citep{kakaria2017}, involves utilizing a circulant matrix as the connectivity matrix\citep{benyishai1995theory,samsonovich1997path}.
+This type of ring attractor network can support a stable ``activity bump'' that can move around the ring of nonlinear neurons in correspondence with changes in head direction\citep{kakaria2017}.
 For finite-sized networks, the dynamics are constrained to an attractive invariant ring, covered with \(N\) stable fixed points for a network of size \(N\) (Fig.~\ref{fig:bio_rings}B).
-For such networks the number of fixed points does change with the size of the perturbation (Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}).
+For such networks the number of fixed points can change with the size of the perturbation (Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}).
 %Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is because they are nearby ring attractors as dynamical systems.
 
 \ptitle{Low-rank ring attractor model} %mastrogiuseppe, beiran, ostojic
@@ -324,7 +324,7 @@ However, in simulations of finite-size networks with this constraint, the dynami
 
 \ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
 Approximate ring attractors can be constructed by constraining the connectivity so that the networks Jacobian satisfies certain requirements for a ring attractor to exist~\citep{pollock2020} (see for more details Sec.~\ref{sec:supp:empj}).
-The models fitted with this method also can contain an invariant ring manifold on which the dynamics contain stable and saddle fixed points (Fig.~\ref{fig:bio_rings}C).
+The models constructed with this method also can contain an invariant ring manifold on which the dynamics contain stable and saddle fixed points (Fig.~\ref{fig:bio_rings}C).
 It has been observed that approximate continuous attractor emerge in networks trained on sampled points with other methods as well \citep{darshan2022}.
 
 \ptitle{Similarity between all bifurcations and approximations of continuous attractors}
@@ -554,9 +554,7 @@ We numerically minimized the mean squared error loss \(L_{\operatorname{MSE}}\) 
 \(L_{\operatorname{MSE}} \coloneqq y_{i, t}-\hat y_{i, t})^{2}\).
 %We implemented a mask, \(m_{i, t}\), for modulating the loss with respect to certain time intervals.
 %We trained vanilla RNNs with ReLU, tanh, and rectified tanh activation functions. 
-For each activation function and each network architecture (vanilla RNN with ReLU, tanh, and rectified tanh activation functions, LSTM, and GRU), we trained 10 networks per hidden size: 64, 128, and 256 with state noise.
-
-
+For each activation function and each network architecture (vanilla RNN with ReLU, \texttt{tanh}, and rectified \texttt{tanh} activation functions, LSTM, and GRU), we trained 10 networks per hidden size: 64, 128, and 256 with (hidden) state noise.
 
  %method
 \subsection{Numerical Fast-Slow Decomposition}\label{sec:fastslowmethod}
@@ -1166,7 +1164,7 @@ C2 & \xmark 		& only Eq\ref{eq:condition2.1} or~\ref{eq:condition2.2}  	 & \cmar
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{bla_parameter_space}
+  \includegraphics[width=0.6\textwidth]{bla_parameter_space}
   \caption{A slice of the parameter space of the BLA for a fixed \(\epsilon_{11}\) and \(\epsilon_{12}\). %The different bifurcations can be found
   }\label{fig:blaparameterspace}
 \end{figure}
@@ -1628,7 +1626,7 @@ W(\theta_{i} - \theta_{j}) = J^- + (J^+ - J^-) \exp\left[ -\frac{(\theta_{i} - \
  and \(\sigma\) the width of the connectivity footprint.
 
 
- Such ring attractor approximations are similar to the ones in \citep{goodridge2000, samsonovich1997path, redish1996coupled, tsodyks1995associative}. %Equation 9,12
+ Such ring attractor approximations are similar to the ones in \citep{goodridge2000,samsonovich1997path,redish1996coupled, tsodyks1995associative}. %Equation 9,12
 However, some have other nonlinearities, e.g.,  the sigmoid is used in \citep{goodridge2000}.
 Another line of related models can be found in \citep{Burak2009}, \citep{couey2013} and \citep{spalla2021continuous}.
 
@@ -1645,7 +1643,7 @@ The memory capacity of this initial configuration is \(N\log(N)\) for the \(2N\)
 
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=\textwidth]{performance2}
+  \includegraphics[width=0.5\textwidth]{performance2}
   \caption{Degradation of performance across perturbation sizes. System behavior at the asymptotic time scales measured through memory capacity. }\label{fig:performance}
 \end{figure}
 
@@ -1715,7 +1713,7 @@ We keep the following parameters for the analysis:
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{N100_si2_rho1.9_g0_fp4.8.12_s}
+\includegraphics[width=\textwidth]{N100_si2_rho1.9_g0_fp4.8.12_s}
 \caption{Some examples of networks dynamics for sizes \(N = 10, 100, 1000\).}\label{fig:low_rank_examples}
 \end{figure}
 
