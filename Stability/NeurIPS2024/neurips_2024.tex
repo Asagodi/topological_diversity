@@ -1,14 +1,15 @@
 \documentclass{article} % For LaTeX2e
+
+\usepackage[open={},close={},numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2024
 \usepackage[final]{neurips_2024}
 \pdfminorversion=6
 %\usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath,amsthm}
 \usepackage{thmtools,mathtools,mathrsfs}
-\usepackage{amsfonts}       		% blackboard math symbols
+\usepackage{amsfonts}
 \usepackage{forloop}
 \usepackage{xspace}
-%\usepackage{natbib}
-\setcitestyle{open={},close={},comma,numbers,sort&compress,super}
+%\setcitestyle{open={},close={},numbers,sort&compress,super,comma}
 \usepackage{graphicx}
 \usepackage{tikz-cd}
 \PassOptionsToPackage{dvipsnames}{xcolor}
@@ -17,10 +18,11 @@
 \definecolor{MidnightBlue}{rgb}{0.1, 0.1, 0.44}
 \definecolor{BurntOrange}{rgb}{0.8, 0.33, 0.0}
 \definecolor{Plum}{rgb}{0.56, 0.27, 0.52}
-\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}       % hyperlinks
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}
 \hypersetup{breaklinks=true}
+
 \usepackage{pifont} 			%xmark
-\usepackage{caption,subcaption} 			%\usepackage{subcaption}
+\usepackage{caption,subcaption}
 \usepackage{float}
 \usepackage{bm}				%bold
 \usepackage[T1]{fontenc}    		% use 8-bit T1 fonts
@@ -33,14 +35,15 @@
  %% space saving tricks
 \usepackage{sidecap} % caption on the side SCfigure
 \sidecaptionvpos{figure}{c} % vertically align scfigure in sidecap
+
 \usepackage[compact]{titlesec}
-\setlength{\abovedisplayskip}{2pt}
-\setlength{\belowdisplayskip}{2pt}
-\AtBeginDocument{ \setlength{\textfloatsep}{1pt }}
-\AtBeginDocument{\setlength\abovedisplayskip{1pt}}
-\AtBeginDocument{\setlength\belowdisplayskip{1pt}}
+%\AtBeginDocument{\setlength{\textfloatsep}{2pt}} % <-- this changes how "noticestring" behaves on the first page
+\AtBeginDocument{\setlength\abovedisplayskip{2pt}}
+\AtBeginDocument{\setlength\belowdisplayskip{2pt}}
 \titlespacing*{\section}{0pt}{0pt}{0pt}
 \titlespacing*{\subsection}{0pt}{0pt}{0pt}
+\widowpenalty=10000
+\clubpenalty=10000
 
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
@@ -99,15 +102,12 @@
 
 \title{Back to the Continuous Attractor}
 
-\newcommand{\fix}{\marginpar{FIX}}
-\newcommand{\new}{\marginpar{NEW}}
-
-\renewcommand{\cite}{\citep}
+%\renewcommand{\cite}{\citep}
 
 \author{
-    \'Abel S\'agodi, Guillermo Mart\'in-S\'anchez, Piotr Sok\'o\l, Il Memming Park \\
+    \'Abel S\'agodi, Guillermo Mart\'in-S\'anchez, Piotr Sok\'o\l, Il Memming Park
+    \vspace{1ex}\\
     %\thanks{Use footnote for providing further information about author (webpage, alternative address).} \\
-    \\
     Champalimaud Centre for the Unknown\\
     Champalimaud Foundation, Lisbon, Portugal\\
     \texttt{\{abel.sagodi,guillermo.martin,memming.park\}@research.fchampalimaud.org}\\
@@ -116,13 +116,7 @@
 
 \begin{document}
 
-%keywords:
-%neural computation, robustness, bifurcation analysis, exploding gradient problem, continuous attractors, persistence of invariant manifolds
-
-%TLDR
-
 \maketitle
-
 \begin{abstract}
 Continuous attractors offer a unique class of solutions for storing continuous-valued variables in recurrent system states for indefinitely long time intervals.
 Unfortunately, continuous attractors suffer from severe structural instability in general---they are destroyed by most infinitesimal changes of the dynamical law that defines them.
@@ -194,8 +188,6 @@ This leads to the connection of different systems with different topologies as \
 Our theory guarantees that systems close to a continuous attractor (in the space of vector fields) will have similar behavior to it, implying that the concept of continuous attractors remains a crucial framework for understanding the neural computation underlying analog memory (Sec.~\ref{sec:implications}).
 
 
-
-
 \section{A critique of pure continuous attractors}\label{sec:critique}
 We will first lay out a number of observations about the dynamics of bifurcations and approximations of continuous attractors used in theoretical neuroscience.
 Ordinary differential equations (ODEs) are commonly used to describe the dynamical laws governing the temporal evolution of firing rates or latent population states\cite{vyas2020}.
@@ -205,7 +197,7 @@ To define it formally, let \(\vx(t) \in \reals^{d}\) denote the neural state, an
 Let \(\manifold \subset \reals^{d}\) be a manifold.
 We say \(\manifold\) is a continuous attractor, if (1) every state on the manifold is a fixed point, \(\forall \vx \in \manifold, \vf(\vx) = 0\), and (2) the fixed points are marginally stable tangent to the manifold and stable normal to the manifold.
 In other words, the continuous attractor is a continuum of equilibrium points such that the neural state near the manifold is attracted to it, and on the manifold, the state does not move.
-Marginal stability implies that continuous systems are structurally unstable, meaning that small perturbations or variations in the system's parameters lead to significant changes in the system's behavior or stability \citep{peixoto1959structural, palis2000structural, robbin1971structural, robinson1974structural}.
+Marginal stability implies that continuous systems are \emph{structurally unstable}, meaning that small perturbations or variations in the system's parameters lead to significant changes in the system's behavior or stability \citep{peixoto1959structural, palis2000structural, robbin1971structural, robinson1974structural}.
 We will now study some examples of continuous attractors and how perturbations change their dynamics.
 
 % noise-instability is a problem for all CAN types in the literature
@@ -224,8 +216,11 @@ We will now study some examples of continuous attractors and how perturbations c
 }\label{fig:lara_bifurcations}
 \end{figure}
 
+% now that the neurips 2024 noticestring is added, we can reduce the float separation
+\setlength{\floatsep}{3pt plus 1pt minus 1pt}
+\setlength{\textfloatsep}{3pt plus 1pt minus 1pt}
 
-As an example, we can construct a line attractor (a continuous attractor with a line manifold) as follows:
+As an illustrative example, we can construct a line attractor (a continuous attractor with a line manifold) as follows:
 %We will describe the bifurcation space of some continuous attractors.
 %Neurons exhibit complex dynamics that can be described by differential equations.
 \begin{align}\label{eq:TLN}
@@ -240,12 +235,12 @@ We get \(\dot{\vx} = 0\) on the \(x_{1} = -x_{2} + 1\) line segment in the first
 Linearization of the fixed points on the manifold exhibits two eigenvalues, \(0\) and \(-2\);
 the \(0\) eigenvalue allows the continuum of fixed points, while \(-2\) makes the flow normal to the manifold attractive (Fig.~\ref{fig:lara_bifurcations}A, left; flow field).
 
-In general, continuous attractors are not only structurally unstable \citep{mane1987proof}, they bifurcate almost certainly for an arbitrary perturbation.
-Small changes to the parameters \((\vb,\vW)\) perturb the eigenvalues and any perturbation to the \(0\) eigenvalue destroys the continuous attractor: it bifurcates to either
+In general, continuous attractors are not only structurally unstable \citep{mane1987proof}, they bifurcate almost certainly for an \emph{arbitrary} perturbation of $\vf$.
+In this example, small changes to the parameters \((\vb,\vW)\) perturb the eigenvalues and any to the \(0\) eigenvalue destroys the continuous attractor: it bifurcates to either
 a single stable fixed point (Fig.~\ref{fig:lara_bifurcations}A, top) or two stable fixed points separated with a saddle-node in between (Fig.~\ref{fig:lara_bifurcations}A, bottom).
 However, interestingly, after bifurcation, continuous attractors seemingly tend to leave a ``ghost'' manifold topologically equivalent to the original continuous attractor (note the slow speed).
 Furthermore, the flow after the bifurcation is contained in the ghost manifold, i.e., it is an invariant manifold.
-This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been commented on~\citep{seung1997learning,mante2013context,schmidt2019identifying}.
+This phenomenon, wherein a continuous attractor is approximated by a manifold within the neural space along which the drift occurs at a very slow pace, has previously been discussed~\citep{seung1997learning,mante2013context,schmidt2019identifying}.
 %Similar to the BLA in \citep{schmidt2019identifying} a line attractor approximation was described as a slightly detuned line attractor with arbitrarily slow time constants.
 
 
@@ -285,17 +280,17 @@ This phenomenon, wherein a continuous attractor is approximated by a manifold wi
 %\subsubsection{Angular integration networks}\label{sec:hd}
 For circular variables such as the goal-direction (e.g. for navigation \citep{sun2020decentralised, westeinde2024transforming} and working memory for communication in bees \citep{frisch1993dance}) %home navigation + dance in bees: the angle of the waggle phase relative to gravity reflects the angle of the food source relative to the sun
 %duration of the waggle phse reflects the distance to the food source from the hive
-or head-direction, the temporal integration, and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology) \citep{kim2017ring,kim2019generation,turner2017angular,turner2020neuroanatomical,hulse2020mechanisms,taube2003persistent,taube2007head,angelaki2020head,fisher2022flexible,neupane2024mental}.
+or head direction, the temporal integration, and working memory functions are naturally solved by a ring attractor (continuous attractor with a ring topology) \citep{kim2017ring,kim2019generation,turner2017angular,turner2020neuroanatomical,hulse2020mechanisms,taube2003persistent,taube2007head,angelaki2020head,fisher2022flexible,neupane2024mental}.
 Other examples include
 integration of evidence for continuous perceptual judgments, e.g. a hunting predator that needs to compute the net direction of motion of a large group of prey \citep{esnaola2022flexible}.
 In this section, we investigate the bifurcations of various implementations of continuous attractors.
 Continuous attractor network models of the head direction are based on the interactions of neurons that (anatomically) form a ring-like overlapping neighbor connectivity~\citep{zhang1996,noorman2024accurate,ajabi2023,vafidis2022,boucheny2005continuous,knierim2012,song2005angular,xie2002double}.
 %Since continuous attractors are susceptible to noise and perturbations the precise representation of the head direction can in principle be disrupted easily.
-Similarly to the line attractor, the ring attractor bifurcates with almost any perturbation. However, the resulting dynamics continue to follow a familiar pattern: they remain confined to a ghost manifold that closely approximates the original continuous attractor.
+Similarly to the line attractor, the ring attractor bifurcates with almost any perturbation to the network dynamics. However, the resulting dynamics continue to follow a familiar pattern: they remain confined to a ghost manifold that closely approximates the original continuous attractor.
 
 
 \ptitle{Piecewise-linear ring attractor model of the central complex}
-Firstly, we discuss perturbations of a continuous ring attractor proposed as a model for the head direction representation in fruit flies~\citep{noorman2024accurate}.
+Firstly, we discuss perturbations of a continuous ring attractor recently proposed as a model for the head direction representation in fruit flies~\citep{noorman2024accurate}.
 This model is composed of \(N\) heading-tuned neurons with preferred headings \(\theta_{j} \in \{\nicefrac{2\pi i}{N}\}_{i = 1\dots N}\) radians (Sec.~\ref{sec:supp:headdirection}).
 For sufficiently strong local excitation (given by the parameter \(J_{E}\)) and broad inhibition (\(J_{I}\)), this network will generate a stable bump of activity corresponding to the head direction.
 This continuum of fixed points forms a \(N\)-sided polygon. %: a one-dimensional manifold homeomorphic to the circle.
@@ -303,15 +298,15 @@ This continuum of fixed points forms a \(N\)-sided polygon. %: a one-dimensional
 \begin{figure}[tbhp]
      \centering
   \includegraphics[width=.8\textwidth]{bio_rings_ss}
-       \caption{ Perturbations of different implementations and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact. For each model, the network dynamics is constrained to a ring which in turn is populated by stable fixed points (green) and saddle nodes (red).
-       (A) 	Perturbations to the ring attractor \citep{noorman2024accurate}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to \(2N\) (stable and saddle points are paired).
-       (B) 	Perturbations to a tanh approximation of a ring attractor \citep{seeholzer2017efficient}.
+       \caption{ Perturbations of different implementations and approximations of ring attractors lead to bifurcations that all leave the ring invariant manifold intact. For each model, the network dynamics is constrained to a ring manifold with stable fixed points (green) and saddle nodes (red).
+       (A) 	Perturbations to \citet{noorman2024accurate}. The ring attractor can be perturbed in systems with an even number of fixed points (FPs) up to \(2N\) (stable and saddle points are paired).
+       (B) 	Perturbations to a tanh approximation of a ring attractor \citet{seeholzer2017efficient}.
        (C) 	Different Embedding Manifolds with Population-level Jacobians (EMPJ) approximations of a ring attractor \citep{pollock2020}.
        }\label{fig:bio_rings}
 \end{figure}
 
 We evaluate the effect of parametric perturbations of the form \( \vW \leftarrow \vW + \vV\) with \(\vV_{i, j}\iidsample\mathcal{N}(0,\nicefrac{1}{100})\) on a network of size \(N = 6\) (forming an hexagon, see also Sec.~\ref{sec:supp:ring_perturbations}). %with \(J_{E} = 4\) and \(J_{I}=-2.4\) by identifying all bifurcations.
-We found that the ring (consisting of infinite fixed points) can be perturbed into systems with between 2 and 12 fixed points (Fig.~\ref{fig:bio_rings}A).
+We found that the continuum of fixed points can collapse to between 2 and 12 isolated fixed points (Fig.~\ref{fig:bio_rings}A).
 As far as we know, this bifurcation from a ring of equilibria to a saddle and node has not been described previously in the literature.
 The probability of each type of bifurcation was numerically estimated (Sec.~\ref{sec:supp:headdirection}).
 %There are several additional co-dim 1 bifurcations with measure zero (Fig.~\ref{fig:meaure_zero_perturbations}).
@@ -322,21 +317,21 @@ Surprisingly, the number of fixed points is maintained throughout a range of per
 
 %In modeling neural dynamics, ensuring biological plausibility is paramount.
 \ptitle{Bump attractor model}
-A well-established approach, consistent with the principles observed in the fly head direction network \citep{kakaria2017}, involves utilizing a circulant matrix as the connectivity matrix\citep{benyishai1995theory,samsonovich1997path}.
-This type of ring attractor network can support a stable ``activity bump'' that can move around the ring in correspondence with changes in head direction.
-This can be accomplished with a connection matrix \(W\) with entries that follow a circular Gaussian function of \(i - j\) \citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic,wang2012multistability} (see for more details Sec.~\ref{sec:supp:goodridge}).
+A well-established approach to form a ring attractor in the limit of large network is with a connection matrix \(W\) with entries that follow a circular Gaussian function of \(i - j\)\citep{seeholzer2017efficient,redish1996coupled,goodridge2000,compte2000synaptic} (Sec.~\ref{sec:supp:goodridge}).
+%, consistent with the principles observed in the fly head direction network\citep{kakaria2017}, involves utilizing a circulant matrix as the connectivity matrix\citep{benyishai1995theory,samsonovich1997path}.
+This type of ring attractor network can support a stable ``activity bump'' that can move around the ring of nonlinear neurons in correspondence with changes in head direction\citep{kakaria2017}.
 For finite-sized networks, the dynamics are constrained to an attractive invariant ring, covered with \(N\) stable fixed points for a network of size \(N\) (Fig.~\ref{fig:bio_rings}B).
-For such networks the number of fixed points does change with the size of the perturbation (Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}).
+For such networks the number of fixed points can change with the size of the perturbation (Fig.~\ref{fig:noorman_ring_allfxdpnts_allnorm}).
 %Furthermore, our theory indicates that the reason why networks of generic spiking neurons with connectivity inferred from light-resolution microscopy gives rise to approximate ring attractors\citep{kakaria2017}, is because they are nearby ring attractors as dynamical systems.
 
 \ptitle{Low-rank ring attractor model} %mastrogiuseppe, beiran, ostojic
 Low-rank networks can be used to approximate ring attractors~\citep{mastrogiuseppe2018, beiran2021}.
-In the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining the overlap of the right- and left-connectivity vectors (see for more details  Sec.~\ref{sec:supp:lowrank}).
+In the limit of infinite-size networks, one can construct a ring attractor through a rank 2 network by constraining the overlap of the right- and left-connectivity vectors (see Sec.~\ref{sec:supp:lowrank}).
 However, in simulations of finite-size networks with this constraint, the dynamics instead always converge to a small number of stable fixed points arranged on a ring (Fig.~\ref{fig:lara_bifurcations}B).
 
 \ptitle{Embedding Manifolds with Population-level Jacobians} %pollock, jazayeri
-Approximate ring attractors can be constructed by constraining the connectivity so that the networks Jacobian satisfies certain requirements for a ring attractor to exist~\citep{pollock2020} (see for more details Sec.~\ref{sec:supp:empj}).
-The models fitted with this method also can contain an invariant ring manifold on which the dynamics contain stable and saddle fixed points (Fig.~\ref{fig:bio_rings}C).
+Approximate ring attractors can be constructed by constraining the connectivity so that the networks Jacobian satisfies certain requirements for a ring attractor to exist~\citep{pollock2020} (see Sec.~\ref{sec:supp:empj}).
+The models constructed with this method also can contain an invariant ring manifold on which the dynamics contain stable and saddle fixed points (Fig.~\ref{fig:bio_rings}C).
 It has been observed that approximate continuous attractor emerge in networks trained on sampled points with other methods as well \citep{darshan2022}.
 
 \ptitle{Similarity between all bifurcations and approximations of continuous attractors}
@@ -397,9 +392,9 @@ To describe an arbitrary bifurcation of interest, we introduce a sufficiently sm
     \dot{\vy} &=           \epsilon  \vg(\vy, \vz, \epsilon) \qquad \text{(tangent)}\label{eq:fenichel:flowtangent}\\
     \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}\label{eq:fenichel:flownormal}
 \end{align}where \(\epsilon = 0\) gives the condition for the continuous attractor \(\dot{\vy} = \mathbf{0}\).
-We denote the corresponding manifold of \(l\) dimensions \(\manifold_{0} = \{(\vy,\vz) \mid \vh(\vy,\vz, 0) = \mathbf{0} \}\).
+We denote the corresponding manifold of \(l\) dimensions as \(\manifold_{0} \coloneqq \{(\vy,\vz) \mid \vh(\vy,\vz, 0) = \mathbf{0} \}\).
 
-We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic: the Jacobians \(\nabla_{\vz} \vh\) evaluated at any point on the \(\manifold_{0}\) has \(d - l\) eigenvalues with their real part uniformly bounded away from zero, and \(\nabla_{\vy} \vg\) has \(l\) eigenvalues with zero real part.
+We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic, i.e.\ the Jacobians \(\nabla_{\vz} \vh\) evaluated at any point on the \(\manifold_{0}\) has \(d - l\) eigenvalues with their real part uniformly bounded away from zero, and \(\nabla_{\vy} \vg\) has \(l\) eigenvalues with zero real part.
 %Roughly speaking, \(f\) is normally hyperbolic at \(N\) if the tangent map \(Tf\), restricted to the normal direction to \(N\), is hyperbolic (it expands and contracts complementary directions) and if it dominates the restriction of \(Tf\) to the tangent direction \(TN\) (that is, expansion and contraction in the tangent direction, if any, are weaker than those in the normal direction).
 More specifically, for continuous attractors, the real part of the eigenvalues of \(\nabla_{\vz} \vh\) will be negative, representing sufficiently strong attractive flow toward the manifold.
 Equivalently, for the ODE, \(\dot{\vx} = \vf(\vx)\), the variational system is of constant rank and has exactly \((d - l)\) eigenvalues with negative real parts uniformly away from zero and \(l\) eigenvalues with zero real parts everywhere along the continuous attractor.
@@ -428,7 +423,7 @@ We informally present a special case due to~\citet{Jones1995}:
 \setlength\belowcaptionskip{2ex}
 
 \begin{theorem}[Persistent Manifold]\label{theorem:persistent}
-Let \(\manifold_{0}\) be a connected, compact\footnote{See \citep{eldering2013normally} for results of persistence of noncompact invariant manifolds.}, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
+Let \(\manifold_{0}\) be a connected, compact\footnote{See \citet{eldering2013normally} for results of persistence of noncompact invariant manifolds.}, normally hyperbolic manifold of equilibria originating from a sufficiently smooth ODE.
 For a sufficiently small perturbation \(\epsilon > 0\), there exists a manifold \(\manifold_{\epsilon}\) diffeomorphic to \(\manifold_{0}\) and  invariant under the flow of Eq.~\eqref{eq:fenichel:flowtangent}-\eqref{eq:fenichel:flownormal}. %locally
 %Moreover, \(\manifold_{\epsilon}\) has \(\mathcal{O}(\epsilon)\) Hausdroff distance to \(\manifold_{0}\) and has the same smoothness as \(g\) and \(h\).
 \end{theorem}
@@ -442,12 +437,11 @@ Finally, the persisting invariant manifold is very close in space to the origina
 
 %Informally, normal hyperbolicity guarantees that the perturbations change the structure of the manifold before they can destroy the attractiveness of the manifold.
 
-These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow rerparametrization of the BLA
-	\footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems). Therefore, we consider systems that are at least continuous, but some extra conditions apply if a system is not differentiable.}). %
-As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (Fig.~\ref{fig:lara_bifurcations}, dark-colored regions) that contains fixed points and connecting orbits and is overall still attractive.
+These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow reparametrization%
+	\footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems). Therefore, we consider systems that are at least continuous, but some extra conditions apply if a system is not differentiable.}).%
+As the theory predicts, it bifurcates into a 1-dimensional slow manifold (Fig.~\ref{fig:lara_bifurcations}, dark-colored regions) that contains fixed points and connecting orbits and is overall still attractive.
 Furthermore, Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
-Because continuous ring attractors are bounded, they persist as invariant manifold and remain attractive under small perturbations~\citep{wiggins1994}.
-
+Because continuous ring attractors are bounded, they persist as an invariant manifold and remain attractive under small perturbations~\citep{wiggins1994}.
 
 % region
 %\subsection{Implications on Machine Learning}\label{sec:imp:ML}
@@ -518,7 +512,7 @@ Although we have seen numerous topologies in Sec.~\ref{sec:critique}, the Persis
 This is especially relevant as previous works have identified a low-dimensional organization of neural activity to explain the brain's ability to adapt behavioral responses to changing stimuli and environments \citep{beiran2023parametric,altan2023low,fanthomme2021low}.
 For a ring attractor, this implies that the stability structure of the invariant manifold is either
 (1) composed of an equal number of stable fixed points and saddle nodes, placed alternatingly and with connecting orbits, or (2) a limit cycle.
-These different strability structures have different generalization properties (see Sec.~\ref{sec:generalization}).
+These different stability structures have different generalization properties (see Sec.~\ref{sec:generalization}).
 %saddle node with homoclinic orbit: with noise equivalent to a limit cycle
 %For 2 dimensional attractors, stable fixed points and saddle nodes can coexist with limit cycles.
 In more complex scenarios, such as two-dimensional attractors, fixed points can coexist with limit cycles, creating a rich tapestry of possible neural states.
@@ -557,7 +551,7 @@ Researchers have analyzed task-optimized RNNs through nonlinear dynamical system
 Previously, systematic analysis of the variability in network dynamics has been surveyed in vanilla RNNs, and variations in dynamical solutions over architecture and nonlinearity have been quantified~\citep{sussillo2013blackbox,mante2013context,yang2019task,maheswaranathan2019universality,driscoll2022}.
 Furthermore, working memory mechanisms in RNNs had tendencies to find sequential or persistent representations through training depending on the task specification~\citep{orhan2019diverse}.
 We therefore investigated to what extent training RNNs on a task uniquely determines the low-dimensional dynamics, independent of neural architectures.
-We see that all the solutions have a slow invariant manifold, making all of them an instatiation of approximate continuous attractors.
+We see that all the solutions have a slow invariant manifold, making all of them an instantiation of approximate continuous attractors.
 
 \subsection{Model Architectures and Training Procedure}
 Building upon prior work, which has shown their capabilities on such tasks, we trained RNNs to either
@@ -567,9 +561,7 @@ We numerically minimized the mean squared error loss \(L_{\operatorname{MSE}}\) 
 \(L_{\operatorname{MSE}} \coloneqq y_{i, t}-\hat y_{i, t})^{2}\).
 %We implemented a mask, \(m_{i, t}\), for modulating the loss with respect to certain time intervals.
 %We trained vanilla RNNs with ReLU, tanh, and rectified tanh activation functions. 
-For each activation function and each network architecture (vanilla RNN with ReLU, tanh, and rectified tanh activation functions, LSTM, and GRU), we trained 10 networks per hidden size: 64, 128, and 256 with state noise.
-
-
+For each activation function and each network architecture (vanilla RNN with ReLU, \texttt{tanh}, and rectified \texttt{tanh} activation functions, LSTM, and GRU), we trained 10 networks per hidden size: 64, 128, and 256 with (hidden) state noise.
 
  %method
 \subsection{Numerical Fast-Slow Decomposition}\label{sec:fastslowmethod}
@@ -679,7 +671,7 @@ Looking beyond the finite timescale provides valuable insights into the network'
 For the asymptotic time scale, we capture the asymptotic behavior of the system by identifying to what part of the system evolves to in the limit \(t\rightarrow\infty\) (see also Sec.\ref{sec:supp:asymbehav}).
 For a one-dimensional system, this will either be fixed points or a limit cycle.
 For the fixed-point type solution, the maximal error is given by the maximal distance to the next fixed point, while for a limit cycle, this will always be \(\pi\).
-We calculate the \emph{average fixed point distance} by takeing the average of the inter-fixed-point interval for each neighboring pair of fixed points.
+We calculate the \emph{average fixed point distance} by taking the average of the inter-fixed-point interval for each neighboring pair of fixed points.
 We identify the location of the fixed points as described in Sec.~\ref{sec:fastslowmethod}.
 
 Besides the maximal error that the network will make in the asymptotic limit, we can also characterize how many different angles the network would confuse in the asymptotic limit.
@@ -749,15 +741,9 @@ The possible solutions that the networks can find are restricted by having a lin
 For a nonlinear output mapping, a possible solution for analog memory is the quasi-periodic toroidal attractor, but this is not possible for a linear output mapping.
 Our analysis methods can identify these limit sets, but we do not have a simple way to parametrize the two dimensional torus invariant manifold.
 
-
-
-
-
-
-
 \begin{ack}
 We would like to extend our heartfelt thanks to Sukbin Lim, Srdjan Ostojic and Daniel Durstewitz for their invaluable feedback and thoughtful suggestions which significantly refined the work.
-This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resilience Plan (PPR), through project number 62, Center for Responsible AI, and the Portuguese national funds, through FCT--- Funda\c{c}\~{a}o para a Ci\^{e}ncia e a Tecnologia--- in the context of the project UIDB/04443/2020.
+This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resilience Plan (PPR), through project number 62, Center for Responsible AI, and the Portuguese national funds, through FCT---Funda\c{c}\~{a}o para a Ci\^{e}ncia e a Tecnologia---in the context of the project UIDB/04443/2020.
 \end{ack}
 
 
@@ -776,11 +762,10 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 \small
 
 \newpage
-\bibliographystyle{abbrvnatm}
+%\bibliographystyle{abbrvnatm}
+\bibliographystyle{unsrtnat}
 \bibliography{../cit,../catniplab}
 %
-
-
 
 \newpage
 \appendix
@@ -1186,7 +1171,7 @@ C2 & \xmark 		& only Eq\ref{eq:condition2.1} or~\ref{eq:condition2.2}  	 & \cmar
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{bla_parameter_space}
+  \includegraphics[width=0.6\textwidth]{bla_parameter_space}
   \caption{A slice of the parameter space of the BLA for a fixed \(\epsilon_{11}\) and \(\epsilon_{12}\). %The different bifurcations can be found
   }\label{fig:blaparameterspace}
 \end{figure}
@@ -1648,7 +1633,7 @@ W(\theta_{i} - \theta_{j}) = J^- + (J^+ - J^-) \exp\left[ -\frac{(\theta_{i} - \
  and \(\sigma\) the width of the connectivity footprint.
 
 
- Such ring attractor approximations are similar to the ones in \citep{goodridge2000, samsonovich1997path, redish1996coupled, tsodyks1995associative}. %Equation 9,12
+ Such ring attractor approximations are similar to the ones in \citep{goodridge2000,samsonovich1997path,redish1996coupled, tsodyks1995associative}. %Equation 9,12
 However, some have other nonlinearities, e.g.,  the sigmoid is used in \citep{goodridge2000}.
 Another line of related models can be found in \citep{Burak2009}, \citep{couey2013} and \citep{spalla2021continuous}.
 
@@ -1665,7 +1650,7 @@ The memory capacity of this initial configuration is \(N\log(N)\) for the \(2N\)
 
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[width=\textwidth]{performance2}
+  \includegraphics[width=0.5\textwidth]{performance2}
   \caption{Degradation of performance across perturbation sizes. System behavior at the asymptotic time scales measured through memory capacity. }\label{fig:performance}
 \end{figure}
 
@@ -1735,7 +1720,7 @@ We keep the following parameters for the analysis:
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{N100_si2_rho1.9_g0_fp4.8.12_s}
+\includegraphics[width=\textwidth]{N100_si2_rho1.9_g0_fp4.8.12_s}
 \caption{Some examples of networks dynamics for sizes \(N = 10, 100, 1000\).}\label{fig:low_rank_examples}
 \end{figure}
 
