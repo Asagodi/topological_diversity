@@ -32,6 +32,10 @@
 \usepackage{microtype}      		% microtypography
 \usepackage[inline]{enumitem}		%inline enumerate
 
+% since we are using superscript numbers for citation, change footnote symbol
+\usepackage[symbol]{footmisc}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
  %% space saving tricks
 \usepackage{sidecap} % caption on the side SCfigure
 \sidecaptionvpos{figure}{c} % vertically align scfigure in sidecap
