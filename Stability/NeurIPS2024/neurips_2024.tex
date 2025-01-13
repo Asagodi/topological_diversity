@@ -1,5 +1,6 @@
 \documentclass{article} % For LaTeX2e
 
+\usepackage[open={},close={},numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2024
 \usepackage[final]{neurips_2024}
 \pdfminorversion=6
 %\usepackage[utf8]{inputenc}
@@ -8,8 +9,7 @@
 \usepackage{amsfonts}
 \usepackage{forloop}
 \usepackage{xspace}
-%\usepackage{natbib}
-\setcitestyle{open={},close={},comma,numbers,sort&compress,super}
+%\setcitestyle{open={},close={},numbers,sort&compress,super,comma}
 \usepackage{graphicx}
 \usepackage{tikz-cd}
 \PassOptionsToPackage{dvipsnames}{xcolor}
@@ -100,7 +100,7 @@
 
 \title{Back to the Continuous Attractor}
 
-\renewcommand{\cite}{\citep}
+%\renewcommand{\cite}{\citep}
 
 \author{
     \'Abel S\'agodi, Guillermo Mart\'in-S\'anchez, Piotr Sok\'o\l, Il Memming Park
@@ -763,7 +763,8 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 \small
 
 \newpage
-\bibliographystyle{abbrvnatm}
+%\bibliographystyle{abbrvnatm}
+\bibliographystyle{unsrtnat}
 \bibliography{../cit,../catniplab}
 %
 
