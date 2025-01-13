@@ -390,9 +390,9 @@ To describe an arbitrary bifurcation of interest, we introduce a sufficiently sm
     \dot{\vy} &=           \epsilon  \vg(\vy, \vz, \epsilon) \qquad \text{(tangent)}\label{eq:fenichel:flowtangent}\\
     \dot{\vz} &= \hphantom{\epsilon} \vh(\vy, \vz, \epsilon) \qquad \text{(normal)}\label{eq:fenichel:flownormal}
 \end{align}where \(\epsilon = 0\) gives the condition for the continuous attractor \(\dot{\vy} = \mathbf{0}\).
-We denote the corresponding manifold of \(l\) dimensions \(\manifold_{0} = \{(\vy,\vz) \mid \vh(\vy,\vz, 0) = \mathbf{0} \}\).
+We denote the corresponding manifold of \(l\) dimensions as \(\manifold_{0} \coloneqq \{(\vy,\vz) \mid \vh(\vy,\vz, 0) = \mathbf{0} \}\).
 
-We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic: the Jacobians \(\nabla_{\vz} \vh\) evaluated at any point on the \(\manifold_{0}\) has \(d - l\) eigenvalues with their real part uniformly bounded away from zero, and \(\nabla_{\vy} \vg\) has \(l\) eigenvalues with zero real part.
+We say the flow around the manifold is \emph{normally hyperbolic}, if the flow normal to the manifold is hyperbolic, i.e.\ the Jacobians \(\nabla_{\vz} \vh\) evaluated at any point on the \(\manifold_{0}\) has \(d - l\) eigenvalues with their real part uniformly bounded away from zero, and \(\nabla_{\vy} \vg\) has \(l\) eigenvalues with zero real part.
 %Roughly speaking, \(f\) is normally hyperbolic at \(N\) if the tangent map \(Tf\), restricted to the normal direction to \(N\), is hyperbolic (it expands and contracts complementary directions) and if it dominates the restriction of \(Tf\) to the tangent direction \(TN\) (that is, expansion and contraction in the tangent direction, if any, are weaker than those in the normal direction).
 More specifically, for continuous attractors, the real part of the eigenvalues of \(\nabla_{\vz} \vh\) will be negative, representing sufficiently strong attractive flow toward the manifold.
 Equivalently, for the ODE, \(\dot{\vx} = \vf(\vx)\), the variational system is of constant rank and has exactly \((d - l)\) eigenvalues with negative real parts uniformly away from zero and \(l\) eigenvalues with zero real parts everywhere along the continuous attractor.
@@ -435,12 +435,11 @@ Finally, the persisting invariant manifold is very close in space to the origina
 
 %Informally, normal hyperbolicity guarantees that the perturbations change the structure of the manifold before they can destroy the attractiveness of the manifold.
 
-These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow reparametrization of the BLA
-	\footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems). Therefore, we consider systems that are at least continuous, but some extra conditions apply if a system is not differentiable.}). %
-As the theory predicts, BLA bifurcates into a 1-dimensional slow manifold (Fig.~\ref{fig:lara_bifurcations}, dark-colored regions) that contains fixed points and connecting orbits and is overall still attractive.
+These conditions are met for the examples in Fig.~\ref{fig:lara_bifurcations} (see Sec.~\ref{sec:supp:fast_slow_form} for the fast-slow reparametrization%
+	\footnote{As a technical note, for the theory to apply to a continuous piecewise-linear system, it is required that the invariant manifold is globally attracting~\cite{simpson2018}, which is also the case for the BLA (see also \citep{prohens2013canard,prohens2016slow} for a discussion of geometric singular perturbation theory for piecewise linear dynamical systems). Therefore, we consider systems that are at least continuous, but some extra conditions apply if a system is not differentiable.}).%
+As the theory predicts, it bifurcates into a 1-dimensional slow manifold (Fig.~\ref{fig:lara_bifurcations}, dark-colored regions) that contains fixed points and connecting orbits and is overall still attractive.
 Furthermore, Fenichel's Persistent Manifold theorem explains the bifurcation structure of the theoretical models discussed in Sec.~\ref{sec:ras}.
-Because continuous ring attractors are bounded, they persist as invariant manifold and remain attractive under small perturbations~\citep{wiggins1994}.
-
+Because continuous ring attractors are bounded, they persist as an invariant manifold and remain attractive under small perturbations~\citep{wiggins1994}.
 
 % region
 %\subsection{Implications on Machine Learning}\label{sec:imp:ML}
