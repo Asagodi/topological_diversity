@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{arxiv}
+%\usepackage{arxiv}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{amssymb, amsmath, amsthm, amsfonts}
@@ -66,6 +66,8 @@
 
 \begin{document}
 \maketitle
+
+\section*{Abstract}
 
 \section{Introduction}
 The versatility or flexibility of a given machine learning paradigm is usually established by proving its universality.
@@ -201,6 +203,8 @@ This is in general not true for the unbounded time case, as the approximation er
 %A finite-sized recurrent neural network with sigmoidal activation functions can simulate a universal Turing machine \citep{siegelmann1992computational}.
 %Sigmoidal neural networks can be used to compute any recursive (Turing) function\citep{kilian1996universality}.
 
+\citep{moore1990unpredictability,moore1998finite}
+
 A finite-sized RNN with either linear and Heaviside or sigmoidal activation functions is Turing universal \citep{pollack1991induction, siegelmann1992computational,kilian1996universality}.
 %
 More generally, RNNs with an activation function that is for any point Lipschitz continuous in some neighborhood can be simulated by a family of nonuniform Boolean circuits\citep{siegelmann1994analog}.
@@ -244,6 +248,9 @@ Finally, more recently it was shown that discrete-time RNNs are universal approx
 The universal approximation properties of static neural networks \citep{funahashi1989approximate} made them a useful tool for modeling nonlinear systems. 
 The problem of nonlinear modeling using static neural networks has been extensively researched \citep{narendra1990identification,warwick1992neural} and many approaches have used multilayer perceptrons and radial basis functions \citep{chen1992neural,choi1996constructive,tan1995efficient}. 
 For an overview, see \citep{garces2012strategies}.
+
+\paragraph{uncat}
+trajectories \citep{toomarian1992learning}
 
 \paragraph{Autonomous systems}
 The universal approximation capabilities of continuous-time recurrent networks for autonomous systems were first demonstrated by \citet{funahashi1993approximation}. 
@@ -300,7 +307,7 @@ More recently, it was shown that RNNs are universal approximators of flow functi
 %periodic inputs
 %+Universal approximation for discrete-time dynamical systems
 
-
+\citep{kosmatopoulos1995structural}
 
 
 \subsection{Looking beyond the finite-time horizon}\label{sec:beyondfinitetime}
