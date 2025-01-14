@@ -1,16 +1,18 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat May 11 14:02:15 2024
+"""
+
 import os, sys
 import glob
 import pickle
 current_dir = os.path.dirname(os.path.realpath('__file__'))
-def makedirs(dirname):
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
+
         
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, TensorDataset, DataLoader
-# import torch.nn.init as weight_init
 
 import scipy
 from scipy.optimize import minimize
@@ -31,14 +33,12 @@ from matplotlib import cm
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 
-#import conley_functions as cf
 import networkx as nx
 import subprocess
 from tqdm import tqdm
 
-#from FixedPointFinderTorch import *
-#from plot_utils import plot_fps
 from odes import relu_step_input
+from utils import makedirs
 
 #import skdim
 # functions = [skdim.id.CorrInt(), skdim.id.DANCo(), skdim.id.ESS(), skdim.id.Fishers(), skdim.id.KNN(), skdim.id.lPCA(), skdim.id.MADA(), skdim.id.MiND_ML(), skdim.id.MLE(), skdim.id.MOM(), skdim.id.TLE(), skdim.id.TwoNN()]
@@ -48,9 +48,7 @@ from odes import relu_step_input
     # print(function_names[fi], ":", dim)
 
 
-
-
-def db(x):
+def decibel(x):
     return 10*np.log10(x)
 
 def pd_accuracy_function(y, yhat, output_mask):
@@ -307,58 +305,6 @@ def find_analytic_fixed_points(W_hh, b, W_ih=None, I=None, tol=10**-4, verbose=F
     return fixed_point_list, stabilist, unstabledimensions, eigenvalues_list
 
 
-# def lu_step(x, W, b):
-#     return x*W+b
-
-# def relu_step(x, W, b):
-#     res = np.array(np.dot(W,x)+b)
-#     res[res < 0] = 0
-#     return res
- 
-# def relu_step_input(x, W, b, W_ih=None, I=None):
-#     if I:
-#         res = np.array(np.dot(W,x) + b + np.dot(W_ih, I))
-#     else:
-#         res = np.array(np.dot(W,x) + b)
-#     res[res < 0] = 0
-#     return res
-
-
-
-# def tanh_ode(t,x,W,b,tau, mlrnn=True):
-    
-#     if mlrnn:
-#         return (-x + np.tanh(np.dot(W,x)+b))/tau
-#     else:
-#         return (-x + np.dot(W,np.tanh(x))+b)/tau
-
-# #Jacobians
-# #include versions for x_solved being from a (scipy) ode solver?
-# def linear_jacobian(t,W,b,tau,x_solved):
-#     return W/tau
-
-
-# def tanh_jacobian(t,W,b,tau,x_solved, mlrnn=True):
-    
-#     if mlrnn:
-#         return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(np.dot(W,x_solved[t])+b)**2))/tau
-#     else:
-#         return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(x_solved[t])**2))/tau
-
-# def relu_jacobian(t,W,b,tau,x_solved):
-#     return (-np.eye(W.shape[0]) + np.multiply(W, np.where(np.dot(W,x_solved[t])+b>0,1,0)))/tau
-
-
-# def ReLU(x):
-#     return np.where(x<0,0,x)
-
-# def relu_ode(t,x,W,b,tau, mlrnn=True):
-
-#     if mlrnn:
-#         return (-x + ReLU(np.dot(W,x)+b))/tau
-#     else:
-#         return (-x + np.dot(W,ReLU(x))+b)/tau
-
 #To calculate Lyapunov Exponents
 def calculate_lyapunov_spectrum(act_fun,W,b,tau,x_solved,delta_t,from_t_step=0):
     #Benettin 1980: Lyapunov Characteristic Exponents for smooth dynamical 
@@ -575,10 +521,7 @@ def get_cubic_spline_ring(thetas, invariant_manifold):
     invariant_manifold_unique = invariant_manifold[idx_unique,:];
     invariant_manifold_sorted = invariant_manifold_unique[idx_sorted,:];
     invariant_manifold_sorted[-1,:] = invariant_manifold_sorted[0,:];
-    cs = scipy.interpolate.CubicSpline(thetas_unique, invariant_manifold_sorted, bc_type='periodic')
-    
-    # smoothed = gaussian_filter1d(all_bin_locs_sorted, 20, axis=0, mode='wrap')
-    
+    cs = scipy.interpolate.CubicSpline(thetas_unique, invariant_manifold_sorted, bc_type='periodic')    
     return cs    
 
 def simulate_rnn_with_input(net, input, h_init):
@@ -733,22 +676,6 @@ def get_saddles_from_simulated_trajectories(net, fxd_pnts, pca, cs):
     
     return saddles
 
-# def get_uniformly_spaced_points_from_manifold(invariant_manifold, npoints):
-#     cd = geodesic_cumdist(invariant_manifold)
-#     max_dist = cd[-1]
-#     points = [invariant_manifold[0]]
-#     for dist in np.arange(max_dist/npoints, max_dist, max_dist/npoints):
-#         idx = np.min(np.where(cd>dist)[0])
-        
-#         idx = argrelextrema(np.abs(cd-dist), np.less)[0][0]
-#         act_dist = cd[idx]-dist
-#         if act_dist>dist_eps:
-#             next_point = 
-#                 invariant_manifold[idx]
-#         else:
-#             points.append(invariant_manifold[idx])
-#     points.append(invariant_manifold[-1])
-#     return np.array(points)
 
 
 def get_speed_and_acceleration(trajectory):
@@ -1164,54 +1091,6 @@ def get_fps_fpf():
 def is_nonnormal(A):
     A_star = A.conj().T
     return not np.allclose(np.dot(A, A_star), np.dot(A_star, A))
-
-
-
-
-
-
-##############DSA
-###all
-# exp_path = parent_dir + '/experiments//angular_integration_old/N128_T128_noisy/relu/';
-# relu_all_trajs = []
-# T=128
-# for exp_i in tqdm(range(10)):
-#     print(exp_i)
-#     params_path = glob.glob(exp_path + '/param*.yml')[0];
-#     training_kwargs = yaml.safe_load(Path(params_path).read_text()); 
-#     exp_list = glob.glob(exp_path + "/res*")
-#     exp = exp_list[exp_i]
-#     net, result = load_net_path(exp, which='post')
-#     n_rec = net.dims[1]
-#     wi, wrec, wo, brec, h0, oth = result['weights_last']
-#     net.noise_std*=10;
-    
-#     output, trajectories_0 = get_autonomous_dynamics(net, T=T, dt=.1, batch_size=batch_size)
-
-#     net.map_output_to_hidden = False
-#     output, trajectories = get_autonomous_dynamics_from_hinit(net, trajectories_0[:,100,:], T=int(T*4))
-#     relu_all_trajs.append(trajectories)
-
-
-######TORUS
-#task_cor = center_out_reaching_task(T=T*500, dt=dt, time_until_cue_range=[10, 10+1], angles_random=False);
-# exp_path = parent_dir + '/experiments/center_out/mask_after_saccade_N50_T500_noisy_actreg/tanh/'
-# exp_i=0
-# params_path = glob.glob(exp_path + '/param*.yml')[0]; training_kwargs = yaml.safe_load(Path(params_path).read_text()); 
-# exp_list = glob.glob(exp_path + "/res*")
-# params_folder = exp_path
-# wi, wrec, wo, brec, h0, oth, training_kwargs, losses = get_params_exp(params_folder, exp_i)
-# net = load_net_from_weights(wi, wrec, wo, brec, h0, oth, training_kwargs)
-# n_rec = net.dims[1]
-# wi, wrec, wo, brec, h0, oth = result['weights_last']
-# net.noise_std = 0
-# input, target, mask, output, trajectories_torus = simulate_rnn_with_task(net, task_cor, T, 'random', batch_size=batch_size)
-
-
-#exp_path = parent_dir + '/experiments/double_angular_test/N128_T128_noisy/recttanh/';
-#exp_i=0
-#T=12.8*2; dt=.1; double_task = double_angularintegration_task(T=T, dt=dt,  sparsity=1, random_angle_init='equally_spaced');
-#input, target, mask, output, trajectories_double = simulate_rnn_with_task(net, double_task, T, h_init, batch_size)
 
 
 def grid_search_dsa():

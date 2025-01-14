@@ -219,10 +219,9 @@ class RNN(nn.Module):
         self.wo = nn.Parameter(torch.Tensor(hidden_size, output_size))
         if not train_wo:
             self.wo.requires_grad = False
-        self.bo = nn.Parameter(torch.Tensor(output_size, 1))
+        self.bo = nn.Parameter(torch.Tensor(output_size))
         if not train_bo:
                 self.bo.requires_grad = False
-        
         self.h0 = nn.Parameter(torch.Tensor(hidden_size))
         if not train_h0:
             self.h0.requires_grad = False
@@ -254,7 +253,6 @@ class RNN(nn.Module):
                 if type(brec_init) == np.ndarray:
                     brec_init = torch.from_numpy(brec_init)
                 self.brec.copy_(brec_init)
-                
             if bo_init is None:
                 self.bo.zero_()
             else:
@@ -304,7 +302,7 @@ class RNN(nn.Module):
             h_init_torch = target[:,0,:].matmul(self.output_to_hidden)
             h_init_torch = self.input_nonlinearity(h_init_torch)
             with torch.no_grad():
-                h = h_init_torch#.copy_(h_init_torch)
+                h = h_init_torch
                 
         elif type(h_init) == np.ndarray or isinstance(h_init, torch.Tensor):
             h_init_torch = nn.Parameter(torch.Tensor(batch_size, self.hidden_size))
@@ -336,8 +334,6 @@ class RNN(nn.Module):
                     h.matmul(self.wrec.t()) 
                     + input[:, i, :].matmul(self.wi)
                     + self.brec)
-                     # Note that if noise is added inside the nonlinearity, the amplitude should be adapted to the slope...
-                     # + np.sqrt(2. / self.dt) * self.noise_std * noise[:, i, :])
                 h = ((1 - self.dt) * h 
                      + self.dt * rec_input
                      + np.sqrt(self.dt) * self.noise_std * noise[:, i, :])
@@ -362,9 +358,6 @@ class RNN(nn.Module):
             return output
         else:
             return output, trajectories
-
- 
-
 
 
 def get_weights_during(net, wis=None, wrecs=None, wos=None, brecs=None, h0s=None, oths=None):

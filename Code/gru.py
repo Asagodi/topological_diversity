@@ -12,24 +12,24 @@ import torch.optim as optim
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+import pandas as pd
+from sklearn.cluster import DBSCAN
 
 from tasks import angularintegration_task, angularintegration_task_constant, double_angularintegration_task
 
+from lstm import vf_norm_from_outtraj, mean_fp_distance, boa, find_fixed_point, nmse, angluar_error
+from double_angular_analysis import double_mean_fp_distance, double_boa, angular_double_error
+from analysis_functions import calculate_lyapunov_spectrum, participation_ratio, identify_limit_cycle, find_periodic_orbits, find_analytic_fixed_points, powerset, decibel
+from utils import makedirs
 
-# from analysis_functions import db
-def db(x):
-    return 10 * np.log10(x)
 
+epsilon=.1
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
 tanh = nn.Tanh()
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-def makedirs(dirname):
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
 
 # Define the GRU model
 class GRUModel(nn.Module):
@@ -157,7 +157,7 @@ def train_model(model, task, num_epochs=100, batch_size=32, learning_rate=0.001,
         
         # Check for NaNs in loss
         if torch.isnan(loss):
-            return False
+            return [False]
             # if epoch == 0:
             #     print(f'NaN detected in loss at epoch {epoch}. Reinitializing model parameters.')
             #     model._initialize_weights()
@@ -204,27 +204,37 @@ def train_n(n, task, input_size=1, hidden_size=64, output_size=2,
         model = GRUModel(input_size, hidden_size, output_size, dropout=0.5, init_weight_radius_scaling=0.25)
         losses = train_model(model, task, num_epochs=5000, batch_size=batch_size, output_noise_level=0.01,
                              weight_decay=0.0001, learning_rate=0.01, clip_norm=100);
-        if not losses:
+        if not losses.any():
             continue
         torch.save(model.state_dict(), exp_path+f'/model_{i}.pth')
         np.save(exp_path+f'/losses_{i}.npy', losses)
         i+=1
         
         
-# T = 12.8
-# dt = 0.1
-# task = angularintegration_task(T, dt, sparsity='variable', random_angle_init=True)
-# long_task = angularintegration_task_constant(T, dt, speed_range=[0,0], random_angle_init='equally_spaced')
-# input_size = 1
-# hidden_size = 64
-# batch_size = 64
-# output_size = 2;
+        
+        
+# fig, ax = plt.subplots(1, 1, figsize=(5, 3));
+# N_color_dict = {64:'b', 128:'g', 256:'orange'}
+# for N in [64,128,256]:
+#     df_N = df[df['N'] == N]
+#     error_T1 = np.array(df_N['mean_error_0'].tolist())[:,127]
+#     ax.plot(df_N['vf_infty'], error_T1, 'X', color=N_color_dict[N])
+#     error_10T1 = np.array(df_N['mean_error_0'].tolist())[:,-1]
+#     ax.plot(df_N['vf_infty'], error_10T1, 'X', color=N_color_dict[N], fillstyle='none')
 
-# for i in range(1,10):
-#     model = GRUModel(input_size, hidden_size, output_size, dropout=0.5)
-#     losses = train_model(model, task, num_epochs=5000, batch_size=batch_size, learning_rate=0.01, clip_norm=1000,scale_factor=.5);
-#     torch.save(model.state_dict(), f'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/angular_integration_old/N{hidden_size}_T128_noisy/gru/model_{i}.pth')
-#     np.save(exp_path+f'/losses_{i}.npy', losses)
+#     #ax.plot(df_N['nfps'], df_N['mean_fp_dist'], '.', color='magenta')
+# varphis = np.linspace(0,0.04)
+# ax.plot(varphis, 12.8*varphis, 'r--')
+# ax.set_xlim([0,.04])
+# ax.set_ylim([0,1.25])
+
+# lines = [Line2D([0], [0], color=c, linewidth=2, linestyle='-') for c in ['b', 'g', 'orange']]
+# first_legend = plt.legend(lines, N_color_dict.keys(), title='Network Size', loc='upper right')
+# ax.add_artist(first_legend)
+
+# plt.xlabel(r"$\|\varphi\|_\infty$"); plt.ylabel("angular error (rad)");
+#plt.savefig('C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/angular_integration_old/gru_vfnorm_vs_mae.pdf');
+
         
         
 def grid_search(task, input_size=1, hidden_size=64, output_size=2,
@@ -268,7 +278,6 @@ def init_weights(m):
         
         
 #######################ANALYSIS
-from lstm import nmse, angluar_error
 
 def test_gru(model, task, batch_size=256):
     with torch.no_grad():
@@ -279,8 +288,197 @@ def test_gru(model, task, batch_size=256):
         _, hs = model.sequence(inputs, targets)
     targets = targets.detach().numpy()
     outputs = outputs.detach().numpy()
-    hs = hs.detach().numpy()
     hs = hs.squeeze()
     trajectories = hs
     
-    return inputs, targets, outputs, trajectories
+    return inputs, targets, outputs, trajectories, hs
+
+def gru_jacobian(model, h0):
+    hidden_size = model.hidden_size
+    
+    # Input tensor at the origin
+    #TODO: autonmatic input dim........
+    x = torch.zeros(1, 1, 2)
+    
+    # Forward pass through the GRU
+    out, hn = model.gru(x, h0)
+    
+    # Compute the Jacobian matrix
+    jacobian = torch.zeros(hidden_size, hidden_size)
+    
+    for i in range(hidden_size):
+        model.zero_grad()
+        hn[0, 0, i].backward(retain_graph=True)
+        jacobian[i] = h0.grad.view(-1)
+        h0.grad.zero_()
+    
+    # Return the Jacobian matrix
+    jacobian_matrix = jacobian.detach().numpy()
+    return jacobian_matrix
+
+def eigenspectrum_invman_gru(model, hs):
+    hidden_size = model.hidden_size
+
+    eigenspectrum = []
+    for i,x in enumerate(hs):
+        h0 = hs[i].clone().detach().unsqueeze(0).expand(1, -1, -1).requires_grad_(True)
+        J = gru_jacobian(model,h0)
+        if np.isfinite(J).all():
+            eigenvalues, eigenvectors = np.linalg.eig(J)           
+            eigenvalues = sorted(np.real(eigenvalues))
+        else:
+            eigenvalues = [np.nan]*hidden_size*2
+
+        # plt.scatter([i]*hidden_size, eigenvalues, s=1, c='k', marker='o', alpha=0.5); 
+        eigenspectrum.append(eigenvalues)
+    return eigenspectrum
+
+    
+#OVERALL
+def run_all_gru():
+    df = pd.DataFrame(columns=['path', 'T', 'N'])
+    T = 12.8
+    dt = 0.1
+    task = angularintegration_task(T, dt, sparsity='variable', random_angle_init=True)
+    long_task = angularintegration_task_constant(T*10, dt, speed_range=[0,0], random_angle_init='equally_spaced')
+    input_size = 1
+    output_size = 2
+    for N in [64,128,256]:
+            
+        hidden_size = N
+        
+        exp_path = f'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/angular_integration_old/N{N}_T128_noisy/gru/'
+        for exp_i in range(10):
+            #load model
+            model_path = exp_path+f'/model_{exp_i}.pth'
+            model = GRUModel(input_size, hidden_size, output_size,dropout=0.)
+            model.load_state_dict(torch.load(model_path))
+            
+            #run model on original task
+            inputs, targets, outputs, trajectories, hs = test_gru(model, task, batch_size=256)
+            mse, mse_normalized, db_mse_normalized = nmse(targets, outputs)
+            print(exp_i,db_mse_normalized)
+        
+            #run model autonomously
+            inputs, targets, outputs, trajectories, hs = test_gru(model, long_task, batch_size=256)
+            
+            #angular error
+            min_error, mean_error, max_error, eps_min_int, eps_mean_int, eps_plus_int = angluar_error(targets, outputs)
+            
+            #fixed point
+            fxd_pnt_output, fxd_pnt_thetas, stabilities = find_fixed_point(outputs)
+            nfps = fxd_pnt_output.shape[0]
+            fp_boa = boa(fxd_pnt_thetas)
+            mean_fp_dist = mean_fp_distance(fxd_pnt_thetas)
+            
+            #VF uniform norm
+            thetas = np.arctan2(outputs[:,:,0], outputs[:,:,1]);
+            vf_infty = vf_norm_from_outtraj(thetas[:,126], thetas[:,127])
+            
+            #eigenspec
+            eigenspectrum = eigenspectrum_invman_gru(model, hs[:,127,:])
+        
+            df = df.append({'path':model_path,
+            'T': T, 'N': hidden_size, 'scale_factor': .5,  'dropout': 0., 'M': True, 'clip_gradient':1,
+                        'trial': exp_i,
+                        'mse': mse,
+                        'mse_normalized':mse_normalized,
+                        'nfps': nfps,
+                        'stabilities':stabilities,
+                        'boa':fp_boa,
+                        'mean_fp_dist':mean_fp_dist,
+                        'inv_man':trajectories[:,127,:],
+                         'inv_man_output':outputs[:,127,:],
+                         'vf_infty':vf_infty,
+                         'eigenspectrum':eigenspectrum,
+                          'min_error_0':min_error,
+                           'mean_error_0':mean_error,
+                            'max_error_0':max_error,
+                            'eps_min_int_0':eps_min_int,
+                            'eps_mean_int_0':eps_mean_int,
+                            'eps_plus_int_0':eps_plus_int
+                            }, ignore_index=True)
+            
+    return df
+
+
+
+
+####################DOUBLE######################
+# dt = 0.1
+# batch_size = 4*256
+# task = double_angularintegration_task(T, dt, sparsity='variable', random_angle_init=True)
+# long_task = double_angularintegration_task(T*10, dt, speed_range=[0,0], random_angle_init='equally_spaced', constant_speed=True)
+# input_size = 2
+# output_size = 4
+# for N in [64,128,256]:
+#     hidden_size = N #  int(N/2)
+
+#     exp_path = f'C:\\Users\\abel_\\Documents\\Lab\\Projects\\topological_diversity/experiments/double_angular/N{N}_T128/gru/'
+#     for exp_i in range(1,10):
+#         #load model
+#         model_path = exp_path+f'/model_{exp_i}.pth'
+#         model = GRUModel(input_size, hidden_size, output_size,dropout=0.)
+#         model.load_state_dict(torch.load(model_path))
+
+#         #run model on original task
+#         inputs, targets, outputs, trajectories, hs = test_gru(model, task, batch_size=batch_size)
+#         mse, mse_normalized, db_mse_normalized = nmse(targets, outputs)
+#         print(db_mse_normalized)
+        
+#         inputs, targets, outputs, trajectories, hs = test_gru(model, long_task, batch_size=batch_size)
+#         #if np.isnan(trajectories).any():
+#         #    continue
+#         #trajectories_flat = trajectories[:,:,:].reshape((-1,trajectories.shape[-1]));
+#         #trajectories_pca = pca.fit_transform(trajectories_flat);
+#         #trajectories_pca_time = trajectories_pca.reshape((batch_size,-1,10))
+#         recurrences, recurrences_pca = find_periodic_orbits(trajectories, trajectories, limcyctol=1e-2, mindtol=1e-10)
+#         fxd_pnts = np.array([recurrence[0] for recurrence in recurrences if len(recurrence)==1 or len(recurrence)==11]).reshape((-1,N));
+#         #lcs =[recurrence for recurrence in recurrences if len(recurrence)!=1 and len(recurrence)>11];
+#         if fxd_pnts.shape[0]==0:
+#             continue
+#         db = DBSCAN(eps=epsilon, min_samples=1).fit(fxd_pnts);
+#         unique_indices = np.unique(db.labels_, return_index=True)[1]
+#         fps = fxd_pnts[unique_indices]
+#         fps_out = model.fc(torch.tensor(fps[:,:hidden_size]))
+#         fps_out = fps_out.detach().numpy() 
+#         #fps_out = np.dot(fps, wo)
+#         nfps = unique_indices.shape[0]
+#         #stabilities = stabilities_fps(wrec, brec, fps, rnn_ode_jacobian)
+#         fxd_pnt_thetas1 = np.arctan2(fps_out[...,1], fps_out[...,0]);
+#         fxd_pnt_thetas2 = np.arctan2(fps_out[...,3], fps_out[...,2]);
+#         print(exp_i, nfps, db_mse_normalized)
+        
+#         mean_fp_dist = double_mean_fp_distance(fxd_pnt_thetas1, fxd_pnt_thetas2)
+#         fp_boa = double_boa(fxd_pnt_thetas1, fxd_pnt_thetas2)
+        
+#         thetas1 = np.arctan2(outputs[:,:,1], outputs[:,:,0]);
+#         thetas2 = np.arctan2(outputs[:,:,3], outputs[:,:,2]);
+#         vf_infty1 = vf_norm_from_outtraj(thetas1[:,126], thetas1[:,127])
+#         vf_infty2 = vf_norm_from_outtraj(thetas1[:,126], thetas1[:,127])
+#         vf_infty = vf_infty1+vf_infty2
+#         eigenspectrum = eigenspectrum_invman_gru(model, hs[:,127,:])
+
+#         min_error, mean_error, max_error, eps_min_int, eps_mean_int, eps_plus_int = angular_double_error(targets, outputs)
+#         df_gru = df_gru.append({'path':model_path, 'S':'lstm',
+# 'T': T, 'N': N, 'scale_factor': .5,  'dropout': 0., 'M': True, 'clip_gradient':1,
+#             'trial': exp_i,
+#             'mse': mse,
+#             'mse_normalized':mse_normalized,
+#             'nfps': nfps,
+#             'fps':fps,
+#             'fps_out':fps_out,
+#             #'stabilities':stabilities,
+#             'boa':fp_boa,
+#             'mean_fp_dist':mean_fp_dist,
+#             'inv_man':trajectories[:,0,:],
+#              'inv_man_output':outputs[:,0,:],
+#              'vf_infty':vf_infty,
+#              'eigenspectrum':eigenspectrum,
+#               'min_error_0':min_error,
+#                'mean_error_0':mean_error,
+#                 'max_error_0':max_error,
+#                 'eps_min_int_0':eps_min_int,
+#                 'eps_mean_int_0':eps_mean_int,
+#                 'eps_plus_int_0':eps_plus_int
+#                 }, ignore_index=True)

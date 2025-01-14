@@ -4,6 +4,7 @@ Created on Mon May  6 16:37:38 2024
 
 @author: 
 """
+
 import numpy as np
 from scipy.integrate import solve_ivp
 
@@ -91,7 +92,6 @@ def relu_jacobian(W,b,tau,x):
     return (-np.eye(W.shape[0]) + np.multiply(W, np.where(np.dot(W,x)+b>0,1,0)))/tau
 
 def tanh_jacobian(W,b,tau,x,mlrnn=True):
-    #b is unused, but there for consistency with relu jac
     if mlrnn:
         #return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(np.dot(W,x)+b)**2))/tau
         dtanh = 1 - np.tanh(np.dot(W, x) + b) ** 2
@@ -106,22 +106,7 @@ def recttanh_jacobian_point(W,b,tau,x):
     return (-np.eye(W.shape[0]) + np.multiply(np.multiply(W, np.where(np.dot(W,np.tanh(x))+b>0,1,0)),  np.multiply(W,1/np.cosh(x)**2)))/tau
 
 
-
-def compute_jacobian(X, J):
-    N = len(X)
-    Jacobian = np.zeros((N, N))
-
-    for i in range(N):
-        for j in range(N):
-            if i == j:
-                Jacobian[i, j] = -1 + J[i, j] * (1 - np.tanh(X[j])**2)
-            else:
-                Jacobian[i, j] = J[i, j] * (1 - np.tanh(X[j])**2)
-
-    return Jacobian
-
-
-#include versions for x_solved being from a (scipy) ode solver?
+#for trajectory
 def linear_jacobian(t,W,b,tau,x_solved):
     return W/tau
 
@@ -147,3 +132,5 @@ def newton_method(x0, system, jacobian, W, b, tau, mlrnn, tol=1e-6, max_iter=100
         if np.linalg.norm(dx) < tol:
             break
     return x
+
+

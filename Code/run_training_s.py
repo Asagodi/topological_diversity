@@ -28,17 +28,14 @@ import torch.optim as optim
 
 from models import train, mse_loss_masked, get_optimizer, get_loss_function, get_scheduler, RNN
 from network_initialization import qpta_rec_weights, bla_rec_weights, perfect_params, perfect_initialization
-from tasks import *
 from qpta_initializers import _qpta_tanh_hh
-from plot_losses import get_params_exp
-
-def makedirs(dirname):
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
+from tasks import *
+from load_network import get_params_exp
+from utils import makedirs
 
 def get_task(task_name = 'angular_integration', T=10, dt=.1, t_delay=50, sparsity=1, last_mses=None,
              input_length=0, task_noise_sigma=0., final_loss=False, random_angle_init=True, max_input=None, fixed_step=False, step_size=1,
-             cue_output_durations=[5,5,75,5,5], time_until_cue_range=None,input_noise_level=0):
+             cue_output_durations=[5,5,75,5,5], time_until_cue_range=None, input_noise_level=0):
     
     if task_name == 'eyeblink':
         task =  eyeblink_task(input_length=T, t_delay=t_delay)
@@ -140,7 +137,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
         #                 sparsity=training_kwargs['task_sparsity'], last_mses=training_kwargs['last_mses'])
         
         task = get_task(task_name=training_kwargs['task'], T=training_kwargs['T'], dt=training_kwargs['dt_task'],
-                        input_length=training_kwargs['input_length'], sparsity=training_kwargs['sparsity'],
+                        input_length=training_kwargs['input_length'], sparsity=training_kwargs['task_sparsity'],
                         task_noise_sigma=training_kwargs['task_noise_sigma'], last_mses=training_kwargs['last_mses'],
                         random_angle_init=training_kwargs['random_angle_init'], max_input=training_kwargs['max_input'], 
                         fixed_step=training_kwargs['fixed_step'], step_size=training_kwargs['step_size'],
@@ -173,7 +170,7 @@ def run_single_training(parameter_file_name, exp_name='', trial=None, save=True,
               scheduler=training_kwargs['scheduler'], scheduler_step_size=training_kwargs['scheduler_step_size'], scheduler_gamma=training_kwargs['scheduler_gamma'], 
               verbose=training_kwargs['verbose'], record_step=training_kwargs['record_step'])
     else:
-        wi_init, wo_init, h0_init, oth_init = None, None, training_kwargs['h0_init'], None
+        wi_init, wo_init, h0_init, oth_init, bo_init = None, None, training_kwargs['h0_init'], None, None
         
         if training_kwargs['initialization_type'] == 'trained':
             wi_init, wrec_init, wo_init, brec_init, h0_init, oth_init, _ = get_params_exp(training_kwargs['network_folder'], exp_i=training_kwargs['trained_exp_i'])
@@ -328,8 +325,7 @@ def grid_search(parameter_file_name, param_grid, experiment_folder, parameter_pa
     df_final = df[all_keys]
     
     save_path = parent_dir+'/experiments/'+experiment_folder+'/grid_search_'+sub_exp_name
-    # with np.printoptions(linewidth=10000):
-    #     df.to_csv(save_path+'.csv', index=False)
+
         
     df.to_pickle(save_path+'.pickle')
     
@@ -406,106 +402,26 @@ def size_experiment(main_exp_name, sub_exp_name):
     
     
     
-# if __name__ == "__main__":
-#     parameter_file_name = 'params_poisson_clicks.yml'
-
-#     parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
-#     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
-
-#     main_exp_name = 'poisson_clicks'
-#     sub_exp_name  = 'test'
-#     training_kwargs['g_in'] = 14.142135623730951
-#     model_name = 'high'
-#     training_kwargs['network_type'] = 'high'
-#     training_kwargs['initialization_type'] = 'gain'
-
-#     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
-#                                                             sub_exp_name=sub_exp_name,
-#                                                           model_name=model_name, trials=11, training_kwargs=training_kwargs)
-
-    
-    
 if __name__ == "__main__":
     print(current_dir)
     parameter_file_name = 'params_ang_sparse.yml'
     
     parameter_path = parent_dir + '/experiments/parameter_files/'+ parameter_file_name
-    # parameter_path = parent_dir + '/experiments/angular_integration/N50_tanh_T128_B512_nomax/parameters.yml'
     training_kwargs = yaml.safe_load(Path(parameter_path).read_text())
-    
-    network_types = ['lstm_noforget', 'rnn', 'rnn', 'rnn', 'rnn']
-    model_names = ['lstm', 'low', 'high', 'ortho', 'qpta']
-    initialization_type_list =['', 'gain','gain', 'ortho', 'qpta']
-    loss_functions = ['mse', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked', 'mse_loss_masked']
-    g_list = [0., .5, 1.5, 0., 0.]
-    scheduler_step_sizes = [100, 300, 100, 100, 300]
-    gammas = [1., 0.5, 0.75, 0.75, 1.]
-    nrecs = [115, 200, 200, 200, 200]
         
-    main_exp_name = 'bernoulli_integration/' #poisson_clicks_task' # angular_integration'
-    training_kwargs['task'] = 'bernoulli_integration'
-    
-    training_kwargs['random_angle_init'] = False
-    training_kwargs['map_output_to_hidden'] = False
-    training_kwargs['T'] = 1024 # 12.8*2
-
-    training_kwargs['N_in'] = 2
-    training_kwargs['N_out'] = 1
-    training_kwargs['N_rec'] = 2
-    
-    training_kwargs['nonlinearity'] = 'relu'
-    training_kwargs['input_nonlinearity'] = 'recurrent'
-    training_kwargs['readout_nonlinearity'] = 'id'
-    training_kwargs['sparsity'] = 'variable'
-    training_kwargs['noise_std'] = 0.0
-    training_kwargs['task_noise_sigma'] = 0 #1e-1
-    training_kwargs['act_reg_lambda'] = 0 #1e-3    
-    training_kwargs['h0_init'] = 'set'
-    training_kwargs['hidden_initial_variance'] = 0
-    # sub_exp_name += f"/{training_kwargs['act_reg_lambda']}"
-    
-    # training_kwargs['dataset_filename'] = 'dataset_T256_BS1024.npz'
-    training_kwargs['batch_size'] = 64
-    training_kwargs['weight_decay'] = 0.
-    training_kwargs['drouput'] = .0
-    training_kwargs['g_in'] = 10 #14.142135623730951 #np.sqrt(nrecs[model_i])
-    training_kwargs['verbose'] = True
-    training_kwargs['learning_rate'] = 0.001
-    training_kwargs['n_epochs'] = 5000
-    training_kwargs['stop_patience'] = 5000
-    training_kwargs['stop_min_delta'] = 0
-    training_kwargs['record_step'] = 5000
-
-    training_kwargs['adam_beta1'] = 0.9
-    training_kwargs['adam_beta2'] = 0.999
-    training_kwargs['network_type'] = network_types[2]
-    training_kwargs['initialization_type'] = 'bla' #initialization_type_list[model_i]
-    training_kwargs['loss_function'] = 'mse_loss_masked' #loss_functions[model_i]
-    training_kwargs['rnn_init_gain'] = 1.5 # g_list[model_i]        ##########
-    training_kwargs['scheduler_step_size'] = 100 # scheduler_step_sizes[model_i]
-    training_kwargs['scheduler_gamma'] = .75 #gammas[model_i]
-    
-    # if training_kwargs['task'] == 'integration_2d':
-    #     T = training_kwargs['T']
-    # else:
-    T = int(training_kwargs['T']/training_kwargs['dt_task'])
+    main_exp_name = 'angular_integration/' 
+    training_kwargs['task'] = 'angular_integration'
+        
+    if training_kwargs['task'] == 'integration_2d':
+        T = training_kwargs['T']
+    else:
+        T = int(training_kwargs['T']/training_kwargs['dt_task'])
     N_rec = training_kwargs['N_rec']
     nonlin = training_kwargs['nonlinearity'].replace('_', '')
     sub_exp_name = f'N{N_rec}_T{T}_noisy/{nonlin}'
     
-    training_kwargs['input_length'] = 25
-    training_kwargs['fix_seed'] = True
-    training_kwargs['save_inputs'] = False
-    training_kwargs['last_mses'] = False
-    training_kwargs['time_until_cue_range']=[50, 200]
-    training_kwargs['max_input'] = None
-    training_kwargs['dt_rnn'] = .1
-    training_kwargs['dt_task'] = .1
-    training_kwargs['wrec_perturbation']=False
-
-    training_kwargs['network_folder'] = parent_dir + '/experiments/center_out/variable_N200_T2000/tanh'
-    training_kwargs['trained_exp_i'] = 0
     run_experiment('/parameter_files/'+parameter_file_name, main_exp_name=main_exp_name,
                                                             sub_exp_name=sub_exp_name,
-                                                          model_name="", trials=1, training_kwargs=training_kwargs)
+                                                            model_name="", trials=10,
+                                                            training_kwargs=training_kwargs)
 

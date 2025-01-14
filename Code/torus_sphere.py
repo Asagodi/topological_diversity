@@ -5,11 +5,8 @@ Created on Fri Aug  2 11:56:45 2024
 @author: abel_
 """
 
-
 import numpy as np
 from scipy.spatial.distance import cdist
-
-
 
 ########SPHERE
 

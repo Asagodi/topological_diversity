@@ -4,6 +4,7 @@ Created on Sat Aug  3 15:20:28 2024
 
 @author: abel_
 """
+    
 import os, sys
 import glob
 import pickle
@@ -12,9 +13,6 @@ from pathlib import Path, PurePath
 current_dir = os.getcwd()
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, current_dir) 
-def makedirs(dirname):
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
 
 import numpy as np
 import pandas as pd
@@ -26,6 +24,7 @@ from lstm import nmse
 from analysis_functions import find_periodic_orbits
 from tasks import double_angularintegration_task
 from odes import recttanh_jacobian_point, tanh_jacobian, relu_jacobian
+from utils import makedirs
 
 def run_all_analysis():
     df = pd.DataFrame(columns=['path', 'T', 'N'])
@@ -33,19 +32,17 @@ def run_all_analysis():
     nrecs=[64,128,256]; nonlins=['relu','tanh','recttanh']; 
     for N in nrecs:
         for nonlin in nonlins:
-            df = run_analysis_persubexp(N=64, nonlinearity='recttanh', df=df)
+            df = run_analysis_persubexp(df, N=N, nonlinearity=nonlin)
 
     return df
-
-
 
 def run_analysis_persubexp(df, N=64, nonlinearity='recttanh',
                      epsilon=.1):
     exp_path = parent_dir + f'/experiments/double_angular/N{N}_T128/{nonlinearity}/'
-
+    print(exp_path)
 
     h_init='random'
-    T=12.8*15; dt=.1;
+    T=12.8*5; dt=.1;
     task = double_angularintegration_task(T=T, dt=dt, sparsity=1, random_angle_init='equally_spaced', speed_range=[0.,0.], constant_speed=True);
     batch_size = 256*4
     pca = PCA(n_components=10)
@@ -56,14 +53,17 @@ def run_analysis_persubexp(df, N=64, nonlinearity='recttanh',
 
     exp_list = glob.glob(exp_path + "/res*")
     for exp_i in range(10):
-        print(exp_i)
         exp = exp_list[exp_i]
         net, result = load_net_path(exp, which='post')
         n_rec = net.dims[1]
         wi, wrec, wo, brec, h0, oth = result['weights_last']
         net.noise_std=0;
-        input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, h_init, batch_size);
+        input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, 12.8*2, h_init, batch_size);
         mse, mse_normalized, mse_db = nmse(target, output, from_t=0, to_t=None)
+        if mse_db>-3:
+            continue
+        
+        input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, h_init, batch_size);
         output_angle1 = np.arctan2(output[...,1], output[...,0]);
         output_angle2 = np.arctan2(output[...,3], output[...,2]);
         fxd_pnts = output[:,-1,:]
@@ -79,16 +79,17 @@ def run_analysis_persubexp(df, N=64, nonlinearity='recttanh',
         recurrences, recurrences_pca = find_periodic_orbits(trajectories, trajectories_pca_time, limcyctol=1e-2, mindtol=1e-10)
         fxd_pnts = np.array([recurrence[0] for recurrence in recurrences if len(recurrence)==1 or len(recurrence)==11]).reshape((-1,n_rec));
         #lcs =[recurrence for recurrence in recurrences if len(recurrence)!=1 and len(recurrence)>11];
+        if fxd_pnts.shape[0]==0:
+            continue
         db = DBSCAN(eps=epsilon, min_samples=1).fit(fxd_pnts);
         unique_indices = np.unique(db.labels_, return_index=True)[1]
         fps = fxd_pnts[unique_indices]
         fps_out = np.dot(fps, wo)
         nfps = unique_indices.shape[0]
         stabilities = stabilities_fps(wrec, brec, fps, rnn_ode_jacobian)
-        print(nfps)
         fxd_pnt_thetas1 = np.arctan2(fps_out[...,1], fps_out[...,0]);
         fxd_pnt_thetas2 = np.arctan2(fps_out[...,3], fps_out[...,2]);
-        print(fxd_pnt_thetas1.shape, fxd_pnt_thetas2.shape)
+        print(exp_i, nfps, mse_db)
         fp_boa = double_boa(fxd_pnt_thetas1, fxd_pnt_thetas2)
         mean_fp_dist = double_mean_fp_distance(fxd_pnt_thetas1, fxd_pnt_thetas2)
         
@@ -99,7 +100,7 @@ def run_analysis_persubexp(df, N=64, nonlinearity='recttanh',
         
         min_error, mean_error, max_error, eps_min_int, eps_mean_int, eps_plus_int = angular_double_error(target, output)
 
-        df = df.append({'path':exp,
+        df = df.append({'path':exp, 'S':nonlinearity,
         'T': T, 'N': N, 'scale_factor': .5,  'dropout': 0., 'M': True, 'clip_gradient':1,
                     'trial': exp_i,
                     'mse': mse,
