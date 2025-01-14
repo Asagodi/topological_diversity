@@ -6,8 +6,9 @@ Created on Sat May 11 14:02:15 2024
 import os, sys
 import glob
 import pickle
+import yaml
+from pathlib import Path
 current_dir = os.path.dirname(os.path.realpath('__file__'))
-
         
 import torch
 import torch.nn as nn
@@ -18,6 +19,10 @@ import scipy
 from scipy.optimize import minimize
 from scipy.optimize import LinearConstraint
 from scipy.integrate import odeint, DOP853, solve_ivp
+from scipy.signal import argrelextrema
+from scipy.ndimage import gaussian_filter1d
+from scipy.spatial.distance import cdist
+from sklearn.decomposition import PCA
 
 from functools import partial
 import numpy as np
@@ -37,8 +42,12 @@ import networkx as nx
 import subprocess
 from tqdm import tqdm
 
-from odes import relu_step_input
+from load_network import get_params_exp, load_net_from_weights, load_net_path, load_all
+from tasks import angularintegration_task, center_out_reaching_task
+from odes import relu_step_input, relu_ode, simulate_from_y0s, tanh_ode, talu
+from simulate_network import simulate_rnn
 from utils import makedirs
+
 
 #import skdim
 # functions = [skdim.id.CorrInt(), skdim.id.DANCo(), skdim.id.ESS(), skdim.id.Fishers(), skdim.id.KNN(), skdim.id.lPCA(), skdim.id.MADA(), skdim.id.MiND_ML(), skdim.id.MLE(), skdim.id.MOM(), skdim.id.TLE(), skdim.id.TwoNN()]
@@ -358,7 +367,13 @@ def sample_trajs_fxdpnts(model, Nrec, fixed_points, max_grid=0.01, Nsteps=3, max
 
 
 ###analysis of dynamics
+#general
+def euclidean_distance(point1, point2):
+    return np.linalg.norm(point1 - point2)
 
+def is_nonnormal(A):
+    A_star = A.conj().T
+    return not np.allclose(np.dot(A, A_star), np.dot(A_star, A))
 
 def participation_ratio(cov_mat_eigenvalues):
     # https://ganguli-gang.stanford.edu/pdf/17.theory.measurement.pdf
@@ -369,26 +384,35 @@ def participation_ratio(cov_mat_eigenvalues):
     pr = np.sum(cov_mat_eigenvalues)**2/np.sum(cov_mat_eigenvalues**2)
     return pr
 
-
-
-def simulate_from_y0s(y0s, W, b, tau=1, 
-                   maxT = 25, tsteps=501):
-
-    N = W.shape[0]
-    t = np.linspace(0, maxT, tsteps)
-    sols = np.zeros((y0s.shape[1], t.shape[0], N))
-    for yi,y0 in enumerate(y0s.T):
-        sol = solve_ivp(relu_ode, y0=y0, t_span=[0,maxT],
-                        args=tuple([W, b, tau]),
-                        dense_output=True)
-        sols[yi,...] = sol.sol(t).T
-
-    return sols
-
-from scipy.signal import argrelextrema
-
-def find_bla_persisten_manifold(W, b):
+def plot_participatioratio(main_exp_name, model_name, task, first_or_last='last'):
+    params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')[0]
+    training_kwargs = yaml.safe_load(Path(params_path).read_text())
+    exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")[:1]
     
+    fig, ax = plt.subplots(1, 1, figsize=(5, 3))
+    for exp_i, exp in enumerate(exp_list):
+        with open(exp, 'rb') as handle:
+            result = pickle.load(handle)
+            
+        losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs_ = result
+        if first_or_last=='last':
+            wi_init, wrec_init, wo_init, brec_init, h0_init = weights_last
+        elif first_or_last=='first':
+            wi_init, wrec_init, wo_init, brec_init, h0_init = weights_init
+        dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
+        net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'],
+                  nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
+                  wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=training_kwargs['ml_rnn'])
+        
+        input, target, mask, output, loss, trajectories = run_net(net, task, batch_size=1, return_dynamics=True, h_init=None);
+        
+        trajectories = trajectories.reshape((-1, training_kwargs['N_rec']))
+        trajectories -= np.mean(trajectories, axis=0) 
+        U, S, Vt = svd(trajectories, full_matrices=True)
+        print(participation_ratio(S))
+
+##line attractor
+def find_bla_persisten_manifold(W, b):
     step=.01;x = np.arange(0,1+step,step); ca = np.vstack([x, np.flip(x)])
     ca = np.vstack([x, np.flip(x)])
     sols = simulate_from_y0s(ca, W, b, tau=10, maxT=20000, tsteps=20001);
@@ -414,7 +438,7 @@ def find_bla_persisten_manifold(W, b):
     invariant_manifold = np.concatenate([np.flip(sols[idxx,lowspeed_idx[idxx]:,:],axis=0), sols[idxx+1,lowspeed_idx[idxx+1]:,:]])
 
     plt.plot(invariant_manifold[:,0], invariant_manifold[:,1]);
-    
+
     
 def digitize_manifold(time_series, num_bins_x = 100, num_bins_y = 100):
     
@@ -434,8 +458,7 @@ def digitize_manifold(time_series, num_bins_x = 100, num_bins_y = 100):
     return u_dig
 
 
-def euclidean_distance(point1, point2):
-    return np.linalg.norm(point1 - point2)
+
 
 # Define function to calculate geodesic distance along the 1D manifold
 def geodesic_distance(manifold_points, point1_index, point2_index):
@@ -499,7 +522,9 @@ def digitize_trajectories(trajectories, nbins=1000):
     
     return all_bin_locs
 
-from scipy.ndimage import gaussian_filter1d
+
+
+#ring attractor
 def get_cubic_spline_ring(thetas, invariant_manifold):
     """
 
@@ -524,28 +549,56 @@ def get_cubic_spline_ring(thetas, invariant_manifold):
     cs = scipy.interpolate.CubicSpline(thetas_unique, invariant_manifold_sorted, bc_type='periodic')    
     return cs    
 
-def simulate_rnn_with_input(net, input, h_init):
-    input = torch.from_numpy(input).float();
-    output, trajectories = net(input, return_dynamics=True, h_init=h_init); 
-    output = output.detach().numpy();
-    trajectories = trajectories.detach().numpy()
-    return output, trajectories
-
-def simulate_rnn_with_task(net, task, T, h_init, batch_size=256):
-
-    input, target, mask = task(batch_size);
-    input_ = torch.from_numpy(input).float();
-    target = torch.from_numpy(target).float();
-    output, trajectories = net(input_, return_dynamics=True, h_init=h_init, target=target); 
-    
-    output = output.detach().numpy();
-    trajectories = trajectories.detach().numpy()
-    target = target.detach().numpy()
-    return input, target, mask, output, trajectories
 
 
-from sklearn.decomposition import PCA
-from scipy.spatial.distance import cdist
+
+
+
+
+#########find recurrent dynamics
+
+##fixed points
+def get_stabilities(fxd_points, wrec, brec, tau):
+    #for tanh networks
+    h_stabilities = []
+    for fxd in fxd_points:
+        J = tanh_jacobian(fxd, wrec, brec, tau=tau)
+        eigvals, _ = np.linalg.eig(J)
+        maxeig = np.max(np.real(eigvals))
+        numpos = np.where(np.real(eigvals)>0)[0].shape[0]
+        # print(maxeig, numpos)
+        h_stabilities.append(numpos)
+    return h_stabilities
+
+
+
+def determine_ring_from_fixed_points(fxd_pnts):
+    closest_two = []
+    nrecs = fxd_pnts.shape[0]
+    for i in range(nrecs):
+        exclude = []
+        exclude.append(i)
+        incl = np.delete(np.arange(0,nrecs,1),exclude)    
+        idx1 = sklearn.metrics.pairwise_distances_argmin_min(fxd_pnts[i].reshape(1,-1), np.delete(fxd_pnts, exclude, axis=0))[0][0]
+        idx1 = incl[idx1]
+        exclude.append(idx1)
+        incl = np.delete(np.arange(0,nrecs,1),exclude)
+        idx2 = sklearn.metrics.pairwise_distances_argmin_min(fxd_pnts[i].reshape(1,-1), np.delete(fxd_pnts, exclude, axis=0))[0][0]
+        idx2 = incl[idx2]
+        closest_two.append([idx1, idx2])
+        
+    edges = []
+    nrecs = fxd_pnts.shape[0]
+    for i in range(nrecs):
+        edges.append([i,closest_two[i][0]])
+        edges.append([i,closest_two[i][1]])
+        
+    #for visualization:
+    #G=nx.Graph(); G.add_edges_from(closest_two)
+    # nx.draw(G)
+    return closest_two, edges
+
+###LCs
 def identify_limit_cycle(time_series, skip_first=10, tol=1e-6):
     d = cdist(time_series[-1,:].reshape((1,-1)),time_series[:-skip_first])
     mind = np.min(d)
@@ -571,6 +624,45 @@ def find_periodic_orbits(traj, traj_pca, limcyctol=1e-2, mindtol=1e-10):
             recurrences_pca.append(traj_pca[trial_i,idx:,:])
 
     return recurrences, recurrences_pca
+
+
+
+###slow analysis
+
+def find_slow_points(wrec, brec, wo=None, dt=1, outputspace=False, trajectory=None, n_points=100,
+                     method='L-BFGS-B', tol=1e-9, nonlinearity='tanh'): #less useful
+    
+    if nonlinearity=='tanh':
+        nonlinearity_function = np.tanh
+    elif nonlinearity=='talu':
+        nonlinearity_function = talu
+    elif nonlinearity=='rect_tanh': 
+        nonlinearity_function = rect_tanh
+    
+    N = wrec.shape[0]
+    fxd_points = []
+    speeds = []
+    if not np.any(trajectory.numpy()):
+        for p_i in tqdm(range(n_points)):    
+            x0 = np.random.uniform(-1,1,N)
+            if outputspace:
+                res = minimize(rnn_speed_function_in_outputspace, x0, method=method, tol=tol, args=tuple([wrec, brec, wo, dt, nonlinearity_function]))
+            else:
+                res = minimize(rnn_speed_function, x0, method=method, tol=tol, args=tuple([wrec, brec, dt, nonlinearity_function]))
+            if res.success: # and res.fun<tol: 
+                fxd_points.append(res.x)
+                speeds.append(res.fun)
+    else:
+        for x0 in tqdm(trajectory):
+            if outputspace:
+                res = minimize(rnn_speed_function_in_outputspace, x0, method=method, tol=tol, args=tuple([wrec, brec, wo, dt, nonlinearity_function])) #jac=tanh_jacobian
+            else:
+                res = minimize(rnn_speed_function, x0, method=method, tol=tol,  args=tuple([wrec, brec, dt, nonlinearity_function]))
+            if res.success: # and res.fun<tol: 
+                fxd_points.append(res.x)
+                speeds.append(res.fun)
+        
+    return np.array(fxd_points), np.array(speeds)
 
 def get_slow_manifold(net, task, T, h_init='random', from_t=300, batch_size=256, n_components=3, nbins=100):
     n_rec = net.dims[1]
@@ -701,7 +793,7 @@ def get_speed_and_acceleration_batch(trajectories):
     return np.array(all_speeds), np.array(all_accs)
 
 
-#identify slow manifolds
+#########identify slow manifolds
 
 #1fp with full support
 from matplotlib.ticker import MaxNLocator
@@ -765,7 +857,7 @@ def get_invman_fullsupp(W, b, tau, maxT=2000, tsteps=2001, fig_folder=parent_dir
     plt.plot(fixed_point_list[0][0]+eigenvectors[0,0], fixed_point_list[0][1]+eigenvectors[0,1], 'x')
     plt.savefig(fig_folder+"/1fp.pdf")
     
-def get_invman_3fps(W, b, tau, eps_=0.001):
+def get_invman_3fps(W, b, tau, eps_=0.001, fig_folder=''):
     
     
     fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(W, b)
@@ -812,14 +904,8 @@ def get_invman_3fps(W, b, tau, eps_=0.001):
         
         
         
-def fast_slow_decomposition(main_exp_name, exp_i, which='post'):
-    main_exp_name='center_out/N200_T500_noisy_hinitlast/tanh/'
-    folder = parent_dir+"/experiments/" + main_exp_name
-    net, wi, wrec, wo, brec, h0, oth, training_kwargs, losses = load_all(main_exp_name, exp_i=exp_i, which=which);
-    net.noise_std = 0
-    # plt.plot(losses[:np.argmin(losses)]); plt.yscale('log'); plt.xlabel("Epoch"); plt.ylabel("Loss");
-    
-     
+
+###############
 def get_manifold_from_closest_projections(trajectories, wo, npoints=30):
     n_rec = wo.shape[0]
     xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
@@ -918,7 +1004,7 @@ def plot_angle_error():
     fig.savefig(folder+"/angle_error.pdf", bbox_inches="tight");
     
 
-def plot_angle_error_msg(ax=None):
+def plot_angle_error_msg(exp_i, ax=None):
     main_exp_name='center_out/variable_N100_T250_Tr100/relu/'
     folder = parent_dir+"/experiments/" + main_exp_name
     which = 'post'
@@ -985,9 +1071,7 @@ def plot_angle_error_msg(ax=None):
     #ax.legend(title="trained on max. interval", bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     return 
 
-
-
-def angle_error_folder():
+def angle_error_folder(training_kwargs):
     main_exp_name='center_out/variable_N100_T250_Tr100/tanh/'
     folder = parent_dir+"/experiments/" + main_exp_name
     which = 'post'
@@ -1055,7 +1139,56 @@ sys.path.append("C:/Users/abel_/Documents/Lab/Software/fixed-point-finder");
 
     #from plot_losses import *; from analysis_functions import *
 
-#Fixed point finder
+
+
+#########TDA
+#from ripser import ripser
+#from persim import plot_diagrams
+def tda_trajectories(trajectories):
+    
+    data = trajectories.reshape((-1,trajectories.shape[-1]))
+    diagrams = ripser(data)['dgms']
+    # diagrams = ripser(data, maxdim=2)['dgms'] #higher homology groups 
+
+    plot_diagrams(diagrams, show=True)
+    
+    # recarr = [np.array(rec) if len(rec)>1 else np.array(rec[0]) for rec in recurrences]
+    # allrec = np.vstack(recarr)
+    # u, c = np.unique(np.round(allrec,4), return_counts=True, axis=0)
+    
+    
+    
+def tda_inputdriven_recurrent(id_recurrences, maxdim=1):
+    recarr = [np.array(rec) if len(rec)>1 else np.array(rec[0]) for rec in id_recurrences]
+    allrec = np.vstack(recarr)
+    u, c = np.unique(np.round(allrec,4), return_counts=True, axis=0)
+    diagrams = ripser(u, maxdim=maxdim)['dgms']
+
+    # plot_diagrams(diagrams, show=True)
+    
+    colors = ['b', 'r', 'g']
+    s=4
+    # plt.style.use('seaborn-dark-palette')
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3));
+    for i in range(len(diagrams)):
+        for point in diagrams[i]:
+            ax.scatter(point[0], point[1], c=colors[i], s=s)
+    maximal = np.max([np.nanmax(diagrams[i][np.isfinite(diagrams[i])]) for i in range(len(diagrams))])
+    ax.scatter(0, 1.01*maximal, c=colors[0], s=s)
+    ax.plot([-maximal,1.1*maximal], [-maximal,1.1*maximal], 'k--')
+    ax.plot([-maximal,1.1*maximal], [1.01*maximal,1.01*maximal], 'k--')
+    ax.set_xlim([-maximal/10.,1.1*maximal]); ax.set_ylim([-maximal/10.,1.1*maximal])
+    handles = [mpatches.Patch(color=color, label=f'H_{i}') for i, color in enumerate(colors)]
+    labels = [r'$H_{%01d}$'%i for i in range(len(colors))]
+    ax.legend(handles, labels)
+    
+    return diagrams, fig, ax
+
+
+
+###########FPF    
+#Fixed point finder 
+#from FixedPointFinder import FixedPointFinderTorch
 def get_fps_fpf():
     main_exp_name='center_out/N200_T500_noisy_hinitlast/tanh/'
     folder = parent_dir+"/experiments/" + main_exp_name
@@ -1086,26 +1219,6 @@ def get_fps_fpf():
     from_t = 0
     invariant_manifold = trajectories[:,from_t:,:]
     fig = plot_fps(fps[1], state_traj=invariant_manifold); fig.savefig(folder+'/fpf_traj.pdf', bbox_inches="tight")
-    
-    
-def is_nonnormal(A):
-    A_star = A.conj().T
-    return not np.allclose(np.dot(A, A_star), np.dot(A_star, A))
-
-
-def grid_search_dsa():
-    n_delays_list = [5,10,25,50,100]
-    rank_list = [5,10,25,50,75]
-    ds_scores = np.zeros((len(n_delays_list), len(rank_list)))
-    for i,n_delays in enumerate(n_delays_list):
-        if i<3:
-            continue
-        for j,rank in enumerate(rank_list):
-            print(n_delays,rank)
-            ds = DSA(tanh_all_trajs[0], tanh_all_trajs[1], n_delays=n_delays, rank=rank);
-            score = ds.fit_score()
-            ds_scores[i,j] = score
-            print(score)
 
 
 #MORSE

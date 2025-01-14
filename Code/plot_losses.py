@@ -22,6 +22,9 @@ from sklearn.decomposition import PCA
 from scipy.optimize import minimize
 from itertools import chain, combinations, permutations
 from tqdm import tqdm
+import sklearn
+from scipy.spatial.distance import pdist, squareform
+import networkx as nx
 
 import matplotlib.pyplot as plt
 from matplotlib import rc
@@ -36,16 +39,22 @@ from matplotlib.collections import LineCollection
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 from matplotlib.colors import Normalize
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
-from models import RNN, run_net
-from tasks import angularintegration_task, angularintegration_delta_task, simplestep_integration_task, poisson_clicks_task, center_out_reaching_task
-from analysis_functions import calculate_lyapunov_spectrum, participation_ratio, identify_limit_cycle, find_periodic_orbits, find_analytic_fixed_points, powerset
-from odes import tanh_jacobian, relu_step_input
+from models import RNN, run_net, LSTM_noforget, run_lstm
+from tasks import angularintegration_task, angularintegration_delta_task, simplestep_integration_task, poisson_clicks_task, center_out_reaching_task, contbernouilli_noisy_integration_task
+from analysis_functions import calculate_lyapunov_spectrum, participation_ratio, identify_limit_cycle, find_periodic_orbits, find_analytic_fixed_points, powerset, find_slow_points
+from odes import tanh_jacobian, relu_step_input, ReLU, relu_ode
+from load_network import get_params_exp, load_net_from_weights, load_all
+from simulate_network import simulate_rnn
 from utils import makedirs
         
+
+model_names=['lstm', 'low','high', 'ortho', 'qpta']
+mean_colors = ['k', 'r',  'darkorange', 'g', 'b']
+trial_colors = ['gray', 'lightcoral', 'moccasin', 'lime', 'deepskyblue']
+labels=['LSTM', r'$g=.5$', r'$g=1.5$', 'Orthogonal', 'QPTA']
         
 def set_3daxes(ax):
     ax.xaxis.pane.fill = False
@@ -303,6 +312,73 @@ def plot_all(model_names, main_exp_name='angularintegration'):
     plt.show()
     
     
+def plot_final_losses(main_exp_name, exp="triallength", mean_colors=['b'], trial_colors=['b'], labels=['']):
+    sub_exp_names = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/*' + os.path.sep)
+    
+    if exp=="triallength":
+        xlabel="Trial length"
+        sub_exp_names = [float(PurePath(sub_exp_name).parts[-1]) for sub_exp_name in sub_exp_names]
+    elif exp=="size":
+        xlabel="Network size"
+        sub_exp_names = [int(PurePath(sub_exp_name).parts[-1]) for sub_exp_name in sub_exp_names]
+    sub_exp_names = sorted(sub_exp_names)
+    print(sub_exp_names)
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    
+    xticks, positions = [], []
+    for sub_exp_i, sub_exp_name in enumerate(sub_exp_names):
+        print(sub_exp_name)
+        sub_exp_name = str(sub_exp_name)
+        for model_i, model_name in enumerate(model_names):
+            print(model_name)
+            print(parent_dir+'/experiments/' + main_exp_name +'/'+ sub_exp_name +'/'+ model_names[model_i])
+            params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ sub_exp_name +'/'+ model_names[model_i] + '/param*.yml')[0]
+            training_kwargs = yaml.safe_load(Path(params_path).read_text())
+            all_losses = plot_losses_and_trajectories(plot_losses_or_trajectories=None, main_exp_name=main_exp_name+'/'+ sub_exp_name, model_name=model_name)
+            final_losses = all_losses[:,-10:]
+            final_losses = np.mean(final_losses, axis=1)
+            final_losses_nonan = final_losses[~np.isnan(final_losses)]
+            
+            # ax.scatter([training_kwargs['T']/training_kwargs['dt_task']]*final_losses.shape[0], final_losses, marker='_', color=mean_colors[model_i], alpha=.9)
+            # plt.bar(bins1[:-1], hist_data1, width=bar_width, alpha=0.5, label='Data 1')
+            if exp=="triallength":
+                bplot = ax.boxplot(final_losses_nonan, widths=25,
+                                   positions=[np.log(training_kwargs['T']/training_kwargs['dt_task'])*sub_exp_i*50+35*model_i-70],
+                                   patch_artist=True)
+            
+            elif exp=="size":
+                bplot = ax.boxplot(final_losses_nonan, widths=10,
+                                   positions=[sub_exp_i*100+15*model_i-35],
+                                   patch_artist=True)
+
+            bplot['boxes'][0].set_facecolor(mean_colors[model_i])
+
+        
+        if exp=="triallength":
+            xticks.append(int(training_kwargs['T']/training_kwargs['dt_task']))
+            positions.append(np.log(training_kwargs['T']/training_kwargs['dt_task'])*sub_exp_i*50)
+        elif exp=="size":
+            positions.append(sub_exp_i*100)
+            xticks.append(int(training_kwargs['N_rec']))
+
+    
+    ax.set_xticks(np.array(positions),xticks)
+    ax.set_xlim([positions[0]-100,positions[-1]+100])
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel("Final loss")
+    handles = [mpatches.Patch(color=color, label=f'Label {i}') for i, color in enumerate(mean_colors)]
+
+    plt.legend(handles, labels)
+    if exp=="triallength":
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/alltimes_finallosses.pdf', bbox_inches="tight")
+    elif exp=="size":
+        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/allsizes_finallosses.pdf', bbox_inches="tight")
+
+    plt.show()  
+    
+    
+    
+###network dynamics (trajectories)    
 def plot_bestmodel_traj(model_names, main_exp_name='angularintegration', sparsity=1, i=0):
     params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ model_names[0] + '/param*.yml')[0]
     training_kwargs = yaml.safe_load(Path(params_path).read_text())
@@ -427,50 +503,6 @@ def load_best_model_from_grid(experiment_folder, model_name, task):
     # plt.show()
     
     return df
-    
-    
-def calc_LEs(net, T=10, from_t_step=0):
-    task = angularintegration_task(T=T, dt=.1, sparsity=0); #just creates zero input batches
-    input, target, mask, output, loss, trajectories = run_net(net, task, batch_size=1, return_dynamics=True, h_init=None);
-    lyap_spec, lyaps = calculate_lyapunov_spectrum(act_fun=tanh_jacobian, W=net.wrec.cpu().detach().numpy(), b=net.brec.cpu().detach().numpy(),
-                                                   tau=1, x_solved=trajectories[0,...], delta_t=net.dt, from_t_step=from_t_step)
-
-    return sorted(lyap_spec, reverse=True), trajectories
-
-def plot_allLEs_model(main_exp_name, model_name, which='last', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=False, hidden_i=0):
-    print(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')
-    params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')[0]
-    training_kwargs = yaml.safe_load(Path(params_path).read_text())
-    exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
-    
-    if not ax:
-        fig, ax = plt.subplots(1, 1, figsize=(5, 3))
-    lyap_specs = np.zeros((len(exp_list), training_kwargs['N_rec']))
-    for exp_i, exp in enumerate(exp_list):
-        print(exp)
-        with open(exp, 'rb') as handle:
-            result = pickle.load(handle)
-            
-        losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = result
-        if which=='post':
-            wi_init, wrec_init, wo_init, brec_init, h0_init = weights_last
-        elif which=='pre':
-            wi_init, wrec_init, wo_init, brec_init, h0_init = weights_init
-        dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
-        net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
-                  nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-                  wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=training_kwargs['ml_rnn'])
-        
-        lyap_spec, trajectories = calc_LEs(net, T=T, from_t_step=from_t_step)
-        lyap_specs[exp_i, :] = lyap_spec
-        ax.plot(lyap_spec, color=trial_color, alpha=.1)
-    
-    ax.plot(np.mean(lyap_specs, axis=0), color=mean_color, label=label)
-    # plt.show()
-    # if save:
-    #     plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/les_{which}.pdf', bbox_inches="tight")
-    #     plt.close()
-    return ax
 
 
 
@@ -605,36 +637,71 @@ def plot_input_driven_trajectory_2d(traj, traj_pca, wo,
             
     if plot_epoch:
         plt.text(.0, 0., s=plot_epoch, fontsize=10)
+        
+        
+        
+########Lyapunov exponents
+def calc_LEs(net, T=10, from_t_step=0):
+    task = angularintegration_task(T=T, dt=.1, sparsity=0); #just creates zero input batches
+    input, target, mask, output, loss, trajectories = run_net(net, task, batch_size=1, return_dynamics=True, h_init=None);
+    lyap_spec, lyaps = calculate_lyapunov_spectrum(act_fun=tanh_jacobian, W=net.wrec.cpu().detach().numpy(), b=net.brec.cpu().detach().numpy(),
+                                                   tau=1, x_solved=trajectories[0,...], delta_t=net.dt, from_t_step=from_t_step)
 
-import sklearn
-from scipy.spatial.distance import pdist, squareform
-import networkx as nx
-def determine_ring_from_fixed_points(fxd_pnts):
-    closest_two = []
-    nrecs = fxd_pnts.shape[0]
-    for i in range(nrecs):
-        exclude = []
-        exclude.append(i)
-        incl = np.delete(np.arange(0,nrecs,1),exclude)    
-        idx1 = sklearn.metrics.pairwise_distances_argmin_min(fxd_pnts[i].reshape(1,-1), np.delete(fxd_pnts, exclude, axis=0))[0][0]
-        idx1 = incl[idx1]
-        exclude.append(idx1)
-        incl = np.delete(np.arange(0,nrecs,1),exclude)
-        idx2 = sklearn.metrics.pairwise_distances_argmin_min(fxd_pnts[i].reshape(1,-1), np.delete(fxd_pnts, exclude, axis=0))[0][0]
-        idx2 = incl[idx2]
-        closest_two.append([idx1, idx2])
-        
-    edges = []
-    nrecs = fxd_pnts.shape[0]
-    for i in range(nrecs):
-        edges.append([i,closest_two[i][0]])
-        edges.append([i,closest_two[i][1]])
-        
-        
-    #G=nx.Graph(); G.add_edges_from(closest_two)
-    # nx.draw(G)
-    return closest_two, edges
+    return sorted(lyap_spec, reverse=True), trajectories
 
+def plot_allLEs_model(main_exp_name, model_name, which='last', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=False, hidden_i=0):
+    print(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')
+    params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')[0]
+    training_kwargs = yaml.safe_load(Path(params_path).read_text())
+    exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")
+    
+    if not ax:
+        fig, ax = plt.subplots(1, 1, figsize=(5, 3))
+    lyap_specs = np.zeros((len(exp_list), training_kwargs['N_rec']))
+    for exp_i, exp in enumerate(exp_list):
+        print(exp)
+        with open(exp, 'rb') as handle:
+            result = pickle.load(handle)
+            
+        losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs = result
+        if which=='post':
+            wi_init, wrec_init, wo_init, brec_init, h0_init = weights_last
+        elif which=='pre':
+            wi_init, wrec_init, wo_init, brec_init, h0_init = weights_init
+        dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
+        net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'], g=training_kwargs['rnn_init_gain'],
+                  nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
+                  wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=training_kwargs['ml_rnn'])
+        
+        lyap_spec, trajectories = calc_LEs(net, T=T, from_t_step=from_t_step)
+        lyap_specs[exp_i, :] = lyap_spec
+        ax.plot(lyap_spec, color=trial_color, alpha=.1)
+    
+    ax.plot(np.mean(lyap_specs, axis=0), color=mean_color, label=label)
+    # plt.show()
+    # if save:
+    #     plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/les_{which}.pdf', bbox_inches="tight")
+    #     plt.close()
+    return ax
+
+
+def plot_allLEs(main_exp_name, mean_colors, trial_colors, labels, T=10, from_t_step=0, which='post'):
+    
+    fig, ax = plt.subplots(1, 1, figsize=(5, 3))
+    for model_i, model_name in enumerate(model_names):
+        model_i += 1
+        plot_allLEs_model(main_exp_name, model_name, first_or_last=which, from_t_step=from_t_step, T=T,
+                          ax=ax, mean_color=mean_colors[model_i], trial_color=trial_colors[model_i], label=labels[model_i])
+    ax.set_ylabel("Lyapunov exponent")
+
+    plt.legend()
+    plt.savefig(parent_dir+'/experiments/'+main_exp_name+f'/les_{which}.pdf', bbox_inches="tight")
+    plt.show()
+
+
+
+
+###plot recurrent sets
 def plot_recs_ring_3d(recurrences, recurrences_pca, cmap, norm, ax=None):
     
     if ax == None:
@@ -741,6 +808,8 @@ def plot_recs_3d_ring(recurrences, recurrences_pca, wo, cmap, norm, ax=None):
     
     return ax
 
+
+##plot slow manifold
 def plot_slow_manifold_ring_3d(saddles, fxd_pnts, wo, pca, exp_name,
                                all_bin_locs_pca=None,
                                recurrences=[], recurrences_pca=[],
@@ -829,6 +898,40 @@ def video_slow_manifold_ring_3d(saddles, fxd_pnts, all_bin_locs_pca, wo, pca, ex
     plt.savefig(parent_dir+'/experiments/'+exp_name+f'/slow_manifold_3d2d_{figname_postfix}.pdf', bbox_inches="tight")
 
 
+
+def plot_slowpoints(params_folder, exp_i):
+    params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
+    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i=exp_i)
+    trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
+                                                                                      T=2*input_length, input_length=input_length, which=which,
+                                                                                      pca_from_to=pca_from_to,
+                                                                                      num_of_inputs=num_of_inputs, input_range=input_range)
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
+    # # plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=input_length, 
+    # #                 num_of_inputs=2, input_range=(-.51,-.5), ax=ax)
+    # # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/vf_{which}.pdf', bbox_inches="tight")
+    traj = trajectories[:10,::50,:].reshape((-1,training_kwargs['N_rec']))
+    fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], trajectory=traj)
+    # #pca projection
+    # proj_fxd_points = pca.transform(fxd_points.reshape(-1, training_kwargs['N_rec']))
+    # proj_h0 = pca.transform(h0.reshape(1, -1))
+    # #output projection
+    proj_fxd_points = np.dot(fxd_points, wo)
+
+    proj_h0 = np.dot(h0, wo)
+    ax.scatter(proj_fxd_points[:,0], proj_fxd_points[:,1])    
+    # ax.scatter(proj_trajectory[:,0], proj_trajectory[:,1])    
+
+    ax.scatter(proj_h0[0], proj_h0[1], c='k')
+    
+    cmap2 = plt.get_cmap('hsv')
+    norm2 = mpl.colors.Normalize(-np.pi, np.pi)
+    x = np.linspace(-np.pi, np.pi, 1000)
+    ax.scatter(np.cos(x), np.sin(x), color=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1)
+
+
+
+####vector field
 def plot_vf_on_ring_spline(wo, cs, npoints, fxd_pnt_thetas=[], stabilities=[]):
     
     xs = np.arange(-np.pi, np.pi, 2*np.pi/npoints)
@@ -852,7 +955,6 @@ def plot_vf_on_ring_spline(wo, cs, npoints, fxd_pnt_thetas=[], stabilities=[]):
     plt.savefig(parent_dir+'/experiments/'+main_exp_name+f'/vf_on_ring_exp{exp_i}.pdf', bbox_inches="tight")
 
 def plot_two_rings(net, batch_size=256):    
-    
     # main_exp_name='center_out/variable_N200_T500/tanh/'
     # exp_i=0
     # net, wi, wrec, wo, brec, h0, oth, training_kwargs = load_all(main_exp_name, exp_i, which='post'); 
@@ -911,13 +1013,11 @@ def plot_two_rings(net, batch_size=256):
     plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/2rings_3d_top.pdf', bbox_inches="tight")
 
 
-
-
-def plot_vf_diff_ring():
+def plot_vf_diff_ring(xs, csx, diff, fxd_pnt_thetas, stabilities):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     ax.view_init(elev=45., azim=45, roll=0)
-    x,y=np.dot(csx2, wo).T
+    x,y=np.dot(csx, wo).T
     x=np.cos(xs)
     y=np.sin(xs)
     ax.plot(x, y, diff)
@@ -973,6 +1073,7 @@ def plot_inputdriven_trajectory_3d(traj, input_length, plot_traj=True,
                                     elev=20., azim=-35, roll=0,
                                     lims=[], plot_epoch=False,
                                     cmap = cmx.get_cmap("coolwarm")):
+    #needs pca
     
     num_of_inputs = traj.shape[0]
     fig = plt.figure()
@@ -1260,17 +1361,7 @@ def plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=10,
 
 
 
-def relu_jacobian(t,W,b,tau,x_solved):
-    return (-np.eye(W.shape[0]) + np.multiply(W, np.where(np.dot(W,x_solved(t))+b>0,1,0)))/tau
-
-def tanh_jacobian(t,W,b,tau,x_solved):
-    #b is unused, but there for consistency with relu jac
-    return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(x_solved(t))**2))/tau
-
-def recttanh_jacobian_point(W,b,tau,x):
-    #b is unused, but there for consistency with relu jac
-    return (-np.eye(W.shape[0]) + np.multiply(np.multiply(W, np.where(np.dot(W,np.tanh(x))+b>0,1,0)),  np.multiply(W,1/np.cosh(x)**2)))/tau
-    
+###plot network (hidden) dynamics (trajectories)
 def get_hidden_trajs(net, T=128, input_length=10, input_type='constant', 
                      num_of_inputs=51, input_range=(-3,3), 
                      pca_from_to=(0,None), n_components=10, 
@@ -1348,7 +1439,7 @@ def get_hidden_trajs(net, T=128, input_length=10, input_type='constant',
     return trajectories, traj_pca, h0_pca, input, target, output, input_proj, pca, explained_variance
 
 
-
+#plot output dynamics
 def plot_output_vs_target(target, output, ax=None):
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3))
@@ -1369,6 +1460,10 @@ def plot_output_vs_target(target, output, ax=None):
     ax.set_axis_off()
     plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/output_vs_target.pdf', bbox_inches="tight")
 
+
+
+
+####move to analysis
 def average_output_changevectors(wi, wrec, brec, wo, I, trajectories, x_min=-2, x_max=2, num_x_points=11):
     # Create a regular grid
     x_values = np.linspace(x_min, x_max, num_x_points)
@@ -1388,6 +1483,8 @@ def average_output_changevectors(wi, wrec, brec, wo, I, trajectories, x_min=-2, 
     avf = average_vector_field/bin_counts.reshape((num_x_points,num_x_points,1))
     avf = np.where(avf==np.nan, 0, avf)
     return avf
+
+
 
 def average_input_vectorfield(wi, wrec, brec, wo, I, trajectory, x_min=-2, x_max=2, num_x_points=11):
     """
@@ -1430,21 +1527,6 @@ def input_vectorfield(x, wi, wrec, brec, I):
     for \dot x = tanh(Wx+b+W_inI)
     i.e. g(x,I) = tanh(Wx+b+W_inI) - tanh(Wx+b)
 
-    Parameters
-    ----------
-    wi : TYPE
-        DESCRIPTION.
-    wrec : TYPE
-        DESCRIPTION.
-    wo : TYPE
-        DESCRIPTION.
-    brec : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    None.
-
     """
     dotx = np.tanh(np.dot(wrec, x)+brec+np.dot(wi,I))
     fx = np.tanh(np.dot(wrec, x)+brec)
@@ -1452,17 +1534,6 @@ def input_vectorfield(x, wi, wrec, brec, I):
 
 
 
-def ReLU(x):
-    return np.where(x<0,0,x)
-
-def relu_ode(t,x,W):
-    return ReLU(np.dot(W,x)) - x 
-
-# def tanh_ode(t,x,W):
-#     return np.tanh(np.dot(W,x)) - x 
-
-
-    
 def find_grid_cell(target_point, x_values, y_values, num_x_points=11):
     
     # Iterate through grid cells and find the cell containing the target point
@@ -1476,25 +1547,11 @@ def find_grid_cell(target_point, x_values, y_values, num_x_points=11):
                 break
     return cell_containing_point
     
+
+
 def average_logspeed(wrec, wo, brec, trajectories, x_min=-2, x_max=2, num_x_points=11):
     """
     Calculate the average speed over the trajectories per grid element in output space
-
-    Parameters
-    ----------
-    wrec : TYPE
-        DESCRIPTION.
-    wo : TYPE
-        DESCRIPTION.
-    brec : TYPE
-        DESCRIPTION.
-    trajectories : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    all_logspeeds : TYPE
-        DESCRIPTION.
 
     """
     
@@ -1528,169 +1585,12 @@ def average_logspeed(wrec, wo, brec, trajectories, x_min=-2, x_max=2, num_x_poin
             bin_counts[cell_containing_point] += 1
     return output_logspeeds/bin_counts, all_logspeeds
 
-def plot_allLEs(main_exp_name, mean_colors, trial_colors, labels, T=10, from_t_step=0, which='post'):
-    
-    fig, ax = plt.subplots(1, 1, figsize=(5, 3))
-    for model_i, model_name in enumerate(model_names):
-        model_i += 1
-        plot_allLEs_model(main_exp_name, model_name, first_or_last=which, from_t_step=from_t_step, T=T,
-                          ax=ax, mean_color=mean_colors[model_i], trial_color=trial_colors[model_i], label=labels[model_i])
-    ax.set_ylabel("Lyapunov exponent")
-
-    plt.legend()
-    plt.savefig(parent_dir+'/experiments/'+main_exp_name+f'/les_{which}.pdf', bbox_inches="tight")
-    plt.show()
-
-def plot_final_losses(main_exp_name, exp="triallength", mean_colors=['b'], trial_colors=['b'], labels=['']):
-    sub_exp_names = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/*' + os.path.sep)
-    
-    if exp=="triallength":
-        xlabel="Trial length"
-        sub_exp_names = [float(PurePath(sub_exp_name).parts[-1]) for sub_exp_name in sub_exp_names]
-    elif exp=="size":
-        xlabel="Network size"
-        sub_exp_names = [int(PurePath(sub_exp_name).parts[-1]) for sub_exp_name in sub_exp_names]
-    sub_exp_names = sorted(sub_exp_names)
-    print(sub_exp_names)
-    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-    
-    xticks, positions = [], []
-    for sub_exp_i, sub_exp_name in enumerate(sub_exp_names):
-        print(sub_exp_name)
-        sub_exp_name = str(sub_exp_name)
-        for model_i, model_name in enumerate(model_names):
-            print(model_name)
-            print(parent_dir+'/experiments/' + main_exp_name +'/'+ sub_exp_name +'/'+ model_names[model_i])
-            params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ sub_exp_name +'/'+ model_names[model_i] + '/param*.yml')[0]
-            training_kwargs = yaml.safe_load(Path(params_path).read_text())
-            all_losses = plot_losses_and_trajectories(plot_losses_or_trajectories=None, main_exp_name=main_exp_name+'/'+ sub_exp_name, model_name=model_name)
-            final_losses = all_losses[:,-10:]
-            final_losses = np.mean(final_losses, axis=1)
-            final_losses_nonan = final_losses[~np.isnan(final_losses)]
-            
-            # ax.scatter([training_kwargs['T']/training_kwargs['dt_task']]*final_losses.shape[0], final_losses, marker='_', color=mean_colors[model_i], alpha=.9)
-            # plt.bar(bins1[:-1], hist_data1, width=bar_width, alpha=0.5, label='Data 1')
-            if exp=="triallength":
-                bplot = ax.boxplot(final_losses_nonan, widths=25,
-                                   positions=[np.log(training_kwargs['T']/training_kwargs['dt_task'])*sub_exp_i*50+35*model_i-70],
-                                   patch_artist=True)
-            
-            elif exp=="size":
-                bplot = ax.boxplot(final_losses_nonan, widths=10,
-                                   positions=[sub_exp_i*100+15*model_i-35],
-                                   patch_artist=True)
-
-            bplot['boxes'][0].set_facecolor(mean_colors[model_i])
-
-        
-        if exp=="triallength":
-            xticks.append(int(training_kwargs['T']/training_kwargs['dt_task']))
-            positions.append(np.log(training_kwargs['T']/training_kwargs['dt_task'])*sub_exp_i*50)
-        elif exp=="size":
-            positions.append(sub_exp_i*100)
-            xticks.append(int(training_kwargs['N_rec']))
-
-    
-    ax.set_xticks(np.array(positions),xticks)
-    ax.set_xlim([positions[0]-100,positions[-1]+100])
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel("Final loss")
-    handles = [mpatches.Patch(color=color, label=f'Label {i}') for i, color in enumerate(mean_colors)]
-
-    plt.legend(handles, labels)
-    if exp=="triallength":
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/alltimes_finallosses.pdf', bbox_inches="tight")
-    elif exp=="size":
-        plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/allsizes_finallosses.pdf', bbox_inches="tight")
-
-    plt.show()  
-    
-def plot_participatioratio(main_exp_name, model_name, task, first_or_last='last'):
-    params_path = glob.glob(parent_dir+'/experiments/' + main_exp_name +'/'+ model_name + '/param*.yml')[0]
-    training_kwargs = yaml.safe_load(Path(params_path).read_text())
-    exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name +'/'+ model_name + "/result*")[:1]
-    
-    fig, ax = plt.subplots(1, 1, figsize=(5, 3))
-    for exp_i, exp in enumerate(exp_list):
-        with open(exp, 'rb') as handle:
-            result = pickle.load(handle)
-            
-        losses, gradient_norms, weights_init, weights_last, weights_train, epochs, rec_epochs, training_kwargs_ = result
-        if first_or_last=='last':
-            wi_init, wrec_init, wo_init, brec_init, h0_init = weights_last
-        elif first_or_last=='first':
-            wi_init, wrec_init, wo_init, brec_init, h0_init = weights_init
-        dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
-        net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'],
-                  nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-                  wi_init=wi_init, wrec_init=wrec_init, wo_init=wo_init, brec_init=brec_init, h0_init=h0_init, ML_RNN=training_kwargs['ml_rnn'])
-        
-        input, target, mask, output, loss, trajectories = run_net(net, task, batch_size=1, return_dynamics=True, h_init=None);
-        
-        trajectories = trajectories.reshape((-1, training_kwargs['N_rec']))
-        trajectories -= np.mean(trajectories, axis=0) 
-        U, S, Vt = svd(trajectories, full_matrices=True)
-        print(participation_ratio(S))
-        
-def talu(x):
-    y = np.where(x<0,np.tanh(x),x)
-    return y
-
-def rect_tanh(x):
-    y = np.where(x>0,x,0)
-    return y
-
-def rnn_step(x, wrec, brec, dt, nonlinearity):
-    act = np.dot(wrec, x) + brec
-    rec_input = nonlinearity(act)
-    dx =  - dt * x  + dt * rec_input
-    return dx
-
-def rect_tanh_step(x, wrec, brec, dt):
-    tanh_act = np.tanh(np.dot(wrec, x) + brec)
-    rec_input = np.where(tanh_act>0,tanh_act,0)
-    dx =  - dt * x  + dt * rec_input
-    return dx
-
-def talu_step(x, wrec, brec, dt):
-    act = np.dot(wrec, x) + brec
-    rec_input = np.where(act<0,np.tanh(act),act)
-    dx =  - dt * x  + dt * rec_input
-    return dx
-        
-def tanh_ode(t,x,wrec, brec):
-    return np.tanh(np.dot(wrec,x)+brec) - x 
-
-def rnn_speed_function(x, wrec, brec, dt, nolinearity):
-    return np.linalg.norm(rnn_step(x, wrec, brec, dt, nolinearity))**2
-
-def rnn_speed_function_in_outputspace(x, wrec, brec, wo, dt, nonlinearity):
-    return np.linalg.norm(np.dot(wo.T, rnn_step(x, wrec, brec, dt, nonlinearity)))**2
-
-
-# def tanh_rnn_speed(x, wrec, brec):
-#     f_x = tanh_ode(0,x,wrec, brec)
-#     return np.linalg.norm(f_x)
-
-def tanh_jacobian(x,W,b,tau, mlrnn=True):
-
-    if mlrnn:
-        return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(np.dot(W,x)+b)**2))/tau
-    else:
-        return (-np.eye(W.shape[0]) + np.multiply(W,1/np.cosh(x)**2))/tau
-
-# def tanh_jacobian(x, wrec, brec, dt, mlrnn=True):
-#       # = 2*tanh_step(x, wrec, brec, dt)
-#     if mlrnn:
-#         return np.sum(dt*(-np.eye(wrec.shape[0]) + np.multiply(wrec,1/np.cosh(np.dot(wrec,x)+brec)**2)), axis=1)
-#     else:
-#         return dt*(-np.eye(wrec.shape[0]) + np.multiply(wrec,1/np.cosh(x)**2))
 
 
 
-def plot_output_speeds():
+###speed
+def plot_output_speeds(recurrences):
     #TODO: use unrounded recs
-    
     recs = np.unique(np.round(recurrences, 1), axis=0).squeeze()
     
     closest_two = []
@@ -1753,42 +1653,9 @@ def plot_output_speeds():
     ax.set_axis_off()
     plt.savefig(output_folder_path+f'/speed_{exp_i}_{which:04d}.png', bbox_inches="tight", pad_inches=0.0)
     
-def find_slow_points(wrec, brec, wo=None, dt=1, outputspace=False, trajectory=None, n_points=100,
-                     method='L-BFGS-B', tol=1e-9, nonlinearity='tanh'):
     
-    if nonlinearity=='tanh':
-        nonlinearity_function = np.tanh
-    elif nonlinearity=='talu':
-        nonlinearity_function = talu
-    elif nonlinearity=='rect_tanh': 
-        nonlinearity_function = rect_tanh
-    
-    N = wrec.shape[0]
-    fxd_points = []
-    speeds = []
-    if not np.any(trajectory.numpy()):
-        for p_i in tqdm(range(n_points)):    
-            x0 = np.random.uniform(-1,1,N)
-            if outputspace:
-                res = minimize(rnn_speed_function_in_outputspace, x0, method=method, tol=tol, args=tuple([wrec, brec, wo, dt, nonlinearity_function]))
-            else:
-                res = minimize(rnn_speed_function, x0, method=method, tol=tol, args=tuple([wrec, brec, dt, nonlinearity_function]))
-            if res.success: # and res.fun<tol: 
-                fxd_points.append(res.x)
-                speeds.append(res.fun)
-    else:
-        for x0 in tqdm(trajectory):
-            if outputspace:
-                res = minimize(rnn_speed_function_in_outputspace, x0, method=method, tol=tol, args=tuple([wrec, brec, wo, dt, nonlinearity_function])) #jac=tanh_jacobian
-            else:
-                res = minimize(rnn_speed_function, x0, method=method, tol=tol,  args=tuple([wrec, brec, dt, nonlinearity_function]))
-            if res.success: # and res.fun<tol: 
-                fxd_points.append(res.x)
-                speeds.append(res.fun)
-        
-    return np.array(fxd_points), np.array(speeds)
 
-
+#plot error
 def plot_error_over_time(params_folder, exp_i, T=None, sparsity=0.2, batch_size=2**8, ax=None, label=None):
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(3, 3));
@@ -1833,6 +1700,8 @@ def plot_error_over_time_list(main_exp_name, model_name, T=None, batch_size=2**8
     plt.legend(title='Reg. param.', bbox_to_anchor=(1., 1.))
     plt.savefig(parent_dir+f"/experiments/angular_integration/act_norm/error_T{T}.pdf", bbox_inches="tight")
 
+
+#explained vriance
 def plot_explained_variances(main_exp_name, model_name, input_length, batch_size=2**8, 
                               act_lambdas = [0.01, 0.001, 1e-05, 1e-07, 1e-09, 0]):
     colors = [plt.cm.jet(i) for i in np.linspace(.5, 1, len(act_lambdas))]
@@ -1860,180 +1729,10 @@ def plot_explained_variances(main_exp_name, model_name, input_length, batch_size
         ax.set_ylabel("Explained variance")
         plt.legend(title='Reg. param.', bbox_to_anchor=(1., 1.))
         plt.savefig(parent_dir+"/experiments/angular_integration/act_norm/exp_vars.pdf", bbox_inches="tight")
-
-def plot_slowpoints(params_folder, exp_i):
-    params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
-    wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i=exp_i)
-    trajectories, traj_pca, start, target, output, input_proj, pca, explained_variance = get_hidden_trajs(wi, wrec, wo, brec, h0, training_kwargs,
-                                                                                      T=2*input_length, input_length=input_length, which=which,
-                                                                                      pca_from_to=pca_from_to,
-                                                                                      num_of_inputs=num_of_inputs, input_range=input_range)
-    fig, ax = plt.subplots(1, 1, figsize=(3, 3)); 
-    # # plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=input_length, 
-    # #                 num_of_inputs=2, input_range=(-.51,-.5), ax=ax)
-    # # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+model_name+f'/vf_{which}.pdf', bbox_inches="tight")
-    traj = trajectories[:10,::50,:].reshape((-1,training_kwargs['N_rec']))
-    fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], trajectory=traj)
-    # #pca projection
-    # proj_fxd_points = pca.transform(fxd_points.reshape(-1, training_kwargs['N_rec']))
-    # proj_h0 = pca.transform(h0.reshape(1, -1))
-    # #output projection
-    proj_fxd_points = np.dot(fxd_points, wo)
-
-    proj_h0 = np.dot(h0, wo)
-    ax.scatter(proj_fxd_points[:,0], proj_fxd_points[:,1])    
-    # ax.scatter(proj_trajectory[:,0], proj_trajectory[:,1])    
-
-    ax.scatter(proj_h0[0], proj_h0[1], c='k')
-    
-    cmap2 = plt.get_cmap('hsv')
-    norm2 = mpl.colors.Normalize(-np.pi, np.pi)
-    x = np.linspace(-np.pi, np.pi, 1000)
-    ax.scatter(np.cos(x), np.sin(x), color=cmap2(norm2(x)), alpha=.5, s=2, zorder=-1)
-
-def get_stabilities(fxd, wrec, brec, tau):
-    h_stabilities = []
-    for fxd in fxd_points:
-        J = tanh_jacobian(fxd, wrec, brec, tau=tau)
-        eigvals, _ = np.linalg.eig(J)
-        maxeig = np.max(np.real(eigvals))
-        numpos = np.where(np.real(eigvals)>0)[0].shape[0]
-        # print(maxeig, numpos)
-        h_stabilities.append(numpos)
-    return h_stabilities
-
-
-
-def fixed_point_analysis():
-    T = 2000
-    batch_size = 1000
-    for exp_i in range(10):
-        task = contbernouilli_noisy_integration_task(T=T,
-                                                  input_length=training_kwargs['input_length'],
-                                                  sigma=training_kwargs['task_noise_sigma'],
-                                                  final_loss=training_kwargs['final_loss'])
-        # if exp_i==8:
-        #     continue
-        print("EXP:", exp_i)
-        main_exp_name='integration/N20_long'
-        params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
-        net =  load_net_from_weights(params_folder, exp_i)
-        wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder, exp_i)
-        input, target, mask, output, loss, trajectories = run_net(net, task, batch_size=batch_size, return_dynamics=True, h_init=None);
-    
-        plt.show()
-        fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(wrec, brec)
-    
-        trajectories_tofit = trajectories[:,:200,:].reshape((-1,training_kwargs['N_rec']))
-        pca.fit(trajectories_tofit)
-        traj_pca = pca.transform(trajectories[:,:2000,:].reshape((-1,training_kwargs['N_rec']))).reshape((batch_size,-1,10))
-        fixed_point_pca = pca.transform(np.array(fixed_point_list).reshape(1, -1))
-    
-        for i in range(batch_size):
-            plt.plot(traj_pca[i,200:, 0],traj_pca[i,200:, 1])
-            # for t in range(0,T,50):
-            #     plt.scatter(traj_pca[i,t, 0],traj_pca[i,t, 1], color=cmap(norm[t]), s=1)
-        # plt.scatter(fixed_point_pca[:,0], fixed_point_pca[:,1], zorder=100, c='k')
-        
-        for i in range(len(fixed_point_list)):
-            plt.scatter(fixed_point_pca[i,0], fixed_point_pca[i,1], zorder=100, c=colors[stabilist[i]])
-            
-        minx = np.min(fixed_point_pca[:,0])-2
-        maxx = np.max(fixed_point_pca[:,0])+20
-        miny = np.min(fixed_point_pca[:,1])-2
-        maxy = np.max(fixed_point_pca[:,1])+20
-        plt.xlim([minx, maxx])
-        plt.ylim([miny, maxy])
-        plt.show()
-    
-        for i in range(len(fixed_point_list)):
-            #print(np.real(eigenvalues_list[i][0]))
-            nearest_to_zero = min(np.real(eigenvalues_list[i]), key=lambda x:abs(x))
-            print(nearest_to_zero)
-        
-        
-#from ripser import ripser
-#from persim import plot_diagrams
-def tda_trajectories(trajectories):
-    
-    data = trajectories.reshape((-1,trajectories.shape[-1]))
-    diagrams = ripser(data)['dgms']
-    # diagrams = ripser(data, maxdim=2)['dgms'] #higher homology groups 
-
-    plot_diagrams(diagrams, show=True)
-    
-    # recarr = [np.array(rec) if len(rec)>1 else np.array(rec[0]) for rec in recurrences]
-    # allrec = np.vstack(recarr)
-    # u, c = np.unique(np.round(allrec,4), return_counts=True, axis=0)
-    
-    
-def tda_inputdriven_recurrent(id_recurrences, maxdim=1):
-    recarr = [np.array(rec) if len(rec)>1 else np.array(rec[0]) for rec in id_recurrences]
-    allrec = np.vstack(recarr)
-    u, c = np.unique(np.round(allrec,4), return_counts=True, axis=0)
-    diagrams = ripser(u, maxdim=maxdim)['dgms']
-
-    # plot_diagrams(diagrams, show=True)
-    
-    colors = ['b', 'r', 'g']
-    s=4
-    # plt.style.use('seaborn-dark-palette')
-    fig, ax = plt.subplots(1, 1, figsize=(3, 3));
-    for i in range(len(diagrams)):
-        for point in diagrams[i]:
-            ax.scatter(point[0], point[1], c=colors[i], s=s)
-    maximal = np.max([np.nanmax(diagrams[i][np.isfinite(diagrams[i])]) for i in range(len(diagrams))])
-    ax.scatter(0, 1.01*maximal, c=colors[0], s=s)
-    ax.plot([-maximal,1.1*maximal], [-maximal,1.1*maximal], 'k--')
-    ax.plot([-maximal,1.1*maximal], [1.01*maximal,1.01*maximal], 'k--')
-    ax.set_xlim([-maximal/10.,1.1*maximal]); ax.set_ylim([-maximal/10.,1.1*maximal])
-    handles = [mpatches.Patch(color=color, label=f'H_{i}') for i, color in enumerate(colors)]
-    labels = [r'$H_{%01d}$'%i for i in range(len(colors))]
-    ax.legend(handles, labels)
-    
-    return diagrams, fig, ax
         
 
-def load_net(exp_name, exp_i, which):
-    
-    
-    params_folder = parent_dir+'/experiments/' + exp_name +'/'
 
-    try:
-        wi, wrec, wo, brec, h0, oth, training_kwargs, losses = get_params_exp(params_folder, exp_i, which)
-    except:
-        wi, wrec, wo, brec, h0, training_kwargs, losses = get_params_exp(params_folder, exp_i, which)
-        oth = None
-        
-    try:
-        training_kwargs['map_output_to_hidden']
-    except:
-        training_kwargs['map_output_to_hidden'] = False
-        
-            
-    try:
-        training_kwargs['input_nonlinearity']
-    except:
-        training_kwargs['input_nonlinearity'] = None
-        
-    try:
-        h0 = training_kwargs['h_init']
-    except:
-        0
-        
-    dims = (training_kwargs['N_in'], training_kwargs['N_rec'], training_kwargs['N_out'])
-    net = RNN(dims=dims, noise_std=training_kwargs['noise_std'], dt=training_kwargs['dt_rnn'],
-              g=training_kwargs['rnn_init_gain'],
-              nonlinearity=training_kwargs['nonlinearity'], readout_nonlinearity=training_kwargs['readout_nonlinearity'],
-              wi_init=wi, wrec_init=wrec, wo_init=wo, brec_init=brec,
-              h0_init=h0, oth_init=oth,
-              ML_RNN=training_kwargs['ml_rnn'], map_output_to_hidden=training_kwargs['map_output_to_hidden'],
-              input_nonlinearity=training_kwargs['input_nonlinearity'])
-    
-    return net, training_kwargs
-
-
-
+###learning trajectory
 def plot_learning_trajectory(exp_name, exp_i, T=256, num_of_inputs=11, xylims=[-1.5,1.5],
                              input_length=128, input_type='constant', input_range = (-.5, .5),     
                              angle_init=False, task=None,
@@ -2122,8 +1821,6 @@ def plot_learning_trajectory(exp_name, exp_i, T=256, num_of_inputs=11, xylims=[-
                                    cmap=cmap)
         plt.savefig(parent_dir+'/experiments/'+exp_name+'/' + output_folder + f'/{exp_i}_{which:04d}.png', bbox_inches="tight")
         plt.close()
-# 
-    # return targets, outputs
         
 def plot_weights_during_learning(exp_name, parent_dir, exp_i):
     print(exp_name)
@@ -2234,387 +1931,338 @@ def plot_centered_tuning(trajectories, tunings=None, target=None, nbins=10, wind
         ax.set_xticks([-np.pi,np.pi], [r'$-\pi$', r'$\pi$'])
         plt.savefig(folder+'/tuning_centered.pdf', bbox_inches="tight")
         # plt.close()
-        
-        
-def load_all(exp_name, exp_i, which='post'):
-    folder = parent_dir+"/experiments/" + exp_name
-    wi, wrec, wo, brec, h0, oth, training_kwargs, losses = get_params_exp(folder, exp_i, which)
-    net, _ = load_net(exp_name, exp_i, which)
-    return net, wi, wrec, wo, brec, h0, oth, training_kwargs, losses
 
-# if __name__ == "__main__":
-#     main_exp_name='angular_integration/recttanh_N100_T128/'
-#     exp_list = glob.glob(parent_dir+"/experiments/" + main_exp_name + "/result*")
+
+
+
+
+# if False:
+# # if __name__ == "__main__":
+
+#     model_names=['lstm', 'low','high', 'ortho', 'qpta']
+#     mean_colors = ['k', 'r',  'darkorange', 'g', 'b']
+#     trial_colors = ['gray', 'lightcoral', 'moccasin', 'lime', 'deepskyblue']
+#     labels=['LSTM', r'$g=.5$', r'$g=1.5$', 'Orthogonal', 'QPTA']
+    
+#     # main_exp_name='angularintegration/lambda_T2'
+#     # plot_final_losses(main_exp_name, exp="triallength", mean_colors=mean_colors, trial_colors=trial_colors, labels=labels)
+#     # main_exp_name='angularintegration/sizes2'
+#     # plot_final_losses(main_exp_name, exp="size", mean_colors=mean_colors, trial_colors=trial_colors, labels=labels)
+    
+#     # T = 20
+#     # from_t_step = 90
+#     # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
+#     T = 128*32  
+#     input_length = int(128)*2
+#     num_of_inputs = 111
+#     angle_init = 'random'
+#     input_range = (-.2, .2)   
+#     input_type = 'constant'
+
+#     plot_from_to = (T-1*input_length,T)
+#     pca_from_to = (0,input_length)
+#     slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
+    
+#     cmap = cmx.get_cmap("tab10")
+#     cmap = cmx.get_cmap("coolwarm")
+
+#     model_name = ''
+#     # main_exp_name='angular_integration/hidden/25.6'
+#     main_exp_name='angular_integration/N500_T128/recttanh/' #
+#     main_exp_name='angular_integration/recttanh_N50_T128/' #
+#     # main_exp_name='angular_integration/N50_T128_noisy/tanh' #
+
 #     exp_i = 0
-#     net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
     
-#     task =  angularintegration_task(T=training_kwargs['T'], dt=training_kwargs['dt_task'], sparsity=training_kwargs['task_sparsity'], 
-#                                     last_mses=training_kwargs['last_mses'], angle_init=training_kwargs['angle_init'],
-#                                     max_input=.5)
+#     params_folder = parent_dir+"/experiments/" + main_exp_name +'/'+ model_name
+#     exp_list = glob.glob(params_folder + "/result*")    
+#     params_path = glob.glob(params_folder + '/param*.yml')[0]
+#     exp = exp_list[exp_i]
+#     training_kwargs = yaml.safe_load(Path(params_path).read_text())
+#     with open(exp, 'rb') as handle:
+#         result = pickle.load(handle)
+
+#     if True:    
+#         np.random.seed(1234)
+
+#         params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
+#         which = 'post'
+#         losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, which)
+#         print("Epochs trained: ", np.argmin(losses))
+        
+#         # input = torch.from_numpy(result['all_inputs'][np.argmin(losses)]).float() 
+#         # target = result['all_targets'][np.argmin(losses)]
+#         # num_of_inputs = input.shape[0]
+#         input = None
+#         target= None
+
+#         net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
+#         net.noise_std = 0 #1e-2
+#         # training_kwargs['noise_std'] = 0
+#         wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder)
+
+#         task =  angularintegration_task(T=input_length*training_kwargs['dt_task'], dt=training_kwargs['dt_task'], sparsity=1, length_scale=1,
+#                                         last_mses=training_kwargs['last_mses'], angle_init=angle_init, max_input=.5)
+        
+#         trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
+#                                                                                             T=T, input_length=input_length, 
+#                                                                                             pca_from_to=pca_from_to,
+#                                                                                             num_of_inputs=num_of_inputs,
+#                                                                                             input_range=input_range,
+#                                                                                             input_type=input_type,
+#                                                                                             angle_init=angle_init, 
+#                                                                                             task=task,
+#                                                                                             input=input,
+#                                                                                             target=target)
+        
+#         nbins = 40
+#         tunings = tuning_curves(trajectories[:,:input_length,:], target[:,:input_length,:], nbins=nbins, plot_fig=False)
+
+#         plot_centered_tuning(trajectories, tunings=tunings, nbins=nbins, window_size=1)
+#         plot_centered_tuning(trajectories, tunings=tunings, nbins=nbins, window_size=5)
+
+#         xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
+#         ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
+#         zlim = [np.min(traj_pca[...,2]), np.max(traj_pca[...,2])]
+        
+#     rcParams["figure.dpi"] = 250
+#     plt.rcParams["figure.figsize"] = (5,5)
+#     xylims=[-1.5,1.5]
+#     inputdriven_folder = '/inputdriven3d_asymp'
+#     output_folder = '/output_asymp'
+#     vf_folder = '/vf'
+
+#     inputdriven_folder_path = parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder
+#     output_folder_path = parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder
+#     vf_folder_path = parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + vf_folder
+
+#     makedirs(inputdriven_folder_path)
+#     makedirs(output_folder_path)
+#     makedirs(vf_folder_path)
+
+#     if training_kwargs['nonlinearity'] == 'relu' and training_kwargs['N_rec'] <= 25:
+#         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_analytic')
+#         makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
     
-#     # set_cmap = cmx.get_cmap("gray")
-#     set_cmap = cmx.get_cmap("coolwarm")
-#     targets, outputs = plot_learning_trajectory(main_exp_name, exp_i, T=128*32, 
-#                                   input_length=int(128)*1, input_type='constant', random_angle_init=True, task=task,
-#                                   set_cmap=set_cmap)
-    
-#     params_folder = parent_dir+'/experiments/' + main_exp_name +'/'
-#     losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, 'post')
-#     wrecs = weights_train['wrec']
-    
-#     plot_weights_during_learning(main_exp_name, parent_dir, exp_i)
-    
-    
-    
-    #
-    # exp_file = glob.glob(parent_dir+"/experiments/" + main_exp_name + "/result_*")[0]
-    # with open(exp_file, 'rb') as handle:
-    #     result = pickle.load(handle)
+#     for which in [np.argmin(losses)]:
         
-    # inputs = torch.from_numpy(result['all_inputs']).float() 
-    # targets = torch.from_numpy(result['all_targets']).float()
-    # outputs = torch.from_numpy(result['all_outputs']).float()
-    # trajectories = torch.from_numpy(result['all_trajectories']).float()
-    
-    # # all_data = {"inputs":inputs, "targets":targets, "outputs":outputs, "trajectories":trajectories, "wrecs":wrecs, "parameters":weights_train}
-    # all_data_notraj = {"inputs":inputs, "targets":targets, "outputs":outputs, "wrecs":wrecs, "parameters":weights_train}
-
-    # with open(parent_dir+"/experiments/" + main_exp_name + '/parameters_during_training.pickle', 'wb') as handle:
-    #     pickle.dump(all_data, handle, protocol=pickle.HIGHEST_PROTOCOL) 
+#     # for which in ['post']:
+#     # for which in range(500, np.argmin(losses), 25):
+#     # for which in  range(100, 500, 5):
+#     # for which in range(0, 100, 1):
         
-    # with open(parent_dir+"/experiments/" + main_exp_name + '/parameters_wotrajs_during_training.pickle', 'wb') as handle:
-    #     pickle.dump(all_data_notraj, handle, protocol=pickle.HIGHEST_PROTOCOL)  
-    
-    
-
-if False:
-# if __name__ == "__main__":
-
-    model_names=['lstm', 'low','high', 'ortho', 'qpta']
-    mean_colors = ['k', 'r',  'darkorange', 'g', 'b']
-    trial_colors = ['gray', 'lightcoral', 'moccasin', 'lime', 'deepskyblue']
-    labels=['LSTM', r'$g=.5$', r'$g=1.5$', 'Orthogonal', 'QPTA']
-    
-    # main_exp_name='angularintegration/lambda_T2'
-    # plot_final_losses(main_exp_name, exp="triallength", mean_colors=mean_colors, trial_colors=trial_colors, labels=labels)
-    # main_exp_name='angularintegration/sizes2'
-    # plot_final_losses(main_exp_name, exp="size", mean_colors=mean_colors, trial_colors=trial_colors, labels=labels)
-    
-    # T = 20
-    # from_t_step = 90
-    # plot_allLEs_model(main_exp_name, 'qpta', which='pre', T=10, from_t_step=0, mean_color='b', trial_color='b', label='', ax=None, save=True)
-    T = 128*32  
-    input_length = int(128)*2
-    num_of_inputs = 111
-    angle_init = 'random'
-    input_range = (-.2, .2)   
-    input_type = 'constant'
-
-    plot_from_to = (T-1*input_length,T)
-    pca_from_to = (0,input_length)
-    slowpointmethod= 'L-BFGS-B' #'Newton-CG' #
-    
-    cmap = cmx.get_cmap("tab10")
-    cmap = cmx.get_cmap("coolwarm")
-
-    model_name = ''
-    # main_exp_name='angular_integration/hidden/25.6'
-    main_exp_name='angular_integration/N500_T128/recttanh/' #
-    main_exp_name='angular_integration/recttanh_N50_T128/' #
-    # main_exp_name='angular_integration/N50_T128_noisy/tanh' #
-
-    exp_i = 0
-    
-    params_folder = parent_dir+"/experiments/" + main_exp_name +'/'+ model_name
-    exp_list = glob.glob(params_folder + "/result*")    
-    params_path = glob.glob(params_folder + '/param*.yml')[0]
-    exp = exp_list[exp_i]
-    training_kwargs = yaml.safe_load(Path(params_path).read_text())
-    with open(exp, 'rb') as handle:
-        result = pickle.load(handle)
-
-    if True:    
-        np.random.seed(1234)
-
-        params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
-        which = 'post'
-        losses, gradient_norms, epochs, rec_epochs, weights_train = get_traininginfo_exp(params_folder, exp_i, which)
-        print("Epochs trained: ", np.argmin(losses))
+#         # input = torch.from_numpy(result['all_inputs'][which]).float() 
+#         # target = result['all_targets'][which]
+#         # num_of_inputs = input.shape[0]
+#         # input = None
+#         # target= None
         
-        # input = torch.from_numpy(result['all_inputs'][np.argmin(losses)]).float() 
-        # target = result['all_targets'][np.argmin(losses)]
-        # num_of_inputs = input.shape[0]
-        input = None
-        target= None
-
-
-        net, training_kwargs = load_net(main_exp_name, exp_i, 'post')
-        net.noise_std = 0 #1e-2
-        # training_kwargs['noise_std'] = 0
-        wi, wrec, wo, brec, h0, oth, training_kwargs = get_params_exp(params_folder)
-
-        task =  angularintegration_task(T=input_length*training_kwargs['dt_task'], dt=training_kwargs['dt_task'], sparsity=1, length_scale=1,
-                                        last_mses=training_kwargs['last_mses'], angle_init=angle_init, max_input=.5)
+#         # net, training_kwargs = load_net(main_exp_name, exp_i, which)
+#         wo = net.wo.detach().numpy()
         
-        trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
-                                                                                            T=T, input_length=input_length, 
-                                                                                            pca_from_to=pca_from_to,
-                                                                                            num_of_inputs=num_of_inputs,
-                                                                                            input_range=input_range,
-                                                                                            input_type=input_type,
-                                                                                            angle_init=angle_init, 
-                                                                                            task=task,
-                                                                                            input=input,
-                                                                                            target=target)
+#         # trajectories, traj_pca, start, input, target, output, input_proj, _, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
+#         #                                                                                     T=T, input_length=input_length,
+#         #                                                                                     pca_from_to=pca_from_to, 
+#         #                                                                                     num_of_inputs=num_of_inputs,
+#         #                                                                                     input_range=input_range, 
+#         #                                                                                     input_type=input_type,
+#         #                                                                                     angle_init=angle_init,
+#         #                                                                                     task=task,
+#         #                                                                                     input=input,
+#         #                                                                                     target=target)
         
-        nbins = 40
-        tunings = tuning_curves(trajectories[:,:input_length,:], target[:,:input_length,:], nbins=nbins, plot_fig=False)
-
-        plot_centered_tuning(trajectories, tunings=tunings, nbins=nbins, window_size=1)
-        plot_centered_tuning(trajectories, tunings=tunings, nbins=nbins, window_size=5)
-
-        xlim = [np.min(traj_pca[...,0]), np.max(traj_pca[...,0])]
-        ylim = [np.min(traj_pca[...,1]), np.max(traj_pca[...,1])]
-        zlim = [np.min(traj_pca[...,2]), np.max(traj_pca[...,2])]
+#         traj_pca = pca.transform(trajectories.reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,10))
+#         recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
         
-    rcParams["figure.dpi"] = 250
-    plt.rcParams["figure.figsize"] = (5,5)
-    xylims=[-1.5,1.5]
-    inputdriven_folder = '/inputdriven3d_asymp'
-    output_folder = '/output_asymp'
-    vf_folder = '/vf'
-
-    inputdriven_folder_path = parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + inputdriven_folder
-    output_folder_path = parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + output_folder
-    vf_folder_path = parent_dir+'/experiments/'+main_exp_name+'/'+ model_name + vf_folder
-
-    makedirs(inputdriven_folder_path)
-    makedirs(output_folder_path)
-    makedirs(vf_folder_path)
-
-    if training_kwargs['nonlinearity'] == 'relu' and training_kwargs['N_rec'] <= 25:
-        makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/inputdriven3d_analytic')
-        makedirs(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +'/output_analytic')
-    
-    for which in [np.argmin(losses)]:
+#         # plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, ax=None)
+#         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_{which}_{exp_i}.pdf', bbox_inches="tight")
         
-    # for which in ['post']:
-    # for which in range(500, np.argmin(losses), 25):
-    # for which in  range(100, 500, 5):
-    # for which in range(0, 100, 1):
+#         # plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, plot_asymp=True, ax=None);
+#         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_{which}_{exp_i}.pdf', bbox_inches="tight")
         
-        # input = torch.from_numpy(result['all_inputs'][which]).float() 
-        # target = result['all_targets'][which]
-        # num_of_inputs = input.shape[0]
-        # input = None
-        # target= None
-        
-        # net, training_kwargs = load_net(main_exp_name, exp_i, which)
-        wo = net.wo.detach().numpy()
-        
-        # trajectories, traj_pca, start, input, target, output, input_proj, _, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
-        #                                                                                     T=T, input_length=input_length,
-        #                                                                                     pca_from_to=pca_from_to, 
-        #                                                                                     num_of_inputs=num_of_inputs,
-        #                                                                                     input_range=input_range, 
-        #                                                                                     input_type=input_type,
-        #                                                                                     angle_init=angle_init,
-        #                                                                                     task=task,
-        #                                                                                     input=input,
-        #                                                                                     target=target)
-        
-        traj_pca = pca.transform(trajectories.reshape((-1,training_kwargs['N_rec']))).reshape((num_of_inputs,-1,10))
-        recurrences, recurrences_pca = find_periodic_orbits(trajectories, traj_pca, limcyctol=1e-2, mindtol=1e-4)
-        
-        # plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, ax=None)
-        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_{which}_{exp_i}.pdf', bbox_inches="tight")
-        
-        # plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, plot_asymp=True, ax=None);
-        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_{which}_{exp_i}.pdf', bbox_inches="tight")
-        
-        # id_recurrences, id_recurrences_pca = find_periodic_orbits(trajectories[:,:input_length,:], traj_pca[:,:input_length,:], limcyctol=1e-1, mindtol=1e-4)
+#         # id_recurrences, id_recurrences_pca = find_periodic_orbits(trajectories[:,:input_length,:], traj_pca[:,:input_length,:], limcyctol=1e-1, mindtol=1e-4)
         
 
-        plot_inputdriven_trajectory_3d(traj_pca, input_length, plot_traj=True,
-                                            recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
-                                            elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which,
-                                            cmap=cmap)
-        plt.savefig(inputdriven_folder_path+f'/{exp_i}_{which:04d}.png', bbox_inches="tight", pad_inches=0.0)
-        plt.close()
+#         plot_inputdriven_trajectory_3d(traj_pca, input_length, plot_traj=True,
+#                                             recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
+#                                             elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which,
+#                                             cmap=cmap)
+#         plt.savefig(inputdriven_folder_path+f'/{exp_i}_{which:04d}.png', bbox_inches="tight", pad_inches=0.0)
+#         plt.close()
         
-        plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
-                                   fxd_points=None, ops_fxd_points=None,
-                                   plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which,
-                                   cmap=cmap)
-        plt.savefig(output_folder_path+f'/{exp_i}_{which:04d}.png', bbox_inches="tight", pad_inches=0.0)
-        plt.close()
+#         plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
+#                                    fxd_points=None, ops_fxd_points=None,
+#                                    plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which,
+#                                    cmap=cmap)
+#         plt.savefig(output_folder_path+f'/{exp_i}_{which:04d}.png', bbox_inches="tight", pad_inches=0.0)
+#         plt.close()
 
-        # plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
-        #                            fxd_points=None, ops_fxd_points=None,
-        #                            plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
-        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp_notraj_{which}_{exp_i}.pdf', bbox_inches="tight")
+#         # plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
+#         #                            fxd_points=None, ops_fxd_points=None,
+#         #                            plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
+#         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_asymp_notraj_{which}_{exp_i}.pdf', bbox_inches="tight")
         
-        # diagrams, fig, ax = tda_inputdriven_recurrent(id_recurrences, maxdim=1)
-        # plot_diagrams(diagrams, show=True)
-        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven_tda_{exp_i}.png', bbox_inches="tight")
-        # plt.close()
+#         # diagrams, fig, ax = tda_inputdriven_recurrent(id_recurrences, maxdim=1)
+#         # plot_diagrams(diagrams, show=True)
+#         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven_tda_{exp_i}.png', bbox_inches="tight")
+#         # plt.close()
 
-        if training_kwargs['nonlinearity'] == 'relu' and training_kwargs['N_rec'] <= 15:
+#         if training_kwargs['nonlinearity'] == 'relu' and training_kwargs['N_rec'] <= 15:
         
-            fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(wrec, brec)
+#             fixed_point_list, stabilist, unstabledimensions, eigenvalues_list = find_analytic_fixed_points(wrec, brec)
             
-            plot_inputdriven_trajectory_3d(traj_pca, input_length, plot_traj=True,
-                                                recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
-                                                fxd_points=fixed_point_list,
-                                                h_stabilities=unstabledimensions,
-                                                elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
-            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_analytic/{exp_i}_{which:04d}.png', bbox_inches="tight")
-            plt.close()
+#             plot_inputdriven_trajectory_3d(traj_pca, input_length, plot_traj=True,
+#                                                 recurrences=recurrences, recurrences_pca=recurrences_pca, wo=wo,
+#                                                 fxd_points=fixed_point_list,
+#                                                 h_stabilities=unstabledimensions,
+#                                                 elev=45, azim=135, lims=[xlim, ylim, zlim], plot_epoch=which)
+#             plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven3d_analytic/{exp_i}_{which:04d}.png', bbox_inches="tight")
+#             plt.close()
 
             
-            plot_output_trajectory(trajectories[:,:,:], wo, input_length, plot_traj=True,
-                                       fxd_points=fixed_point_list,
-                                       h_stabilities=unstabledimensions,
-                                       plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which)
-            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_analytic/{exp_i}_{which:04d}.png', bbox_inches="tight")
-            plt.close()
+#             plot_output_trajectory(trajectories[:,:,:], wo, input_length, plot_traj=True,
+#                                        fxd_points=fixed_point_list,
+#                                        h_stabilities=unstabledimensions,
+#                                        plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None, xylims=xylims, plot_epoch=which)
+#             plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_analytic/{exp_i}_{which:04d}.png', bbox_inches="tight")
+#             plt.close()
         
-        if False:
-            traj = trajectories[:,:input_length:20,:].reshape((-1,training_kwargs['N_rec']));
-            slowpointtol=1e-27
-            fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], trajectory=traj, tol=slowpointtol, method=slowpointmethod)
+#         if False:
+#             traj = trajectories[:,:input_length:20,:].reshape((-1,training_kwargs['N_rec']));
+#             slowpointtol=1e-27
+#             fxd_points, speeds = find_slow_points(wrec, brec, dt=training_kwargs['dt_rnn'], trajectory=traj, tol=slowpointtol, method=slowpointmethod)
             
-            ops_fxd_points, ops_speeds = find_slow_points(wrec, brec, wo=wo, dt=training_kwargs['dt_rnn'], trajectory=traj,
-                                                      outputspace=True, tol=slowpointtol, method=slowpointmethod,
-                                                      nonlinearity=training_kwargs['nonlinearity'])
+#             ops_fxd_points, ops_speeds = find_slow_points(wrec, brec, wo=wo, dt=training_kwargs['dt_rnn'], trajectory=traj,
+#                                                       outputspace=True, tol=slowpointtol, method=slowpointmethod,
+#                                                       nonlinearity=training_kwargs['nonlinearity'])
 
     
-            h_stabilities=get_stabilities(fxd_points, wrec, brec, tau=1/training_kwargs['dt_rnn'])
-            h_stabilities = np.where(np.array(h_stabilities)>2,2,h_stabilities)
-            plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, fxd_points=fxd_points, 
-                                            ops_fxd_points=ops_fxd_points,
-                                            h_stabilities=h_stabilities, plot_asymp=True, ax=None);
-            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
+#             h_stabilities=get_stabilities(fxd_points, wrec, brec, tau=1/training_kwargs['dt_rnn'])
+#             h_stabilities = np.where(np.array(h_stabilities)>2,2,h_stabilities)
+#             plot_input_driven_trajectory_2d(trajectories, traj_pca, wo, fxd_points=fxd_points, 
+#                                             ops_fxd_points=ops_fxd_points,
+#                                             h_stabilities=h_stabilities, plot_asymp=True, ax=None);
+#             plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/inputdriven2d_asymp_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
             
-            plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
-                                       fxd_points=fxd_points, ops_fxd_points=ops_fxd_points,
-                                       h_stabilities=h_stabilities,
-                                       plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
-            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
+#             plot_output_trajectory(trajectories, wo, input_length, plot_traj=True,
+#                                        fxd_points=fxd_points, ops_fxd_points=ops_fxd_points,
+#                                        h_stabilities=h_stabilities,
+#                                        plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
+#             plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_slow_{which}_{exp_i}.pdf', bbox_inches="tight")
     
-            plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
-                                       fxd_points=fxd_points, ops_fxd_points=ops_fxd_points,
-                                       h_stabilities=h_stabilities,
-                                       plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
-            plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_slow_notraj_{which}_{exp_i}.pdf', bbox_inches="tight")
+#             plot_output_trajectory(trajectories, wo, input_length, plot_traj=False,
+#                                        fxd_points=fxd_points, ops_fxd_points=ops_fxd_points,
+#                                        h_stabilities=h_stabilities,
+#                                        plot_asymp=True, limcyctol=1e-2, mindtol=1e-4, ax=None)
+#             plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/output_slow_notraj_{which}_{exp_i}.pdf', bbox_inches="tight")
 
-        # plot_trajs_model(main_exp_name, model_name, exp_i, T=T, which='post', input_length=input_length,
-        #                           timepart='all', num_of_inputs=num_of_inputs,
-        #                           plot_from_to=plot_from_to, pca_from_to=pca_from_to,
-        #                           input_range=input_range, slowpointtol=1e-15, slowpointmethod=slowpointmethod)
+#         # plot_trajs_model(main_exp_name, model_name, exp_i, T=T, which='post', input_length=input_length,
+#         #                           timepart='all', num_of_inputs=num_of_inputs,
+#         #                           plot_from_to=plot_from_to, pca_from_to=pca_from_to,
+#         #                           input_range=input_range, slowpointtol=1e-15, slowpointmethod=slowpointmethod)
         
-        # #Vector field plotting
-        # params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
-        # wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder)
+#         # #Vector field plotting
+#         # params_folder = parent_dir+'/experiments/' + main_exp_name +'/'+ model_name
+#         # wi, wrec, wo, brec, h0, training_kwargs = get_params_exp(params_folder)
 
-            #Both directions
-            x_lim = 1.4
-            num_x_points = 21
-            num_of_inputs = 11
-            input_range = (-.3,.3)
-            trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
-                                                                                            T=T, input_length=input_length, 
-                                                                                            pca_from_to=pca_from_to,
-                                                                                            num_of_inputs=num_of_inputs,
-                                                                                            input_range=input_range,
-                                                                                            input_type=input_type,
-                                                                                            angle_init=angle_init, 
-                                                                                            task=task,
-                                                                                            input=input,
-                                                                                            target=target)
-            plot_average_vf(trajectories[:,input_length:,:], wi, wrec, brec, wo, input_length=0, 
-                            num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
-                            num_x_points=num_x_points)
-            plt.savefig(vf_folder_path +f'/vf_noinput_{which}_{exp_i}.pdf', bbox_inches="tight")
-            plt.show()
+#             #Both directions
+#             x_lim = 1.4
+#             num_x_points = 21
+#             num_of_inputs = 11
+#             input_range = (-.3,.3)
+#             trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
+#                                                                                             T=T, input_length=input_length, 
+#                                                                                             pca_from_to=pca_from_to,
+#                                                                                             num_of_inputs=num_of_inputs,
+#                                                                                             input_range=input_range,
+#                                                                                             input_type=input_type,
+#                                                                                             angle_init=angle_init, 
+#                                                                                             task=task,
+#                                                                                             input=input,
+#                                                                                             target=target)
+#             plot_average_vf(trajectories[:,input_length:,:], wi, wrec, brec, wo, input_length=0, 
+#                             num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
+#                             num_x_points=num_x_points)
+#             plt.savefig(vf_folder_path +f'/vf_noinput_{which}_{exp_i}.pdf', bbox_inches="tight")
+#             plt.show()
             
-            #Single direction
-            fig, ax = plt.subplots(1, 1, figsize=(3, 3));
-            input_range = (.5, .51)
-            num_of_inputs = 1
-            trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
-                                                                                            T=T, input_length=input_length, 
-                                                                                            pca_from_to=pca_from_to,
-                                                                                            num_of_inputs=num_of_inputs,
-                                                                                            input_range=input_range,
-                                                                                            input_type=input_type,
-                                                                                            angle_init=angle_init, 
-                                                                                            task=task,
-                                                                                            input=input,
-                                                                                            target=target)
+#             #Single direction
+#             fig, ax = plt.subplots(1, 1, figsize=(3, 3));
+#             input_range = (.5, .51)
+#             num_of_inputs = 1
+#             trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
+#                                                                                             T=T, input_length=input_length, 
+#                                                                                             pca_from_to=pca_from_to,
+#                                                                                             num_of_inputs=num_of_inputs,
+#                                                                                             input_range=input_range,
+#                                                                                             input_type=input_type,
+#                                                                                             angle_init=angle_init, 
+#                                                                                             task=task,
+#                                                                                             input=input,
+#                                                                                             target=target)
         
-            plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=T, 
-                            num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
-                            num_x_points=num_x_points, color='blue', ax=ax)
+#             plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=T, 
+#                             num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
+#                             num_x_points=num_x_points, color='blue', ax=ax)
             
-            input_range = (-.51, -.5)
-            num_of_inputs = 1
-            trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
-                                                                                            T=T, input_length=input_length, 
-                                                                                            pca_from_to=pca_from_to,
-                                                                                            num_of_inputs=num_of_inputs,
-                                                                                            input_range=input_range,
-                                                                                            input_type=input_type,
-                                                                                            angle_init=angle_init, 
-                                                                                            task=task,
-                                                                                            input=input,
-                                                                                            target=target)
+#             input_range = (-.51, -.5)
+#             num_of_inputs = 1
+#             trajectories, traj_pca, start, input, target, output, input_proj, pca, explained_variance = get_hidden_trajs(net, dt_task=training_kwargs['dt_task'], 
+#                                                                                             T=T, input_length=input_length, 
+#                                                                                             pca_from_to=pca_from_to,
+#                                                                                             num_of_inputs=num_of_inputs,
+#                                                                                             input_range=input_range,
+#                                                                                             input_type=input_type,
+#                                                                                             angle_init=angle_init, 
+#                                                                                             task=task,
+#                                                                                             input=input,
+#                                                                                             target=target)
         
-            plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=T, 
-                            num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
-                            num_x_points=num_x_points, color='red', ax=ax)
-            # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/vf_onedir_{which}_{exp_i}.pdf', bbox_inches="tight")
-            plt.savefig(vf_folder_path+f'/vf_both_{which}_{exp_i}.pdf', bbox_inches="tight")
-            plt.show()
+#             plot_average_vf(trajectories, wi, wrec, brec, wo, input_length=T, 
+#                             num_of_inputs=num_of_inputs, input_range=input_range, x_lim=x_lim,
+#                             num_x_points=num_x_points, color='red', ax=ax)
+#             # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f'/vf_onedir_{which}_{exp_i}.pdf', bbox_inches="tight")
+#             plt.savefig(vf_folder_path+f'/vf_both_{which}_{exp_i}.pdf', bbox_inches="tight")
+#             plt.show()
             
             
-            fig, ax = plt.subplots(1, 1, figsize=(3, 3));
-            im=ax.imshow(np.rot90(output_logspeeds), cmap='inferno')
-            ax.set_axis_off()
-            cbar = fig.colorbar(im, ax=ax)
-            cbar.set_label("log(speed)")
-            plt.savefig(output_folder_path+f'/mss_output_{which}_{exp_i}.png', bbox_inches="tight", pad_inches=0.0)
+#             fig, ax = plt.subplots(1, 1, figsize=(3, 3));
+#             im=ax.imshow(np.rot90(output_logspeeds), cmap='inferno')
+#             ax.set_axis_off()
+#             cbar = fig.colorbar(im, ax=ax)
+#             cbar.set_label("log(speed)")
+#             plt.savefig(output_folder_path+f'/mss_output_{which}_{exp_i}.png', bbox_inches="tight", pad_inches=0.0)
     
-        # fig, ax = plt.subplots(1, 1, figsize=(3, 3));
-        # # for i in range(10):
-        # plot_output_vs_target(target[0,...], output[0,...], ax=ax)
-        # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f"/output_vs_target_{exp_i}.pdf")
+#         # fig, ax = plt.subplots(1, 1, figsize=(3, 3));
+#         # # for i in range(10):
+#         # plot_output_vs_target(target[0,...], output[0,...], ax=ax)
+#         # plt.savefig(parent_dir+'/experiments/'+main_exp_name+'/'+ model_name +f"/output_vs_target_{exp_i}.pdf")
 
-    #plot target vs output
-    # plot_output_vs_target(target[0,...], output[0,...])
+#     #plot target vs output
+#     # plot_output_vs_target(target[0,...], output[0,...])
 
     
-    # for trial_i in range(trajectories.shape[0]):
-    #     target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
+#     # for trial_i in range(trajectories.shape[0]):
+#     #     target_angle = np.arctan2(output[trial_i,-1,1], output[trial_i,-1,0])
 
-    #     ax.plot(traj_pca[trial_i,after_t:before_t,0], traj_pca[trial_i,after_t:before_t,1], '-', color=cmap2(norm2(target_angle)))
-
-
+#     #     ax.plot(traj_pca[trial_i,after_t:before_t,0], traj_pca[trial_i,after_t:before_t,1], '-', color=cmap2(norm2(target_angle)))
 
 
-    # plot_allLEs(main_exp_name,  mean_colors, trial_colors, labels, T=T, from_t_step=from_t_step, first_or_last='first')
-    # plot_allLEs(main_exp_name,  mean_colors, trial_colors, labels, T=T, from_t_step=from_t_step, first_or_last='last')
 
 
-# plot_losses_and_trajectories(plot_losses_or_trajectories='losses', main_exp_name='angularintegration', model_name='high_gain')
+#     # plot_allLEs(main_exp_name,  mean_colors, trial_colors, labels, T=T, from_t_step=from_t_step, first_or_last='first')
+#     # plot_allLEs(main_exp_name,  mean_colors, trial_colors, labels, T=T, from_t_step=from_t_step, first_or_last='last')
+
+
+# # plot_losses_and_trajectories(plot_losses_or_trajectories='losses', main_exp_name='angularintegration', model_name='high_gain')
     
-    # model_names=['lstm', 'low','high', 'ortho', 'qpta']
-    # i, model_names = 3, ['ortho']
+#     # model_names=['lstm', 'low','high', 'ortho', 'qpta']
+#     # i, model_names = 3, ['ortho']
 
-    # plot_all(model_names=model_names,                   main_exp_name='angularintegration/lambda_T2/12.8')
-    # for sparsity in [0.01, 0.1, 1.]:
-    #     plot_bestmodel_traj(model_names=model_names, main_exp_name=main_exp_name, sparsity=sparsity, i=i)
+#     # plot_all(model_names=model_names,                   main_exp_name='angularintegration/lambda_T2/12.8')
+#     # for sparsity in [0.01, 0.1, 1.]:
+#     #     plot_bestmodel_traj(model_names=model_names, main_exp_name=main_exp_name, sparsity=sparsity, i=i)
     
-    # experiment_folder = 'lambda_grid_2'
-    # for model_name in model_names:
-    #     load_best_model_from_grid(experiment_folder, model_name)
+#     # experiment_folder = 'lambda_grid_2'
+#     # for model_name in model_names:
+#     #     load_best_model_from_grid(experiment_folder, model_name)

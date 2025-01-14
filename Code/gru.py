@@ -110,7 +110,7 @@ def test_model(model, task, batch_size):
     target_power = np.mean(targets[:, from_t:to_t, :] ** 2)
     mse = np.mean((targets[:, from_t:to_t, :] - outputs[:, from_t:to_t, :]) ** 2)
     mse_normalized = mse / target_power
-    return db(mse_normalized), outputs, trajectories
+    return decibel(mse_normalized), outputs, trajectories
 
 
 

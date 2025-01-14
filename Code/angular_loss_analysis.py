@@ -7,10 +7,8 @@ import os, sys
 import glob
 import pickle
 import yaml
-from pathlib import Path, PurePath
-current_dir = os.getcwd()
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, current_dir) 
+from pathlib import Path
+current_dir = os.path.dirname(os.path.realpath('__file__'))
 
         
 from tqdm import tqdm
@@ -21,7 +19,7 @@ import scipy
 import pandas as pd
 from ripser import ripser
 from persim import plot_diagrams
-import skdim
+#import skdim
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -29,47 +27,11 @@ from matplotlib.lines import Line2D
 
 from models import RNN 
 from tasks import angularintegration_task, angularintegration_task_constant, center_out_reaching_task, double_angularintegration_task
-from odes import relu_ode, tanh_ode, recttanh_ode, relu_jacobian, tanh_jacobian, recttanh_jacobian_point
-from analysis_functions import db
+from odes import relu_ode, tanh_ode, recttanh_ode, relu_jacobian, tanh_jacobian, recttanh_jacobian_point, get_rnn_ode
+from analysis_functions import decibel
+from load_network import get_params_exp, load_net_from_weights, load_net_path, get_weights_from_net, get_tr_par
+from simulate_network import simulate_rnn, simulate_rnn_with_task, simulate_rnn_with_input, test_network, get_autonomous_dynamics, get_autonomous_dynamics_from_hinit
 from utils import makedirs
-
-
-def get_rnn_ode(nonlinearity):
-    if nonlinearity == 'tanh':
-        return tanh_ode
-    elif nonlinearity == 'relu':
-        return relu_ode
-    elif nonlinearity == 'rect_tanh':
-        return recttanh_ode
-
-def get_weights_from_net(net):
-    wi = net.wi.detach().numpy()
-    wrec = net.wrec.detach().numpy()
-    brec = net.brec.detach().numpy()
-    wo = net.wo.detach().numpy()
-    try:
-        oth = net.output_to_hidden.detach().numpy()
-    except:
-        oth=None
-    return wi, wrec, brec, wo, oth
-
-
-def simulate_rnn_with_input(net, input, h_init):
-    input = torch.from_numpy(input).float();
-    output, trajectories = net(input, return_dynamics=True, h_init=h_init); 
-    output = output.detach().numpy();
-    trajectories = trajectories.detach().numpy()
-    return output, trajectories
-
-def simulate_rnn_with_task(net, task, T, h_init, batch_size=256):
-    input, target, mask = task(batch_size);
-    input_ = torch.from_numpy(input).float();
-    target_ = torch.from_numpy(target).float();
-    output, trajectories = net(input_, return_dynamics=True, h_init=h_init, target=target_); 
-    
-    output = output.detach().numpy();
-    trajectories = trajectories.detach().numpy()
-    return input, target, mask, output, trajectories
 
 
 ##############ANGULAR
@@ -448,9 +410,6 @@ def vf_inv_man_analysis(inv_man, wo, wrec, brec, cs, rnn_ode):
     vf_diff_closest, X, Y, U_closest, V_closest = vf_on_ring(inv_man, wo,  wrec, brec, None, method='closest', rnn_ode=rnn_ode)
     return vf_diff_spline, vf_diff_closest, U_spline, V_spline, U_closest, V_closest
 
-def get_dimension(inv_man, function=skdim.id.MOM()):
-    dim=function.fit(inv_man).dimension_
-    return dim
 
 def tda_trajectories(inv_man, maxdim=1, show=False):
     diagrams = ripser(inv_man, maxdim=maxdim)['dgms']
@@ -459,7 +418,10 @@ def tda_trajectories(inv_man, maxdim=1, show=False):
         plot_diagrams(diagrams, show=show)
     return diagrams
 
-    
+    #def get_dimension(inv_man, function=skdim.id.MOM()):
+    #    dim=function.fit(inv_man).dimension_
+    #    return dim
+
 
 def analyse_net(net, task, batch_size=128, T=2e4, dt=.1):
     wi, wrec, brec, wo, oth = get_weights_from_net(net)
@@ -469,7 +431,7 @@ def analyse_net(net, task, batch_size=128, T=2e4, dt=.1):
     
     inv_man = detect_slow_manifold(trajectories, subsample=100, tol=1e-4)
     inv_man_proj2 = np.dot(inv_man, wo)
-    dim = get_dimension(inv_man)
+    #dim = get_dimension(inv_man)
     
     inv_man_proj2 = np.dot(inv_man,wo)
     #get angles from invariant manifold
@@ -479,7 +441,7 @@ def analyse_net(net, task, batch_size=128, T=2e4, dt=.1):
     cs = get_cubic_spline_ring(inv_man_thetas, inv_man)
     
     xs, csx2, csx2_proj2 = get_manifold_from_closest_projections(inv_man, wo, npoints=batch_size);
-    rnn_ode=get_rnn_ode(net.nonlinearity)
+    rnn_ode = get_rnn_ode(net.nonlinearity)
     vf_diff_spline, vf_diff_closest = vf_inv_man_analysis(inv_man, wo, wrec, brec, cs, rnn_ode=rnn_ode)
     
     
@@ -531,104 +493,9 @@ def do_all_angular_analysis(folder, T1, batch_size=128, T1_multiple=16, speed_ra
         
         
     np.save(folder+'all_eps.npy', all_eps)
-    
-    
-def load_losses(path):
-    net, result = load_net_path(path)
-    losses = result['losses']
-    return losses
 
 
-def get_tr_par(training_kwargs):
-    T = training_kwargs['T']/training_kwargs['dt_task']
-    N = training_kwargs['N_rec']
-    if training_kwargs['initialization_type']=='gain':
-        I = training_kwargs['rnn_init_gain']
-    else:
-        I = 'irnn'    
-    S = training_kwargs['nonlinearity']
-    R = training_kwargs['act_reg_lambda']
-    M = training_kwargs['ml_rnn']
-    clip_gradient = training_kwargs['clip_gradient']
-    return T, N, I, S, R, M, clip_gradient
-    
-    
-def load_all_losses_folder(folder, df):
-    exp_list = glob.glob(folder + "/res*")
-    nexps = len(exp_list)
-    all_losses = np.empty((nexps,10000))
-    all_losses[:] = np.nan
-    # if not np.any(df):
-    #     df = pd.DataFrame(columns=['T', 'N', 'I', 'S', 'R', 'M', 'trial'])
 
-    for exp_i in range(nexps):
-        path = exp_list[exp_i]
-        net, result = load_net_path(path)
-        losses = load_losses(path)
-        losses[np.argmin(losses):] = np.nan
-        training_kwargs = result['training_kwargs']
-        T, N, I, S, R, M, clip_gradient = get_tr_par(training_kwargs)
-        df = df.append({'T': T, 'N': N, 'I': I, 'S': S, 'R': R, 'M': M, 'clip_gradient':clip_gradient,
-                        'trial': exp_i,
-                        'losses': losses}, ignore_index=True)
-
-    return df
-
-def load_all_losses(folder):
-    
-    df = pd.DataFrame(columns=['T', 'N', 'I', 'S', 'R', 'M', 'trial'])
-
-    for dirName, subdirList, fileList in os.walk(folder):
-        df = load_all_losses_folder(dirName, df=df)
-        
-    return df
-
-def test_network(net,T=25.6, dt=.1, batch_size=4, from_t=0, to_t=None, random_seed=100):
-    np.random.seed(random_seed)
-    task = angularintegration_task(T=T, dt=dt, sparsity=1, random_angle_init='equally_spaced');
-    #task = angularintegration_task_constant(T=T, dt=dt, speed_range=[0.1,0.1], sparsity=1, random_angle_init='equally_spaced');
-    input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, 'random', batch_size=batch_size)
-    target_power = np.mean(target[:,from_t:to_t,:]**2)
-    mse = np.mean((target[:,from_t:to_t,:] - output[:,from_t:to_t,:])**2)
-    mse_normalized = mse/target_power
-    return mse, mse_normalized
-
-def get_autonomous_dynamics(net, T=128, dt=.1, batch_size=32):
-    task = angularintegration_task_constant(T=T, dt=dt, speed_range=[0.,0.], sparsity=1, random_angle_init='equally_spaced');
-
-    input, target, mask, output, trajectories = simulate_rnn_with_task(net, task, T, 'random', batch_size=batch_size)
-    return output, trajectories
-
-def get_autonomous_dynamics_from_hinit(net, h_init, T=128):
-    input = np.zeros((h_init.shape[0], T, net.dims[0]))
-    output, trajectories = simulate_rnn_with_input(net, input, h_init=h_init)
-    return output, trajectories
-    
-
-def test_networks_in_folder(folder, df=None):
-    exp_list = glob.glob(folder + "/res*")
-    nexps = len(exp_list)
-
-    for exp_i in range(nexps):
-        path = exp_list[exp_i]
-        print(path)        
-        net, result = load_net_path(path)
-        mse = test_network(net)
-        training_kwargs = result['training_kwargs']
-        T, N, I, S, R, M, clip_gradient = get_tr_par(training_kwargs)
-        df = df.append({'T': T, 'N': N, 'I': I, 'S': S, 'R': R, 'M': M, 'clip_gradient':clip_gradient,
-                        'trial': exp_i,
-                        'mse': mse}, ignore_index=True)
-    return df
-
-def test_all_networks(folder):
-    df = pd.DataFrame(columns=['T', 'N', 'I', 'S', 'R', 'M', 'trial', 'mse'])
-
-    for dirName, subdirList, fileList in os.walk(folder):
-        print(dirName)
-        df = test_networks_in_folder(dirName, df=df)
-
-    return df
 
 ##################
 
@@ -718,7 +585,7 @@ def plot_spline_vs_nmse(df, figfolder):
         subset = df[df['S'] == nonlinearity]
         for nrec in df['N'].unique(): 
             subsubset = subset[subset['N']==nrec]
-            plt.scatter(subsubset['vf_infty_closest'], db(subsubset['mse_normalized']), color=size_to_color_mapping(nrec), marker=nonlinearity_to_marker_mapping(nonlinearity))
+            plt.scatter(subsubset['vf_infty_closest'], decibel(subsubset['mse_normalized']), color=size_to_color_mapping(nrec), marker=nonlinearity_to_marker_mapping(nonlinearity))
         #plt.scatter(subset['vf_infty_spline'], db(subset['mse_normalized']), marker=nonlinearity_to_marker_mapping(nonlinearity), label=nonlinearity)
     first_legend = plt.legend(title='Nonlinearity', loc='upper left')
     lines = [Line2D([0], [0], color=c, linewidth=2, linestyle='-') for c in colors]
@@ -933,7 +800,8 @@ def all_analysis(folders):
 
 
 
-    # nrecs=[64,128,256]; nonlins=['relu','tanh','recttanh'];
-
-    # folders = [parent_dir + f'/experiments/angular_integration_old/N{nrec}_T128_noisy/{nonlin}/' 
-    #            for nrec in nrecs for nonlin in nonlins]
+markers=['o', 's', '^']
+nrecs=[64,128,256]
+nonlins=['relu','tanh','recttanh'];
+folders = [parent_dir + f'/experiments/angular_integration_old/N{nrec}_T128_noisy/{nonlin}/' 
+           for nrec in nrecs for nonlin in nonlins]
