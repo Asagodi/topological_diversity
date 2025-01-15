@@ -83,6 +83,7 @@
 \newcommand{\wout}{\vW_{\text{out}}}
 \newcommand{\bout}{\vb_{\text{out}}}
 \newcommand{\reals}{\mathbb{R}}
+\newcommand{\vol}{\operatorname{vol}}
 
 \newcommand{\manifold}{\mathcal{M}}
 \newcommand{\uniformNorm}[1]{\left\|#1\right\|_\infty} % uniform norm
@@ -501,7 +502,7 @@ In the short-time scale the memory performance is bounded by the uniform norm of
 Let \(\vx_{0} \in \manifold\), and \(\varphi = \vp(\cdot)\vert_{\manifold}\) be the vector field restricted to the manifold (following the notation in Eq.~\ref{eq:perturbation:nonparam}).
 The average deviation from the initial memory \(\vx_{0}\) over time is bounded linearly (derivation in Sec.~\ref{sec:supp:ub}):
 \begin{align}\label{eq:distance:ub}
-\frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
+\frac{1}{\vol\manifold}\int_{\manifold}
 %\frac{1}{T}\int_0^T
 \abs{\vx(t, \vx_{0}) - \vx_{0}}\,
 %\dm{t}
@@ -684,7 +685,7 @@ We calculate the \emph{average fixed point distance} by taking the average of th
 %We identify the location of the fixed points as described in Sec.~\ref{sec:fastslowmethod}.
 
 We can also quantify the loss of information.
-Assuming a uniform distribution over the angles, we define the \emph{memory capacity} as the conditional entropy of the continuous memory given the asymptotic state, i.e.\ the stable fixed points (see Sec.~\ref{sec:supp:asymbehav}).
+Assuming a uniform distribution over the angles, we define the \emph{memory capacity} as the negative conditional entropy of the continuous memory given the asymptotic state, i.e.\ the stable fixed points (see Sec.~\ref{sec:supp:asymbehav} and Eq.~\ref{eq:memcap}).
 
 %Besides the maximal error that the network will make in the asymptotic limit, we can quantify the loss of information.
 % %we can also characterize how many different angles the network would confuse in the asymptotic limit.
@@ -2349,7 +2350,7 @@ Let \(\manifold\) be a normally hyperbolic slow manifold as in Prop.~\ref{sec:re
 Let \(\vx_{0} \in \manifold\), and \(\varphi = \vf\vert_{\manifold}\) be the flow restricted to the manifold.
 The average deviation from the initial memory \(\vx_{0}\) over time is bounded linearly
 \begin{align}
-\frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
+\frac{1}{\vol\manifold}\int_{\manifold}
 \abs{\vx(t, \vx_{0}) - \vx_{0}}\,
 \dm{\vx_{0}}
 \leq t\uniformNorm{\varphi}.
@@ -2363,9 +2364,9 @@ x(t,\vx_{0}) &= \int_{0}^{t}\varphi(x(\tau))d\tau + \vx_{0} \\
 &= t\|\varphi\|_{\infty}+ \vx_{0}
 \end{align*}From this, we get
 \begin{align*}
-\frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
+\frac{1}{\vol\manifold}\int_{\manifold}
 \abs{\vx(t, \vx_{0}) - \vx_{0}}\,
-\dm{\vx_{0}} & \leq \frac{1}{\operatorname{vol}\manifold}\int_{\manifold} t\|\varphi\|_{\infty}\\
+\dm{\vx_{0}} & \leq \frac{1}{\vol\manifold}\int_{\manifold} t\|\varphi\|_{\infty}\\
 &= t\uniformNorm{\varphi}.
 \end{align*}\end{proof}
 
@@ -2382,7 +2383,7 @@ Suppose we have a dynamical system \(\bm{x} \in \mathbb{R}^{N}\) with autonomous
 Let us define the error (i.e.\ the  average deviation from the initial memory) for an attractor as
 \begin{align}
 \mathcal{L}(T) \coloneqq
-\frac{1}{\operatorname{vol}\manifold}\int_{\manifold}
+\frac{1}{\vol\manifold}\int_{\manifold}
 %\frac{1}{T}\int_0^T
 \abs{\vx(t, \vx_{0}) - \vx_{0}}\,
 \dm{\vx_{0}}
@@ -2703,7 +2704,16 @@ and determine the basin of attraction
 \end{equation}through assesing the local flow direction for 1024 sample points in the found invariant manifold.
 
 We construct a probability distribution of what part of state space we end up in an infinite time through the calculation of the size of the basins of attraction of stable fixed points as a proportion of the ring.
-Finally, we characterize the memory capacity of the network by calculating the entropy of this probability distribution of the network.
+We characterize the memory capacity of the network by calculating the entropy of this probability distribution of the network.
+
+This follows from the following observation.
+If we assume that the angular variable that needs to be encoded $X$ is uniformly distributed and the encoding $Y$ is distributed according to the histogram given by the asymptotic behavior of the networks (i.e., the fixed points),
+then the \emph{memory capacity} as the negative conditional entropy of the continuous memory given the asymptotic state, i.e.,
+\begin{equation}\label{eq:memcap}
+-H(X|Y) =
+% \mathbb{E}[H(X|Y=y)] = 
+\sum_{y\in Y} p(y) \int_{x\in \basin(y)} p(x|y) \log p(x|y) = \sum_{y\in Y} \vol \basin(y) \log (\vol \basin(y)).
+\end{equation}
 
 
  \subsubsection{Fast-slow decomposition}\label{sec:fsdecmethod}
