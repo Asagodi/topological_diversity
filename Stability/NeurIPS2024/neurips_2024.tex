@@ -574,7 +574,7 @@ For each trained network, we find the slow manifold by integrating the autonomou
 %https://scikit-dimension.readthedocs.io/en/latest/skdim.id.MOM.html#skdim.id.MOM
 We identify the points on the invariant manifold from the simulated trajectories that are projected closest to a set of points in the output space relevant to the task after convergence, i.e. on the target ring.
 We parametrize the one-dimensional invariant manifold by fitting a cubic spline with periodic boundary constraints to these points (black line in Fig.~\ref{fig:fastslow_decomposition}B \& C).
-Normal hyperbolicity is measured by a gap in the timescales of the system (measured from the eigenvalue spectrum of the linearization along points on the invariant manifold, Fig.~\ref{fig:fastslow_decomposition}E and F).
+Normal hyperbolicity is measured by a gap in the timescales of the system (the eigenvalue spectrum of the linearization along points on the invariant manifold, Fig.~\ref{fig:fastslow_decomposition}E and F).
 %Leveraging a fast-slow decomposition methodology, premised on the assumption of normal hyperbolicity within the system, we first identify the slow manifold through a velocity bound criterion, and then identify the slow flow by its asymptotic behavior.
 
 
@@ -585,7 +585,7 @@ while saddle nodes are identified where they are pointing away (Fig.~\ref{fig:fa
 
 
 
-\subsection{Variations in the Topologies of the Networks}\label{sec:topologies}
+\subsection{Variations in the Topologies of the Slow Manifold Solutions}\label{sec:topologies}
 To understand what solutions the RNNs found to solve the task, we investigate their memory mechanism.
 For this, we dissect the dynamics of RNNs by segregating time scales to delineate the rapid flow normal to the slow manifold, and the flow on the manifold (Sec.~\ref{sec:fsdecmethod}).
 All solutions involve a slow manifold with the same topology as the relevant variable in the task.
@@ -596,9 +596,8 @@ Less commonly found topologies includes the slow torus around a repulsive ring i
 This solution in turn is consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing, Park2023a} and neuronal circuits underlying persistent representations despite time-varying activity~\citep{druckmann2012neuronal}.
 All stability structures (fixed points and limit cycles) are mapped close to the target output circle (Figs.~\ref{fig:fastslow_decomposition_otuput},~\ref{fig:im_rep},~\ref{fig:im_all}).
 
-We verify that this gap exists in the trained networks shown in Fig.~\ref{fig:fastslow_decomposition}B and C.
-The largest  eigenvalue of the Jacobian is non-zero (the invariant manifold is not a continuous attractor), but it is removed from the second largest, see Fig.~\ref{fig:fastslow_decomposition}E and F.
-This implies that normal hyperbolicity for these trained networks holds.
+We also verify the normal hyperbolicity of the trained networks shown in Fig.~\ref{fig:fastslow_decomposition}B and C.
+The largest eigenvalue of the Jacobian fluctuates around zero (the invariant manifold is not a continuous attractor), but it is removed from the second largest (Fig.~\ref{fig:fastslow_decomposition}E \& F).
 
 %Fig 4
 \begin{figure}[tbhp]
