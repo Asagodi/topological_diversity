@@ -1,39 +1,217 @@
-@INPROCEEDINGS{Jeon2024a,
-    author = {Hyungju Jeon and Matthew Dowling and Il Memming Park},
-    title = {Closed-loop active sensing for nonlinear system identification in attractor dynamics disorders},
-    note = {ECBS2024 oral presentation}
+@InProceedings{Filipe2025a,
+  author    = {Carolina Filipe and Mahmoud Elmakki and Guilherme Costa-Ferreira and Il Memming Park},
+  booktitle = {Computational and Systems Neuroscience ({COSYNE})},
+  title     = {Conditional Diffusion Framework for Analyzing Neural Dynamics Across Multiple Contexts},
+  year      = {2025},
 }
 
-@InProceedings{Dowling2024a,
-    author    = {Matthew Dowling and Yuan Zhao and Il Memming Park},
-    title     = {XFADS: Predicting single-trial cued behavior solely from preparatory activity},
-    booktitle = {Computational and Systems Neuroscience ({COSYNE})},
-    year      = {2024},
+@InProceedings{Vermani2025a,
+  author    = {Ayesha Vermani and Josue Nassar and Hyungju Jeon and Matthew Dowling and Il Memming Park},
+  booktitle = {Computational and Systems Neuroscience ({COSYNE})},
+  title     = {Meta-Dynamical State Space Models for Integrative Neural Data Analysis},
+  year      = {2025},
+}
+
+@InProceedings{Sagodi2025a,
+  author = "S\'agodi, \'Abel and Mart\'in-S\'anchez, Guillermo and Sok{\'o}{\l}, Piotr
+                   and Park, Il Memming",
+  booktitle = {Computational and Systems Neuroscience ({COSYNE})},
+  title     = {Approximate continuous attractor theory},
+  year      = {2025},
+}
+
+@INPROCEEDINGS{Sagodi2024b,
+  author = "S\'agodi, \'Abel and Mart\'in-S\'anchez, Guillermo and Sok{\'o}{\l}, Piotr
+                   and Park, Il Memming",
+  title = "Slow Manifold Dynamics for Working Memory are near Continuous Attractors",
+  booktitle = {Bernstein Conference},
+  doi = "10.12751/nncn.bc2024.076",
+  url = {https://abstracts.g-node.org/conference/BC24/abstracts#/uuid/5964bd61-91e8-4d1a-a9ca-e6d137f456b4},
+  year = 2024,
+  poster_no = "I 59",
+}
+
+@INPROCEEDINGS{Filipe2024a,
+  author        = "Filipe, A. Carolina and Park, Il Memming",
+  title = "{NeuroTask}: A Benchmark Dataset for Multi-Task Neural Analysis",
+  booktitle = {Bernstein Conference},
+  doi = "10.12751/nncn.bc2024.020",
+  url = {https://abstracts.g-node.org/conference/BC24/abstracts#/uuid/ccb5dd62-403b-4da0-a839-2652ab70ac28},
+  code = {https://github.com/catniplab/NeuroTask/tree/nwb},
+  year = 2024,
+  poster_no = "I 1",
+}
+
+@Unpublished{Vermani2024b,
+  title         = "Meta-dynamical state space models for integrative neural data
+                   analysis",
+  author        = "Vermani, Ayesha and Nassar, Josue and Jeon, Hyungju and
+                   Dowling, Matthew and Park, Il Memming",
+  journal       = "arXiv [stat.ML]",
+  abstract      = "Learning shared structure across environments facilitates
+                   rapid learning and adaptive behavior in neural systems. This
+                   has been widely demonstrated and applied in machine learning
+                   to train models that are capable of generalizing to novel
+                   settings. However, there has been limited work exploiting the
+                   shared structure in neural activity during similar tasks for
+                   learning latent dynamics from neural recordings. Existing
+                   approaches are designed to infer dynamics from a single
+                   dataset and cannot be readily adapted to account for
+                   statistical heterogeneities across recordings. In this work,
+                   we hypothesize that similar tasks admit a corresponding
+                   family of related solutions and propose a novel approach for
+                   meta-learning this solution space from task-related neural
+                   activity of trained animals. Specifically, we capture the
+                   variabilities across recordings on a low-dimensional manifold
+                   which concisely parametrizes this family of dynamics, thereby
+                   facilitating rapid learning of latent dynamics given new
+                   recordings. We demonstrate the efficacy of our approach on
+                   few-shot reconstruction and forecasting of synthetic
+                   dynamical systems, and neural recordings from the motor
+                   cortex during different arm reaching tasks.",
+  month         =  oct,
+  year          =  2024,
+  url           = "http://arxiv.org/abs/2410.05454",
+  url		= "https://openreview.net/forum?id=SRpq5OBpED",
+  archivePrefix = "arXiv",
+  primaryClass  = "stat.ML",
+  eprint        = "2410.05454",
+  note = {(under review)},
+}
+
+@InProceedings{Vermani2024a,
+  author    = {Ayesha Vermani and Matthew Dowling and Hyungju Jeon and Ian Jordan and Josue Nassar and Yves Bernaerts and Yuan Zhao and Steven Van Vaerenbergh and Il Memming Park},
+  booktitle = {European Signal Processing Conference},
+  title     = {Real-time machine learning strategies for a new kind of neuroscience experiments},
+  year      = {2024},
+  archivePrefix = "arXiv",
+  primaryClass  = "stat.ML",
+  eprint        = "2409.01280",
+}
+
+@InProceedings{Vermani2023b,
+  author    = {Ayesha Vermani and Il Memming Park and Josue Nassar},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  title     = {Leveraging Generative Models for Unsupervised Alignment of Neural Time Series Data},
+  year      = {2024},
+  month     = may,
+  abstract  = {Large scale inference models are widely used in neuroscience to extract latent representations from high-dimensional neural recordings. Due to the statistical heterogeneities between sessions and animals, a new model is trained from scratch to infer the underlying dynamics for each new dataset. This is computationally expensive and does not fully leverage all the available data. Moreover, as these models get more complex, they can be challenging to train. In parallel, it is becoming common to use pre-trained models in the machine learning community for few shot and transfer learning. One major hurdle that prevents the re-use of generative models in neuroscience is the complex spatio-temporal structure of neural dynamics within and across animals. Interestingly, the underlying dynamics identified from different datasets on the same task are qualitatively similar. In this work, we exploit this observation and propose a source-free and unsupervised alignment approach that utilizes the learnt dynamics and enables the re-use of trained generative models. We validate our approach on simulations and show the efficacy of the alignment on neural recordings from the motor cortex obtained during a reaching task.},
+  url       = {https://openreview.net/forum?id=9zhHVyLY4K},
+}
+
+@InProceedings{Sagodi2024a,
+  title         = "Back to the Continuous Attractor",
+  author        = "S\'agodi, \'Abel and Mart\'in-S\'anchez, Guillermo and Sok{\'o}{\l}, Piotr
+                   and Park, Il Memming",
+  booktitle     = {Advances in Neural Information Processing Systems (NeurIPS)},
+  abstract      = "Continuous attractors offer a unique class of solutions for
+                   storing continuous-valued variables in recurrent system
+                   states for indefinitely long time intervals. Unfortunately,
+                   continuous attractors suffer from severe structural
+                   instability in general--they are destroyed by most
+                   infinitesimal changes of the dynamical law that defines them.
+                   This fragility limits their utility especially in biological
+                   systems as their recurrent dynamics are subject to constant
+                   perturbations. We observe that the bifurcations from
+                   continuous attractors in theoretical neuroscience models
+                   display various structurally stable forms. Although their
+                   asymptotic behaviors to maintain memory are categorically
+                   distinct, their finite-time behaviors are similar. We build
+                   on the persistent manifold theory to explain the
+                   commonalities between bifurcations from and approximations of
+                   continuous attractors. Fast-slow decomposition analysis
+                   uncovers the persistent manifold that survives the seemingly
+                   destructive bifurcation. Moreover, recurrent neural networks
+                   trained on analog memory tasks display approximate continuous
+                   attractors with predicted slow manifold structures.
+                   Therefore, continuous attractors are functionally robust and
+                   remain useful as a universal analogy for understanding analog
+                   memory.",
+  month         =  dec,
+  year          =  2024,
+  archivePrefix = "arXiv",
+  primaryClass  = "q-bio.NC",
+  arxivid       = "2408.00109",
+  eprint        = "2408.00109",
+  url		= "https://openreview.net/forum?id=fvG6ZHrH0B",
 }
 
 @InProceedings{Park2024a,
-    author    = {Il Memming Park},
-    title     = {Persistent activity bump on a ring without a continuous ring attractor},
-    booktitle = {Computational and Systems Neuroscience ({COSYNE})},
-    year      = {2024},
+  author    = {Il Memming Park},
+  booktitle = {Computational and Systems Neuroscience ({COSYNE})},
+  title     = {Persistent activity bump on a ring without a continuous ring attractor},
+  year      = {2024},
+  abstract  = {We propose a robust recurrent memory mechanism for integrating and maintaining head direction without a ring attractor. The ring attractor is a popular theoretical mechanism for maintaining a continuous internal representation of a periodic variable. For instance, they are used to describe the neural dynamics underlying head direction cells, grid cells, and visual working memory. At the same time, it is well-known that mathematically, continuous attractors are prone to fine tuning, where small changes in the connectivity or biophysical parameters lead to the destruction of the mechanism. We describe an alternative, robust mechanism for working memory of a periodic variable using the theory of stable limit cycles. In particular, we detail a biophysical implementation that can explain the bump of activity observed over the ellipsoid body of insects. The content of working memory is stored in the relative phase difference between two independent oscillators, whose periods are constrained by conduction delay. A phase independent readout is achieved through a delay line and nonlinear coincidence detectors that can be mapped onto the readout system, i.e., the ellipsoid body. Our theory makes several strong predictions: the bump of activity on the ellipsoid body is tightly periodic on a short time scale, is robust to partial lesions, and exhibits small, consistent systematic drifts due to misadjustments within each animal. Furthermore, we investigate the impact of diffusion in information encoding and memory due to various noise sources.},
 }
 
-@INPROCEEDINGS{Vermani2023b,
-    author = {Ayesha Vermani and Il Memming Park and Josue Nassar},
-    title = {Leveraging Generative Models for Unsupervised Alignment of Neural Time Series Data},
-    booktitle     = {International Conference on Learning Representations (ICLR)},
-    year      = {2024},
-    url = {https://openreview.net/forum?id=9zhHVyLY4K},
+@InProceedings{Jeon2024b,
+  author    = {Hyungju Jeon and Il Memming Park},
+  booktitle = {European Signal Processing Conference},
+  title     = {Quantifying signal-to-noise ratio in neural latent trajectories via {F}isher information},
+  month         =  aug,
+  year      = {2024},
+  archivePrefix = "arXiv",
+  primaryClass  = "q-bio.NC",
+  eprint        = "2408.08752"
 }
 
-@INPROCEEDINGS{Stone2023c,
-  author        = "Stone, Iris and Sagiv, Yotam and Park, Il Memming and Pillow, Jonathan",
-  title = "Spectral learning of {B}ernoulli linear dynamical systems models",
-  booktitle = {Bernstein Conference},
-  doi = "10.12751/nncn.bc2023.288",
-  url = {https://abstracts.g-node.org/conference/BC23/abstracts#/uuid/9067fd8a-f2c4-4535-a686-8fe99c653492},
-  year = 2023,
-  poster_no = "IV 108",
+@Conference{Jeon2024a,
+  author    = {Hyungju Jeon and Matthew Dowling and Il Memming Park},
+  booktitle = {European Conference on Brain Stimulation},
+  title     = {Closed-loop active sensing for nonlinear system identification in attractor dynamics disorders},
+  year      = {2024},
+  note      = {(oral presentation)},
+  abstract  = {Neurological disorders pose multifaceted challenges for intervention due to their diverse root causes, ranging from cellular, pathogenic, or metabolic dysfunctions to more recently discovered disruptions in complex neuronal dynamics. While conventional treatment methods have demonstrated efficacy in conditions with known cellular or metabolic dysfunctions, they fall short in disorders arising from system-level dynamics disruptions, such as movement disorders, and psychiatric conditions like schizophrenia. However, identifying the underlying mechanisms of such disturbances in system-level dynamics is often hindered by modern data-driven challenges, particularly regarding the size of datasets. The sheer volume of neural recordings measuring the synchronous activity of thousands of neurons simultaneously can impede timely and efficient identification of underlying mechanisms.
+
+To address these challenges, we propose a real-time closed-loop active sensing for nonlinear system identification. Our approach aims to expedite the throughput of current experimental design paradigms and bridge the gap between traditional treatments and the complexities of brain-system dynamics. In particular, we employ Bayesian experimental design to accelerate inference of underlying neural dynamics and their changes by introducing structured perturbation to the system. We consider a synthetic test-bed mimicking neurological disorders characterized by the emergence of disease state attractors; then, we show how statistically informed interventions in the form of carefully chosen perturbations can be used to identify the dynamics of the attractor and restore regularity of the population level neural dynamics by driving the neural state away from disease state attractors.},
+}
+
+@InProceedings{Dowling2024b,
+  title         = "{eXponential} {FAmily} Dynamical Systems ({XFADS}):
+                   Large-scale nonlinear Gaussian state-space modeling",
+  author        = "Dowling, Matthew and Zhao, Yuan and Park, Il Memming",
+  booktitle     = {Advances in Neural Information Processing Systems (NeurIPS)},
+  abstract      = "State-space graphical models and the variational autoencoder
+                   framework provide a principled apparatus for learning
+                   dynamical systems from data. State-of-the-art probabilistic
+                   approaches are often able to scale to large problems at the
+                   cost of flexibility of the variational posterior or
+                   expressivity of the dynamics model. However, those
+                   consolidations can be detrimental if the ultimate goal is to
+                   learn a generative model capable of explaining the
+                   spatiotemporal structure of the data and making accurate
+                   forecasts. We introduce a low-rank structured variational
+                   autoencoding framework for nonlinear Gaussian state-space
+                   graphical models capable of capturing dense covariance
+                   structures that are important for learning dynamical systems
+                   with predictive capabilities. Our inference algorithm
+                   exploits the covariance structures that arise naturally from
+                   sample based approximate Gaussian message passing and
+                   low-rank amortized posterior updates -- effectively
+                   performing approximate variational smoothing with time
+                   complexity scaling linearly in the state dimensionality. In
+                   comparisons with other deep state-space model architectures
+                   our approach consistently demonstrates the ability to learn a
+                   more predictive generative model. Furthermore, when applied
+                   to neural physiological recordings, our approach is able to
+                   learn a dynamical system capable of forecasting population
+                   spiking and behavioral correlates from a small portion of
+                   single trials.",
+  month         =  dec,
+  year          =  2024,
+  archivePrefix = "arXiv",
+  primaryClass  = "stat.ML",
+  eprint        = "2403.01371",
+  arxivid       = "2403.01371",
+  url           = "https://openreview.net/forum?id=Ln8ogihZ2S",
+}
+
+@InProceedings{Dowling2024a,
+  author    = {Matthew Dowling and Yuan Zhao and Il Memming Park},
+  booktitle = {Computational and Systems Neuroscience ({COSYNE})},
+  title     = {{XFADS}: Predicting single-trial cued behavior solely from preparatory activity},
+  year      = {2024},
+  abstract  = {Consider a classic neuroscience dataset --- comprising recordings from monkey's motor cortex during a center-out reaching task. A prevailing hypothesis elucidating the coordinated neural population dynamics in this task suggests that the initial condition of a dynamical system, steering muscle movement, is set during the preparatory phase of the trial. The motor cortex, released from the initial condition and governed by the dynamical system, controls the muscles orchestrating the monkey's movement. However, existing cutting-edge tools often rely on extraneous-input-driven dynamical systems, which tend to learn control inputs anti-causally or lack a dynamic systems model entirely. This led us to explore the feasibility of learning the hypothesized autonomous dynamical system, exclusively from neural data, that is capable of causally predicting, initiated before movement onset, monkey's reaching. Consequently, we developed a novel Bayesian inference framework, eXponential FAmily Dynamical System (XFADS), aimed at learning highly expressive dynamical systems from neural data. Remarkably, we confirm the long standing autonomous nature of motor cortex activity associated with the planned reach behavior through single-trial causal forecasting. Specifically, our inferred stochastic dynamics revealed that the causally-inferred latent states, derived without any prior knowledge of the target or future behavior, were nearly as effective in predicting the monkey's arm velocity as the latent states utilizing the entire trial data.},
 }
 
 @INPROCEEDINGS{Vermani2023a,
@@ -46,51 +224,14 @@
   poster_no = "IV 111",
 }
 
-@INPROCEEDINGS{Park2023b,
-  author        = "Park, Il Memming and S{\'a}godi, {\'A}bel and Sok{\'o}{\l},
-                   Piotr Aleksander",
-  title = "Persistent learning signals without continuous attractors",
+@INPROCEEDINGS{Stone2023c,
+  author        = "Stone, Iris and Sagiv, Yotam and Park, Il Memming and Pillow, Jonathan",
+  title = "Spectral learning of {B}ernoulli linear dynamical systems models",
   booktitle = {Bernstein Conference},
-  doi = "10.12751/nncn.bc2023.348",
-  url = {https://abstracts.g-node.org/conference/BC23/abstracts#/uuid/ecbf6440-d119-4cbc-8324-665e7cefe8d6},
+  doi = "10.12751/nncn.bc2023.288",
+  url = {https://abstracts.g-node.org/conference/BC23/abstracts#/uuid/9067fd8a-f2c4-4535-a686-8fe99c653492},
   year = 2023,
-  poster_no = "IV 302",
-}
-
-@UNPUBLISHED{Park2023a,
-  title         = "Persistent learning signals and working memory without
-                   continuous attractors",
-  author        = "Park, Il Memming and S{\'a}godi, {\'A}bel and Sok{\'o}{\l},
-                   Piotr Aleksander",
-  abstract      = "Neural dynamical systems with stable attractor structures,
-                   such as point attractors and continuous attractors, are
-                   hypothesized to underlie meaningful temporal behavior that
-                   requires working memory. However, working memory may not
-                   support useful learning signals necessary to adapt to
-                   changes in the temporal structure of the environment. We
-                   show that in addition to the continuous attractors that are
-                   widely implicated, periodic and quasi-periodic attractors
-                   can also support learning arbitrarily long temporal
-                   relationships. Unlike the continuous attractors that suffer
-                   from the fine-tuning problem, the less explored
-                   quasi-periodic attractors are uniquely qualified for
-                   learning to produce temporally structured behavior. Our
-                   theory has broad implications for the design of artificial
-                   learning systems and makes predictions about observable
-                   signatures of biological neural dynamics that can support
-                   temporal dependence learning and working memory. Based on
-                   our theory, we developed a new initialization scheme for
-                   artificial recurrent neural networks that outperforms
-                   standard methods for tasks that require learning temporal
-                   dynamics. Moreover, we propose a robust recurrent memory
-                   mechanism for integrating and maintaining head direction
-                   without a ring attractor.",
-  month         =  aug,
-  year          =  2023,
-  archivePrefix = "arXiv",
-  eprint        = "2308.12585",
-  primaryClass  = "q-bio.NC",
-  arxivid       = "2308.12585"
+  poster_no = "IV 108",
 }
 
 @article{Stone2023b,
@@ -156,6 +297,53 @@ In Chapter 3 we analyze the relationship between the dimensionality of neural re
     year      = {2023},
 }
 
+@INPROCEEDINGS{Park2023b,
+  author        = "Park, Il Memming and S{\'a}godi, {\'A}bel and Sok{\'o}{\l},
+                   Piotr Aleksander",
+  title = "Persistent learning signals without continuous attractors",
+  booktitle = {Bernstein Conference},
+  doi = "10.12751/nncn.bc2023.348",
+  url = {https://abstracts.g-node.org/conference/BC23/abstracts#/uuid/ecbf6440-d119-4cbc-8324-665e7cefe8d6},
+  year = 2023,
+  poster_no = "IV 302",
+}
+
+@UNPUBLISHED{Park2023a,
+  title         = "Persistent learning signals and working memory without
+                   continuous attractors",
+  author        = "Park, Il Memming and S{\'a}godi, {\'A}bel and Sok{\'o}{\l},
+                   Piotr Aleksander",
+  abstract      = "Neural dynamical systems with stable attractor structures,
+                   such as point attractors and continuous attractors, are
+                   hypothesized to underlie meaningful temporal behavior that
+                   requires working memory. However, working memory may not
+                   support useful learning signals necessary to adapt to
+                   changes in the temporal structure of the environment. We
+                   show that in addition to the continuous attractors that are
+                   widely implicated, periodic and quasi-periodic attractors
+                   can also support learning arbitrarily long temporal
+                   relationships. Unlike the continuous attractors that suffer
+                   from the fine-tuning problem, the less explored
+                   quasi-periodic attractors are uniquely qualified for
+                   learning to produce temporally structured behavior. Our
+                   theory has broad implications for the design of artificial
+                   learning systems and makes predictions about observable
+                   signatures of biological neural dynamics that can support
+                   temporal dependence learning and working memory. Based on
+                   our theory, we developed a new initialization scheme for
+                   artificial recurrent neural networks that outperforms
+                   standard methods for tasks that require learning temporal
+                   dynamics. Moreover, we propose a robust recurrent memory
+                   mechanism for integrating and maintaining head direction
+                   without a ring attractor.",
+  month         =  aug,
+  year          =  2023,
+  archivePrefix = "arXiv",
+  eprint        = "2308.12585",
+  primaryClass  = "q-bio.NC",
+  arxivid       = "2308.12585"
+}
+
 @Article{Levi2021a,
   author   = {Levi, Aaron J and Zhao, Yuan and Park, Il Memming and Huk, Alexander C},
   journal  = {Journal of Neuroscience},
@@ -201,7 +389,7 @@ In Chapter 3 we analyze the relationship between the dimensionality of neural re
   archiveprefix = {arXiv},
   eprint        = {2306.01802},
   primaryclass  = {q-bio.NC},
-  abstract  = {Latent Gaussian process (GP) models are widely used in neuroscience to uncover hidden state evolutions from sequential observations, mainly in neural activity recordings. While latent GP models provide a principled and powerful solution in theory, the intractable posterior in non-conjugate settings necessitates approximate inference schemes, which may lack scalability. In this work, we propose cvHM, a general inference framework for latent GP models leveraging Hida-Matérn kernels and conjugate computation variational inference (CVI). With cvHM, we are able to perform variational inference of latent neural trajectories with linear time complexity for arbitrary likelihoods. The reparameterization of stationary kernels using Hida-Matérn GPs helps us connect the latent variable models that encode prior assumptions through dynamical systems to those that encode trajectory assumptions through GPs. In contrast to previous work, we use bidirectional information filtering, leading to a more concise implementation. Furthermore, we employ the Whittle approximate likelihood to achieve highly efficient hyperparameter learning.},
+  abstract  = {Latent Gaussian process (GP) models are widely used in neuroscience to uncover hidden state evolutions from sequential observations, mainly in neural activity recordings. While latent GP models provide a principled and powerful solution in theory, the intractable posterior in non-conjugate settings necessitates approximate inference schemes, which may lack scalability. In this work, we propose cvHM, a general inference framework for latent GP models leveraging Hida-Mat\'ern kernels and conjugate computation variational inference (CVI). With cvHM, we are able to perform variational inference of latent neural trajectories with linear time complexity for arbitrary likelihoods. The reparameterization of stationary kernels using Hida-Mat�rn GPs helps us connect the latent variable models that encode prior assumptions through dynamical systems to those that encode trajectory assumptions through GPs. In contrast to previous work, we use bidirectional information filtering, leading to a more concise implementation. Furthermore, we employ the Whittle approximate likelihood to achieve highly efficient hyperparameter learning.},
   url       = {https://openreview.net/forum?id=1hWB5XEUMa},
 }
 
@@ -213,17 +401,19 @@ In Chapter 3 we analyze the relationship between the dimensionality of neural re
 }
 
 @InProceedings{Dowling2023a,
-  author    = {Matthew Dowling and Yuan Zhao and Il Memming Park},
+  author        = {Matthew Dowling and Yuan Zhao and Il Memming Park},
   booktitle     = {International Conference on Learning Representations (ICLR)},
-  title     = {Real-time variational method for learning neural trajectory and its dynamics},
-  month      =  feb,
-  year      = {2023},
-  abstract  = {Latent variable models have become instrumental in computational neuroscience for reasoning about neural computation.  This has fostered the development of powerful offline algorithms for extracting latent neural trajectories from neural recordings.  However, despite the potential of real-time alternatives to give immediate feedback to experimentalists, and enhance experimental design, they have received markedly less attention.  In this work, we introduce the exponential family variational Kalman filter (eVKF), an online recursive Bayesian method aimed at inferring latent trajectories while simultaneously learning the dynamical system generating them.  eVKF works for arbitrary likelihoods and utilizes the constant base measure exponential family to model the latent state stochasticity. We derive a closed-form variational analog to the predict step of the Kalman filter which leads to a provably tighter bound on the ELBO compared to another online variational method. We validate our method on synthetic and real-world data, and, notably, show that it achieves competitive performance.},
-  url       = {https://openreview.net/forum?id=M_MvkWgQSt},
-  arxivid       = "2305.11278",
+  title         = {Real-time variational method for learning neural trajectory and its dynamics},
+  year          = {2023},
+  month         = feb,
+  note          = {(top 25\%)},
+  abstract      = {Latent variable models have become instrumental in computational neuroscience for reasoning about neural computation.  This has fostered the development of powerful offline algorithms for extracting latent neural trajectories from neural recordings.  However, despite the potential of real-time alternatives to give immediate feedback to experimentalists, and enhance experimental design, they have received markedly less attention.  In this work, we introduce the exponential family variational Kalman filter (eVKF), an online recursive Bayesian method aimed at inferring latent trajectories while simultaneously learning the dynamical system generating them.  eVKF works for arbitrary likelihoods and utilizes the constant base measure exponential family to model the latent state stochasticity. We derive a closed-form variational analog to the predict step of the Kalman filter which leads to a provably tighter bound on the ELBO compared to another online variational method. We validate our method on synthetic and real-world data, and, notably, show that it achieves competitive performance.},
   archiveprefix = {arXiv},
+  arxivid       = {2305.11278},
   eprint        = {2305.11278},
   primaryclass  = {stat.ML},
+  url           = {https://openreview.net/forum?id=M_MvkWgQSt},
+  youtube       = {https://iclr.cc/virtual/2023/poster/10849},
 }
 
 @MastersThesis{Arora2023a,
@@ -760,6 +950,14 @@ Fisher geometry and the recently introduced Neural Tangent Kernel.},
   booktitle = {DeepMath},
   year      = {2019},
   url       = {https://www.deepmath-conference.com},
+}
+
+@Conference{Sokol2020d,
+  author    = {Piotr A. Sokol and Ian Jordan and Eben Kadile and Il Memming Park},
+  title = "Unexpected benefits of learning with neural oscillation: stable backpropagation with limit cycles",
+  booktitle = "From Neuroscience to Artificially Intelligent Systems (NAISys)",
+  year = 2020,
+  poster_no = "168",
 }
 
 @InProceedings{Sokol2019a,
