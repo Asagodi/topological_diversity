@@ -427,7 +427,9 @@ In contrast, for systems not satisfying this stability condition, a sharp bound 
 
 
 Why should we assume that the underlying dynamics in neural networks converge to a fixed point?
-Models of neural computation should cover a broader class of dynamics, e.g, oscillations \citep{townley2000existence, kag2020rnns, chang2019antisymmetricrnn}. %could convey preferred capabilities in learning 
+Models of neural computation should cover a broader class of dynamics, e.g, oscillations \citep{townley2000existence, kag2020rnns, chang2019antisymmetricrnn,rapp1987periodic}. %could convey preferred capabilities in learning 
+
+
 
 
 %\paragraph{Stability implies FNNs are enough}%crit
@@ -564,16 +566,29 @@ such that its flow $\hat \varphi$ satisfies
 \end{equation}
 \end{theorem}
 
+%proof will be at end of section? 
+%establish necessary pieces as propositions
 
-\begin{proof}%move to end of section? establish necessary pieces as propositions
-Because of the density of the hypothesis class $\mathcal{G}$ we have that for any $f\in C^1$ and any $\delta_1>0$
+\begin{proposition}
+The fixed points and limit cycles of $C^1$ ODEs can be arbitrarily closely approximated in the $\|\varphi-\hat \varphi\|_\epsilon < \delta$ flow sense.
+\end{proposition}
+
+\begin{proof}
+%%%top eq
+Because of the density of the hypothesis class $\mathcal{G}$ we have that for any $f\in C^1$ and any $\epsilon>0$
 there exists $\hat f\in\mathcal{G}$ such that $\|f-\hat f\|<\epsilon$.
 %
-Structural stability implies that there exists a $\delta_2>0$ such that for all $g$ that are $\delta_2$ $C^1$ close to $f$ the flow is topologically equivalent to that of $f$.
+Structural stability implies that there exists a $\delta>0$ such that for all $g\in C^1$ that are $\delta$ $C^1$ close to $f$, the flow is topologically equivalent to that of $f$.
 %
-So we can choose $\delta = \min\{\delta_1,\delta_2\}$ such that the flow of $\hat f\in\mathcal{G}$ is topologically equivalent to that of $f$.
+So we can choose $\delta$ such that for all $\|f-\hat f\|<\delta$ the flow of $\hat f$ is topologically equivalent to that of $f$.
+
+ADD: fixed points of $\hat f$ are $\mathcal{O}(\epsilon)$ close to $f$.
 \end{proof}
 
+This establishes that for all $\epsilon>0$ there is some time $T$ for which for all $t>T$ we have that $x(t)-\hat x(t)<\epsilon$.
+
+
+\paragraph{A tale of two errors}
 Note that the above error bound depends on two separate quantities: the local error 
 $\| f(s; \tilde{\varphi}_0, s(x)) - f(s; \tilde{\varphi}_0, s(x)) \|$ 
  and the term 
@@ -796,7 +811,8 @@ Regions of attraction to periodic orbits have an interesting structure: they mus
 
 
 \paragraph{Summary}
-We can choose the initial approximation $\hat{f}$ such that the 
+We can choose the initial approximation $\hat{f}$ such that the period difference is smaller than $\epsilon_T$.
+We can then choose a correction to the vector field in a tubular neighborhood around the limit cycle such that this difference is reduced to zero.
 
 
 %%%%%%%%%%%%%%%%
@@ -902,6 +918,9 @@ Theorem \ref{thrm:contractive} actually corresponds to a necessary and sufficien
 A convex contraction region contains at most one equilibrium point, since any length between two trajectories is shrinking exponentially in that region.
 \end{remark}
 
+
+\subsubsection{Limit cycles and contractivity}
+\citep{manchester2014transverse} and refs therein: e.g. 16-20
 
 
 
