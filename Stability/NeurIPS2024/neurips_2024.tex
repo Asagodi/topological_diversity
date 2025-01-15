@@ -536,6 +536,7 @@ In more complex scenarios, such as two-dimensional attractors, fixed points can 
 \subsection{Implications on experimental neuroscience}\label{sec:implications}
 Animal behavior exhibits strong resilience to changes in their neural dynamics, such as the continuous fluctuations in the synapses or slight variations in neuromodulator levels or temperature.
 Hence, any theoretical model of neural or cognitive function that requires fine-tuning, such as the continuous attractor model for analog working memory, raises concerns, as they are seemingly biologically irrelevant.
+This challenge is further compounded by the structural constraints imposed by the connectome, which defines the network's architecture and limits the possible configurations of synaptic and circuit dynamics \citep{kutschireiter2023bayesian, biswas2024fly}.
 Moreover, unbiased data-driven models of time series data and task-trained recurrent network models cannot recover such continuous attractor theories precisely.
 Our theory shows that this apparent fragility is not as devastating as previously thought: despite the ``qualitative differences'' in the phase portrait, the ``effective behavior'' of the system can be arbitrarily close, especially in the behaviorally relevant time scales.
 We show that as long as the attractive flow to the memory representation manifold is fast and the flow on the manifold is sufficiently slow, it represents an \textbf{approximate continuous attractor}\footnote{This correspond a type of ``ideal pattern'' in the vocabulary of \citet{chirimuuta2024brain}. Our framework proposes a general approach to abstract away irrelevant details in models for analog memory \citep{potochnik2017idealization}.}.
@@ -545,7 +546,7 @@ Experimental observations that indicate the slowly changing population represent
 Perturbative experiments can further measure the attractive nature of the manifold and their causal role through manipulating the memory content.
 
 %mention connectome based constraints?
-\citep{kutschireiter2023bayesian,biswas2024fly}
+%\citep{kutschireiter2023bayesian,biswas2024fly}
 
 \section{Numerical Experiments on Task-optimized Recurrent Networks}\label{sec:experiments}
 
@@ -598,7 +599,7 @@ These solutions are consistent with observations that persistent activity relies
 Less commonly found topologies includes the slow torus around a repulsive ring invariant manifold (Fig.~\ref{fig:fastslow_decomposition}D).
 This solution in turn is consistent with both observations of the possibility of using non-constant dynamics for memory storage~\citep{hirsch1995computing, Park2023a} and neuronal circuits underlying persistent representations despite time-varying activity~\citep{druckmann2012neuronal}.
 All stability structures (fixed points and limit cycles) are mapped close to the target output circle (Figs.~\ref{fig:fastslow_decomposition_otuput},~\ref{fig:im_rep},~\ref{fig:im_all}).
-
+%
 We also verify the normal hyperbolicity of the trained networks shown in Fig.~\ref{fig:fastslow_decomposition}B and C.
 The largest eigenvalue of the Jacobian fluctuates around zero (the invariant manifold is not a continuous attractor), but it is removed from the second largest (Fig.~\ref{fig:fastslow_decomposition}E \& F).
 
