@@ -724,6 +724,10 @@ We show that approximations of analog memory (i.e., theoretical models that sati
 This implies that both biological systems and artificial neural networks only need to be near a continuous attractor to effectively solve problems in a manner similar to the ideal theoretical model, on behaviorally relevant timescales.
 %Nevertheless, the topological structure of the found solutions still determines how well a network will perform generalization for longer time scales.
 
+Although we expressed our theory in a non-parametric manner with an arbitrary perturbation $\vp(\cdot)$, we can easily extend it to particular parametric forms such as biophysical models or an RNN using a sensitivity of the flow to the parameters (e.g. synaptic weight).
+Our theory can be applied to latent dynamical systems estimated from neural recordings\citep{Dowling2024b}.
+As a framework, it can abstract out the details in imperfect dynamical implementations, however, it is an open problem to directly recover the continuous attractor from neural recordings or extend it to other ideal computational motifs.
+
 %We investigated the neighborhood of the continuous attractor networks and analyzed diverse bifurcations in various example systems.
 %Although the configurations corresponding to a continuous attractor are measure-zero in parameter space, we showed that when the persistent manifold theorem holds, the finite time behavior of the trajectories only slowly breaks down under perturbations.
 %%For all perturbations and approximations there a diverse set of topologies.	
