@@ -738,13 +738,15 @@ This implies that both biological systems and artificial neural networks only ne
 
 %limitations
 \paragraph{Limitations}
-Although, we only explicitly describe the topology and dimensionality of the identified invariant manifolds for a representative set, the results indicate that most solutions have a ring invariant manifold with a slow flow on it.
+Although, we only explicitly describe the topology and dimensionality of the identified invariant manifolds for a representative set, the results indicate that most solutions have a ring invariant manifold with a slow flow.
 Our numerical analysis relies on identifying a time scale separation from simulated trajectories. If the separation of time scales is too small, it may inadvertently identify parts of the state space that are only forward invariant (i.e., transient). However, this did not pose a problem in our analysis of the trained RNNs, which is unsurprising, as the separation is guaranteed by state noise robustness (due to injected state noise during training).
 
-To identify solutions with a fast-slow decomposition only rely on the generalization property of the network (in terms of the normalized mean square error for ten times longer trials).
+%To identify solutions with a fast-slow decomposition only rely on the generalization property of the network (in terms of the normalized mean square error for ten times longer trials).
 The possible solutions that the networks can find are restricted by having a linear output mapping.
-For a nonlinear output mapping, a possible solution for analog memory is the quasi-periodic toroidal attractor, but this is not possible for a linear output mapping.
-Our analysis methods can identify these limit sets, but we do not have a simple way to parametrize the two dimensional torus invariant manifold.
+In \citet{Park2023a}, an alternative dynamical solution using oscillators (or quasi-periodic toroidal attractor) was described, however, a nonlinear readout may be necessary.
+%Although Our analysis can identify these limit sets, we do not have a simple way to parametrize the two dimensional torus invariant manifold.
+
+%For a nonlinear output mapping, a possible solution for analog memory is the quasi-periodic toroidal attractor, but this is not possible for a linear output mapping.
 
 
 \section*{Code Availability}
