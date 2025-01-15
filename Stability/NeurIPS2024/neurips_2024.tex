@@ -49,6 +49,9 @@
 \widowpenalty=10000
 \clubpenalty=10000
 
+\usepackage{bibspacing}
+\setlength{\bibspacing}{\baselineskip}
+
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
 \definecolor{ascolor}{rgb}{1, 0.5, 0.}
@@ -605,11 +608,11 @@ The largest eigenvalue of the Jacobian fluctuates around zero (the invariant man
   \includegraphics[width=.95\textwidth]{fastslow_decomposition_normhyp_s}
   \caption{Slow manifold approximation of different trained networks on the memory-guided saccade and angular velocity integration tasks.
  (A1) Output of an example trajectory on the angular velocity integration task.
- (A2) Output of a example trajectories on the memory-guided saccade task.
+ (A2) Output of example trajectories on the memory-guided saccade task.
  (B) An example fixed-point type solution to the memory-guided saccade task. Circles indicate fixed points of the system (filled for stable, empty for saddle) and the decoded angular value on the output ring is indicated with the color according to A1.
  (C) An example of a found solution to the angular velocity integration task.
  (D) An example slow-torus type solution to the memory-guided saccade task. The colored curves indicate stable limit cycles of the system.
- (E+F) The eigenvalue spectrum for the trained networks in B and C show a gap between the first two largest eigenvalues.
+ (E+F) The eigenvalue spectra for the trained networks in B and C show a gap between the first two largest eigenvalues.
 }\label{fig:fastslow_decomposition}
 \end{figure}
 
@@ -780,8 +783,6 @@ This work was supported by NIH RF1-DA056404 and the Portuguese Recovery and Resi
 %\medskip
 
 \small
-
-\newpage
 %\bibliographystyle{abbrvnatm}
 \bibliographystyle{unsrtnat_IMP_v1}
 \bibliography{../cit,../catniplab}
