@@ -649,17 +649,21 @@ on the angular velocity integration task at two different time scales:  asymptot
 \begin{figure}[tbhp]
   \centering
   \includegraphics[width=\textwidth]{angular_losses_s}
-  \caption{The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
-  (A) The average accumulated angular error versus the uniform norm on the vector field (left and right hand side of Eq.~\ref{eq:distance:ub}, respectively), shown for finite time (time of trial length on which networks were trained, \(T_{1}\)) indicated with filled markers and at asymptotic time (with hollow markers).
-  (B) Distribution of network performance measured on a validation dataset measured as normalized MSE (NMSE).
-  (C) The average accumulated angular error over time for two selected networks, indicated with the blue and orange arrows in (D).
-  (D) The number of fixed points versus average accumulated angular error, with the average distance between neighboring fixed points indicated in magenta.
-  (E) The memory capacity versus the average accumulated angular error.
+  \caption{
+  Temporal generalization validates theoretical predictions regardless of implementation detail.
+  %The different measures for memory capacity reflect the generalization properties implied by the topology of the found solution.
+  (A) Average accumulated angular error versus the maximum flow on the manifold (Eq.~\ref{eq:distance:ub}), shown for finite time (task duration that the networks were trained on, \(T_{1}\); filled markers) and at asymptotic time (hollow markers).
+  (B) Normalized validation loss of all trained networks.
+  %Distribution of network performance measured on a validation dataset measured as normalized MSE.
+  (C) Average error and theoretical upper bound over time for two selected networks (corresponding to arrows in panel D).
+  (D) Average asymptotic error is roughly inversely proportional to the number of fixed points.
+  %The number of fixed points versus average accumulated angular error, with the average distance between neighboring fixed points indicated in magenta.
+  (E) Memory capacity is predictive of the average error.
   }\label{fig:angular_loss}
 \end{figure}
 %\setlength\belowcaptionskip{2ex}
+%\vspace{-.5cm}
 
-\vspace{-.5cm}
 \ptitle{Finite time}
 Along with the angular velocity integration component of the task, the trained networks learn to store a memory of an angular variable.
 We assess the performance of the network to store the memory of the angle over time.
