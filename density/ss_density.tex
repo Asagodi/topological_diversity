@@ -785,48 +785,51 @@ We will describe a recipe for systems with single and multiple limit cycles.
 
 
 \subsubsection{A single stable limit cycle}
+We start out with an approximation of the target vector field with an $\epsilon$ small difference ($C^1$ distance between the vector fields).
+Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O}(\epsilon)$ the original limit cycle approximation.
+Denote the set of points in the limit cycles by $\gamma$ and $\hat\gamma$ for the target and approximation, respectively.
+
 %However, we can correct this discrepancy.
-We have a difference in period $T-\hat T = \epsilon_T$
-with \[T\coloneqq\frac{1}{\int_{LC}\|f(x)\|dx} \text{ and } \hat T\coloneqq\frac{1}{\int_{\hat{LC}}\|\hat f(x)\|dx}.\]
+We will typically have a difference between the period of limit cycle of the target $T$ and of the approximation $\hat T$: $\epsilon_T\coloneqq T-\hat T>0$
+with \[T\coloneqq\frac{1}{\int_{\gamma}\|f(x)\|dx} \text{ and } \hat T\coloneqq\frac{1}{\int_{\hat{\gamma}}\|\hat f(x)\|dx}.\]
 %
 We will apply a perturbation $\bar{f}$ to our approximations that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
 so that 
-\[\int_{\tilde{LC}}\|\tilde{f}(x)\| dx = \frac{1}{T}. 	\]% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
-The existence of such a perturbation (i.e. that indeed it will be \emph{small} enough) requires that the initial difference between the periods is small.
-If the approximation vector field is close enough to the target vector field, then the periods will be guaranteed to be close (see for the precise statement and proof Supp.Sec.~\ref{sec:periodcloseness}).
+\begin{equation}\label{eq:lc_constraint}
+\int_{\tilde{\gamma}}\|\tilde{f}(x)\| dx = \frac{1}{T}. 	% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
+\end{equation}
+The existence of such a perturbation (i.e. that indeed it will be \emph{small} enough) requires that the initial difference between the periods is small:
+if the approximation vector field is close enough to the target vector field, then the periods will be guaranteed to be close (see for the precise statement and proof Supp.Sec.~\ref{sec:periodcloseness}).
 The resulting total approximation is \[\tilde{f}=%\hat{f}+\hat{\hat{f}} = 
  \hat{f} + a(\epsilon_T)(\hat{f} + \hat{\epsilon}\bar{f}).\]
 
 
-We can use the fact that the tubular neighborhood of diameter $\delta_T$ around the limit cycle (LC) is an (inflowing) normally hyperbolic invariant manifold.
-This implies that there is a 3 layer FNN that approximates the vector field x a bump function around the LC (similar idea as in paper but this would be an actual possible implementation).
-Then we know that the this NHIM will persist.
+We can use the fact that the tubular neighborhood of diameter $\delta_T$ around the limit cycle is an (inflowing) normally hyperbolic invariant manifold.
+This implies that there exists a 3 layer FNN that approximates the vector field that is a bump function around the limit cycle (similar idea as Supp.Sec.~5 in \citep{Sagodi2024a}). %but this would be an actual possible implementation
+Then we know that the this NHIM will persist (from Fenichel's PMT).
 We also know that there is a maximal perturbation size ($\epsilon_{LC}$) for which the limit cycle persists.
 So we have to guarantee that the limit cycle approximation is already close enough so that this perturbation does not destroy the limit cycle.
 We can now rescale the perturbation so that the period of approximation limit cycle matches the target's. 
 We just increase or decrease  the above perturbation by multiplying with a scalar so that this equality holds.
 The only thing we now need to worry about is how the length of the limit cycle changes as a result of this perturbation and whether we can indeed get the equality.
 
-Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O}(\epsilon)$ the original limit cycle approximation.
-
 %So if it gets longer because of the perturbation (i.e. $\hat \ell(\epsilon)$ is an increasing function) as long as $1/(\hat \ell+g(\epsilon))$ is not decreasing at the same rate there should exist a value $\epsilon$ for which the equality holds
 
-%the fixed point happens at an epsilon that is small enough for the persistence of the other parts: TODO
+%TODO: prove that the fixed point happens at an epsilon that is small enough for the persistence of the other parts
 
-%choosing the size of the tubular neighbourhood
 
 %\textbf{Knobs}
 %\begin{itemize}
 %\item $\epsilon_T$: small enough so that limit cycle is structurally stable
 %\item $\hat\epsilon$: needs to be small enough so that effect of correction outside of the tubular neighbourhood doesn't affect attractors and separatrices
-%\item $\delta_T$: needs to be small enough so that no other attractor or separatrix is included (will this have an effect on the inside-basin flow error?)
+%\item $\delta_T$: needs to be small enough so that no other attractor or separatrix is included (will this have an effect on the inside-basin flow error?) %choosing the size of the tubular neighbourhood
 %\end{itemize}
 
 \paragraph{Conclusion}
 this implies that if $\delta T$ is small enough then $\epsilon_T$ is small %?
 
 
-
+%%effects
 \paragraph{The effect of the correction on the flow inside the basins}
 - Tubular neighbourhood: $\epsilon_T$ effect
 - Outside $\hat\epsilon$ effect (affects location of fixed points and limit cycles)
