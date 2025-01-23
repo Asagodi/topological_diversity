@@ -705,15 +705,12 @@ The boundary can be taken to be arbitrarily close to the boundary of the BoA.
 By taking the isolating neighborhood to be closer and closer to the BoA, we can prove persistence of separatrix.
 
 %construction
-Step 1: create inflowing isolated neighborhood.
+\textbf{Step 1:} 
+We start by creating an inflowing isolated neighborhood.
 %N-dim DS
-Take $I$ to be a section in the tubular neighborhood of the fixed point.
- $\{\varphi(t,x_0) \mid x_0\in I\}$ forms a connected $N-1$ dimensional manifold for each $t$.
-%2D DS: $\{\varphi(t,x_0) \mid x_0\in S^1\}$ forms a connected $1$ dimensional manifold for each $t$.
-%1: More generally, take a section in the tubular neighborhood for $t=0$: $I_0 = \{\varphi(0,x_0) \mid x_0\in X_0\}$
-The initial set of points is a connected manifold.
-For each \( t \in \reals \), the image \( \{ \varphi(t, s) \mid s \in I \} \) remains a connected $N-1$ dimensional manifold because:
-
+ Let $I_0$ denote a section within the tubular neighborhood of the fixed point.
+For each $t\in\reals$, the set $\{\varphi(t,x_0) \mid x_0\in I_0\}$ defines a connected $N-1$-dimensional manifold, which evolves smoothly over time. 
+For each \( t \in \reals \), the image \( \{ \varphi(t, s) \mid s \in I_0 \} \) remains a connected $N-1$ dimensional manifold because:
 \begin{enumerate}
     \item The initial family \( \gamma(I) \) is a $N-1$ dimensional manifold.
     \item The map \( \phi(t, \cdot) \) is \( C^1 \) and thus an immersion.
@@ -721,21 +718,22 @@ For each \( t \in \reals \), the image \( \{ \varphi(t, s) \mid s \in I \} \) re
 \end{enumerate}
 This forms the boundary of the isolating neighborhood.
 
-%1.2: For limit cycles this is a torus-shaped 2D manifold (in 3D, in 2D it is union of 2 $S^1$s): relevant for next section.
+\begin{remark}
+In the case of limit cycles, the isolating neighborhood takes on a distinctive topology. For instance, in a 3D state space, it forms a toroidal 2D manifold surrounding the cycle. In 2D systems, the neighborhood reduces to a pair of connected circles. These structures are particularly relevant for the analysis of periodic orbits and their stability.
+ \end{remark}
 
+%Forward Invariance
+For each $t\in\reals$ the set $I_t = \{\varphi(t,x_0) \mid x_0 \in I_0 \}$ is a manifold.
+Furthermore, the union of these sets up to any time  $\bigcup_{s<t}I_s$, indeed forms an inflowing isolating neighborhood.
 
-For each $t\in\reals$ the set $I_t = \{\varphi(t,x_0) \mid x_0 \in X_0 \}$ is a manifold.
-%
-For each $t\in\reals$ the set $\bigcup_{s<t}I_s$ is an isolating neighborhood.
+%fills up basin
+ As $t\rightarrow\infty$ the isolating neighborhood expands to fill the basin of attraction of the fixed point.
+ This illustrates the neighborhood’s role in characterizing the asymptotic behavior of trajectories and the fixed point’s influence on the global dynamics.
 
-
-2: Let $t\rightarrow\infty$, then this isolating neighborhood fills up the basin of attraction
-
-3: These manifolds are forward invariant for each $t$
-
-4: Isolating neighborhoods of target and approximation have same Conley index (trivial) for each $t$ (if vector fields are close to each other, see Sec.\ref{sec:cit})
-
-5: Separatrix must be in remaining part of the state space and, hence it is persistent (i.e., it is $\mathcal{O}(\epsilon)$ close)
+%4:
+ Now, because, isolating neighborhoods of target and approximation have same Conley index (trivial) for each $t$ (if vector fields are close to each other, see Sec.\ref{sec:cit}),
+ %5
+the separatrix must be in remaining part of the state space and, therefore it is persistent (i.e., it is $\mathcal{O}(\epsilon)$ close), and hence normally hyperbolic \citep{mane1978persistent}).
 
 
 \paragraph{Boundary of BoA is persistent and can be made arbitrarily close to target}% this depends on the fact that separatrices are persistent
@@ -831,14 +829,12 @@ this implies that if $\delta T$ is small enough then $\epsilon_T$ is small %?
 
 \paragraph{The effect of the correction on the flow inside the basins}
 - Tubular neighbourhood: $\epsilon_T$ effect
-- Outside $\hat\epsilon$ effect
-
+- Outside $\hat\epsilon$ effect (affects location of fixed points and limit cycles)
 
 \paragraph{The effect of the correction on the separatrices}
-See note on  $\hat\epsilon$ Knob.
+ $\hat\epsilon$ needs to be small enough so that effect of correction outside of the tubular neighborhood doesn't affect attractors and separatrices too much.
 
-
-\paragraph{The basin of attraction for a stable limit cycle}
+\paragraph{The basin of attraction for a stable limit cycle}%irrelevant?
 Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension $n-1$, with a scalar circle coordinate \citep{wilson1967structure}.
 But they can be funky, see Fig.~\ref{fig:unstab_lc_3fps}.
 
@@ -859,6 +855,7 @@ We have to make sure that all the $\hat{\epsilon}_i$ are step-wise small enough 
 %when we change a_T_i we have to adjust the other a_T_j s
 
  ELU/CELU/GeLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles?
+
 
 
 %%%QPTA
