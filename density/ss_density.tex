@@ -1,17 +1,23 @@
 \documentclass{article}
 %\usepackage{arxiv}
+\usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2024
+\usepackage[preprint]{neurips_2024}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{amssymb, amsmath, amsthm, amsfonts}
 \usepackage{thmtools, mathtools, mathrsfs, dsfont}
 \usepackage{bbm}
-\usepackage[square,numbers]{natbib}
-\bibliographystyle{abbrvnat}
-\usepackage{algorithm}
-\usepackage{algpseudocode}
 \usepackage{forloop}
 \usepackage[pdftex]{graphicx}  %remove demo option in your document
 \usepackage{sidecap}
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\usepackage{xcolor}
+\definecolor{ForestGreen}{rgb}{0.13, 0.55, 0.13}
+\definecolor{MidnightBlue}{rgb}{0.1, 0.1, 0.44}
+\definecolor{BurntOrange}{rgb}{0.8, 0.33, 0.0}
+\definecolor{Plum}{rgb}{0.56, 0.27, 0.52}
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}
+\hypersetup{breaklinks=true}
 
 \graphicspath{{figures}}
 
@@ -67,6 +73,15 @@
 \maketitle
 
 \section*{Abstract}
+Universal approximation results provide rigorous guarantees about the representational power of neural networks and hence are important in evaluating the flexibility of machine learning paradigms. A family of transformations is deemed universal if its elements can approximate, with arbitrary precision, a rich class of transformations, such as all continuous or measurable mappings. Recurrent Neural Networks (RNNs) are often considered universal transformations, and this property is often used to justify their usefulness in models for neural computation. However, existing universal approximation theories for RNNs are limited to addressing either finite time horizon approximation or a subclass of dynamical systems with a unique global attractor, overlooking critical aspects of system behavior such as temporal generalization and multistability.
+
+Multistability is a critical feature of many neural systems characterized by the ability to transition between multiple stable states depending on context or input. Neural computation is widely regarded as being fundamentally characterized by multistable dynamics, for example, corresponding to the neural activity in the prefrontal cortex during a delayed match-to-sample task, where the system maintains one of several stable states to represent different visual stimuli held in working memory. 
+
+This work addresses the gap in the existing literature by developing the first-of-its-kind universal approximation result for multi-stable dynamical systems over an infinite horizon using RNNs. A key motivation for extending the notion of universal approximation to the infinite time horizon lies in capturing the behavior of dynamical systems over arbitrarily long time intervals. Infinite horizon approximation provides models with temporal generalization properties, ensuring that abrupt errors after the finite time horizon on which the approximation is based do not occur, thereby maintaining consistency between the target system and its approximation over extended periods. Despite its significance, approximation results for more complex systems, such as multi-stable systems with multiple equilibrium states but no chaotic behavior, remain underexplored in this infinite time regime. Furthermore, because dynamical systems cannot be distinguished from each other given finite time horizon data, there are many different topologies and continuations of trajectories that are all valid. However, in this infinite-time regime, these ambiguities go away.
+
+Our theoretical result provides a framework to analyze and classify approximation errors  by introducing basin-type, trajectory-type, and period-type errors. This new error taxonomy allows researchers working with dynamical systems models of neural computation to identify which aspects of the model need to be adjusted for a theoretical model of neural computation to converge to the true biological implementation. Furthermore, this framework introduces a new way to evaluate how difficult it is to learn a computation (e.g. by calculation of the total length of the separatrices of the system or the difficulty to exactly overlay the shape of the separatrices with an activation function). This framework enables a more comprehensive and unified approach to comparing models for neural computation.
+
+
 
 \section{Introduction}
 The versatility or flexibility of a given machine learning paradigm is usually established by proving its universality.
@@ -83,12 +98,15 @@ However, universal approximation results based on vector fields are limited in s
 Existing results about approximating dynamical systems either focus on finite time horizon approximation or on approximating stable dynamical systems on an infinite time horizon.
 This misses important behavior of the system (e.g. temporal generalization of the approximation, see Fig.~\ref{fig:lc_period_div}).
 
-A key motivation for extending approximation results to the infinite time horizon lies in its ability to capture qualitative behaviors over time. For example, infinite time horizon approximation allows us to better understand how a system's behavior unfolds over extended periods, providing insights into stability, transitions, and equilibrium states.
+A key motivation for extending approximation results to the infinite time horizon lies in its ability to capture qualitative behaviors over time.
+A model is judged a success when the output of the system fits behavioral or neurophysiologicai data in a coherent and systematic fashion, especially when both neurophysiological and behavioral responses are accurately predicted by the same model.
+ For example, infinite time horizon approximation allows us to better understand how a system's behavior unfolds over extended periods, providing insights into stability, transitions, and equilibrium states.
  Furthermore, an effective infinite time horizon approximation ensures robustness: small perturbations, such as noise, do not result in abrupt increases in approximation error, but instead produce gradual, smooth deviations in the system's trajectory.
 %the second point needs to be worked out: with added noise the error would jump for trajectories at separatrices
 
-%We seek to extend approximation results for dynamical systems to multi-stable systems (systems without chaos) on an infinite time horizon through Neural ODEs (NODEs).
-Our work aims to bridge this gap by extending the approximation of dynamical systems to multi-stable systems—those with multiple equilibrium states but no chaotic behavior—over an infinite time horizon. 
+
+
+Our work aims to bridge this gap by extending the approximation of dynamical systems to multi-stable systems (with multiple equilibrium states or limit cycles, but no chaotic behavior) over an infinite time horizon. 
 To achieve this, we leverage Neural Ordinary Differential Equations (NODEs) as a framework for constructing such approximations.
 % By using NODEs, we can model continuous-time dynamical systems while ensuring that key properties, such as stability and smooth error bounds under perturbations, are maintained.
 We provide a fist-of-its-kind \textbf{approximation result for multi-stable systems on the infinite time horizon}, laying the groundwork for future advances in both theory and applications of neural approximators in long-term dynamical modeling.
@@ -168,8 +186,7 @@ The solutions to ODEs can generate smooth transformations on manifolds.
 The flow \( \phi_t \) of the vector field \( X \) defines a map from \( M \) to itself for each fixed time \( t \). Under appropriate conditions (such as \( X \) being complete), \( \phi_t \) is a diffeomorphism of \( M \) for each \( t \). In other words, \( \phi_t \) is smooth, bijective, and its inverse \( \phi_{-t} \) is also smooth.
 Thus, the solutions (flows) of ODEs associated with smooth vector fields give rise to a one-parameter family of diffeomorphisms.
 %
-Neural ODEs (NODEs) and Invertible neural networks (INNs) are a sup-universal approximator for a fairly large class of diffeomorphisms, i.e., smooth invertible maps with smooth inverse \citep{huang2018neural, jaini2019sum, teshima2020uap, teshima2020coupling, ishikawa2023universal}.
-
+NODEs and invertible neural networks are a sup-universal approximator for a fairly large class of diffeomorphisms, i.e., smooth invertible maps with smooth inverse \citep{huang2018neural, jaini2019sum, teshima2020uap, teshima2020coupling, ishikawa2023uap}.
 %rem
 For dynamical systems, however, this only guarantees a finite time approximation.
 We will now consider compact time interval approximation results in more detail.
@@ -248,8 +265,7 @@ The universal approximation properties of static neural networks \citep{funahash
 The problem of nonlinear modeling using static neural networks has been extensively researched \citep{narendra1990identification,warwick1992neural} and many approaches have used multilayer perceptrons and radial basis functions \citep{chen1992neural,choi1996constructive,tan1995efficient}. 
 For an overview, see \citep{garces2012strategies}.
 
-\paragraph{uncat}
-trajectories \citep{toomarian1992learning}
+
 
 \paragraph{Autonomous systems}
 The universal approximation capabilities of continuous-time recurrent networks for autonomous systems were first demonstrated by \citet{funahashi1993approximation}. 
@@ -265,14 +281,9 @@ Finally,  approximation results for input-driven systems with NODEs have been de
 	
 %time-variant	
 \paragraph{Time variant systems}
-Recent advancements in neural ordinary differential equations (NODEs) have expanded these approximation results to include time variant systems. For instance, \citet{li2024universal} established the universal approximation property for semi-autonomous NODEs, demonstrating their ability to approximate a broad class of dynamical systems with time-varying dynamics. Further extensions to control synthesis problems, leveraging continuous-time frameworks, have been proposed by \citet{mei2024controlsynth}, offering new perspectives for integrating control and learning in neural architectures.
+Recent advancements in NODEs have expanded these approximation results to include time variant systems. For instance, \citet{li2024universal} established the universal approximation property for semi-autonomous NODEs, demonstrating their ability to approximate a broad class of dynamical systems with time-varying dynamics. Further extensions to control synthesis problems, leveraging continuous-time frameworks, have been proposed by \citet{mei2024controlsynth}, offering new perspectives for integrating control and learning in neural architectures.
 %
 These developments illustrate the versatility of continuous-time recurrent networks and NODEs in approximating both autonomous and non-autonomous systems, paving the way for new applications in dynamical systems modeling and sequence-to-sequence learning.
-
-
-\paragraph{FNNs for control}
-%control 
-\citep{psaltis1988multilayered} \citep{li1989control,chen1992adaptive}
 
 
 \paragraph{Encoder-Decoder}
@@ -293,7 +304,19 @@ Neural oscillators have the universal approximation property on compact time int
 Any finite trajectory of an $n$-dimensional continuous dynamical system can be approximated by the internal state of the hidden units and $n$ output units of an Liquid time-constant (LTC) network \citep{hasani2018liquid}.
 
 
+
+\paragraph{FNNs for control}
+%control 
+\citep{psaltis1988multilayered} \citep{li1989control,chen1992adaptive}
+
+\paragraph{uncat}
+trajectories \citep{toomarian1992learning}
+
+
+
+%%FLOW APPROX
 \subsubsection{Approximation of flows}%paragraph?
+Flow-based approximations for finite time horizon have been established for architectures such as Recurrent High-Order Neural Networks \citep{kosmatopoulos1995structural}.
 Any continuous dynamical nonlinear systems can be approximately realized\footnote{The finite time trajectories of a given dynamical continuous system can be approximated by the first $n$ internal state out of the $n + N$ neural units in an RNN.} by RNN on finite time interval \citep{chow2000modeling}.
 %fixed initial state!: initial state $x(0)\in X$
 %$\dot z = -\alpha z + W_1\sigma(W_2u+z)$
@@ -304,9 +327,6 @@ This has been extended to time-variant systems but with a fixed initial state \c
 %
 More recently, it was shown that RNNs are universal approximators of flow functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023universal}\footnote{This is direct simulation (for a definition, see Sec.~\ref{sec:simulation}, instead of indirect realization}. %not realization, but direct simulation
 %periodic inputs
-%+Universal approximation for discrete-time dynamical systems
-
-\citep{kosmatopoulos1995structural}
 
 
 \subsection{Looking beyond the finite-time horizon}\label{sec:beyondfinitetime}
@@ -384,8 +404,7 @@ UAP of RNNs for uniformly asymptotically incrementally stable systems on an infi
 \citet{jaeger2001echo} proposed Echo State Networks (ESNs), demonstrating their universal approximation capabilities specifically for fading memory systems.
 This result was extended to include approximation of systems with an input \citep{manjunath2013echo}.
 %ESNs are universal uniform approximators  for discrete-time fading memory filters with uniformly bounded inputs \citep{grigoryeva2018echo,grigoryeva2018universal}. 
-
-For neuroscience \citep{auslender2024decoding}
+Reservoir computing (RC), the broader framework that includes ESNs, has also been applied to neuroscience \citep{auslender2024decoding}.
 
 If the domain of the functional $H$ is restricted to a space of uniformly bounded sequences with the fading memory property then various families of state-space transformations can be used to approximate it uniformly: 
  linear systems with polynomial or neural network readouts \citep{boyd1985fading,grigoryeva2018universal,gonon2019reservoir}, state-affine systems with linear readouts \citep{grigoryeva2018universal}, or echo state networks \citep{grigoryeva2018echo,gonon2019reservoir,gonon2021fading,gonon2023approximation}.
@@ -427,18 +446,12 @@ In contrast, for systems not satisfying this stability condition, a sharp bound 
 
 %Stability and memory-loss go hand-in-hand \citep{manjunath2020stability}
 
-
 Why should we assume that the underlying dynamics in neural networks converge to a fixed point?
 Models of neural computation should cover a broader class of dynamics, e.g, oscillations \citep{townley2000existence, kag2020rnns, chang2019antisymmetricrnn,rapp1987periodic}. %could convey preferred capabilities in learning 
 
 
-
-
 %\paragraph{Stability implies FNNs are enough}%crit
 %When Recurrent Models Don't Need to Be Recurrent \citep{miller2018stable}.
-
-
-
 
 
 %%%%%%%%%%%%%%%%%%%
@@ -448,10 +461,10 @@ This does guarantee knowledge of the dynamics beyond a finite time horizon.
 However, this is trivial for approximation of structurally stable systems with NODEs.
 It is true by virtue of Theorem.~\ref{theorem:ss} that vector fields that are close to the vector field of a dynamical system will have dynamics that are topologically conjugate to it.
 Because it is well known that vector fields can be approximated to arbitrary precision with FNN, this result immediately follows for NODEs.
-
+Finally, we would like to mention the possibility to construct dynamics with Cohen-Grossberg networks for arbitrary sets of fixed point and limit cycles through realization of dynamics \citep{cohen1992construction}.
 %the autonomous ESN ψ ∈ C 1(Rd) with parameters ( A,  W in, W out,  φ) has a normally hyperbolic attracting submanifold on which ψ is topologically conjugate to φ.
 
-Fixed point and limit cycle matching \citep{cohen1992construction}.
+
 
 
 \section{Approximation of multi-stable dynamical systems on infinite time intervals}
@@ -546,7 +559,9 @@ For example, if we take the uniform norm of the uniform norm, it can be shown th
 
 
 \subsection{Approximating systems with a finite number of hyperbolic stable fixed points}
-\begin{theorem}
+
+%This theorem is phrased for the more general case, move to before? 
+\begin{theorem}\label{thrm:approx}
 Let $D$ be an open subset of $\mathbb{R}^n$,
  $f\colon D \to \mathbb{R}^m$ be a $C^1$-mapping,
   and $I$ be a compact subset of $D$ such that any solution $x(t)$ with initial value $x(0) \in I$ of an ordinary differential equation
@@ -554,8 +569,7 @@ Let $D$ be an open subset of $\mathbb{R}^n$,
     \dot{x} = f(x), \quad x(0) \in D
 \end{equation}
 is defined for $t\in\reals_{+}$ and $x(t)$ is included in $I$.
-This defines a flow $\varphi(\cdot, \cdot)$.
-
+This defines a flow $\varphi(\cdot, \cdot)$ (Picard-Lindel\"of theorem).
 
 Then, for an arbitrary $\epsilon, \delta > 0$, there exist an MLP recurrent neural network 
  \begin{equation}
@@ -571,8 +585,17 @@ such that its flow $\hat \varphi$ satisfies
 %proof will be at end of section? 
 %establish necessary pieces as propositions
 
-\begin{proposition}
-The fixed points and limit cycles of $C^1$ ODEs can be arbitrarily closely approximated in the $\|\varphi-\hat \varphi\|_\epsilon < \delta$ flow sense.
+We will break down this result in smaller pieces. 
+First, we prove that (the location of) fixed points can be arbitrarily closely approximated in Prop.~\ref{prop:fp_approx} (we extend this to limit cycles in Sec.~\ref{sec:lc_approx}).
+This allows us to speak of corresponding attractors between the target and approximant system.
+We identify two regions: 1) where the basins of attraction for the same attractor overlap and 2) the remaining state space.
+Second, we prove that inside the basin of an attraction the flow can be approximated in Sec.~\ref{sec:inboa_approx} (this is an extension to the infinite time horizon of a standard finite time result). %this itself is composed of finite time approx + global convergence %or just global convergence?
+Third, we prove that the remaining state space can be made arbitrarily small in Sec.~\ref{sec:separatrix_approx}.
+Finally, we combine these results to prove Theorem \ref{thrm:approx} in Sec.~\ref{sec:proof_fp_approx}.
+
+\begin{proposition}\label{prop:fp_approx}
+The fixed points of $C^1$ ODEs can be arbitrarily closely approximated in the $\|\varphi-\hat \varphi\|_\epsilon < \delta$ flow sense.
+%and limit cycles later
 \end{proposition}
 
 \begin{proof}
@@ -583,8 +606,8 @@ there exists $\hat f\in\mathcal{G}$ such that $\|f-\hat f\|<\epsilon$.
 Structural stability implies that there exists a $\delta>0$ such that for all $g\in C^1$ that are $\delta$ $C^1$ close to $f$, the flow is topologically equivalent to that of $f$.
 %
 So we can choose $\delta$ such that for all $\|f-\hat f\|<\delta$ the flow of $\hat f$ is topologically equivalent to that of $f$.
-
-ADD: fixed points of $\hat f$ are $\mathcal{O}(\epsilon)$ close to $f$.
+Finally, fixed points of $\hat f$ are $\mathcal{O}(\epsilon)$ close to those of $f$ (from Persistent Manifold Theorem\cite{jones1995gspt}).
+%orbits from these initial conditions converge to $\omega$-limit sets that are at most $\epsilon_i$ Hausdorff distance from each other.
 \end{proof}
 
 This establishes that for all $\epsilon>0$ there is some time $T$ for which for all $t>T$ we have that $x(t)-\hat x(t)<\epsilon$.
@@ -597,13 +620,13 @@ $\| f(s; \tilde{\varphi}_0, s(x)) - f(s; \tilde{\varphi}_0, s(x)) \|$
 $\| D\varphi_{s,t}(\tilde{\varphi}_0, s(x)) \|$, 
 which bounds the sensitivity of the flow $\varphi_{s,t}(x)$ to an infinitesimal perturbation of its initial condition.
 %TODO: more catchy name for type I error: F-type (Flow)
-We can bound these two types of errors as follows.%error^I and error^II
+How we can bound these two types of errors will be discussed in the next two subsections.%error^I and error^II
 
 
 \setlength\belowcaptionskip{-1ex}
 \begin{SCfigure}[10][bthp]
   \centering
-  \includegraphics[width=0.5\textwidth]{separatrices}
+  \includegraphics[width=0.45\textwidth]{separatrices}
   \caption{
 	A mismatching pair of separatrices between attractors $A_i$ and $A_j$.
 	The target subsystem has two stable fixed points ($A_i^f$ and $A_j^f$) with separation between the basins of attraction by the separatrix (black line).
@@ -615,21 +638,20 @@ We can bound these two types of errors as follows.%error^I and error^II
   }\label{fig:separatrices}
 \end{SCfigure}
 
-\subsubsection{Errors inside an intersection of the Basins of Attraction (BoA) of the target and approximation}
-So if we have $x_0\in BOA(A_i^f) \cap BOA(A_i^g)$, the flow deviates along the trajectories up to 
+\subsubsection{Errors inside an intersection of the Basins of Attraction (BoA) of the target and approximation}\label{sec:inboa_approx}
+%Introduce A_i^f notation
+%introduce boa
+For an initial value $x_0\in BOA(A_i^f) \cap BOA(A_i^g)$, the flow deviates along the trajectories up to 
 \[
-\|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\| \, ds.
+\|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\| \, ds,
 \]
-Prop.~\ref{prop:313} from \citep{vanhandel2007filtering}, see Supp.Sec.~\ref{sec:313}.
+from Prop.~\ref{prop:313} from \citep{vanhandel2007filtering}, see Supp.Sec.~\ref{sec:313}.
 %
-See Rem.~\ref{rem:313}.
+%See Rem.~\ref{rem:313}.
 
-The first term \[\|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|\]
-is bounded. %?
+The first term \(\|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|\) is bounded %?
+and \(\|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|\rightarrow 0\) for \(t\rightarrow\infty\).
 Define $M\coloneqq \sup \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|<\infty$. 
-
-Additionally:
-\(\|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|\rightarrow 0\) for \(t\rightarrow\infty\).
 %
 This guarantees that the integral is finite.
 
@@ -638,8 +660,7 @@ The second term
 can be made arbitrarily small because of the UAP for mappings.
 
 
-TODO:
-orbits from these initial conditions converge to $\omega$-limit sets that are at most $\epsilon_i$ Hausdorff distance from each other.
+
 
 
 This guarantees that the integral can be made arbitrarily small.	
@@ -656,6 +677,7 @@ Hence, there exists an FNN that defines a vector field for which for each attrac
 
 %TODO: more catchy name for type II error: B-type (Basin) 
 \subsubsection{Errors at the boundary of a BoA}%type II
+\label{sec:separatrix_approx}
 The other type of error arises because trajectories go to different attractors, i.e., $x_0\in BOA(A_i^f,A_j^g)$ for $i\neq j$.
 For such initial points the error along the flow cannot be bounded.
 Eliminating this type of error would constitute perfectly matching the separatrices which can not be guaranteed.
@@ -666,30 +688,7 @@ The volume for which type II error arises is
 
 
 
-\paragraph{Boundary of BoA is persistent}
-The boundary of the BoA of attractor $A_i^f$ is %BoAs are open sets
-\[\partial\boa(A_i) = \overline{\boa(A_i^f)} \cap (X - \overline{\boa(A_i^f)}).\]
-where \(\overline{\cdot}\) denotes the closure of a set. Same as \(\cl\).
-% =\cl\boa(A_i^f)-\boa(A_i^f)\.\]%this should hold for an open set...
 
-Then for some value $\epsilon_{\operatorname{sep}}$ we have that 
-\begin{equation}\label{eq:separatrixoverlap}
-\bigcup_i \boa(A_i^f)\cap\boa(A_i^g) \subset \bigcup_i B_{\epsilon_{\operatorname{sep}}}(\partial\boa(A_i^f)). 
-\end{equation}
-
-The right hand side's volume is at most $\mathcal{O}(\delta)$ with $\leq\epsilon_{\operatorname{sep}}$ the Hausdorff distance between the total separatrix submanifolds.
-This $\delta$ can be made arbitrarily low because of the FNN universal approximation results.
-
-For each attractor $A_i$ we have that the boundary of the basin of attraction $\partial(\boa(A_i^f))$ is a compact normally hyperbolic invariant manifold (See Supp.Sec.~\ref{sec:boaboundary}).
-Consider the connected components $B^f_{ij}$ of $\partial(\boa(A_i^f))$.
-%\footnote{For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.}
-Then, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has a normally hyperbolic invariant manifold  $B^g_{ij}$ that is diffeomorphic to and at most at $\mathcal{\delta_{ij}}$ Hausdorff distance from $B^f_{ij}$.
-Therefore, by Eq.~\ref{eq:separatrixoverlap}, the overlap of the separatrices is less than $\mathcal{O}\epsilon_{\operatorname{sep}}$.%TODO: figure out bound on the volume
-%compactness should imply that the volume is at most $\mathcal{\epsilon_{\operatorname{sep}}$.
-Therefore, there is $k_{ij}\in\reals$ such that the Hausdorff distance between $B^f_{ij}$ and $B^g_{ij}$ is $k_{ij}\delta_{ij}$.
-Let  $N_{\operatorname{cc}}$ be the number of connected components of $\partial(\boa(A_i^f))$.
-Choose $\delta_{ij}<k_{ij}\delta/N_{\operatorname{cc}}$.%the global \delta....
-Define $\delta_i\coloneqq\sum_{i=1}{N_{\operatorname{cc}}}\delta_{ij}$.
 
 %simplifying:%we can consider $\cl\boa(A_i) to be an invariant manifold with boundary
 
@@ -700,7 +699,7 @@ We get a bunch of $\delta_i$'s.
 Then $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each $i$ and hence $\sum_i\delta_i<\delta$.
 
 
-\paragraph{Alternative: isolating neighborhoods as persistent}
+\paragraph{Isolating neighborhoods as persistent}
 Isolating neighborhood with boundary that is transversal to flow.
 The boundary can be taken to be arbitrarily close to the boundary of the BoA.
 By taking the isolating neighborhood to be closer and closer to the BoA, we can prove persistence of separatrix.
@@ -739,6 +738,33 @@ For each $t\in\reals$ the set $\bigcup_{s<t}I_s$ is an isolating neighborhood.
 5: Separatrix must be in remaining part of the state space and, hence it is persistent (i.e., it is $\mathcal{O}(\epsilon)$ close)
 
 
+\paragraph{Boundary of BoA is persistent and can be made arbitrarily close to target}% this depends on the fact that separatrices are persistent
+The boundary of the BoA of attractor $A_i^f$ is %BoAs are open sets
+\[\partial\boa(A_i) = \overline{\boa(A_i^f)} \cap (X - \overline{\boa(A_i^f)}).\]
+where \(\overline{\cdot}\) denotes the closure of a set (same as \(\cl\)).
+% =\cl\boa(A_i^f)-\boa(A_i^f)\.\]%this should hold for an open set...
+%
+Then for some  $\epsilon_{\operatorname{sep}}>0$ we have that 
+\begin{equation}\label{eq:separatrixoverlap}
+\bigcup_i \boa(A_i^f)\cap\boa(A_i^g) \subset \bigcup_i B_{\epsilon_{\operatorname{sep}}}(\partial\boa(A_i^f)). 
+\end{equation}
+
+The right hand side's volume is at most $\mathcal{O}(\delta)$ with $\leq\epsilon_{\operatorname{sep}}$ the Hausdorff distance between the total separatrix submanifolds.
+This $\delta$ can be made arbitrarily low because of the FNN universal approximation results.
+
+
+%link: here is how
+For each attractor $A_i$ we have that the boundary of the basin of attraction $\partial(\boa(A_i^f))$ is a compact normally hyperbolic invariant manifold (See Supp.Sec.~\ref{sec:boaboundary}).
+Consider the connected components $B^f_{ij}$ of $\partial(\boa(A_i^f))$.
+%\footnote{For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.}
+Then, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has a normally hyperbolic invariant manifold  $B^g_{ij}$ that is diffeomorphic to and at most at $\mathcal{\delta_{ij}}$ Hausdorff distance from $B^f_{ij}$.
+Therefore, by Eq.~\ref{eq:separatrixoverlap}, the overlap of the separatrices is less than $\mathcal{O}\epsilon_{\operatorname{sep}}$.%TODO: figure out bound on the volume
+%compactness should imply that the volume is at most $\mathcal{\epsilon_{\operatorname{sep}}$.
+Therefore, there is $k_{ij}\in\reals$ such that the Hausdorff distance between $B^f_{ij}$ and $B^g_{ij}$ is $k_{ij}\delta_{ij}$.
+Let  $N_{\operatorname{cc}}$ be the number of connected components of $\partial(\boa(A_i^f))$.
+Choose $\delta_{ij}<k_{ij}\delta/N_{\operatorname{cc}}$.%the global \delta....
+Define $\delta_i\coloneqq\sum_{i=1}{N_{\operatorname{cc}}}\delta_{ij}$.
+
 %\subsubsection{Alternative: stable and unstable manifolds as persistent}
 %stable and unstable manifolds of a normally hyperbolic manifold persist under perturbation Theorem 2.3.6 in \citep{kuehn2015multipletimescale}.
 %
@@ -746,8 +772,10 @@ For each $t\in\reals$ the set $\bigcup_{s<t}I_s$ is an isolating neighborhood.
 %Persistence of laminations \citep{berger2010persistence}
 
 
+\subsubsection{Proof of Theorem 1 for systems with hyperbolic fixed points}\label{sec:proof_fp_approx}
 
-\subsection{Approximation of stable limit cycles}
+
+\subsection{Approximation of stable limit cycles}\label{sec:lc_approx}
 %TODO:  name for type III error: L-type (limit cycle) P-type (period)
 As we have seen in Sec.~\ref{sec:beyondfinitetime}, any mismatch in periods in the period of stable limit cycles introduces an error.
 We will get convergence onto a limit cycle that is close in Hausdorff distance to the target limit cycle. %$\omega$-limit set?
@@ -789,14 +817,17 @@ Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O
 
 %choosing the size of the tubular neighbourhood
 
-\textbf{Knobs}
-\begin{itemize}
-\item $\epsilon_T$: small enough so that limit cycle is structurally stable
-\item $\hat\epsilon$: needs to be small enough so that effect of correction outside of the tubular neighbourhood doesn't affect attractors and separatrices
-\item $\delta_T$: needs to be small enough so that no other attractor or separatrix is included (will this have an effect on the inside-basin flow error?)
-\end{itemize}
+%\textbf{Knobs}
+%\begin{itemize}
+%\item $\epsilon_T$: small enough so that limit cycle is structurally stable
+%\item $\hat\epsilon$: needs to be small enough so that effect of correction outside of the tubular neighbourhood doesn't affect attractors and separatrices
+%\item $\delta_T$: needs to be small enough so that no other attractor or separatrix is included (will this have an effect on the inside-basin flow error?)
+%\end{itemize}
 
-this implies that if $\delta T$ is small enough then $\epsilon_T$ is small
+\paragraph{Conclusion}
+this implies that if $\delta T$ is small enough then $\epsilon_T$ is small %?
+
+
 
 \paragraph{The effect of the correction on the flow inside the basins}
 - Tubular neighbourhood: $\epsilon_T$ effect
@@ -809,7 +840,7 @@ See note on  $\hat\epsilon$ Knob.
 
 \paragraph{The basin of attraction for a stable limit cycle}
 Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension $n-1$, with a scalar circle coordinate \citep{wilson1967structure}.
-
+But they can be funky, see Fig.~\ref{fig:unstab_lc_3fps}.
 
 
 \paragraph{Summary}
@@ -827,7 +858,7 @@ We have to make sure that all the $\hat{\epsilon}_i$ are step-wise small enough 
 %can we really do this sequentially? no, we have to do it in parallel
 %when we change a_T_i we have to adjust the other a_T_j s
 
- ReLU networks which can be made to be zero outside of the tubular neighbourhood as a method to make things work for multiple stable limit cycles?
+ ELU/CELU/GeLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles?
 
 
 %%%QPTA
@@ -1003,6 +1034,7 @@ Idea: Two dynamical phenomena are isolated into primitive architectural componen
 
 
 \newpage
+\bibliographystyle{unsrtnat_IMP_v1}
 \bibliography{../all_ref.bib,../catniplab.bib}
 
 
@@ -1128,8 +1160,8 @@ Universal approximation of
 \item Monotone analytic functions homotopic to the identity\citep{tabuada2020universal}
 \end{itemize}
 
-\citep{tabuada2022universal}
-\citep{marchi2021training}
+h\citep{tabuada2022universal}
+g\citep{marchi2021training}
 
 
 \section{Neural ODEs (NODEs)}
