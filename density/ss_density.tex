@@ -697,7 +697,7 @@ Then, as $t\rightarrow\infty$, the isolating neighborhood expands to fill the ba
  This illustrates the neighborhood’s role in characterizing the asymptotic behavior of trajectories and the fixed point’s influence on the global dynamics.
 
 %4:
- Now, because, isolating neighborhoods of target and approximation have same Conley index (trivial) for each $t$ (if vector fields are close to each other, see Sec.\ref{sec:cit}),
+ Now, because, isolating neighborhoods of target and approximation have same (trivial) Conley index  for each $t$ (if vector fields are close to each other, see Sec.\ref{sec:cit}),
  %5
 the separatrix must be in remaining part of the state space and, therefore it is persistent (i.e., it is $\mathcal{O}(\epsilon)$ close), and hence normally hyperbolic \citep{mane1978persistent}).
 
@@ -713,8 +713,8 @@ Then for some  $\epsilon_{\operatorname{sep}}>0$ we have that
 \bigcup_{i\neq j} \boa(A_i^f)\cap\boa(A_j^g) \subset \bigcup_i B_{\epsilon_{\operatorname{sep}}}(\partial\boa(A_i^f)). 
 \end{equation}
 
-The right hand side's volume is at most $\mathcal{O}(\delta)$ with $\delta\leq\epsilon_{\operatorname{sep}}$ the Hausdorff distance between the total separatrix submanifolds.
-This $\delta$ can be made arbitrarily low because of the FNN universal approximation results.
+%The left hand side's volume is at most $\mathcal{O}(\delta)$ with $\delta\leq\epsilon_{\operatorname{sep}}$ the Hausdorff distance between the full separatrix submanifolds.
+%This $\delta$ can be made arbitrarily low because of the FNN universal approximation results.
 
 
 %link: here is how
@@ -770,7 +770,7 @@ Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O
 Denote the set of points in the limit cycles by $\gamma$ and $\hat\gamma$ for the target and approximation, respectively.
 
 %However, we can correct this discrepancy.
-We will typically have a difference between the period of limit cycle of the target $T$ and of the approximation $\hat T$: $\epsilon_T\coloneqq T-\hat T>0$
+We will typically have a difference between the periods of limit cycle of the target $T$ and of the approximation $\hat T$: $\epsilon_T\coloneqq T-\hat T>0$
 with \[T\coloneqq\frac{1}{\int_{\gamma}\|f(x)\|dx} \text{ and } \hat T\coloneqq\frac{1}{\int_{\hat{\gamma}}\|\hat f(x)\|dx}.\]
 %
 We will apply a perturbation $\bar{f}$ to our approximations that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
@@ -788,7 +788,7 @@ The resulting total approximation is
 
 We can use the fact that the tubular neighborhood of diameter $\delta_T$ around the limit cycle is an (inflowing) normally hyperbolic invariant manifold.
 This implies that there exists a 3 layer FNN that approximates the vector field that is a bump function around the limit cycle (similar idea as Supp.Sec.~5 in \citep{Sagodi2024a}). %but this would be an actual possible implementation
-Then we know that the this NHIM will persist (from Fenichel's PMT).
+Then we know that this NHIM will persist (from Fenichel's PMT, see Supp.Sec~\ref{sec:fenichel}).
 We also know that there is a maximal perturbation size ($\epsilon_{LC}$) for which the limit cycle persists.
 So we have to guarantee that the limit cycle approximation is already close enough so that this perturbation does not destroy the limit cycle (Supp.Sec.~\ref{sec:periodcloseness}). %repetiiton
 We can now rescale the perturbation through the scalar $a$ in Eq.~\ref{eq:lc_correction} so that the period of approximation limit cycle matches the target's. 
@@ -853,7 +853,7 @@ Important!\citep{Park2023a}
 
 %%%%%%%%%%%%%%%%
 %%%CA
-\subsection{Approximating a continuous attractors}\label{sec:chaos}
+\subsection{Approximating continuous attractors}\label{sec:chaos}
 %TODO:  name for type V error: D-type (discretization) 
 %for the extension of continuous attractors we need to assume that all maximally invariant sets are normally hyperbolic
 
@@ -863,7 +863,7 @@ Each of the neighboring stable fixed points can be at most $\epsilon$ apart.
 This is structurally stable dynamics, so we can approximate its vector field with $\epsilon$ accuracy and we are guaranteed to have a topologically equivalent system to it with the fixed points being moved at most $\mathcal{O}(\epsilon)$. 
 
 
-%continuum of attractors (nonzero flow in at least one dim): e.g. torus
+For a continuum of attractors (nonzero flow in at least one dim): e.g. torus with limit cycles.
 We can tile the continuous attractor with a uniform grid of stable limit cycles.
 
 
@@ -1423,7 +1423,7 @@ kalitin2021attractors}
 
 
 
-\subsubsection{Fenichel's Persistent Manifold Theorem}
+\subsubsection{Fenichel's Persistent Manifold Theorem}\label{sec:fenichel}
 \begin{theorem}[\citep{fenichel1971persistence}; see also \citep{kuehn2015multipletimescale}]
 %\textbf{Theorem 2.2.2} ().%
  Consider
