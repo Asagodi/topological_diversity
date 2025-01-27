@@ -126,37 +126,11 @@ ANNs can generalize. After learning the data presented to them (a sample), ANNs 
 Accurately approximating dynamical systems is essential for understanding and predicting complex behaviors across a range of applications, from robotics to climate modeling.
 Recent advances in machine learning have enabled data-driven approaches to approximating these systems, providing new ways to model complex dynamics over extended periods.
 Here, we review key approaches in the literature and highlight emerging techniques that address these challenges, before we introduce our method that extends to multi-stable and complex systems over infinite time horizons.
-%
-%For an overview of the literature, see [litrev]
 See also \citep{li2022approximation} and \citep{jiang2023brief}.
 
-Density results describe the completeness of a hypothesis class relative to a target class, emphasizing the extent to which the hypothesis class can approximate every element in the target class with arbitrary precision.
-
-
-%TODO: unify terminology: UAP, density result...
 It is important to realize that a class of models (a hypothesis class) can have the universal approximation property (UAP) \emph{for a specific target class} given \emph{a specific metric to compare} (see also Sec.~\ref{sec:approximationtheory}).
 This property implies that the hypothesis class is dense in the target class, hence such results are also referred to as \emph{density results}.
-
-\begin{table}[h]
-\begin{tabular}{|l|l|l|l|l|l|}
-%\hline
-\cline{2-6}
-    \multicolumn{1}{c|}{}							%leave out size?
- 						&  Time interval & FMP	& Finite size 		&  Input     	&     Time   \\\cline{2-6}\hline
-\citet{cybenko1989approximation} 	& Finite	& No 	& Yes 			&  Yes		&	Continuous\\\hline  %vf
-\citet{funahashi1989approximate} 	& Finite	& No		& Yes			&  Yes		&	Continuous\\\hline  %vf
-\citet{hornik1989multilayer} 		& Finite	& No 	& Yes			& Yes		&	Continuous\\\hline  %vf
-\citet{funahashi1993approximation} 	& Finite	& No		& Yes			&  Yes		&	Continuous\\\hline
-\citet{jin1995approximation}		& Finite	& No		& Yes			& Yes		&	Continuous	\\\hline
-\citet{hammer2000approximation}	& Finite     & No 	& Yes			& Yes		& 	Discrete	\\\hline
-\citet{jin1995universal}			& Finite	& No		& Yes			& Yes		&	Discrete	\\\hline
-\citet{bai2019deq} 				& Infinite	& Yes	& No		 	& Yes 			&	Discrete		\\\hline
-\citet{schafer2007uap} 			& Infinite 	& Yes	& No			& Yes 			&	Discrete\\\hline
-\citet{wang2024state}			& Infinite   & Yes 	& No 		& Yes			& 	Continuous\\\hline % FMP type: (exp. decay) 
-\dots&\dots &\dots&\dots&\dots&\dots\\
-\end{tabular}
-\end{table}
-
+Density results describe the completeness of a hypothesis class relative to a target class, emphasizing the extent to which the hypothesis class can approximate every element in the target class with arbitrary precision.
 
 \paragraph{Learning sequences}
  A critical review of recurrent neural networks for sequence learning \citep{williams1989learning, pearlmutter1989learning, lipton2015rnn}.
@@ -609,7 +583,7 @@ Finally, fixed points of $\hat f$ are $\mathcal{O}(\epsilon)$ close to those of 
 %orbits from these initial conditions converge to $\omega$-limit sets that are at most $\epsilon_i$ Hausdorff distance from each other.
 \end{proof}
 
-This establishes that for all $\epsilon>0$ there is some time $T$ for which for all $t>T$ we have that $x(t)-\hat x(t)<\epsilon$.
+This establishes that for all $\epsilon>0$ and $x_0$ initial states in a basin of attraction (for which $\omega \psi(x_0,T) = x^*$) there is some time $T$ for which for all $t>T$ we have that $\psi(t)-\hat \psi(t)<\epsilon$.
 
 
 \paragraph{A tale of two errors}
@@ -638,9 +612,9 @@ How we can bound these two types of errors will be discussed in the next two sub
   }\label{fig:separatrices}
 \end{SCfigure}
 
-\subsubsection{Errors inside an intersection of the Basins of Attraction (BoA) of the target and approximation}\label{sec:inboa_approx}
+\subsubsection{Errors inside the intersection of the basins of attraction of the target and approximation}\label{sec:inboa_approx}
 %Introduce A_i^f notation
-%introduce boa
+%TODO: introduce boa Basins of Attraction (BoA)
 For an initial value $x_0\in BOA(A_i^f) \cap BOA(A_i^g)$, the flow deviates along the trajectories up to 
 \[
 \|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\| \, ds,
@@ -674,21 +648,20 @@ Hence, there exists an FNN that defines a vector field for which for each attrac
 %TODO: more catchy name for type II error: B-type (Basin) 
 \subsubsection{Errors at the boundary of a BoA}%type II
 \label{sec:separatrix_approx}
-The other type of error arises because trajectories go to different attractors, i.e., $x_0\in BOA(A_i^f,A_j^g)$ for $i\neq j$.
-For such initial points the error along the flow cannot be bounded.
-Eliminating this type of error would constitute perfectly matching the separatrices which can not be guaranteed.
+The other type of error (basin-type) arises because trajectories go to different attractors, i.e., $x_0\in \boa(A_i^f,A_j^g)$ for $i\neq j$, see Fig.~\ref{fig:separatrices}.
+For such initial points, the error along the trajectories will be higher than $\epsilon>0$ because the attractors are farther apart than $\epsilon$.
+Eliminating this type of error would constitute perfectly matching the separatrices which typically can not be guaranteed.
 We can reduce the volume in of initial points for which this type of error arises, by reducing the mismatch between the separatrices (proportional to the distance between the attractors).
 
-The volume for which type II error arises is 
-\[\sum\boa(A_i^f)\cap\boa(A_i^g).\]
+The minimal volume of initial values for which basin-type errors arise along their trajectories is 
+\[\varepsilon_{\operatorname{basin}} \coloneqq \sum_{i < j}\boa(A_i^f)\cap\boa(A_j^g).\] %prove?
+%encorporate f,g in def?
 
-%simplifying:%we can consider $\cl\boa(A_i) to be an invariant manifold with boundary
+\begin{proposition}\label{prop:min_sep_bound}
+For any $\delta>0$, we can choose $g$ such that $\varepsilon_{\operatorname{basin}}<\delta$.
+\end{proposition}
 
-%find max epsilon, delta
-Now we need to sum all the different errors together.
-We get a bunch of $\delta_i$'s.
-%Take $\epsilon_i<$.??
-Then $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each $i$ and hence $\sum_i\delta_i<\delta$.
+We will prove this by showing that separatrices are persistent.
 
 
 \paragraph{Showing that separatrices are persistent with isolating neighborhoods that fill the basin of attraction}
@@ -717,9 +690,9 @@ In the case of limit cycles, the isolating neighborhood takes on a distinctive t
 %Forward Invariance
 For each $t\in\reals$ the set $I_t = \{\varphi(t,x_0) \mid x_0 \in I_0 \}$ is a manifold.
 Furthermore, the union of these sets up to any time  $\bigcup_{s<t}I_s$, indeed forms an inflowing isolating neighborhood.
-
+%
 %fills up basin
- As $t\rightarrow\infty$ the isolating neighborhood expands to fill the basin of attraction of the fixed point.
+Then, as $t\rightarrow\infty$, the isolating neighborhood expands to fill the basin of attraction of the fixed point.
  This illustrates the neighborhood’s role in characterizing the asymptotic behavior of trajectories and the fixed point’s influence on the global dynamics.
 
 %4:
@@ -739,22 +712,23 @@ Then for some  $\epsilon_{\operatorname{sep}}>0$ we have that
 \bigcup_i \boa(A_i^f)\cap\boa(A_i^g) \subset \bigcup_i B_{\epsilon_{\operatorname{sep}}}(\partial\boa(A_i^f)). 
 \end{equation}
 
-The right hand side's volume is at most $\mathcal{O}(\delta)$ with $\leq\epsilon_{\operatorname{sep}}$ the Hausdorff distance between the total separatrix submanifolds.
+The right hand side's volume is at most $\mathcal{O}(\delta)$ with $\delta\leq\epsilon_{\operatorname{sep}}$ the Hausdorff distance between the total separatrix submanifolds.
 This $\delta$ can be made arbitrarily low because of the FNN universal approximation results.
 
 
 %link: here is how
 For each attractor $A_i$ we have that the boundary of the basin of attraction $\partial(\boa(A_i^f))$ is a compact normally hyperbolic invariant manifold (See Supp.Sec.~\ref{sec:boaboundary}).
-Consider the connected components $B^f_{ij}$ of $\partial(\boa(A_i^f))$.
-%\footnote{For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.}
-Then, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$ $C^1$ close to $f$ such that $g$ has a normally hyperbolic invariant manifold  $B^g_{ij}$ that is diffeomorphic to and at most at $\mathcal{O}(\delta_{ij})$ Hausdorff distance from $B^f_{ij}$.
+Consider the connected components $B^f_{ij}$ of $\partial(\boa(A_i^f))$. %NOTE: it is not the case that we have a connected component for each pair of attractors
+Then, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}-C^1$ close to $f$ such that $g$ has a normally hyperbolic invariant manifold  $B^g_{ij}$ that is diffeomorphic to and at most at $\mathcal{O}(\delta_{ij})$ Hausdorff distance from $B^f_{ij}$.
 Therefore, by Eq.~\ref{eq:separatrixoverlap}, the overlap of the separatrices is less than $\mathcal{O}(\epsilon_{\operatorname{sep}})$. %TODO: figure out bound on the volume
 %compactness should imply that the volume is at most $\mathcal{\epsilon_{\operatorname{sep}}$.
 Therefore, there is $k_{ij}\in\reals$ such that the Hausdorff distance between $B^f_{ij}$ and $B^g_{ij}$ is $k_{ij}\delta_{ij}$.
-Let  $N_{\operatorname{cc}}$ be the number of connected components of $\partial(\boa(A_i^f))$.
-Choose $\delta_{ij}<k_{ij}\delta/N_{\operatorname{cc}}$. %the global \delta....
-Define $\delta_i\coloneqq\sum_{i=1}{N_{\operatorname{cc}}}\delta_{ij}$.
-%TODO: conclude.
+Let  $N_{\operatorname{cc}}^i$ be the number of connected components of $\partial(\boa(A_i^f))$.
+Choose $\delta_{ij}<k_{ij}\delta/N_{\operatorname{cc}}^i$. 
+Define $\delta_i\coloneqq\sum_{i=1}{N_{\operatorname{cc}}^i}\delta_{ij}$.
+% conclude for all attractor (pairs)
+Now we need to sum errors coming from all pairs of basins of attraction together.
+Take $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each $i$ and hence $\sum_i\delta_i<\delta$.
 
 %\subsubsection{Alternative: stable and unstable manifolds as persistent}
 %stable and unstable manifolds of a normally hyperbolic manifold persist under perturbation Theorem 2.3.6 in \citep{kuehn2015multipletimescale}.
@@ -763,12 +737,17 @@ Define $\delta_i\coloneqq\sum_{i=1}{N_{\operatorname{cc}}}\delta_{ij}$.
 %Persistence of laminations \citep{berger2010persistence}
 
 
+%simplifying:%we can consider $\cl\boa(A_i) to be an invariant manifold with boundary
+
+%\footnote{For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.}
+
+
 \subsubsection{Proof of Theorem 1 for systems with hyperbolic fixed points}\label{sec:proof_fp_approx}
 \begin{proof}[Theorem \ref{thrm:approx}]
 Because of Conley's fundamental theorem of dynamical systems\citep{conley1978morse}, we know that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
 This implies that the phase portrait consists of basins of attraction and separatrices, both gradient-like, as well as fixed points, which are chain-recurrent.
 %
-By Sec.\ref{sec:separatrix_approx} we can make the part of the state space which will have error bigger than $\epsilon$ arbitrarily small. %for every delta
+By Sec.\ref{sec:separatrix_approx} (Prop.~\ref{prop:min_sep_bound}) we can make the part of the state space which will have error bigger than $\epsilon$ arbitrarily small. %for every delta
 %for every epsilon
 By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can make the trajectory wise error smaller than $\epsilon$.
 \end{proof}
@@ -1159,12 +1138,36 @@ Universal approximation of
 \begin{itemize}
 \item Homeomorphisms \citep{zhang2020approximation}
 \item Invariant functions\citep{li2022deep}
-\item Monotone analytic functions homotopic to the identity\citep{tabuada2020universal}
+\item Monotone analytic functions homotopic to the identity\citep{tabuada2020universal}, \citep{tabuada2022universal}
 \end{itemize}
 
-h\citep{tabuada2022universal}
-g\citep{marchi2021training}
 
+a\citep{marchi2021training}
+
+
+
+
+\section{UAP for RNNs overview}
+
+\begin{table}[h]
+\begin{tabular}{|l|l|l|l|l|l|}
+%\hline
+\cline{2-6}
+    \multicolumn{1}{c|}{}							%leave out size?
+ 						&  Time interval & FMP	& Finite size 		&  Input     	&     Time   \\\cline{2-6}\hline
+\citet{cybenko1989approximation} 	& Finite	& No 	& Yes 			&  Yes		&	Continuous\\\hline  %vf
+\citet{funahashi1989approximate} 	& Finite	& No		& Yes			&  Yes		&	Continuous\\\hline  %vf
+\citet{hornik1989multilayer} 		& Finite	& No 	& Yes			& Yes		&	Continuous\\\hline  %vf
+\citet{funahashi1993approximation} 	& Finite	& No		& Yes			&  Yes		&	Continuous\\\hline
+\citet{jin1995approximation}		& Finite	& No		& Yes			& Yes		&	Continuous	\\\hline
+\citet{hammer2000approximation}	& Finite     & No 	& Yes			& Yes		& 	Discrete	\\\hline
+\citet{jin1995universal}			& Finite	& No		& Yes			& Yes		&	Discrete	\\\hline
+\citet{bai2019deq} 				& Infinite	& Yes	& No		 	& Yes 			&	Discrete		\\\hline
+\citet{schafer2007uap} 			& Infinite 	& Yes	& No			& Yes 			&	Discrete\\\hline
+\citet{wang2024state}			& Infinite   & Yes 	& No 		& Yes			& 	Continuous\\\hline % FMP type: (exp. decay) 
+\dots&\dots &\dots&\dots&\dots&\dots\\
+\end{tabular}
+\end{table}
 
 \section{Neural ODEs (NODEs)}
 %\subsection{}
