@@ -481,7 +481,6 @@ We then extend these results to non-autonomous dynamical systems.
 \subsection{The problem of approximation}\label{sec:approximationtheory} %{Problem statement}
 For behaving agents we can formalize their behavior as sequence-to-sequence or input-output mappings.
 We will call $\mathcal{X}$ the space of input sequences and $\mathcal{Y}$ the space of output sequences.
-
 We consider a family of target functions, or simply targets, which is a subset \(\mathcal{C} \) of all mappings \( \mathcal{X} \rightarrow \mathcal{Y} \), i.e., \( \mathcal{C} \subset \mathcal{Y}^\mathcal{X} \). 
 These are the relationships we wish to approximate (or ``learn"), by some (simpler or at least parameterized) candidate functions.
 Let us denote this set of \textbf{candidates} by \( \mathcal{H} \subset \mathcal{Y}^\mathcal{X} \).
@@ -766,6 +765,9 @@ Define $\delta_i\coloneqq\sum_{i=1}{N_{\operatorname{cc}}}\delta_{ij}$.
 
 \subsubsection{Proof of Theorem 1 for systems with hyperbolic fixed points}\label{sec:proof_fp_approx}
 \begin{proof}[Theorem \ref{thrm:approx}]
+Because of Conley's fundamental theorem of dynamical systems\citep{conley1978morse}, we know that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
+This implies that the phase portrait consists of basins of attraction and separatrices, both gradient-like, as well as fixed points, which are chain-recurrent.
+%
 By Sec.\ref{sec:separatrix_approx} we can make the part of the state space which will have error bigger than $\epsilon$ arbitrarily small. %for every delta
 %for every epsilon
 By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can make the trajectory wise error smaller than $\epsilon$.
@@ -859,8 +861,8 @@ We have to make sure that all the $\hat{\epsilon}_i$ are step-wise small enough 
 %when we change a_T_i we have to adjust the other a_T_j s
 %we have to guarantee that a(\epsilon_{T_i})
 
- ELU/CELU/GeLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles?
-
+ ELU/CELU/GeLU/TaLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid,hasan2023talu} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles?
+\citep{duch1999survey,dubey2022activation,jagtap2023activation,ramachandran2017activation,hayou2019activation} survey of neural activation functions
 
 
 %%%QPTA
