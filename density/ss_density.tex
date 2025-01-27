@@ -654,7 +654,8 @@ Eliminating this type of error would constitute perfectly matching the separatri
 We can reduce the volume in of initial points for which this type of error arises, by reducing the mismatch between the separatrices (proportional to the distance between the attractors).
 
 The minimal volume of initial values for which basin-type errors arise along their trajectories is 
-\[\varepsilon_{\operatorname{basin}} \coloneqq \sum_{i < j}\boa(A_i^f)\cap\boa(A_j^g).\] %prove?
+\[\varepsilon_{\operatorname{basin}} \coloneqq \vol \bigcup_{i \neq j}\boa(A_i^f)\cap\boa(A_j^g) = \sum_{i \neq j} \vol\left(\boa(A_i^f)\cap\boa(A_j^g)\right).\] %prove?
+%CHECK: double counting
 %encorporate f,g in def?
 
 \begin{proposition}\label{prop:min_sep_bound}
@@ -683,7 +684,7 @@ For each \( t \in \reals \), the image \( \{ \varphi(t, s) \mid s \in I_0 \} \) 
 \end{enumerate}
 This forms the boundary of the isolating neighborhood.
 
-\begin{remark}
+\begin{remark}%move?
 In the case of limit cycles, the isolating neighborhood takes on a distinctive topology. For instance, in a 3D state space, it forms a toroidal 2D manifold surrounding the cycle. In 2D systems, the neighborhood reduces to a pair of connected circles. These structures are particularly relevant for the analysis of periodic orbits and their stability.
  \end{remark}
 
@@ -709,7 +710,7 @@ where \(\overline{\cdot}\) denotes the closure of a set (same as \(\cl\)).
 %
 Then for some  $\epsilon_{\operatorname{sep}}>0$ we have that 
 \begin{equation}\label{eq:separatrixoverlap}
-\bigcup_i \boa(A_i^f)\cap\boa(A_i^g) \subset \bigcup_i B_{\epsilon_{\operatorname{sep}}}(\partial\boa(A_i^f)). 
+\bigcup_{i\neq j} \boa(A_i^f)\cap\boa(A_j^g) \subset \bigcup_i B_{\epsilon_{\operatorname{sep}}}(\partial\boa(A_i^f)). 
 \end{equation}
 
 The right hand side's volume is at most $\mathcal{O}(\delta)$ with $\delta\leq\epsilon_{\operatorname{sep}}$ the Hausdorff distance between the total separatrix submanifolds.
@@ -728,7 +729,7 @@ Choose $\delta_{ij}<k_{ij}\delta/N_{\operatorname{cc}}^i$.
 Define $\delta_i\coloneqq\sum_{i=1}{N_{\operatorname{cc}}^i}\delta_{ij}$.
 % conclude for all attractor (pairs)
 Now we need to sum errors coming from all pairs of basins of attraction together.
-Take $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each $i$ and hence $\sum_i\delta_i<\delta$.
+Take $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each attractor $A_i$ and hence $\sum_i\delta_i<\delta$.
 
 %\subsubsection{Alternative: stable and unstable manifolds as persistent}
 %stable and unstable manifolds of a normally hyperbolic manifold persist under perturbation Theorem 2.3.6 in \citep{kuehn2015multipletimescale}.
@@ -749,7 +750,7 @@ This implies that the phase portrait consists of basins of attraction and separa
 %
 By Sec.\ref{sec:separatrix_approx} (Prop.~\ref{prop:min_sep_bound}) we can make the part of the state space which will have error bigger than $\epsilon$ arbitrarily small. %for every delta
 %for every epsilon
-By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can make the trajectory wise error smaller than $\epsilon$.
+By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can make the trajectory-wise error smaller than $\epsilon$.
 \end{proof}
 
 \subsection{Approximation of stable limit cycles}\label{sec:lc_approx}
