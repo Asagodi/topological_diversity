@@ -135,6 +135,9 @@ Density results describe the completeness of a hypothesis class relative to a ta
 \paragraph{Learning sequences}
  A critical review of recurrent neural networks for sequence learning \citep{williams1989learning, pearlmutter1989learning, lipton2015rnn}.
  
+ \paragraph{System identification}
+ \citep{werbos1989neural, kuschewski1993application, wang2006fully}
+ 
  %\paragraph{Operators}%approximation of an operator
 
 \subsection{Universal approximation for mappings}\label{sec:uapmappings}
@@ -251,7 +254,7 @@ These networks can approximate the trajectories of autonomous dynamical systems,
 For non-autonomous systems, where the dynamics explicitly depend on external inputs, it has been shown that nonlinear dynamical systems can be approximated on compact time intervals (Lemma 5.3.2 in \citep{garces2012strategies}, similar to Lemma 5.3.1 in \citep{smale1974differential}).
 This result broadens the applicability of continuous-time RNNs to a wide variety of systems influenced by external signals.
 A fundamental result in this domain is that any given trajectory of a dynamical system can be approximately realized by a properly configured continuous-time recurrent network on a finite time interval \citep{nakamura2009approximation}.  %u : R → RNu be a C1 mapping, f : W → E be a C1 mapping, and suppose that x′ = f (u(t),x(t)) defines a non-autonomous dynamical system.
-Finally,  approximation results for input-driven systems with NODEs have been developed more recently \citep{ko2023homotopy}.
+Finally,  approximation results for input-driven systems with NODEs have been developed more recently \citep{ko2023homotopy, zakwan2023universal}.
 	
 %time-variant	
 \paragraph{Time variant systems}
@@ -379,6 +382,8 @@ UAP of RNNs for uniformly asymptotically incrementally stable systems on an infi
 This result was extended to include approximation of systems with an input \citep{manjunath2013echo}.
 %ESNs are universal uniform approximators  for discrete-time fading memory filters with uniformly bounded inputs \citep{grigoryeva2018echo,grigoryeva2018universal}. 
 Reservoir computing (RC), the broader framework that includes ESNs, has also been applied to neuroscience \citep{auslender2024decoding}.
+
+%ADD? ceni2020echo
 
 If the domain of the functional $H$ is restricted to a space of uniformly bounded sequences with the fading memory property then various families of state-space transformations can be used to approximate it uniformly: 
  linear systems with polynomial or neural network readouts \citep{boyd1985fading,grigoryeva2018universal,gonon2019reservoir}, state-affine systems with linear readouts \citep{grigoryeva2018universal}, or echo state networks \citep{grigoryeva2018echo,gonon2019reservoir,gonon2021fading,gonon2023approximation}.
@@ -833,21 +838,21 @@ But they can be funky, see Fig.~\ref{fig:unstab_lc_3fps}.
 %%%%%%%%%%%%%%%%
 \subsubsection{Multiple limit cycles}
 We can perform the same procedure for a finite set of limit cycles.
-We have to make sure that all the $\hat{\epsilon}_i$ are step-wise small enough so that $\epsilon_{T_i}$ is small enough. 
-
-\[ \tilde f_i = (1+ \epsilon_{T_i})\hat{f}_i + \epsilon_{T_i}\hat{\epsilon}_i\bar{f}_i + \sum_{j\neq i}\epsilon_{T_j}\hat{\epsilon}_j\bar{f}_j\]
+We have to make sure that all the $\hat{\epsilon}_i$ are small enough so that $\epsilon_{T_i}$ is small enough:
+\[ \tilde f_i = (1+ \epsilon_{T_i})\hat{f}_i + \epsilon_{T_i}\hat{\epsilon}_i\bar{f}_i + \sum_{j\neq i}\epsilon_{T_j}\hat{\epsilon}_j\bar{f}_j.\]
 
 %can we really do this sequentially? no, we have to do it in parallel
 %when we change a_T_i we have to adjust the other a_T_j s
 %we have to guarantee that a(\epsilon_{T_i})
 
+\paragraph{Using compact support activation functions}
  ELU/CELU/GeLU/TaLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid,hasan2023talu} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles?
 \citep{duch1999survey,dubey2022activation,jagtap2023activation,ramachandran2017activation,hayou2019activation} survey of neural activation functions
 
 
+
 %%%QPTA
-\paragraph{Quasi-periodic toroidal attractors (QPTA)}
-Important!\citep{Park2023a}
+Systems with multiple limit cycles are ubiquitous: e.g., Quasi-periodic toroidal attractors (QPTA)\citep{Park2023a}.
 
 
 
@@ -916,6 +921,9 @@ If an input sequence doesn't converge (i.e. it has a mixing property) we get the
 %and tje input is not in the kernel of the input function
 
 
+Important concepts: %?
+Input-to-state stability \citep{sontag1995iss, sontag1996iss, sontag2008iss}
+
 \subsection{Asymptotically autonomous dynamics}
 
 The vector ordinary differential equation  
@@ -930,6 +938,9 @@ for large \( t \). If the solutions of Eq.~\ref{eq:autonomous} are uniquely dete
 
 
 \subsection{Contractive dynamics}
+\begin{definition}
+Given the system equations \(\dot{x} = f(x, t)\), a region of the state space is called a \textit{contraction region} if the Jacobian \(\frac{\partial f}{\partial x}\) is uniformly negative definite in that region.
+\end{definition}
 
 \begin{theorem}[Theorem 2 in \citep{lohmiller1998contraction}]\label{thrm:contractive}
 Given the system equations $\dot x = f(x,t)$, any trajectory, which starts in a ball of constant radius with respect to the metric $M(x,t)$, centered at a given trajectory and contained at all times in a contraction region with respect to $M(x,t)$,  remains in that ball and converges exponentially to this trajectory.
@@ -994,7 +1005,6 @@ NODEs Simulate RNNs
 -Each RNN is state space equivalent to an RNN
 
 
-
 NNs as controllers \citep{sontag1992neural}
 
 
@@ -1011,6 +1021,7 @@ Reconstructing Computational Dynamics from Neural Measurements with Recurrent Ne
 
 Use of NODEs in neuroscience \citep{kim2021inferring}.
 
+system identification in neuroscience \citep{han2023si} 
 
 \paragraph{Models that generalize over time}
 
