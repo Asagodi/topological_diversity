@@ -909,14 +909,24 @@ This can be only done by also calculating in the probability of making an error 
 So the approximation probability guarantee will need to be formulated in terms of the probability of making an error bigger than a threshold calculated over the function of input sequences and initial points.
 
 For non-autonomous we need another Bernstein-type result:
-we can only approximate input driven dynamics (in our metric) if a forward attractor exists for each input sequence 
+we can only approximate input driven dynamics (in our metric) if a forward attractor exists for each input sequence.
 This allows us to formulate approximation in terms of attractors and separatrices (but now in input space)
 
 If an input sequence doesn't converge (i.e. it has a mixing property) we get the same issue with approximating the system as with chaotic orbits.
-
+%and tje input is not in the kernel of the input function
 
 
 \subsection{Asymptotically autonomous dynamics}
+
+The vector ordinary differential equation  
+\begin{equation}\label{eq:nonautonomous}
+ \quad y' = f(y) + g(t, y),
+\end{equation}
+is commonly said to be asymptotically autonomous if \( g(t, y) \) becomes small in some sense as \( t \to \infty \). One then hopes that the solutions of Eq.~\ref{eq:nonautonomous} behave in some sense like those of the autonomous equation  
+\begin{equation}\label{eq:autonomous}
+\quad x' = f(x)
+\end{equation}
+for large \( t \). If the solutions of Eq.~\ref{eq:autonomous} are uniquely determined by initial conditions,   then it is well-known \cite{} that all positive limit sets \( \omega(x_0) \) of Eq.~\ref{eq:autonomous} are invariant with respect to Eq.~\ref{eq:autonomous}.
 
 
 \subsection{Contractive dynamics}
@@ -926,7 +936,7 @@ Given the system equations $\dot x = f(x,t)$, any trajectory, which starts in a 
 \end{theorem}
 
 \begin{remark}
-Theorem \ref{thrm:contractive} actually corresponds to a necessary and sufficient condition for exponential convergence of a system. In this sense it generalizes and simplifies a number of previous results in dynamic systems theory.
+Theorem \ref{thrm:contractive} actually corresponds to a necessary and sufficient condition for exponential convergence of a system. 
 \end{remark}
 
 \begin{remark}
