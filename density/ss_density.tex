@@ -25,10 +25,8 @@
 \newtheorem{proposition}{Proposition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{corollary}{Corollary}[theorem]
-\theoremstyle{definition}
-\newtheorem{definition}{Definition}
-\theoremstyle{remark}
-\newtheorem{remark}{Remark}
+\theoremstyle{definition} \newtheorem{definition}{Definition}
+\theoremstyle{remark} \newtheorem{remark}{Remark}
 
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\sep}{\operatorname{sep}}
@@ -134,6 +132,8 @@ Density results describe the completeness of a hypothesis class relative to a ta
 
 \paragraph{Learning sequences}
  A critical review of recurrent neural networks for sequence learning \citep{williams1989learning, pearlmutter1989learning, lipton2015rnn}.
+ 
+Approximation of large-scale dynamical systems \citep{antoulas2005approximation}
  
  \paragraph{System identification}
  \citep{werbos1989neural, kuschewski1993application, wang2006fully}
@@ -254,7 +254,8 @@ These networks can approximate the trajectories of autonomous dynamical systems,
 For non-autonomous systems, where the dynamics explicitly depend on external inputs, it has been shown that nonlinear dynamical systems can be approximated on compact time intervals (Lemma 5.3.2 in \citep{garces2012strategies}, similar to Lemma 5.3.1 in \citep{smale1974differential}).
 This result broadens the applicability of continuous-time RNNs to a wide variety of systems influenced by external signals.
 A fundamental result in this domain is that any given trajectory of a dynamical system can be approximately realized by a properly configured continuous-time recurrent network on a finite time interval \citep{nakamura2009approximation}.  %u : R → RNu be a C1 mapping, f : W → E be a C1 mapping, and suppose that x′ = f (u(t),x(t)) defines a non-autonomous dynamical system.
-Finally,  approximation results for input-driven systems with NODEs have been developed more recently \citep{ko2023homotopy, zakwan2023universal}.
+Finite-time horizon approximation results for input-driven systems with NODEs have been developed more recently \citep{li2022deep, ko2023homotopy, zakwan2023universal}.
+Finally, neural flows have been proposed as an alternative to NODEs with comparable approximation capabilities\citep{bilos2021neural}.
 	
 %time-variant	
 \paragraph{Time variant systems}
@@ -942,6 +943,21 @@ for large \( t \). If the solutions of Eq.~\ref{eq:autonomous} are uniquely dete
 Given the system equations \(\dot{x} = f(x, t)\), a region of the state space is called a \textit{contraction region} if the Jacobian \(\frac{\partial f}{\partial x}\) is uniformly negative definite in that region.
 \end{definition}
 
+\begin{theorem}[Theorem 1 in \citep{lohmiller1998contraction}]\label{thrm:contractive_ball}
+Given the system equations  $\dot x = f(x, t)$, any trajectory, which starts in a ball of constant radius centered about a given trajectory and contained at all times in a contraction region, remains in that ball and converges exponentially to this trajectory.
+\end{theorem}
+
+Theorem 1 can be vastly extended simply by using a more general definition of differential length.
+
+
+\begin{definition}
+Given the system equations \(\dot{x} = f(x, t)\), a region of the state space is called a \textit{contraction region} with respect to a uniformly positive definite metric \( M(x, t) = \Theta^T \Theta \), if equivalently \( F \) in (7) is uniformly negative definite or  
+\[
+\frac{\partial f}{\partial x}^T M + M \frac{\partial f}{\partial x} + \dot{M} \leq -\beta_M M
+\]
+(with constant \( \beta_M > 0 \)) in that region.
+\end{definition}
+
 \begin{theorem}[Theorem 2 in \citep{lohmiller1998contraction}]\label{thrm:contractive}
 Given the system equations $\dot x = f(x,t)$, any trajectory, which starts in a ball of constant radius with respect to the metric $M(x,t)$, centered at a given trajectory and contained at all times in a contraction region with respect to $M(x,t)$,  remains in that ball and converges exponentially to this trajectory.
 \end{theorem}
@@ -1078,12 +1094,11 @@ Many popular activation functions, such as the logistic sigmoid and tanh, fall i
 These functions introduce the necessary non-linearity, enabling the network to break free from the constraints of purely linear transformations.
 
 %non-sigmoidal activations like the \textit{Rectified Linear Unit (ReLU)} 
-Despite ReLU's unbounded nature, it still supports the universal approximation property, as shown in \citep{yarotsky2017error}.
+Despite ReLU's unbounded nature, it still supports the universal approximation property \citep{yarotsky2017error}.
 
 \citep{mhaskar2019function}
 
 \subsection{The Multi-layer Perceptron (MLP)}
-
 The universal approximation property of FNNs was first proven by \citep{cybenko1989approximation} for sigmoidal activation functions. This was followed by significant generalizations by \citep{hornik1989multilayer}, \citep{funahashi1989approximate} and \citep{hechtnielsen1992backpropagation}, which extended the result to broader classes of activation functions, including the popular ReLU.
 These results serve as the cornerstone of modern neural network theory, supporting the use of deep architectures across diverse machine learning applications.
 
@@ -1099,7 +1114,6 @@ h^{(1)} = \sigma(W^{(1)} x + b^{(1)})
 f_{\text{MLP}}(x) = W^{(2)} h^{(1)} + b^{(2)}
 \]
 Here, \(h^{(1)}\) represents the hidden layer, while \(W^{(1)}, W^{(2)}\) and \(b^{(1)}, b^{(2)}\) are the weights and biases learned during training. The activation function \(\sigma(\cdot)\) introduces the necessary non-linearity.
-
 
 Three-layered multi-output Feedforward Networks are universal approximators for vector-valued functions \citep{irie1988capabilities}.
 
@@ -1133,7 +1147,8 @@ Theorem 1 holds for the approximation of functions in \( C^{I,N} \) and \( M^{I,
 %For the approximations, we either need to let the width or depth of the MLP grow.
 
 It is not the specific choice of the activation function but rather the multilayer feed-forward architecture itself that gives neural networks the potential of being universal approximators\citep{hornik1991approximation}.
-%
+
+
 The universal approximation property is equivalent to having a nonpolynomial activation function \citep{pinkus1999approximation}.
 
 \citep{mhaskar1997neural}
@@ -1238,6 +1253,11 @@ semiautonomous NODEs (SA-NODEs) \citep{li2024universal}
 
 
 \section{Dynamical systems concepts}
+Overview: TBW
+
+
+
+
 \subsection{Fading memory}
 \begin{definition}[Fading memory Property (FMP)]
 Let $x_1, x_2$ be bounded sequences indexed by $\mathbb{R}$, and let $H$ be a sequence of causal, shift-equivariant (also called time-homogeneous) functionals.
@@ -1270,7 +1290,7 @@ y_t = h(x_t),
 \end{equation}
 where \( F : \mathbb{R}^L \times \mathbb{R}^d \rightarrow \mathbb{R}^L \) and \( h : \mathbb{R}^L \rightarrow \mathbb{R}^d \) are a state and a readout map, respectively. \( \mathbb{R}^L \) is, in this case, the state space and, typically, \( L \) is much bigger than \( d \).
 
-\subsection{Some Preliminaries}
+\subsection{Uniqueness of solutions}
 To construct the infinite time horizon approximation theory of the NODEs, some preliminaries will be provided in this section.
 
 \begin{definition}[Lipschitz]
@@ -1469,6 +1489,13 @@ Consider the autonomous system
 \end{equation}
 with \(f \in C^1(E)\) where E is an open subset of \(\reals^n\). 
 
+\begin{definition}
+The \textit{global attractor} of a system \( \dot{x} = f(x) \) (relative to the state space \( X \)) is the set  
+\[
+\mathbb{A} = \bigcap_{t \geq 0} \phi(t,X).
+\]
+\end{definition}
+
 \begin{definition}[\(\omega\)- and \(\alpha\)-limit sets]
 A point \( p \in E \) is a \(\omega\)-limit point of the trajectory \( \varphi(t, x) \) of the system Eq.~\ref{eq:attractorode} if there exists a sequence \( t_n \to +\infty \) such that
 \[
@@ -1480,6 +1507,22 @@ Similarly, if there exists a sequence \( t_n \to -\infty \) such that
 \]
 and the point \( q \in E \), then the point \( q \) is called an \(\alpha\)-limit point of the trajectory \( \varphi(t, x) \) of  Eq.~\ref{eq:attractorode}. The set of all \(\omega\)-limit points of a trajectory \( r \) is called the \(\omega\)-limit set of \( r \) and is denoted by \( \omega(r) \). The set of all \(\alpha\)-limit points of a trajectory \( r \) is called the \(\alpha\)-limit set of \( r \) and is denoted by \( \alpha(r) \). The set of all limit points of \( r \), \( \alpha(r) \cup \omega(r) \), is called the limit set of \( r \).
 \end{definition}
+
+\subsubsection{Nonexpansivity}
+
+\begin{definition}\label{def:nonexpansive}
+A system \( \dot{x} = f(x) \) is \textit{nonexpansive} with respect to a norm \( \|\cdot\| \) if for all \( t > 0 \) and all \( x, y \) in the system’s state space, we have  
+\[
+\|\phi_t(x) - \phi_t(y)\| \leq \|x - y\|.
+\]
+\end{definition}
+
+
+\textbf{Corollary 2. in \citep{duvall2024remark}} Suppose we have a \( C^1 \) system \( \dot{x} = f(x) \) with a compact forward-invariant state space \( X \). Then, for any real number \( t \geq 0 \), the time evolution operator \( \phi_t \) is an isometry on the set  
+\[
+A = \bigcap_{t \geq 0} \phi_t(X)
+\]  
+(i.e., the global attractor of the system).
 
 
 \subsection{Basins of attraction}
