@@ -1,0 +1,80 @@
+\documentclass{article} % For LaTeX2e
+
+\usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2024
+\usepackage[final]{neurips_2024}
+\pdfminorversion=6
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{thmtools,mathtools,mathrsfs}
+\usepackage{amsfonts}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}[theorem]
+\theoremstyle{definition} \newtheorem{definition}{Definition}
+\theoremstyle{remark} \newtheorem{remark}{Remark}
+
+\title{Learnability of dynamics with NODEs and RNNs}
+
+\author{
+    Tushar Arora, \'Abel S\'agodi
+}
+
+\begin{document}
+
+\maketitle
+\begin{abstract}
+We can approximate dynamics given infinite resources, but what can we approximate with few resources?
+What is the interpretability-correctness trade-off?
+\end{abstract}
+
+\section{Introduction}
+
+
+\begin{definition}
+The \textit{multi-layer perceptron (MLP)}. For a simple 3-layer MLP, the output can be expressed as:
+\[
+h^{(1)} = \sigma(W^{(1)} x + b^{(1)})
+\]
+\[
+f_{\text{MLP}}(x) = W^{(2)} h^{(1)} + b^{(2)}
+\]
+Here, \(h^{(1)}\) represents the hidden layer, while \(W^{(1)}, W^{(2)}\) and \(b^{(1)}, b^{(2)}\) are the weights and biases learned during training. The activation function \(\sigma(\cdot)\) introduces the necessary non-linearity.
+\end{definition}
+
+Three-layered multi-output Feedforward Networks are universal approximators for vector-valued functions \citep{irie1988capabilities}.
+
+Despite ReLU's unbounded nature, it still supports the universal approximation property \citep{yarotsky2017error}.
+
+
+
+\subsection{What type of dynamics are easy to implement?}
+These results are called Bernstein type in the classification of \cite{jiang2023brief}.
+
+
+\subsubsection{Which architecture is better: RNN or MLP?}
+\begin{itemize}
+\item Less $N$ in (layer 2 for MLP, hidden units for RNN) for the same $\epsilon$?
+\item Less training time? (Difficult to measure)
+\end{itemize}
+
+E.g. limit cycles are difficult for MLPs (observation).
+
+
+\subsubsection{What can we say about interpretability?}
+
+
+\subsubsection{How to solve?}
+\begin{itemize}
+\item Taylor series for the vector field?
+\item Fourier series for the flow?
+\item ReLU 3 layer MLP is invertible (?)
+\end{itemize}
+
+
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{../all_ref.bib}
+
+\end{document}
