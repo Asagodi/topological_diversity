@@ -827,15 +827,18 @@ TODO: trajectories next to LC have same period Chapter 9 in \citep{ermentrout201
 
 \paragraph{Summary}
 We can choose the initial approximation $\hat{f}$ such that the period difference is smaller than $\epsilon_T$.
-We can then choose a correction to the vector field in a tubular neighborhood around the limit cycle such that this difference is reduced to zero.
+We can then choose a correction to the vector field in a tubular neighborhood around the limit cycle such that the difference in periods between target and approximation is zero.
 
 
 %%effects
-\paragraph{The effect of the correction}
-- Tubular neighbourhood: $\epsilon_T$ effect
-- Outside $\hat\epsilon$ effect for a non-compact activation function (e.g., affects location of fixed points and limit cycles)
--  $\hat\epsilon$ needs to be small enough so that effect of correction outside of the tubular neighborhood doesn't affect attractors and separatrices too much.
+\paragraph{The effect of the correction $\tilde \epsilon\coloneqq a(\epsilon_T)\hat\epsilon$}
+- Tubular neighbourhood: $\|\hat f_{\operatorname{bump}}\|$ effect (relevant for $\overline\boa(A_i)$). 
 
+- Outside $\tilde\epsilon$ effect for a non-compact activation function (e.g., affects location of fixed points and limit cycles)
+
+-  $\tilde\epsilon$ needs to be small enough so that effect of correction outside of the tubular neighborhood doesn't affect attractors and separatrices too much.
+
+-- These should be also taken into account when choosing an initial approximation $\hat f$ to which to apply the correction.
 
 \paragraph{The basin of attraction for a stable limit cycle}%irrelevant?
 Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension $n-1$, with a scalar circle coordinate \citep{wilson1967structure}.
