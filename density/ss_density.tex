@@ -852,14 +852,18 @@ But they can be funky, see Fig.~\ref{fig:unstab_lc_3fps}.
 \subsubsection{Multiple limit cycles}
 Can we perform the same procedure for $N>1$ limit cycles?
 We have to make sure that all the $\hat{\epsilon}_i$ are small enough so that $\epsilon_{T_i}$ is small enough:
-\begin{equation}\label{eq:nlc_constraint}
-\tilde f_i = (1+ \epsilon_{T_i})\hat{f}_i + \sum_{j}a(\epsilon_{T_j})\hat{\epsilon}_j\bar{f}_j.
+\begin{equation}\label{eq:nlc_vfs}
+\tilde f_i = \hat{f}_i + \sum_{j}a(\epsilon_{T_j})\hat{\epsilon}_j\bar{f}_j.
 \end{equation}
 
 %can we really do this sequentially? no, we have to do it in parallel
 %when we change a_T_i we have to adjust the other a_T_j s
 %we have to guarantee that a(\epsilon_{T_i})
-\paragraph{Finding local perturbations to simulatneously satisfy Eq.\ref{eq:nlc_constraint} for $i=1,\dots, N$.}
+\paragraph{Finding local perturbations to simultaneously satisfy Eq.\ref{eq:nlc_vfs} for $i=1,\dots, N$.}
+We need to find $a(\epsilon_{T_i})$ and $\hat\epsilon_i$ for $i=1,\dots,N$ such that 
+\begin{equation}\label{eq:nlc_constraints}
+\int_{\tilde{\gamma}}\|\tilde{f}_i(x)\| dx = \frac{1}{T_i} \ \  \text{for} \ i=1,\dots, N. 	% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
+\end{equation}
 
 \paragraph{Using compact support activation functions}
  ELU/CELU/GeLU/TaLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid,hasan2023talu} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles.
