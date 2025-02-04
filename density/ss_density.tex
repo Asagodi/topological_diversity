@@ -474,7 +474,7 @@ This difference is measured as the expectation of the uniform norm difference be
 We can make the probability of finding a trajectory of the approximation to be off by a certain arbitrary threshold arbitrarily small. 
 
 
-We start by showing the UAP for our hypothesis class (see Sec.~\ref{sec:hypothesis}) for structurally stable systems with a finite set of fixed points.
+We start by showing the UAP for our hypothesis class for structurally stable systems with a finite set of fixed points  (introduced in Sec.~\ref{sec:hypothesis}).
 Then we extend this results where we consider systems with a finite set of periodic orbits.
 We then also include systems that additionally have a finite set of continuous attractors.
 We conclude with how these results extend to a class of non-autonomous dynamical systems and some remarks about approximation of chaotic orbits.
@@ -486,10 +486,15 @@ Each of these results considers approximation of a system on a compact space tha
 %Autonomous
 %Structurally stable+Fixed points = hyperbolic fixed points
 %The dynamics is globally attractive / There exist a compact set that with the fixed points inside that is forward invariant 
-For our approximation results, we consider the following dynamics:
-\begin{equation}
-\dot x = f(x)   \ \ \ f\in C^1.
+For our approximation results, we consider the following dynamics.
+Let $D$ be an open subset of $\mathbb{R}^n$,
+ $f\colon D \to \mathbb{R}^m$ be a $C^1$-mapping,
+  and $I$ be a compact subset of $D$ such that any solution $x(t)$ with initial value $x(0) \in I$ of an ordinary differential equation
+\begin{equation}\label{eq:5}
+    \dot{x} = f(x), \quad x(0) \in D
 \end{equation}
+is defined for $t\in\reals_{+}$ and $x(t)$ is included in $I$.
+This defines a flow $\varphi(\cdot, \cdot)$ (Picard-Lindel\"of theorem).
 
 
 \subsubsection{Hypothesis class}\label{sec:hypothesis}
@@ -525,7 +530,7 @@ Expectation of the error over all initial points (similar to the metric in \cite
 
 %why we cannot stricten the metric
 For a multistable system it is not possible to find a universal approximation result if we consider a more strict notion of difference between the target and approximant.
-For example, if we take the uniform norm of the uniform norm, it can be shown that there is always a system with a separatrix that can not be exactly matched which would lead to an error that is the distance between the two $\omega$-limit sets.
+For example, if we take the uniform norm of the uniform norm, it can be shown that there is always a system with a separatrix that can not be exactly matched which would lead to an error that is the distance between the two $\omega$-limit sets (see Def.~\ref{def:omega}).
 
 %\subsubsection{Guarantee in $N\rightarrow\infty$ or at finite $N$}
 %It could be that existing theorems could be interpreted that in the limit $N\rightarrow\infty$ the approximation holds. %e.g.\citep{podlaski2024approximating}
@@ -541,14 +546,11 @@ For example, if we take the uniform norm of the uniform norm, it can be shown th
 
 %This theorem is phrased for the more general case, move to before? 
 \begin{theorem}\label{thrm:approx}
-Let $D$ be an open subset of $\mathbb{R}^n$,
- $f\colon D \to \mathbb{R}^m$ be a $C^1$-mapping,
-  and $I$ be a compact subset of $D$ such that any solution $x(t)$ with initial value $x(0) \in I$ of an ordinary differential equation
-\begin{equation}\label{eq:5}
-    \dot{x} = f(x), \quad x(0) \in D
+Take 
+\begin{equation}
+\dot x = f(x)   \ \ \ f\in C^1,
 \end{equation}
-is defined for $t\in\reals_{+}$ and $x(t)$ is included in $I$.
-This defines a flow $\varphi(\cdot, \cdot)$ (Picard-Lindel\"of theorem).
+with flow $\psi$ as in Sec.~\ref{sec:target}. Assume that the only omega limit sets of this system are a finite number of hyperbolic fixed points.
 
 Then, for an arbitrary $\epsilon, \delta > 0$, there exist an MLP recurrent neural network 
  \begin{equation}
@@ -589,7 +591,7 @@ Finally, fixed points of $\hat f$ are $\mathcal{O}(\epsilon)$ close to those of 
 %orbits from these initial conditions converge to $\omega$-limit sets that are at most $\epsilon_i$ Hausdorff distance from each other.
 \end{proof}
 
-This establishes that for all $\epsilon>0$ and $x_0$ initial states in a basin of attraction (for which $\omega \psi(x_0,T) = x^*$) there is some time $T$ for which for all $t>T$ we have that $\psi(t)-\hat \psi(t)<\epsilon$.
+This establishes that for all $\epsilon>0$ and $x_0$ initial states in a basin of attraction (for which $\omega (\psi(x_0,T) = x^*$)) there is some time $T$ for which for all $t>T$ we have that $\psi(t)-\hat \psi(t)<\epsilon$.
 
 
 \paragraph{A tale of two errors}
@@ -621,7 +623,7 @@ How we can bound these two types of errors will be discussed in the next two sub
 \subsubsection{Errors inside the intersection of the basins of attraction of the target and approximation}\label{sec:inboa_approx}
 %Introduce A_i^f notation
 %TODO: introduce boa Basins of Attraction (BoA)
-For an initial value $x_0\in BOA(A_i^f) \cap BOA(A_i^g)$, the flow deviates along the trajectories up to 
+For an initial value $x_0\in \overline{\boa}_i^{f,g} \coloneqq \boa(A_i^f) \cap \boa(A_i^g)$, the flow deviates along the trajectories up to 
 \[
 \|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\| \, ds,
 \]
@@ -654,7 +656,7 @@ Hence, there exists an FNN that defines a vector field for which for each attrac
 %TODO: more catchy name for type II error: B-type (Basin) 
 \subsubsection{Errors at the boundary of a BoA}%type II
 \label{sec:separatrix_approx}
-The other type of error (basin-type) arises because trajectories go to different attractors, i.e., $x_0\in \boa(A_i^f,A_j^g)$ for $i\neq j$, see Fig.~\ref{fig:separatrices}.
+The other type of error (basin-type) arises because trajectories go to different attractors, i.e., $x_0\in \boa(A_i^f)$ and $x_0\in \boa(A_j^g)$ for $i\neq j$, see Fig.~\ref{fig:separatrices}.
 For such initial points, the error along the trajectories will be higher than $\epsilon>0$ because the attractors are farther apart than $\epsilon$.
 Eliminating this type of error would constitute perfectly matching the separatrices which typically can not be guaranteed.
 We can reduce the volume in of initial points for which this type of error arises, by reducing the mismatch between the separatrices (proportional to the distance between the attractors).
@@ -838,17 +840,20 @@ But they can be funky, see Fig.~\ref{fig:unstab_lc_3fps}.
 
 %%%%%%%%%%%%%%%%
 \subsubsection{Multiple limit cycles}
-We can perform the same procedure for a finite set of limit cycles.
+Can we perform the same procedure for $N>1$ limit cycles?
 We have to make sure that all the $\hat{\epsilon}_i$ are small enough so that $\epsilon_{T_i}$ is small enough:
-\[ \tilde f_i = (1+ \epsilon_{T_i})\hat{f}_i + \epsilon_{T_i}\hat{\epsilon}_i\bar{f}_i + \sum_{j\neq i}\epsilon_{T_j}\hat{\epsilon}_j\bar{f}_j.\]
+\begin{equation}\label{eq:nlc_constraint}
+\tilde f_i = (1+ \epsilon_{T_i})\hat{f}_i + \epsilon_{T_i}\hat{\epsilon}_i\bar{f}_i + \sum_{j\neq i}\epsilon_{T_j}\hat{\epsilon}_j\bar{f}_j.
+\end{equation}
 
 %can we really do this sequentially? no, we have to do it in parallel
 %when we change a_T_i we have to adjust the other a_T_j s
 %we have to guarantee that a(\epsilon_{T_i})
+\paragraph{Finding local perturbations to simulatneously satisfy Eq.\ref{eq:nlc_constraint} for $i=1,\dots, N$.}
 
 \paragraph{Using compact support activation functions}
- ELU/CELU/GeLU/TaLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid,hasan2023talu} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles?
-\citep{duch1999survey,dubey2022activation,jagtap2023activation,ramachandran2017activation,hayou2019activation} survey of neural activation functions
+ ELU/CELU/GeLU/TaLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid,hasan2023talu} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles.
+See also \citep{duch1999survey,dubey2022activation,jagtap2023activation,ramachandran2017activation,hayou2019activation} for a survey of neural activation functions.
 
 
 
@@ -1496,7 +1501,7 @@ The \textit{global attractor} of a system \( \dot{x} = f(x) \) (relative to the 
 \]
 \end{definition}
 
-\begin{definition}[\(\omega\)- and \(\alpha\)-limit sets]
+\begin{definition}[\(\omega\)- and \(\alpha\)-limit sets]\label{def:omega}
 A point \( p \in E \) is a \(\omega\)-limit point of the trajectory \( \varphi(t, x) \) of the system Eq.~\ref{eq:attractorode} if there exists a sequence \( t_n \to +\infty \) such that
 \[
 \varphi(t_n, x) = p.
