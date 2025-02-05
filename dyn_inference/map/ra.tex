@@ -1,0 +1,113 @@
+\documentclass{article}
+%\usepackage{arxiv}
+\usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2024
+\usepackage[preprint]{neurips_2024}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amssymb, amsmath, amsthm, amsfonts}
+\usepackage{thmtools, mathtools, mathrsfs, dsfont}
+\usepackage{bbm}
+\usepackage{forloop}
+\usepackage[pdftex]{graphicx}  %remove demo option in your document
+\usepackage{sidecap}
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\usepackage{xcolor}
+\definecolor{ForestGreen}{rgb}{0.13, 0.55, 0.13}
+\definecolor{MidnightBlue}{rgb}{0.1, 0.1, 0.44}
+\definecolor{BurntOrange}{rgb}{0.8, 0.33, 0.0}
+\definecolor{Plum}{rgb}{0.56, 0.27, 0.52}
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}
+\hypersetup{breaklinks=true}
+
+\graphicspath{{figures}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}[theorem]
+\theoremstyle{definition} \newtheorem{definition}{Definition}
+\theoremstyle{remark} \newtheorem{remark}{Remark}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\sep}{\operatorname{sep}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\vol}{\operatorname{vol}}
+\newcommand{\boa}{\operatorname{BoA}}
+\newcommand{\mcN}{\mathcal{N}}
+\newcommand{\mcK}{\mathcal{K}}
+\newcommand{\mcU}{\mathcal{U}}
+\newcommand{\mcX}{\mathcal{X}}
+\newcommand{\T}{\operatorname{T}}
+\newcommand{\TR}{\T\!\mathbb{R}}
+\newcommand{\TM}{\T\!M}
+\newcommand{\TpM}{\T_p\!M}
+\newcommand{\Diffeo}{\operatorname{Diffeo}}
+\newcommand{\Hpert}{H^{\text{pert}}}
+\newcommand{\inv}{\operatorname{Inv}}
+
+\newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
+\newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
+\newcounter{ct}
+\forLoop{1}{26}{ct}{
+    \edef\letter{\alph{ct}}
+    \expandafter\defvec\letter
+}
+% captial \vA
+\forLoop{1}{26}{ct}{
+    \edef\letter{\Alph{ct}}
+    \expandafter\defvec\letter
+}
+
+\title{MAP inference of connectivity in a noise-driven RNN with ring attractor dynamics}
+\author{\'Abel S\'agodi}
+\date{\today}
+
+
+
+\begin{document}
+\maketitle
+
+\section{Problem setting}
+We consider a teacher-student setup, where the teacher has \( D \) neurons and a recurrent weight matrix \( B \), such that the dynamics of its firing rate vector \( z(t) \in \mathbb{R}^D \) is given by
+\[
+\tau \frac{d z}{dt} = -z + B \, \phi(z) + \boldsymbol{\xi}(t),
+\]
+where \( \boldsymbol{\xi}(t) \) is uncorrelated Gaussian noise with 
+\[
+\mathbb{E}[\boldsymbol{\xi}(t)] = 0 \quad \text{and} \quad \mathbb{E}[\boldsymbol{\xi}(t) \boldsymbol{\xi}(s)^\top] = 2 \sigma^2_{\xi} \, \delta(t - s) I_D,
+\]
+and \( \phi \) is a possibly nonlinear transfer function, which we take to act elementwise.
+
+%Noorman model for RA?
+
+
+Similarly, we assume a \( d \)-dimensional student with recurrent weights \( A \), such that its rate \( x(t) \in \mathbb{R}^d \) evolves as
+\[
+\tau \frac{d x}{dt} = -x + A \, \phi(x) + \boldsymbol{\eta}(t),
+\]
+where \( \boldsymbol{\eta}(t) \) is \( d \)-dimensional white noise with
+\[
+\mathbb{E}[\boldsymbol{\eta}(t)] = 0 \quad \text{and} \quad \mathbb{E}[\boldsymbol{\eta}(t) \boldsymbol{\eta}(s)^\top] = 2 \sigma^2_{\eta} \, \delta(t - s) I_d.
+\]
+
+Assuming \( d < D \), we observe the first \( d \) neurons of the teacher:
+\[
+x_{\text{obs}}(t) = P z(t) \quad \text{for} \quad t \in [0, T],
+\]
+where \( P = (I_d, \, 0_{d \times (D - d)}) \).
+
+Our goal is to infer the student’s weight matrix \( A \) given these observations.
+
+
+\section{Derivation}
+
+Brownian motion on the unit circle \((Y_t , t \geq 0)\) \citep{liu2012stochastic}
+
+On L\'evy’s Brownian Motion and White Noise Space on the Circle \citep{huang2021levy}
+
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{../../all_ref.bib}
+
+\end{document}
