@@ -208,9 +208,9 @@ RNNs with polynomially bounded weights can simulate any finite automaton (15-neu
 %
 Finally, any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuous time symmetric Hopfield nets \citep{sima2003continuous}.
 
+%%TODO: 
 \citep{cabessa2019turing}
 \citep{perez2019turing}
-\citep{dehghani2018universal, yun2019transformers}
 \citep{chung2021turing}
 \citep{perez2021attention}
 \citep{giannou2023looped}
@@ -230,7 +230,9 @@ Any function can be approximated arbitrarily well in probability with a recurren
 % where ... can be computed by one neuron whose activation function $\sigma$ possesses a local linearity.\citep{hammer2000approximation}
 RNNs with continuous sigmoidal activation function have the UAP for finite number of time steps \citep{schafer2006recurrent, schafer2007uap}.
 Furthermore, locally recurrent networks with two hidden layers is able to approximate a state-space trajectory produced by any Lipschitz continuous function with arbitrary accuracy\citep{patan2008approximation}.
-Finally, more recently it was shown that discrete-time RNNs are universal approximators of discrete-time systems \citep{aguiar2023universal}.
+Finally, more recently it was shown that discrete-time RNNs are finite-time horizon universal approximators of discrete-time systems \citep{aguiar2023universal}.
+
+Universality of linear recurrences followed by nonlinear projections for finite time \citep{orvieto2023universality}.
 
 \paragraph{RBF neural networks}
 \citep{tan1995efficient}
@@ -944,8 +946,10 @@ If an input sequence doesn't converge (i.e. it has a mixing property) we get the
 Important concepts: %?
 Input-to-state stability \citep{sontag1995iss, sontag1996iss, sontag2008iss}
 
-\subsection{Asymptotically autonomous dynamics}
+Asymptotically autonomous dynamics Supp.Sec.~\ref{sec:asyauto}
+-or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback}
 
+\subsection{Asymptotically autonomous dynamics}\label{sec:asyauto}
 The vector ordinary differential equation  
 \begin{equation}\label{eq:nonautonomous}
  \quad y' = f(y) + g(t, y),
@@ -1012,6 +1016,9 @@ A convex contraction region contains at most one equilibrium point, since any le
 \paragraph{Limit cycles}
 Stable limit cycles are approximable but their approximation is not robust! (period will change under almost all perturbations)
 
+
+\paragraph{Stochastic dynamics} %+pdes?
+\citep{wei2022statistically}
 
 \paragraph{Link to Total integrated error (TIE)}
 We can look at the total integrated error between the target and the approximant and derive a similar UAP theorem.
