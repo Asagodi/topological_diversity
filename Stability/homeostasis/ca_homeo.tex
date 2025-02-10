@@ -1,0 +1,133 @@
+\documentclass{article}
+%\usepackage{arxiv}
+\usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2024
+\usepackage[preprint]{neurips_2024}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amssymb, amsmath, amsthm, amsfonts}
+\usepackage{thmtools, mathtools, mathrsfs, dsfont}
+\usepackage{bbm}
+\usepackage{forloop}
+\usepackage[pdftex]{graphicx}  %remove demo option in your document
+\usepackage{sidecap}
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\usepackage{xcolor}
+\definecolor{ForestGreen}{rgb}{0.13, 0.55, 0.13}
+\definecolor{MidnightBlue}{rgb}{0.1, 0.1, 0.44}
+\definecolor{BurntOrange}{rgb}{0.8, 0.33, 0.0}
+\definecolor{Plum}{rgb}{0.56, 0.27, 0.52}
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}
+\hypersetup{breaklinks=true}
+
+\graphicspath{{figures}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}[theorem]
+\theoremstyle{definition} \newtheorem{definition}{Definition}
+\theoremstyle{remark} \newtheorem{remark}{Remark}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\manifold}{\mathcal{M}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\relu}{\operatorname{ReLU}}
+\newcommand{\vol}{\operatorname{vol}}
+\newcommand{\boa}{\operatorname{BoA}}
+\newcommand{\T}{\operatorname{T}}
+\newcommand{\Hpert}{H^{\text{pert}}}
+\newcommand{\inv}{\operatorname{Inv}}
+\newcommand{\spec}{\operatorname{spec}}
+\newcommand{\sign}{\operatorname{sign}}
+
+\newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
+\newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
+\newcounter{ct}
+\forLoop{1}{26}{ct}{
+    \edef\letter{\alph{ct}}
+    \expandafter\defvec\letter
+}
+% captial \vA
+\forLoop{1}{26}{ct}{
+    \edef\letter{\Alph{ct}}
+    \expandafter\defvec\letter
+}
+
+\title{Plasticity for a perturbed continuous attractor}
+\author{\'Abel S\'agodi}
+\date{\today}
+
+
+
+\begin{document}
+\maketitle
+
+\section{Problem setting}
+
+Consider 
+\begin{equation}\label{eq:ode}
+\tau_x\dot x = f(x) 
+\end{equation}
+implementing a normally hyperbolic continuous attractor, i.e., there is $\manifold_0\coloneqq \{x \in \reals^N | f(x) = 0 \text{ and } \spec_{i>1}(J(x)) <0\}$  (all eigenvalues except for one of the Jacobian at are negative). 
+
+Now imagine that this system has been affected so that the system has an approximate continuous attractor
+\begin{equation}\label{eq:ode_pert}
+\tau_x\dot x = f(x)  + \epsilon p(x).
+\end{equation}
+
+Then the flow on the perturbed persistent invariant manifold $\manifold_\epsilon$ is
+\begin{equation}\label{eq:ode_pert}
+\tau_x\dot x = \epsilon p'(x).
+\end{equation}
+%how are p and p' related?
+We can say that they close to each other, related to $\mathcal{O}(\epsilon)$ and the tangent/derivative of the of f(x) on $\manifold_\epsilon$ being $C^1$ close $\manifold_0$.
+
+
+
+\section{Plasticity/Homeostasis/Adaptation}
+%consider bias pert? 
+
+Let's analyze $f(x,W_0,t) = -x(t) + W_0\relu(x(t)) + b$ with $W_0\in\reals^{n\times n}$ and $b\in\reals^n$ so that the system implements a ring attractor \citep{noorman2024accurate}.
+
+We consider the case where the connectivity has been affected: $W(t=0) \leftarrow W_0 + \epsilon V$.
+In this case we simply have $g(x,W,t) = (W(t)-W_0)\relu(x(t))$.
+
+$g_i(x,W,t) = \sum_{j}^N(W_{ij}(t)-W_{0,ij})\relu(x_j(t))$.
+
+Now, let's assume that $x(t)\in\manifold_\epsilon$.
+Define the plasticity rule
+\begin{equation}\label{eq:plasticity}
+\tau_W\dot W_{ij}(t) = -\epsilon \sign(g_j(x,W,t)) \phi_j(x) = -\epsilon \sign(\dot x_i) \relu(x_j) - \gamma W_{ij}.
+\end{equation}
+%should this have a factor \|\sign(g_j(x,W,t))\| to make it continuous?
+
+%another attempt through finding a gradient desecnt on the weights
+%\begin{equation}\label{eq:plasticity}
+%\tau_W\dot W_{ij}(t) = -\epsilon\frac{\partial g(x,W)}{\partial W_{ij}}.
+%\end{equation}
+%For the above neural dynamics we simply have
+%\[
+%\frac{\partial g(x,W)}{\partial W_{ij}} = \begin{cases} x_j  & \text{ if } x_j > 0 \\ 0 & \text{ otherwise.} 
+%\end{cases}
+%\]
+
+
+
+\subsection{Contractivity}
+%weight decay necessary for contractivity ananlysis?
+
+Plasticity analysis through contractivity \citep{kozachkov2022matrix} \citep{centorrino2024modeling}.
+
+
+
+
+
+
+
+
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{../../all_ref.bib}
+
+\end{document}
