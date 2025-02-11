@@ -76,7 +76,7 @@ where \( \boldsymbol{\xi}(t) \) is uncorrelated Gaussian noise with
 \[
 \mathbb{E}[\boldsymbol{\xi}(t)] = 0 \quad \text{and} \quad \mathbb{E}[\boldsymbol{\xi}(t) \boldsymbol{\xi}(s)^\top] = 2 \sigma^2_{\xi} \, \delta(t - s) I_D,
 \]
-and \( \phi \) is a possibly nonlinear transfer function, which we take to act elementwise.
+and \( \phi \) is a possibly nonlinear transfer function, which we take to act element-wise.
 
 %Noorman model for RA?
 
@@ -99,11 +99,70 @@ where \( P = (I_d, \, 0_{d \times (D - d)}) \).
 Our goal is to infer the student’s weight matrix \( A \) given these observations.
 
 
-\section{Derivation}
+\subsection{MAP estimate for the dynamics}
+
+The likelihood of observing a trajectory \(\{x_{\text{obs}}(t) : t \in [0, T]\}\) given a particular weight matrix \( A \), which using the path integral representation of an Itô process can be written non-rigorously as  
+\[
+p(\{x_{\text{obs}}(t) : t \in [0, T]\} | A) \propto \exp \left( -\frac{1}{2\sigma^2_{\eta}} \int_0^T dt \, \left\| \tau \dot{x}_{\text{obs}}(t) + x_{\text{obs}}(t) - A \phi(x_{\text{obs}}(t)) \right\|^2 \right).
+\]
+
+
+\subsubsection{Prior}
+An isotropic Gaussian prior over the elements of \( A \) is given by:  
+\[
+A_{ij} \sim_{\text{i.i.d.}} \mathcal{N} \left( 0, \frac{\sigma^2_{\eta} T}{\rho} \right),
+\]
+where \( \rho > 0 \).
+
+
+\subsubsection{Posterior}
+The log-posterior density takes a particularly simple form:
+\[
+L = -\sigma^2_{\eta} T \log p\left(A \mid \{x_{\text{obs}}(t) : t \in [0, T]\} \right) = \int_{0}^{T} dt \, \left\| \tau \dot{x}_{\text{obs}}(t) + x_{\text{obs}}(t) - A \phi(x_{\text{obs}}(t)) \right\|^2 + \rho \|A\|^2_F.
+\]
+
+
+
+As the log-posterior density is quadratic, it is easy to read off that the MAP estimate of \( A \) is 
+
+\[
+\hat{A}_T = \left( \int_{0}^{T} dt \, \left[ \tau \dot{x}_{\text{obs}}(t) + x_{\text{obs}}(t) \right] \phi(x_{\text{obs}}(t))^\top \right) 
+\left( \int_{0}^{T} dt \, \phi(x_{\text{obs}}(t)) \phi(x_{\text{obs}}(t))^\top + \rho I_d \right)^{-1},
+\]
+
+where we add a subscript \( T \) to emphasize the observation window. 
+
+Using the dynamics of \( x_{\text{obs}}(t) = P z(t) \), we can re-write this in terms of the teacher’s dynamics as
+
+\[
+\hat{A}_T = P \left( B C_T + \int_{0}^{T} dt \, \xi(t) \phi(z(t))^\top \right) P^\top 
+\left( P C_T P^\top + \rho I_d \right)^{-1},
+\]
+
+where
+
+\[
+C_T = \int_{0}^{T} dt \, \phi(z(t)) \phi(z(t))^\top
+\]
+
+is the empirical covariance of the teacher network activity.
+
+
+
+\section{Calculating the covariance for a symmetric ring attractor network}
 
 Brownian motion on the unit circle \((Y_t , t \geq 0)\) \citep{liu2012stochastic}
 
 On L\'evy’s Brownian Motion and White Noise Space on the Circle \citep{huang2021levy}
+
+Can we consider a continuous attractor (or a fast-slow system more generally) by calculating the correlation in the fast and slow systems separately and then composing the solutions?
+
+
+\subsection{Time-lagged correlation}
+The time-lagged correlation is given by
+\[
+C(\tau) = \mathbb{E}_s \left[ z(t) z(t + \tau)^\top \right].
+\]
 
 
 \newpage
