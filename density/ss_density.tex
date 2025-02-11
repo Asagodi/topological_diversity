@@ -73,11 +73,11 @@
 \section*{Abstract}
 Universal approximation results provide rigorous guarantees about the representational power of neural networks and hence are important in evaluating the flexibility of machine learning paradigms. A family of transformations is deemed universal if its elements can approximate, with arbitrary precision, a rich class of transformations, such as all continuous or measurable mappings. Recurrent Neural Networks (RNNs) are often considered universal transformations, and this property is often used to justify their usefulness in models for neural computation. However, existing universal approximation theories for RNNs are limited to addressing either finite time horizon approximation or a subclass of dynamical systems with a unique global attractor, overlooking critical aspects of system behavior such as temporal generalization and multistability.
 
-Multistability is a critical feature of many neural systems characterized by the ability to transition between multiple stable states depending on context or input. Neural computation is widely regarded as being fundamentally characterized by multistable dynamics, for example, corresponding to the neural activity in the prefrontal cortex during a delayed match-to-sample task, where the system maintains one of several stable states to represent different visual stimuli held in working memory. 
+%Multistability is a critical feature of many neural systems characterized by the ability to transition between multiple stable states depending on context or input. Neural computation is widely regarded as being fundamentally characterized by multistable dynamics, for example, corresponding to the neural activity in the prefrontal cortex during a delayed match-to-sample task, where the system maintains one of several stable states to represent different visual stimuli held in working memory. 
 
 This work addresses the gap in the existing literature by developing the first-of-its-kind universal approximation result for multi-stable dynamical systems over an infinite horizon using RNNs. A key motivation for extending the notion of universal approximation to the infinite time horizon lies in capturing the behavior of dynamical systems over arbitrarily long time intervals. Infinite horizon approximation provides models with temporal generalization properties, ensuring that abrupt errors after the finite time horizon on which the approximation is based do not occur, thereby maintaining consistency between the target system and its approximation over extended periods. Despite its significance, approximation results for more complex systems, such as multi-stable systems with multiple equilibrium states but no chaotic behavior, remain underexplored in this infinite time regime. Furthermore, because dynamical systems cannot be distinguished from each other given finite time horizon data, there are many different topologies and continuations of trajectories that are all valid. However, in this infinite-time regime, these ambiguities go away.
 
-Our theoretical result provides a framework to analyze and classify approximation errors  by introducing basin-type, trajectory-type, and period-type errors. This new error taxonomy allows researchers working with dynamical systems models of neural computation to identify which aspects of the model need to be adjusted for a theoretical model of neural computation to converge to the true biological implementation. Furthermore, this framework introduces a new way to evaluate how difficult it is to learn a computation (e.g. by calculation of the total length of the separatrices of the system or the difficulty to exactly overlay the shape of the separatrices with an activation function). This framework enables a more comprehensive and unified approach to comparing models for neural computation.
+%Our theoretical result provides a framework to analyze and classify approximation errors  by introducing basin-type, trajectory-type, and period-type errors. This new error taxonomy allows researchers working with dynamical systems models of neural computation to identify which aspects of the model need to be adjusted for a theoretical model of neural computation to converge to the true biological implementation. Furthermore, this framework introduces a new way to evaluate how difficult it is to learn a computation (e.g. by calculation of the total length of the separatrices of the system or the difficulty to exactly overlay the shape of the separatrices with an activation function). This framework enables a more comprehensive and unified approach to comparing models for neural computation.
 
 
 
@@ -130,15 +130,16 @@ It is important to realize that a class of models (a hypothesis class) can have 
 This property implies that the hypothesis class is dense in the target class, hence such results are also referred to as \emph{density results}.
 Density results describe the completeness of a hypothesis class relative to a target class, emphasizing the extent to which the hypothesis class can approximate every element in the target class with arbitrary precision.
 
-\paragraph{Learning sequences}
- A critical review of recurrent neural networks for sequence learning \citep{williams1989learning, pearlmutter1989learning, lipton2015rnn}.
- 
-Approximation of large-scale dynamical systems \citep{antoulas2005approximation}
- 
- \paragraph{System identification}
- \citep{werbos1989neural, kuschewski1993application, wang2006fully}
+
+%SHOULD learning be discussed? move to Discussion?
+%\paragraph{Learning sequences}
+% A critical review of recurrent neural networks for sequence learning \citep{williams1989learning, pearlmutter1989learning, lipton2015rnn}.
+%Approximation of large-scale dynamical systems \citep{antoulas2005approximation}
+ %\paragraph{System identification}
+ %\citep{werbos1989neural, kuschewski1993application, wang2006fully}
  
  %\paragraph{Operators}%approximation of an operator
+
 
 \subsection{Universal approximation for mappings}\label{sec:uapmappings}
 This is the basic ingredient for many of the UAP results in the literature and will be the starting point for our proof.
@@ -149,7 +150,6 @@ See for the  Supp.Sec.~\ref{sec:uniapproxffn}.
 \subsection{Approximating vector fields}\label{sec:uapvfs}
  FNNs can approximate smooth functions effectively, making them suitable for approximating vector fields \citep{doya1993universality}.
 This is a direct consequence of the UAP of FNNs for mappings, see Supp.Sec.~\ref{sec:uniapproxffn}.
-
 
 
 \paragraph{Spiking neural network}
@@ -186,8 +186,6 @@ Most of these results rely on Gr\"{o}nwall’s inequality (see Supp.Sec.\ref{sec
 This is in general not true for the unbounded time case, as the approximation error can be magnified by the dynamics.
 
 
-
-
 \subsubsection{Discrete sequence-to-sequence mapping}\label{sec:discrete}
 \paragraph{Discrete valued tokes: Turing completeness}
 %A finite size recurrent net model (with linear and Heaviside transfer functions) is Turing universal (Dynamical Recognizer) \citep{pollack1991induction}.
@@ -196,19 +194,14 @@ This is in general not true for the unbounded time case, as the approximation er
 %A finite-sized recurrent neural network with sigmoidal activation functions can simulate a universal Turing machine \citep{siegelmann1992computational}.
 %Sigmoidal neural networks can be used to compute any recursive (Turing) function\citep{kilian1996universality}.
 
-\citep{moore1990unpredictability,moore1998finite}
-
 A finite-sized RNN with either linear and Heaviside or sigmoidal activation functions is Turing universal \citep{pollack1991induction, siegelmann1992computational,kilian1996universality}.
-%
 More generally, RNNs with an activation function that is for any point Lipschitz continuous in some neighborhood can be simulated by a family of nonuniform Boolean circuits\citep{siegelmann1994analog}.
-%
 Furthermore, smooth ODES in $\reals^3$ can simulate arbitrary Turing machines \citep{branicky1995universal}. %DSs are computationally universal in the sense that they can mimic the operations of any computer algorithm
-%
 RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
-%
 Finally, any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuous time symmetric Hopfield nets \citep{sima2003continuous}.
 
 %%TODO: 
+\citep{moore1990unpredictability,moore1998finite}
 \citep{cabessa2019turing}
 \citep{perez2019turing}
 \citep{chung2021turing}
@@ -217,11 +210,9 @@ Finally, any polynomially space-bounded Turing machine can be simulated by a fam
 \citep{stogin2024provably}
 
 
-
 \paragraph{Probabilistic}
  \citep{nowak2023representational, nowak2024representational}
 +Bernstein-type \citep{veeravalli2023nonlinear}
-
 
 
 \paragraph{Continuous valued tokens}
@@ -243,7 +234,6 @@ Universality of linear recurrences followed by nonlinear projections for finite 
 The universal approximation properties of static neural networks \citep{funahashi1989approximate} made them a useful tool for modeling nonlinear systems. 
 The problem of nonlinear modeling using static neural networks has been extensively researched \citep{narendra1990identification,warwick1992neural} and many approaches have used multilayer perceptrons and radial basis functions \citep{chen1992neural,choi1996constructive,tan1995efficient}. 
 For an overview, see \citep{garces2012strategies}.
-
 
 
 \paragraph{Autonomous systems}
@@ -922,84 +912,61 @@ Forecasting
 \citep{grigoryeva2024forecasting}
 
 \paragraph{How?}
-Attractor reconstruction, reconstructing the full Lyapunov spectrum of a dynamical system using reservoir computing \citep{hart2024attractor}
+Prior work:
+- Attractor reconstruction, reconstructing the full Lyapunov spectrum of a dynamical system using reservoir computing \citep{hart2024attractor}.
+- \citep{hess2023teacherforcing}
 
 Different metric: Chaotic orbits
-mention: we can guarantee finite time approximation
-prove: we can never do infinite time approximation 
+- mention: we can guarantee finite time approximation (prove: we can never do infinite time approximation)
+- approximation of maximal attractor in Hausdorff sense possible
 
 
 
-\section{Input-driven dynamics}
+\section{Non-autonomous dynamics}
 
-This can be only done by also calculating in the probability of making an error on a given input.
-So the approximation probability guarantee will need to be formulated in terms of the probability of making an error bigger than a threshold calculated over the function of input sequences and initial points.
+\subsection{General}
+Unlike autonomous systems, where the evolution is determined solely by the state variable $x$, non-autonomous systems incorporate an explicit time dependence in the function $h(x,t)$:
+\begin{equation}
+\dot x = h(x,t).
+\end{equation}
 
+
+\subsubsection{Proposed constraints on $h$}
 For non-autonomous we need another Bernstein-type result:
 we can only approximate input driven dynamics (in our metric) if a forward attractor exists for each input sequence.
 This allows us to formulate approximation in terms of attractors and separatrices (but now in input space)
 
+%Important concepts: %?
+%Input-to-state stability \citep{sontag1995iss, sontag1996iss, sontag2008iss}
+
+
 If an input sequence doesn't converge (i.e. it has a mixing property) we get the same issue with approximating the system as with chaotic orbits.
-%and tje input is not in the kernel of the input function
+%and the input is not in the kernel of the input function
+If it converges to a fixed point: then it is Asymptotically autonomous. Necessary if $f(x)$ has a continuous attractor.
+If it converges to a limit cycle: then we have periodic forcing. 
+
+-Exponentially asymptotically autonomous dynamics Supp.Sec.~\ref{sec:asyauto} \ref{def:eaa}
+
+-or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback} \citep{giesl2012numerical} \citep{cheban2002relationship}
 
 
-Important concepts: %?
-Input-to-state stability \citep{sontag1995iss, sontag1996iss, sontag2008iss}
 
-Asymptotically autonomous dynamics Supp.Sec.~\ref{sec:asyauto}
--or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback}
+\subsubsection{Approximating $h(x,t)$}
+Same as before but now $\hat h\colon \reals^{n+1} \rightarrow \reals^{n}$. %x'\rightarrow x\oplus t
 
-\subsection{Asymptotically autonomous dynamics}\label{sec:asyauto}
-The vector ordinary differential equation  
-\begin{equation}\label{eq:nonautonomous}
- \quad y' = f(y) + g(t, y),
+%prove:
+Finite-time horizon approximation + exponentially asymptotically autonomous = Infinite-time horizon approximation
+
+
+\subsection{Input-driven}
+\begin{equation}
+\dot x(t) = f(x(t)) + g(x(t),u(t)),
 \end{equation}
-is commonly said to be asymptotically autonomous if \( g(t, y) \) becomes small in some sense as \( t \to \infty \). One then hopes that the solutions of Eq.~\ref{eq:nonautonomous} behave in some sense like those of the autonomous equation  
-\begin{equation}\label{eq:autonomous}
-\quad x' = f(x)
-\end{equation}
-for large \( t \). If the solutions of Eq.~\ref{eq:autonomous} are uniquely determined by initial conditions,   then it is well-known \cite{} that all positive limit sets \( \omega(x_0) \) of Eq.~\ref{eq:autonomous} are invariant with respect to Eq.~\ref{eq:autonomous}.
 
+\subsubsection{Constraints on $u(t)$}
 
-\subsection{Contractive dynamics}
-\begin{definition}
-Given the system equations \(\dot{x} = f(x, t)\), a region of the state space is called a \textit{contraction region} if the Jacobian \(\frac{\partial f}{\partial x}\) is uniformly negative definite in that region.
-\end{definition}
-
-\begin{theorem}[Theorem 1 in \citep{lohmiller1998contraction}]\label{thrm:contractive_ball}
-Given the system equations  $\dot x = f(x, t)$, any trajectory, which starts in a ball of constant radius centered about a given trajectory and contained at all times in a contraction region, remains in that ball and converges exponentially to this trajectory.
-\end{theorem}
-
-Theorem 1 can be vastly extended simply by using a more general definition of differential length.
-
-
-\begin{definition}
-Given the system equations \(\dot{x} = f(x, t)\), a region of the state space is called a \textit{contraction region} with respect to a uniformly positive definite metric \( M(x, t) = \Theta^T \Theta \), if equivalently \( F \) in (7) is uniformly negative definite or  
-\[
-\frac{\partial f}{\partial x}^T M + M \frac{\partial f}{\partial x} + \dot{M} \leq -\beta_M M
-\]
-(with constant \( \beta_M > 0 \)) in that region.
-\end{definition}
-
-\begin{theorem}[Theorem 2 in \citep{lohmiller1998contraction}]\label{thrm:contractive}
-Given the system equations $\dot x = f(x,t)$, any trajectory, which starts in a ball of constant radius with respect to the metric $M(x,t)$, centered at a given trajectory and contained at all times in a contraction region with respect to $M(x,t)$,  remains in that ball and converges exponentially to this trajectory.
-\end{theorem}
-
-\begin{remark}
-Theorem \ref{thrm:contractive} actually corresponds to a necessary and sufficient condition for exponential convergence of a system. 
-\end{remark}
-
-\begin{remark}
-A convex contraction region contains at most one equilibrium point, since any length between two trajectories is shrinking exponentially in that region.
-\end{remark}
-
-
-\subsubsection{Limit cycles and contractivity}
-\citep{manchester2014transverse} and refs therein: e.g. 16-20
-
-
-
-\subsection{Finite-time horizon approximation + asymptotically autonomous = Infinite-time horizon approximation}
+\subsubsection{Approximating $g(x,u)$}
+ $\hat g\colon \reals^{2n} \rightarrow \reals^{n}$.
 
 
 
@@ -1009,17 +976,22 @@ A convex contraction region contains at most one equilibrium point, since any le
 
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
 \paragraph{Recap}	
 
 
+\subsection{Limitations}
 \paragraph{Limit cycles}
-Stable limit cycles are approximable but their approximation is not robust! (period will change under almost all perturbations)
+Stable limit cycles are approximable but their approximation is not robust! (period will change under almost all perturbations, only a measure zero set of perturbations preserves the period).
 
 
 \paragraph{Stochastic dynamics} %+pdes?
 \citep{wei2022statistically}
 
+
+\subsection{Remarks on error}
 \paragraph{Link to Total integrated error (TIE)}
 We can look at the total integrated error between the target and the approximant and derive a similar UAP theorem.
 
@@ -1041,19 +1013,18 @@ Limit $\delta\rightarrow 0$: error of type II goes to zero, i.e., perfectly matc
 Limit $\epsilon\rightarrow 0$: error of type I goes to zero (apart from small mismatch around separatrices), i.e., perfectly matching in-basin dynamics
 
 
-\paragraph{NODEs vs RNNs}
+\subsection{NODEs vs RNNs}
 NODEs Simulate RNNs 
 - Each NODE is state space equivalent to an RNN that is split into a part for which the equivalence holds and a hidden part (Boltzmann Machine-like)
 -Each RNN is state space equivalent to an RNN
 
-
 NNs as controllers \citep{sontag1992neural}
 
 
-\paragraph{The price of universality}
-This construction is immensely inefficient
-
-Better to just look at RNNs. 
+\subsection{The price of universality}
+This construction is immensely inefficient.
+Better to just look at RNNs (?)
+%Expressivity paper?
 
 
 %%%%
@@ -1067,13 +1038,15 @@ system identification in neuroscience \citep{han2023si}
 
 \paragraph{Models that generalize over time}
 
+\paragraph{Convergence in model space}
 
-\paragraph{Interpretability}%move to anti-truncated koopman operator paper?
+%\paragraph{Convergent realism}
 
-%\subsection{Convergent realism}
+\paragraph{Interpretability}%point to anti-truncated koopman operator paper?
 
-\paragraph{Robust neural computation}
-Idea: Two dynamical phenomena are isolated into primitive architectural components which perform the operations of continuous nonlinear transformation and autoassociative recall \citep{pineda1988dynamics}.
+
+%\paragraph{Robust neural computation}
+%Idea: Two dynamical phenomena are isolated into primitive architectural components which perform the operations of continuous nonlinear transformation and autoassociative recall \citep{pineda1988dynamics}.
 
 
 
@@ -1661,6 +1634,91 @@ Then they have the same Conley Index, i.e.,
 \]
 \end{theorem}
 
+
+
+%
+\subsection{Non-autonomous dynamical systems}
+
+
+\subsection{Asymptotically autonomous dynamics}\label{sec:asyauto}
+introduced in \citep{markus1956asyauto}
+
+The vector ordinary differential equation  
+\begin{equation}\label{eq:nonautonomous}
+ \quad y' = f(y) + g(t, y),
+\end{equation}
+is commonly said to be asymptotically autonomous if \( g(t, y) \) becomes small in some sense as \( t \to \infty \). One then hopes that the solutions of Eq.~\ref{eq:nonautonomous} behave in some sense like those of the autonomous equation  
+\begin{equation}\label{eq:autonomous}
+\quad x' = f(x)
+\end{equation}
+for large \( t \). If the solutions of Eq.~\ref{eq:autonomous} are uniquely determined by initial conditions,   then it is well-known \cite{} that all positive limit sets \( \omega(x_0) \) of Eq.~\ref{eq:autonomous} are invariant with respect to Eq.~\ref{eq:autonomous}.
+
+More on aads: \citep{wieczorek2021compactification}
+
+\subsubsection{Exponentially asymptotically autonomous}
+\begin{definition}\label{def:eaa}
+Let \(\sigma \in \mathbb{N}\). Consider the exponentially asymptotically autonomous equation  
+\[
+\dot{x} = f(t,x), \quad x \in \mathbb{R}^n,
+\]
+where \( f, g \in C^\sigma \) and \( f(t,x) \to g(x) \) in the following sense: for each compact set \( K \subset \mathbb{R}^n \) and each \( \epsilon > 0 \), there exists \( T \) such that  
+\[
+\|\partial^\gamma f(t,x) - \partial^\gamma g(x)\| e^{\alpha t} < \epsilon
+\]
+for all multi-indices \( \gamma \) with \( |\gamma| \leq \sigma \), for all \( x \in K \), and for all \( t > T \).
+
+\end{definition}
+
+\subsubsection{BoA}
+Exponentially asymptotically autonomous \citep{giesl2011numerical}
+non-expo \citep{giesl2012numerical}
+
+Non-autonomous approximation can be done by also calculating in the probability of making an error on a given input.
+So the approximation probability guarantee will need to be formulated in terms of the probability of making an error bigger than a threshold calculated over the function of input sequences and initial points.
+
+
+
+
+\subsection{Contractive dynamics}
+\begin{definition}
+Given the system equations \(\dot{x} = f(x, t)\), a region of the state space is called a \textit{contraction region} if the Jacobian \(\frac{\partial f}{\partial x}\) is uniformly negative definite in that region.
+\end{definition}
+
+\begin{theorem}[Theorem 1 in \citep{lohmiller1998contraction}]\label{thrm:contractive_ball}
+Given the system equations  $\dot x = f(x, t)$, any trajectory, which starts in a ball of constant radius centered about a given trajectory and contained at all times in a contraction region, remains in that ball and converges exponentially to this trajectory.
+\end{theorem}
+
+Theorem 1 can be vastly extended simply by using a more general definition of differential length.
+
+
+\begin{definition}
+Given the system equations \(\dot{x} = f(x, t)\), a region of the state space is called a \textit{contraction region} with respect to a uniformly positive definite metric \( M(x, t) = \Theta^T \Theta \), if equivalently \( F \) in (7) is uniformly negative definite or  
+\[
+\frac{\partial f}{\partial x}^T M + M \frac{\partial f}{\partial x} + \dot{M} \leq -\beta_M M
+\]
+(with constant \( \beta_M > 0 \)) in that region.
+\end{definition}
+
+\begin{theorem}[Theorem 2 in \citep{lohmiller1998contraction}]\label{thrm:contractive}
+Given the system equations $\dot x = f(x,t)$, any trajectory, which starts in a ball of constant radius with respect to the metric $M(x,t)$, centered at a given trajectory and contained at all times in a contraction region with respect to $M(x,t)$,  remains in that ball and converges exponentially to this trajectory.
+\end{theorem}
+
+\begin{remark}
+Theorem \ref{thrm:contractive} actually corresponds to a necessary and sufficient condition for exponential convergence of a system. 
+\end{remark}
+
+\begin{remark}
+A convex contraction region contains at most one equilibrium point, since any length between two trajectories is shrinking exponentially in that region.
+\end{remark}
+
+
+\subsubsection{Limit cycles and contractivity}
+\citep{manchester2014transverse} and refs therein: e.g. 16-20
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%
 \section{Support for the proof}
 \subsection{In basin bound}\label{sec:313}
 \begin{proposition}[Proposition 3.1.3. in \citep{vanhandel2007filtering}]\label{prop:313}
@@ -1911,10 +1969,6 @@ H(0, t) = \gamma_1(t), \quad H(1, t) = \gamma_2(t)
 This means that at \( \tau = 0 \), the homotopy corresponds to the first limit cycle \( \gamma_1 \), and at \( \tau = 1 \), the homotopy corresponds to the second limit cycle \( \gamma_2 \). For intermediate values of \( \tau \), \( H(\tau, t) \) represents a continuous deformation between \( \gamma_1 \) and \( \gamma_2 \).
 
 
-
-\subsection{Non-autonomous}
-\subsubsection{Asymptotically autonomous dynamical systems}
-\citep{wieczorek2021compactification}
 
 
 \end{document}
