@@ -446,11 +446,12 @@ Then, we prove our universal approximation property for this setting by step-wis
 starting with autonomous systems with a finite number of hyperbolic fixed points,
 then systems with (additionally) a finite number of hyperbolic limit cycles
 and finally, covering approximation of chaotic orbits.
-We then extend these results to non-autonomous dynamical systems.
+We then extend these results to non-autonomous dynamical systems (Sec.~\ref{sec:nonautonomous}).
 
 
 
-\subsection{The problem of approximation}\label{sec:approximationtheory} %{Problem statement}
+\subsection{The problem of approximation}\label{sec:approximationtheory} %{Problem statement} 
+%this can be cut shorter
 For behaving agents we can formalize their behavior as sequence-to-sequence or input-output mappings.
 We will call $\mathcal{X}$ the space of input sequences and $\mathcal{Y}$ the space of output sequences.
 We consider a family of target functions, or simply targets, which is a subset \(\mathcal{C} \) of all mappings \( \mathcal{X} \rightarrow \mathcal{Y} \), i.e., \( \mathcal{C} \subset \mathcal{Y}^\mathcal{X} \). 
@@ -505,7 +506,7 @@ These restrictions of the hypothesis class are Bernstein-type results (in the cl
 \subsubsection{Metric}\label{sec:metric}
 First, of all, we compare trajectories through the uniform norm over time (given the same initial starting point \citep{girard2007approximation}):
 \begin{equation}
-\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty = \sup_t|\varphi(t,x_0)-\hat \varphi(t,x_0)|.
+\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty = \sup_t\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|.
 \end{equation}
 
 We consider a compact $X$ on which we measure the difference between the target and our approximation.
@@ -513,7 +514,7 @@ We consider a compact $X$ on which we measure the difference between the target 
 The results can be extended to systems that diverge to infinite in a finite number of orbits (all orbits that diverge converge in uniform norm to one of these divergent orbits).}
 %
 Expectation of the error over all initial points (similar to the metric in \citep{hammer2000approximation} and \citep{hanson2021learning}):
-\begin{equation}
+\begin{equation}\label{eq:initerror}
 %\|\varphi-\hat \varphi\|_\epsilon \coloneqq \frac{1}{\vol X}\mathbb{E}\left[ \int_{x_0\in X}   \mathds{1}[\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty>\epsilon]\right],
 \|\varphi-\hat \varphi\|_\epsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0)-\hat \varphi(\cdot,x_0)\|_\infty>\epsilon\right).
 \end{equation}
@@ -743,8 +744,8 @@ Take $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each attractor
 %\footnote{For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.}
 
 
-\subsubsection{Proof of Theorem 1 for systems with hyperbolic fixed points}\label{sec:proof_fp_approx}
-\begin{proof}[Theorem \ref{thrm:approx}]
+\subsubsection{Proof of Theorem~\ref{thrm:approx} for systems with hyperbolic fixed points}\label{sec:proof_fp_approx}
+\begin{proof}%[Theorem \ref{thrm:approx}]
 Because of Conley's fundamental theorem of dynamical systems\citep{conley1978morse}, we know that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
 This implies that the phase portrait consists of basins of attraction and separatrices, both gradient-like, as well as fixed points, which are chain-recurrent.
 %
@@ -788,15 +789,15 @@ This implies that there exists a 3 layer FNN $\hat f_{\operatorname{bump}}$ that
 Then we know that this NHIM will persist (from Fenichel's PMT, see Supp.Sec~\ref{sec:fenichel}).
 We also know that there is a maximal perturbation size ($\epsilon_{LC}$) for which the limit cycle persists.
 So we have to guarantee that the limit cycle approximation is already close enough so that this perturbation does not destroy the limit cycle (Supp.Sec.~\ref{sec:periodcloseness}). %repetition
-We can now rescale the perturbation through a scalar $a$ that depends on $\epsilon_T$ so that the period of approximation limit cycle matches the target's (Eq.~\ref{eq:lc_correction}). 
+We can now rescale the perturbation through a scalar $a_{\epsilon_T}^*$ (depends on initial $\epsilon_T$) so that the period of approximation limit cycle matches the target's (Eq.~\ref{eq:lc_correction}). 
 We can then increase or decrease the above perturbation by multiplying with a scalar so that the equality in Eq.~\ref{eq:lc_constraint} holds.
 The only thing we now need to worry about is how the length of the limit cycle changes as a result of this perturbation and whether we can indeed get the equality.
 %CONSTRUCT:
 %
-The resulting total approximation is 
+The resulting total approximation is %replace a(\epsilon_T) with just an optimal constant?
 \begin{equation}\label{eq:lc_correction}
 \tilde{f}= \hat{f}+\hat f_{\operatorname{bump}} = 
- \hat{f} + a(\epsilon_T)(f_{\operatorname{bump}}+ \hat{\epsilon}\bar{f}),
+ \hat{f} + a_{\epsilon_T}^*(f_{\operatorname{bump}}+ \hat{\epsilon}\bar{f}),
  \end{equation}
 where $\hat{\epsilon}\bar{f} = f_{\operatorname{bump}} -\hat f_{\operatorname{bump}}$ with $\|\bar f\|=1$ and $\hat \epsilon <\max(\epsilon_T,\epsilon_{LC})$. %actually this should be a function of epsilon T so that closeness in Supp.Sec.~\ref{sec:periodcloseness} is guaranteed
 %no this is not the bound that belongs to hat epsilon!!!!!!!!!!!
@@ -847,12 +848,13 @@ We have to make sure that all the $\hat{\epsilon}_i$ are small enough so that $\
 \begin{equation}\label{eq:nlc_vfs}
 \tilde f_i = \hat{f}_i + \sum_{j}a(\epsilon_{T_j})\hat{\epsilon}_j\bar{f}_j.
 \end{equation}
+%TODO: replace a(\epsilon_{T_j}) with a_j^*? 
 
 %can we really do this sequentially? no, we have to do it in parallel
 %when we change a_T_i we have to adjust the other a_T_j s
 %we have to guarantee that a(\epsilon_{T_i})
 \paragraph{Finding local perturbations to simultaneously satisfy Eq.\ref{eq:nlc_vfs} for $i=1,\dots, N$.}
-We need to find $a(\epsilon_{T_i})$ and $\hat\epsilon_i$ for $i=1,\dots,N$ such that 
+We need to find $a_i^* = a(\epsilon_{T_i})$ and $\hat\epsilon_i$ for $i=1,\dots,N$ such that 
 \begin{equation}\label{eq:nlc_constraints}
 \int_{\tilde{\gamma}}\|\tilde{f}_i(x)\| dx = \frac{1}{T_i} \ \  \text{for} \ i=1,\dots, N. 	% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
 \end{equation}
@@ -922,16 +924,21 @@ Different metric: Chaotic orbits
 
 
 
-\section{Non-autonomous dynamics}
 
-\subsection{General}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Non-autonomous dynamics}\label{sec:nonautonomous}
+We will consider general non-autonomous systems (Sec.~\ref{sec:generalnonautonomous}) and input-driven systems (Sec.~\ref{sec:inputdriven}).
+
+\subsection{General}\label{sec:generalnonautonomous}%includes time-varying 
+%and of course includes input-driven systems
 Unlike autonomous systems, where the evolution is determined solely by the state variable $x$, non-autonomous systems incorporate an explicit time dependence in the function $h(x,t)$:
 \begin{equation}
 \dot x = h(x,t).
 \end{equation}
 
-
 \subsubsection{Proposed constraints on $h$}
+%Needs to be smooth enough.
+
 For non-autonomous we need another Bernstein-type result:
 we can only approximate input driven dynamics (in our metric) if a forward attractor exists for each input sequence.
 This allows us to formulate approximation in terms of attractors and separatrices (but now in input space)
@@ -940,13 +947,20 @@ This allows us to formulate approximation in terms of attractors and separatrice
 %Input-to-state stability \citep{sontag1995iss, sontag1996iss, sontag2008iss}
 
 
-If an input sequence doesn't converge (i.e. it has a mixing property) we get the same issue with approximating the system as with chaotic orbits.
+%mention? convergence depends on x_0? this allows us to formulate coupled system with hyperbolic system for parameters?
+If an sequence doesn't converge (i.e. it has a mixing property) we get the same issue with approximating the system as with chaotic orbits.
 %and the input is not in the kernel of the input function
 If it converges to a fixed point: then it is Asymptotically autonomous. Necessary if $f(x)$ has a continuous attractor.
 If it converges to a limit cycle: then we have periodic forcing. 
+If it doesn't converge, we cannot approximate. 
+%except systems that have the inputs in some nullspaces
+
+In any case we cannot have a continuous attractor in the asymptotic vector field.
+
+
 
 -Exponentially asymptotically autonomous dynamics Supp.Sec.~\ref{sec:asyauto} \ref{def:eaa}
-
+%
 -or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback} \citep{giesl2012numerical} \citep{cheban2002relationship}
 
 
@@ -955,23 +969,45 @@ If it converges to a limit cycle: then we have periodic forcing.
 Same as before but now $\hat h\colon \reals^{n+1} \rightarrow \reals^{n}$. %x'\rightarrow x\oplus t
 
 %prove:
-Finite-time horizon approximation + exponentially asymptotically autonomous = Infinite-time horizon approximation
+\paragraph{Finite-time horizon approximation + exponentially asymptotically autonomous = Infinite-time horizon approximation}
+What is the maximal error $h-\hat h$ we can allow for the $\epsilon,\delta$ distance in flow fields to hold?
 
 
-\subsection{Input-driven}
+At some $T>0$ stop changing $\hat h.$ %related to the convergence of nonautonomous vf to autonomous vf
+There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta$ and therefore $\|h(t,x)-\hat h(T,x)\|<\eta$.
+
+
+\subsection{Input-driven}\label{sec:inputdriven}
 \begin{equation}
 \dot x(t) = f(x(t)) + g(x(t),u(t)),
 \end{equation}
 
+These have solutions $\psi(t,x_0,u)$.
+
 \subsubsection{Constraints on $u(t)$}
+Input space 
+$u\in \mathcal{U}$
+
+$\mathcal{U} = \mathcal{L}_2$ (square-integrable functions)
+
+\subsubsection{Constraints on $g$}
+Needs to be smooth enough as a function of $x$ and $u$.
 
 \subsubsection{Approximating $g(x,u)$}
  $\hat g\colon \reals^{2n} \rightarrow \reals^{n}$.
 
+What is the maximal error $g-\hat g$ we can allow for the $\epsilon$-$\delta$ distance in flow fields to hold?
 
 
 
+Reconsider $\delta$:
+We now also keep track of which proportion of input space leads to bigger than $\epsilon$ trajectory error.
+So we define 
+\begin{equation}%indicate X,U spaces?
+\|\varphi-\hat \varphi\|_\epsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0,u)-\hat \varphi(\cdot,x_0,u)\|_\infty>\epsilon\right).
+\end{equation}
 
+\subsection{}
 
 
 
@@ -1081,7 +1117,15 @@ where \(K \subset \mathbb{R}^n\) is compact. This guarantees that given sufficie
 The importance of the compact domain assumption is that it constrains the input space to a finite region, ensuring the approximation remains well-behaved.	
 This is where the theorem’s beauty shines: while we often don’t know the explicit form of the target function, neural networks learn it purely from data, making them excellent for tasks like regression, classification, and pattern recognition.
 
- For example, sums of polynomial functions are known to have this property\citep{llavona1986approximation}
+ 
+ \begin{theorem}[Universal Approximation Theorem for Feedforward Neural Networks\citep{hornik1989multilayer,schafer2007uap}]
+%\textbf{Theorem 1 (Universal Approximation Theorem for Feedforward Neural Networks).} 
+For any sigmoid activation function \( f \), any dimension \( I \), and any probability measure \( \mu \) on \( (\mathbb{R}^I, \mathcal{B}^I) \), \( \Sigma_I(f) \) is uniformly dense on a compact domain in \( C^I \) and \( \rho_{\mu} \)-dense in \( M^I \).
+\end{theorem}
+
+\begin{corollary}%[in \citep{schafer2007uap}]
+Theorem 1 holds for the approximation of functions in \( C^{I,N} \) and \( M^{I,N} \) by the extended function class \( \Sigma^{I,N} \). Thereby, the metric \( \rho_{\mu} \) is replaced by \( \rho_{\mu}^N := \sum_{k=1}^{N} \rho_{\mu}(f_k, g_k) \).
+\end{corollary}
 
 \subsection{Activation functions} %Sigmoidal 
 At the heart of the theorem lies the activation function. Any non-linear, continuous, and non-constant function enables the network to approximate continuous functions universally.
@@ -1116,14 +1160,7 @@ Here, \(h^{(1)}\) represents the hidden layer, while \(W^{(1)}, W^{(2)}\) and \(
 
 Three-layered multi-output Feedforward Networks are universal approximators for vector-valued functions \citep{irie1988capabilities}.
 
-\begin{theorem}[Universal Approximation Theorem for Feedforward Neural Networks\citep{hornik1989multilayer,schafer2007uap}]
-%\textbf{Theorem 1 (Universal Approximation Theorem for Feedforward Neural Networks).} 
-For any sigmoid activation function \( f \), any dimension \( I \), and any probability measure \( \mu \) on \( (\mathbb{R}^I, \mathcal{B}^I) \), \( \Sigma_I(f) \) is uniformly dense on a compact domain in \( C^I \) and \( \rho_{\mu} \)-dense in \( M^I \).
-\end{theorem}
 
-\begin{corollary}%[in \citep{schafer2007uap}]
-Theorem 1 holds for the approximation of functions in \( C^{I,N} \) and \( M^{I,N} \) by the extended function class \( \Sigma^{I,N} \). Thereby, the metric \( \rho_{\mu} \) is replaced by \( \rho_{\mu}^N := \sum_{k=1}^{N} \rho_{\mu}(f_k, g_k) \).
-\end{corollary}
 
 %In a more general case, for a deeper MLP with \(L\) layers, we have:
 %\[
@@ -1162,6 +1199,8 @@ function and derivative \citep{li1996simultaneous}
 
 
 \subsection{Other results on UAP for mappings}
+For example, sums of polynomial functions are known to have this property\citep{llavona1986approximation}.
+ 
 NODEs are $L^p$-universal approximators \citep{li2022deep,li2022deeparxiv}
 %invariant functions
 \begin{remark}
@@ -1183,6 +1222,8 @@ a\citep{marchi2021training}
 
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{UAP for RNNs overview}
 
 \begin{table}[h]
