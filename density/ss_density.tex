@@ -7,6 +7,7 @@
 \usepackage{amssymb, amsmath, amsthm, amsfonts}
 \usepackage{thmtools, mathtools, mathrsfs, dsfont}
 \usepackage{bbm}
+%\usepackage{bbold} %for mathbb{1}
 \usepackage{forloop}
 \usepackage[pdftex]{graphicx}  %remove demo option in your document
 \usepackage{sidecap}
@@ -448,7 +449,7 @@ then systems with (additionally) a finite number of hyperbolic limit cycles
 and finally, covering approximation of chaotic orbits.
 We then extend these results to non-autonomous dynamical systems (Sec.~\ref{sec:nonautonomous}).
 
-
+%mention that the focus is on semiflows? Sec.~\ref{sec:semiflow}
 
 \subsection{The problem of approximation}\label{sec:approximationtheory} %{Problem statement} 
 %this can be cut shorter
@@ -944,7 +945,7 @@ we can only approximate input driven dynamics (in our metric) if a forward attra
 This allows us to formulate approximation in terms of attractors and separatrices (but now in input space)
 
 %Important concepts: %?
-%Input-to-state stability \citep{sontag1995iss, sontag1996iss, sontag2008iss}
+%Input-to-state stability \citep{sontag1995iss, sontag1996iss, sontag2008iss} introduce in Appendix?
 
 
 %mention? convergence depends on x_0? this allows us to formulate coupled system with hyperbolic system for parameters?
@@ -958,7 +959,7 @@ If it doesn't converge, we cannot approximate.
 In any case we cannot have a continuous attractor in the asymptotic vector field.
 
 
-
+%%%
 -Exponentially asymptotically autonomous dynamics Supp.Sec.~\ref{sec:asyauto} \ref{def:eaa}
 %
 -or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback} \citep{giesl2012numerical} \citep{cheban2002relationship}
@@ -988,6 +989,8 @@ These have solutions $\psi(t,x_0,u)$.
 Input space 
 $u\in \mathcal{U}$
 
+Bounded functions?
+
 $\mathcal{U} = \mathcal{L}_2$ (square-integrable functions) % $\int\vert f(x)\vert^2 dx<+\infty$
 %\mathcal{L}_1? % $\int\vert f(x)\vert dx<+\infty$
 
@@ -995,10 +998,23 @@ But also functions that converge to a time constant function or that converge to
 
 Sobolev space? % $f\in L^2$ and $f'\in L^2$
 
+Input doesn't need to be periodic! %but in the appropriate norm these functions will be on a period funciton...
+As long as the maximal size (at a given time point) is bounded (this bound is determined by the BoA)
+And as long as the proportion of trajectories that remain around the separatrices falls of fast enough
+How to characterize this?
+
+
 \subsubsection{Constraints on $g$}
 Needs to be smooth enough as a function of $x$ and $u$.
 
 %any consideration of multistable contractivity?
+
+Needs to be hyperbolic (in the limit $t\rightarrow\infty$).
+
+Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$).
+%What goes wrong with LCs: basically lack of robustness
+%What goes wrong with CAs: lack of robustness
+
 
 \subsubsection{Approximating $g(x,u)$}
  $\hat g\colon \reals^{2n} \rightarrow \reals^{n}$.
@@ -1014,9 +1030,32 @@ So we define
 \|\varphi-\hat \varphi\|_\epsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0,u)-\hat \varphi(\cdot,x_0,u)\|_\infty>\epsilon\right).
 \end{equation}
 
-\subsection{}
 
+Path integral representation of the distribution of $x(t,u)$ when integrating over all possible input functions $u(t)$:
+\begin{equation}
+    p(x,t) = \int \delta(x - x(t, u)) \mathcal{P}[u] \mathcal{D}u
+\end{equation}
+where $\mathcal{P}[u]$ is a probability measure over the function space of $u(t)$.
 
+\paragraph{Uniform (Lebesgue) Measure on a Bounded Subset of \( C([0,T], \reals^m) \)}
+If \( u(t) \) is continuous and satisfies a uniform bound
+\[
+\|u(t)\| \leq C \quad \text{for all } t,
+\]
+the natural measure is the uniform measure on a subset of the Banach space \( C([0,T], \reals^m) \):
+\[
+\mathcal{P}[u] \propto \mathds{1}_{\|u\|_\infty \leq C} \mathcal{D} u.
+\]
+Here, \( \|u\|_\infty = \sup_{t \in [0,T]} \|u(t)\| \), and the measure is supported on the Banach space of continuous functions with bounded norm.
+
+With this we can capture what proportion of inputs lead the system to the separatrix mismatch regions $\boa(A_i^f)\cap\boa(A_j^{\hat{f}})$. %TODO introduce some nice notation
+
+%consideration of p(x,t) after some time passed
+%use dynamics until then to get a prior on the initial states
+%then calculate path integral over inputs 
+\begin{equation}
+    p(x,t+s) = \int_{x_t} \int \delta(x - x(s, x_t, u)) \mathcal{P}[u] \mathcal{D}u dx_t
+\end{equation}
 
 
 
@@ -1308,7 +1347,7 @@ semiautonomous NODEs (SA-NODEs) \citep{li2024universal}
 %%%%%%%%%%%
 \newpage
 \section{Dynamical systems concepts}
-Overview: TBW
+Overview: 
 
 
 
@@ -1323,8 +1362,11 @@ We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing func
 \]
 \end{definition}
 
-\subsection{Realization}\label{sec:realization}
+%introduce ISS here?
 
+
+\subsection{Realization}\label{sec:realization}
+%TODO: intro
 Infinite sequences \( y = (y_t)_{t \in \mathbb{Z}} \), where \( y_t \in \mathbb{R}^d \) for all \( t \in \mathbb{Z} \), for which there exists a functional \( H : (\mathbb{R}^d)^{\mathbb{Z}^-} \rightarrow \mathbb{R}^d \) such that 
 \begin{equation}\label{eq:filter}
 y_t = H(\ldots, y_{t-2}, y_{t-1}) = H\left( y_{t-1} \right), \quad \text{for all } t \in \mathbb{Z},
@@ -1345,6 +1387,55 @@ y_t = h(x_t),
 \end{equation}
 where \( F : \mathbb{R}^L \times \mathbb{R}^d \rightarrow \mathbb{R}^L \) and \( h : \mathbb{R}^L \rightarrow \mathbb{R}^d \) are a state and a readout map, respectively. \( \mathbb{R}^L \) is, in this case, the state space and, typically, \( L \) is much bigger than \( d \).
 
+
+%%%%
+\subsection{Simulation}\label{sec:simulation}
+\citep{sontag1992neural}
+
+\begin{definition}[Sec.2.3 in \citep{sontag1992neural}]\label{def:simulation}
+Consider two systems $\Sigma$ and $\tilde\Sigma$ described by the following dynamics 
+\begin{equation}
+    \Sigma: \begin{cases}
+        \dot x = f (x, u)\\ y = Hx
+    \end{cases}
+    \ \ \ 
+    \tilde\Sigma: \begin{cases}
+        \dot{\tilde x} = \tilde f (\tilde x, u)\\ \tilde y = \tilde H\tilde x
+    \end{cases}
+\end{equation} 
+with inputs $u(t) \in \mathbb{R}^m$, outputs $y(t) \in \mathbb{R}^p$, and states $x(t) \in \mathbb{R}^n$ and $\tilde{x}(t) \in \mathbb{R}^{\tilde{n}}$. Suppose we are given a compact set $K \subset \mathbb{R}^n$, a set $U$ of admissible inputs, and a time interval $T \subseteq \mathbb{R}^+$.
+
+$\Sigma$ \emph{simulates} $\tilde{\Sigma}$ on sets $K$ and $U$ up to accuracy $\varepsilon$ for times $t \in \mathbb{T}$ if there exist two continuous maps $\alpha : \mathbb{R}^{\tilde{n}} \to \mathbb{R}^n$ and $\gamma : \mathbb{R}^n \to \mathbb{R}^{\tilde{n}}$ such that, when $\Sigma$ is initialized at $x(s) = \xi \in K$, $\tilde{\Sigma}$ is initialized at $\tilde{x}(s) = \gamma(\xi)$, where $s := \inf \mathbb{T}$, and any common input $u(\cdot) \in U$ is supplied to both $\Sigma$ and $\tilde{\Sigma}$, then
+\[
+|x(t) - \alpha(\tilde{x}(t))| < \varepsilon \quad \text{and} \quad |y(t) - \tilde{y}(t)| < \varepsilon \quad \text{for all } t \in \mathbb{T}.
+\]
+\end{definition}
+
+
+%%%
+\subsection{Semiflows}\label{sec:semiflow}
+Let \( M \) be a subset of a complete metric space \( W \), and let \( \mathbb{R} = (-\infty, \infty) \) 
+and \( \mathbb{R}_+ = [0, \infty) \). A mapping \( \alpha = \alpha(w,t) \), where 
+\( \alpha: M \times [0,\infty) \to M \), is said to be a \textit{semiflow} on \( M \), provided the following hold:
+
+\begin{enumerate}
+    \item Identity property: 
+    \[
+    \alpha(w,0) = w, \quad \text{for all } w \in M.
+    \]
+    \item Semigroup property: 
+    \[
+    \alpha(\alpha(w,s),t) = \alpha(w,s+t),
+    \]
+    for all \( w \in M \) and \( s, t \in \mathbb{R}_+ \).
+    \item The mapping \( \alpha: M \times (0,\infty) \to M \) is continuous.
+\end{enumerate}
+
+
+
+
+
+%%%
 \subsection{Uniqueness of solutions}
 To construct the infinite time horizon approximation theory of the NODEs, some preliminaries will be provided in this section.
 
@@ -1383,9 +1474,10 @@ has a unique solution on \([0, \infty)\).
 \end{lemma}	
 
 
+%TODO: uniqueness for non-autonomous dynamics?
 
 
-
+%%%%
 \subsection{The Fundamental Theorem of Dynamical Systems}
 See, for example\citep{conley1978morse, norton1995fundamental}, it is also referred to as Conley's Decomposition Theorem \citep{mischaikow1999cit}.
 
@@ -1393,6 +1485,11 @@ See, for example\citep{conley1978morse, norton1995fundamental}, it is also refer
  Any flow on a compact metric space decomposes into a chain recurrent part and a gradient-like part.
 \end{theorem}
 
+%TODO: takeaway
+
+
+
+%%%%
 \subsection{Structural stability}
 \citep{peixoto1959ss, mane1987ss, hu1994ss, hayashi1997invariant, robbin1971ss, robinson1974ss, palis1970ss}
 
@@ -1452,14 +1549,13 @@ Hyperbolicity of an invariant manifold can be defined in terms of stable and uns
 \end{itemize}
 
 
-
-
-\subsection{Structural stability in dimensions greater than two}
+%%%%
+\subsubsection{Structural stability in dimensions greater than two}
 \begin{theorem}[\cite{robbin1971ss}, \cite{robinson1974ss}]\label{theorem:ss}
 A vector field $S$ is structurally stable if it satisfies Axiom A and the Strong Transversality conditions.
 \end{theorem}
 
-\subsubsection{Axiom A}
+\paragraph{Axiom A}
 A point $x\in M$ is \emph{nonwandering} of the vector field $S$ if for any neighborhood $V$ of $x$ in $M$, there is $t\geq 1$ such that $\phi_t(V) \cap V\neq \emptyset$. The set of \emph{nonwandering} points of $S$ is the nonwandering set of $S$, and denoted by $\Omega(S)$. 
 
 \begin{definition}
@@ -1480,7 +1576,7 @@ Singularities (i.e. points where $S(x)=0$) and points of periodic orbits are all
 for $v\in E^s(x)$ and \[\|D\phi_{-t}(v)\|\leq C\lambda^t\|v\|\] for $v\in E^u(x)$ . 
 \end{definition}
 
-\subsubsection{Strong Transversality Condition}
+\paragraph{Strong Transversality Condition}
 %An axiom A diffeomorphism satisfies the strong transversality condition if for any non-wandering points $x$ and $y$, the stable manifold of $x$ is transverse to the unstable manifold of $y$.
 
 If a vector field $S$ satisfies Axiom A, then for any $x \in M$, the stable manifold 
@@ -1507,7 +1603,7 @@ For higher than 2 dimensional systems saddle-to-saddle connections can be struct
 
 
 
-
+%%%%small intro for PMT? move there as subsub?
 \subsection{Invariant manifolds}
 \citep{roberts1989invariant,
 kalitin2021attractors}
@@ -1519,7 +1615,9 @@ kalitin2021attractors}
 
 
 
+%%%%
 \subsubsection{Fenichel's Persistent Manifold Theorem}\label{sec:fenichel}
+%TODO: intro
 \begin{theorem}[\citep{fenichel1971persistence}; see also \citep{kuehn2015multipletimescale}]
 %\textbf{Theorem 2.2.2} ().%
  Consider
@@ -1536,7 +1634,7 @@ Then for every \( C^r \) vector field \( H_{\text{pert}} \) that is \( C^1 \thet
 
 
 
-
+%%%%
 \subsection{Attractors}
 Consider the autonomous system
 \begin{equation}\label{eq:attractorode}
@@ -1564,7 +1662,6 @@ and the point \( q \in E \), then the point \( q \) is called an \(\alpha\)-limi
 \end{definition}
 
 \subsubsection{Nonexpansivity}
-
 \begin{definition}\label{def:nonexpansive}
 A system \( \dot{x} = f(x) \) is \textit{nonexpansive} with respect to a norm \( \|\cdot\| \) if for all \( t > 0 \) and all \( x, y \) in the system’s state space, we have  
 \[
@@ -1580,6 +1677,8 @@ A = \bigcap_{t \geq 0} \phi_t(X)
 (i.e., the global attractor of the system).
 
 
+
+%%%%move to attractors as subsub?
 \subsection{Basins of attraction}
 \citep{milnor1985attractor}
 \citep{hirsch1995computing}
@@ -1613,6 +1712,7 @@ Each connected component of $\bigcup_i\cl BOA(A_i) \cap BOA(A_i) $ is a connecte
 \end{proposition}
 
 
+%%%%
 \subsection{Separatrices}
 The boundaries between basins of attraction are exactly the stable manifolds of dimension $n-1$ (e.g.originating from a saddle point with $n-1$ stable directions 
 or from a closed orbit with $n-2$ stable directions) \citep{gruemm1975stable}.
@@ -1627,34 +1727,15 @@ Define the separatrix between the basins of attraction of attractors $A_i$ and $
 \end{definition}
 
 
+%%%%
 \subsection{Gronwall's lemma}\label{sec:gronwall}
 \begin{lemma}\label{lemma:gronwall}
 
 \end{lemma}
 
 
-\subsection{Simulation}\label{sec:simulation}
-\citep{sontag1992neural}
 
-\begin{definition}[Sec.2.3 in \citep{sontag1992neural}]\label{def:simulation}
-Consider two systems $\Sigma$ and $\tilde\Sigma$ described by the following dynamics 
-\begin{equation}
-    \Sigma: \begin{cases}
-        \dot x = f (x, u)\\ y = Hx
-    \end{cases}
-    \ \ \ 
-    \tilde\Sigma: \begin{cases}
-        \dot{\tilde x} = \tilde f (\tilde x, u)\\ \tilde y = \tilde H\tilde x
-    \end{cases}
-\end{equation} 
-with inputs $u(t) \in \mathbb{R}^m$, outputs $y(t) \in \mathbb{R}^p$, and states $x(t) \in \mathbb{R}^n$ and $\tilde{x}(t) \in \mathbb{R}^{\tilde{n}}$. Suppose we are given a compact set $K \subset \mathbb{R}^n$, a set $U$ of admissible inputs, and a time interval $T \subseteq \mathbb{R}^+$.
-
-$\Sigma$ \emph{simulates} $\tilde{\Sigma}$ on sets $K$ and $U$ up to accuracy $\varepsilon$ for times $t \in \mathbb{T}$ if there exist two continuous maps $\alpha : \mathbb{R}^{\tilde{n}} \to \mathbb{R}^n$ and $\gamma : \mathbb{R}^n \to \mathbb{R}^{\tilde{n}}$ such that, when $\Sigma$ is initialized at $x(s) = \xi \in K$, $\tilde{\Sigma}$ is initialized at $\tilde{x}(s) = \gamma(\xi)$, where $s := \inf \mathbb{T}$, and any common input $u(\cdot) \in U$ is supplied to both $\Sigma$ and $\tilde{\Sigma}$, then
-\[
-|x(t) - \alpha(\tilde{x}(t))| < \varepsilon \quad \text{and} \quad |y(t) - \tilde{y}(t)| < \varepsilon \quad \text{for all } t \in \mathbb{T}.
-\]
-\end{definition}
-
+%%%%
 \subsection{Conley Index Theory}\label{sec:cit}
 From \citet{mischaikow1999cit}.
 
@@ -1692,9 +1773,8 @@ Then they have the same Conley Index, i.e.,
 
 
 
-%
-\subsection{Non-autonomous dynamical systems}
-
+%%%%
+%\subsection{Non-autonomous dynamical systems}
 
 \subsection{Asymptotically autonomous dynamics}\label{sec:asyauto}
 introduced in \citep{markus1956asyauto}
@@ -1884,12 +1964,14 @@ Qi: what is the projection operator?
 Qii: 
 R: this only proves contractivity onto this subspace and robustness for it in the sense of trajectories being close after a small perturbation but it cannot track what happens inside the subspace
 %is this already helpful?
+R: what we want to know is that which perturbations (inputs) lead us to a different attractor asymptotically and which proportion of all possible perturbations this is 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%
-\section{Support for the proof}
 \newpage
+\section{Support for the proof}
+
 \subsection{In basin bound}\label{sec:313}
 \begin{proposition}[Proposition 3.1.3. in \citep{vanhandel2007filtering}]\label{prop:313}
 Define 
