@@ -988,10 +988,17 @@ These have solutions $\psi(t,x_0,u)$.
 Input space 
 $u\in \mathcal{U}$
 
-$\mathcal{U} = \mathcal{L}_2$ (square-integrable functions)
+$\mathcal{U} = \mathcal{L}_2$ (square-integrable functions) % $\int\vert f(x)\vert^2 dx<+\infty$
+%\mathcal{L}_1? % $\int\vert f(x)\vert dx<+\infty$
+
+But also functions that converge to a time constant function or that converge to a periodic function.
+
+Sobolev space? % $f\in L^2$ and $f'\in L^2$
 
 \subsubsection{Constraints on $g$}
 Needs to be smooth enough as a function of $x$ and $u$.
+
+%any consideration of multistable contractivity?
 
 \subsubsection{Approximating $g(x,u)$}
  $\hat g\colon \reals^{2n} \rightarrow \reals^{n}$.
@@ -1224,6 +1231,7 @@ a\citep{marchi2021training}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \section{UAP for RNNs overview}
 
 \begin{table}[h]
@@ -1246,6 +1254,10 @@ a\citep{marchi2021training}
 \end{tabular}
 \end{table}
 
+
+
+%%%%%%%%%%%%%%%%%
+\newpage
 \section{Neural ODEs (NODEs)}
 %\subsection{}
 Neural ODEs \citep{chen2018neural} represent the latest instance of continuous deep learning model for time series, first developed in the context of continuous recurrent networks \citep{cohen1983absolute}.
@@ -1292,6 +1304,9 @@ semiautonomous NODEs (SA-NODEs) \citep{li2024universal}
 
 
 
+
+%%%%%%%%%%%
+\newpage
 \section{Dynamical systems concepts}
 Overview: TBW
 
@@ -1721,6 +1736,29 @@ So the approximation probability guarantee will need to be formulated in terms o
 
 
 \subsection{Contractive dynamics}
+
+Overview \citep{aminzare2014contraction, tsukamoto2021contraction}
+
+The concept of a \textit{generalized Jacobian} was introduced for analyzing contracting systems \citep{lohmiller1998contraction}.
+Consider a nonsingular change of differential coordinates \( \delta z = \Theta(x) \delta x \), then the dynamics in the new coordinates are given by
+\[
+\dot{\delta z} = F(x) \delta z
+\]
+where the generalized Jacobian is defined as
+\[
+F(x) := \Theta(x) A(x) \Theta(x)^{-1} + \dot{\Theta}(x) \Theta(x)^{-1}.
+\]
+
+If such a change of coordinates exists such that
+\[
+F(x) + F(x)' \leq -\lambda I,
+\]
+then the system is contracting with rate \( \lambda \). Furthermore, the metric
+\[
+M(x) = \Theta(x)^T \Theta(x)
+\]
+is a valid contraction metric.
+
 \begin{definition}
 Given the system equations \(\dot{x} = f(x, t)\), a region of the state space is called a \textit{contraction region} if the Jacobian \(\frac{\partial f}{\partial x}\) is uniformly negative definite in that region.
 \end{definition}
@@ -1745,22 +1783,113 @@ Given the system equations $\dot x = f(x,t)$, any trajectory, which starts in a 
 \end{theorem}
 
 \begin{remark}
-Theorem \ref{thrm:contractive} actually corresponds to a necessary and sufficient condition for exponential convergence of a system. 
+Theorem \ref{thrm:contractive} corresponds to a necessary and sufficient condition for exponential convergence of a system. 
 \end{remark}
 
 \begin{remark}
 A convex contraction region contains at most one equilibrium point, since any length between two trajectories is shrinking exponentially in that region.
 \end{remark}
 
+\subsubsection{Transverse contraction}
+\begin{definition}[Transverse contraction] 
+A system is said to be \textit{transversely contracting} if there exists a differential change of coordinates such that  
 
-\subsubsection{Limit cycles and contractivity}
+\[
+\delta z^T (F + F') \delta z < 0
+\]
+
+for all \( \delta z \) satisfying  
+
+\[
+\delta z^T \Theta(x) f(x) = 0,
+\]
+
+where the latter condition follows from  
+
+\[
+\dot{z} = \Theta(x) \dot{x} = \Theta(x) f(x).
+\]
+
+\end{definition}
+
+%Alternative def:
+Consider a dynamical system:
+\begin{equation}
+    \dot{x} = f(x), \quad x \in \mathbb{R}^n.
+\end{equation}
+
+The system is said to be \textit{transversely contracting} if there exists an orthogonal projection $P(x)$ that removes motion along a particular subspace (such as an invariant manifold), and a metric $M(x)$ under which the reduced system exhibits contraction. Mathematically, this means:
+\begin{equation}
+    P(x) (J(x) + J(x)^T) P(x) \leq -\lambda I, \quad \lambda > 0,
+\end{equation}
+where:
+\begin{itemize}
+    \item $J(x) = \frac{\partial f}{\partial x}$ is the Jacobian of the system,
+    \item $P(x)$ is a projection operator defining the transverse direction
+\end{itemize}
+
+
+\paragraph{Limit cycles and contractivity}%
 \citep{manchester2014transverse} and refs therein: e.g. 16-20
 
+
+\subsubsection{Robustness of contractive dynamics}
+\begin{proposition} %A.2 in \citep{zhang2022adversarially}
+Consider two nonlinear systems:
+
+\[
+\dot{x}_p = f(x_p, t) + d(x_p, t)
+\]
+
+\[
+\dot{x} = f(x, t)
+\]
+
+where \( f(x, t) \) is contracting in the metric \( M(x,t) \). Then the geodesic distance \( d_{M(t)}(x_p(t), x(t)) \) satisfies the differential inequality:
+
+\[
+\frac{d}{dt} d_{M(t)}(x_p(t), x(t)) \leq -\lambda(x_p(t), t) d_{M(t)}(x_p(t), x(t)) + \|d(x_p(t), t)\|_M
+\]
+
+where \( M(x,t) = \Theta(x,t)^\top \Theta(x,t) \).
+\end{proposition}
+
+\subsubsection{Contractivity and ISS}
+Contraction implies E-ISS \citep{zhang2022adversarially}
+
+\begin{definition}[Exponential Incrementally Input-to-State Stability (E-$\delta$ISS)]
+Let \( \beta, \rho, \gamma > 0 \) be positive constants.
+A continuous-time dynamical system  
+\(\dot{x} = f(x, t)\)
+is said to be \((\beta, \rho, \gamma)\)-exponential-incrementally-input-to-state stable (\((\beta, \rho, \gamma)\)-E-$\delta$ISS) if, for any pair of initial conditions \( (x_0, y_0) \) and input signal \( u(t) \) – which can depend causally on \( x, y \) – the trajectories \( x(t) \) and \( y(t) \), satisfying  
+\[
+\dot{x} = f(x, t), \quad \dot{y} = f(y, t) + u(t),
+\]
+obey the bound for all \( t \geq 0 \):
+\[
+\| x(t) - y(t) \|^2 \leq  \beta \| x_0 - y_0 \|^2 e^{- \rho t} + \gamma \int_0^t e^{-\rho (t-s)} \| u(s) \|^2 ds.
+\]
+\end{definition}
+
+
+\subsubsection{How to use contractivity for UAP}
+
+If a system is contractive (with rate $\lambda$) then there exists a change of differential coordinates % δz = Θ(x)δx
+such that for the generalized Jacobian $F$ such that $F(x)+F (x)' \leq  -\lambda I$.
+
+If a system is transverse contracting then there exists a differential change of coordinates such that $\delta z(F + F')\delta z < 0$ for all $\delta z$ satisfying $\delta' z \Theta(x)f (x) = 0$, where the latter condition follows from  $\dot z= \Theta(x) \dot x = \Theta(x)f (x)$.
+
+Q: can we consider the maximally invariant subspace of the system to be the subspace onto which we have transverse contractivity?
+Qi: what is the projection operator?
+Qii: 
+R: this only proves contractivity onto this subspace and robustness for it in the sense of trajectories being close after a small perturbation but it cannot track what happens inside the subspace
+%is this already helpful?
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%
 \section{Support for the proof}
+\newpage
 \subsection{In basin bound}\label{sec:313}
 \begin{proposition}[Proposition 3.1.3. in \citep{vanhandel2007filtering}]\label{prop:313}
 Define 
