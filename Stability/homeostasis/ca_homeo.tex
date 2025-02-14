@@ -53,7 +53,7 @@
     \expandafter\defvec\letter
 }
 
-\title{Plasticity for a perturbed continuous attractor}
+\title{Compensation and plasticity for a perturbed continuous attractor}
 \author{\'Abel S\'agodi}
 \date{\today}
 
@@ -80,13 +80,85 @@ Then the flow on the perturbed persistent invariant manifold $\manifold_\epsilon
 \tau_x\dot x = \epsilon p'(x).
 \end{equation}
 %how are p and p' related?
-We can say that they close to each other, related to $\mathcal{O}(\epsilon)$ and the tangent/derivative of the of f(x) on $\manifold_\epsilon$ being $C^1$ close $\manifold_0$.
+We can say that they are close to each other, related to $\mathcal{O}(\epsilon)$, and the tangent/derivative of the of f(x) on $\manifold_\epsilon$ being $C^1$ close the one on $\manifold_0$.
+%how relevant is the difference between invariant sets ?
 
 
 
+
+\section{Control through input (bias-based optimization of slowness on manifold)}
+Total velocity along original invariant set:
+\begin{equation}
+v_{\manifold_0}   = \int_{x\in\manifold_0}  \|\epsilon p(x)\|dx.
+\end{equation}
+
+Total velocity along perturbed invariant set:
+\begin{equation}
+v_{\manifold_\epsilon}  =\int_{x\in\manifold_\epsilon} \|f(x) + \epsilon p(x)\|dx.
+\end{equation}
+
+
+Let's analyze $f(x,W_0,t) = -x(t) + W_0\relu(x(t)) + b$ with $W_0\in\reals^{n\times n}$ and $b\in\reals^n$ so that the system implements a ring attractor \citep{noorman2024accurate}.
+
+
+How can we change the inputs to the neurons so that the invariant manifold is slowest, i.e., velocity is minimized?
+
+We calculate the gradient w.r.t. a new bias term $c$ that we add linearly as an input to each neuron:
+\begin{equation}
+\nabla_{c}v_{\manifold_0} = \int_{x\in\manifold_0}  \|\epsilon p(x) + c\|dx = \int_{x\in\manifold_0}  \frac{\epsilon p(x) + c}{\|\epsilon p(x) + c\|}dx.
+\end{equation}
+
+\paragraph{Easy form of p?}
+If $p(x) = (V-W)\relu(x(t))$, 
+
+
+\subsection{How to account for change in invariant manifold?}
+How does the invariant manifold $\manifold_{\epsilon,c}$ change as a function of $c$?
+
+\begin{equation}
+\dot x = f(x,c) = f(x) + \epsilon p(x) + c
+\end{equation}
+
+We have that 
+\begin{equation}
+\frac{d}{dt} \phi_c(y) = f(\phi_c(y), c) \quad \text{for all points} \quad x = \phi_c(y) \text{ on the manifold}.
+\end{equation}
+
+Total derivative
+\begin{equation}
+\frac{d}{dc} \frac{d}{dt} \phi_c(y) = D_x f(\phi_c(y), c) \frac{\partial}{\partial c} \phi_c(y) + \frac{\partial f}{\partial c}.
+\end{equation}
+
+
+For the manifold $\manifold_{\epsilon,c}$ remain invariant, the deformation of $\phi_c(y)$ must still satisfy the dynamics, meaning:
+\begin{equation}
+D_x f(\phi_c(y), c) \frac{\partial \phi_c(y)}{\partial c} + \frac{\partial f}{\partial c} = 0.
+\end{equation}
+
+If $D_x f$ is invertible, we can solve for $\frac{\partial \phi_c(y)}{\partial c}$, giving:
+\begin{equation}
+\frac{\partial \phi_c(y)}{\partial c} = - (D_x f)^{-1} \frac{\partial f}{\partial c}.
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%
 \section{Plasticity/Homeostasis/Adaptation}
-%consider bias pert? 
+\citep{martin2000plasticity}
+\citep{takeuchi2014plasticity}
 
+\cite{bell2024discovering} \citep{shervani2023meta}
+
+
+%consider bias pert? 
+\subsection{A principled approach}
 Let's analyze $f(x,W_0,t) = -x(t) + W_0\relu(x(t)) + b$ with $W_0\in\reals^{n\times n}$ and $b\in\reals^n$ so that the system implements a ring attractor \citep{noorman2024accurate}.
 
 We consider the case where the connectivity has been affected: $W(t=0) \leftarrow W_0 + \epsilon V$.
@@ -112,18 +184,164 @@ Define the plasticity rule
 %\]
 
 
++++
+
+\subsection{A heuristic}
+Define the plasticity rule
+\begin{equation}\label{eq:plasticity_heur}
+\tau_W\dot W_{ij}(t) = - \dot x_i \phi_j(x) 
+\end{equation}
+so that compactly
+\begin{equation}\label{eq:plasticity_heur_comp}
+\tau_W\dot W(t) = - \dot x \otimes \phi(x) 
+\end{equation}
+
+If the angular velocity $v_in(t)$ is nonzero we have that 
+\begin{equation}
+\dot x = W^{sym}\phi(x) + v(t)W^{asym} + \epsilon p(x)
+\end{equation}
+hence we can use
+\begin{equation}\label{eq:plasticity_heur_comp_vin}
+\tau_W\dot W(t) = - (\dot x - v(t)W^{asym}) \otimes \phi(x) 
+\end{equation}
+
+\subsubsection{Equilibria}
+At equilibrium, we have:
+\begin{equation}
+    \tau W \dot{W} = - \dot{x} \otimes \operatorname{ReLU}(x) = 0.
+\end{equation}
+Since \( \operatorname{ReLU}(x) \) is nonnegative, this implies that
+\begin{equation}
+    \dot{x} = 0
+\end{equation}
+at equilibrium, which is consistent with the previous condition.
+
+\subsubsection{Stability with Jacobian}
+\paragraph{Linearizing $\dot x$}
+Taking the first-order Taylor expansion around \( (x^*, W^*) \):
+
+\begin{equation}
+    \tau_x \delta \dot{x} = -\delta x + W D_{\operatorname{ReLU}} \delta x + \delta W \operatorname{ReLU}(x^*),
+\end{equation}
+where \( D_{\operatorname{ReLU}} \) is a diagonal matrix with entries:
+
+\begin{equation}
+    (D_{\operatorname{ReLU}})_{ii} =
+    \begin{cases}
+        1, & x^*_i > 0, \\
+        0, & x^*_i \leq 0.
+    \end{cases}
+\end{equation}
+
+Thus, the linearized equation for \( \dot{x} \) is:
+
+\begin{equation}
+    \tau_x \delta \dot{x} = (-I + W D_{\operatorname{ReLU}}) \delta x + \delta W \operatorname{ReLU}(x^*).
+\end{equation}
+
+
+\paragraph{Linearizing $\dot W$}
+
+\begin{equation}
+    \tau_W \dot{W} = - \dot{x} \otimes \operatorname{ReLU}(x).
+\end{equation}
+
+Substituting \( \delta \dot{x} \) from the previous step:
+
+\begin{equation}
+    \tau_W \delta \dot{W} = -\left[ (-I + W D_{\operatorname{ReLU}}) \delta x + \delta W \operatorname{ReLU}(x^*) \right] \otimes \operatorname{ReLU}(x^*).
+\end{equation}
+
+Rearranging:
+
+\begin{equation}
+    \tau_W \delta \dot{W} = - (-I + W D_{\operatorname{ReLU}}) \delta x \otimes \operatorname{ReLU}(x^*) 
+    - \delta W \operatorname{ReLU}(x^*) \otimes \operatorname{ReLU}(x^*).
+\end{equation}
+
+
+\paragraph{Joint Jacobian}
+\begin{equation}
+\begin{bmatrix}
+    \tau_x \delta \dot{x} \\
+    \tau_W \delta \dot{W}
+\end{bmatrix}
+=
+\begin{bmatrix}
+    (-I + W D_{\operatorname{ReLU}}) & \operatorname{ReLU}(x^*) \\
+    -(-I + W D_{\operatorname{ReLU}}) \otimes \operatorname{ReLU}(x^*) & -\operatorname{ReLU}(x^*) \otimes \operatorname{ReLU}(x^*)
+\end{bmatrix}
+\begin{bmatrix}
+    \delta x \\
+    \delta W
+\end{bmatrix}.
+\end{equation}
+
+Dividing by \( \tau_x \) and \( \tau_W \) for each row respectively, we obtain the Jacobian:
+
+\begin{equation}
+J =
+\begin{bmatrix}
+    \frac{1}{\tau_x} (-I + W D_{\operatorname{ReLU}}) & \frac{1}{\tau_x} \operatorname{ReLU}(x^*) \\
+    -\frac{1}{\tau_W} ((-I + W D_{\operatorname{ReLU}}) \otimes \operatorname{ReLU}(x^*)) & -\frac{1}{\tau_W} (\operatorname{ReLU}(x^*) \otimes \operatorname{ReLU}(x^*))
+\end{bmatrix}.
+\end{equation}
+
+\subsubsection{Stability with Lyapunov}
+The Lyapunov function should now reflect deviations from both manifolds. A candidate function could be:
+\[
+V(x, W) = \frac{1}{2} \| \delta x \|^2 + \frac{1}{2} \| \delta W \|^2,
+\]
+where 
+\[
+\delta x = x - x^*(W) \quad \text{and} \quad \delta W = W - W^*(x)
+\]
+
+are the deviations from the equilibrium manifolds of \(x\) and \(W\), respectively.
+
+Since both \(x\) and \(W\) have manifolds of fixed points, this function ensures that deviations from the equilibrium in both \(x\) and \(W\) are captured.
+
+The time derivative of the Lyapunov function is:
+\[
+\dot{V} = \langle \delta x, \dot{x} \rangle + \langle \delta W, \dot{W} \rangle.
+\]
+
+We then compute \(\dot{V}\) as follows:
+\[
+\dot{V} = \left\langle \delta x, \frac{1}{\tau_x} \left( -x + W \operatorname{ReLU}(x) + b \right) \right\rangle 
++ \left\langle \delta W, -\frac{1}{\tau_W} \dot{x} \otimes \operatorname{ReLU}(x) \right\rangle.
+\]
+
+
+\subsubsection{Numerical experiments}
+\begin{equation}
+dW_{ij,t} = \mu(X_t, W_{ij,t}, t)dt + \sigma(X_t, W_{ij,t}, t)dB_t
+\end{equation}
+ where $B$ denotes a Wiener process and $ \mu(X_t, W_{ij,t}, t) = -\dot x_t \otimes x_t$
+
+Euler-Maruyama method
+\[
+W_{t+\Delta t} = W_t -( \dot x_t \otimes x_t) \Delta t + \sigma \sqrt{\Delta t} \, \xi
+\]
+where \(\xi \sim \mathcal{N}(0, \sigma_W\mathbb{I})\) is an i.i.d. Gaussian noise matrix:
+\begin{equation}
+\xi \sim \mathcal{N}(0,\sigma_W\mathbb{I}), \ \sigma_W=\tfrac{1}{100}.
+\end{equation}
 
 \subsection{Contractivity}
 %weight decay necessary for contractivity ananlysis?
 
 Plasticity analysis through contractivity \citep{kozachkov2022matrix} \citep{centorrino2024modeling}.
 
+Skew-Symmetric Feedback Interconnection \citep{manchester2014transverse}
+Bounded Feedback Interconnections \citep{wang2005contraction} and \citep{manchester2014transverse}
 
+\section{Optimization of the location of invariant manifolds} %or double optimization for location of NHIM and parameters
+\citep{agrachev2009controllability,agrachev2022control}
 
+RA: Diffeomorphism between $S^1$  and embedding
 
-
-
-
+\citep{ocko2018emergent}
 
 
 \newpage
