@@ -507,7 +507,7 @@ These restrictions of the hypothesis class are Bernstein-type results (in the cl
 \subsubsection{Metric}\label{sec:metric}
 First, of all, we compare trajectories through the uniform norm over time (given the same initial starting point \citep{girard2007approximation}):
 \begin{equation}
-\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty = \sup_t\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|.
+\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty \coloneqq \sup_t\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|.
 \end{equation}
 
 We consider a compact $X$ on which we measure the difference between the target and our approximation.
@@ -894,27 +894,20 @@ We can tile the continuous attractor with a uniform grid of stable limit cycles.
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Approximating a chaotic orbit}
-%TODO:  name for type IV error: C-type (chaos)
-We cannot approximate according to our above criteria.
-Every small discrepancy in the vector field will lead to orbits starting at same position to diverge over time, analogous to perturbing initial start of the chaotic orbit.
-
-
-What we can do is minimize the Hausdorff distance between the chaotic invariant manifolds and match the Lyapunov exponents of the target system
-The first because of structural stability.
-%%The second because of ???
-
-
-Alternatively, we can guarantee that the shift representation of the dynamics is persistent.
-% Symbolic dynamics: Mapping onto the same shift dynamical system
-
-\paragraph{Why?} 
+\paragraph{Why consider chaos} 
 Forecasting
 \citep{jaeger2004harnessing}
 \citep{fan2020long}
 \citep{vlachas2020backpropagation}
 \citep{grigoryeva2024forecasting}
 
-\paragraph{How?}
+%TODO:  name for type IV error: C-type (chaos)
+\paragraph{The issue with our method} 
+We cannot approximate according to our above criteria.
+Every small discrepancy in the vector field will lead to orbits starting at same position to diverge over time, analogous to perturbing initial start of the chaotic orbit.
+
+
+\paragraph{How to proceed?}
 Prior work:
 - Attractor reconstruction, reconstructing the full Lyapunov spectrum of a dynamical system using reservoir computing \citep{hart2024attractor}.
 - \citep{hess2023teacherforcing}
@@ -923,7 +916,12 @@ Different metric: Chaotic orbits
 - mention: we can guarantee finite time approximation (prove: we can never do infinite time approximation)
 - approximation of maximal attractor in Hausdorff sense possible
 
-
+What we can do is minimize the Hausdorff distance between the chaotic invariant manifolds and match the Lyapunov exponents of the target system
+The first because of structural stability.
+%%The second because of ???
+%
+Alternatively, we can guarantee that the shift representation of the dynamics is persistent.
+% Symbolic dynamics: Mapping onto the same shift dynamical system
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -979,45 +977,60 @@ There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta
 
 
 \subsection{Input-driven}\label{sec:inputdriven}
-\begin{equation}
+In many dynamical systems, external inputs influence the system's evolution over time. Such systems can be described by differential equations of the form
+\begin{equation}\label{eq:inputdriven}
 \dot x(t) = f(x(t)) + g(x(t),u(t)),
 \end{equation}
+where $x(t)\in\reals^n$  represents the system state and $u(t)$ is an input function.
 
-These have solutions $\psi(t,x_0,u)$.
+The solutions of this system, denoted as $\psi(t,x_0,u)$, depend on the initial condition $x(0) = x_0$  and the input $u(t)$.
+We assume the solutions to be unique (see Sec.~\ref{sec:inputunique}).
+
 
 \subsubsection{Constraints on $u(t)$}
-Input space 
-$u\in \mathcal{U}$
+We will now characterize the input space 
+$u\in \mathcal{U}$ with $u:\reals_+\rightarrow\reals^m$.
+We assume that $u(t)$ converges to a periodic function, i.e., %or g(\dot,u) needs to (?)
+%rate of convergence?
+\begin{equation}
+\mathcal{U} \coloneqq \left\{ u(t) \mid \exists p(t) \text{ periodic} \text{ or } c \in \mathbb{R}^n, \ \lim_{t \to \infty} \| u(t) - p(t) \| = 0 \text{ or } \lim_{t \to \infty} \| u(t) - c \| = 0 \right\}.
+\end{equation}
 
-Bounded functions?
+%we can extend \mathcal{U} for a set epsilon and delta
 
-$\mathcal{U} = \mathcal{L}_2$ (square-integrable functions) % $\int\vert f(x)\vert^2 dx<+\infty$
+%for systems with FPs we can allow for more leniency (?) % we can allow for small inputs as long as it doesnt bring the system across separatrices (but this is all defined probabilistically in the PDE picture) %or if it does then it does it only a finite number of times
+% but for now we just consider inputs converging to a periodic function.
+
+%for systems with LCs small inputs will desynchronize approximation from target
+%
+
+%Bounded functions?
+%$\mathcal{U} = \mathcal{L}_2$ (square-integrable functions) % $\int\vert f(x)\vert^2 dx<+\infty$
 %\mathcal{L}_1? % $\int\vert f(x)\vert dx<+\infty$
+%But also functions that converge to a time constant function or that converge to a periodic function.
+%Sobolev space? % $f\in L^2$ and $f'\in L^2$
 
-But also functions that converge to a time constant function or that converge to a periodic function.
+%Input doesn't need to be periodic! %but in the appropriate norm these functions will be on a period function...
+%As long as the maximal size (at a given time point) is bounded (this bound is determined by the BoA)
+%And as long as the proportion of trajectories that remain around the separatrices falls of fast enough
+%How to characterize this?
 
-Sobolev space? % $f\in L^2$ and $f'\in L^2$
 
-Input doesn't need to be periodic! %but in the appropriate norm these functions will be on a period funciton...
-As long as the maximal size (at a given time point) is bounded (this bound is determined by the BoA)
-And as long as the proportion of trajectories that remain around the separatrices falls of fast enough
-How to characterize this?
 
 
 \subsubsection{Constraints on $g$}
 Needs to be smooth enough as a function of $x$ and $u$.
 
-%any consideration of multistable contractivity?
+Needs to be hyperbolic (in the limit $t\rightarrow\infty$) for each $u(\infty)$
 
-Needs to be hyperbolic (in the limit $t\rightarrow\infty$).
-
-Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$).
+Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$) for each $u(\infty)$
 %What goes wrong with LCs: basically lack of robustness
 %What goes wrong with CAs: lack of robustness
 
 
+
 \subsubsection{Approximating $g(x,u)$}
- $\hat g\colon \reals^{2n} \rightarrow \reals^{n}$.
+ $\hat g\colon \reals^{n+m} \rightarrow \reals^{n}$.
 
 What is the maximal error $g-\hat g$ we can allow for the $\epsilon$-$\delta$ distance in flow fields to hold?
 
@@ -1057,22 +1070,40 @@ With this we can capture what proportion of inputs lead the system to the separa
     p(x,t+s) = \int_{x_t} \int \delta(x - x(s, x_t, u)) \mathcal{P}[u] \mathcal{D}u dx_t
 \end{equation}
 
+\begin{theorem}
 
+\end{theorem}
+
+\subsubsection{Proof}
+%TODO
+
+\begin{itemize}
+\item probability density around asymptotic orbits can be made arbitrarily high
+\item probability density in separatrix mismatch regions can be made arbitrarily low
+\item what to do with which input functions lead to bad approximation?
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
-\paragraph{Recap}	
-
+%\paragraph{Recap}	
+This is the first proof of the universal approximation property of neural ODEs for multistable dynamical systems on an infinite time horizon.
 
 \subsection{Limitations}
 \paragraph{Limit cycles}
 Stable limit cycles are approximable but their approximation is not robust! (period will change under almost all perturbations, only a measure zero set of perturbations preserves the period).
 
+\paragraph{Chaotic dynamics}
 
 \paragraph{Stochastic dynamics} %+pdes?
 \citep{wei2022statistically}
 
 
+\paragraph{Practicalities: The price of universality}
+This construction is immensely inefficient.
+%Better to just look at RNNs (?)
+%Expressivity paper?
+
+%%
 \subsection{Remarks on error}
 \paragraph{Link to Total integrated error (TIE)}
 We can look at the total integrated error between the target and the approximant and derive a similar UAP theorem.
@@ -1095,40 +1126,39 @@ Limit $\delta\rightarrow 0$: error of type II goes to zero, i.e., perfectly matc
 Limit $\epsilon\rightarrow 0$: error of type I goes to zero (apart from small mismatch around separatrices), i.e., perfectly matching in-basin dynamics
 
 
+%%
 \subsection{NODEs vs RNNs}
-NODEs Simulate RNNs 
+NODEs simulate RNNs (see definition for simulation in Sec.~\ref{sec:simulation}).
 - Each NODE is state space equivalent to an RNN that is split into a part for which the equivalence holds and a hidden part (Boltzmann Machine-like)
 -Each RNN is state space equivalent to an RNN
 
-NNs as controllers \citep{sontag1992neural}
+This equivalence does not hold for input-driven systems (?)
+
+% NNs as controllers \citep{sontag1992neural}
 
 
-\subsection{The price of universality}
-This construction is immensely inefficient.
-Better to just look at RNNs (?)
-%Expressivity paper?
-
-
-%%%%
+%%
 \subsection{Implications for understanding neural computation} 
-
 Reconstructing Computational Dynamics from Neural Measurements with Recurrent Neural Networks \citep{durstewitz2023reconstructing}.
 
 Use of NODEs in neuroscience \citep{kim2021inferring}.
 
 system identification in neuroscience \citep{han2023si} 
 
-\paragraph{Models that generalize over time}
+%\paragraph{Robust neural computation}
+%Idea: Two dynamical phenomena are isolated into primitive architectural components which perform the operations of continuous nonlinear transformation and autoassociative recall \citep{pineda1988dynamics}.
 
-\paragraph{Convergence in model space}
+%TODO: choose most relevant topic
+%\paragraph{Models that generalize over time}
+
+%\paragraph{Convergence in model space}
 
 %\paragraph{Convergent realism}
 
-\paragraph{Interpretability}%point to anti-truncated koopman operator paper?
+%\paragraph{Interpretability}%point to anti-truncated koopman operator paper?
 
 
-%\paragraph{Robust neural computation}
-%Idea: Two dynamical phenomena are isolated into primitive architectural components which perform the operations of continuous nonlinear transformation and autoassociative recall \citep{pineda1988dynamics}.
+
 
 
 
@@ -1413,7 +1443,7 @@ $\Sigma$ \emph{simulates} $\tilde{\Sigma}$ on sets $K$ and $U$ up to accuracy $\
 
 
 %%%
-\subsection{Semiflows}\label{sec:semiflow}
+\subsection{Semiflows\citep{sell2013dynamics}}\label{sec:semiflow}
 Let \( M \) be a subset of a complete metric space \( W \), and let \( \mathbb{R} = (-\infty, \infty) \) 
 and \( \mathbb{R}_+ = [0, \infty) \). A mapping \( \alpha = \alpha(w,t) \), where 
 \( \alpha: M \times [0,\infty) \to M \), is said to be a \textit{semiflow} on \( M \), provided the following hold:
@@ -1432,13 +1462,16 @@ and \( \mathbb{R}_+ = [0, \infty) \). A mapping \( \alpha = \alpha(w,t) \), wher
 \end{enumerate}
 
 
-
+ Existence of Global Attractors for compact semiflows: Theorem 23.11 in \citep{sell2013dynamics}
+ 
 
 
 %%%
 \subsection{Uniqueness of solutions}
 To construct the infinite time horizon approximation theory of the NODEs, some preliminaries will be provided in this section.
 
+
+%TODO: intro to basic cont reqs
 \begin{definition}[Lipschitz]
  Let both $S \subset \mathbb{S}^n$ and $U \subset \mathbb{R}^m$ be open subsets.
  A mapping $f: S \times U \rightarrow \mathbb{R}^n$ is said to be Lipschitz in $x$ on $S \times U$ if there exists a constant $L$ such that
@@ -1449,20 +1482,21 @@ for all $x_1, x_2 \in S$, and any $u \in U$, and $L$ is a Lipschitz constant of 
 \end{definition}
 
 
-\begin{lemma}
-Let a mapping \( F : D \to \mathbb{R}^n \) be \( C^t \). 
-Then \( F \) is locally Lipschitz. Moreover, if \( A \subset D \) is compact, then the restriction \( F|_A \) is Lipschitz.
-(For proof see Hirsch \& Smale, 1974, chap. 8, §3. Lemma and §6. Lemma.)
-\end{lemma}	
+%\begin{lemma}
+%Let a mapping \( F : D \to \mathbb{R}^n \) be \( C^t \). 
+%Then \( F \) is locally Lipschitz. Moreover, if \( A \subset D \) is compact, then the restriction \( F|_A \) is Lipschitz.
+%(For proof see Hirsch \& Smale, 1974, chap. 8, §3. Lemma and §6. Lemma.)
+%\end{lemma}	
 
 
+\subsubsection{Autonomous solutions}\label{sec:autonomousunique}
 \begin{lemma}
 %LEMMA 3.
 Let \( D \) be an open subset of \( \mathbb{R}^n \) and \( F : D \to \mathbb{R}^n \) be a \( C^t \)-mapping. 
 Let \( x(t) \) be a solution on a maximal open interval \( J = (a, \beta) \subset \mathbb{R} \) with \( \beta < \infty \). 
 Then for any given compact subset \( K \subset D \), there is some \( t \in (a, \beta) \) with \( x(t) \notin K \). 
-(For proof see Hirsch \& Smale, 1974, chap. 8, §5. Theorem).
 \end{lemma}	
+For proof see \citep{hirsch1974nonautonomous}[chap. 8, §5]).
 
 
 \begin{lemma}[Lemma 4 in \citep{funahashi1993approximation}]
@@ -1475,6 +1509,16 @@ has a unique solution on \([0, \infty)\).
 
 
 %TODO: uniqueness for non-autonomous dynamics?
+
+\subsubsection{Input-driven solutions}\label{sec:inputunique}
+If \( f(x) \) and \( g(x,u) \) are Lipschitz continuous in \( x \) and bounded for a given \( u(t) \), then for any initial condition \( x_0 \), there exists a unique local solution on some interval \( [0,T) \).  
+
+A sufficient condition for the solutions to exist globally is that \( f(x) \) and \( g(x,u) \) satisfy a linear growth bound:  
+\[
+\| f(x) + g(x,u) \| \leq C (1 + \| x \|), \quad \text{for some } C > 0.
+\]
+%This prevents solutions from blowing up in finite time and guarantees global existence.
+
 
 
 %%%%
@@ -1677,6 +1721,11 @@ A = \bigcap_{t \geq 0} \phi_t(X)
 (i.e., the global attractor of the system).
 
 
+\subsubsection{Compact dynamics}
+The semiflow $\sigma(u, t) = S(t)u$ on $W$ is said to be compact, if for every bounded set $B$ in $W$ there is a $r = r(B)$, $0 \leq r < \infty$, such that for every $t> r$, the set $S(t)B$ lies in a compact subset of $W$, i.e., $\cl_WS(t)B$ is compact. 
+
+%\subsubsection{$\kappa$-contracting}%for noncompact dynamics
+%\citep{sell2013dynamics}
 
 %%%%move to attractors as subsub?
 \subsection{Basins of attraction}
@@ -1915,24 +1964,31 @@ where:
 
 \subsubsection{Robustness of contractive dynamics}
 \begin{proposition} %A.2 in \citep{zhang2022adversarially}
-Consider two nonlinear systems:
 
+Given a Riemannian metric \( M: \mathbb{R}^n \to \text{Sym}_{+}^{n \times n} \), the geodesic distance associated with \( M \) is defined as:
+\begin{equation}
+    d_M(x, y) := \inf_{\gamma \in \Gamma(x,y)} \int_0^1 \sqrt{\dot{\gamma}(s)^T M(\gamma(s)) \dot{\gamma}(s)} \, ds,
+\end{equation}
+where \( \Gamma(x,y) \) denotes the set of smooth curves \( \gamma: [0,1] \to \mathbb{R}^n \) with boundary conditions \( \gamma(0) = x \) and \( \gamma(1) = y \).
+
+
+Consider two nonlinear systems:
 \[
 \dot{x}_p = f(x_p, t) + d(x_p, t)
 \]
-
+and 
 \[
 \dot{x} = f(x, t)
 \]
-
-where \( f(x, t) \) is contracting in the metric \( M(x,t) \). Then the geodesic distance \( d_{M(t)}(x_p(t), x(t)) \) satisfies the differential inequality:
-
+where \( f(x, t) \) is contracting in the metric \( M(x,t) \).
+ Then the geodesic distance \( d_{M(t)}(x_p(t), x(t)) \) satisfies the differential inequality:
 \[
 \frac{d}{dt} d_{M(t)}(x_p(t), x(t)) \leq -\lambda(x_p(t), t) d_{M(t)}(x_p(t), x(t)) + \|d(x_p(t), t)\|_M
 \]
-
 where \( M(x,t) = \Theta(x,t)^\top \Theta(x,t) \).
 \end{proposition}
+
+
 
 \subsubsection{Contractivity and ISS}
 Contraction implies E-ISS \citep{zhang2022adversarially}
