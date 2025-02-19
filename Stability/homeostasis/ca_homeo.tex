@@ -62,6 +62,14 @@
 \begin{document}
 \maketitle
 
+
+\section{Introduction}
+
+\subsection{Hebbian plasticity}
+\begin{equation}
+\dot W_{ij} = F(x_i, x_j, W_{ij})
+\end{equation}
+
 \section{Problem setting}
 
 Consider 
@@ -105,42 +113,82 @@ How can we change the inputs to the neurons so that the invariant manifold is sl
 
 We calculate the gradient w.r.t. a new bias term $c$ that we add linearly as an input to each neuron:
 \begin{equation}
-\nabla_{c}v_{\manifold_0} = \int_{x\in\manifold_0}  \|\epsilon p(x) + c\|dx = \int_{x\in\manifold_0}  \frac{\epsilon p(x) + c}{\|\epsilon p(x) + c\|}dx.
+\nabla_{c}v_{\manifold_0} = \frac{\partial}{\partial c}\int_{x\in\manifold_0}  \|\epsilon p(x) + c\|dx = \int_{x\in\manifold_0}  \frac{\epsilon p(x) + c}{\|\epsilon p(x) + c\|}dx.
 \end{equation}
 
-\paragraph{Easy form of p?}
-If $p(x) = (V-W)\relu(x(t))$, 
+We calculate the gradient w.r.t. a weight change $W_{ij}$:
+\begin{equation}
+\nabla_{W_{ij}}v_{\manifold_0} = \frac{\partial}{\partial W_{ij}}\int_{x\in\manifold_0}  \|f(x) + \epsilon p(x)\|dx = \int_{x\in\manifold_0} 
+\frac{(W \text{ReLU}(x) + \epsilon p(x))_i}{\| W \text{ReLU}(x) + \epsilon p(x) \|} \text{ReLU}(x)_j
+dx.
+\end{equation}
+
+
+
+%can we calculate that for manifold_epsilon?
+\begin{equation}
+\nabla_{W_{ij}}v_{\manifold_\epsilon} = \frac{\partial}{\partial W_{ij}}\int_{x\in\manifold_{\epsilon}}  \|f(x) + \epsilon p(x)\|dx = \int_{x\in\manifold_{\epsilon}}  \relu(x_j)\frac{f(x) + \epsilon p(x)}{\|f(x) +\epsilon p(x) \|}dx.
+\end{equation}
+
+
+
+
 
 
 \subsection{How to account for change in invariant manifold?}
 How does the invariant manifold $\manifold_{\epsilon,c}$ change as a function of $c$?
 
 \begin{equation}
-\dot x = f(x,c) = f(x) + \epsilon p(x) + c
+\dot x = g(x,c) = f(x) + \epsilon p(x) + c
 \end{equation}
 
 We have that 
 \begin{equation}
-\frac{d}{dt} \phi_c(y) = f(\phi_c(y), c) \quad \text{for all points} \quad x = \phi_c(y) \text{ on the manifold}.
+\frac{d}{dt} \phi_c(y) =g(\phi_c(y), c) \quad \text{for all points} \quad x = \phi_c(y) \text{ on the manifold}.
 \end{equation}
 
 Total derivative
 \begin{equation}
-\frac{d}{dc} \frac{d}{dt} \phi_c(y) = D_x f(\phi_c(y), c) \frac{\partial}{\partial c} \phi_c(y) + \frac{\partial f}{\partial c}.
+\frac{d}{dc} \frac{d}{dt} \phi_c(y) = D_x g(\phi_c(y), c) \frac{\partial}{\partial c} \phi_c(y) + \frac{\partial g}{\partial c}.
 \end{equation}
 
 
 For the manifold $\manifold_{\epsilon,c}$ remain invariant, the deformation of $\phi_c(y)$ must still satisfy the dynamics, meaning:
 \begin{equation}
-D_x f(\phi_c(y), c) \frac{\partial \phi_c(y)}{\partial c} + \frac{\partial f}{\partial c} = 0.
+D_x g(\phi_c(y), c) \frac{\partial \phi_c(y)}{\partial c} + \frac{\partial g}{\partial c} = 0.
 \end{equation}
 
-If $D_x f$ is invertible, we can solve for $\frac{\partial \phi_c(y)}{\partial c}$, giving:
+If $D_x g$ is invertible, we can solve for $\frac{\partial \phi_c(y)}{\partial c}$, giving:
 \begin{equation}
-\frac{\partial \phi_c(y)}{\partial c} = - (D_x f)^{-1} \frac{\partial f}{\partial c}.
+\frac{\partial \phi_c(y)}{\partial c} = - (D_x g)^{-1} \frac{\partial g}{\partial c}.
 \end{equation}
 
 
+\subsubsection{Weights}
+For $\dot x= f(x) =W\phi(x)$ and invariant manifold $x=\psi_{W_{ij}}(y)$
+
+We have that 
+\begin{equation}
+\frac{d}{dt} \psi(y) =f(\psi(y)) \quad \text{for all points} \quad x = \psi(y) \text{ on the manifold}.
+\end{equation}
+
+\begin{equation}
+\frac{\partial}{\partial W_{ij}} \left( W \phi(\psi_{W_{ij}}(y)) \right) = \phi(\psi_{W_{ij}}(y)) e_{ij} + W \frac{d}{dW_{ij}} \phi(\psi_{W_{ij}}(y)),
+\end{equation}
+
+\begin{equation}
+W \frac{\partial}{\partial W_{ij}}  \phi(\psi_{W_{ij}}(y)) = - \phi(\psi_{W_{ij}}(y)) e_{ij}.
+\end{equation}
+
+
+\begin{equation}
+\frac{\partial}{\partial W_{ij}}  \phi(\psi_{W_{ij}}(y)) = \phi'(\psi_{W_{ij}}(y))\frac{d}{dW_{ij}}\psi_{W_{ij}}(y)
+\end{equation}
+
+We get 
+\begin{equation}
+\frac{\partial}{\partial W_{ij}} \psi_{W_{ij}}(y) = - \left(\phi'(\psi_{W_{ij}}(y))\right)^{-1} W^{-1} \phi(\psi_{W_{ij}}(y)) e_{ij}.
+\end{equation}
 
 
 
@@ -184,9 +232,28 @@ Define the plasticity rule
 %\]
 
 
-+++
 
-\subsection{A heuristic}
+
+\subsection{Outer product learning rule}%Omri Barak's suggesiton
+\begin{equation}
+\frac{\partial}{\partial W_{ij}}\|\dot x \|^2 = 2 \dot x^T \frac{\partial}{\partial W_{ij}}\dot x = 2 \dot x_i\phi(x_j).
+\end{equation}
+
+\begin{equation}
+\frac{\partial}{\partial W_{ij}} \|\dot{x}\| = \frac{2 \dot{x}_i \cdot \text{ReLU}(x_j)}{\|\dot{x}\|}
+\end{equation}
+
+
+\paragraph{Easy form of p?}
+If $p(x) = (V-W)\relu(x(t))$
+
+
+\paragraph{General activation function}
+\[
+\frac{\partial}{\partial W_{ij}} \|\dot{x}\|^2 = 2 \dot{x}^T \cdot \phi'(Wx) \cdot x_j
+\]
+
+
 Define the plasticity rule
 \begin{equation}\label{eq:plasticity_heur}
 \tau_W\dot W_{ij}(t) = - \dot x_i \phi_j(x) 
@@ -208,7 +275,7 @@ hence we can use
 \subsubsection{Equilibria}
 At equilibrium, we have:
 \begin{equation}
-    \tau W \dot{W} = - \dot{x} \otimes \operatorname{ReLU}(x) = 0.
+    \tau_W \dot{W} = - \dot{x} \otimes \operatorname{ReLU}(x) = 0.
 \end{equation}
 Since \( \operatorname{ReLU}(x) \) is nonnegative, this implies that
 \begin{equation}
