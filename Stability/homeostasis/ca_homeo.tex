@@ -411,6 +411,26 @@ RA: Diffeomorphism between $S^1$  and embedding
 \citep{ocko2018emergent}
 
 
+
+\section{Types of plasticity}
+\subsection{Hebbian/Anti-Hebbian Plasticity}
+\subsection{Dong \& Hopfield Synaptic Plasticity}
+\subsection{Presynaptic Plasticity}
+\citep{mongillo2008synaptic}
+\citep{masse2019circuit}
+
+\subsection{Covariance Rule}
+Consider a covariance-based learning rule \citep{sejnowski1989hebb, gerstner2002mathematical}, with a leak term  
+\begin{equation}
+    \dot{W} = \nu \left( \phi(x) - \langle \phi \rangle \right) \left( \phi(x) - \langle \phi \rangle \right)^T - \gamma W
+\end{equation}
+where $\nu \geq 0$ is a learning rate and $\langle \phi \rangle$ denotes a running average over the firing rate  
+\begin{equation}
+    \langle \phi \rangle_i = \int_{t-\Delta}^{t} \phi(x(s))_i \, ds
+\end{equation}
+with some window size $\Delta > 0$.
+
+
 \newpage
 \bibliographystyle{plain}
 \bibliography{../../all_ref.bib}
