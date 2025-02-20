@@ -109,6 +109,7 @@ Our work aims to bridge this gap by extending the approximation of dynamical sys
 To achieve this, we leverage Neural Ordinary Differential Equations (NODEs) as a framework for constructing such approximations.
 % By using NODEs, we can model continuous-time dynamical systems while ensuring that key properties, such as stability and smooth error bounds under perturbations, are maintained.
 We provide a fist-of-its-kind \textbf{approximation result for multi-stable systems on the infinite time horizon}, laying the groundwork for future advances in both theory and applications of neural approximators in long-term dynamical modeling.
+We redefine the previously known landscape of dynamical systems from the perspective of RNNs, see Fig.\ref{fig:ds_land_rnns_fmp}.
 
 %mention that vanilla RNNs are not universal approximators?
 %how we will do this
@@ -117,6 +118,15 @@ We provide a fist-of-its-kind \textbf{approximation result for multi-stable syst
 
 \paragraph{Formulation: lack of theory on time generalization/forecasting}
 ANNs can generalize. After learning the data presented to them (a sample), ANNs can often correctly infer the unseen part of a population even if the sample data contain noisy information. As forecasting is performed via prediction of future behavior (the unseen part) from examples of past behavior, it is an ideal application area for neural networks, at least in principle. \citep{zhang1998forecasting}
+
+\setlength\belowcaptionskip{-5ex}
+\begin{SCfigure}[10][bthp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{ds_land_rnns_fmp}
+  \caption{Dynamical systems landscape.
+  }\label{fig:ds_land_rnns_fmp}
+\end{SCfigure}
+
 
 
 
@@ -1099,7 +1109,9 @@ Stable limit cycles are approximable but their approximation is not robust! (per
 
 \paragraph{Chaotic dynamics}
 
-\paragraph{Stochastic dynamics} %+pdes?
+%also pdes?
+\paragraph{Stochastic dynamics}
+\citep{chen2022universal} 
 \citep{wei2022statistically}
 \citep{bishop2023recurrent}
 
@@ -1266,16 +1278,13 @@ Three-layered multi-output Feedforward Networks are universal approximators for 
 
 It is not the specific choice of the activation function but rather the multilayer feed-forward architecture itself that gives neural networks the potential of being universal approximators\citep{hornik1991approximation}.
 
-
+%TODO: oragnize
 The universal approximation property is equivalent to having a nonpolynomial activation function \citep{pinkus1999approximation}.
 
 \citep{mhaskar1997neural}
 \citep{leshno1993multilayer}
-
 UA with Deep narrow \citep{kidger2020universal}
-
 with WTA networks \citep{maass2000wta}
-
 Function+Derivatives \citep{hornik1990universal}
 function and derivative \citep{li1996simultaneous}
 
@@ -1293,7 +1302,7 @@ The universal approximation property with respect to the $L^p$-norm can be insuf
 
 Universal approximation of 
 \begin{itemize}
-\item Homeomorphisms \citep{zhang2020approximation}
+\item Homeomorphisms \citep{zhang2020approximation}, with normalizing flows \citep{papamakarios2021normalizing}
 \item Invariant functions\citep{li2022deep}
 \item Monotone analytic functions homotopic to the identity\citep{tabuada2020universal}, \citep{tabuada2022universal}
 \end{itemize}
