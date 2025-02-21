@@ -93,6 +93,7 @@ Recurrent Neural Networks (RNNs) are believed to be universal approximators.
 For example, \citet{durstewitz2023reconstructing} claims that 
 %a library of basis functions or
  a neural network may be used to closely approximate the vector field or the trajectories of any given dynamical system.
+ Also, in \citep{dinc2025latentcomputing} it is claimed that RNNs are universal approximators of dynamical systems (even though the proof they provide covers universal approximation of vector fields, see also Sec.\ref{sec:uapvfs}). 
 However, universal approximation results based on vector fields are limited in scope, as the behavior of the ODE they support might deviate from the target.
 Existing results about approximating dynamical systems either focus on finite time horizon approximation or on approximating stable dynamical systems on an infinite time horizon.
 This misses important behavior of the system (e.g. temporal generalization of the approximation, see Fig.~\ref{fig:lc_period_div}).
@@ -1097,6 +1098,10 @@ With this we can capture what proportion of inputs lead the system to the separa
 \item Input functions that are problematic? Separatrices in input space?
 \end{itemize}
 \end{itemize}
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
