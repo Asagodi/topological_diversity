@@ -20,6 +20,13 @@
 \usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}
 \hypersetup{breaklinks=true}
 
+%for comments
+\newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
+\definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
+\definecolor{ascolor}{rgb}{1, 0.5, 0.}
+\newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
+\newcommand{\ascomment}[1]{\textcolor{ascolor}{(#1)}}
+
 \graphicspath{{figures}}
 
 \newtheorem{theorem}{Theorem}
@@ -212,7 +219,7 @@ Furthermore, smooth ODES in $\reals^3$ can simulate arbitrary Turing machines \c
 RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
 Finally, any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuous time symmetric Hopfield nets \citep{sima2003continuous}.
 
-%%TODO: 
+\ascomment{TODO: orgnize} 
 \citep{moore1990unpredictability,moore1998finite}
 \citep{cabessa2019turing}
 \citep{perez2019turing}
@@ -233,9 +240,8 @@ Any function can be approximated arbitrarily well in probability with a recurren
 % where ... can be computed by one neuron whose activation function $\sigma$ possesses a local linearity.\citep{hammer2000approximation}
 RNNs with continuous sigmoidal activation function have the UAP for finite number of time steps \citep{schafer2006recurrent, schafer2007uap}.
 Furthermore, locally recurrent networks with two hidden layers is able to approximate a state-space trajectory produced by any Lipschitz continuous function with arbitrary accuracy\citep{patan2008approximation}.
-Finally, more recently it was shown that discrete-time RNNs are finite-time horizon universal approximators of discrete-time systems \citep{aguiar2023universal}.
+Finally, more recently it was shown that discrete-time RNNs are finite-time horizon universal approximators of discrete-time systems \citep{aguiar2023universal} and the universality of linear recurrences followed by nonlinear projections for finite time was established \citep{orvieto2023universality}.
 
-Universality of linear recurrences followed by nonlinear projections for finite time \citep{orvieto2023universality}.
 
 \paragraph{RBF neural networks}
 \citep{tan1995efficient}
@@ -969,7 +975,7 @@ In any case we cannot have a continuous attractor in the asymptotic vector field
 
 
 %%%
--Exponentially asymptotically autonomous dynamics Supp.Sec.~\ref{sec:asyauto} \ref{def:eaa}
+-Exponentially asymptotically autonomous dynamics Supp.Sec.~\ref{sec:asyauto} and Eq.~\ref{def:eaa}\\
 %
 -or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback} \citep{giesl2012numerical} \citep{cheban2002relationship}
 
@@ -978,7 +984,7 @@ In any case we cannot have a continuous attractor in the asymptotic vector field
 \subsubsection{Approximating $h(x,t)$}
 Same as before but now $\hat h\colon \reals^{n+1} \rightarrow \reals^{n}$. %x'\rightarrow x\oplus t
 
-%prove:
+%prove: %use this for input-driven
 \paragraph{Finite-time horizon approximation + exponentially asymptotically autonomous = Infinite-time horizon approximation}
 What is the maximal error $h-\hat h$ we can allow for the $\epsilon,\delta$ distance in flow fields to hold?
 
@@ -1038,28 +1044,54 @@ Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$) f
 %What goes wrong with LCs: basically lack of robustness
 %What goes wrong with CAs: lack of robustness
 
+\paragraph{$g$ is asymptotically autonomous} %+exponentially
+Eq.~\ref{eq:nonautonomous} so that 
+\begin{equation}\label{eq:inputdriven_asymp}
+g(x(t), u(t)) \rightarrow h_{aut}(x(t))
+\end{equation}
+%for every epsilon there is a T
+that is for $t>T$ for some $T$ %...
+\begin{equation}\label{eq:inputdriven_asymp}
+g(x(t), u(t)) =  h_{\operatorname{aut}}(x(t)) + \epsilon h_{\operatorname{inp}}(x(t), u(t))
+\end{equation}
+with $\|h_{inp}\| = 1$.
+
+
+\paragraph{$g$ needs to converge to countably many separated asymptotically autonomous vector fields}
+
+
+
+Should we consider the vector field as a dynamical system?
+We can then apply the autonomous theory to it.
+This would lead to the requirement ``$g$ needs to converge to countably many separated asymptotically autonomous vector fields''.
+
+
+\paragraph{How does this relate to the input class?}
+
 
 
 \subsubsection{Approximating $g(x,u)$}
+\ascomment{TODO: define input-driven MLP style neural ODE}
  $\hat g\colon \reals^{n+m} \rightarrow \reals^{n}$.
 
-What is the maximal error $g-\hat g$ we can allow for the $\epsilon$-$\delta$ distance in flow fields to hold?
+\textbf{What is the maximal error $g-\hat g$ we can allow for the $\epsilon$-$\delta$ distance in flow fields to hold?}
 
 
-
-Reconsider $\delta$:
+\subsubsection{Defining the metric for the approximation of non-autonomous systems}
+%Reconsider $\delta$:
 We now also keep track of which proportion of input space leads to bigger than $\epsilon$ trajectory error.
 So we define 
 \begin{equation}%indicate X,U spaces?
 \|\varphi-\hat \varphi\|_\epsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0,u)-\hat \varphi(\cdot,x_0,u)\|_\infty>\epsilon\right).
 \end{equation}
 
-
 Path integral representation of the distribution of $x(t,u)$ when integrating over all possible input functions $u(t)$:
 \begin{equation}
     p(x,t) = \int \delta(x - x(t, u)) \mathcal{P}[u] \mathcal{D}u
 \end{equation}
 where $\mathcal{P}[u]$ is a probability measure over the function space of $u(t)$.
+
+Any stochastic and even deterministic system can be expressed in terms of a path integral for which asymptotic methods can be systematically applied \citep{chow2015path}.
 
 \paragraph{Uniform (Lebesgue) Measure on a Bounded Subset of \( C([0,T], \reals^m) \)}
 If \( u(t) \) is continuous and satisfies a uniform bound
@@ -1079,10 +1111,20 @@ With this we can capture what proportion of inputs lead the system to the separa
 %then calculate path integral over inputs 
 \begin{equation}
     p(x,t+s) = \int_{x_t} \int \delta(x - x(s, x_t, u)) \mathcal{P}[u] \mathcal{D}u dx_t
+    %    p(x,t+s) = \int_{x(t)} \int \delta(x - x(s, x(t), u)) \mathcal{P}[u] \mathcal{D}u dx(t) %which form is better?
 \end{equation}
 
-\begin{theorem}
 
+\ascomment{TODO: define $d_\epsilon$}
+
+
+\subsubsection{Theorem}
+\begin{theorem}
+For an input-driven dynamical system as in Eq.~\ref{eq:inputdriven} %+assymptions...
+with solutions  $\psi(t,x_0,u)$
+and $\epsilon, \delta>0$, there exists an input-driven MLP style neural ODE %...
+with solutions  $\hat \psi(t,x_0,u)$ such that 
+$d_\epsilon(\psi,\hat\psi)<\delta$.
 \end{theorem}
 
 \subsubsection{Proof}
@@ -1104,9 +1146,36 @@ With this we can capture what proportion of inputs lead the system to the separa
 Characterize proportion of “bad” input sequences through path integral 
 
 1. Input brings state to separatrix mismatch
-    1. Can be controlled by size of mismatch region (and hence autonomous part of the vf (or the asymptotically autonomous vf))
+    a. Can be controlled by size of mismatch region (and hence autonomous part of the vf (or the asymptotically autonomous vf))
 2. Input brings state to wrong side of separatrix
-    1. Can be controlled by mismatch in non-autonomous/input-driven factor of vf
+    a. Can be controlled by mismatch in non-autonomous/input-driven factor of vf
+    
+We can set $p(x_0)$ to be the uniform distribution over the compact state space $\mathcal{X}$ we consider. 
+Then the probability density after $t$ time has passed is
+\begin{equation}\label{eq:init_path_density}
+p(x_1,t) = p(x_0)p(x_1,t).
+\end{equation}
+
+$p(x_{i+1},t+s) = p(x_i,t)p(x_{i+1},s)$
+
+We need to consider this until $T$ for which we are $\eta$ close to the asymptotic, autonomous vector field.
+
+
+
+%
+We have that for a finite time we will make at most $\epsilon'$ error. %for a vector field that is .... close 
+
+
+%At some $T$ the vector field is $\eta$ away from the asymptotic vector field.
+We consider Eq.~\ref{eq:init_path_density} with $T$ for which the convergence of the non-autonomous vector field is at most $\eta$ away from the asymptotic autonomous vector field $f'(x)$. %which is a combination of f(x) and the asymptotic part of g(x)
+We can then consider the dynamics of Eq.~\ref{eq:nonautonomous} as an small perturbation from $f(x)$ (so $\eta$ away).
+We can approximate that with $\epsilon''$ accuracy with our vector field.
+So we are at most $\eta+\epsilon''$ away from the actual target dynamics.
+
+
+
+    
+\subsection{Concluding remarks on nonautonomus systems}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1161,7 +1230,7 @@ NODEs simulate RNNs (see definition for simulation in Sec.~\ref{sec:simulation})
 - Each NODE is state space equivalent to an RNN that is split into a part for which the equivalence holds and a hidden part (Boltzmann Machine-like)
 -Each RNN is state space equivalent to an RNN
 
-This equivalence does not hold for input-driven systems (?)
+This equivalence does not hold for input-driven systems (?)  (according to \citep{dinc2025latentcomputing} they are?)
 
 % NNs as controllers \citep{sontag1992neural}
 
@@ -1856,7 +1925,7 @@ introduced in \citep{markus1956asyauto}
 
 The vector ordinary differential equation  
 \begin{equation}\label{eq:nonautonomous}
- \quad y' = f(y) + g(t, y),
+ \dot y = f(y) + g(t, y),
 \end{equation}
 is commonly said to be asymptotically autonomous if \( g(t, y) \) becomes small in some sense as \( t \to \infty \). One then hopes that the solutions of Eq.~\ref{eq:nonautonomous} behave in some sense like those of the autonomous equation  
 \begin{equation}\label{eq:autonomous}
