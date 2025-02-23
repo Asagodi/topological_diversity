@@ -130,8 +130,9 @@ ANNs can generalize. After learning the data presented to them (a sample), ANNs 
 \setlength\belowcaptionskip{-5ex}
 \begin{SCfigure}[10][bthp]
   \centering
-  \includegraphics[width=0.5\textwidth]{ds_land_rnns_fmp}
-  \caption{Dynamical systems landscape.
+  \includegraphics[width=0.4\textwidth]{ds_land_rnns_fmp}
+  \caption{We show that RNNs are dense in the space of Lipschitz dynamical systems that have a finite set of normally hyperbolic attractors.
+  Previously, it was only established that RNNs are dense in systems that have at most one global connected attractor.
   }\label{fig:ds_land_rnns_fmp}
 \end{SCfigure}
 
@@ -506,7 +507,9 @@ Let $D$ be an open subset of $\mathbb{R}^n$,
 \end{equation}
 is defined for $t\in\reals_{+}$ and $x(t)$ is included in $I$.
 This defines a flow $\varphi(\cdot, \cdot)$ (Picard-Lindel\"of theorem).
-
+For Sec.~\ref{sec:fp_theorem} we assume that $f$ has  a finite set of hyperbolic stable fixed points.
+For Sec.~\ref{sec:lc_theorem} we assume that $f$ has  a finite set of hyperbolic stable periodic orbits.
+For Sec.~\ref{sec:ca_theorem} we assume that $f$ has only a finite set of normally hyperbolic continuous attractors.
 
 \subsubsection{Hypothesis class}\label{sec:hypothesis}
 %rename f hat?
@@ -553,7 +556,7 @@ For example, if we take the uniform norm of the uniform norm, it can be shown th
 
 
 
-\subsection{Approximating systems with a finite number of hyperbolic stable fixed points}
+\subsection{Approximating systems with a finite number of hyperbolic stable fixed points}\label{sec:fp_theorem}
 
 %This theorem is phrased for the more general case, move to before? 
 \begin{theorem}\label{thrm:approx}
@@ -578,7 +581,7 @@ such that its flow $\hat \varphi$ satisfies
 %establish necessary pieces as propositions
 
 We will break down this result in smaller pieces. 
-First, we prove that (the location of) fixed points can be arbitrarily closely approximated in Prop.~\ref{prop:fp_approx} (we extend this to limit cycles in Sec.~\ref{sec:lc_approx}).
+First, we prove that (the location of) fixed points can be arbitrarily closely approximated in Prop.~\ref{prop:fp_approx} (we extend this to limit cycles in Sec.~\ref{sec:lc_theorem}).
 This allows us to speak of corresponding attractors between the target and approximant system.
 We identify two regions: 1) where the basins of attraction for the same attractor overlap and 2) the remaining state space.
 Second, we prove that inside the basin of an attraction the flow can be approximated in Sec.~\ref{sec:inboa_approx} (this is an extension to the infinite time horizon of a standard finite time result). %this itself is composed of finite time approx + global convergence %or just global convergence?
@@ -762,6 +765,7 @@ Take $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each attractor
 %\footnote{For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.}
 
 
+
 \subsubsection{Proof of Theorem~\ref{thrm:approx} for systems with hyperbolic fixed points}\label{sec:proof_fp_approx}
 \begin{proof}%[Theorem \ref{thrm:approx}]
 Because of Conley's fundamental theorem of dynamical systems\citep{conley1978morse}, we know that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
@@ -772,7 +776,7 @@ By Sec.\ref{sec:separatrix_approx} (Prop.~\ref{prop:min_sep_bound}) we can make 
 By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can make the trajectory-wise error smaller than $\epsilon$.
 \end{proof}
 
-\subsection{Approximation of stable limit cycles}\label{sec:lc_approx}
+\subsection{Approximation of stable limit cycles}\label{sec:lc_theorem}
 %TODO:  name for type III error: L-type (limit cycle) P-type (period)
 As we have seen in Sec.~\ref{sec:beyondfinitetime}, any mismatch in periods in the period of stable limit cycles introduces an error.
 We will get convergence onto a limit cycle that is close in Hausdorff distance to the target limit cycle. %$\omega$-limit set?
@@ -890,7 +894,7 @@ Systems with multiple limit cycles are ubiquitous: e.g., Quasi-periodic toroidal
 
 %%%%%%%%%%%%%%%%
 %%%CA
-\subsection{Approximating continuous attractors}\label{sec:chaos}
+\subsection{Approximating continuous attractors}\label{sec:ca_theorem}
 %TODO:  name for type V error: D-type (discretization) 
 %for the extension of continuous attractors we need to assume that all maximally invariant sets are normally hyperbolic
 
@@ -910,7 +914,7 @@ We can tile the continuous attractor with a uniform grid of stable limit cycles.
 
 
 %%%%%%%%%%%%%%%%%%%%%
-\subsection{Approximating a chaotic orbit}
+\subsection{Approximating a chaotic orbit}\label{sec:chaos}
 \paragraph{Why consider chaos} 
 Forecasting
 \citep{jaeger2004harnessing}
@@ -1202,31 +1206,12 @@ This construction is immensely inefficient.
 %Expressivity paper?
 
 %%
-\subsection{Remarks on error}
-\paragraph{Link to Total integrated error (TIE)}
-We can look at the total integrated error between the target and the approximant and derive a similar UAP theorem.
-
-Error is then defined as 
-\begin{equation}
-\operatorname{TIE}(\varphi, \hat{\varphi}) = \int_{x_0\in X}\|\varphi(t,x_0) - \hat{\varphi}(t, x_0)\|_\infty.
-\end{equation}
-
-It is then easy to show that $\forall\epsilon>0$ there exists a NODE such that $\operatorname{TIE}(\varphi, \hat{\varphi})<\epsilon$.
-
-\paragraph{Link to MSE loss}
-In the limit that $\delta\rightarrow 0$ and $\epsilon\rightarrow 0$  we have that 
-\[\operatorname{MSE}(\varphi, \hat{\varphi}) \coloneqq \int_{x_0\in X} \|\varphi_t(x_0) - \hat{\varphi}_t(x_0)\|_\infty \rightarrow 0.\]
-
-
-Limit $\delta\rightarrow 0$: error of type II goes to zero, i.e., perfectly matching separatrices
-
-
-Limit $\epsilon\rightarrow 0$: error of type I goes to zero (apart from small mismatch around separatrices), i.e., perfectly matching in-basin dynamics
+Relation to MSE and total integrated error, see Supp.Sec.\ref{sec:error_remarks}.
 
 
 %%
 \subsection{NODEs vs RNNs}
-NODEs simulate RNNs (see definition for simulation in Sec.~\ref{sec:simulation}).
+NODEs simulate RNNs (see definition for simulation in Sec.~\ref{sec:simulation})
 - Each NODE is state space equivalent to an RNN that is split into a part for which the equivalence holds and a hidden part (Boltzmann Machine-like)
 -Each RNN is state space equivalent to an RNN
 
@@ -2119,6 +2104,8 @@ R: what we want to know is that which perturbations (inputs) lead us to a differ
 
 
 
+
+%move to start?
 %%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{Support for the proof}
@@ -2372,6 +2359,28 @@ H(0, t) = \gamma_1(t), \quad H(1, t) = \gamma_2(t)
 This means that at \( \tau = 0 \), the homotopy corresponds to the first limit cycle \( \gamma_1 \), and at \( \tau = 1 \), the homotopy corresponds to the second limit cycle \( \gamma_2 \). For intermediate values of \( \tau \), \( H(\tau, t) \) represents a continuous deformation between \( \gamma_1 \) and \( \gamma_2 \).
 
 
+\newpage
+\section{Implications}
 
+\subsection{Remarks on error}\label{sec:error_remarks}
+\paragraph{Link to Total integrated error (TIE)}
+We can look at the total integrated error between the target and the approximant and derive a similar UAP theorem.
+
+Error is then defined as 
+\begin{equation}
+\operatorname{TIE}(\varphi, \hat{\varphi}) = \int_{x_0\in X}\|\varphi(t,x_0) - \hat{\varphi}(t, x_0)\|_\infty.
+\end{equation}
+
+It is then easy to show that $\forall\epsilon>0$ there exists a NODE such that $\operatorname{TIE}(\varphi, \hat{\varphi})<\epsilon$.
+
+\paragraph{Link to MSE loss}
+In the limit that $\delta\rightarrow 0$ and $\epsilon\rightarrow 0$  we have that 
+\[\operatorname{MSE}(\varphi, \hat{\varphi}) \coloneqq \int_{x_0\in X} \|\varphi_t(x_0) - \hat{\varphi}_t(x_0)\|_\infty \rightarrow 0.\]
+
+
+Limit $\delta\rightarrow 0$: error of type II goes to zero, i.e., perfectly matching separatrices
+
+
+Limit $\epsilon\rightarrow 0$: error of type I goes to zero (apart from small mismatch around separatrices), i.e., perfectly matching in-basin dynamics
 
 \end{document}
