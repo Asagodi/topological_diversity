@@ -62,15 +62,86 @@
 \begin{document}
 \maketitle
 
+\section*{Abstract}
 
 \section{Introduction}
 
-\subsection{Hebbian plasticity}
+
+Intrinsic dynamics should self-organize and self-sustain in the face of fluctuating inputs and biological noise, including synaptic turnover and cell death.
+
+
+Previously, it was established that continuous attractors are functionally robust \citep{Sagodi2024a}.
+
+
+
+\subsection{Continuous attractors}
+Express the system as 
+\begin{equation}
+\dot  = f(x,W),
+\end{equation} where $x$ is the neural activity, and $W$ represents synaptic weights.
+
+
+To maintain a continuous attractor, synaptic plasticity should preserve the network’s structured connectivity while allowing for slow adaptation.
+
+
+\subsection{Biology of plasticity}
+
+homeostatic \citep{turrigiano2004homeostatic}
+
+Homeostatic scaling of all synapses of a neuron, which is obtained by adjusting the number of postsynaptic receptors proportionally to the neuron’s average firing activity \citep{turrigiano1998activity,turrigiano1999homeostatic},
+ could maintain neural activity within a dynamic range and, more generally, stabilize neural circuit function despite the positive feedback of Hebbian plasticity \citep{toyoizumi2014modeling}. 
+ 
+ 
+\subsubsection{Additional}
+\paragraph{Astrocytes} 
+astro\citep{depitta2016astrocytes}
+\citep{koshkin2024astrocyte}
+
+\paragraph{Balancing Hebbian with homeostatic}
+\citep{zenke2017temporal}
+
+
+
+%%%%%%%%
+\subsection{Plasticity math/theory}
+\citep{gerstner2002mathematical}
+\citep{berner2023adaptive}
+\citep{clark2024theory}
+\citep{tyulmankov2024computational}
+
+
+\subsubsection{Hebbian plasticity}
 \begin{equation}
 \dot W_{ij} = F(x_i, x_j, W_{ij})
 \end{equation}
 
-\section{Problem setting}
+
+
+\subsection{Learning plasticity rules} %inference of 
+\citep{shervani2023meta}
+\citep{bell2024discovering}
+\citep{jordan2021plasticity}
+
+\citep{nayebi2020learning}
+\citep{kepple2022curriculum}
+\citep{mcmahan2021learning}
+\citep{ashwood2020inferring}
+
+\citep{tyulmankov2022meta}
+
+
+
+
+\section{Plasticity/Homeostasis/Adaptation}
+%%%%%%%%%%%%%
+\citep{martin2000plasticity}
+\citep{takeuchi2014plasticity}
+
+\cite{bell2024discovering} \citep{shervani2023meta}
+
+
+
+\subsection{Problem setting for maintaining a continuous attractor}
 
 Consider 
 \begin{equation}\label{eq:ode}
@@ -94,119 +165,37 @@ We can say that they are close to each other, related to $\mathcal{O}(\epsilon)$
 
 
 
-\section{Control through input (bias-based optimization of slowness on manifold)}
-Total velocity along original invariant set:
+\subsection{Learning rule to minimize the speed}%Omri Barak's suggesiton
+On the continuous attractor we want to minimize the change in the neural state (in the absence of input).
+For a Hopfield type network\footnote{Wilson-Cowan type and Hopfield type (as used in e.g. \citep{gort2024emergence}}, i.e., with dynamics 
 \begin{equation}
-v_{\manifold_0}   = \int_{x\in\manifold_0}  \|\epsilon p(x)\|dx.
+\dot x = W\phi(x) + b
+\end{equation}
+ the gradient of the speed is
+%use factor 1/2?
+\begin{equation}
+\frac{\partial}{\partial W_{ij}}\|\dot x \|^2 = 2 \dot x^T \frac{\partial}{\partial W_{ij}}\dot x = 2 \dot x_i\phi(x_j).
 \end{equation}
 
-Total velocity along perturbed invariant set:
+%\begin{equation}
+%\frac{\partial}{\partial W_{ij}} \|\dot{x}\| = \frac{2 \dot{x}_i \cdot \text{ReLU}(x_j)}{\|\dot{x}\|}
+%\end{equation}
+
+
+\paragraph{General activation function}
+For a Wilson type network, i.e., with dynamics 
 \begin{equation}
-v_{\manifold_\epsilon}  =\int_{x\in\manifold_\epsilon} \|f(x) + \epsilon p(x)\|dx.
+\dot x = \phi(Wx+b) 
+\end{equation}
+ the gradient of the speed is
+\begin{equation}
+\frac{\partial}{\partial W_{ij}} \|\dot{x}\|^2 = 2 \dot{x}^T \cdot \phi'(Wx+b) \cdot x_j.
 \end{equation}
 
-
-Let's analyze $f(x,W_0,t) = -x(t) + W_0\relu(x(t)) + b$ with $W_0\in\reals^{n\times n}$ and $b\in\reals^n$ so that the system implements a ring attractor \citep{noorman2024accurate}.
-
-
-How can we change the inputs to the neurons so that the invariant manifold is slowest, i.e., velocity is minimized?
-
-We calculate the gradient w.r.t. a new bias term $c$ that we add linearly as an input to each neuron:
-\begin{equation}
-\nabla_{c}v_{\manifold_0} = \frac{\partial}{\partial c}\int_{x\in\manifold_0}  \|\epsilon p(x) + c\|dx = \int_{x\in\manifold_0}  \frac{\epsilon p(x) + c}{\|\epsilon p(x) + c\|}dx.
-\end{equation}
-
-We calculate the gradient w.r.t. a weight change $W_{ij}$:
-\begin{equation}
-\nabla_{W_{ij}}v_{\manifold_0} = \frac{\partial}{\partial W_{ij}}\int_{x\in\manifold_0}  \|f(x) + \epsilon p(x)\|dx = \int_{x\in\manifold_0} 
-\frac{(W \text{ReLU}(x) + \epsilon p(x))_i}{\| W \text{ReLU}(x) + \epsilon p(x) \|} \text{ReLU}(x)_j
-dx.
-\end{equation}
-
-
-
-%can we calculate that for manifold_epsilon?
-\begin{equation}
-\nabla_{W_{ij}}v_{\manifold_\epsilon} = \frac{\partial}{\partial W_{ij}}\int_{x\in\manifold_{\epsilon}}  \|f(x) + \epsilon p(x)\|dx = \int_{x\in\manifold_{\epsilon}}  \relu(x_j)\frac{f(x) + \epsilon p(x)}{\|f(x) +\epsilon p(x) \|}dx.
-\end{equation}
-
-
-
-
-
-
-\subsection{How to account for change in invariant manifold?}
-How does the invariant manifold $\manifold_{\epsilon,c}$ change as a function of $c$?
-
-\begin{equation}
-\dot x = g(x,c) = f(x) + \epsilon p(x) + c
-\end{equation}
-
-We have that 
-\begin{equation}
-\frac{d}{dt} \phi_c(y) =g(\phi_c(y), c) \quad \text{for all points} \quad x = \phi_c(y) \text{ on the manifold}.
-\end{equation}
-
-Total derivative
-\begin{equation}
-\frac{d}{dc} \frac{d}{dt} \phi_c(y) = D_x g(\phi_c(y), c) \frac{\partial}{\partial c} \phi_c(y) + \frac{\partial g}{\partial c}.
-\end{equation}
-
-
-For the manifold $\manifold_{\epsilon,c}$ remain invariant, the deformation of $\phi_c(y)$ must still satisfy the dynamics, meaning:
-\begin{equation}
-D_x g(\phi_c(y), c) \frac{\partial \phi_c(y)}{\partial c} + \frac{\partial g}{\partial c} = 0.
-\end{equation}
-
-If $D_x g$ is invertible, we can solve for $\frac{\partial \phi_c(y)}{\partial c}$, giving:
-\begin{equation}
-\frac{\partial \phi_c(y)}{\partial c} = - (D_x g)^{-1} \frac{\partial g}{\partial c}.
-\end{equation}
-
-
-\subsubsection{Weights}
-For $\dot x= f(x) =W\phi(x)$ and invariant manifold $x=\psi_{W_{ij}}(y)$
-
-We have that 
-\begin{equation}
-\frac{d}{dt} \psi(y) =f(\psi(y)) \quad \text{for all points} \quad x = \psi(y) \text{ on the manifold}.
-\end{equation}
-
-\begin{equation}
-\frac{\partial}{\partial W_{ij}} \left( W \phi(\psi_{W_{ij}}(y)) \right) = \phi(\psi_{W_{ij}}(y)) e_{ij} + W \frac{d}{dW_{ij}} \phi(\psi_{W_{ij}}(y)),
-\end{equation}
-
-\begin{equation}
-W \frac{\partial}{\partial W_{ij}}  \phi(\psi_{W_{ij}}(y)) = - \phi(\psi_{W_{ij}}(y)) e_{ij}.
-\end{equation}
-
-
-\begin{equation}
-\frac{\partial}{\partial W_{ij}}  \phi(\psi_{W_{ij}}(y)) = \phi'(\psi_{W_{ij}}(y))\frac{d}{dW_{ij}}\psi_{W_{ij}}(y)
-\end{equation}
-
-We get 
-\begin{equation}
-\frac{\partial}{\partial W_{ij}} \psi_{W_{ij}}(y) = - \left(\phi'(\psi_{W_{ij}}(y))\right)^{-1} W^{-1} \phi(\psi_{W_{ij}}(y)) e_{ij}.
-\end{equation}
-
-
-
-
-
-
-
-
-%%%%%%%%%%%%%
-\section{Plasticity/Homeostasis/Adaptation}
-\citep{martin2000plasticity}
-\citep{takeuchi2014plasticity}
-
-\cite{bell2024discovering} \citep{shervani2023meta}
 
 
 %consider bias pert? 
-\subsection{A principled approach}
+\subsection{Noorman ring attractor}
 Let's analyze $f(x,W_0,t) = -x(t) + W_0\relu(x(t)) + b$ with $W_0\in\reals^{n\times n}$ and $b\in\reals^n$ so that the system implements a ring attractor \citep{noorman2024accurate}.
 
 We consider the case where the connectivity has been affected: $W(t=0) \leftarrow W_0 + \epsilon V$.
@@ -214,44 +203,9 @@ In this case we simply have $g(x,W,t) = (W(t)-W_0)\relu(x(t))$.
 
 $g_i(x,W,t) = \sum_{j}^N(W_{ij}(t)-W_{0,ij})\relu(x_j(t))$.
 
-Now, let's assume that $x(t)\in\manifold_\epsilon$.
-Define the plasticity rule
-\begin{equation}\label{eq:plasticity}
-\tau_W\dot W_{ij}(t) = -\epsilon \sign(g_j(x,W,t)) \phi_j(x) = -\epsilon \sign(\dot x_i) \relu(x_j) - \gamma W_{ij}.
-\end{equation}
-%should this have a factor \|\sign(g_j(x,W,t))\| to make it continuous?
 
-%another attempt through finding a gradient desecnt on the weights
-%\begin{equation}\label{eq:plasticity}
-%\tau_W\dot W_{ij}(t) = -\epsilon\frac{\partial g(x,W)}{\partial W_{ij}}.
-%\end{equation}
-%For the above neural dynamics we simply have
-%\[
-%\frac{\partial g(x,W)}{\partial W_{ij}} = \begin{cases} x_j  & \text{ if } x_j > 0 \\ 0 & \text{ otherwise.} 
-%\end{cases}
-%\]
-
-
-
-
-\subsection{Outer product learning rule}%Omri Barak's suggesiton
-\begin{equation}
-\frac{\partial}{\partial W_{ij}}\|\dot x \|^2 = 2 \dot x^T \frac{\partial}{\partial W_{ij}}\dot x = 2 \dot x_i\phi(x_j).
-\end{equation}
-
-\begin{equation}
-\frac{\partial}{\partial W_{ij}} \|\dot{x}\| = \frac{2 \dot{x}_i \cdot \text{ReLU}(x_j)}{\|\dot{x}\|}
-\end{equation}
-
-
-\paragraph{Easy form of p?}
+\paragraph{Easy form of perturbation}
 If $p(x) = (V-W)\relu(x(t))$
-
-
-\paragraph{General activation function}
-\[
-\frac{\partial}{\partial W_{ij}} \|\dot{x}\|^2 = 2 \dot{x}^T \cdot \phi'(Wx) \cdot x_j
-\]
 
 
 Define the plasticity rule
@@ -262,6 +216,8 @@ so that compactly
 \begin{equation}\label{eq:plasticity_heur_comp}
 \tau_W\dot W(t) = - \dot x \otimes \phi(x) 
 \end{equation}
+
+Fast Hebbian plasticity \citep{lansner2023fast}
 
 If the angular velocity $v_in(t)$ is nonzero we have that 
 \begin{equation}
@@ -379,6 +335,18 @@ We then compute \(\dot{V}\) as follows:
 + \left\langle \delta W, -\frac{1}{\tau_W} \dot{x} \otimes \operatorname{ReLU}(x) \right\rangle.
 \]
 
+\subsubsection{Stability with ontractivity analysis}
+%weight decay necessary for contractivity ananlysis?
+
+Plasticity analysis through contractivity \citep{kozachkov2022matrix} \citep{centorrino2024modeling}.
+
+\paragraph{Transverse contractivity}
+Skew-Symmetric Feedback Interconnection \citep{manchester2014transverse}
+Bounded Feedback Interconnections \citep{wang2005contraction} and \citep{manchester2014transverse}
+
+
+
+
 
 \subsubsection{Numerical experiments}
 \begin{equation}
@@ -395,13 +363,58 @@ where \(\xi \sim \mathcal{N}(0, \sigma_W\mathbb{I})\) is an i.i.d. Gaussian nois
 \xi \sim \mathcal{N}(0,\sigma_W\mathbb{I}), \ \sigma_W=\tfrac{1}{100}.
 \end{equation}
 
-\subsection{Contractivity}
-%weight decay necessary for contractivity ananlysis?
 
-Plasticity analysis through contractivity \citep{kozachkov2022matrix} \citep{centorrino2024modeling}.
+%\subsection{Control through input (bias-based optimization of slowness on manifold)}
+\subsection{Minimizing globally across the invariant manfiold}
+Gradient view of plasticity \citep{richards2023plasticity}
 
-Skew-Symmetric Feedback Interconnection \citep{manchester2014transverse}
-Bounded Feedback Interconnections \citep{wang2005contraction} and \citep{manchester2014transverse}
+Total velocity along original invariant set:
+\begin{equation}
+v_{\manifold_0}   = \int_{x\in\manifold_0}  \|\epsilon p(x)\|dx.
+\end{equation}
+
+Total velocity along perturbed invariant set:
+\begin{equation}
+v_{\manifold_\epsilon}  =\int_{x\in\manifold_\epsilon} \|f(x) + \epsilon p(x)\|dx.
+\end{equation}
+
+
+Let's analyze $f(x,W_0,t) = -x(t) + W_0\relu(x(t)) + b$ with $W_0\in\reals^{n\times n}$ and $b\in\reals^n$ so that the system implements a ring attractor \citep{noorman2024accurate}.
+
+
+How can we change the inputs to the neurons so that the invariant manifold is slowest, i.e., velocity is minimized?
+
+We calculate the gradient w.r.t. a new bias term $c$ that we add linearly as an input to each neuron:
+\begin{equation}
+\nabla_{c}v_{\manifold_0} = \frac{\partial}{\partial c}\int_{x\in\manifold_0}  \|\epsilon p(x) + c\|dx = \int_{x\in\manifold_0}  \frac{\epsilon p(x) + c}{\|\epsilon p(x) + c\|}dx.
+\end{equation}
+
+We calculate the gradient w.r.t. a weight change $W_{ij}$ on the original invariant manifold:
+\begin{equation}
+\nabla_{W_{ij}}v_{\manifold_0} = \frac{\partial}{\partial W_{ij}}\int_{x\in\manifold_0}  \|f(x) + \epsilon p(x)\|dx = \int_{x\in\manifold_0} 
+\frac{(W \text{ReLU}(x) + \epsilon p(x))_i}{\| W \text{ReLU}(x) + \epsilon p(x) \|} \text{ReLU}(x)_j
+dx.
+\end{equation}
+
+
+
+%can we calculate that for manifold_epsilon?
+With the new invariant manifold:
+\begin{equation}
+\nabla_{W_{ij}}v_{\manifold_\epsilon} = \frac{\partial}{\partial W_{ij}}\int_{x\in\manifold_{\epsilon}}  \|f(x) + \epsilon p(x)\|dx = \int_{x\in\manifold_{\epsilon}}  \relu(x_j)\frac{f(x) + \epsilon p(x)}{\|f(x) +\epsilon p(x) \|}dx.
+\end{equation}
+
+
+\subsubsection{Assumptions to make this global rule work}
+
+ 
+\paragraph{Repair over longer time scale}
+ 
+\paragraph{Navigating the manifold sufficiently (through spontaneous diffusion or control)}
+
+
+
+
 
 \section{Optimization of the location of invariant manifolds} %or double optimization for location of NHIM and parameters
 \citep{agrachev2009controllability,agrachev2022control}
@@ -410,7 +423,76 @@ RA: Diffeomorphism between $S^1$  and embedding
 
 \citep{ocko2018emergent}
 
+\subsection{Manifold learning}
+\citep{chang2023novo}
 
+\subsubsection{How to account for change in invariant manifold?}
+How does the invariant manifold $\manifold_{\epsilon,c}$ change as a function of $c$?
+
+\begin{equation}
+\dot x = g(x,c) = f(x) + \epsilon p(x) + c
+\end{equation}
+
+We have that 
+\begin{equation}
+\frac{d}{dt} \phi_c(y) =g(\phi_c(y), c) \quad \text{for all points} \quad x = \phi_c(y) \text{ on the manifold}.
+\end{equation}
+
+Total derivative
+\begin{equation}
+\frac{d}{dc} \frac{d}{dt} \phi_c(y) = D_x g(\phi_c(y), c) \frac{\partial}{\partial c} \phi_c(y) + \frac{\partial g}{\partial c}.
+\end{equation}
+
+
+For the manifold $\manifold_{\epsilon,c}$ remain invariant, the deformation of $\phi_c(y)$ must still satisfy the dynamics, meaning:
+\begin{equation}
+D_x g(\phi_c(y), c) \frac{\partial \phi_c(y)}{\partial c} + \frac{\partial g}{\partial c} = 0.
+\end{equation}
+
+If $D_x g$ is invertible, we can solve for $\frac{\partial \phi_c(y)}{\partial c}$, giving:
+\begin{equation}
+\frac{\partial \phi_c(y)}{\partial c} = - (D_x g)^{-1} \frac{\partial g}{\partial c}.
+\end{equation}
+
+
+\subsubsection{Weights}
+For $\dot x= f(x) =W\phi(x)$ and invariant manifold $x=\psi_{W_{ij}}(y)$
+
+We have that 
+\begin{equation}
+\frac{d}{dt} \psi(y) =f(\psi(y)) \quad \text{for all points} \quad x = \psi(y) \text{ on the manifold}.
+\end{equation}
+
+\begin{equation}
+\frac{\partial}{\partial W_{ij}} \left( W \phi(\psi_{W_{ij}}(y)) \right) = \phi(\psi_{W_{ij}}(y)) e_{ij} + W \frac{d}{dW_{ij}} \phi(\psi_{W_{ij}}(y)),
+\end{equation}
+
+\begin{equation}
+W \frac{\partial}{\partial W_{ij}}  \phi(\psi_{W_{ij}}(y)) = - \phi(\psi_{W_{ij}}(y)) e_{ij}.
+\end{equation}
+
+
+\begin{equation}
+\frac{\partial}{\partial W_{ij}}  \phi(\psi_{W_{ij}}(y)) = \phi'(\psi_{W_{ij}}(y))\frac{d}{dW_{ij}}\psi_{W_{ij}}(y)
+\end{equation}
+
+We get 
+\begin{equation}
+\frac{\partial}{\partial W_{ij}} \psi_{W_{ij}}(y) = - \left(\phi'(\psi_{W_{ij}}(y))\right)^{-1} W^{-1} \phi(\psi_{W_{ij}}(y)) e_{ij}.
+\end{equation}
+
+
+
+
+
+\newpage
+%\bibliographystyle{plain}
+\bibliographystyle{unsrtnat_IMP_v1}
+\bibliography{../../all_ref.bib, ../../catniplab.bib}
+
+
+\newpage
+\appendix
 
 \section{Types of plasticity}
 \subsection{Hebbian/Anti-Hebbian Plasticity}
@@ -420,6 +502,7 @@ RA: Diffeomorphism between $S^1$  and embedding
 \citep{masse2019circuit}
 
 \subsection{Covariance Rule}
+\citep{amit1989modeling}
 Consider a covariance-based learning rule \citep{sejnowski1989hebb, gerstner2002mathematical}, with a leak term  
 \begin{equation}
     \dot{W} = \nu \left( \phi(x) - \langle \phi \rangle \right) \left( \phi(x) - \langle \phi \rangle \right)^T - \gamma W
@@ -430,9 +513,19 @@ where $\nu \geq 0$ is a learning rate and $\langle \phi \rangle$ denotes a runni
 \end{equation}
 with some window size $\Delta > 0$.
 
+\subsection{The Bayesian confidence propagation learning rule (BCPNN)}
+See e.g. \citep{lansner2023fast}
 
-\newpage
-\bibliographystyle{plain}
-\bibliography{../../all_ref.bib}
+\subsection{Metaplasticity}
+ - Bienenstock-Cooper-Munro (BCM) model \cite{bienenstock1982theory}. The core component of this synaptic update rule is its non-monotonic, time-varying dependence on the postsynaptic activity:  
+\begin{equation}
+    \Delta w_i = \eta_w y (y - \theta) x_i
+\end{equation}
+where $\theta$ is a variable threshold. If the postsynaptic activity $y$ is below this threshold, the synapse will be depressed; above, it will be potentiated. Critically, the threshold itself depends on the postsynaptic neuron’s activity history, for example, a low-pass filtered version of it \cite[Ch.~8.2]{dayan2005theoretical}:  
+\begin{equation}
+    \Delta \theta = \eta_\theta (y^2 - \theta)
+\end{equation}
+
+
 
 \end{document}
