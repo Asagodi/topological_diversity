@@ -691,7 +691,7 @@ By Sec.\ref{sec:separatrix_approx} (Prop.~\ref{prop:min_sep_bound}) we can make 
 By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can make the trajectory-wise error smaller than $\epsilon$.
 \end{proof}
 
-\paragraph{Admin}
+\paragraph{Accounting}
 \begin{enumerate}
 \item Bounding the volume of separatix mismatch regions
 \begin{enumerate}
@@ -706,7 +706,7 @@ By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can 
 \item Per basin: $\Psi_i(\epsilon)$ so that flow is $\epsilon$ close (from previous FMP based results)
 \item Take minimum from these bounds $\Psi_{\min}(\epsilon)$
 \end{enumerate}
-\item Take minimum $\{\tfrac{1}{k}\delta, \Psi_{\min}(\epsilon)\}$ guarantees $\epsilon,\delta$-approximation
+\item Take minimum $\{\tfrac{1}{k}\delta, \Psi_{\min}(\epsilon)\}$ guarantees $\epsilon$,$\delta$-approximation
 \end{enumerate}
 
 \subsection{Approximation of stable limit cycles}\label{sec:lc_theorem}
@@ -752,9 +752,9 @@ The only thing we now need to worry about is how the length of the limit cycle c
 The resulting total approximation is %replace a(\epsilon_T) with just an optimal constant?
 \begin{equation}\label{eq:lc_correction}
 \tilde{f}= \hat{f}+a_{\epsilon_T}^*\hat f_{\operatorname{bump}} = 
- \hat{f} + a_{\epsilon_T}^*(f_{\operatorname{bump}}+ \hat{\epsilon}\bar{f}),
+ \hat{f} + a_{\epsilon_T}^*(f_{\operatorname{bump}}+ \hat{\epsilon}\bar{f}_{\operatorname{bump}}),
  \end{equation}
-where $\hat{\epsilon}\bar{f} = f_{\operatorname{bump}} -\hat f_{\operatorname{bump}}$ with $\|\bar f\|=1$ and $\hat \epsilon <\max(\epsilon_T,\epsilon_{LC})$. %actually this should be a function of epsilon T so that closeness in Supp.Sec.~\ref{sec:periodcloseness} is guaranteed
+where $\hat{\epsilon}\bar{f}_{\operatorname{bump}} = f_{\operatorname{bump}} -\hat f_{\operatorname{bump}}$ with $\|\bar f\|=1$ and $\hat \epsilon <\max(\epsilon_T,\epsilon_{LC})$. %actually this should be a function of epsilon T so that closeness in Supp.Sec.~\ref{sec:periodcloseness} is guaranteed
 %no this is not the bound that belongs to hat epsilon!!!!!!!!!!!
 %it should be \|f_{\operatorname{bump}\| < some epsilon...
 %
@@ -767,7 +767,26 @@ We can choose the initial approximation $\hat{f}$ such that the period differenc
 We can then choose a correction to the vector field in a tubular neighborhood around the limit cycle such that the difference in periods between target and approximation is zero.
 
 
-
+\paragraph{Accounting}
+\begin{enumerate}
+\item How small needs the tubular neighbourhood to be for the bump? 
+\begin{enumerate}
+\item Small enough so that it is included inside the basin of attraction
+\item Should not change flow to introduce more than $\epsilon$ error flow type error.
+\end{enumerate}
+\item How big can the bump approximation error be?
+\begin{enumerate}
+\item Should not shift location of limit cycle by more than $\epsilon$.
+\item See below.
+\end{enumerate}
+\item How small does the initial period error need to be and how is this expressed in vector field space distance?
+\begin{enumerate}
+\item We need that the adjustment still has at most $\epsilon$ error in basins and that only $\delta$ part of the state space is in the problematic separatrix mismatch region
+\item Separatrices are persistent so they will be shifted $\mathcal{O}(a_{\epsilon_T}\hat \epsilon)$. So we need $ka_{\epsilon_T}\hat \epsilon < \tfrac{1}{2}\delta$ and if we require for the initial mismatch error to be $\kappa<\tfrac{1}{2}\delta$ we get the total to be less than $\delta$. 
+\item The vector field outside the tubular neighborhood is $f - \eta\bar f  + a_{\epsilon_T}\hat \epsilon\bar f_{\operatorname{bump}}$. 
+We have that $\|\eta\bar f  + a_{\epsilon_T}\hat \epsilon\bar f_{\operatorname{bump}}\| < \eta + a_{\epsilon_T}\hat \epsilon$ (triangle inequality and absolute homogeneity of norm). Therefore, we can take $\hat f$ to be  $\Psi_{\min}(\eta + a_{\epsilon_T}\hat \epsilon)$ close to $f$ to guarantee $\epsilon$,$\delta$-approximation
+\end{enumerate}
+\end{enumerate}
 
 
 
