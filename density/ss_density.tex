@@ -123,14 +123,15 @@ We redefine the previously known landscape of dynamical systems from the perspec
 %how we will do this
 %outlay of paper
 
+%INCLUDE?????
+%\paragraph{Formulation: lack of theory on time generalization/forecasting}
+%ANNs can generalize. After learning the data presented to them (a sample), ANNs can often correctly infer the unseen part of a population even if the sample data contain noisy information. As forecasting is performed via prediction of future behavior (the unseen part) from examples of past behavior, it is an ideal application area for neural networks, at least in principle. \citep{zhang1998forecasting}
 
-\paragraph{Formulation: lack of theory on time generalization/forecasting}
-ANNs can generalize. After learning the data presented to them (a sample), ANNs can often correctly infer the unseen part of a population even if the sample data contain noisy information. As forecasting is performed via prediction of future behavior (the unseen part) from examples of past behavior, it is an ideal application area for neural networks, at least in principle. \citep{zhang1998forecasting}
 
 \setlength\belowcaptionskip{-5ex}
 \begin{SCfigure}[10][bthp]
   \centering
-  \includegraphics[width=0.4\textwidth]{ds_land_rnns_fmp}
+  \includegraphics[width=0.3\textwidth]{ds_land_rnns_fmp}
   \caption{We show that RNNs are dense in the space of Lipschitz dynamical systems that have a finite set of normally hyperbolic attractors.
   Previously, it was only established that RNNs are dense in systems that have at most one global connected attractor.
   }\label{fig:ds_land_rnns_fmp}
@@ -142,7 +143,7 @@ ANNs can generalize. After learning the data presented to them (a sample), ANNs 
 \section{Approximation of dynamical systems: A vast literature with limited results}
 %sota 
 Accurately approximating dynamical systems is essential for understanding and predicting complex behaviors across a range of applications, from robotics to climate modeling.
-Recent advances in machine learning have enabled data-driven approaches to approximating these systems, providing new ways to model complex dynamics over extended periods.
+%Recent advances in machine learning have enabled data-driven approaches to approximating these systems, providing new ways to model complex dynamics over extended periods.
 Here, we review key approaches in the literature and highlight emerging techniques that address these challenges, before we introduce our method that extends to multi-stable and complex systems over infinite time horizons.
 See also \citep{li2022approximation} and \citep{jiang2023brief}.
 
@@ -163,22 +164,21 @@ Density results describe the completeness of a hypothesis class relative to a ta
 
 \subsection{Universal approximation for mappings}\label{sec:uapmappings}
 This is the basic ingredient for many of the UAP results in the literature and will be the starting point for our proof.
-See for the  Supp.Sec.~\ref{sec:uniapproxffn}.
+See Supp.Sec.~\ref{sec:uniapproxffn} for results on FNN based UAP.
 
 
 %vector fields (which is just FNN setting)
-\subsection{Approximating vector fields}\label{sec:uapvfs}
+\subsubsection{Approximating vector fields}\label{sec:uapvfs}
  FNNs can approximate smooth functions effectively, making them suitable for approximating vector fields \citep{doya1993universality}.
 This is a direct consequence of the UAP of FNNs for mappings, see Supp.Sec.~\ref{sec:uniapproxffn}.
-
-
-\paragraph{Spiking neural network}
+%
+%\paragraph{Spiking neural network}
 %only approximates vector field 
 It is possible to approximate vector fields with other architectures.
 For example, in limit $N\rightarrow\infty$ spiking network (ODE with jumps) approximates a vector field (for a continuous ODE) \citep{podlaski2024approximating}. 
 
 
-\subsection{Diffeomorphisms}%move to \ref{sec:compacttime}?
+\subsubsection{Diffeomorphisms}%move to \ref{sec:compacttime}?
 The solutions to ODEs can generate smooth transformations on manifolds.
 The flow \( \phi_t \) of the vector field \( X \) defines a map from \( M \) to itself for each fixed time \( t \). Under appropriate conditions (such as \( X \) being complete), \( \phi_t \) is a diffeomorphism of \( M \) for each \( t \). In other words, \( \phi_t \) is smooth, bijective, and its inverse \( \phi_{-t} \) is also smooth.
 Thus, the solutions (flows) of ODEs associated with smooth vector fields give rise to a one-parameter family of diffeomorphisms.
@@ -228,9 +228,7 @@ Finally, any polynomially space-bounded Turing machine can be simulated by a fam
 \citep{perez2021attention}
 \citep{giannou2023looped}
 \citep{stogin2024provably}
-
-
-\paragraph{Probabilistic}
+%\paragraph{Probabilistic}
  \citep{nowak2023representational, nowak2024representational}
 +Bernstein-type \citep{veeravalli2023nonlinear}
 
@@ -277,11 +275,7 @@ These developments illustrate the versatility of continuous-time recurrent netwo
 
 \paragraph{Encoder-Decoder}
 %\paragraph{Decoder}%part of system approximates
-For non-autonomous systems, where the dynamics explicitly depend on external inputs, it has been shown that the states of the output units of a continuous-time RNN, can approximate the solution of systems governed by differential equations of the form:
-\[
-\dot{x}(t) = f(x(t); u(t)) 
-\]
-where $u(t)$ is the input \citep{garces2012strategies}. %5.3.3: interesting result on the error dynamics and its bound!!!
+For non-autonomous systems, where the dynamics explicitly depend on external inputs, it has been shown that the states of the output units of a continuous-time RNN, can approximate the solution of systems governed by differential equations of the form $\dot{x}(t) = f(x(t); u(t))$ where $u(t)$ is the input \citep{garces2012strategies}. %5.3.3: interesting result on the error dynamics and its bound!!!
 A subpopulation of an RNN's units can approximate a dynamical system with arbitrary precision for finite time\citep{kambhampati2000approximation}. %this is equivalent to setting the decoding mapping to be the identity
  %The first $p$ output neural units of a dynamic $n$-dimensional neural model approximate at a desired proximity a $p$-dimensional dynamic system with $n > p$
 RNN encoder-decoders have UAP for linear, continuous and regular functionals\citep{li2021approximationencdec}.
@@ -314,7 +308,7 @@ Any continuous dynamical nonlinear systems can be approximately realized\footnot
 %
 This has been extended to time-variant systems but with a fixed initial state \citep{li2005approximation}. %approx of time variant systems with fixed initial state
 %
-More recently, it was shown that RNNs are universal approximators of flow functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023universal}\footnote{This is direct simulation (for a definition, see Sec.~\ref{sec:simulation}, instead of indirect realization}. %not realization, but direct simulation
+More recently, it was shown that RNNs are universal approximators of flow functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023universal}\footnote{This is direct simulation instead of indirect realization (for definitions, see Sec.~\ref{sec:simulation})}. %not realization, but direct simulation
 %periodic inputs
 
 
@@ -330,7 +324,7 @@ We will refer to this as P-type error (for Period).
 \setlength\belowcaptionskip{-5ex}
 \begin{SCfigure}[10][bthp]
   \centering
-  \includegraphics[width=0.5\textwidth]{lc_period_div}
+  \includegraphics[width=0.3\textwidth]{lc_period_div}
   \caption{Divergence of orbits at limit cycles after $T$.
   Even though an approximation (red) might have an orbit that stays $\epsilon$ close to a target system with a stable limit cycle with period $T$ (blue), if the periods are not exactly matched, the two systems will diverge from each other.
   In this example, the approximation has period $\hat{T} = T+\epsilon$ and will hence be above the approximation guarantee at time $t=2T$.
@@ -346,7 +340,7 @@ We will refer to this as \textbf{B-type error} (for \textbf{B}asin).
 %FPS%fading%FMS%FMP
 \subsubsection{Approximation of fading memory systems}\label{sec:fadingmemory}
 %On the general theory of fading memory \citep{coleman1968general}
-The concept of a system having the fading memory property (FMP) has been a cornerstone in the study of dynamical systems\citep{coleman1968general}, providing a framework where the system’s output depends on past inputs with gradually diminishing influence \citep{boyd1985fading}.
+The concept of a system having the fading memory property (FMP, see Supp.Sec.~\ref{sec:fading_memory}) has been a cornerstone in the study of dynamical systems\citep{coleman1968general}, providing a framework where the system’s output depends on past inputs with gradually diminishing influence \citep{boyd1985fading}.
 That the output of a dynamical relationship should depend only on the recent past of its input and that the effect of the distant past should fade away is intuitively clear  \citep{sepulchre2021fading}.
 %-APPROXIMATION BY VOLTERRA SERIES: A simplified interpretation of the N -th Volterra Series expansion is the “N -th Taylor expansion in the sequence variable x”.
 %-APPROXIMATION BY FINITE-DIMENSIONAL DYNAMICAL SYSTEMS
@@ -357,19 +351,7 @@ The requirement of fading memory inherently restricts the class of dynamical sys
 Many real-world systems exhibit behaviors where the influence of past inputs does not simply fade away over time; instead, they can have long-term dependencies or even cyclical behaviors that are crucial to their dynamics.
 A very simple example is a system with two stable fixed points.
 We now discuss existing universal approximation results that are confined to fading memory systems and critically assess their limitations.
-
-
-
-\begin{definition}[Fading memory Property (FMP)]
-Let $x_1, x_2$ be bounded sequences indexed by $\mathbb{R}$, and let $H$ be a sequence of causal, shift-equivariant (also called time-homogeneous) functionals.
-Here, causal means $H_t(x) = H_t(x(-\infty,t])$ for all $t$.
-We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing function $w : \mathbb{R}^+ \to (0, 1]$ such that for any $\varepsilon > 0$ there exists $\delta > 0$ with 
-\[
-|H_t(x_1) - H_t(x_2)| < \varepsilon \quad \text{whenever} \quad \sup_{s \in (-\infty, t]} |x_1(s) - x_2(s)| w(t - s) < \delta.
-\]
-\end{definition}
-%The notion of fading memory is strictly an input/output property, that is, it refers only to the operator $\mathcal{H}$ which maps inputs into outputs; the realization of $\mathcal{H}$ (there need not even be one) is irrelevant.
-
+%
 Typically, the FMP is used to reduce the approximation problem to one over a finite, bounded index set, and then appeal to the density of fully connected neural network to obtain approximation \citep{gonon2021fading}. %more examples
 
 
@@ -411,11 +393,11 @@ Finally, a new method was developed to approximate Fading Memory Systems (FMS) b
 %Approximation error estimates for random neural networks and reservoir systems \citep{gonon2023approximation} [Gono 23a]
 
 %Universal Transformer
- \citet{dehghani2018universal} introduce a recurrently-stacked universal transformer and demonstrate its effectiveness on text understanding and generation and subsequently, transformer models are universal approximators of continuous permutation equivariant sequence-to-sequence functions with compact support \citep{yun2019transformers}.
+ \citet{dehghani2018universal} introduced a recurrently-stacked universal transformer and \citet{yun2019transformers} showed that transformer models are universal approximators of continuous permutation equivariant sequence-to-sequence functions with compact support.
 
 
 % Deep Equilibrium Sequence Model (encapsulates universal transformer) and are themselves an instance of the so-called implicit-depth models such as neural ordinary differential equations
-Recently, \citet{bai2019deq} proposed the deep equilibrium model (DEQ) which is equivalent to running an infinite depth (weight-tied) feedforward network and which was shown to be able to approximate any sequence whose underlying dynamics is determined by a model that converge to a fixed point.
+Recently, \citet{bai2019deq} proposed the deep equilibrium model (DEQ) and which was shown to be able to approximate any sequence whose underlying dynamics is determined by a model that converge to a fixed point.
 This model was further extended to be able to capture systems with arbitrary invariant sets, but the UAP has not been established \citep{konishi2023stable}. %some remarks: p.397
 
 
@@ -426,17 +408,10 @@ Using the perceptron to uniformly approximate the external representation of a f
 %
 If  input/output sequence target has a realization\footnote{See Supp.Sec.~\ref{sec:realization}.} as a dynamical system, then the fading memory property is related to the unique steady-state property for dynamical systems \citep{chua1976qualitative}.
 Hence, the fading memory assumption implies that the state will be “asymptotically independent” of the initial condition.
-Therefore, FPM systems cannot have multi-stability which makes this framework exclude many real-world systems.
-
- 
-\begin{remark}
-The FMP quantitatively captures the idea that perturbations to the initial condition have asymptotically negligible influence on the long-term behavior of the system trajectory.
-This implies that imperfect system models may still be able of generating outputs that uniformly approximate the outputs of the original system over infinite time intervals.
-In contrast, for systems not satisfying this stability condition, a sharp bound on the approximation error degrades exponentially with time \citep{hirsch1974nonautonomous, sontag2013mathematical}.
-\end{remark}
-
+Therefore, FPM systems cannot have multi-stability which makes this framework exclude many real-world systems (see also Rem.~\ref{rem:fmp}).
 %Stability and memory-loss go hand-in-hand \citep{manjunath2020stability}
 
+\ascomment{TODO:}
 Why should we assume that the underlying dynamics in neural networks converge to a fixed point?
 Models of neural computation should cover a broader class of dynamics, e.g, oscillations \citep{townley2000existence, kag2020rnns, chang2019antisymmetricrnn,rapp1987periodic}. %could convey preferred capabilities in learning 
 
@@ -469,30 +444,20 @@ We then extend these results to non-autonomous dynamical systems (Sec.~\ref{sec:
 
 %mention that the focus is on semiflows? Sec.~\ref{sec:semiflow}
 
-\subsection{The problem of approximation}\label{sec:approximationtheory} %{Problem statement} 
-%this can be cut shorter
-For behaving agents we can formalize their behavior as sequence-to-sequence or input-output mappings.
-We will call $\mathcal{X}$ the space of input sequences and $\mathcal{Y}$ the space of output sequences.
-We consider a family of target functions, or simply targets, which is a subset \(\mathcal{C} \) of all mappings \( \mathcal{X} \rightarrow \mathcal{Y} \), i.e., \( \mathcal{C} \subset \mathcal{Y}^\mathcal{X} \). 
-These are the relationships we wish to approximate (or ``learn"), by some (simpler or at least parameterized) candidate functions.
-Let us denote this set of \textbf{candidates} by \( \mathcal{H} \subset \mathcal{Y}^\mathcal{X} \).
-In learning theory, this is often called a \textbf{hypothesis space}.
-The problem of approximation concerns how well functions in \( \mathcal{H} \) can resolve functions in \( \mathcal{C} \).
-This is typically formulated in terms of a bound on the (maximal) error between the approximation and the target mapping.
-
 We will discuss what the space is of target dynamical systems that we can approximate (Sec.~\ref{sec:target}).
 Furthermore, these can be approximated in a particular way, i.e. with a specific difference between the approximant and the target system (the metric): measured as the expectation of the uniform norm difference between the flows (Sec.~\ref{sec:metric}). 
 We will show that we can make the probability of finding a trajectory of the approximation to be off by a certain arbitrary threshold arbitrarily small. 
 
-
+%TODO remove repeat
 We start by showing the UAP for our hypothesis class for structurally stable systems with a finite set of fixed points  (introduced in Sec.~\ref{sec:hypothesis} and proven in Sec.~\ref{sec:fp_theorem}).
 Then we extend this results where we consider systems with a finite set of periodic orbits (Sec.~\ref{sec:lc_theorem}).
 We then also include systems that additionally have a finite set of continuous attractors (Sec.~\ref{sec:ca_theorem}).
-We conclude with how these results extend to a class of non-autonomous dynamical systems and some remarks about approximation of chaotic orbits (Sec.~\ref{sec:chaos}).
+We prove with how these results extend to a class of non-autonomous dynamical systems (Sec.~\ref{sec:nonautonomous}) 
+For remarks about approximation of chaotic orbits (Sec.~\ref{sec:chaos}).
 Each of these results considers approximation of a system on a compact space that is globally attractive. %explain what this entails
 
 
-
+\subsection{Setup}
 \subsubsection{Target class}\label{sec:target}
 %Autonomous
 %Structurally stable+Fixed points = hyperbolic fixed points
@@ -509,18 +474,16 @@ This defines a flow $\varphi(\cdot, \cdot)$ (Picard-Lindel\"of theorem).
 For Sec.~\ref{sec:fp_theorem} we assume that $f$ has  a finite set of hyperbolic stable fixed points.
 For Sec.~\ref{sec:lc_theorem} we assume that $f$ has  a finite set of hyperbolic stable periodic orbits.
 For Sec.~\ref{sec:ca_theorem} we assume that $f$ has only a finite set of normally hyperbolic continuous attractors.
+%
+These restrictions of the target class are Bernstein-type results (in the classification of approximation result types made in \citep{jiang2023brief}).
+%analogy with realization of transfer functions in state space models
+
 
 \subsubsection{Hypothesis class}\label{sec:hypothesis}
 %rename f hat?
-The hypothesis class $\mathcal{G}$ is composed of
-\begin{equation}
-\dot x = g(x) 
-\end{equation}
-where $g$ is an FNN with the universal approximation property.
-In essence, by setting up $g$ as a neural network, you are equipping the NODE with a highly flexible model for $g$, which can approximate a vast variety of continuous functions. 
-
-These restrictions of the hypothesis class are Bernstein-type results (in the classification of approximation result types made in \citep{jiang2023brief}).
-%analogy with realization of transfer functions in state space models
+The hypothesis class $\mathcal{G}$ is composed of $\dot x = g(x)$
+where $g$ is an FNN with the universal approximation property. %of arbitrary dimension.
+In essence, by setting up $g$ as a neural network, we are equipping the NODE with a highly flexible model for $g$, which can approximate a vast variety of continuous functions. 
 
 
 \subsubsection{Metric}\label{sec:metric}
@@ -564,16 +527,13 @@ Take
 \dot x = f(x)   \ \ \ f\in C^1,
 \end{equation}
 with flow $\psi$ as in Sec.~\ref{sec:target}. Assume that the only omega limit sets of this system are a finite number of hyperbolic fixed points.
-
-Then, for an arbitrary $\epsilon, \delta > 0$, there exist an MLP recurrent neural network 
- \begin{equation}
-\dot x = \hat f(x) = \sigma(A\sigma(Bx+b)+a)
-\end{equation}
+%
+Then, for an arbitrary $\epsilon, \delta > 0$, there exist a FNN $\hat f: \reals^n\rightarrow\reals^n$ with the UAP such that the NODE defined by it $\dot x = \hat f(x)$ %just point to definition in app??
+% \begin{equation}
+%\dot x = \hat f(x) = A\sigma(Bx+b)+a  %give this as example? 
+%\end{equation}
 %such that for a solution $\hat \varphi(t,x_0)$ satisfying Eq~\ref{eq:5} with initial state $x_0$ of the network
-such that its flow $\hat \varphi$ satisfies
-\begin{equation}
-\|\varphi-\hat \varphi\|_\epsilon < \delta.
-\end{equation}
+with flow $\hat \varphi$ satisfies $\|\varphi-\hat \varphi\|_\epsilon < \delta.$
 \end{theorem}
 
 %proof will be at end of section? 
@@ -588,7 +548,7 @@ Third, we prove that the remaining state space can be made arbitrarily small in 
 Finally, we combine these results to prove Theorem \ref{thrm:approx} in Sec.~\ref{sec:proof_fp_approx}.
 
 \begin{proposition}\label{prop:fp_approx}
-The fixed points of $C^1$ ODEs can be arbitrarily closely approximated in the $\|\varphi-\hat \varphi\|_\epsilon < \delta$ flow sense.
+The fixed points of $C^1$ ODEs can be arbitrarily closely approximated. %Hausdorff distance % in the $\|\varphi-\hat \varphi\|_\epsilon < \delta$ flow sense.
 %and limit cycles later
 \end{proposition}
 
@@ -597,7 +557,7 @@ The fixed points of $C^1$ ODEs can be arbitrarily closely approximated in the $\
 Because of the density of the hypothesis class $\mathcal{G}$ we have that for any $f\in C^1$ and any $\epsilon>0$
 there exists $\hat f\in\mathcal{G}$ such that $\|f-\hat f\|<\epsilon$.
 %
-Structural stability implies that there exists a $\delta>0$ such that for all $g\in C^1$ that are $\delta$ $C^1$ close to $f$, the flow is topologically equivalent to that of $f$.
+Structural stability implies that there exists a $\delta>0$ such that for all $g\in C^1$ that are $\delta$-$C^1$ close to $f$, the flow is topologically equivalent to that of $f$.
 %
 So we can choose $\delta$ such that for all $\|f-\hat f\|<\delta$ the flow of $\hat f$ is topologically equivalent to that of $f$.
 Finally, fixed points of $\hat f$ are $\mathcal{O}(\epsilon)$ close to those of $f$ (from Persistent Manifold Theorem\cite{jones1995gspt}).
@@ -608,6 +568,7 @@ This establishes that for all $\epsilon>0$ and $x_0$ initial states in a basin o
 
 
 \paragraph{A tale of two errors}
+\ascomment{Change tilde to hat}
 Note that the above error bound depends on two separate quantities: the local error 
 $\| f(s; \tilde{\varphi}_0, s(x)) - f(s; \tilde{\varphi}_0, s(x)) \|$ 
  and the term 
@@ -617,11 +578,11 @@ which bounds the sensitivity of the flow $\varphi_{s,t}(x)$ to an infinitesimal 
 How we can bound these two types of errors will be discussed in the next two subsections.%error^I and error^II
 
 \ascomment{Express everything in terms of $\epsilon$ and $\delta$}
-
+%use \hat f notation?
 \setlength\belowcaptionskip{-1ex}
 \begin{SCfigure}[10][bthp]
   \centering
-  \includegraphics[width=0.6\textwidth]{separatrices}
+  \includegraphics[width=0.5\textwidth]{separatrices}
   \caption{
 	Schematic of an approximation of a bistable system with mismatching separatrix. % $A_i$ and $A_j$.
 	The target subsystem has two stable fixed points ($A_i^f$ and $A_j^f$) with separation between the basins of attraction by the separatrix (black line).
@@ -634,9 +595,10 @@ How we can bound these two types of errors will be discussed in the next two sub
   }\label{fig:separatrices}
 \end{SCfigure}
 
-\subsubsection{Errors inside the intersection of the basins of attraction of the target and approximation}\label{sec:inboa_approx}
+\subsubsection{Errors inside the intersection of the basins of attraction of target and approximation}\label{sec:inboa_approx}
+\ascomment{Change g to fhat}
+%replace this proof with previous result on UAP for FMP systems?
 %Introduce A_i^f notation
-%TODO: introduce boa Basins of Attraction (BoA)
 For an initial value $x_0\in \overline{\boa}_i^{f,g} \coloneqq \boa(A_i^f) \cap \boa(A_i^g)$, the flow deviates along the trajectories up to 
 \[
 \|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\| \, ds,
@@ -644,20 +606,19 @@ For an initial value $x_0\in \overline{\boa}_i^{f,g} \coloneqq \boa(A_i^f) \cap 
 from Prop.~\ref{prop:313} from \citep{vanhandel2007filtering}, see Supp.Sec.~\ref{sec:313}.
 %
 %See Rem.~\ref{rem:313}.
-
+%
 The first term \(\|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|\) is bounded %?
 and \(\|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|\rightarrow 0\) for \(t\rightarrow\infty\).
 Define $M\coloneqq \sup \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\|<\infty$. 
 %
 This guarantees that the integral is finite.
-
-The second term
-\[\|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\|\]
+%
+The second term $\|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\|$
 can be made arbitrarily small because of the UAP for mappings.
 %
 This guarantees that the integral can be made arbitrarily small.	
 %conclusion about Type I errors
-Hence, there exists an FNN that defines a vector field for which for each attractor we have $\epsilon_i<\epsilon$. 
+Hence, there exists an NODE in which for attractor the error is $\epsilon_i<\epsilon$. 
 
 
 
@@ -679,54 +640,18 @@ The minimal volume of initial values for which basin-type errors arise along the
 \[\varepsilon_{\operatorname{basin}} \coloneqq \vol \bigcup_{i \neq j}\boa(A_i^f)\cap\boa(A_j^g) = \sum_{i \neq j} \vol\left(\boa(A_i^f)\cap\boa(A_j^g)\right).\] %prove?
 %CHECK: double counting
 %encorporate f,g in def?
+\ascomment{Notation: $\varepsilon_{\operatorname{basin}}$ -> $\operatorname{vol}_{\operatorname{basin}}$?}
 
 \begin{proposition}\label{prop:min_sep_bound}
 For any $\delta>0$, we can choose $g$ such that $\varepsilon_{\operatorname{basin}}<\delta$.
 \end{proposition}
 
-We will prove this by showing that separatrices are persistent.
 
-\paragraph{Separatrices are persistent with isolating neighborhoods that fill the basin of attraction}
-Isolating neighborhood with boundary that is transversal to flow.
-The boundary can be taken to be arbitrarily close to the boundary of the BoA.
-By taking the isolating neighborhood to be closer and closer to the BoA, we can prove persistence of separatrix.
-
-%construction
-%\textbf{Step 1:} 
-We start by creating an inflowing isolated neighborhood.
-%N-dim DS
- Let $I_0$ denote a section within the tubular neighborhood of the fixed point.
-For each $t\in\reals$, the set $\{\varphi(t,x_0) \mid x_0\in I_0\}$ defines a connected $N-1$-dimensional manifold, which evolves smoothly over time. 
-For each \( t \in \reals \), the image \( \{ \varphi(t, s) \mid s \in I_0 \} \) remains a connected $N-1$ dimensional manifold because:
-\begin{enumerate}
-    \item The initial family \( \gamma(I) \) is a $N-1$ dimensional manifold.
-    \item The map \( \phi(t, \cdot) \) is \( C^1 \) and thus an immersion.
-    \item The image of a connected set under a continuous map remains connected.
-\end{enumerate}
-This forms the boundary of the isolating neighborhood.
-
-\begin{remark}%move?
-In the case of limit cycles, the isolating neighborhood takes on a distinctive topology. For instance, in a 3D state space, it forms a toroidal 2D manifold surrounding the cycle. In 2D systems, the neighborhood reduces to a pair of connected circles. These structures are particularly relevant for the analysis of periodic orbits and their stability.
- \end{remark}
-
-%Forward Invariance
-For each $t\in\reals$ the set $I_t = \{\varphi(t,x_0) \mid x_0 \in I_0 \}$ is a manifold.
-Furthermore, the union of these sets up to any time  $\bigcup_{s<t}I_s$, indeed forms an inflowing isolating neighborhood.
-%
-%fills up basin
-Then, as $t\rightarrow\infty$, the isolating neighborhood expands to fill the basin of attraction of the fixed point.
- This illustrates the neighborhood’s role in characterizing the asymptotic behavior of trajectories and the fixed point’s influence on the global dynamics.
-
-%4:
- Now, because, isolating neighborhoods of target and approximation have same (trivial) Conley index  for each $t$ (if vector fields are close to each other, see Sec.\ref{sec:cit}),
- %5
-the separatrix must be in remaining part of the state space and, therefore it is persistent (i.e., it is $\mathcal{O}(\epsilon)$ close), and hence normally hyperbolic \citep{mane1978persistent}).
-
-
+%focus on separatrices or boundaries of boas?
 \paragraph{Boundary of BoA is persistent and can be made arbitrarily close to target}% this depends on the fact that separatrices are persistent
 The boundary of the BoA of attractor $A_i^f$ is %BoAs are open sets
 \[\partial\boa(A_i) = \overline{\boa(A_i^f)} \cap (X - \overline{\boa(A_i^f)}).\]
-where \(\overline{\cdot}\) denotes the closure of a set (same as \(\cl\)).
+where \(\overline{\cdot}\) denotes the closure of a set (same as \(\cl\)). %use consitent notation!!!!!!
 % =\cl\boa(A_i^f)-\boa(A_i^f)\.\]%this should hold for an open set...
 %
 Then for some  $\epsilon_{\operatorname{sep}}>0$ we have that 
@@ -741,7 +666,7 @@ Then for some  $\epsilon_{\operatorname{sep}}>0$ we have that
 %link: here is how
 For each attractor $A_i$ we have that the boundary of the basin of attraction $\partial(\boa(A_i^f))$ is a compact normally hyperbolic invariant manifold (See Supp.Sec.~\ref{sec:boaboundary}).
 Consider the connected components $B^f_{ij}$ of $\partial(\boa(A_i^f))$. %NOTE: it is not the case that we have a connected component for each pair of attractors
-Then, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}-C^1$ close to $f$ such that $g$ has a normally hyperbolic invariant manifold  $B^g_{ij}$ that is diffeomorphic to and at most at $\mathcal{O}(\delta_{ij})$ Hausdorff distance from $B^f_{ij}$.
+Then, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$-$C^1$ close to $f$ such that $g$ has a normally hyperbolic invariant manifold  $B^g_{ij}$ that is diffeomorphic to and at most at $\mathcal{O}(\delta_{ij})$ Hausdorff distance from $B^f_{ij}$.
 Therefore, by Eq.~\ref{eq:separatrixoverlap}, the overlap of the separatrices is less than $\mathcal{O}(\epsilon_{\operatorname{sep}})$. %TODO: figure out bound on the volume
 %compactness should imply that the volume is at most $\mathcal{\epsilon_{\operatorname{sep}}$.
 Therefore, there is $k_{ij}\in\reals$ such that the Hausdorff distance between $B^f_{ij}$ and $B^g_{ij}$ is $k_{ij}\delta_{ij}$.
@@ -752,16 +677,7 @@ Define $\delta_i\coloneqq\sum_{i=1}{N_{\operatorname{cc}}^i}\delta_{ij}$.
 Now we need to sum errors coming from all pairs of basins of attraction together.
 Take $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each attractor $A_i$ and hence $\sum_i\delta_i<\delta$.
 
-%\subsubsection{Alternative: stable and unstable manifolds as persistent}
-%stable and unstable manifolds of a normally hyperbolic manifold persist under perturbation Theorem 2.3.6 in \citep{kuehn2015multipletimescale}.
-%
-%Laminations: The collection of global stable/unstable manifolds. The same for the local stable/unstable manifolds or the local unstable manifolds for the geodesic flow on a compact manifolds with nonzero Lyapunov exponents almost everywhere. 
-%Persistence of laminations \citep{berger2010persistence}
 
-
-%simplifying:%we can consider $\cl\boa(A_i) to be an invariant manifold with boundary
-
-%\footnote{For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.}
 
 
 
@@ -775,7 +691,23 @@ By Sec.\ref{sec:separatrix_approx} (Prop.~\ref{prop:min_sep_bound}) we can make 
 By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can make the trajectory-wise error smaller than $\epsilon$.
 \end{proof}
 
-
+\paragraph{Admin}
+\begin{enumerate}
+\item Bounding the volume of separatix mismatch regions
+\begin{enumerate}
+\item Rolling back time until $T$ to get isolating neighborhood ($\eta_T$ share of $\mathcal{X}$ not included after this time (call the separatrix mismatch regions $\operatorname{sepmiss}$, which decreases monotonically for $T$)
+\item Approximation of isolating neighborhood: $\mu$ close in vf space implies $\mathcal{O}(\mu)$ closeness of persisting isolating neighbourhood (part of state space not covered in basin of attraction guarantee: $\widehat{\operatorname{sepmiss}}$)
+\item $\Gamma(\eta_T, k\mu) <  \delta$ gives a bound on how close our approximation needs to be in vector space
+\item Need at least $\eta_T<k\mu$ (?)
+\item So if we have $\| f - \hat f\|<\tfrac{1}{k}\delta$ then $\vol(\widehat{\operatorname{sepmiss}})<\delta$
+\end{enumerate}
+\item Bounding the flow errors inside basins (remaining space $\mathcal{X}-\widehat{\operatorname{sepmiss}}$)
+\begin{enumerate}
+\item Per basin: $\Psi_i(\epsilon)$ so that flow is $\epsilon$ close (from previous FMP based results)
+\item Take minimum from these bounds $\Psi_{\min}(\epsilon)$
+\end{enumerate}
+\item Take minimum $\{\tfrac{1}{k}\delta, \Psi_{\min}(\epsilon)\}$ guarantees $\epsilon,\delta$-approximation
+\end{enumerate}
 
 \subsection{Approximation of stable limit cycles}\label{sec:lc_theorem}
 %TODO:  name for type III error: L-type (limit cycle) P-type (period)
@@ -792,9 +724,9 @@ We will describe a recipe for systems with single and multiple limit cycles.
 We start out with an approximation of the target vector field with an $\epsilon$ small difference ($C^1$ distance between the vector fields).
 Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O}(\epsilon)$ the original limit cycle approximation.
 Denote the set of points in the limit cycles by $\gamma$ and $\hat\gamma$ for the target and approximation, respectively.
-
+%
 %However, we can correct this discrepancy.
-We will typically have a difference between the periods of limit cycle of the target $T$ and of the approximation $\hat T$: $\epsilon_T\coloneqq T-\hat T>0$
+We typically have a difference between the periods of limit cycle of the target $T$ and of the approximation $\hat T$: $\epsilon_T\coloneqq T-\hat T>0$
 with \[T\coloneqq\frac{1}{\int_{\gamma}\|f(x)\|dx} \text{ and } \hat T\coloneqq\frac{1}{\int_{\hat{\gamma}}\|\hat f(x)\|dx}.\]
 %
 We will apply a perturbation $\bar{f}$ to our approximation, $\tilde f = \hat f + \bar f$, that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
@@ -819,7 +751,7 @@ The only thing we now need to worry about is how the length of the limit cycle c
 %
 The resulting total approximation is %replace a(\epsilon_T) with just an optimal constant?
 \begin{equation}\label{eq:lc_correction}
-\tilde{f}= \hat{f}+\hat f_{\operatorname{bump}} = 
+\tilde{f}= \hat{f}+a_{\epsilon_T}^*\hat f_{\operatorname{bump}} = 
  \hat{f} + a_{\epsilon_T}^*(f_{\operatorname{bump}}+ \hat{\epsilon}\bar{f}),
  \end{equation}
 where $\hat{\epsilon}\bar{f} = f_{\operatorname{bump}} -\hat f_{\operatorname{bump}}$ with $\|\bar f\|=1$ and $\hat \epsilon <\max(\epsilon_T,\epsilon_{LC})$. %actually this should be a function of epsilon T so that closeness in Supp.Sec.~\ref{sec:periodcloseness} is guaranteed
@@ -828,36 +760,12 @@ where $\hat{\epsilon}\bar{f} = f_{\operatorname{bump}} -\hat f_{\operatorname{bu
 %
 %So if the period gets longer because of the perturbation (i.e. $\hat \ell(\epsilon)$ is an increasing function) as long as $1/(\hat \ell+g(\epsilon))$ is not decreasing at the same rate there should exist a value $\epsilon$ for which the equality holds.
 
-\ascomment{TODO: prove that the fixed point happens at an epsilon that is small enough for the persistence of the other parts}
-\ascomment{TODO: trajectories next to LC have same period Chapter 9 in \citep{ermentrout2010mathematical}}
-
-
-%\textbf{Knobs}
-%\begin{itemize}
-%\item $\epsilon_T$: small enough so that limit cycle is structurally stable
-%\item $\hat\epsilon$: needs to be small enough so that effect of correction outside of the tubular neighbourhood doesn't affect attractors and separatrices
-%\item $\delta_T$: needs to be small enough so that no other attractor or separatrix is included (will this have an effect on the inside-basin flow error?) %choosing the size of the tubular neighbourhood
-%\end{itemize}
-
+See further Supp.Sec.~\ref{sec:lc_extras}.
 
 \paragraph{Summary}
 We can choose the initial approximation $\hat{f}$ such that the period difference is smaller than $\epsilon_T$.
 We can then choose a correction to the vector field in a tubular neighborhood around the limit cycle such that the difference in periods between target and approximation is zero.
 
-
-%%effects
-\paragraph{The effect of the correction $\tilde \epsilon\coloneqq a(\epsilon_T)\hat\epsilon$}
-- Tubular neighbourhood: $\|\hat f_{\operatorname{bump}}\|$ effect (relevant for $\overline\boa(A_i)$). 
-
-- Outside $\tilde\epsilon$ effect for a non-compact activation function (e.g., affects location of fixed points and limit cycles)
-
--  $\tilde\epsilon$ needs to be small enough so that effect of correction outside of the tubular neighborhood doesn't affect attractors and separatrices too much.
-
--- These should be also taken into account when choosing an initial approximation $\hat f$ to which to apply the correction.
-
-\paragraph{The basin of attraction for a stable limit cycle}%irrelevant?
-Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension $n-1$, with a scalar circle coordinate \citep{wilson1967structure}.
-But they can be funky, see Fig.~\ref{fig:unstab_lc_3fps}.
 
 
 
@@ -867,26 +775,20 @@ But they can be funky, see Fig.~\ref{fig:unstab_lc_3fps}.
 \subsubsection{Multiple limit cycles}
 %%%QPTA
 Systems with multiple limit cycles are ubiquitous: e.g., quasi-periodic toroidal attractors (QPTA)\citep{Park2023a}.
-
-Can we perform the same procedure for $N>1$ limit cycles?
+%
+If $f$ has $N>1$ limit cycles, we can perform a similar procedure.
 We have to make sure that all the $\hat{\epsilon}_i$ are small enough so that $\epsilon_{T_i}$ is small enough:
 \begin{equation}\label{eq:nlc_vfs}
-\tilde f_i = \hat{f}_i + \sum_{j}a_{\epsilon_{T_j}}\hat{\epsilon}_j\bar{f}_j.
+\tilde f_i = \hat{f}_i + \sum_{j}a_{\epsilon_{T_j}}\hat{\epsilon}_j\bar{f}_j \text{ for } i=1,\dots, N.
 \end{equation}
 %TODO: replace a(\epsilon_{T_j}) with a_j^*? 
-
+%\paragraph{Finding local perturbations to simultaneously satisfy Eq.\ref{eq:nlc_vfs} for $i=1,\dots, N$.}
+We can find $a_i^* = a_{\epsilon_{T_i}}$ and $\hat\epsilon_i$ for $i=1,\dots,N$ such that Eq.~\ref{eq:lc_constraint} is satisfied for each limit cycle.
+\ascomment{TODO: prove in Sec.~\ref{sec:lc_extras}}
 %can we really do this sequentially? no, we have to do it in parallel
 %when we change a_T_i we have to adjust the other a_T_j s
 %we have to guarantee that a(\epsilon_{T_i})
-\paragraph{Finding local perturbations to simultaneously satisfy Eq.\ref{eq:nlc_vfs} for $i=1,\dots, N$.}
-We need to find $a_i^* = a_{\epsilon_{T_i}}$ and $\hat\epsilon_i$ for $i=1,\dots,N$ such that 
-\begin{equation}\label{eq:nlc_constraints}
-\int_{\tilde{\gamma}}\|\tilde{f}_i(x)\| dx = \frac{1}{T_i} \ \  \text{for} \ i=1,\dots, N. 	% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
-\end{equation}
 
-\paragraph{Using compact support activation functions}
- ELU/CELU/GeLU/TaLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid,hasan2023talu} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles.
-See also \citep{duch1999survey,dubey2022activation,jagtap2023activation,ramachandran2017activation,hayou2019activation} for a survey of neural activation functions.
 
 
 
@@ -897,13 +799,11 @@ See also \citep{duch1999survey,dubey2022activation,jagtap2023activation,ramachan
 %for the extension of continuous attractors we need to assume that all maximally invariant sets are normally hyperbolic
 
 %continuous attractor (zero flow)
-We can tile the continuous attractor with a uniform grid of stable fixed points \citep{Sagodi2024a}.
-Each of the neighboring stable fixed points can be at most $\epsilon$ apart.
-This is structurally stable dynamics, so we can approximate its vector field with $\epsilon$ accuracy and we are guaranteed to have a topologically equivalent system to it with the fixed points being moved at most $\mathcal{O}(\epsilon)$. 
-
-
-For a continuum of attractors (nonzero flow in at least one dim): e.g. torus with limit cycles.
-We can tile the continuous attractor with a uniform grid of stable limit cycles.
+If $f$ has a normally hyperbolic continuous attractor, we can tile the continuous attractor with a uniform grid of stable fixed points \citep{Sagodi2024a}.
+Each of the neighboring stable fixed points can be at most $\epsilon$ apart. %needs to be smaller because of $\mathcal{O}(\epsilon)$ dispacement of stable FP of approx?
+Because this is structurally stable dynamics,  we can approximate its vector field with $\epsilon$ accuracy and we are guaranteed to have a topologically equivalent system to it with the fixed points being moved at most $\mathcal{O}(\epsilon)$. 
+%
+Finally, for $f$ with a continuum of attractors (nonzero flow in at least one dimension): e.g. torus of limit cycles, we can tile the continuous attractor with a uniform grid of stable limit cycles, see Section S5 in \citep{Sagodi2024a}.
 
 
 %\subsection{Center manifolds}
@@ -911,36 +811,6 @@ We can tile the continuous attractor with a uniform grid of stable limit cycles.
 
 
 
-%%%%%%%%%%%%%%%%%%%%%
-\subsection{Approximating a chaotic orbit}\label{sec:chaos}
-\paragraph{Why consider chaos} 
-Forecasting
-\citep{jaeger2004harnessing}
-\citep{fan2020long}
-\citep{vlachas2020backpropagation}
-\citep{grigoryeva2024forecasting}
-
-%TODO:  name for type IV error: C-type (chaos)
-\paragraph{The issue with our method} 
-We cannot approximate according to our above criteria.
-Every small discrepancy in the vector field will lead to orbits starting at same position to diverge over time, analogous to perturbing initial start of the chaotic orbit.
-
-
-\paragraph{How to proceed?}
-Prior work:
-- Attractor reconstruction, reconstructing the full Lyapunov spectrum of a dynamical system using reservoir computing \citep{hart2024attractor}.
-- teacher forcing \citep{hess2023teacherforcing}.
-
-Different metric: Chaotic orbits
-- mention: we can guarantee finite time approximation (prove: we can never do infinite time approximation)
-- approximation of maximal attractor in Hausdorff sense possible \citep{hess2023teacherforcing}
-
-What we can do is minimize the Hausdorff distance between the chaotic invariant manifolds and match the Lyapunov exponents of the target system
-The first because of structural stability.
-%%The second because of ???
-%
-Alternatively, we can guarantee that the shift representation of the dynamics is persistent.
-% Symbolic dynamics: Mapping onto the same shift dynamical system
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1012,7 +882,6 @@ If it converges to a fixed point: then it is Asymptotically autonomous. Necessar
 If it converges to a limit cycle: then we have periodic forcing. 
 If it doesn't converge, we cannot approximate. 
 %except systems that have the inputs in some nullspaces
-
 In any case we cannot have a continuous attractor in the asymptotic vector field.
 
 
@@ -1026,14 +895,14 @@ In any case we cannot have a continuous attractor in the asymptotic vector field
 \paragraph{$g$ is asymptotically autonomous} %+exponentially
 Eq.~\ref{eq:nonautonomous} so that 
 \begin{equation}\label{eq:inputdriven_asymp}
-g(x(t), u(t)) \rightarrow h_{aut}(x(t))
+g(x(t), u(t)) \rightarrow h_{\operatorname{aut}}(x(t))
 \end{equation}
 %for every epsilon there is a T
 that is for $t>T$ for some $T$ %...
 \begin{equation}\label{eq:inputdriven_asymp}
 g(x(t), u(t)) =  h_{\operatorname{aut}}(x(t)) + \epsilon h_{\operatorname{inp}}(x(t), u(t))
 \end{equation}
-with $\|h_{inp}\| = 1$.
+with $\|h_{\operatorname{inp}}\| = 1$.
 
 
 \paragraph{$g$ needs to converge to countably many separated asymptotically autonomous vector fields}
@@ -1063,6 +932,7 @@ So we define
 \begin{equation}%indicate X,U spaces?
 \|\varphi-\hat \varphi\|_\epsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0,u)-\hat \varphi(\cdot,x_0,u)\|_\infty>\epsilon\right).
 \end{equation}
+\ascomment{TODO: replace notation with $d_\epsilon$}
 
 Path integral representation of the distribution of $x(t,u)$ when integrating over all possible input functions $u(t)$:
 \begin{equation}
@@ -1072,6 +942,7 @@ where $\mathcal{P}[u]$ is a probability measure over the function space of $u(t)
 
 Any stochastic and even deterministic system can be expressed in terms of a path integral for which asymptotic methods can be systematically applied \citep{chow2015path}.
 
+%this can be moved to APPendix
 \paragraph{Uniform (Lebesgue) Measure on a Bounded Subset of \( C([0,T], \reals^m) \)}
 If \( u(t) \) is continuous and satisfies a uniform bound
 \[
@@ -1094,7 +965,7 @@ With this we can capture what proportion of inputs lead the system to the separa
 \end{equation}
 
 
-\ascomment{TODO: define $d_\epsilon$}
+
 
 
 \subsubsection{Theorem}
@@ -1134,8 +1005,7 @@ Then the probability density after $t$ time has passed is
 \begin{equation}\label{eq:init_path_density}
 p(x_1,t) = p(x_0)p(x_1,t).
 \end{equation}
-
-$p(x_{i+1},t+s) = p(x_i,t)p(x_{i+1},s)$
+%$p(x_{i+1},t+s) = p(x_i,t)p(x_{i+1},s)$
 
 We need to consider this until $T$ for which we are $\eta$ close to the asymptotic, autonomous vector field.
 
@@ -1525,7 +1395,7 @@ Contractive dynamics\ref{sec:contractive}
 
 \subsection{Fading memory}\label{sec:fading_memory}
 
-\begin{definition}[Fading memory Property (FMP)]
+\begin{definition}[Fading memory Property (FMP)]\label{def:fmp}
 Let $x_1, x_2$ be bounded sequences indexed by $\mathbb{R}$, and let $H$ be a sequence of causal, shift-equivariant (also called time-homogeneous) functionals.
 Here, causal means $H_t(x) = H_t(x(-\infty,t])$ for all $t$.
 We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing function $w : \mathbb{R}^+ \to (0, 1]$ such that for any $\varepsilon > 0$ there exists $\delta > 0$ with 
@@ -1533,6 +1403,14 @@ We say that $H$ has the \textbf{FMP} if there is a monotonically decreasing func
 |H_t(x_1) - H_t(x_2)| < \varepsilon \quad \text{whenever} \quad \sup_{s \in (-\infty, t]} |x_1(s) - x_2(s)| w(t - s) < \delta.
 \]
 \end{definition}
+The notion of fading memory is strictly an input/output property, that is, it refers only to the operator $\mathcal{H}$ which maps inputs into outputs; the realization of $\mathcal{H}$ (there need not even be one) is irrelevant.
+
+\begin{remark}\label{rem:fmp}%this is just a repeat
+The FMP quantitatively captures the idea that perturbations to the initial condition have asymptotically negligible influence on the long-term behavior of the system trajectory.
+This implies that imperfect system models may still be able of generating outputs that uniformly approximate the outputs of the original system over infinite time intervals.
+In contrast, for systems not satisfying this stability condition, a sharp bound on the approximation error degrades exponentially with time \citep{hirsch1974nonautonomous, sontag2013mathematical}.
+\end{remark}
+
 
 %introduce ISS here?
 
@@ -2198,6 +2076,28 @@ R: what we want to know is that which perturbations (inputs) lead us to a differ
 %%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{Support for the proof}
+General intro into UAP Sec.~\ref{sec:approximationtheory}
+
+Bound on approximation error inside a basin of attraction Sec.~\ref{sec:313} \ascomment{move section on this in main text to this sec?}
+
+Separatrices/boundaries of BoAs are persistent Sec.~\ref{sec:boaboundary}
+
+Perturbing limit cycles: period closeness Sec.~\ref{sec:lc_pert}
+
+Chaos Sec.~\ref{sec:chaos} 
+
+Non-autonomous/input-driven Sec.~\ref{sec:input_driven_app} 
+
+\subsection{The problem of approximation}\label{sec:approximationtheory} %{Problem statement} 
+%this can be cut shorter
+For behaving agents we can formalize their behavior as sequence-to-sequence or input-output mappings.
+We will call $\mathcal{X}$ the space of input sequences and $\mathcal{Y}$ the space of output sequences.
+We consider a family of target functions, or simply targets, which is a subset \(\mathcal{C} \) of all mappings \( \mathcal{X} \rightarrow \mathcal{Y} \), i.e., \( \mathcal{C} \subset \mathcal{Y}^\mathcal{X} \). 
+These are the relationships we wish to approximate (or ``learn"), by some (simpler or at least parameterized) candidate functions.
+Let us denote this set of \textbf{candidates} by \( \mathcal{H} \subset \mathcal{Y}^\mathcal{X} \).
+In learning theory, this is often called a \textbf{hypothesis space}.
+The problem of approximation concerns how well functions in \( \mathcal{H} \) can resolve functions in \( \mathcal{C} \) (by comparing elements through a metric).
+This is typically formulated in terms of a bound on the (maximal) error between the approximation and the target mapping.
 
 \subsection{In basin bound}\label{sec:313}
 \begin{proposition}[Proposition 3.1.3. in \citep{vanhandel2007filtering}]\label{prop:313}
@@ -2229,7 +2129,7 @@ the term \( \| D\phi_{s,t}(\tilde{\phi}_{0,s}(x)) \| \), which bounds the sensit
 \end{remark}
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Boundaries of basins of attraction}\label{sec:boaboundary}
 
 \begin{proposition}
@@ -2263,8 +2163,6 @@ The boundary of a set \( A \) is defined as
 \partial A = \overline{A} \cap (X - \overline{A}).
 \]
 It is the intersection of two closed sets and hence is closed.
-
-
 \footnote{
 The boundary is made up of 
 $\alpha$-limit sets 
@@ -2279,9 +2177,11 @@ Implied by structural stability.
 
 \end{proof}
 
-
-
 \subsubsection{Nontrivial examples}
+
+\paragraph{The basin of attraction for a stable limit cycle}%irrelevant?
+Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension $n-1$, with a scalar circle coordinate \citep{wilson1967structure}.
+But they can be have complex structures, see for example Fig.~\ref{fig:unstab_lc_3fps}.
 
 \setlength\belowcaptionskip{-5ex}
 \begin{SCfigure}[10][bthp]
@@ -2293,7 +2193,61 @@ Implied by structural stability.
 
 
 
-\subsection{Perturbing limit cycles}
+\subsubsection{Separatrices are persistent with isolating neighborhoods that fill the basin of attraction}
+We will prove Prop.~\ref{prop:min_sep_bound} by showing that separatrices are persistent.
+Isolating neighborhood with boundary that is transversal to flow.
+The boundary can be taken to be arbitrarily close to the boundary of the BoA.
+By taking the isolating neighborhood to be closer and closer to the BoA, we can prove persistence of separatrix.
+
+%construction
+%\textbf{Step 1:} 
+We start by creating an inflowing isolated neighborhood.
+%N-dim DS
+ Let $I_0$ denote a section within the tubular neighborhood of the fixed point.
+For each $t\in\reals$, the set $\{\varphi(t,x_0) \mid x_0\in I_0\}$ defines a connected $N-1$-dimensional manifold, which evolves smoothly over time. 
+For each \( t \in \reals \), the image \( \{ \varphi(t, s) \mid s \in I_0 \} \) remains a connected $N-1$ dimensional manifold because the map \( \phi(t, \cdot) \) is \( C^1 \) and thus an immersion and the image of a connected set under a continuous map remains connected.
+% The initial family \( \gamma(I) \) is a $N-1$ dimensional manifold.
+This forms the boundary of the isolating neighborhood (see further Supp.Sec.~\ref{sec:isonbhd}).
+
+%Forward Invariance
+For each $t\in\reals$ the set $I_t = \{\varphi(t,x_0) \mid x_0 \in I_0 \}$ is a manifold.
+Furthermore, the union of these sets up to any time  $\bigcup_{s<t}I_s$, indeed forms an inflowing isolating neighborhood.
+%
+%fills up basin
+Then, as $t\rightarrow\infty$, the isolating neighborhood expands to fill the basin of attraction of the fixed point.
+ This illustrates the neighborhood’s role in characterizing the asymptotic behavior of trajectories and the fixed point’s influence on the global dynamics.
+
+%4:
+Finally, because isolating neighborhoods of target and approximation have same (trivial) Conley index  for each $t$ (if vector fields are close to each other, see Sec.\ref{sec:cit}),
+ %5
+the separatrix must be in remaining part of the state space and, therefore it is persistent (i.e., it is $\mathcal{O}(\epsilon)$ close), and hence normally hyperbolic \citep{mane1978persistent}).
+
+\ascomment{Mention alternative proofs?}
+%alternative proof with
+%% 1 the above isolating nbhd being a normally hyperbolic invariant manifold (flow is tanget to boundary by construction)
+%% 2 contractivity see \ref{sec:contractive_robustness}
+
+
+\subsubsection{Isolating neighbourhood for the basin}\label{sec:isonbhd}
+\begin{remark}%move to app?
+In the case of limit cycles, the isolating neighborhood takes on a distinctive topology. For instance, in a 3D state space, it forms a toroidal 2D manifold surrounding the cycle. In 2D systems, the neighborhood reduces to a pair of connected circles. These structures are particularly relevant for the analysis of periodic orbits and their stability.
+ \end{remark}
+
+
+%\subsubsection{Alternative: stable and unstable manifolds as persistent}
+%stable and unstable manifolds of a normally hyperbolic manifold persist under perturbation Theorem 2.3.6 in \citep{kuehn2015multipletimescale}.
+%
+%Laminations: The collection of global stable/unstable manifolds. The same for the local stable/unstable manifolds or the local unstable manifolds for the geodesic flow on a compact manifolds with nonzero Lyapunov exponents almost everywhere. 
+%Persistence of laminations \citep{berger2010persistence}
+
+
+%simplifying:%we can consider $\cl\boa(A_i) to be an invariant manifold with boundary
+
+%\footnote{For example,  all invariant manifolds of ReLU RNNs are either continuous attractors (in the direction of non-normal hyperbolicity) or normally hyperbolic.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Perturbing limit cycles}\label{sec:lc_pert}
 If the limit cycle is hyperbolic, the Hausdorff distance between the original and perturbed limit cycles tends to scale linearly with \(\epsilon\), the size of the perturbation. That is,
 
 \[
@@ -2417,12 +2371,84 @@ meaning that the period change is proportional to \(\epsilon\), the size of the 
 If \(M(\gamma_0) = 0\), the system is at a critical point where a bifurcation may occur, and the limit cycle may undergo a qualitative change (e.g., it could disappear or bifurcate).
 
 
+\subsection{Approximating limit cycles}\label{sec:lc_extras}
+\ascomment{TODO: prove that the fixed point happens at an epsilon that is small enough for the persistence of the other parts}
+\ascomment{TODO: trajectories next to LC have same period Chapter 9 in \citep{ermentrout2010mathematical}}
+
+
+%\textbf{Knobs}
+%\begin{itemize}
+%\item $\epsilon_T$: small enough so that limit cycle is structurally stable
+%\item $\hat\epsilon$: needs to be small enough so that effect of correction outside of the tubular neighbourhood doesn't affect attractors and separatrices
+%\item $\delta_T$: needs to be small enough so that no other attractor or separatrix is included (will this have an effect on the inside-basin flow error?) %choosing the size of the tubular neighbourhood
+%\end{itemize}
+
+%%effects
+\paragraph{The effect of the correction $\tilde \epsilon\coloneqq a(\epsilon_T)\hat\epsilon$}
+- Tubular neighbourhood: $\|\hat f_{\operatorname{bump}}\|$ effect (relevant for $\overline\boa(A_i)$). 
+
+- Outside $\tilde\epsilon$ effect for a non-compact activation function (e.g., affects location of fixed points and limit cycles)
+
+-  $\tilde\epsilon$ needs to be small enough so that effect of correction outside of the tubular neighborhood doesn't affect attractors and separatrices too much.
+
+-- These should be also taken into account when choosing an initial approximation $\hat f$ to which to apply the correction.
+
+
+\subsubsection{Multiple}\label{sec:mlc_extras}
+\begin{equation}\label{eq:nlc_constraints}
+\int_{\tilde{\gamma}}\|\tilde{f}_i(x)\| dx = \frac{1}{T_i} \ \  \text{for} \ i=1,\dots, N. 	% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
+\end{equation}
+
+
+\paragraph{Using compact support activation functions}
+\ascomment{Which ones are really compact?}
+ ELU/CELU/GeLU/TaLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid,hasan2023talu} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles.
+See also \citep{duch1999survey,dubey2022activation,jagtap2023activation,ramachandran2017activation,hayou2019activation} for a survey of neural activation functions.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Approximating a chaotic orbit}\label{sec:chaos} 
+\ascomment{move to app??}
+\paragraph{Why consider chaos} 
+Forecasting
+\citep{jaeger2004harnessing}
+\citep{fan2020long}
+\citep{vlachas2020backpropagation}
+\citep{grigoryeva2024forecasting}
+
+%TODO:  name for type IV error: C-type (chaos)
+\paragraph{The issue with our method} 
+We cannot approximate according to our above criteria.
+Every small discrepancy in the vector field will lead to orbits starting at same position to diverge over time, analogous to perturbing initial start of the chaotic orbit.
+
+
+\paragraph{How to proceed?}
+Prior work:
+- Attractor reconstruction, reconstructing the full Lyapunov spectrum of a dynamical system using reservoir computing \citep{hart2024attractor}.
+- teacher forcing \citep{hess2023teacherforcing}.
+
+Different metric: Chaotic orbits
+- mention: we can guarantee finite time approximation (prove: we can never do infinite time approximation)
+- approximation of maximal attractor in Hausdorff sense possible \citep{hess2023teacherforcing}
+
+What we can do is minimize the Hausdorff distance between the chaotic invariant manifolds and match the Lyapunov exponents of the target system
+The first because of structural stability.
+%%The second because of ???
+%
+Alternatively, we can guarantee that the shift representation of the dynamics is persistent.
+% Symbolic dynamics: Mapping onto the same shift dynamical system
+
+
+
+\subsection{Input-driven extras}\label{sec:input_driven_app} 
 
 
 
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{Implications}
 
