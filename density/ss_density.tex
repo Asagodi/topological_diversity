@@ -478,12 +478,15 @@ For Sec.~\ref{sec:ca_theorem} we assume that $f$ has only a finite set of normal
 These restrictions of the target class are Bernstein-type results (in the classification of approximation result types made in \citep{jiang2023brief}).
 %analogy with realization of transfer functions in state space models
 
+\ascomment{Explanation why not larger target class. We need structurally stable systems so that we know that similar vector fields guarantee topologically equivalent dynamics. The only exception (to our knowledge) for which it is established that nearby vector fields have similar behavior (in epsilon-delta sense) is for normally hyperbolic continuous attractors.}
 
 \subsubsection{Hypothesis class}\label{sec:hypothesis}
 %rename f hat?
 The hypothesis class $\mathcal{G}$ is composed of $\dot x = g(x)$
 where $g$ is an FNN with the universal approximation property. %of arbitrary dimension.
 In essence, by setting up $g$ as a neural network, we are equipping the NODE with a highly flexible model for $g$, which can approximate a vast variety of continuous functions. 
+
+%canonical example: 3 layer MLP
 
 
 \subsubsection{Metric}\label{sec:metric}
@@ -523,12 +526,12 @@ For example, if we take the uniform norm of the uniform norm, it can be shown th
 %This theorem is phrased for the more general case, move to before? 
 \begin{theorem}\label{thrm:approx}
 Take 
-\begin{equation}
+\begin{equation}\label{eq:mlp_vf}
 \dot x = f(x)   \ \ \ f\in C^1,
 \end{equation}
 with flow $\psi$ as in Sec.~\ref{sec:target}. Assume that the only omega limit sets of this system are a finite number of hyperbolic fixed points.
 %
-Then, for an arbitrary $\epsilon, \delta > 0$, there exist a FNN $\hat f: \reals^n\rightarrow\reals^n$ with the UAP such that the NODE defined by it $\dot x = \hat f(x)$ %just point to definition in app??
+Then, for an arbitrary $\epsilon, \delta > 0$, there exist a FNN $\hat f: \reals^n\rightarrow\reals^n$ with the UAP (see Sec.~\ref{sec:hypothesis}) such that the NODE defined by it $\dot x = \hat f(x)$ %just point to definition in app??
 % \begin{equation}
 %\dot x = \hat f(x) = A\sigma(Bx+b)+a  %give this as example? 
 %\end{equation}
@@ -703,7 +706,7 @@ By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can 
 \end{enumerate}
 \item Bounding the flow errors inside basins (remaining space $\mathcal{X}-\widehat{\operatorname{sepmiss}}$)
 \begin{enumerate}
-\item Per basin: $\Psi_i(\epsilon)$ so that flow is $\epsilon$ close (from previous FMP based results)
+\item Per basin: $\Psi_i(\epsilon)$ so that flow is $\epsilon$ close (from previous finite time horizon + trajectory closeness to attractor after finite time or from FMP based results)
 \item Take minimum from these bounds $\Psi_{\min}(\epsilon)$
 \end{enumerate}
 \item Take minimum $\{\tfrac{1}{k}\delta, \Psi_{\min}(\epsilon)\}$ guarantees $\epsilon$,$\delta$-approximation
@@ -849,14 +852,7 @@ The solutions of this system, denoted as $\psi(t,x_0,u)$, depend on the initial 
 We assume the solutions to be unique (see Sec.~\ref{sec:inputunique}).
 
 
-\subsubsection{Constraints on $u(t)$}
-We will now characterize the input space 
-$u\in \mathcal{U}$ with $u:\reals_+\rightarrow\reals^m$.
-We assume that $u(t)$ converges to a periodic function, i.e., %or g(\dot,u) needs to (?)
-%rate of convergence?
-\begin{equation}
-\mathcal{U} \coloneqq \left\{ u(t) \mid \exists p(t) \text{ periodic} \text{ or } c \in \mathbb{R}^n, \ \lim_{t \to \infty} \| u(t) - p(t) \| = 0 \text{ or } \lim_{t \to \infty} \| u(t) - c \| = 0 \right\}.
-\end{equation}
+
 
 %we can extend \mathcal{U} for a set epsilon and delta
 
@@ -881,14 +877,15 @@ We assume that $u(t)$ converges to a periodic function, i.e., %or g(\dot,u) need
 
 
 \subsubsection{Constraints on $g$}
-Needs to be smooth enough as a function of $x$ and $u$.
+Similarly, as for the autonous case, $g$ needs to be smooth enough as a function of $x$ and $u$ (at least Lipschitz or $C^1$). %C^1 for persistence!
 %
-Needs to be hyperbolic (in the limit $t\rightarrow\infty$) for each $u(\infty)$.
+Needs to be hyperbolic (in the limit $t\rightarrow\infty$) for each $u(\infty)$. %u(\infty) only makes sense for convergent u ? or we need to take equivalence classes that are invariant wrt changes in u.
 %
-Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$) for each $u(\infty)$.
+Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$) for each $u(\infty)$. %so that we can use the autonomous UAP theory.
+%with convergent u, we can inlude LCs and CAs!
 %What goes wrong with LCs: basically lack of robustness
 %What goes wrong with CAs: lack of robustness
-$g$ needs to converge to countably many separated asymptotically autonomous vector fields.
+$g$ needs to converge to countably many separated asymptotically autonomous vector fields. 
 
 %summarize here, expand in app.
 \paragraph{In terms of general non-autonomous dynamics}
@@ -915,15 +912,26 @@ If it doesn't converge, we cannot approximate.  %?
 This could be seen as a form of meta-FMP (FMP for the \emph{vector field}).
 \end{remark}
 
-\paragraph{How does this relate to the input class?}
+\paragraph{How does this relate to the input class? Constraints on $u(t)$}
+This would guarantee exponential asymptotic autonomy for minimal assumptions about $g$. %SPECIFY
 
+We will now characterize the input space 
+$u\in \mathcal{U}$ with $u:\reals_+\rightarrow\reals^m$.
+We assume that $u(t)$ converges (exponentially) to a periodic function, i.e., %or g(\dot,u) needs to (?)
+%rate of convergence?
+\begin{equation}
+\mathcal{U} \coloneqq \left\{ u(t) \mid \exists p(t) \text{ periodic} \text{ or } c \in \mathbb{R}^n, \ \lim_{t \to \infty} \| u(t) - p(t) \| = 0 \text{ or } \lim_{t \to \infty} \| u(t) - c \| = 0 \right\}.
+\end{equation}
+
+%include more general u class?
 
 
 \subsubsection{Approximating $g(x,u)$}
 \ascomment{TODO: define input-driven MLP style neural ODE}
+MLP for autonomous vector field $f$ as in Eq.~\ref{eq:mlp_vf}.
+For the input-driven part of the vector field we have an MLP:
  $\hat g\colon \reals^{n+m} \rightarrow \reals^{n}$.
 
-\textbf{What is the maximal error $g-\hat g$ we can allow for the $\epsilon$-$\delta$ distance in flow fields to hold?}
 
 For the metric to compare input-driven systems with their approximations, see Sec.\ref{sec:inputdriven_metric}.
 
@@ -1057,6 +1065,8 @@ This would lead to the requirement ``$g$ needs to converge to countably many sep
 
     
 \subsection{Concluding remarks on nonautonomus systems}
+
+\textbf{What is the maximal error $g-\hat g$ we can allow for the $\epsilon$-$\delta$ distance in flow fields to hold?}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
