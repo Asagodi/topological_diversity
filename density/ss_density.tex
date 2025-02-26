@@ -568,7 +568,7 @@ This establishes that for all $\epsilon>0$ and $x_0$ initial states in a basin o
 
 
 \paragraph{A tale of two errors}
-\ascomment{Change tilde to hat}
+\ascomment{Change tilde to hat, or change fhat to g??}
 Note that the above error bound depends on two separate quantities: the local error 
 $\| f(s; \tilde{\varphi}_0, s(x)) - f(s; \tilde{\varphi}_0, s(x)) \|$ 
  and the term 
@@ -691,7 +691,7 @@ By Sec.\ref{sec:separatrix_approx} (Prop.~\ref{prop:min_sep_bound}) we can make 
 By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can make the trajectory-wise error smaller than $\epsilon$.
 \end{proof}
 
-\paragraph{Accounting}
+\paragraph{Bookkeeping}
 \begin{enumerate}
 \item Bounding the volume of separatix mismatch regions
 \begin{enumerate}
@@ -767,13 +767,14 @@ We can choose the initial approximation $\hat{f}$ such that the period differenc
 We can then choose a correction to the vector field in a tubular neighborhood around the limit cycle such that the difference in periods between target and approximation is zero.
 
 
-\paragraph{Accounting}
+\paragraph{Bookkeeping}
 \begin{enumerate}
 \item How small needs the tubular neighbourhood to be for the bump? 
 \begin{enumerate}
 \item Small enough so that it is included inside the basin of attraction
 \item Should not change flow to introduce more than $\epsilon$ error flow type error.
 \end{enumerate}
+\item How big should $a_{\epsilon_T}$ be: Initial period mismatch $\epsilon_T$, then $a_{\epsilon_T}< \Lambda(\epsilon_T)$ for some function $\Lambda$...
 \item How big can the bump approximation error be?
 \begin{enumerate}
 \item Should not shift location of limit cycle by more than $\epsilon$.
@@ -881,14 +882,15 @@ We assume that $u(t)$ converges to a periodic function, i.e., %or g(\dot,u) need
 
 \subsubsection{Constraints on $g$}
 Needs to be smooth enough as a function of $x$ and $u$.
-
-Needs to be hyperbolic (in the limit $t\rightarrow\infty$) for each $u(\infty)$
-
-Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$) for each $u(\infty)$
+%
+Needs to be hyperbolic (in the limit $t\rightarrow\infty$) for each $u(\infty)$.
+%
+Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$) for each $u(\infty)$.
 %What goes wrong with LCs: basically lack of robustness
 %What goes wrong with CAs: lack of robustness
+$g$ needs to converge to countably many separated asymptotically autonomous vector fields.
 
-
+%summarize here, expand in app.
 \paragraph{In terms of general non-autonomous dynamics}
 Unlike autonomous systems, where the evolution is determined solely by the state variable $x$, non-autonomous systems incorporate an explicit time dependence in the function $h(x,t)$:
 \begin{equation}
@@ -899,39 +901,19 @@ If an sequence doesn't converge (i.e. it has a mixing property) we get the same 
 %and the input is not in the kernel of the input function
 If it converges to a fixed point: then it is Asymptotically autonomous. Necessary if $f(x)$ has a continuous attractor.
 If it converges to a limit cycle: then we have periodic forcing. 
-If it doesn't converge, we cannot approximate. 
+If it doesn't converge, we cannot approximate.  %?
 %except systems that have the inputs in some nullspaces
-In any case we cannot have a continuous attractor in the asymptotic vector field.
+%In any case we cannot have a continuous attractor in the asymptotic vector field. %or can we?
 
 
 %%%
--Exponentially asymptotically autonomous dynamics Supp.Sec.~\ref{sec:asyauto} and Eq.~\ref{def:eaa}\\
+-Exponentially asymptotically autonomous dynamics Supp.Sec.~\ref{sec:asyauto} and Eq.~\ref{def:eaa}.
 %
--or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback} \citep{giesl2012numerical} \citep{cheban2002relationship}
+%-or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback} \citep{giesl2012numerical} \citep{cheban2002relationship}
 
-
-
-\paragraph{$g$ is asymptotically autonomous} %+exponentially
-Eq.~\ref{eq:nonautonomous} so that 
-\begin{equation}\label{eq:inputdriven_asymp}
-g(x(t), u(t)) \rightarrow h_{\operatorname{aut}}(x(t))
-\end{equation}
-%for every epsilon there is a T
-that is for $t>T$ for some $T$ %...
-\begin{equation}\label{eq:inputdriven_asymp}
-g(x(t), u(t)) =  h_{\operatorname{aut}}(x(t)) + \epsilon h_{\operatorname{inp}}(x(t), u(t))
-\end{equation}
-with $\|h_{\operatorname{inp}}\| = 1$.
-
-
-\paragraph{$g$ needs to converge to countably many separated asymptotically autonomous vector fields}
-
-
-
-Should we consider the vector field as a dynamical system?
-We can then apply the autonomous theory to it.
-This would lead to the requirement ``$g$ needs to converge to countably many separated asymptotically autonomous vector fields''.
-
+\begin{remark}
+This could be seen as a form of meta-FMP (FMP for the \emph{vector field}).
+\end{remark}
 
 \paragraph{How does this relate to the input class?}
 
@@ -943,60 +925,35 @@ This would lead to the requirement ``$g$ needs to converge to countably many sep
 
 \textbf{What is the maximal error $g-\hat g$ we can allow for the $\epsilon$-$\delta$ distance in flow fields to hold?}
 
-
-\subsubsection{Defining the metric for the approximation of non-autonomous systems}
-%Reconsider $\delta$:
-We now also keep track of which proportion of input space leads to bigger than $\epsilon$ trajectory error.
-So we define 
-\begin{equation}%indicate X,U spaces?
-\|\varphi-\hat \varphi\|_\epsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0,u)-\hat \varphi(\cdot,x_0,u)\|_\infty>\epsilon\right).
-\end{equation}
-\ascomment{TODO: replace notation with $d_\epsilon$}
-
-Path integral representation of the distribution of $x(t,u)$ when integrating over all possible input functions $u(t)$:
-\begin{equation}
-    p(x,t) = \int \delta(x - x(t, u)) \mathcal{P}[u] \mathcal{D}u
-\end{equation}
-where $\mathcal{P}[u]$ is a probability measure over the function space of $u(t)$.
-
-Any stochastic and even deterministic system can be expressed in terms of a path integral for which asymptotic methods can be systematically applied \citep{chow2015path}.
-
-%this can be moved to APPendix
-\paragraph{Uniform (Lebesgue) Measure on a Bounded Subset of \( C([0,T], \reals^m) \)}
-If \( u(t) \) is continuous and satisfies a uniform bound
-\[
-\|u(t)\| \leq C \quad \text{for all } t,
-\]
-the natural measure is the uniform measure on a subset of the Banach space \( C([0,T], \reals^m) \):
-\[
-\mathcal{P}[u] \propto \mathds{1}_{\|u\|_\infty \leq C} \mathcal{D} u.
-\]
-Here, \( \|u\|_\infty = \sup_{t \in [0,T]} \|u(t)\| \), and the measure is supported on the Banach space of continuous functions with bounded norm.
-
-With this we can capture what proportion of inputs lead the system to the separatrix mismatch regions $\boa(A_i^f)\cap\boa(A_j^{\hat{f}})$. %TODO introduce some nice notation
-
-%consideration of p(x,t) after some time passed
-%use dynamics until then to get a prior on the initial states
-%then calculate path integral over inputs 
-\begin{equation}
-    p(x,t+s) = \int_{x_t} \int \delta(x - x(s, x_t, u)) \mathcal{P}[u] \mathcal{D}u dx_t
-    %    p(x,t+s) = \int_{x(t)} \int \delta(x - x(s, x(t), u)) \mathcal{P}[u] \mathcal{D}u dx(t) %which form is better?
-\end{equation}
+For the metric to compare input-driven systems with their approximations, see Sec.\ref{sec:inputdriven_metric}.
 
 
 
 
 
-\subsubsection{Theorem}
+
+
+
+\subsection{Theorem}
 \begin{theorem}
-For an input-driven dynamical system as in Eq.~\ref{eq:inputdriven} %+assymptions...
+For an input-driven system as in Eq.~\ref{eq:inputdriven} %+assymptions...
 with solutions  $\psi(t,x_0,u)$
 and $\epsilon, \delta>0$, there exists an input-driven MLP style neural ODE %...
 with solutions  $\hat \psi(t,x_0,u)$ such that 
 $d_\epsilon(\psi,\hat\psi)<\delta$.
 \end{theorem}
 
+
 \subsubsection{Proof}
+%prove: %use this for input-driven
+\paragraph{Finite-time horizon approximation + exponentially asymptotically autonomous = Infinite-time horizon approximation}
+What is the maximal error $h-\hat h$ we can allow for the $\epsilon,\delta$ distance in flow fields to hold?
+
+
+At some $T>0$ stop changing $\hat h.$ %related to the convergence of nonautonomous vf to autonomous vf
+There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta$ and therefore $\|h(t,x)-\hat h(T,x)\|<\eta$.
+
+
 %TODO
 
 \begin{itemize}
@@ -1028,9 +985,6 @@ p(x_1,t) = p(x_0)p(x_1,t).
 
 We need to consider this until $T$ for which we are $\eta$ close to the asymptotic, autonomous vector field.
 
-
-
-%
 We have that for a finite time we will make at most $\epsilon'$ error. %for a vector field that is .... close 
 
 
@@ -1040,6 +994,39 @@ We can then consider the dynamics of Eq.~\ref{eq:nonautonomous} as an small pert
 We can approximate that with $\epsilon''$ accuracy with our vector field.
 So we are at most $\eta+\epsilon''$ away from the actual target dynamics.
 
+
+
+\paragraph{$g$ is asymptotically autonomous} %+exponentially
+Eq.~\ref{eq:nonautonomous} so that 
+\begin{equation}\label{eq:inputdriven_asymp}
+g(x(t), u(t)) \rightarrow h_{\operatorname{aut}}(x(t))
+\end{equation}
+%for every epsilon there is a T
+that is for $t>T$ for some $T$ %...
+\begin{equation}\label{eq:inputdriven_asymp}
+g(x(t), u(t)) =  h_{\operatorname{aut}}(x(t)) + \epsilon h_{\operatorname{inp}}(x(t), u(t))
+\end{equation}
+with $\|h_{\operatorname{inp}}\| = 1$.
+
+
+
+\paragraph{Integrating over all inputs}
+\ascomment{Mention path integral here? And move second time eq to app?}
+%consideration of p(x,t) after some time passed
+%use dynamics until then to get a prior on the initial states
+%then calculate path integral over inputs 
+\begin{equation}
+    p(x,t+s) = \int_{x_t} \int \delta(x - x(s, x_t, u)) \mathcal{P}[u] \mathcal{D}u dx_t
+    %    p(x,t+s) = \int_{x(t)} \int \delta(x - x(s, x(t), u)) \mathcal{P}[u] \mathcal{D}u dx(t) %which form is better?
+\end{equation}
+
+
+
+
+\ascomment{Alternative strategy?}
+Should we consider the vector field as a dynamical system?
+We can then apply the autonomous theory to it.
+This would lead to the requirement ``$g$ needs to converge to countably many separated asymptotically autonomous vector fields''.
 
 
 
@@ -1063,17 +1050,9 @@ So we are at most $\eta+\epsilon''$ away from the actual target dynamics.
 
 
 
-
-\subsubsection{Approximating $h(x,t)$}
-Same as before but now $\hat h\colon \reals^{n+1} \rightarrow \reals^{n}$. %x'\rightarrow x\oplus t
-
-%prove: %use this for input-driven
-\paragraph{Finite-time horizon approximation + exponentially asymptotically autonomous = Infinite-time horizon approximation}
-What is the maximal error $h-\hat h$ we can allow for the $\epsilon,\delta$ distance in flow fields to hold?
-
-
-At some $T>0$ stop changing $\hat h.$ %related to the convergence of nonautonomous vf to autonomous vf
-There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta$ and therefore $\|h(t,x)-\hat h(T,x)\|<\eta$.
+%for a general non-autonomous system.
+%\subsubsection{Approximating $h(x,t)$}
+%Same as before but now $\hat h\colon \reals^{n+1} \rightarrow \reals^{n}$. %x'\rightarrow x\oplus t
 
 
     
@@ -1089,7 +1068,7 @@ This is the first proof of the universal approximation property of neural ODEs f
 \paragraph{Limit cycles}
 Stable limit cycles are approximable but their approximation is not robust! (period will change under almost all perturbations, only a measure zero set of perturbations preserves the period).
 
-\paragraph{Chaotic dynamics}
+%\paragraph{Chaotic dynamics}
 
 %also pdes?
 \paragraph{Stochastic dynamics}
@@ -1098,13 +1077,13 @@ Stable limit cycles are approximable but their approximation is not robust! (per
 \citep{bishop2023recurrent}
 
 
-\paragraph{Practicalities: The price of universality}
+\subsection{Practicalities: The price of universality}
 This construction is immensely inefficient.
 %Better to just look at RNNs (?)
 %Expressivity paper?
 
 %%
-Relation to MSE and total integrated error, see Supp.Sec.\ref{sec:error_remarks}.
+Relation to mean squared error and total integrated error, see Supp.Sec.~\ref{sec:error_remarks}.
 
 
 %%
@@ -2392,6 +2371,8 @@ If \(M(\gamma_0) = 0\), the system is at a critical point where a bifurcation ma
 
 \subsection{Approximating limit cycles}\label{sec:lc_extras}
 \ascomment{TODO: prove that the fixed point happens at an epsilon that is small enough for the persistence of the other parts}
+Follows from taking initial $\epsilon_T$ to be small enough.
+
 \ascomment{TODO: trajectories next to LC have same period Chapter 9 in \citep{ermentrout2010mathematical}}
 
 
@@ -2402,15 +2383,15 @@ If \(M(\gamma_0) = 0\), the system is at a critical point where a bifurcation ma
 %\item $\delta_T$: needs to be small enough so that no other attractor or separatrix is included (will this have an effect on the inside-basin flow error?) %choosing the size of the tubular neighbourhood
 %\end{itemize}
 
-%%effects
-\paragraph{The effect of the correction $\tilde \epsilon\coloneqq a(\epsilon_T)\hat\epsilon$}
-- Tubular neighbourhood: $\|\hat f_{\operatorname{bump}}\|$ effect (relevant for $\overline\boa(A_i)$). 
-
-- Outside $\tilde\epsilon$ effect for a non-compact activation function (e.g., affects location of fixed points and limit cycles)
-
--  $\tilde\epsilon$ needs to be small enough so that effect of correction outside of the tubular neighborhood doesn't affect attractors and separatrices too much.
-
--- These should be also taken into account when choosing an initial approximation $\hat f$ to which to apply the correction.
+%%effects: incorporated into Bookkeeping 
+%\paragraph{The effect of the correction $\tilde \epsilon\coloneqq a(\epsilon_T)\hat\epsilon$}
+%- Tubular neighbourhood: $\|\hat f_{\operatorname{bump}}\|$ effect (relevant for $\overline\boa(A_i)$). 
+%
+%- Outside $\tilde\epsilon$ effect for a non-compact activation function (e.g., affects location of fixed points and limit cycles)
+%
+%-  $\tilde\epsilon$ needs to be small enough so that effect of correction outside of the tubular neighborhood doesn't affect attractors and separatrices too much.
+%
+%-- These should be also taken into account when choosing an initial approximation $\hat f$ to which to apply the correction.
 
 
 \subsubsection{Multiple}\label{sec:mlc_extras}
@@ -2419,11 +2400,22 @@ If \(M(\gamma_0) = 0\), the system is at a critical point where a bifurcation ma
 \end{equation}
 
 
+\paragraph{For non-compact support activation functions}
+\begin{enumerate}
+\item We need that the adjustment still has at most $\epsilon$ error in basins and that only $\delta$ part of the state space is in the problematic separatrix mismatch region
+\item Separatrices are persistent so they will be shifted $\mathcal{O}(a_{\epsilon_{T_i}}\hat \epsilon_i)$. So we need $\sum_{i=1}^{N}k_i a_{\epsilon_{T_i}}\hat \epsilon_i < \tfrac{1}{2}\delta$ and if we require for the initial mismatch error to be $\kappa<\tfrac{1}{2}\delta$ we get the total to be less than $\delta$. 
+\item The vector field outside the tubular neighborhood is $f - \eta\bar f  + \sum_{i=1}^Na_{\epsilon_{T_i}}\hat \epsilon_i\bar f_{i,\operatorname{bump}}$. 
+%We have that $\|\eta\bar f  + a_{\epsilon_T}\hat \epsilon\bar f_{\operatorname{bump}}\| < \eta + a_{\epsilon_T}\hat \epsilon$ (triangle inequality and absolute homogeneity of norm). 
+Therefore, we can take $\hat f$ to be  $\Psi_{\min}(\eta + \sum_{i=1}^Na_{\epsilon_{T_i}}\hat \epsilon_i)$ close to $f$ to guarantee $\epsilon$,$\delta$-approximation
+\end{enumerate}
+
 \paragraph{Using compact support activation functions}
 \ascomment{Which ones are really compact?}
  ELU/CELU/GeLU/TaLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid,hasan2023talu} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles.
 See also \citep{duch1999survey,dubey2022activation,jagtap2023activation,ramachandran2017activation,hayou2019activation} for a survey of neural activation functions.
 
+With a compact support activation function we can create a bump function that is truly zero outside of (an approximation of) the tubular neighborhood.
+%instead of approximating zero.
 
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -2461,6 +2453,42 @@ Alternatively, we can guarantee that the shift representation of the dynamics is
 
 
 \subsection{Input-driven extras}\label{sec:input_driven_app} 
+
+
+
+
+\subsubsection{Defining the metric for the approximation of non-autonomous systems}\label{sec:inputdriven_metric}
+%Reconsider $\delta$:
+We now also keep track of which proportion of input space leads to bigger than $\epsilon$ trajectory error.
+So we define 
+\begin{equation}%indicate X,U spaces?
+d_\epsilon(\varphi,\hat \varphi) \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0,u)-\hat \varphi(\cdot,x_0,u)\|_\infty>\epsilon\right).
+\end{equation}
+
+
+Path integral representation of the distribution of $x(t,u)$ when integrating over all possible input functions $u(t)$:
+\begin{equation}
+    p(x,t) = \int \delta(x - x(t, u)) \mathcal{P}[u] \mathcal{D}u
+\end{equation}
+where $\mathcal{P}[u]$ is a probability measure over the function space of $u(t)$.
+
+Any stochastic and even deterministic system can be expressed in terms of a path integral for which asymptotic methods can be systematically applied \citep{chow2015path}.
+
+%this can be moved to APPendix
+
+\paragraph{Measure for input functions}
+Uniform Lebesgue Measure on a Bounded Subset of \( C([0,T], \reals^m) \)
+If \( u(t) \) is continuous and satisfies a uniform bound
+\[
+\|u(t)\| \leq C \quad \text{for all } t,
+\]
+the natural measure is the uniform measure on a subset of the Banach space \( C([0,T], \reals^m) \):
+\[
+\mathcal{P}[u] \propto \mathds{1}_{\|u\|_\infty \leq C} \mathcal{D} u.
+\]
+Here, \( \|u\|_\infty = \sup_{t \in [0,T]} \|u(t)\| \), and the measure is supported on the Banach space of continuous functions with bounded norm.
+
+With this we can capture what proportion of inputs lead the system to the separatrix mismatch regions $\boa(A_i^f)\cap\boa(A_j^{\hat{f}})$. %TODO introduce some nice notation
 
 
 
