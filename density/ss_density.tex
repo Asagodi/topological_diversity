@@ -846,8 +846,8 @@ In many dynamical systems, external inputs influence the system's evolution over
 \begin{equation}\label{eq:inputdriven}
 \dot x(t) = f(x(t)) + g(x(t),u(t)),
 \end{equation}
-where $x(t)\in\reals^n$  represents the system state and $u(t)$ is an input function.
-
+where $x(t)\in\reals^n$  represents the system state and $u(t)\in\reals^m$ is an input function.
+%
 The solutions of this system, denoted as $\psi(t,x_0,u)$, depend on the initial condition $x(0) = x_0$  and the input $u(t)$.
 We assume the solutions to be unique (see Sec.~\ref{sec:inputunique}).
 
@@ -876,36 +876,18 @@ We assume the solutions to be unique (see Sec.~\ref{sec:inputunique}).
 
 
 
-\subsubsection{Targets: Constraints on $g$}
-Similarly, as for the autonous case, $g$ needs to be smooth enough as a function of $x$ and $u$ (at least Lipschitz or $C^1$). %C^1 for persistence!
-%
-Needs to be hyperbolic (in the limit $t\rightarrow\infty$) for each $u(\infty)$. %u(\infty) only makes sense for convergent u ? or we need to take equivalence classes that are invariant wrt changes in u.
-%
-Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$) for each $u(\infty)$. %so that we can use the autonomous UAP theory.
-%with convergent u, we can inlude LCs and CAs!
-%What goes wrong with LCs: basically lack of robustness
-%What goes wrong with CAs: lack of robustness
-$g$ needs to converge to countably many separated asymptotically autonomous vector fields. 
-
-%summarize here, expand in app.
-\paragraph{In terms of general non-autonomous dynamics}
-Unlike autonomous systems, where the evolution is determined solely by the state variable $x$, non-autonomous systems incorporate an explicit time dependence in the function $h(x,t)$:
-\begin{equation}
-\dot x = h(x,t).
-\end{equation}
-%mention? convergence depends on x_0? this allows us to formulate coupled system with hyperbolic system for parameters?
-If an sequence doesn't converge (i.e. it has a mixing property) we get the same issue with approximating the system as with chaotic orbits.
-%and the input is not in the kernel of the input function
-If it converges to a fixed point: then it is Asymptotically autonomous. Necessary if $f(x)$ has a continuous attractor.
-If it converges to a limit cycle: then we have periodic forcing. 
-If it doesn't converge, we cannot approximate.  %?
-%except systems that have the inputs in some nullspaces
-%In any case we cannot have a continuous attractor in the asymptotic vector field. %or can we?
+\subsubsection{Targets: Constraints on $g$}\label{sec:input_target}
+%Similarly, as for the autonous case, $g$ needs to be smooth enough as a function of $x$ and $u$ (at least Lipschitz or $C^1$). %C^1 for persistence!
+%%
+%Needs to be hyperbolic (in the limit $t\rightarrow\infty$) for each $u(\infty)$. %u(\infty) only makes sense for convergent u ? or we need to take equivalence classes that are invariant wrt changes in u.
+%%
+%Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$) for each $u(\infty)$. %so that we can use the autonomous UAP theory.
 
 
 We assume that $g(x,u(t))$ is exponentially asymptotically autonomous dynamics for each $u$ (Def.~\ref{def:eaa_input}). %Supp.Sec.~\ref{sec:eea_input}
-
+%
 Furthermore, we assume that $g$ converges to a finite number of topological equivalence classes of asymptotically autonomous vector fields.
+%can we increase it to countable?
 
 
 \paragraph{How does this relate to the input class? Constraints on $u(t)$}
@@ -916,38 +898,32 @@ $u\in \mathcal{U}$ with $u:\reals_+\rightarrow\reals^m$.
 We assume that $u(t)$ converges (exponentially) to a periodic function, i.e., %or g(\dot,u) needs to (?)
 %rate of convergence?
 \begin{equation}
-\mathcal{U} \coloneqq \left\{ u(t) \mid \exists p(t) \text{ periodic} \text{ or } c \in \mathbb{R}^n, \ \lim_{t \to \infty} \| u(t) - p(t) \| = 0 \text{ or } \lim_{t \to \infty} \| u(t) - c \| = 0 \right\}.
+\mathcal{U} \coloneqq \left\{ u(t) \mid \exists p(t) \text{ periodic} \text{ or } c \in \mathbb{R}^n, \ \lim_{t \to \infty} \| u(t) - p(t) \| = 0 \text{ or } \lim_{t \to \infty} \| u(t) - c \| = 0 \right\},
 \end{equation}
-
+such that only a measure-zero set of input sequences that lead to non-hyperbolic asymptotically autonomous vector fields.
 %include more general u class?
 
 
-\paragraph{Include a measure-zero set of input sequences that lead to non-hyperbolic asymptotically autonomous vector fields}
-
 
 %Alternative assumptions:
+%epsilon, delta dependent input space
+
 %-or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback} \citep{giesl2012numerical} \citep{cheban2002relationship}
 
 
-\subsubsection{Hypothesis space: Approximating $g(x,u)$} %with input-driven MLP-NODEs
-\ascomment{TODO: define input-driven MLP style neural ODE}
+\subsubsection{Hypothesis space: Approximating $g(x,u)$}\label{sec:input_hypothesis} %with input-driven MLP-NODEs
 MLP for autonomous vector field $f$ as in Eq.~\ref{eq:mlp_vf}.
 For the input-driven part of the vector field we have an MLP:
- $\hat g\colon \reals^{n+m} \rightarrow \reals^{n}$.
-
-
+ $\hat g\colon \reals^{n+m} \rightarrow \reals^{n}$ with $m$ the dimensionality of the input.
+%
 For the metric to compare input-driven systems with their approximations, see Sec.\ref{sec:inputdriven_metric}.
-
-
-
-
 
 
 
 
 \subsection{Theorem}
 \begin{theorem}
-For an input-driven system as in Eq.~\ref{eq:inputdriven} %+assymptions...
+For an input-driven system as in Sec.~\ref{sec:input_target} % Eq.~\ref{eq:inputdriven} %+assymptions...
 with solutions  $\psi(t,x_0,u)$
 and $\epsilon, \delta>0$, there exists an input-driven MLP style neural ODE %...
 with solutions  $\hat \psi(t,x_0,u)$ such that 
@@ -966,6 +942,33 @@ There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta
 
 
 %TODO
+\begin{enumerate}
+\item Characterize proportion of “bad” initial positions for each input sequence and measure the proportion in terms of the probability measure for $\mathcal{U}$ (Supp.Sec.~\ref{sec:inputspace_measure})
+\begin{enumerate}
+\item Input brings state to separatrix mismatch: 
+	Can be controlled by size of mismatch region (and hence autonomous part of the vf (or the asymptotically autonomous vf))
+\item  Input brings state to wrong side of separatrix:
+ 	Can be controlled by mismatch in non-autonomous/input-driven factor of vf
+\end{enumerate}
+\item Characterize proportion of “bad” input sequences through path integral (e.g., non-hyperbolic dynamics)
+\end{enumerate}
+
+\begin{enumerate}
+\item Let non-aut vf converge up to some time $T$
+\item Pick asy aut vf $h_u$ for approximation (so we have $\hat h_u = h_u + \kappa \bar h_u$)
+\item Small error in vf
+\begin{enumerate}
+\item from input-driven vf (quantify...)
+\item from approximation (quantify...)
+\end{enumerate}
+\item Error in trajectories
+\begin{enumerate}
+\item From sep mismatch (how does this look at $T$?)
+\item From input-driven vf mismatch
+\item from aut and asy-aut vf mismatch
+\item Quantify above in PDE terms
+\end{enumerate}
+\end{enumerate}
 
 \begin{itemize}
 \item probability density around asymptotic orbits can be made arbitrarily high
@@ -979,16 +982,31 @@ There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta
 \end{itemize}
 
 
-\begin{enumerate}
-\item Characterize proportion of “bad” initial positions for each input sequence and measure the proportion in terms of the probability measure for $\mathcal{U}$ (Supp.Sec.~\ref{sec:inputspace_measure})
-\begin{enumerate}
-\item Input brings state to separatrix mismatch: 
-	Can be controlled by size of mismatch region (and hence autonomous part of the vf (or the asymptotically autonomous vf))
-\item  Input brings state to wrong side of separatrix:
- 	Can be controlled by mismatch in non-autonomous/input-driven factor of vf
-\end{enumerate}
-\item Characterize proportion of “bad” input sequences through path integral (e.g., non-hyperbolic dynamics)
-\end{enumerate}
+
+\paragraph{$g$ is exponentially asymptotically autonomous} %+exponentially
+We have that for a finite time we will make at most $\Psi(\eta,T)$ error (for a vector field that is $\eta$ close).
+
+Eq.~\ref{eq:nonautonomous} so that 
+\begin{equation}\label{eq:inputdriven_asymp}
+g(x(t), u(t)) \rightarrow h_{\operatorname{aut}}(x(t))
+\end{equation}
+%for every epsilon there is a T
+that is for $t>T$ for some $T$ %...
+\begin{equation}\label{eq:inputdriven_asymp}
+g(x(t), u(t)) =  h_{\operatorname{aut}}(x(t)) + \epsilon h_{\operatorname{inp}}(x(t), u(t))
+\end{equation}
+with $\|h_{\operatorname{inp}}\| = 1$.
+
+
+%At some $T$ the vector field is $\eta$ away from the asymptotic vector field.
+We consider Eq.~\ref{eq:init_path_density} with $T$ for which the convergence of the non-autonomous vector field is at most $\eta$ away from the asymptotic autonomous vector field $f'(x)$. %which is a combination of f(x) and the asymptotic part of g(x)
+We can then consider the dynamics of Eq.~\ref{eq:nonautonomous} as an small perturbation from $f(x)$ (so $\eta$ away).
+We can approximate that with $\epsilon''$ accuracy with our vector field.
+So we are at most $\eta+\epsilon''$ away from the actual target dynamics.
+
+
+
+
 
 
 
@@ -1005,7 +1023,6 @@ There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta
 
 
 %using the probability density to measure the proportion of initial points that have trajectories that will have bigger than epsilon error:
-
 We can set $p(x_0)$ to be the uniform distribution over the compact state space $\mathcal{X}$ we consider. 
 Then the probability density after $t$ time has passed is
 \begin{equation}\label{eq:init_path_density}
@@ -1014,31 +1031,6 @@ p(x_1,t) = p(x_0)p(x_1,t).
 %$p(x_{i+1},t+s) = p(x_i,t)p(x_{i+1},s)$
 
 We need to consider this until $T$ for which we are $\eta$ close to the asymptotic, autonomous vector field.
-
-\paragraph{$g$ is asymptotically autonomous} %+exponentially
-We have that for a finite time we will make at most $\epsilon'$ error. %for a vector field that is .... close 
-
-Eq.~\ref{eq:nonautonomous} so that 
-\begin{equation}\label{eq:inputdriven_asymp}
-g(x(t), u(t)) \rightarrow h_{\operatorname{aut}}(x(t))
-\end{equation}
-%for every epsilon there is a T
-that is for $t>T$ for some $T$ %...
-\begin{equation}\label{eq:inputdriven_asymp}
-g(x(t), u(t)) =  h_{\operatorname{aut}}(x(t)) + \epsilon h_{\operatorname{inp}}(x(t), u(t))
-\end{equation}
-with $\|h_{\operatorname{inp}}\| = 1$.
-
-
-
-%At some $T$ the vector field is $\eta$ away from the asymptotic vector field.
-We consider Eq.~\ref{eq:init_path_density} with $T$ for which the convergence of the non-autonomous vector field is at most $\eta$ away from the asymptotic autonomous vector field $f'(x)$. %which is a combination of f(x) and the asymptotic part of g(x)
-We can then consider the dynamics of Eq.~\ref{eq:nonautonomous} as an small perturbation from $f(x)$ (so $\eta$ away).
-We can approximate that with $\epsilon''$ accuracy with our vector field.
-So we are at most $\eta+\epsilon''$ away from the actual target dynamics.
-
-
-
 
 
 
@@ -2475,7 +2467,6 @@ With a compact support activation function we can create a bump function that is
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Approximating a chaotic orbit}\label{sec:chaos} 
-\ascomment{move to app??}
 \paragraph{Why consider chaos} 
 Forecasting
 \citep{jaeger2004harnessing}
@@ -2508,7 +2499,10 @@ Alternatively, we can guarantee that the shift representation of the dynamics is
 
 
 \subsection{Input-driven extras}\label{sec:input_driven_app} 
-
+Unlike autonomous systems, where the evolution is determined solely by the state variable $x$, non-autonomous systems incorporate an explicit time dependence in the function $h(x,t)$:
+\begin{equation}
+\dot x = h(x,t).
+\end{equation}
 
 \subsubsection{Measure for input functions}\label{sec:inputspace_measure}
 Uniform Lebesgue Measure on a Bounded Subset of \( C([0,T], \reals^m) \)
@@ -2544,8 +2538,21 @@ Any stochastic and even deterministic system can be expressed in terms of a path
 %this can be moved to APPendix
 
 
+\subsubsection{Why this target class?}
+%\paragraph{In terms of general non-autonomous dynamics}
+%mention? convergence depends on x_0? this allows us to formulate coupled system with hyperbolic system for parameters?
+If an sequence doesn't converge (i.e. it has a mixing property) we get the same issue with approximating the system as with chaotic orbits.
+%and the input is not in the kernel of the input function
+If it converges to a fixed point: then it is Asymptotically autonomous. Necessary if $f(x)$ has a continuous attractor.
+If it converges to a limit cycle: then we have periodic forcing. 
+If it doesn't converge, we cannot approximate.  %?
+%except systems that have the inputs in some nullspaces
+%In any case we cannot have a continuous attractor in the asymptotic vector field. %or can we?
 
 
+%%with convergent u, we can inlude LCs and CAs!
+%%What goes wrong with LCs: basically lack of robustness
+%%What goes wrong with CAs: lack of robustness
 
 
 
