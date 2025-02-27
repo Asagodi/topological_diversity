@@ -68,6 +68,8 @@
 \maketitle
 
 \section{Problem setting}
+Setting from \citep{qian2024partial}.
+
 We consider a teacher-student setup, where the teacher has \( D \) neurons and a recurrent weight matrix \( B \), such that the dynamics of its firing rate vector \( z(t) \in \mathbb{R}^D \) is given by
 \[
 \tau \frac{d z}{dt} = -z + B \, \phi(z) + \boldsymbol{\xi}(t),
@@ -165,8 +167,246 @@ C(\tau) = \mathbb{E}_s \left[ z(t) z(t + \tau)^\top \right].
 \]
 
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Multistable systems: gradient $f$}
+If we assume that the noise $\eta(t)$ is Gaussian white noise, then the system is described by the stochastic differential equation (SDE):
+\begin{equation}
+    dx = f(x)dt + \sigma dW_t,
+\end{equation}
+where $W_t$ is a standard Wiener process, and $\sigma > 0$ is the noise strength.
+
+\subsection{Existence of a Stationary Distribution}
+A stationary distribution exists if the Fokker-Planck equation has a normalizable steady-state solution. The probability density function $p(x,t)$ evolves according to:
+\begin{equation}
+    \frac{\partial p}{\partial t} = -\frac{\partial}{\partial x} \left( f(x) p \right) + D \frac{\partial^2 p}{\partial x^2},
+\end{equation}
+where $D = \frac{\sigma^2}{2}$ is the diffusion coefficient. A stationary distribution $p_{\text{stat}}(x)$ satisfies:
+\begin{equation}
+    \frac{d}{dx} \left( f(x) p_{\text{stat}}(x) \right) = D \frac{d^2 p_{\text{stat}}}{dx^2}.
+\end{equation}
+Solving formally,
+\begin{equation}
+    p_{\text{stat}}(x) \propto \exp \left( \frac{1}{D} \int f(x) dx \right).
+\end{equation}
+This suggests that the existence of a normalizable stationary distribution depends on whether this expression is integrable.
+
+\subsection{$f$ if gradient of a potential}
+If $f(x)$ is derived from a potential, 
+\[
+f(x) = - \frac{dV}{dx},
+\]
+the stationary solution (assuming it exists) is given by the Boltzmann-Gibbs form:
+
+\[
+p_{\text{stat}}(x) \propto \exp \left( - \frac{V(x)}{D} \right).
+\]
+
+For this to be normalizable, the potential $V(x)$ must grow sufficiently fast at infinity (ensuring that $p_{\text{stat}}$ is integrable). This condition ensures that probability does not escape to infinity.
+
+
+\subsection{Role of Dissipativity}
+A function $f(x)$ is dissipative if it has a restoring effect for large $\vert x \vert$, typically satisfying:
+\begin{equation}
+    \lim_{\vert x \vert \to \infty} \frac{x}{f(x)} = -\lambda, \quad \lambda > 0.
+\end{equation}
+For example, for $f(x) = -x^3$ or $f(x) = -\lambda x$, the integral
+\begin{equation}
+    \int f(x) dx
+\end{equation}
+grows negatively at large $\vert x \vert$, ensuring that $p_{\text{stat}}(x)$ decays exponentially and remains normalizable.
+
+Thus, if $f(x)$ is sufficiently dissipative (i.e., it dominates over noise-driven diffusion at large $\vert x \vert$), a stationary distribution is guaranteed.
+
+\subsection{Sufficient Condition for a Stationary Distribution}
+A rigorous sufficient condition is the existence of a Lyapunov function $V(x)$, satisfying:
+\begin{equation}
+    f(x) = -\frac{dV}{dx}, \quad \text{and} \quad \lim_{\vert x \vert \to \infty} V(x) = \infty.
+\end{equation}
+This ensures that the potential well confines probability mass, leading to a normalizable stationary density:
+\begin{equation}
+    p_{\text{stat}}(x) \propto e^{-V(x)/D}.
+\end{equation}
+
+
+
+
+%%%%%%%%%%%%%%%LC
+\section{Limit cycle}
+To express the effective potential near a limit cycle directly in terms of the original system
+\begin{equation}
+    \dot{x} = f(x) + \eta(t), \quad x \in \mathbb{R}^n,
+\end{equation}
+we introduce a normal coordinate system adapted to the deterministic limit cycle.
+
+
+\section{Define Local Coordinates Near the Limit Cycle}
+
+Let $\gamma(s)$ be the deterministic limit cycle, parameterized by arc length $s$, so that:
+\begin{equation}
+    \frac{d \gamma}{ds} = T(s),
+\end{equation}
+where $T(s)$ is the tangent vector to the cycle. The cycle has period $T$, so $s \in [0, T]$.
+
+To describe deviations from the cycle, we introduce normal coordinates $\rho$, defining a set of transversal unit vectors $N_i(s)$ (for $i = 1, \dots, n-1$) such that:
+\begin{equation}
+    N_i(s) \cdot T(s) = 0.
+\end{equation}
+Then any point $x$ near the cycle can be expressed as:
+\begin{equation}
+    x = \gamma(s) + \sum_{i=1}^{n-1} \rho_i N_i(s).
+\end{equation}
+Here, $\rho = (\rho_1, \dots, \rho_{n-1})$ measures displacement normal to the cycle.
+
+\subsection{Project the Stochastic Dynamics}
+
+The original equation is:
+\begin{equation}
+    \dot{x} = f(x) + \eta(t),
+\end{equation}
+where $\eta(t)$ is Gaussian white noise with covariance:
+\begin{equation}
+    \langle \eta_i(t) \eta_j(t') \rangle = 2D \delta_{ij} \delta(t - t').
+\end{equation}
+
+\subsection{(a) Tangential Equation (Phase Dynamics)}
+Projecting onto $T(s)$, we get the phase equation along the cycle:
+\begin{equation}
+    \dot{s} = \omega + O(\rho) + (\text{noise term}),
+\end{equation}
+where $\omega$ is the deterministic oscillation frequency, and noise contributes to phase diffusion.
+
+\subsection{(b) Normal Equation (Transversal Stability)}
+Projecting onto $N_i(s)$, we get the normal dynamics:
+\begin{equation}
+    \dot{\rho}_i = \sum_j J_{ij}(s) \rho_j + (\text{higher-order terms}) + \eta \rho_i(t),
+\end{equation}
+where $J_{ij}(s)$ is the Jacobian matrix of $f(x)$ evaluated on the limit cycle, projected onto the normal directions:
+\begin{equation}
+    J_{ij}(s) = N_i(s) \cdot \left( \frac{\partial f}{\partial x} \bigg|_{x = \gamma(s)} N_j(s) \right).
+\end{equation}
+If we assume linear stability in the normal directions, this reduces to:
+\begin{equation}
+    \dot{\rho}_i = -\lambda_i(s) \rho_i + \eta \rho_i(t),
+\end{equation}
+where $\lambda_i(s)$ are the local Lyapunov exponents, describing how trajectories relax back to the cycle.
+
+\subsection{Deriving the Effective Potential}
+
+Since the normal equation is of the form:
+\begin{equation}
+    \dot{\rho}_i = -\lambda_i(s) \rho_i + \eta \rho_i(t),
+\end{equation}
+the associated Fokker-Planck equation for the stationary probability distribution $p_{\text{stat}}(\rho | s)$ satisfies:
+\begin{equation}
+    \frac{d}{d \rho_i} \left( \lambda_i(s) \rho_i p \right) = D \frac{d^2 p}{d \rho_i^2}.
+\end{equation}
+Solving this in equilibrium, we obtain the stationary density:
+\begin{equation}
+    p_{\text{stat}}(\rho | s) \propto \exp \left( - \frac{U(\rho)}{D} \right),
+\end{equation}
+where the effective potential is:
+\begin{equation}
+    U(\rho) = \sum_{i=1}^{n-1} \lambda_i(s) \rho_i^2.
+\end{equation}
+Thus, near the limit cycle, the probability density is Gaussian in the normal directions:
+\begin{equation}
+    p_{\text{stat}}(\rho | s) \propto \exp \left( - \sum_{i=1}^{n-1} \frac{\lambda_i(s)}{2D} \rho_i^2 \right).
+\end{equation}
+This shows that:
+\begin{itemize}
+    \item The probability mass is concentrated around the cycle $x = \gamma(s)$.
+    \item The spread in the normal directions is determined by $\lambda_i(s)$ and noise strength $D$.
+    \item If $\lambda_i(s)$ varies along the cycle, the shape of the density tube changes.
+\end{itemize}
+
+
+\subsection{Expressing the Stationary Distribution in the Original Space}
+To express the stationary distribution $p_{\text{stat}}(\rho | s)$ in the original space $\mathbb{R}^n$, we use the normal coordinate expansion:
+\begin{equation}
+    x = \gamma(s) + \sum_{i=1}^{n-1} \rho_i N_i(s).
+\end{equation}
+Since $p_{\text{stat}}(\rho | s)$ is Gaussian in the normal directions:
+\begin{equation}
+    p_{\text{stat}}(\rho | s) \propto \exp \left( - \sum_{i=1}^{n-1} \frac{\lambda_i(s)}{2D} \rho_i^2 \right),
+\end{equation}
+we can rewrite the probability density in $\mathbb{R}^n$ as a Gaussian tube around the deterministic limit cycle.
+
+
+\subsubsection{Step 1: Expressing the Distribution in $x$ Space}
+Using the coordinate transformation, the probability density in $x$-space is:
+\begin{equation}
+    p_{\text{stat}}(x) = p_{\text{stat}}(\rho | s) \, p_{\text{stat}}(s).
+\end{equation}
+Here, $p_{\text{stat}}(\rho | s)$ is the Gaussian density in the normal directions and $p_{\text{stat}}(s)$ is the uniform density along the cycle, given by
+\begin{equation}
+    p_{\text{stat}}(s) = \frac{1}{T} \quad \text{(assuming no noise-driven phase diffusion)}.
+\end{equation}
+Thus, in terms of $x$:
+\begin{equation}
+    p_{\text{stat}}(x) \propto \exp \left( - \sum_{i=1}^{n-1} \frac{\lambda_i(s)}{2D} \left( N_i(s) \cdot (x - \gamma(s)) \right)^2 \right).
+\end{equation}
+
+
+\subsubsection{Step 2: Interpretation}
+This describes a Gaussian distribution around the limit cycle $\gamma(s)$, with a shape that depends on the local stability $\lambda_i(s)$:
+\begin{itemize}
+    \item The density is maximal on the limit cycle $x = \gamma(s)$.
+    \item The spread along each normal direction $N_i(s)$ is proportional to $\frac{D}{\lambda_i(s)}$.
+    \item If the limit cycle is deformed (non-circular), the distribution is anisotropic, meaning noise causes larger deviations in some directions than others.
+\end{itemize}
+
+
+\subsubsection{Special Case: Approximate Isotropy}
+If the stability exponents $\lambda_i(s)$ are approximately constant along the cycle, the density simplifies to:
+\begin{equation}
+    p_{\text{stat}}(x) \propto \exp \left( - \frac{1}{2D} (x - \gamma(s))^T M(s) (x - \gamma(s)) \right),
+\end{equation}
+where $M(s)$ is a local quadratic form encoding the stability matrix:
+\begin{equation}
+    M(s) = \sum_{i=1}^{n-1} \lambda_i(s) N_i(s) N_i^T(s).
+\end{equation}
+This shows that the density forms an elliptical Gaussian centered on the cycle, with principal axes aligned with the normal directions $N_i(s)$.
+
+
 \newpage
 \bibliographystyle{plain}
 \bibliography{../../all_ref.bib}
+
+
+\newpage
+\appendix
+
+\section{Boltzmann distribution for Langevin dynamics}
+See also Ch.8.3. in \citep{villani2021topics}
+\subsection{Langevin equation}
+The dynamics of the system are governed by the following equation:
+\begin{equation}
+    \frac{dx}{dt} = - \gamma \nabla U(x) + \xi(t),
+\end{equation}
+
+where $\gamma$ is the friction coefficient, $U(x)$ is the potential energy, and $\xi(t)$ represents the white noise term corresponding to thermal fluctuations.
+
+\subsection{Fokker-Planck}
+The Fokker-Planck equation for the probability density function $P(x,t)$ is:
+\begin{equation}
+    \frac{\partial P}{\partial t} = \gamma \nabla \cdot \left( \nabla U(x) P \right) + D \nabla^2 P,
+\end{equation}
+where $D$ is the diffusion coefficient related to the noise strength.
+
+\subsection{Steady-state solution}
+To find the steady-state probability distribution, set $\frac{\partial P}{\partial t} = 0$. This leads to the following equation:
+
+\begin{equation}
+    0 = \gamma \nabla \cdot \left( \nabla U(x) P \right) + D \nabla^2 P.
+\end{equation}
+
+Solving this gives the steady-state solution for the probability distribution $P(x)$:
+\begin{equation}
+    P(x) \propto \exp \left( - \frac{U(x)}{kT} \right),
+\end{equation}
+where $k$ is the Boltzmann constant and $T$ is the temperature.
+
 
 \end{document}
