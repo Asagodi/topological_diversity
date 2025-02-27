@@ -838,10 +838,10 @@ Finally, for $f$ with a continuum of attractors (nonzero flow in at least one di
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Non-autonomous dynamics}\label{sec:nonautonomous}
-We will consider input-driven systems (Sec.~\ref{sec:inputdriven}).  %general non-autonomous systems (Sec.~\ref{sec:generalnonautonomous}) 
+%We will consider input-driven systems (Sec.~\ref{sec:inputdriven}).  %general non-autonomous systems (Sec.~\ref{sec:generalnonautonomous}) 
 
 
-\subsection{Input-driven}\label{sec:inputdriven}
+\subsection{Target and hypothesis class for input-driven systems}\label{sec:inputdriven}
 In many dynamical systems, external inputs influence the system's evolution over time. Such systems can be described by differential equations of the form
 \begin{equation}\label{eq:inputdriven}
 \dot x(t) = f(x(t)) + g(x(t),u(t)),
@@ -876,7 +876,7 @@ We assume the solutions to be unique (see Sec.~\ref{sec:inputunique}).
 
 
 
-\subsubsection{Constraints on $g$}
+\subsubsection{Targets: Constraints on $g$}
 Similarly, as for the autonous case, $g$ needs to be smooth enough as a function of $x$ and $u$ (at least Lipschitz or $C^1$). %C^1 for persistence!
 %
 Needs to be hyperbolic (in the limit $t\rightarrow\infty$) for each $u(\infty)$. %u(\infty) only makes sense for convergent u ? or we need to take equivalence classes that are invariant wrt changes in u.
@@ -926,7 +926,7 @@ We assume that $u(t)$ converges (exponentially) to a periodic function, i.e., %o
 %include more general u class?
 
 
-\subsubsection{Approximating $g(x,u)$}
+\subsubsection{Hypothesis space: Approximating $g(x,u)$} %with input-driven MLP-NODEs
 \ascomment{TODO: define input-driven MLP style neural ODE}
 MLP for autonomous vector field $f$ as in Eq.~\ref{eq:mlp_vf}.
 For the input-driven part of the vector field we have an MLP:
@@ -1034,7 +1034,7 @@ with $\|h_{\operatorname{inp}}\| = 1$.
 \ascomment{Alternative strategy?}
 Should we consider the vector field as a dynamical system?
 We can then apply the autonomous theory to it.
-This would lead to the requirement ``$g$ needs to converge to countably many separated asymptotically autonomous vector fields''.
+This would lead to the requirement ``$g$ needs to converge to countably many topological equivalence classes of asymptotically autonomous vector fields''
 
 
 
@@ -1230,9 +1230,10 @@ Three-layered multi-output Feedforward Networks are universal approximators for 
 
 It is not the specific choice of the activation function but rather the multilayer feed-forward architecture itself that gives neural networks the potential of being universal approximators\citep{hornik1991approximation}.
 
-%TODO: oragnize
+%TODO: organize
 The universal approximation property is equivalent to having a nonpolynomial activation function \citep{pinkus1999approximation}.
 
+\citep{lowe1988multivariable}
 \citep{mhaskar1997neural}
 \citep{leshno1993multilayer}
 UA with Deep narrow \citep{kidger2020universal}
