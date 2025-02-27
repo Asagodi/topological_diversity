@@ -903,10 +903,9 @@ If it doesn't converge, we cannot approximate.  %?
 %In any case we cannot have a continuous attractor in the asymptotic vector field. %or can we?
 
 
-%%%
--Exponentially asymptotically autonomous dynamics Supp.Sec.~\ref{sec:asyauto} and Eq.~\ref{def:eaa}.
-%
-%-or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback} \citep{giesl2012numerical} \citep{cheban2002relationship}
+We assume that $g(x,u(t))$ is exponentially asymptotically autonomous dynamics for each $u$ (Def.~\ref{def:eaa_input}). %Supp.Sec.~\ref{sec:eea_input}
+
+Furthermore, we assume that $g$ converges to a finite number of topological equivalence classes of asymptotically autonomous vector fields.
 
 
 \paragraph{How does this relate to the input class? Constraints on $u(t)$}
@@ -921,6 +920,13 @@ We assume that $u(t)$ converges (exponentially) to a periodic function, i.e., %o
 \end{equation}
 
 %include more general u class?
+
+
+\paragraph{Include a measure-zero set of input sequences that lead to non-hyperbolic asymptotically autonomous vector fields}
+
+
+%Alternative assumptions:
+%-or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback} \citep{giesl2012numerical} \citep{cheban2002relationship}
 
 
 \subsubsection{Hypothesis space: Approximating $g(x,u)$} %with input-driven MLP-NODEs
@@ -973,14 +979,33 @@ There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta
 \end{itemize}
 
 
-\paragraph{The plan}
-Characterize proportion of “bad” input sequences through path integral 
+\begin{enumerate}
+\item Characterize proportion of “bad” initial positions for each input sequence and measure the proportion in terms of the probability measure for $\mathcal{U}$ (Supp.Sec.~\ref{sec:inputspace_measure})
+\begin{enumerate}
+\item Input brings state to separatrix mismatch: 
+	Can be controlled by size of mismatch region (and hence autonomous part of the vf (or the asymptotically autonomous vf))
+\item  Input brings state to wrong side of separatrix:
+ 	Can be controlled by mismatch in non-autonomous/input-driven factor of vf
+\end{enumerate}
+\item Characterize proportion of “bad” input sequences through path integral (e.g., non-hyperbolic dynamics)
+\end{enumerate}
 
-1. Input brings state to separatrix mismatch
-    a. Can be controlled by size of mismatch region (and hence autonomous part of the vf (or the asymptotically autonomous vf))
-2. Input brings state to wrong side of separatrix
-    a. Can be controlled by mismatch in non-autonomous/input-driven factor of vf
-    
+
+
+
+\paragraph{Integrating over all inputs}
+\ascomment{Mention path integral here? And move second time eq to app?}
+%consideration of p(x,t) after some time passed
+%use dynamics until then to get a prior on the initial states
+%then calculate path integral over inputs 
+\begin{equation}
+    p(x,t+s) = \int_{x_t} \int \delta(x - x(s, x_t, u)) \mathcal{P}[u] \mathcal{D}u dx_t
+    %    p(x,t+s) = \int_{x(t)} \int \delta(x - x(s, x(t), u)) \mathcal{P}[u] \mathcal{D}u dx(t) %which form is better?
+\end{equation}
+
+
+%using the probability density to measure the proportion of initial points that have trajectories that will have bigger than epsilon error:
+
 We can set $p(x_0)$ to be the uniform distribution over the compact state space $\mathcal{X}$ we consider. 
 Then the probability density after $t$ time has passed is
 \begin{equation}\label{eq:init_path_density}
@@ -990,18 +1015,9 @@ p(x_1,t) = p(x_0)p(x_1,t).
 
 We need to consider this until $T$ for which we are $\eta$ close to the asymptotic, autonomous vector field.
 
+\paragraph{$g$ is asymptotically autonomous} %+exponentially
 We have that for a finite time we will make at most $\epsilon'$ error. %for a vector field that is .... close 
 
-
-%At some $T$ the vector field is $\eta$ away from the asymptotic vector field.
-We consider Eq.~\ref{eq:init_path_density} with $T$ for which the convergence of the non-autonomous vector field is at most $\eta$ away from the asymptotic autonomous vector field $f'(x)$. %which is a combination of f(x) and the asymptotic part of g(x)
-We can then consider the dynamics of Eq.~\ref{eq:nonautonomous} as an small perturbation from $f(x)$ (so $\eta$ away).
-We can approximate that with $\epsilon''$ accuracy with our vector field.
-So we are at most $\eta+\epsilon''$ away from the actual target dynamics.
-
-
-
-\paragraph{$g$ is asymptotically autonomous} %+exponentially
 Eq.~\ref{eq:nonautonomous} so that 
 \begin{equation}\label{eq:inputdriven_asymp}
 g(x(t), u(t)) \rightarrow h_{\operatorname{aut}}(x(t))
@@ -1015,15 +1031,16 @@ with $\|h_{\operatorname{inp}}\| = 1$.
 
 
 
-\paragraph{Integrating over all inputs}
-\ascomment{Mention path integral here? And move second time eq to app?}
-%consideration of p(x,t) after some time passed
-%use dynamics until then to get a prior on the initial states
-%then calculate path integral over inputs 
-\begin{equation}
-    p(x,t+s) = \int_{x_t} \int \delta(x - x(s, x_t, u)) \mathcal{P}[u] \mathcal{D}u dx_t
-    %    p(x,t+s) = \int_{x(t)} \int \delta(x - x(s, x(t), u)) \mathcal{P}[u] \mathcal{D}u dx(t) %which form is better?
-\end{equation}
+%At some $T$ the vector field is $\eta$ away from the asymptotic vector field.
+We consider Eq.~\ref{eq:init_path_density} with $T$ for which the convergence of the non-autonomous vector field is at most $\eta$ away from the asymptotic autonomous vector field $f'(x)$. %which is a combination of f(x) and the asymptotic part of g(x)
+We can then consider the dynamics of Eq.~\ref{eq:nonautonomous} as an small perturbation from $f(x)$ (so $\eta$ away).
+We can approximate that with $\epsilon''$ accuracy with our vector field.
+So we are at most $\eta+\epsilon''$ away from the actual target dynamics.
+
+
+
+
+
 
 
 
@@ -1889,19 +1906,35 @@ for large \( t \). If the solutions of Eq.~\ref{eq:autonomous} are uniquely dete
 
 More on aads: \citep{wieczorek2021compactification}
 
-\subsubsection{Exponentially asymptotically autonomous}
+\subsubsection{Exponentially asymptotically autonomous (EAA)}
 \begin{definition}\label{def:eaa}
 Let \(\sigma \in \mathbb{N}\). Consider the exponentially asymptotically autonomous equation  
 \[
-\dot{x} = f(t,x), \quad x \in \mathbb{R}^n,
+\dot{x} = g(t,x), \quad x \in \mathbb{R}^n,
 \]
-where \( f, g \in C^\sigma \) and \( f(t,x) \to g(x) \) in the following sense: for each compact set \( K \subset \mathbb{R}^n \) and each \( \epsilon > 0 \), there exists \( T \) such that  
+where \( g, h \in C^\sigma \) and \( g(t,x) \to h(x) \) in the following sense: for each compact set \( K \subset \mathbb{R}^n \) and each \( \epsilon > 0 \), there exists \( T \) such that  
 \[
-\|\partial^\gamma f(t,x) - \partial^\gamma g(x)\| e^{\alpha t} < \epsilon
+\|\partial^\gamma g(t,x) - \partial^\gamma h(x)\| e^{\alpha t} < \epsilon
 \]
 for all multi-indices \( \gamma \) with \( |\gamma| \leq \sigma \), for all \( x \in K \), and for all \( t > T \).
-
 \end{definition}
+
+\paragraph{EAA for each input}\label{sec:eea_input}
+\begin{definition}\label{def:eaa_input}
+Let \(\sigma \in \mathbb{N}\). Consider the exponentially asymptotically autonomous equation  
+\[
+\dot{x} = g(x,u(t)), \quad x \in \mathbb{R}^n,
+\]
+where \( g, h \in C^\sigma \) and \( g(u(t),x) \to h(x) \) in the following sense: for each compact set \( K \subset \mathbb{R}^n \) and each \( \epsilon > 0 \), there exists \( T \) such that  
+\[
+\|\partial^\gamma g(u(t),x) - \partial^\gamma h_u(x)\| e^{\alpha t} < \epsilon
+\]
+for all multi-indices \( \gamma \) with \( |\gamma| \leq \sigma \), for all \( x \in K \), and for all \( t > T \).
+\end{definition}
+
+\paragraph{Class of EEA}
+We take $\sigma\geq 1$.
+
 
 \subsubsection{BoA}
 Exponentially asymptotically autonomous \citep{giesl2011numerical}
@@ -2477,7 +2510,19 @@ Alternatively, we can guarantee that the shift representation of the dynamics is
 \subsection{Input-driven extras}\label{sec:input_driven_app} 
 
 
+\subsubsection{Measure for input functions}\label{sec:inputspace_measure}
+Uniform Lebesgue Measure on a Bounded Subset of \( C([0,T], \reals^m) \)
+If \( u(t) \) is continuous and satisfies a uniform bound
+\[
+\|u(t)\| \leq C \quad \text{for all } t,
+\]
+the natural measure is the uniform measure on a subset of the Banach space \( C([0,T], \reals^m) \):
+\[
+\mathcal{P}[u] \propto \mathds{1}_{\|u\|_\infty \leq C} \mathcal{D} u.
+\]
+Here, \( \|u\|_\infty = \sup_{t \in [0,T]} \|u(t)\| \), and the measure is supported on the Banach space of continuous functions with bounded norm.
 
+With this we can capture what proportion of inputs lead the system to the separatrix mismatch regions $\boa(A_i^f)\cap\boa(A_j^{\hat{f}})$. %TODO introduce some nice notation
 
 \subsubsection{Defining the metric for the approximation of non-autonomous systems}\label{sec:inputdriven_metric}
 %Reconsider $\delta$:
@@ -2498,19 +2543,7 @@ Any stochastic and even deterministic system can be expressed in terms of a path
 
 %this can be moved to APPendix
 
-\paragraph{Measure for input functions}
-Uniform Lebesgue Measure on a Bounded Subset of \( C([0,T], \reals^m) \)
-If \( u(t) \) is continuous and satisfies a uniform bound
-\[
-\|u(t)\| \leq C \quad \text{for all } t,
-\]
-the natural measure is the uniform measure on a subset of the Banach space \( C([0,T], \reals^m) \):
-\[
-\mathcal{P}[u] \propto \mathds{1}_{\|u\|_\infty \leq C} \mathcal{D} u.
-\]
-Here, \( \|u\|_\infty = \sup_{t \in [0,T]} \|u(t)\| \), and the measure is supported on the Banach space of continuous functions with bounded norm.
 
-With this we can capture what proportion of inputs lead the system to the separatrix mismatch regions $\boa(A_i^f)\cap\boa(A_j^{\hat{f}})$. %TODO introduce some nice notation
 
 
 
