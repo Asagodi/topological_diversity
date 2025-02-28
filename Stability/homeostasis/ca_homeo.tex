@@ -69,6 +69,12 @@
 \maketitle
 
 \section*{Abstract}
+Continuous attractors enable stable representation of continuous variables in neural networks but are notoriously fragile due to the fine-tuning problem: small perturbations in synaptic weights, such as those induced by synaptic noise, can disrupt their structure and degrade function.
+ We propose a synaptic plasticity rule that counteracts these perturbations by dynamically adjusting synaptic weights based on neural activity.
+ Through analytical and computational studies, we demonstrate that this rule preserves attractor continuity while preventing drift and degradation over time.
+
+
+
 
 \section{Introduction}
 
@@ -448,6 +454,8 @@ With the new invariant manifold:
 Similar (?) to \citep{renart2003robust}
 
 \ascomment{$\theta$ (orientation) dependence? Can be ignored when averaging over long timescales?}
+But maybe it's enough to just globally set mean activation targets?
+This is only supposed to help with pushing the network away from local minima that are not an actually good slow invariant manifold.
 
 
 
@@ -500,6 +508,7 @@ x(t) = \int_0^Tdt \dot x(t) = \int_0^Tdt W\phi(x(t)) + b
 Make the stationary distribution have a peak that is consistent with rate target.
 This seems to not be a sufficient constraint. 
 Or not well-defined problem.
+
 
 To find the stationary distribution for a stochastic differential equation, we usually rely on the Fokker-Planck equation, which describes the evolution of the probability density \( p(x,t) \) of the system. For an equation of the form:
 
