@@ -951,7 +951,7 @@ There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta
 \item  Input brings state to wrong side of separatrix:
  	Can be controlled by mismatch in non-autonomous/input-driven factor of vf
 \end{enumerate}
-\item Characterize proportion of “bad” input sequences through path integral (e.g., non-hyperbolic dynamics)
+\item Characterize proportion of “bad” input sequences through asymptotic behavior (e.g., non-hyperbolic dynamics)
 \end{enumerate}
 
 \begin{enumerate}
@@ -1143,6 +1143,10 @@ Reconstructing Computational Dynamics from Neural Measurements with Recurrent Ne
 Use of NODEs in neuroscience \citep{kim2021inferring}.
 
 system identification in neuroscience \citep{han2023si} 
+
+Temporal generalization
+
+Seperatrices are robust hence decision-making is robust to D-type noise \citep{Park2023a}.
 
 %\paragraph{Robust neural computation}
 %Idea: Two dynamical phenomena are isolated into primitive architectural components which perform the operations of continuous nonlinear transformation and autoassociative recall \citep{pineda1988dynamics}.
@@ -2429,8 +2433,25 @@ If \(M(\gamma_0) = 0\), the system is at a critical point where a bifurcation ma
 \ascomment{TODO: prove that the fixed point happens at an epsilon that is small enough for the persistence of the other parts}
 Follows from taking initial $\epsilon_T$ to be small enough.
 
-\ascomment{TODO: trajectories next to LC have same period Chapter 9 in \citep{ermentrout2010mathematical}}
+%\ascomment{TODO: trajectories next to LC have same period Chapter 8.1 in \citep{ermentrout2010mathematical}}
 
+\subsubsection{Isochrons}%move to DS section?
+This section if based on Section 8.1 in \citep{ermentrout2010mathematical}.
+Consider the differential equation in $\reals^n$
+\begin{equation}\label{eq:isochron_ode}
+\dot x = f(x)
+\end{equation}
+and suppose $\Gamma$ is a $T$-periodic asymptotically stable limit cycle.
+We parametrize $\Gamma$ by time with respect to the period $T$ and thus define a phase $\theta\in[0,T]$ along the limit cycle.
+Let $\Theta(z)$ denote the phase of the oscillator for a point $z$ on $\Gamma$.
+For an asymptotically stable limit cycle it is possible to define a phase for points $y$ in a neighborhood of the cycle.
+Let $x(t,y)$ be the solution to Eq.~\ref{eq:isochron_ode} with initial condition $y$. 
+Suppose $y$ is a point in the neighborhood of the limit cycle such that $\|x(t,z) - x(t,y)\|\rightarrow 0$ as $t\rightarrow \infty$.
+Then we define $\Theta(y) = \Theta(z)$ (as $t\rightarrow\infty$, the solutions are indistinguishable.
+The set of points which have the same asymptotic phase is called the \emph{isochron} of the limit cycle.
+We denote the isochron of a point $z\in \Gamma$ as $N(z) $.
+%The map $y\rightarrow y'$ is a Poincar\'e map for the limit cycle which takes exatly $T$ to return.
+The existence of isochrons was proven in \citep{guckenheimer1975isochrons}.
 
 %\textbf{Knobs}
 %\begin{itemize}
