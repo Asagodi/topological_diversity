@@ -59,8 +59,8 @@
     \expandafter\defvec\letter
 }
 
-\title{Maintaining a continuous attractor: Plasticity rules for slow invariant manfidols}
-\author{\'Abel S\'agodi}
+\title{Maintaining a continuous attractor: Plasticity rules for slow invariant manifdols} %maintaining and learning? if the inv man optimization works out.
+\author{\'Abel S\'agodi and Il Memming Park}
 \date{\today}
 
 
@@ -91,6 +91,23 @@ CA1 \citep{bittner2017behavioral}
 
 learning is shaped by abrupt changes in neural engagement \citep{hennig2021learning}
 
+timescales of learning\citep{miller2024timescales}
+rapid \citep{li2023rapid} \citep{dan2024neural}
+\citep{brennan2023attractor}
+
+
+\citep{kilpatrick2018wm}
+
+such a mechanism with a slow learning rate is ideal for extracting the statistical regularities of the environment \citep{panichello2019error}
+
+multistability in attractors \citep{braun2010attractors}
+Attractor dynamics with activity-dependent plasticity capture human working memory across time scales \citep{brennan2023attractor}
+
+attractor dynamics for decision making \citep{luo2023noncanonical}
+
+persistent activity \citep{curtis2010beyond}
+
+Computing with dynamic attractors in neural networks \citep{hirsch1995computing}
 
 \subsection{Continuous attractors}
 Express the system as 
@@ -98,9 +115,18 @@ Express the system as
 \dot x = f(x,W),
 \end{equation} where $x$ is the neural activity, and $W$ represents synaptic weights.
 
+Functions: navigation/head-direction\citep{wilson2023navigation, skaggs1994model}, evidence integration\citep{mante2013context, esnaola2022flexible}
 
 To maintain a continuous attractor, synaptic plasticity should preserve the network’s structured connectivity while allowing for slow adaptation.
+\citep{cannon1983oculomotor}
+\citep{samsonovich1997pathintegration}
 
+connectome \citep{kakaria2017ra}
+
+\paragraph{HD}
+\citep{skaggs1994model, redish1996coupled, boucheny2005continuous}
+\citep{stentiford2022spiking}
+\citep{barak2021mapping}
 
 \paragraph{Continuous attractors are fragile}
 Describe the fine-tuning problem.
@@ -111,17 +137,56 @@ Describe the fine-tuning problem.
 %       }\label{fig:}
 %\end{figure}
 
+deformation \citep{goodridge2000modeling}
 
+\paragraph{Functional robustness}
+
+Fenichel
+
+NIHM
+
+\citep{li2013normally}
+
+Distance to Bifurcation \citep{dobson2003sensitivity}
+
+\paragraph{Maintenance}
+Error-correcting dynamics in visual working memory (with discrete attractors) \citep{panichello2019error} (S-type noise)
+Several neural mechanisms might account for the increase in attractor strength with load, including increased drive into the network\citep{wang2018flexible} or changes in f-I gain via neuromodulation\citep{servan1990network}.
+
+
+\paragraph{Learning}
+inhibitory mechanism \citep{couey2013recurrent}
+Learning accurate path integration in ring attractor models of the head direction system \citep{vafidis2022hd}
 
 \subsection{Biology of plasticity}
+
+Theory has been developed to describe memory storage of an analog stimulus (such as spatial location or eye position), in terms of continuous ‘bump attractors' and ‘line attractors'.
+The stability of a working memory network is recognized as a serious problem; stability can be achieved if reverberation is largely mediated by NMDA receptors at recurrent synapses \citep{wang2001synaptic}.
+
+spatial working memory\citep{compte2000synaptic}
+
+flexibility \citep{remington2018flexible}
 
 \subsubsection{Homeostatic} \citep{turrigiano2004homeostatic}
 
 Homeostatic scaling of all synapses of a neuron, which is obtained by adjusting the number of postsynaptic receptors proportionally to the neuron’s average firing activity \citep{turrigiano1998activity,turrigiano1999homeostatic},
  could maintain neural activity within a dynamic range and, more generally, stabilize neural circuit function despite the positive feedback of Hebbian plasticity \citep{toyoizumi2014modeling}. 
  
+ \citep{niemeyer2021homeostasis}
+ \citep{oleary2018homeostasis}
+ 
+ \paragraph{Stability}
+ \citep{aljaberi2021global}
+ 
  \paragraph{Excitatory-inhibitory balance}
  
+ excitability \citep{daoudal2003long}
+ 
+ control of inhibition \citep{machens2005flexible}
+
+ Dynamic tuning of neural stability for cognitive control \citep{xu2024dynamic}
+ 
+ A dynamically stabilized recurrent neural network \citep{saab2022stabilized}
  
 \paragraph{Hebbian vs. homeostatic synaptic plasticity}
 \citep{pozo2010unraveling}
@@ -138,7 +203,8 @@ astro\citep{depitta2016astrocytes}
 \paragraph{Balancing Hebbian with homeostatic}
 \citep{zenke2017temporal}
 
-
+\paragraph{Self-organizing}
+\citep{federer2018self}
 
 %%%%%%%%
 \subsection{Plasticity math/theory}
@@ -149,6 +215,7 @@ astro\citep{depitta2016astrocytes}
 
 
 \subsubsection{Hebbian plasticity}
+\citep{caporale2008spike}
 \begin{equation}
 \dot W_{ij} = F(x_i, x_j, W_{ij})
 \end{equation}
@@ -156,11 +223,13 @@ astro\citep{depitta2016astrocytes}
 
 
 \subsection{Learning plasticity rules} %inference of 
+\citep{pereira2018attractor}
+
 \citep{shervani2023meta}
 \citep{bell2024discovering}
 \citep{jordan2021plasticity}
 
-\citep{nayebi2020learning}
+Identifying learning rules from neural network observables \citep{nayebi2020learning} (waterfall effect?)
 \citep{kepple2022curriculum}
 \citep{mcmahan2021learning}
 \citep{ashwood2020inferring}
@@ -178,10 +247,17 @@ astro\citep{depitta2016astrocytes}
 
 \subsubsection{Representational drift}
 
+Representational drift as a window into neural and behavioural plasticity \citep{micou2023representational}
+
 Understanding representational drift in olfaction with dynamical  systems \citep{barwich2023drift}
 
+\citep{wolff2020drifting}
+
+\citep{buschman2022wm}
 
 Experiment: tuning curves over time.
+
+
 
 
 \subsubsection{Dynamic coding}
@@ -199,8 +275,9 @@ Experiment: plasticity for input weights
 \citep{takeuchi2014plasticity}
 
 \cite{bell2024discovering} \citep{shervani2023meta}
+\citep{chadwick2023learning}
 
-
+signatures of task learning \citep{gurnani2023task}
 
 \subsection{Problem setting for maintaining a continuous attractor}
 
@@ -228,6 +305,8 @@ We can say that they are close to each other, related to $\mathcal{O}(\epsilon)$
 
 \subsection{Learning rule to minimize the speed}%Omri Barak's suggesiton
 On the continuous attractor we want to minimize the change in the neural state (in the absence of input).
+
+Equivalence of Hopfield and Wilson-Cowan\citep{miller2012mathematical}
 For a Hopfield type network\footnote{Wilson-Cowan type and Hopfield type (as used in e.g. \citep{gort2024emergence}}, i.e., with dynamics 
 \begin{equation}\label{sec:hopfieldode}
 \dot x = W\phi(x) + b
@@ -300,7 +379,9 @@ Since \( \operatorname{ReLU}(x) \) is nonnegative, this implies that
 \end{equation}
 at equilibrium, which is consistent with the previous condition.
 
+
 \subsubsection{Stability with Jacobian}
+\citep{wersing2001dynamical}
 \paragraph{Linearizing $\dot x$}
 Taking the first-order Taylor expansion around \( (x^*, W^*) \):
 
@@ -559,10 +640,22 @@ RA: Diffeomorphism between $S^1$  and embedding
 \citep{ocko2018emergent}
 
 \subsection{Manifold learning}
-\citep{chang2023novo}
+\citep{huys2014functional}
+Relevant \citep{chang2023novo}
 
+Control view
+Controlling brain dynamics: Landscape and transition path for working memory \citep{ye2023wm}
 
 Optimization view \citep{hennig2021learningoptimization}
+
+probing learning \citep{marschall2023probing}
+
+Existence of slow-fast dynamics in random networks \citep{schmalfuss2008invariant, shaham2017slow}
+NHIM in random \citep{li2013normally}
+
+? \citep{federer2018self}
+
+invariant manfiolds \citep{guckenheimer2015invariant}
 
 \subsubsection{How to account for change in invariant manifold?}
 How does the invariant manifold $\manifold_{\epsilon,c}$ change as a function of $c$?
