@@ -1097,11 +1097,19 @@ Exponentially asymptotically autonomous dynamics a form of input to state stabil
 %\paragraph{Recap}	
 This is the first proof of the universal approximation property of neural ODEs for multistable dynamical systems on an infinite time horizon.
 
+
+basin stability\citep{menck2013basinstability}
+
 \subsection{Limitations}
 \paragraph{Limit cycles}
 Stable limit cycles are approximable but their approximation is not robust! (period will change under almost all perturbations, only a measure zero set of perturbations preserves the period).
 
-%\paragraph{Chaotic dynamics}
+
+\paragraph{Asymptotically autonomous assumption}
+It is often [and in neural network models of working memory (WM), typically] assumed that inputs are only non-zero for a brief initial period (the cue period of a WM trial) \citep{hopfield1982neural, stroud2023infromationloading, stroud2024computational, schimel2024preparation}.
+
+\paragraph{Chaotic dynamics}
+the constraints of computing with biological wet-ware may make chaotic dynamics unavoidable in complex nervous systems\citep{hirsch1995computing}
 
 %also pdes?
 \paragraph{Stochastic dynamics}
@@ -1115,6 +1123,8 @@ Stable limit cycles are approximable but their approximation is not robust! (per
 \citep{mishne2024elucidating}
 \citep{lipman2024flow}
 
+\paragraph{PDEs}
+\citep{richter2022neural}
 
 \subsection{Practicalities: The price of universality}
 This construction is immensely inefficient.
