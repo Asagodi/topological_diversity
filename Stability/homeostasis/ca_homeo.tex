@@ -73,6 +73,8 @@ Continuous attractors enable stable representation of continuous variables in ne
 We propose a synaptic plasticity rule that counteracts these perturbations by dynamically adjusting synaptic weights based on neural activity.
 Through analytical and computational studies, we demonstrate that this rule preserves attractor continuity while preventing drift and degradation over time.
 
+Our results suggest ...
+ and point at experimentally measurable signatures.
 
 
 
@@ -87,13 +89,20 @@ Nevertheless, their function as continuous attractors degrades as a function of 
 
 
 
+
+
 \paragraph{Plasticity for learning}
 learning is shaped by abrupt changes in neural engagement \citep{hennig2021learning}
 
 CA1 \citep{bittner2017behavioral} 
 
+formation of assemblies \citep{litwin2014formation}
+
+
 \paragraph{Plasticity for WM}
 \citep{kilpatrick2018wm}
+
+Stable Memory with Unstable Synapses \citep{susman2019memory}
 
 \paragraph{Timescales}
 the instantaneous value of the synaptic efficacy can reflect the history of pre-synaptic activation over tens of seconds (i.e., the time scale of augmentation) or even minutes (i.e., the time scale of potentiation) rather than just seconds (i.e., the time scale of facilitation)  \citep{thomson2000facilitation}.
@@ -102,9 +111,11 @@ rapid \citep{li2023rapid} \citep{dan2024neural}
 short term \citep{fioravante2011short}
 \citep{brennan2023attractor}
 
-
+fast rate detection\citep{zenke2013synaptic}
 
 such a mechanism with a slow learning rate is ideal for extracting the statistical regularities of the environment \citep{panichello2019error}
+
+
 
 \paragraph{Attractors for neural computation}
 multistability in attractors \citep{braun2010attractors}
@@ -122,6 +133,16 @@ Computing with dynamic attractors in neural networks \citep{hirsch1995computing}
 \citep{rolls2010noisybrain}
 benefits\citep{mcdonnell2011benefits}
 development of a noisy brain \citep{mcintosh2010development}
+
+
+\paragraph{The Heraclitan brain}
+synapses are not as stable as once thought \citep{susman2019memory}
+
+
+\paragraph{Robustness}
+
+robustness of the classic Hopfield model to static synaptic noise\citep{sompolinsky1986neural, tirozzi1991chaos}
+which exhibits a smooth and moderate decline of the critical memory load as a function of the noise variance.
 
 
 \subsection{Continuous attractors}
@@ -199,10 +220,12 @@ Homeostatic scaling of all synapses of a neuron, which is obtained by adjusting 
  \citep{niemeyer2021homeostasis}
  \citep{oleary2018homeostasis}
  
+ Homeostatic plasticity erodes real-coded information\citep{susman2019memory}.
+ 
  \paragraph{Stability}
  \citep{aljaberi2021global}
  
- \paragraph{Excitatory-inhibitory balance}
+ \paragraph{Excitatory-inhibitory balance}%ei balance
  
  excitability \citep{daoudal2003long}
  
@@ -211,6 +234,8 @@ Homeostatic scaling of all synapses of a neuron, which is obtained by adjusting 
  Dynamic tuning of neural stability for cognitive control \citep{xu2024dynamic}
  
  A dynamically stabilized recurrent neural network \citep{saab2022stabilized}
+ 
+ in balanced cortical networks, inhibitory connectivity alone bears the burden of robust information storage\citep{mongillo2018inhibitory}
  
 \paragraph{Hebbian vs. homeostatic synaptic plasticity}
 \citep{pozo2010unraveling}
@@ -806,16 +831,22 @@ W_p(\mu_1, \mu_2) = \inf_{\gamma \in \Pi(\mu_1, \mu_2)} \left( \int d(x, y)^p \,
 \appendix
 
 \section{Types of plasticity}
+diversity\citep{zenke2015diverse}
+
 \subsection{Hebbian/Anti-Hebbian Plasticity}
 \subsection{Dong \& Hopfield Synaptic Plasticity}
 \subsection{Presynaptic Plasticity}
 \citep{mongillo2008synaptic}
 \citep{masse2019circuit}
 
+anti \citep{magnasco2009self}
+
 \subsection{Synaptic scaling}
 \citep{renart2003robust}
 
 \subsection{Covariance Rule}
+correlation\citep{bi2001synaptic}
+
 \citep{amit1989modeling}
 Consider a covariance-based learning rule \citep{sejnowski1989hebb, gerstner2002mathematical}, with a leak term  
 \begin{equation}
