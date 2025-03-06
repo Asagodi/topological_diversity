@@ -81,27 +81,32 @@ Through analytical and computational studies, we demonstrate that this rule pres
 
 Intrinsic dynamics should self-organize and self-sustain in the face of fluctuating inputs and biological noise, including synaptic turnover and cell death.
 
+It is well-known that continuous attractors are fragile. 
+Recently, it was established that continuous attractors are functionally robust \citep{Sagodi2024a}.
+Nevertheless, their function as continuous attractors degrades as a function of the distance from one \citep{Sagodi2024a}.
 
-Previously, it was established that continuous attractors are functionally robust \citep{Sagodi2024a}.
 
 
-meta \citep{kusmierz2017learning}
+\paragraph{Plasticity for learning}
+learning is shaped by abrupt changes in neural engagement \citep{hennig2021learning}
 
 CA1 \citep{bittner2017behavioral} 
 
-learning is shaped by abrupt changes in neural engagement \citep{hennig2021learning}
+\paragraph{Plasticity for WM}
+\citep{kilpatrick2018wm}
 
-
-the instantaneous value of the synaptic efficacy can reflect the history of pre-synaptic activation over tens of seconds (i.e., the time scale of augmentation) or even minutes (i.e., the time scale of potentiation) rather than just seconds (i.e., 81 the time scale of facilitation). \citep{thomson2000facilitation}
+\paragraph{Timescales}
+the instantaneous value of the synaptic efficacy can reflect the history of pre-synaptic activation over tens of seconds (i.e., the time scale of augmentation) or even minutes (i.e., the time scale of potentiation) rather than just seconds (i.e., the time scale of facilitation)  \citep{thomson2000facilitation}.
 timescales of learning\citep{miller2024timescales}
 rapid \citep{li2023rapid} \citep{dan2024neural} 
 short term \citep{fioravante2011short}
 \citep{brennan2023attractor}
 
-\citep{kilpatrick2018wm}
+
 
 such a mechanism with a slow learning rate is ideal for extracting the statistical regularities of the environment \citep{panichello2019error}
 
+\paragraph{Attractors for neural computation}
 multistability in attractors \citep{braun2010attractors}
 Attractor dynamics with activity-dependent plasticity capture human working memory across time scales \citep{brennan2023attractor}
 
@@ -257,6 +262,8 @@ Identifying learning rules from neural network observables \citep{nayebi2020lear
 
 \citep{tyulmankov2022meta}
 
+\citep{kusmierz2017learning}
+
 learning-to-learn \citep{bellec2018long}
 
 \subsection{Stability of plasticity overview}
@@ -336,8 +343,8 @@ We can say that they are close to each other, related to $\mathcal{O}(\epsilon)$
 \subsection{Learning rule to minimize the speed}%Omri Barak's suggesiton
 On the continuous attractor we want to minimize the change in the neural state (in the absence of input).
 
-Equivalence of Hopfield and Wilson-Cowan\citep{miller2012mathematical}
-For a Hopfield type network\footnote{Wilson-Cowan type and Hopfield type (as used in e.g. \citep{gort2024emergence}}, i.e., with dynamics 
+Equivalence of Hopfield and Wilson-Cowan\citep{miller2012mathematical} for invertible $W$.
+For a Hopfield type network\footnote{Wilson-Cowan type and Hopfield type (as used in e.g. \citep{gort2024emergence}) and referred to as $v$-equation and $r$-equation in \citep{miller2012mathematical}.}, i.e., with dynamics 
 \begin{equation}\label{sec:hopfieldode}
 \dot x = W\phi(x) + b
 \end{equation}
@@ -747,6 +754,40 @@ We get
 \begin{equation}
 \frac{\partial}{\partial W_{ij}} \psi_{W_{ij}}(y) = - \left(\phi'(\psi_{W_{ij}}(y))\right)^{-1} W^{-1} \phi(\psi_{W_{ij}}(y)) e_{ij}.
 \end{equation}
+
+
+
+\paragraph{Target location of invariant manifold}
+$x = \psi_{target}(y)$
+
+Metric
+- Hausdorff (non-differentiable)
+-- issue: Hausdorff distance is not differentiable, as it involves taking the supremum over pointwise distances, making it non-smooth at changes where the supremum switches between different points.
+
+
+- Pointwise distance (irrelevant invariance)
+
+- The soft nearest-neighbor distance:
+\[
+d(M_1, M_2) = \int_{M_1} \frac{\sum\limits_{y \in M_2} \|x - y\|^2 e^{-\alpha \|x - y\|^2}}{\sum\limits_{y \in M_2} e^{-\alpha \|x - y\|^2}} \, d\mu(x).
+\]
+The gradient is given by:
+\[
+\nabla_x f(x) = 2 \sum_{y \in M_2} (x - y) w(y),
+\]
+where the soft weighting function is:
+\[
+w(y) = \frac{e^{-\alpha \|x - y\|^2}}{\sum\limits_{y' \in M_2} e^{-\alpha \|x - y'\|^2}}.
+\]
+
+
+- The Optimal Transport Distance, also known as the Wasserstein Distance, is defined as follows.
+If one defines probability measures \( \mu_1 \) and \( \mu_2 \) over the manifolds, then the Wasserstein distance is given by:
+\[
+W_p(\mu_1, \mu_2) = \inf_{\gamma \in \Pi(\mu_1, \mu_2)} \left( \int d(x, y)^p \, d\gamma(x, y) \right)^{\frac{1}{p}}.
+\]
+
+
 
 
 
