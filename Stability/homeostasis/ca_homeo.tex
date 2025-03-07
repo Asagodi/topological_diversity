@@ -81,14 +81,42 @@ Our results suggest ...
 \section{Introduction}
 
 
-Intrinsic dynamics should self-organize and self-sustain in the face of fluctuating inputs and biological noise, including synaptic turnover and cell death.
+Intrinsic dynamics should self-organize and self-sustain in the face of fluctuating inputs and biological noise, including synaptic turnover and cell death \citep{rolls2010noisybrain,Sagodi2024a}.
+
+
+
+
+\paragraph{Attractors for neural computation}
+Connectivity of task-performing networks is often designed to achieve a desired functionality, and assumed to be constant while the network is performing the task\citep{hopfield1982neural,benyishai1995theory}.
+
+multistability in attractors \citep{braun2010attractors}
+Attractor dynamics with activity-dependent plasticity capture human working memory across time scales \citep{brennan2023attractor}
+
+attractor dynamics for decision making \citep{luo2023noncanonical}
+
+persistent activity \citep{curtis2010beyond} \citep{bray2017persistence}
+\citep{constantinidis2018persistent} persistent spiking activity underlies working memory
+
+Computing with dynamic attractors in neural networks \citep{hirsch1995computing}
+
+\paragraph{The Heraclitan brain/Noisy brain}
+\citep{cheung2010noisybrain}
+\citep{rolls2010noisybrain}
+benefits\citep{mcdonnell2011benefits}
+development of a noisy brain \citep{mcintosh2010development}
+
+synapses are not as stable as once thought \citep{susman2019memory}
+
+
+\paragraph{Robustness}
+Robustness of the classic Hopfield model to static synaptic noise\citep{sompolinsky1986neural, tirozzi1991chaos}
+which exhibits a smooth and moderate decline of the critical memory load as a function of the noise variance.
 
 It is well-known that continuous attractors are fragile. 
 Recently, it was established that continuous attractors are functionally robust \citep{Sagodi2024a}.
 Nevertheless, their function as continuous attractors degrades as a function of the distance from one \citep{Sagodi2024a}.
 
-
-
+\paragraph{The problem}
 
 
 \paragraph{Plasticity for learning}
@@ -117,32 +145,9 @@ such a mechanism with a slow learning rate is ideal for extracting the statistic
 
 
 
-\paragraph{Attractors for neural computation}
-multistability in attractors \citep{braun2010attractors}
-Attractor dynamics with activity-dependent plasticity capture human working memory across time scales \citep{brennan2023attractor}
-
-attractor dynamics for decision making \citep{luo2023noncanonical}
-
-persistent activity \citep{curtis2010beyond} \citep{bray2017persistence}
-\citep{constantinidis2018persistent} persistent spiking activity underlies working memory
-
-Computing with dynamic attractors in neural networks \citep{hirsch1995computing}
-
-\paragraph{Noisy brain}
-\citep{cheung2010noisybrain}
-\citep{rolls2010noisybrain}
-benefits\citep{mcdonnell2011benefits}
-development of a noisy brain \citep{mcintosh2010development}
 
 
-\paragraph{The Heraclitan brain}
-synapses are not as stable as once thought \citep{susman2019memory}
 
-
-\paragraph{Robustness}
-
-robustness of the classic Hopfield model to static synaptic noise\citep{sompolinsky1986neural, tirozzi1991chaos}
-which exhibits a smooth and moderate decline of the critical memory load as a function of the noise variance.
 
 
 \subsection{Continuous attractors}
@@ -236,6 +241,7 @@ Homeostatic scaling of all synapses of a neuron, which is obtained by adjusting 
  A dynamically stabilized recurrent neural network \citep{saab2022stabilized}
  
  in balanced cortical networks, inhibitory connectivity alone bears the burden of robust information storage\citep{mongillo2018inhibitory}
+\citep{mongillo2018inhibitory} showed that rewiring of excitatory connections had much less influence on memory compared with rewiring of inhibitory connections in the balanced spiking neural network model of the cortical circuit
  
 \paragraph{Hebbian vs. homeostatic synaptic plasticity}
 \citep{pozo2010unraveling}
