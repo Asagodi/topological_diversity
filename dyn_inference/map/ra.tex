@@ -149,6 +149,42 @@ C_T = \int_{0}^{T} dt \, \phi(z(t)) \phi(z(t))^\top
 
 is the empirical covariance of the teacher network activity.
 
+\paragraph{For a stationary distribution}
+We need to calculate 
+\begin{equation}
+\int_X dx p_{\text{stat}}(x) \phi(x)\phi(x)^T.
+\end{equation}
+
+For a potential vector field (Sec.~\ref{sec:pstat_gradientpotential} and Eq.~\ref{eq:pstat_potential}) we get 
+We need to calculate 
+\[
+\mathbb{E}[\phi(x) \phi(x)^T] = \frac{1}{Z} \int_{X} dx \, e^{-V(x)/D} \phi(x) \phi(x)^T.
+\]
+
+For small \( D \), the distribution \( p(x) \) is typically well-approximated by a sum of Gaussian-like distributions centered around the local minima \( x_i^* \) of \( V(x) \):
+
+\[
+p(x) \approx \sum_i \frac{w_i}{Z_i} e^{-\frac{(x - x_i^*)^T H_i (x - x_i^*)}{2D}},
+\]
+
+where:
+- \( x_i^* \) are the local minima of \( V(x) \).
+- \( H_i = \nabla^2 V(x_i^*) \) is the Hessian at each minimum.
+- \( w_i \approx e^{-V(x_i^*)/D} \) represents the relative weight of each mode.
+- \( Z_i \) normalizes each Gaussian component.
+
+For very small \( D \), transitions between wells are rare, and the distribution effectively stays localized in one well for long times.
+
+In the limit \( D \to 0 \), the integral can be approximated by a sum over contributions from each metastable well:
+\[
+\mathbb{E}[\phi(x) \phi(x)^T] \approx \sum_i \pi_i \mathbb{E}_i[\phi(x) \phi(x)^T],
+\]
+where:
+\[
+\pi_i = \frac{w_i}{\sum_j w_j}
+\]
+is the relative probability of being in well \( i \).
+
 
 
 \section{Calculating the covariance for a symmetric ring attractor network}
@@ -192,7 +228,7 @@ Solving formally,
 \end{equation}
 This suggests that the existence of a normalizable stationary distribution depends on whether this expression is integrable.
 
-\subsection{$f$ if gradient of a potential}
+\subsection{$f$ if gradient of a potential}\label{sec:pstat_gradientpotential}
 If $f(x)$ is derived from a potential, 
 \[
 f(x) = - \frac{dV}{dx},
@@ -204,6 +240,12 @@ p_{\text{stat}}(x) \propto \exp \left( - \frac{V(x)}{D} \right).
 \]
 
 For this to be normalizable, the potential $V(x)$ must grow sufficiently fast at infinity (ensuring that $p_{\text{stat}}$ is integrable). This condition ensures that probability does not escape to infinity.
+
+
+\subsubsection{Covariance in low noise regime}
+\[
+C_T = \int_{0}^{T} dt \, \phi(z(t)) \phi(z(t))^\top
+\]
 
 
 \subsection{Role of Dissipativity}
@@ -225,7 +267,7 @@ A rigorous sufficient condition is the existence of a Lyapunov function $V(x)$, 
     f(x) = -\frac{dV}{dx}, \quad \text{and} \quad \lim_{\vert x \vert \to \infty} V(x) = \infty.
 \end{equation}
 This ensures that the potential well confines probability mass, leading to a normalizable stationary density:
-\begin{equation}
+\begin{equation}\label{eq:pstat_potential}
     p_{\text{stat}}(x) \propto e^{-V(x)/D}.
 \end{equation}
 
