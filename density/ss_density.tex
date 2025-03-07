@@ -581,7 +581,6 @@ which bounds the sensitivity of the flow $\varphi_{s,t}(x)$ to an infinitesimal 
 %TODO: more catchy name for type I error: F-type (Flow)
 How we can bound these two types of errors will be discussed in the next two subsections.%error^I and error^II
 
-\ascomment{Express everything in terms of $\varepsilon$ and $\delta$}
 %use \hat f notation?
 \setlength\belowcaptionskip{-1ex}
 \begin{SCfigure}[10][bthp]
@@ -600,10 +599,9 @@ How we can bound these two types of errors will be discussed in the next two sub
 \end{SCfigure}
 
 \subsubsection{Errors inside the intersection of the basins of attraction of target and approximation}\label{sec:inboa_approx}
-\ascomment{Change g to fhat}
 %replace this proof with previous result on UAP for FMP systems?
 %Introduce A_i^f notation
-For an initial value $x_0\in \overline{\boa}_i^{f,g} \coloneqq \boa(A_i^f) \cap \boa(A_i^g)$, the flow deviates along the trajectories up to 
+For an initial value $x_0\in \overline{\boa}_i^{f,g} \coloneqq \boa(A_i^f) \cap \boa(A_i^g)$, the flow deviates along the trajectories 
 \[
 \|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\| \, ds,
 \]
@@ -644,7 +642,7 @@ The minimal volume of initial values for which basin-type errors arise along the
 \[\varepsilon_{\operatorname{basin}} \coloneqq \vol \bigcup_{i \neq j}\boa(A_i^f)\cap\boa(A_j^g) = \sum_{i \neq j} \vol\left(\boa(A_i^f)\cap\boa(A_j^g)\right).\] %prove?
 %CHECK: double counting
 %encorporate f,g in def?
-\ascomment{Notation: $\varepsilon_{\operatorname{basin}}$ -> $\operatorname{vol}_{\operatorname{basin}}$?}
+\ascomment{Notation: $\varepsilon_{\operatorname{basin}}$ replace by $\operatorname{vol}_{\operatorname{basin}}$?}
 
 \begin{proposition}\label{prop:min_sep_bound}
 For any $\delta>0$, we can choose $g$ such that $\varepsilon_{\operatorname{basin}}<\delta$.
@@ -668,7 +666,7 @@ Then for some  $\varepsilon_{\operatorname{sep}}>0$ we have that
 
 
 %link: here is how
-For each attractor $A_i$ we have that the boundary of the basin of attraction $\partial(\boa(A_i^f))$ is a compact normally hyperbolic invariant manifold (See Supp.Sec.~\ref{sec:boaboundary}).
+For each attractor $A_i$ we have that the boundary of the basin of attraction $\partial(\boa(A_i^f))$ is a compact normally hyperbolic invariant manifold (see Supp.Sec.~\ref{sec:boaboundary}).
 Consider the connected components $B^f_{ij}$ of $\partial(\boa(A_i^f))$. %NOTE: it is not the case that we have a connected component for each pair of attractors
 Then, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$-$C^1$ close to $f$ such that $g$ has a normally hyperbolic invariant manifold  $B^g_{ij}$ that is diffeomorphic to and at most at $\mathcal{O}(\delta_{ij})$ Hausdorff distance from $B^f_{ij}$.
 Therefore, by Eq.~\ref{eq:separatrixoverlap}, the overlap of the separatrices is less than $\mathcal{O}(\varepsilon_{\operatorname{sep}})$. %TODO: figure out bound on the volume
@@ -696,6 +694,7 @@ By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can 
 \end{proof}
 
 \paragraph{Bookkeeping}
+\ascomment{Express everything in terms of $\varepsilon$ and $\delta$}
 \begin{enumerate}
 \item Bounding the volume of separatix mismatch regions
 \begin{enumerate}
@@ -807,8 +806,8 @@ We have to make sure that all the $\hat{\varepsilon}_i$ are small enough so that
 \end{equation}
 %TODO: replace a(\varepsilon_{T_j}) with a_j^*? 
 %\paragraph{Finding local perturbations to simultaneously satisfy Eq.\ref{eq:nlc_vfs} for $i=1,\dots, N$.}
-We can find $a_i^* = a_{\varepsilon_{T_i}}$ and $\hat\varepsilon_i$ for $i=1,\dots,N$ such that Eq.~\ref{eq:lc_constraint} is satisfied for each limit cycle.
-\ascomment{TODO: prove in Sec.~\ref{sec:lc_extras}}
+We can find $a_i^* = a_{\varepsilon_{T_i}}$ and $\hat\varepsilon_i$ for $i=1,\dots,N$ such that Eq.~\ref{eq:lc_constraint} is satisfied for each limit cycle (Eq.~\ref{eq:nlc_constraints}).
+For a proof , see Supp.Sec.~\ref{sec:mlc_extras}.
 %can we really do this sequentially? no, we have to do it in parallel
 %when we change a_T_i we have to adjust the other a_T_j s
 %we have to guarantee that a(\varepsilon_{T_i})
@@ -885,7 +884,7 @@ We assume the solutions to be unique (see Sec.~\ref{sec:inputunique}).
 %Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$) for each $u(\infty)$. %so that we can use the autonomous UAP theory.
 
 
-We assume that $g(x,u(t))$ is exponentially asymptotically autonomous dynamics for each $u$ (Def.~\ref{def:eaa_input}). %Supp.Sec.~\ref{sec:eea_input}
+We assume that $g(x,u(t))$ is exponentially asymptotically autonomous dynamics for each $u$ (Def.~\ref{def:eaa_input} with $\sigma,\gamma=1$). %Supp.Sec.~\ref{sec:eea_input}
 %
 Furthermore, we assume that $g$ converges to a finite number of topological equivalence classes of asymptotically autonomous vector fields.
 %can we increase it to countable?
@@ -938,32 +937,15 @@ $d_\varepsilon(\psi,\hat\psi)<\delta$.
 \paragraph{Finite-time horizon approximation + exponentially asymptotically autonomous = Infinite-time horizon approximation}
 What is the maximal error $h-\hat h$ we can allow for the $\varepsilon,\delta$ distance in flow fields to hold?
 
-
-At some $T>0$ stop changing $\hat h.$ %related to the convergence of nonautonomous vf to autonomous vf
-There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta$ and therefore $\|h(t,x)-\hat h(T,x)\|<\eta$.
-
-
 %TODO
 \begin{enumerate}
-\item Characterize proportion of “bad” initial positions for each input sequence and measure the proportion in terms of the probability measure for $\mathcal{U}$ (Supp.Sec.~\ref{sec:inputspace_measure})
-\begin{enumerate}
-\item Input brings state to separatrix mismatch: 
-	Can be controlled by size of mismatch region (and hence autonomous part of the vf (or the asymptotically autonomous vf))
-\item  Input brings state to wrong side of separatrix:
- 	Can be controlled by mismatch in non-autonomous/input-driven factor of vf
-\end{enumerate}
-\item Characterize proportion of “bad” input sequences through asymptotic behavior (e.g., non-hyperbolic dynamics)
-\end{enumerate}
-
-\begin{enumerate}
 \item Let non-aut vf converge up to some time $T$
-\item Pick asy aut vf $h_u$ for approximation (so we have $\hat h_u = h_u + \kappa \bar h_u$)
+\item Pick asy aut vf $h_u$ for approximation (so we have $\hat h_u = h_u + \eta\ \bar h_u$)
 \item Small error in vf
 \begin{enumerate}
 \item from input-driven vf (quantify...)
 \item from approximation (quantify...)
 \item Small displacement in attractors of the autonomous vf (why?) in topologically equivalent regions in input space (what does this mean?)
-\item 
 \end{enumerate}
 \item Error in trajectories
 \begin{enumerate}
@@ -985,11 +967,14 @@ There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta
 \end{itemize}
 \end{itemize}
 
+Step 1+2+3 (apply autonomous UAP theory to vector field dynamics)
+\paragraph{Apply autonomous UAP theory to vector field dynamics} %+exponentially
+%up to T
+We can approximate the changing vector field $g$ up to a finite $T$ by applying the existing finite time horizon approximation results.
 
-
-\paragraph{$g$ is exponentially asymptotically autonomous} %+exponentially
-We have that for a finite time we will make at most $\Psi(\eta,T)$ error (for a vector field that is $\eta$ close).
-
+%after T
+We have that for a finite time we will make at most $\Psi(\eta,T)$ error (for a vector field that is $\eta$ close). $T$ depends on asymptotic exponent for the vector field $\alpha$ (Def.~\ref{def:eaa_input}). %$g$ is exponentially asymptotically autonomous
+%We need to consider this until $T$ for which we are $\eta$ close to the asymptotic, autonomous vector field.
 Eq.~\ref{eq:nonautonomous} so that 
 \begin{equation}\label{eq:inputdriven_asymp}
 g(x(t), u(t)) \rightarrow h_{\operatorname{aut}}(x(t))
@@ -997,55 +982,55 @@ g(x(t), u(t)) \rightarrow h_{\operatorname{aut}}(x(t))
 %for every epsilon there is a T
 that is for $t>T$ for some $T$ %...
 \begin{equation}\label{eq:inputdriven_asymp}
-g(x(t), u(t)) =  h_{\operatorname{aut}}(x(t)) + \varepsilon h_{\operatorname{inp}}(x(t), u(t))
+g(x(t), u(t)) =  h_{\operatorname{aut}}(x(t)) + \eta h_{\operatorname{inp}}(x(t), u(t))
 \end{equation}
-with $\|h_{\operatorname{inp}}\| = 1$.
-
+with $\|h_{\operatorname{inp}}(\cdot, u(t))\| \leq 1$ and $0<\eta\ll1$.
 
 %At some $T$ the vector field is $\eta$ away from the asymptotic vector field.
-We consider Eq.~\ref{eq:init_path_density} with $T$ for which the convergence of the non-autonomous vector field is at most $\eta$ away from the asymptotic autonomous vector field $f'(x)$. %which is a combination of f(x) and the asymptotic part of g(x)
-We can then consider the dynamics of Eq.~\ref{eq:nonautonomous} as an small perturbation from $f(x)$ (so $\eta$ away).
-We can approximate that with $\varepsilon''$ accuracy with our vector field.
-So we are at most $\eta+\varepsilon''$ away from the actual target dynamics.
+We consider Eq.~\ref{eq:init_path_density} with $T$ for which the convergence of the non-autonomous vector field is at most $\eta$ away from the asymptotic autonomous vector field $h_{\operatorname{aut}}(x)$. %which is a combination of f(x) and the asymptotic part of g(x)
+We can now consider the dynamics of Eq.~\ref{eq:nonautonomous} as an small perturbation from $g(x)$ ($\eta$ away).
+We can approximate that with $\kappa$ accuracy with our vector field.
+%So we are at most $\eta+\kappa$ away from the actual target dynamics at each time point after $T$.
+%Rather: 
+The approximation asymptotic autonomous vector field converges at most  $\eta+\kappa$ away from the actual target dynamics at each time point after $T$.
+%At some $T>0$ stop changing $\hat h.$ %related to the convergence of nonautonomous vf to autonomous vf
+%There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta$ and therefore $\|g(t,x)-\hat g(T,x)\|<\eta+\kappa$.
 
 
 
 
 
 
+\paragraph{Step 4}
+\begin{enumerate}
+\item Characterize proportion of “bad” initial positions for each input sequence and measure the proportion in terms of the probability measure for $\mathcal{U}$ (Supp.Sec.~\ref{sec:inputspace_measure})
+\begin{enumerate}
+\item Input brings state to separatrix mismatch: 
+	Can be controlled by size of mismatch region (and hence autonomous part of the vf (or the asymptotically autonomous vf))
+\item  Input brings state to wrong side of separatrix:
+ 	Can be controlled by mismatch in non-autonomous/input-driven factor of vf
+\end{enumerate}
+\item Characterize proportion of “bad” input sequences through asymptotic behavior (e.g., non-hyperbolic dynamics)
+\end{enumerate}
 
 
 \paragraph{Integrating over all inputs}
-\ascomment{Mention path integral here? And move second time eq to app?}
-%consideration of p(x,t) after some time passed
-%use dynamics until then to get a prior on the initial states
-%then calculate path integral over inputs 
-\begin{equation}
-    p(x,t+s) = \int_{x_t} \int \delta(x - x(s, x_t, u)) \mathcal{P}[u] \mathcal{D}u dx_t
-    %    p(x,t+s) = \int_{x(t)} \int \delta(x - x(s, x(t), u)) \mathcal{P}[u] \mathcal{D}u dx(t) %which form is better?
-\end{equation}
-
+See Supp.Sec.~\ref{sec:inputdriven_metric}.
 
 %using the probability density to measure the proportion of initial points that have trajectories that will have bigger than epsilon error:
 We can set $p(x_0)$ to be the uniform distribution over the compact state space $\mathcal{X}$ we consider. 
 Then the probability density after $t$ time has passed is
 \begin{equation}\label{eq:init_path_density}
-p(x_1,t) = p(x_0)p(x_1,t).
+p(x_1,t) = p(x_0)p(x_0,t).
 \end{equation}
 %$p(x_{i+1},t+s) = p(x_i,t)p(x_{i+1},s)$
 
-We need to consider this until $T$ for which we are $\eta$ close to the asymptotic, autonomous vector field.
 
+Approximation $\hat p(x_1,t)$
 
+Up to finite $T$: $d(p(x_1,t),\hat p(x_1,t))<\mu$.
 
-
-
-
-\ascomment{Alternative strategy?}
-Should we consider the vector field as a dynamical system?
-We can then apply the autonomous theory to it.
-This would lead to the requirement ``$g$ needs to converge to countably many topological equivalence classes of asymptotically autonomous vector fields''
-
+Asymptotically ($t\rightarrow\infty$): $d(p(x_1,\infty),\hat p(x_1,\infty))$ is given by initial separatrix mismatch + contribution from aut asym separatrix mismatch(es).
 
 
 %\subsection{General}\label{sec:generalnonautonomous}%includes time-varying 
@@ -1076,12 +1061,16 @@ This would lead to the requirement ``$g$ needs to converge to countably many top
     
 \subsection{Concluding remarks on nonautonomus systems}
 
-\textbf{What is the maximal error $g-\hat g$ we can allow for the $\varepsilon$-$\delta$ distance in flow fields to hold?}
+\paragraph{Bookkeping}
+\ascomment{What is the maximal error $g-\hat g$ we can allow for the $\varepsilon$-$\delta$ distance in flow fields to hold?}
 
 
 
 \subsubsection{meta-FMP and vf-ISS}
-
+%\ascomment{Alternative strategy?}
+We can consider the vector field as a dynamical system.
+We can then apply the autonomous theory to it.
+This would lead to the requirement ``$g$ needs to converge to a finite number of topological equivalence classes of asymptotically autonomous vector fields'' (Sec.~\ref{sec:input_target}).
 
 \begin{remark}
 Exponentially asymptotically autonomous dynamics could be seen as a form of meta-FMP (FMP for the \emph{vector field}).
@@ -1859,7 +1848,7 @@ Also called the Region of attraction, e.g., in \citep{garces2012strategies} (Def
 Suppose that $x=0$ is an attractive equilibrium point of a system $\dot x = f(x)$.
 The basin of attraction $BOA(0)$ is defined as the set of initial states $x(0)=x_0$ for which the resulting trajectory $x(t), t\geq 0$ tends to the equilibrium point:
 \begin{equation}
-BOA(0) \coloneqq \{x_0\in \reals^n|x(t)\rightarrow0\text{ as } t\rightarrow\infty\}.
+\boa(0) \coloneqq \{x_0\in \reals^n|x(t)\rightarrow0\text{ as } t\rightarrow\infty\}.
 \end{equation}
 
 %for LC
@@ -1869,16 +1858,16 @@ BOA(0) \coloneqq \{x_0\in \reals^n|x(t)\rightarrow0\text{ as } t\rightarrow\inft
 
 %is this important?
 \begin{proposition}
-\[\dim BOA(A_i) = \dim X\] for each attractor $A_i$.
+\[\dim \boa(A_i) = \dim X\] for each attractor $A_i$.
 \end{proposition}
 \begin{proposition}
-\[\dim\cl BOA(A_i) \cap BOA(A_i) = \dim X - 1 \] for each attractor $A_i$.
+\[\dim\cl \boa(A_i) \cap \boa(A_i) = \dim X - 1 \] for each attractor $A_i$.
 \end{proposition}
 
 
 
 \begin{proposition}
-Each connected component of $\ \bigcup_i\cl BOA(A_i) \cap BOA(A_i) $ is a connected, compact normally hyperbolic invariant manifold. %repelling/outflowing?
+Each connected component of $\ \bigcup_i\cl \boa(A_i) \cap \boa(A_i) $ is a connected, compact normally hyperbolic invariant manifold. %repelling/outflowing?
 \end{proposition}
 
 
@@ -1892,7 +1881,7 @@ When the system under some perturbations (S-type) crosses the separatrices, it m
 \begin{definition}[Separatrix]\label{def:separatrix}
 Define the separatrix between the basins of attraction of attractors $A_i$ and $A_j$ as 
 \begin{equation}
-\sep(A_i,A_j) = \cl(BOA(A_i)\cap \cl(BOA(A_j)).
+\sep(A_i,A_j) = \cl(\boa(A_i)\cap \cl(\boa(A_j)).
 \end{equation}
 \end{definition}
 
@@ -2495,7 +2484,8 @@ The existence of isochrons was proven in \citep{guckenheimer1975isochrons}.
 \item Separatrices are persistent so they will be shifted $\mathcal{O}(a_{\varepsilon_{T_i}}\hat \varepsilon_i)$. So we need $\sum_{i=1}^{N}k_i a_{\varepsilon_{T_i}}\hat \varepsilon_i < \tfrac{1}{2}\delta$ and if we require for the initial mismatch error to be $\kappa<\tfrac{1}{2}\delta$ we get the total to be less than $\delta$. 
 \item The vector field outside the tubular neighborhood is $f - \eta\bar f  + \sum_{i=1}^Na_{\varepsilon_{T_i}}\hat \varepsilon_i\bar f_{i,\operatorname{bump}}$. 
 %We have that $\|\eta\bar f  + a_{\varepsilon_T}\hat \varepsilon\bar f_{\operatorname{bump}}\| < \eta + a_{\varepsilon_T}\hat \varepsilon$ (triangle inequality and absolute homogeneity of norm). 
-Therefore, we can take $\hat f$ to be  $\Psi_{\min}(\eta + \sum_{i=1}^Na_{\varepsilon_{T_i}}\hat \varepsilon_i)$ close to $f$ to guarantee $\varepsilon$,$\delta$-approximation
+Therefore, we can take $\hat f$ to be  $\Psi_{\min}(\eta + \sum_{i=1}^Na_{\varepsilon_{T_i}}\hat \varepsilon_i)$ close to $f$ to guarantee $\varepsilon$,$\delta$-approximation.
+\item Because we can make the correction vector field term dominate through $a_{\varepsilon_{T_i}}$ by choosing $\hat \varepsilon_i$ small enough, we can always adjust the periods of all stable limit cycles simultaneously (if there is a finite number of them).
 \end{enumerate}
 
 \paragraph{Using compact support activation functions}
@@ -2577,7 +2567,14 @@ where $\mathcal{P}[u]$ is a probability measure over the function space of $u(t)
 
 Any stochastic and even deterministic system can be expressed in terms of a path integral for which asymptotic methods can be systematically applied \citep{chow2015path}.
 
-%this can be moved to APPendix
+
+Consideration of $p(x,t)$ after some time passed %calculating path integral from initial distribution p(x,t)
+%use dynamics until then to get a prior on the initial states
+%then calculate path integral over inputs 
+\begin{equation}
+    p(x,t+s) = \int_{x_t} \int \delta(x - x(s, x_t, u)) \mathcal{P}[u] \mathcal{D}u dx_t.
+    %    p(x,t+s) = \int_{x(t)} \int \delta(x - x(s, x(t), u)) \mathcal{P}[u] \mathcal{D}u dx(t) %which form is better?
+\end{equation}
 
 
 \subsubsection{Why this target class?}
