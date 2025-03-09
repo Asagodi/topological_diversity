@@ -84,7 +84,7 @@ Our results suggest ...
 Intrinsic dynamics should self-organize and self-sustain in the face of fluctuating inputs and biological noise, including synaptic turnover and cell death \citep{rolls2010noisybrain,Sagodi2024a}.
 
 
-
+\citep{gerstner2002spiking}
 
 \paragraph{Attractors for neural computation}
 Connectivity of task-performing networks is often designed to achieve a desired functionality, and assumed to be constant while the network is performing the task\citep{hopfield1982neural,benyishai1995theory}.
@@ -94,8 +94,11 @@ Attractor dynamics with activity-dependent plasticity capture human working memo
 
 attractor dynamics for decision making \citep{luo2023noncanonical}
 
-persistent activity \citep{curtis2010beyond} \citep{bray2017persistence}
+
+\paragraph{Persistent activity}
+Persistent activity in neural networks with dynamic synapses \citep{barak2007persistent}\citep{curtis2010beyond} \citep{bray2017persistence}
 \citep{constantinidis2018persistent} persistent spiking activity underlies working memory
+flexible WM \citep{bouchacourt2019wm}
 
 Computing with dynamic attractors in neural networks \citep{hirsch1995computing}
 
@@ -118,17 +121,31 @@ It is well-known that continuous attractors are fragile.
 Recently, it was established that continuous attractors are functionally robust \citep{Sagodi2024a}.
 Nevertheless, their function as continuous attractors degrades as a function of the distance from one \citep{Sagodi2024a}.
 
+Characterization of dynamical systems in the context of changes in synaptic efficacy reveals that time varying attractors are easier to maintain than fixed points \citep{susman2019memory}
+
+\paragraph{Forgetting}
+\citep{tran2019forgetting}
+
+
+\paragraph{Plasticity-stability tradeoff for memory capacity}
+\citep{carpenter1991pattern}
+\citep{fusi2007limits}
+
 \paragraph{The problem}
 
 
 \paragraph{Plasticity for learning}
+adaptive behavior\citep{ashby2013desgining}
+
 learning is shaped by abrupt changes in neural engagement \citep{hennig2021learning}
 
 cortical rewiring and information storage \citep{chklovskii2004cortical}
 CA1 \citep{bittner2017behavioral} 
 
 formation of assemblies \citep{litwin2014formation}
+memory\citep{martin2000plasticity}\citep{takeuchi2014plasticity}
 
+beyond backprop\citep{song2024inferring}
 
 \paragraph{Plasticity for WM}
 \citep{kilpatrick2018wm}
@@ -161,6 +178,7 @@ Express the system as
 \end{equation} where $x$ is the neural activity, and $W$ represents synaptic weights.
 
 Functions: navigation/head-direction\citep{wilson2023navigation, skaggs1994model}, evidence integration\citep{mante2013context, esnaola2022flexible}
+grid cells\citep{sutton2024continuous}
 
 To maintain a continuous attractor, synaptic plasticity should preserve the network’s structured connectivity while allowing for slow adaptation.
 \citep{cannon1983oculomotor}
@@ -221,6 +239,17 @@ flexibility \citep{remington2018flexible}
 
 Desiderata for normative models of synaptic plasticity \citep{bredenberg2024desiderata}
 
+\paragraph{Intrinsic vs extrinsic dynamics}
+
+
+Intrinsic (noise)
+Computational roles of intrinsic synaptic dynamics \citep{shimizu2021computational}
+Synaptic size dynamics as an effectively stochastic process\citep{statman2014synaptic}
+
+Extrinsic (learning)
+
+
+
 \subsubsection{Homeostatic} \citep{turrigiano2004homeostatic}
 
 Homeostatic scaling of all synapses of a neuron, which is obtained by adjusting the number of postsynaptic receptors proportionally to the neuron’s average firing activity \citep{turrigiano1998activity,turrigiano1999homeostatic},
@@ -235,6 +264,12 @@ Homeostatic scaling of all synapses of a neuron, which is obtained by adjusting 
  \citep{aljaberi2021global}
  
  \paragraph{Excitatory-inhibitory balance}%ei balance
+ \citep{renart2003robust}
+\citep{murphy2009balancedamplification}
+\citep{zhang2022ei}
+\citep{song2016ei}
+\citep{jarne2023ei}
+\citep{meissner2025geometry}
  
  excitability \citep{daoudal2003long}
  
@@ -317,20 +352,38 @@ learning-to-learn \citep{bellec2018long}
 
 
 \subsubsection{Representational drift}
-\citep{wolff2020drifting}
+Overview\citep{rule2019causes}
 
-\citep{masset2022drifting}
+Representational drift could arise for this reason and thus be a biological inevitability.
 
-\citep{buschman2022wm}
 
+Experimental evidence indicates that drift impacts coding of environmental and behavioral variables and thus is not strictly confined to “null” dimensions \citep{driscoll2017dynamic, rule2020stable}
+
+
+\paragraph{Functions of RD}%for the brain
+Drift enforces a baseline malleability, constantly updating the structure and organization of computation \citep{driscoll2022representational}
+more generally continual learning \citep{driscoll2022representational}
+
+drift could have computational benefits during learning as a regularization strategy\citep{aitken2022geometry}
+% similar to drop-out in artificial neural networks \citep{srivastava2014dropout}
+
+
+\paragraph{Use for neuroscience}
 Representational drift as a window into neural and behavioural plasticity \citep{micou2023representational}
 
-Understanding representational drift in olfaction with dynamical  systems \citep{barwich2023drift}
 
-continual learning \citep{driscoll2022representational}
+\paragraph{Other topics}
+Understanding representational drift in olfaction with dynamical  systems \citep{schoonover2021representational, barwich2023drift}
+mouse visual cortex \citep{deitch2021representational}
+\citep{wolff2020drifting}
+\citep{masset2022drifting}
+\citep{buschman2022wm}
+
+
+
 
 Experiment: tuning curves over time.
-
+- As the pool of active cells changes, the manifold of network activity patterns shifts and rotates in neural state space.
 
 
 
@@ -713,7 +766,7 @@ RA: Diffeomorphism between $S^1$  and embedding
 
 \citep{ocko2018emergent}
 
-\subsection{Manifold learning}
+\subsection{Manifold learning}%ML%manl
 \citep{huys2014functional}
 Relevant \citep{chang2023novo}
 
@@ -731,12 +784,16 @@ Bayesian Plasticity (so named because it is derived using Bayes' rule), states t
 
 probing learning \citep{marschall2023probing}
 
+\citep{mishra2021continual}
+
 Perturbing low dimensional activity manifolds \citep{warnberg2019perturbing}
 
 Existence of slow-fast dynamics in random networks \citep{schmalfuss2008invariant, shaham2017slow}
 NHIM in random \citep{li2013normally}
 
-? \citep{federer2018self}
+\citep{federer2018self}
+
+Neural Manifold under Plasticity in a Goal-Driven Learning Behavior \citep{feulner2021plasticity}
 
 invariant manfiolds \citep{guckenheimer2015invariant}
 
@@ -861,6 +918,7 @@ anti \citep{magnasco2009self}
 
 \subsection{Covariance Rule}
 correlation\citep{bi2001synaptic}
+\citep{loewenstein2008robustness}
 
 \citep{amit1989modeling}
 Consider a covariance-based learning rule \citep{sejnowski1989hebb, gerstner2002mathematical}, with a leak term  
