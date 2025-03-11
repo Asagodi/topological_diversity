@@ -11,6 +11,7 @@
 \usepackage{forloop}
 \usepackage[pdftex]{graphicx}  %remove demo option in your document
 \usepackage{sidecap}
+\usepackage{enumitem}
 \PassOptionsToPackage{dvipsnames}{xcolor}
 \usepackage{xcolor}
 \definecolor{ForestGreen}{rgb}{0.13, 0.55, 0.13}
@@ -242,8 +243,8 @@ Furthermore, locally recurrent networks with two hidden layers is able to approx
 Finally, more recently it was shown that discrete-time RNNs are finite-time horizon universal approximators of discrete-time systems \citep{aguiar2023universal} and the universality of linear recurrences followed by nonlinear projections for finite time was established \citep{orvieto2023universality}.
 
 
-\paragraph{RBF neural networks}
-\citep{tan1995efficient}
+%\paragraph{RBF neural networks}
+%\citep{tan1995efficient}
 
 
 
@@ -288,11 +289,11 @@ Any finite trajectory of an $n$-dimensional continuous dynamical system can be a
 
 
 
-\paragraph{FNNs for control}
-%control 
-\citep{psaltis1988multilayered} \citep{li1989control,chen1992adaptive}
+%\paragraph{FNNs for control}
+%%control 
+%\citep{psaltis1988multilayered} \citep{li1989control,chen1992adaptive}
 
-\paragraph{uncat}
+%\paragraph{uncat}
 %trajectories \citep{toomarian1992learning}
 
 
@@ -467,13 +468,13 @@ For our approximation results, we consider the following dynamics.
 Let $D$ be an open subset of $\mathbb{R}^n$,
  $f\colon D \to \mathbb{R}^m$ be a $C^1$-mapping,
   and $I$ be a compact subset of $D$ such that any solution $x(t)$ with initial value $x(0) \in I$ of an ordinary differential equation
-\begin{equation}\label{eq:5}
+\begin{equation}\label{eq:mlp_vf}
     \dot{x} = f(x), \quad x(0) \in D
 \end{equation}
 is defined for $t\in\reals_{+}$ and $x(t)$ is included in $I$.
-This defines a flow $\varphi(\cdot, \cdot)$ (Picard-Lindel\"of theorem).
-For Sec.~\ref{sec:fp_theorem} we assume that $f$ has  a finite set of hyperbolic stable fixed points.
-For Sec.~\ref{sec:lc_theorem} we assume that $f$ has  a finite set of hyperbolic stable periodic orbits.
+This defines a flow $\varphi(\cdot, \cdot)$ (by the Picard-Lindel\"of theorem, see Supp.Sec.\ref{sec:solutions}).
+For Sec.~\ref{sec:fp_theorem} we assume that the only $\omega$-limit sets of  $f$ are a finite number of hyperbolic fixed points.
+For Sec.~\ref{sec:lc_theorem} we assume that $f$ has a finite set of hyperbolic stable periodic orbits.
 For Sec.~\ref{sec:ca_theorem} we assume that $f$ has only a finite set of normally hyperbolic continuous attractors.
 %
 These restrictions of the target class are Bernstein-type results (in the classification of approximation result types made in \citep{jiang2023brief}).
@@ -526,18 +527,13 @@ For example, if we take the uniform norm of the uniform norm, it can be shown th
 
 %This theorem is phrased for the more general case, move to before? 
 \begin{theorem}\label{thrm:approx}
-Take 
-\begin{equation}\label{eq:mlp_vf}
-\dot x = f(x)   \ \ \ f\in C^1,
-\end{equation}
-with flow $\psi$ as in Sec.~\ref{sec:target}. Assume that the only omega limit sets of this system are a finite number of hyperbolic fixed points.
-%
-Then, for an arbitrary $\varepsilon, \delta > 0$, there exist a FNN $\hat f: \reals^n\rightarrow\reals^n$ with the UAP (see Sec.~\ref{sec:hypothesis}) such that the NODE defined by it $\dot x = \hat f(x)$ %just point to definition in app??
+Take $\dot x = f(x)   \ \ \ f\in C^1$, with flow $\psi$ as in Sec.~\ref{sec:target}.
+Then, for an arbitrary $\varepsilon, \delta > 0$, there exist a FNN $\hat f: \reals^n\rightarrow\reals^n$ with the UAP (see Sec.~\ref{sec:hypothesis}) such that the NODE defined by it $\dot x = g(x)$
 % \begin{equation}
 %\dot x = \hat f(x) = A\sigma(Bx+b)+a  %give this as example? 
 %\end{equation}
 %such that for a solution $\hat \varphi(t,x_0)$ satisfying Eq~\ref{eq:5} with initial state $x_0$ of the network
-with flow $\hat \varphi$ satisfies $\|\varphi-\hat \varphi\|_\varepsilon < \delta.$
+with flow $\varphi_g$ satisfies $\|\varphi_f- \varphi_g\|_\varepsilon < \delta.$
 \end{theorem}
 
 %proof will be at end of section? 
@@ -559,11 +555,10 @@ The fixed points of $C^1$ ODEs can be arbitrarily closely approximated. %Hausdor
 \begin{proof}
 %%%top eq
 Because of the density of the hypothesis class $\mathcal{G}$ we have that for any $f\in C^1$ and any $\varepsilon>0$
-there exists $\hat f\in\mathcal{G}$ such that $\|f-\hat f\|<\varepsilon$.
+there exists $g\in\mathcal{G}$ such that $\|f-g\|<\varepsilon$.
 %
 Structural stability implies that there exists a $\delta>0$ such that for all $g\in C^1$ that are $\delta$-$C^1$ close to $f$, the flow is topologically equivalent to that of $f$.
-%
-So we can choose $\delta$ such that for all $\|f-\hat f\|<\delta$ the flow of $\hat f$ is topologically equivalent to that of $f$.
+So we can choose $\delta$ such that for all $\|f-g\|<\delta$ the flow of $\hat f$ is topologically equivalent to that of $f$.
 Finally, fixed points of $\hat f$ are $\mathcal{O}(\varepsilon)$ close to those of $f$ (from Persistent Manifold Theorem\cite{jones1995gspt}).
 %orbits from these initial conditions converge to $\omega$-limit sets that are at most $\varepsilon_i$ Hausdorff distance from each other.
 \end{proof}
@@ -572,7 +567,6 @@ This establishes that for all $\varepsilon>0$ and $x_0$ initial states in a basi
 
 
 \paragraph{A tale of two errors}
-\ascomment{Change tilde to hat, or change fhat to g??}
 Note that the above error bound depends on two separate quantities: the local error 
 $\| f(s; \tilde{\varphi}_0, s(x)) - f(s; \tilde{\varphi}_0, s(x)) \|$ 
  and the term 
@@ -639,13 +633,14 @@ Eliminating this type of error would constitute perfectly matching the separatri
 We can reduce the volume in of initial points for which this type of error arises, by reducing the mismatch between the separatrices (proportional to the distance between the attractors).
 
 The minimal volume of initial values for which basin-type errors arise along their trajectories is 
-\[\varepsilon_{\operatorname{basin}} \coloneqq \vol \bigcup_{i \neq j}\boa(A_i^f)\cap\boa(A_j^g) = \sum_{i \neq j} \vol\left(\boa(A_i^f)\cap\boa(A_j^g)\right).\] %prove?
+\begin{equation}
+\operatorname{SMM}(f,g) \coloneqq \bigcup_{i \neq j}\boa(A_i^f)\cap\boa(A_j^g) \ \ \  \vol \left(\operatorname{SMM}(f,g)\right) =  \sum_{i \neq j} \left(\boa(A_i^f)\cap\boa(A_j^g)\right).
+\end{equation}
 %CHECK: double counting
-%encorporate f,g in def?
-\ascomment{Notation: $\varepsilon_{\operatorname{basin}}$ replace by $\operatorname{vol}_{\operatorname{basin}}$?}
+
 
 \begin{proposition}\label{prop:min_sep_bound}
-For any $\delta>0$, we can choose $g$ such that $\varepsilon_{\operatorname{basin}}<\delta$.
+For any $\delta>0$, we can choose $g$ such that $ \vol \left(\operatorname{SMM}(f,g)\right) <\delta$.
 \end{proposition}
 
 
@@ -655,22 +650,20 @@ The boundary of the BoA of attractor $A_i^f$ is %BoAs are open sets
 \[\partial\boa(A_i) = \overline{\boa(A_i^f)} \cap (X - \overline{\boa(A_i^f)}).\]
 where \(\overline{\cdot}\) denotes the closure of a set (same as \(\cl\)). %use consitent notation!!!!!!
 % =\cl\boa(A_i^f)-\boa(A_i^f)\.\]%this should hold for an open set...
-%
 Then for some  $\varepsilon_{\operatorname{sep}}>0$ we have that 
 \begin{equation}\label{eq:separatrixoverlap}
 \bigcup_{i\neq j} \boa(A_i^f)\cap\boa(A_j^g) \subset \bigcup_i B_{\varepsilon_{\operatorname{sep}}}(\partial\boa(A_i^f)). 
 \end{equation}
 
-%The left hand side's volume is at most $\mathcal{O}(\delta)$ with $\delta\leq\varepsilon_{\operatorname{sep}}$ the Hausdorff distance between the full separatrix submanifolds.
+%The left hand side's volume is at most $\mathcal{O}(\delta)$ with $\delta\leq\varepsilon_{\operatorname{SSM}}$ the Hausdorff distance between the full separatrix submanifolds.
 %This $\delta$ can be made arbitrarily low because of the FNN universal approximation results.
 
-
-%link: here is how
+%TODO: link: here is how
 For each attractor $A_i$ we have that the boundary of the basin of attraction $\partial(\boa(A_i^f))$ is a compact normally hyperbolic invariant manifold (see Supp.Sec.~\ref{sec:boaboundary}).
 Consider the connected components $B^f_{ij}$ of $\partial(\boa(A_i^f))$. %NOTE: it is not the case that we have a connected component for each pair of attractors
 Then, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$-$C^1$ close to $f$ such that $g$ has a normally hyperbolic invariant manifold  $B^g_{ij}$ that is diffeomorphic to and at most at $\mathcal{O}(\delta_{ij})$ Hausdorff distance from $B^f_{ij}$.
-Therefore, by Eq.~\ref{eq:separatrixoverlap}, the overlap of the separatrices is less than $\mathcal{O}(\varepsilon_{\operatorname{sep}})$. %TODO: figure out bound on the volume
-%compactness should imply that the volume is at most $\mathcal{\varepsilon_{\operatorname{sep}}$.
+Therefore, by Eq.~\ref{eq:separatrixoverlap}, the overlap of the separatrices is less than $\mathcal{O}(\varepsilon_{\operatorname{SSM}})$. 
+%compactness should imply that the volume is at most $\mathcal{\varepsilon_{\operatorname{SSM}}$.
 Therefore, there is $k_{ij}\in\reals$ such that the Hausdorff distance between $B^f_{ij}$ and $B^g_{ij}$ is $k_{ij}\delta_{ij}$.
 Let  $N_{\operatorname{cc}}^i$ be the number of connected components of $\partial(\boa(A_i^f))$.
 Choose $\delta_{ij}<k_{ij}\delta/N_{\operatorname{cc}}^i$. 
@@ -678,9 +671,6 @@ Define $\delta_i\coloneqq\sum_{i=1}{N_{\operatorname{cc}}^i}\delta_{ij}$.
 % conclude for all attractor (pairs)
 Now we need to sum errors coming from all pairs of basins of attraction together.
 Take $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each attractor $A_i$ and hence $\sum_i\delta_i<\delta$.
-
-
-
 
 
 \subsubsection{Proof of Theorem~\ref{thrm:approx} for systems with hyperbolic fixed points}\label{sec:proof_fp_approx}
@@ -695,22 +685,27 @@ By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can 
 
 \paragraph{Bookkeeping}
 \ascomment{Express everything in terms of $\varepsilon$ and $\delta$}
-\begin{enumerate}
+\begin{enumerate}[start=0]
+\item $\varepsilon_{top.eq.}$ for topological equivalence (structural stability)
 \item Bounding the volume of separatix mismatch regions
 \begin{enumerate}
 \item Rolling back time until $T$ to get isolating neighborhood ($\eta_T$ share of $\mathcal{X}$ not included after this time (call the separatrix mismatch regions $\operatorname{sepmiss}$, which decreases monotonically for $T$)
-\item Approximation of isolating neighborhood: $\mu$ close in vf space implies $\mathcal{O}(\mu)$ closeness of persisting isolating neighbourhood (part of state space not covered in basin of attraction guarantee: $\widehat{\operatorname{sepmiss}}$)
+\item Approximation of isolating neighborhood: $\mu$ close in vf space implies $\mathcal{O}(\mu)$ closeness of persisting isolating neighbourhood (part of state space not covered in basin of attraction guarantee: $\widehat{\operatorname{sepmis}}$)
 \item $\Gamma(\eta_T, k\mu) <  \delta$ gives a bound on how close our approximation needs to be in vector space
 \item Need at least $\eta_T<k\mu$ (?)
-\item So if we have $\| f - \hat f\|<\tfrac{1}{k}\delta$ then $\vol(\widehat{\operatorname{sepmiss}})<\delta$
+\item So if we have $\| f - \hat f\|<\tfrac{1}{k}\delta$ then $\vol(\widehat{\operatorname{sepmis}})<\delta$
 \end{enumerate}
-\item Bounding the flow errors inside basins (remaining space $\mathcal{X}-\widehat{\operatorname{sepmiss}}$)
+\item Bounding the flow errors inside basins (remaining space $\mathcal{X}-\widehat{\operatorname{sepmis}}$)
 \begin{enumerate}
 \item Per basin: $\Psi_i(\varepsilon)$ so that flow is $\varepsilon$ close (from previous finite time horizon + trajectory closeness to attractor after finite time or from FMP based results)
 \item Take minimum from these bounds $\Psi_{\min}(\varepsilon)$
 \end{enumerate}
-\item Take minimum $\{\tfrac{1}{k}\delta, \Psi_{\min}(\varepsilon)\}$ guarantees $\varepsilon$,$\delta$-approximation
+\item Take minimum $\{\tfrac{1}{k}\delta, \Psi_{\min}(\varepsilon),\varepsilon_{top.eq.}\}$ guarantees $\varepsilon$,$\delta$-approximation
 \end{enumerate}
+
+
+
+
 
 \subsection{Approximation of stable limit cycles}\label{sec:lc_theorem}
 %TODO:  name for type III error: L-type (limit cycle) P-type (period)
@@ -724,26 +719,26 @@ We will describe a recipe for systems with single and multiple limit cycles.
 
 
 \subsubsection{A single stable limit cycle}
-We start out with an approximation of the target vector field with an $\varepsilon$ small difference ($C^1$ distance between the vector fields).
-Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O}(\varepsilon)$ the original limit cycle approximation.
-Denote the set of points in the limit cycles by $\gamma$ and $\hat\gamma$ for the target and approximation, respectively.
+Again, we start out with an approximation of the target vector field with an $\varepsilon_{top.eq.}$ small difference so that topological equivalence is guaranteed ($C^1$ distance between the vector fields).
+Fenichel's PMT guarantees that the perturbed limit cycle lies within $\mathcal{O}(\varepsilon)$ the original limit cycle approximation. %Hausdorff
+Denote the set of points in the limit cycles by $\gamma_f$ and $\gamma_g$ for the target and approximation, respectively.
 %
 %However, we can correct this discrepancy.
-We typically have a difference between the periods of limit cycle of the target $T$ and of the approximation $\hat T$: $\varepsilon_T\coloneqq T-\hat T>0$
-with \[T\coloneqq\frac{1}{\int_{\gamma}\|f(x)\|dx} \text{ and } \hat T\coloneqq\frac{1}{\int_{\hat{\gamma}}\|\hat f(x)\|dx}.\]
+We typically have a difference between the periods of limit cycle of the target $T_f$ and of the approximation $\hat T$: $\varepsilon_T\coloneqq T_f- T_g>0$
+with \[T_f\coloneqq\frac{1}{\int_{\gamma}\|f(x)\|dx} \text{ and } T_g\coloneqq\frac{1}{\int_{\hat{\gamma}}\|g(x)\|dx}.\]
 %
-We will apply a perturbation $\bar{f}$ to our approximation, $\tilde f = \hat f + \bar f$, that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
+We will apply a perturbation $\bar{f}$ to our approximation, $\tilde f = g + \bar f$, that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
 so that 
 \begin{equation}\label{eq:lc_constraint}
 \int_{\tilde{\gamma}}\|\tilde{f}(x)\| dx = \frac{1}{T}. 	% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
 \end{equation}
 The existence of such a perturbation (i.e. that indeed it will be \emph{small} enough) requires that the initial difference between the periods is small:
 if the approximation vector field is close enough to the target vector field, then the periods will be guaranteed to be close (see for the precise statement and proof Supp.Sec.~\ref{sec:periodcloseness}).
-
+%this quarantees that top.eq. is not violated
 
 We can use the fact that the tubular neighborhood of diameter $\delta_T$ around the limit cycle is an (inflowing) normally hyperbolic invariant manifold.
 We will now construct the correction $\bar{f}$ so that the period of our approximation matches the targets.
-This implies that there exists a 3 layer FNN $\hat f_{\operatorname{bump}}$ that approximates the vector field $f_{\operatorname{bump}}$ that is a bump function around the limit cycle (similar idea as Supp.Sec.~5 in \citep{Sagodi2024a}). %but this would be an actual possible implementation
+This implies that there exists a 3 layer FNN $g_{\operatorname{bump}}$ that approximates the vector field $f_{\operatorname{bump}}$ that is a bump function around the limit cycle (similar idea as Supp.Sec.~5 in \citep{Sagodi2024a}). %but this would be an actual possible implementation
 Then we know that this NHIM will persist (from Fenichel's PMT, see Supp.Sec~\ref{sec:fenichel}).
 We also know that there is a maximal perturbation size ($\varepsilon_{LC}$) for which the limit cycle persists.
 So we have to guarantee that the limit cycle approximation is already close enough so that this perturbation does not destroy the limit cycle (Supp.Sec.~\ref{sec:periodcloseness}). %repetition
@@ -754,20 +749,15 @@ The only thing we now need to worry about is how the length of the limit cycle c
 %
 The resulting total approximation is %replace a(\varepsilon_T) with just an optimal constant?
 \begin{equation}\label{eq:lc_correction}
-\tilde{f}= \hat{f}+a_{\varepsilon_T}^*\hat f_{\operatorname{bump}} = 
- \hat{f} + a_{\varepsilon_T}^*(f_{\operatorname{bump}}+ \hat{\varepsilon}\bar{f}_{\operatorname{bump}}),
+\tilde{f}= g+a_{\varepsilon_T}^*g_{\operatorname{bump}} = 
+g + a_{\varepsilon_T}^*(f_{\operatorname{bump}}+ \hat{\varepsilon}\bar{f}_{\operatorname{bump}}),
  \end{equation}
-where $\hat{\varepsilon}\bar{f}_{\operatorname{bump}} = f_{\operatorname{bump}} -\hat f_{\operatorname{bump}}$ with $\|\bar f\|=1$ and $\hat \varepsilon <\max(\varepsilon_T,\varepsilon_{LC})$. %actually this should be a function of epsilon T so that closeness in Supp.Sec.~\ref{sec:periodcloseness} is guaranteed
+where $\hat{\varepsilon}\bar{f}_{\operatorname{bump}} = f_{\operatorname{bump}} - g_{\operatorname{bump}}$ with $\|\bar f\|=1$ and $\hat \varepsilon <\max(\varepsilon_T,\varepsilon_{LC})$. %actually this should be a function of epsilon T so that closeness in Supp.Sec.~\ref{sec:periodcloseness} is guaranteed
 %no this is not the bound that belongs to hat epsilon!!!!!!!!!!!
 %it should be \|f_{\operatorname{bump}\| < some epsilon...
 %
 %So if the period gets longer because of the perturbation (i.e. $\hat \ell(\varepsilon)$ is an increasing function) as long as $1/(\hat \ell+g(\varepsilon))$ is not decreasing at the same rate there should exist a value $\varepsilon$ for which the equality holds.
-
 See further Supp.Sec.~\ref{sec:lc_extras}.
-
-\paragraph{Summary}
-We can choose the initial approximation $\hat{f}$ such that the period difference is smaller than $\varepsilon_T$.
-We can then choose a correction to the vector field in a tubular neighborhood around the limit cycle such that the difference in periods between target and approximation is zero.
 
 
 \paragraph{Bookkeeping}
@@ -777,7 +767,7 @@ We can then choose a correction to the vector field in a tubular neighborhood ar
 \item Small enough so that it is included inside the basin of attraction
 \item Should not change flow to introduce more than $\varepsilon$ error flow type error.
 \end{enumerate}
-\item How big should $a_{\varepsilon_T}$ be: Initial period mismatch $\varepsilon_T$, then $a_{\varepsilon_T}< \Lambda(\varepsilon_T)$ for some function $\Lambda$...
+\item How big should $a_{\varepsilon_T}$ be: Initial period mismatch $\varepsilon_T$, then $a_{\varepsilon_T}< \Lambda(\varepsilon_T)$ %TODO: specify function $\Lambda$...
 \item How big can the bump approximation error be?
 \begin{enumerate}
 \item Should not shift location of limit cycle by more than $\varepsilon$.
@@ -791,6 +781,10 @@ We can then choose a correction to the vector field in a tubular neighborhood ar
 We have that $\|\eta\bar f  + a_{\varepsilon_T}\hat \varepsilon\bar f_{\operatorname{bump}}\| < \eta + a_{\varepsilon_T}\hat \varepsilon$ (triangle inequality and absolute homogeneity of norm). Therefore, we can take $\hat f$ to be  $\Psi_{\min}(\eta + a_{\varepsilon_T}\hat \varepsilon)$ close to $f$ to guarantee $\varepsilon$,$\delta$-approximation
 \end{enumerate}
 \end{enumerate}
+
+\paragraph{Summary}
+We can choose the initial approximation $\hat{f}$ such that the period difference is smaller than $\varepsilon_T$.
+We can then choose a correction to the vector field in a tubular neighborhood around the limit cycle such that the difference in periods between target and approximation is zero.
 
 
 
