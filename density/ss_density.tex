@@ -165,7 +165,7 @@ Density results describe the completeness of a hypothesis class relative to a ta
 
 \subsection{Universal approximation for mappings}\label{sec:uapmappings}
 This is the basic ingredient for many of the UAP results in the literature and will be the starting point for our proof.
-See Supp.Sec.~\ref{sec:uniapproxffn} for results on FNN based UAP.
+See Supp.Sec.~\ref{sec:uniapproxffn} for results on Feedforward Neural Netowkrs (FNN) based UAP.
 
 
 %vector fields (which is just FNN setting)
@@ -430,8 +430,6 @@ However, this is trivial for approximation of structurally stable systems with N
 It is true by virtue of Theorem.~\ref{theorem:ss} that vector fields that are close to the vector field of a dynamical system will have dynamics that are topologically conjugate to it.
 Because it is well known that vector fields can be approximated to arbitrary precision with FNN, this result immediately follows for NODEs.
 Finally, we would like to mention the possibility to construct dynamics with Cohen-Grossberg networks for arbitrary sets of fixed point and limit cycles through realization of dynamics \citep{cohen1992construction}.
-%the autonomous ESN ψ ∈ C 1(Rd) with parameters ( A,  W in, W out,  φ) has a normally hyperbolic attracting submanifold on which ψ is topologically conjugate to φ.
-
 
 
 
@@ -467,12 +465,12 @@ Each of these results considers approximation of a system on a compact space tha
 For our approximation results, we consider the following dynamics.
 Let $D$ be an open subset of $\mathbb{R}^n$,
  $f\colon D \to \mathbb{R}^m$ be a $C^1$-mapping,
-  and $I$ be a compact subset of $D$ such that any solution $x(t)$ with initial value $x(0) \in I$ of an ordinary differential equation
+  and $I$ be a compact subset of $D$ such that any solution $x(t)$ with initial value $x(0) \in I$ of the ordinary differential equation
 \begin{equation}\label{eq:mlp_vf}
-    \dot{x} = f(x), \quad x(0) \in D
+    \dot{x} = f(x),
 \end{equation}
 is defined for $t\in\reals_{+}$ and $x(t)$ is included in $I$.
-This defines a flow $\varphi(\cdot, \cdot)$ (by the Picard-Lindel\"of theorem, see Supp.Sec.\ref{sec:solutions}).
+This defines a flow $\varphi(\cdot, \cdot)$ by the Picard-Lindel\"of theorem (see Supp.Sec.\ref{sec:solutions}).
 For Sec.~\ref{sec:fp_theorem} we assume that the only $\omega$-limit sets of  $f$ are a finite number of hyperbolic fixed points.
 For Sec.~\ref{sec:lc_theorem} we assume that $f$ has a finite set of hyperbolic stable periodic orbits.
 For Sec.~\ref{sec:ca_theorem} we assume that $f$ has only a finite set of normally hyperbolic continuous attractors.
@@ -528,7 +526,7 @@ For example, if we take the uniform norm of the uniform norm, it can be shown th
 %This theorem is phrased for the more general case, move to before? 
 \begin{theorem}\label{thrm:approx}
 Take $\dot x = f(x)   \ \ \ f\in C^1$, with flow $\psi$ as in Sec.~\ref{sec:target}.
-Then, for an arbitrary $\varepsilon, \delta > 0$, there exist a FNN $\hat f: \reals^n\rightarrow\reals^n$ with the UAP (see Sec.~\ref{sec:hypothesis}) such that the NODE defined by it $\dot x = g(x)$
+Then, for an arbitrary $\varepsilon, \delta > 0$, there exist a FNN $\hat f: \reals^n\rightarrow\reals^n$ with the UAP (see Sec.~\ref{sec:hypothesis}) such that the NODE defined by it, i.e. $\dot x = g(x)$,
 % \begin{equation}
 %\dot x = \hat f(x) = A\sigma(Bx+b)+a  %give this as example? 
 %\end{equation}
@@ -647,8 +645,8 @@ For any $\delta>0$, we can choose $g$ such that $ \vol \left(\operatorname{SMM}(
 %focus on separatrices or boundaries of boas?
 \paragraph{Boundary of BoA is persistent and can be made arbitrarily close to target}% this depends on the fact that separatrices are persistent
 The boundary of the BoA of attractor $A_i^f$ is %BoAs are open sets
-\[\partial\boa(A_i) = \overline{\boa(A_i^f)} \cap (X - \overline{\boa(A_i^f)}).\]
-where \(\overline{\cdot}\) denotes the closure of a set (same as \(\cl\)). %use consitent notation!!!!!!
+\[\partial\boa(A_i^f) = \overline{\boa(A_i^f)} \cap (X - \overline{\boa(A_i^f)}).\]
+where \(\overline{\cdot}\) denotes the closure of a set (same as \(\cl\)). %use consistent notation!!!!!!
 % =\cl\boa(A_i^f)-\boa(A_i^f)\.\]%this should hold for an open set...
 Then for some  $\varepsilon_{\operatorname{sep}}>0$ we have that 
 \begin{equation}\label{eq:separatrixoverlap}
@@ -662,7 +660,7 @@ Then for some  $\varepsilon_{\operatorname{sep}}>0$ we have that
 For each attractor $A_i$ we have that the boundary of the basin of attraction $\partial(\boa(A_i^f))$ is a compact normally hyperbolic invariant manifold (see Supp.Sec.~\ref{sec:boaboundary}).
 Consider the connected components $B^f_{ij}$ of $\partial(\boa(A_i^f))$. %NOTE: it is not the case that we have a connected component for each pair of attractors
 Then, by Fenichel's Persistent manifold theorem, there exists a $\delta_{ij}$ such that for all $g$ that are $\delta_{ij}$-$C^1$ close to $f$ such that $g$ has a normally hyperbolic invariant manifold  $B^g_{ij}$ that is diffeomorphic to and at most at $\mathcal{O}(\delta_{ij})$ Hausdorff distance from $B^f_{ij}$.
-Therefore, by Eq.~\ref{eq:separatrixoverlap}, the overlap of the separatrices is less than $\mathcal{O}(\varepsilon_{\operatorname{SSM}})$. 
+Therefore, by Eq.~\ref{eq:separatrixoverlap}, the overlap of the separatrices is less than $\mathcal{O}(\varepsilon_{\operatorname{SSM}})$. %this is not entirely correct....
 %compactness should imply that the volume is at most $\mathcal{\varepsilon_{\operatorname{SSM}}$.
 Therefore, there is $k_{ij}\in\reals$ such that the Hausdorff distance between $B^f_{ij}$ and $B^g_{ij}$ is $k_{ij}\delta_{ij}$.
 Let  $N_{\operatorname{cc}}^i$ be the number of connected components of $\partial(\boa(A_i^f))$.
@@ -693,7 +691,7 @@ By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can 
 \item Approximation of isolating neighborhood: $\mu$ close in vf space implies $\mathcal{O}(\mu)$ closeness of persisting isolating neighbourhood (part of state space not covered in basin of attraction guarantee: $\widehat{\operatorname{sepmis}}$)
 \item $\Gamma(\eta_T, k\mu) <  \delta$ gives a bound on how close our approximation needs to be in vector space
 \item Need at least $\eta_T<k\mu$ (?)
-\item So if we have $\| f - \hat f\|<\tfrac{1}{k}\delta$ then $\vol(\widehat{\operatorname{sepmis}})<\delta$
+\item So if we have $\| f - g\|<\tfrac{1}{k}\delta$ then $\vol(\widehat{\operatorname{sepmis}})<\delta$
 \end{enumerate}
 \item Bounding the flow errors inside basins (remaining space $\mathcal{X}-\widehat{\operatorname{sepmis}}$)
 \begin{enumerate}
@@ -1174,59 +1172,56 @@ Seperatrices are robust hence decision-making is robust to D-type noise \citep{P
 \appendix 
 
 \section{Universal Approximation with Feedforward Neural Networks (FNNs)}\label{sec:uniapproxffn}
-
 The foundation of our approach lies in leveraging the \textit{universal approximation property} of feedforward neural networks (FNNs) \citep{poggio1990networks}, a powerful result that makes neural networks exceptional for a broad array of tasks. This property allows FNNs to approximate complex functions with remarkable flexibility, providing the theoretical basis for their widespread success in machine learning.
 For an overview see \citep{blum1991approximation,scarselli1998universal,augustine2024survey}.
-
-
-
 
 
 \subsection{The Universal Approximation Theorem}
 The universal approximation theorem states that a \textit{feedforward neural network} with at least one hidden layer, using a non-linear activation function (such as the sigmoid or ReLU), and equipped with enough neurons, can approximate \textit{any continuous function} defined on a compact subset of \(\mathbb{R}^n\) to arbitrary precision.
 
 Formally, for any continuous function \(f(x)\) and any \(\varepsilon > 0\), there exists an FNN such that:
-\[
-| f(x) - f_{\text{MLP}}(x) | < \varepsilon \quad \forall x \in K
-\]
+\begin{equation}
+| f(x) - f_{\text{MLP}}(x) | < \varepsilon \quad \forall x \in K,
+\end{equation}
 where \(K \subset \mathbb{R}^n\) is compact. This guarantees that given sufficient resources (neurons, depth), the FNN can approximate \(f(x)\) as closely as desired within this bounded region.
 
 The importance of the compact domain assumption is that it constrains the input space to a finite region, ensuring the approximation remains well-behaved.	
 This is where the theorem’s beauty shines: while we often don’t know the explicit form of the target function, neural networks learn it purely from data, making them excellent for tasks like regression, classification, and pattern recognition.
 
- 
- \begin{theorem}[Universal Approximation Theorem for Feedforward Neural Networks\citep{hornik1989multilayer,schafer2007uap}]
-%\textbf{Theorem 1 (Universal Approximation Theorem for Feedforward Neural Networks).} 
-For any sigmoid activation function \( f \), any dimension \( I \), and any probability measure \( \mu \) on \( (\mathbb{R}^I, \mathcal{B}^I) \), \( \Sigma_I(f) \) is uniformly dense on a compact domain in \( C^I \) and \( \rho_{\mu} \)-dense in \( M^I \).
-\end{theorem}
-
-\begin{corollary}%[in \citep{schafer2007uap}]
-Theorem 1 holds for the approximation of functions in \( C^{I,N} \) and \( M^{I,N} \) by the extended function class \( \Sigma^{I,N} \). Thereby, the metric \( \rho_{\mu} \) is replaced by \( \rho_{\mu}^N := \sum_{k=1}^{N} \rho_{\mu}(f_k, g_k) \).
-\end{corollary}
-
-\subsection{Activation functions} %Sigmoidal 
-At the heart of the theorem lies the activation function. Any non-linear, continuous, and non-constant function enables the network to approximate continuous functions universally.
-A classic example is the \textit{sigmoidal function}, defined by the property:
-\[
-\lim_{x \to -\infty} \sigma(x) = 0 \quad \text{and} \quad \lim_{x \to +\infty} \sigma(x) = 1
-\]
-Many popular activation functions, such as the logistic sigmoid and tanh, fall into this category.
-These functions introduce the necessary non-linearity, enabling the network to break free from the constraints of purely linear transformations.
-
-%non-sigmoidal activations like the \textit{Rectified Linear Unit (ReLU)} 
-Despite ReLU's unbounded nature, it still supports the universal approximation property \citep{yarotsky2017error}.
-
-\citep{mhaskar2019function}
-
-\subsection{The Multi-layer Perceptron (MLP)}
 The universal approximation property of FNNs was first proven by \citep{cybenko1989approximation} for sigmoidal activation functions. This was followed by significant generalizations by \citep{hornik1989multilayer}, \citep{funahashi1989approximate} and \citep{hechtnielsen1992backpropagation}, which extended the result to broader classes of activation functions, including the popular ReLU.
 These results serve as the cornerstone of modern neural network theory, supporting the use of deep architectures across diverse machine learning applications.
 
-% There is a single hidden layer feedforward network that approximates any measurable function to any desired degree of accuracy on some compact set K \citep{hornik1989multilayer}.
+For example, sums of polynomial functions are known to have the UAP \citep{llavona1986approximation}.
 
-%all above are 3 layer FNNs? right?
 
-Let’s now focus on the structure of a \textit{multi-layer perceptron (MLP)}, a common form of FNN. For a simple 3-layer MLP, the output can be expressed as:
+\subsection{Activation functions} %Sigmoidal 
+\paragraph{Sigmoid} %general form?
+\begin{theorem}[Universal Approximation Theorem for Feedforward Neural Networks\citep{hornik1989multilayer,schafer2007uap}]
+For any sigmoid activation function \( f \), any dimension \( I \), and any probability measure \( \mu \) on \( (\mathbb{R}^I, \mathcal{B}^I) \), \( \Sigma_I(f) \) is uniformly dense on a compact domain in \( C^I \) and \( \rho_{\mu} \)-dense in \( M^I \).
+\end{theorem}
+
+%\begin{corollary}%[in \citep{schafer2007uap}]
+%Theorem 1 holds for the approximation of functions in \( C^{I,N} \) and \( M^{I,N} \) by the extended function class \( \Sigma^{I,N} \). Thereby, the metric \( \rho_{\mu} \) is replaced by \( \rho_{\mu}^N := \sum_{k=1}^{N} \rho_{\mu}(f_k, g_k) \).
+%\end{corollary}
+
+
+At the heart of the theorem lies the activation function.
+Any non-linear, continuous, and non-constant function enables the network to approximate continuous functions universally\citep{csaji2001approximation}.
+A classic example is the \textit{sigmoidal function}, defined by the property:
+\[
+\lim_{x \to -\infty} \sigma(x) = 0 \quad \text{and} \quad \lim_{x \to +\infty} \sigma(x) = 1.
+\]
+Many popular activation functions, such as the logistic sigmoid and tanh, fall into this category.
+Despite ReLU's unbounded nature, it still supports the universal approximation property \citep{yarotsky2017error}.
+These functions introduce the necessary non-linearity, enabling the network to break free from the constraints of purely linear transformations.
+%non-sigmoidal activations like the \textit{Rectified Linear Unit (ReLU)} 
+
+The universal approximation property is equivalent to having a nonpolynomial activation function \citep{pinkus1999approximation}.
+
+
+\subsection{The Multi-layer Perceptron (MLP)}
+Let’s now focus on the structure of a \textit{multi-layer perceptron (MLP)}, a common form of FNN with the UAP.
+ For a simple 3-layer MLP, the output can be expressed as:
 \[
 h^{(1)} = \sigma(W^{(1)} x + b^{(1)})
 \]
@@ -1234,10 +1229,10 @@ h^{(1)} = \sigma(W^{(1)} x + b^{(1)})
 f_{\text{MLP}}(x) = W^{(2)} h^{(1)} + b^{(2)}
 \]
 Here, \(h^{(1)}\) represents the hidden layer, while \(W^{(1)}, W^{(2)}\) and \(b^{(1)}, b^{(2)}\) are the weights and biases learned during training. The activation function \(\sigma(\cdot)\) introduces the necessary non-linearity.
-
 Three-layered multi-output Feedforward Networks are universal approximators for vector-valued functions \citep{irie1988capabilities}.
+In these networks there is a single hidden layer feedforward network that approximates any measurable function to any desired degree of accuracy on some compact set \citep{hornik1989multilayer}.
 
-
+It is not the specific choice of the activation function but rather the multilayer feed-forward architecture itself that gives neural networks the potential of being universal approximators\citep{hornik1991approximation}.
 
 %In a more general case, for a deeper MLP with \(L\) layers, we have:
 %\[
@@ -1259,30 +1254,19 @@ Three-layered multi-output Feedforward Networks are universal approximators for 
 %This architecture allows the MLP to progressively build complex representations, layer by layer, transforming raw input data into rich feature hierarchies.%
 %For the approximations, we either need to let the width or depth of the MLP grow.
 
-It is not the specific choice of the activation function but rather the multilayer feed-forward architecture itself that gives neural networks the potential of being universal approximators\citep{hornik1991approximation}.
 
-%TODO: organize
-The universal approximation property is equivalent to having a nonpolynomial activation function \citep{pinkus1999approximation}.
 
-\citep{lowe1988multivariable}
-\citep{mhaskar1997neural}
-\citep{leshno1993multilayer}
-UA with Deep narrow \citep{kidger2020universal}
-with WTA networks \citep{maass2000wta}
-Function+Derivatives \citep{hornik1990universal}
-function and derivative \citep{li1996simultaneous}
-ReLU\citep{huang2020relu}
+\subsection{Efficiency}
+The blessing of compositionality mitigates the curse of dimensionality \citep{mhaskar2019function}.
 
 
 \subsection{Other results on UAP for mappings}
-For example, sums of polynomial functions are known to have this property\citep{llavona1986approximation}.
+
  
-NODEs are $L^p$-universal approximators \citep{li2022deep,li2022deeparxiv}
-%invariant functions
-\begin{remark}
-The universal approximation property with respect to the $L^p$-norm can be insufficient as it does not guarantee an approximation for the entire input domain:
+NODEs are $L^p$-universal approximators \citep{li2022deep,li2022deeparxiv}.
+However, the universal approximation property with respect to the $L^p$-norm can be insufficient as it does not guarantee an approximation for the entire input domain:
  $L^p$ approximation may still hold even if the approximator largely differs from the target function on a small region of the input space.
-\end{remark}
+
 
 
 Universal approximation of 
@@ -1293,7 +1277,18 @@ Universal approximation of
 \end{itemize}
 
 
+\ascomment{TODO: organize}
+RBF\citep{park1991universal}
 a\citep{marchi2021training}
+\citep{lowe1988multivariable}
+\citep{mhaskar1997neural}
+\citep{leshno1993multilayer}
+UA with Deep narrow \citep{kidger2020universal}
+with WTA networks \citep{maass2000wta}
+Function+Derivatives \citep{hornik1990universal}
+function and derivative \citep{li1996simultaneous}
+ReLU\citep{huang2020relu}
+ResNet\citep{lin2018resnet}
 
 
 
