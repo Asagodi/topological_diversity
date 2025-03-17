@@ -435,26 +435,35 @@ Finally, we would like to mention the possibility to construct dynamics with Coh
 
 \section{Approximation of multi-stable dynamical systems on infinite time intervals}
 \paragraph{Roadmap}
-First we describe the target (the systems we can approximate) and hypothesis classes (the systems that we approximate with) and the metric for the density result (way we measure how wrong our approximation is to our target system).
-Then, we prove our universal approximation property for this setting by step-wise constructing the target class:
-starting with autonomous systems with a finite number of hyperbolic fixed points,
-then systems with (additionally) a finite number of hyperbolic limit cycles
-and finally, covering approximation of chaotic orbits.
-We then extend these results to non-autonomous dynamical systems (Sec.~\ref{sec:nonautonomous}).
+%First we describe the target (the systems we can approximate) and hypothesis classes (the systems that we approximate with) and the metric for the density result (way we measure how wrong our approximation is to our target system).
+%Then, we prove our universal approximation property for this setting by step-wise constructing the target class:
+%starting with autonomous systems with a finite number of hyperbolic fixed points,
+%then systems with (additionally) a finite number of hyperbolic limit cycles
+%and finally, covering approximation of chaotic orbits.
+%We then extend these results to non-autonomous dynamical systems (Sec.~\ref{sec:nonautonomous}).
+%
+%%mention that the focus is on semiflows? Sec.~\ref{sec:semiflow}
+%
+%We will discuss what the space is of target dynamical systems that we can approximate (Sec.~\ref{sec:target}).
+%Furthermore, these can be approximated in a particular way, i.e. with a specific difference between the approximant and the target system (the metric): measured as the expectation of the uniform norm difference between the flows (Sec.~\ref{sec:metric}). 
+%We will show that we can make the probability of finding a trajectory of the approximation to be off by a certain arbitrary threshold arbitrarily small. 
+%
+%%TODO remove repeat
+%We start by showing the UAP for our hypothesis class for structurally stable systems with a finite set of fixed points  (introduced in Sec.~\ref{sec:hypothesis} and proven in Sec.~\ref{sec:fp_theorem}).
+%Then we extend this results where we consider systems with a finite set of periodic orbits (Sec.~\ref{sec:lc_theorem}).
+%We then also include systems that additionally have a finite set of continuous attractors (Sec.~\ref{sec:ca_theorem}).
+%We prove with how these results extend to a class of non-autonomous dynamical systems (Sec.~\ref{sec:nonautonomous}) 
+%For remarks about approximation of chaotic orbits (Sec.~\ref{sec:chaos}).
+%Each of these results considers approximation of a system on a compact space that is globally attractive. %explain what this entails
 
-%mention that the focus is on semiflows? Sec.~\ref{sec:semiflow}
 
-We will discuss what the space is of target dynamical systems that we can approximate (Sec.~\ref{sec:target}).
-Furthermore, these can be approximated in a particular way, i.e. with a specific difference between the approximant and the target system (the metric): measured as the expectation of the uniform norm difference between the flows (Sec.~\ref{sec:metric}). 
-We will show that we can make the probability of finding a trajectory of the approximation to be off by a certain arbitrary threshold arbitrarily small. 
-
-%TODO remove repeat
-We start by showing the UAP for our hypothesis class for structurally stable systems with a finite set of fixed points  (introduced in Sec.~\ref{sec:hypothesis} and proven in Sec.~\ref{sec:fp_theorem}).
-Then we extend this results where we consider systems with a finite set of periodic orbits (Sec.~\ref{sec:lc_theorem}).
-We then also include systems that additionally have a finite set of continuous attractors (Sec.~\ref{sec:ca_theorem}).
-We prove with how these results extend to a class of non-autonomous dynamical systems (Sec.~\ref{sec:nonautonomous}) 
-For remarks about approximation of chaotic orbits (Sec.~\ref{sec:chaos}).
-Each of these results considers approximation of a system on a compact space that is globally attractive. %explain what this entails
+First, we define the target class (the dynamical systems we approximate), the hypothesis class (the systems we approximate with), and the metric used to quantify approximation error (Sec.~\ref{sec:target}, \ref{sec:metric}). We then establish our universal approximation property (UAP) by progressively constructing the target class:
+\begin{itemize}
+\item Structurally stable systems with a finite number of hyperbolic fixed points (Sec.~\ref{sec:fp_theorem}).
+\item Systems with a finite number of hyperbolic limit cycles (Sec.~\ref{sec:lc_theorem}).
+\item Systems with a finite set of continuous attractors, including chaotic orbits (Sec.~\ref{sec:ca_theorem}, \ref{sec:chaos}).
+\end{itemize}
+Finally, we extend these results to non-autonomous dynamical systems (Sec.~\ref{sec:nonautonomous}). Throughout, we consider approximation in a metric measuring the expectation of the uniform norm difference between flows, ensuring that the probability of large deviations is arbitrarily small. Each result applies to compact, globally attractive spaces.
 
 
 \subsection{Setup}
