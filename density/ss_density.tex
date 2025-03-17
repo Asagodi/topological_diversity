@@ -711,6 +711,14 @@ By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can 
 \end{enumerate}
 
 
+\paragraph{Bookkeeping}  
+To express all approximations in terms of $\varepsilon$ and $\delta$, we introduce a few key quantities. First, we define $\varepsilon_{top.eq.}$ as the tolerance ensuring topological equivalence, which guarantees structural stability.  
+
+To bound the volume of separatrix mismatch regions, we consider rolling back time to $T$ to obtain an isolating neighborhood. After this rollback, a fraction $\eta_T$ of $\mathcal{X}$ remains outside this neighborhood, defining the separatrix mismatch regions, $\operatorname{sepmiss}$. Importantly, the volume of these regions decreases monotonically as $T$ increases. To approximate the isolating neighborhood, we observe that if two vector fields differ by at most $\mu$, then the resulting isolating neighborhoods remain within $\mathcal{O}(\mu)$ proximity. This leads to an upper bound on the portion of the state space not covered by the basin of attraction guarantee, which we denote as $\widehat{\operatorname{sepmis}}$. If the function $\Gamma(\eta_T, k\mu)$ satisfies $\Gamma(\eta_T, k\mu) < \delta$, we obtain a condition on the required accuracy of our vector field approximation. In particular, ensuring $\eta_T < k\mu$ implies that if $\| f - g \| < \tfrac{1}{k} \delta$, then the volume of the uncovered region is bounded by $\vol(\widehat{\operatorname{sepmis}}) < \delta$.  
+
+Within the remaining portion of the state space, $\mathcal{X} - \widehat{\operatorname{sepmis}}$, we control the flow error. For each basin, we define a function $\Psi_i(\varepsilon)$ that quantifies how closely the flow remains within $\varepsilon$ of the true trajectory. This bound follows either from finite-time trajectory closeness to the attractor or from results based on the Finite-Time Mapping Property (FMP). Taking the minimum across all basins, we obtain a global bound, $\Psi_{\min}(\varepsilon)$.  
+Combining these results, we conclude that setting $\varepsilon$ and $\delta$ according to $\min \left\{ \frac{1}{k} \delta, \Psi_{\min}(\varepsilon), \varepsilon_{top.eq.} \right\} $
+ensures a valid $(\varepsilon, \delta)$-approximation.
 
 
 
