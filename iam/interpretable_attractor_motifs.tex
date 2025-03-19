@@ -1,0 +1,281 @@
+\documentclass{article}
+%\usepackage{arxiv}
+\usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2024
+\usepackage[preprint]{neurips_2024}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amssymb, amsmath, amsthm, amsfonts}
+\usepackage{thmtools, mathtools, mathrsfs, dsfont}
+\usepackage{bbm}
+%\usepackage{bbold} %for mathbb{1}
+\usepackage{forloop}
+\usepackage[pdftex]{graphicx}  %remove demo option in your document
+\usepackage{sidecap}
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\usepackage{xcolor}
+\definecolor{ForestGreen}{rgb}{0.13, 0.55, 0.13}
+\definecolor{MidnightBlue}{rgb}{0.1, 0.1, 0.44}
+\definecolor{BurntOrange}{rgb}{0.8, 0.33, 0.0}
+\definecolor{Plum}{rgb}{0.56, 0.27, 0.52}
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}
+\hypersetup{breaklinks=true}
+
+%for comments
+\newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
+\definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
+\definecolor{ascolor}{rgb}{1, 0.5, 0.}
+\newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
+\newcommand{\ascomment}[1]{\textcolor{ascolor}{(#1)}}
+
+\graphicspath{{figures}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}[theorem]
+\theoremstyle{definition} \newtheorem{definition}{Definition}
+\theoremstyle{remark} \newtheorem{remark}{Remark}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\sep}{\operatorname{sep}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\vol}{\operatorname{vol}}
+\newcommand{\boa}{\operatorname{BoA}}
+\newcommand{\mcN}{\mathcal{N}}
+\newcommand{\mcK}{\mathcal{K}}
+\newcommand{\mcU}{\mathcal{U}}
+\newcommand{\mcX}{\mathcal{X}}
+\newcommand{\T}{\operatorname{T}}
+\newcommand{\TR}{\T\!\mathbb{R}}
+\newcommand{\TM}{\T\!M}
+\newcommand{\TpM}{\T_p\!M}
+\newcommand{\Diff}{\operatorname{Diff}}
+\newcommand{\Hpert}{H^{\text{pert}}}
+\newcommand{\inv}{\operatorname{Inv}}
+
+\newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
+\newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
+\newcounter{ct}
+\forLoop{1}{26}{ct}{
+    \edef\letter{\alph{ct}}
+    \expandafter\defvec\letter
+}
+
+% captial \vA
+\forLoop{1}{26}{ct}{
+    \edef\letter{\Alph{ct}}
+    \expandafter\defvec\letter
+}
+
+
+%\title{Interpretable attractor motifs for a new language for neural computation}
+\title{Attractor motifs for an interpretable language for neural computation}
+\author{\'Abel S\'agodi and Il Memming Park}
+\date{\today}
+
+
+
+\begin{document}
+\maketitle
+
+\section*{Abstract}
+
+
+
+
+\section{Introduction}\label{sec:intro}
+Neural activity is complex but low-dimensional \citep{duncker2021dynamics}
+Behavior is simple
+If the neural activity reflects the behavior it should be also simple.
+
+
+
+\subsection{Our contribution}\label{sec:contribution}
+
+
+
+
+\section{Background and related work}\label{sec:background}
+\subsection{Existing methods for dynamics}
+\subsubsection{Reconstructing dynamics}
+
+Learning interpretable continuous-time models of latent stochastic dynamical systems \citep{duncker2019learning}
+
+Phase2vec \citep{ricci2022phase2vec}
+
+MARBLE \citep{gosztolai2025marble}
+
+
+
+\subsubsection{Methods to compare/classify dynamics}\label{sec:compare}
+%Comparison of dynamical systems
+Concepts:
+\begin{itemize}
+\item topological conjugacy (Def.~\ref{def:top_conj}).%/equivalence
+\item 
+\end{itemize}
+
+Taking apart topological conjugacy (diffeomorphism from motif):
+\begin{itemize}
+\item On asymptotic / $\omega$-limit set / invariant set
+\item On transients
+\end{itemize}
+
+
+\paragraph{SOTA}
+assess the limit sets
+Fixed-point based \citep{sussillo2013blackbox,katz2017fibers,golub2018fixedpointfinder}
+
+Also limit cycles 
+
+slow invariant manifolds\citep{Sagodi2024a}
+
+TWA\citep{moriel2024timewarpattend}
+
+SVCCA\citep{raghu2017svcca}
+
+Dynamical Similarity Analysis\citep{ostrow2024beyond}
+
+Diffeomorphic vector field alignment for comparing dynamics across learned models\citep{chen2024dform}
+- orbital similarity loss (Eq.5)
+
+
+
+\subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
+into basins of attraction through Conley’s Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
+
+FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
+Behaviorism is based on an engineering approach, treating the mind as a control system for the organism. This corresponds to an approximation of the recurrent neural dynamics (brain states) by finite state automata (behavioral states). Another approximations to neural dynamics is described, leading to a Platonic-like model of mind based on psychological spaces. \citep{duch1998platonic}
+
+Main shortcoming: difficulty with dealing with complicated attractors.
+When is decomposition of attractor into motifs possible?
+
+On the lifting and reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
+
+
+
+
+\subsubsection{Reduction}\label{sec:reduction} %simplification of dynamics
+In each basin of attraction we have one attractor.
+We can simplify it's dynamics by looking at its normal form.
+
+\begin{itemize}
+\item approximation based (model order reduction): schilders2008model
+\item topology based Delay Embedding and Takens' Theorem and Morse Decomposition
+\item \citep{zemlianova2024dynamical}
+\item motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} (also referred to as prototypes in literature)
+\item  \citep{mezic2005spectral}
+\item libraries \citep{brunton2014compressive}
+\item  primitives (more for behavioral) \citep{ijspeert2013dynamical}
+\item fast-slow \citep{dsilva2016data} \citep{haller2017exact}
+\item averaging methods
+\end{itemize}
+
+
+
+
+
+
+
+
+\newpage
+\bibliographystyle{unsrtnat_IMP_v1}
+\bibliography{../all_ref.bib,../catniplab.bib}
+\newpage
+\appendix
+
+
+%%%%%TOP
+\section{Topology}\label{sec:topology}
+
+
+\subsection{Diffeomorphisms in practice}\label{sec:diffeomorphisms}
+
+a simple sufficient condition for a family of flows on a smooth compact manifold $M$ to generate the group $\Diff0_(M)$ of all diffeomorphisms of M that are isotopic to the identity \citep{caponigro2010families}.
+
+Stability of diffeomorphisms implies that $\Diff(M)\subset C^1(M,M)$  is an open subset.
+
+Normalizing flows\citep{kobyzev2020normalizing}
+
+ResNets 
+the layers of a ResNet can be considered as Euler-discretization of the integration of a flow of a diffeomorphism\citep{rousseau2020residual}
+
+Conjugate Mappings \citep{bramburger2021conjugate}
+
+any homeomorphism on a $p$-dimensional Euclidean space can be approximated by a Neural ODE or an i-ResNet operating on a $2p$-dimensional Euclidean space \citep{zhang2020approximation}
+
+diffeomorphisms from gradient information of desired costs \citep{lai2021parallelised}
+
+
+
+
+
+
+%%%%%DS
+\section{Dynamical systems background}
+
+\subsection{Topological conjugacy}\label{sec:top_conj}
+\begin{definition}\label{def:top_conj}
+Let \( f: X \to X \) and \( g: Y \to Y \) be two continuous dynamical systems, where \( X \) and \( Y \) are topological spaces.
+ The systems are said to be \emph{topologically conjugate} if there exists a homeomorphism \( h: X \to Y \) such that the following conjugacy condition holds:
+\[
+h \circ f = g \circ h.
+\]
+That is, the following diagram commutes:
+\[
+\begin{array}{ccc}
+X & \xrightarrow{f} & X \\
+\downarrow h &  & \downarrow h \\
+Y & \xrightarrow{g} & Y
+\end{array}
+\]
+\end{definition}
+
+
+\subsection{The flow under a diffeomorphism}
+See e.g., Eq.1.2 in \citep{agrachev2013control}.
+
+Given a diffeomorphism \( \Phi: M \to M \), we consider the vector field \( V \in \text{Vec}(M) \), governing the dynamical system:
+\[
+\dot{q} = V(q).
+\]
+
+\paragraph{Pushforward of the Vector Field}
+The diffeomorphism \( \Phi \) induces a pushforward of the vector field \( V \), given by:
+\[
+(\Phi_* V)(p) = D\Phi(\Phi^{-1}(p)) V(\Phi^{-1}(p)),
+\]
+
+where \( D\Phi \) is the differential (Jacobian) of \( \Phi \).  
+
+\paragraph{Transformed Dynamical System}
+In the new coordinates \( x = \Phi(q) \), differentiating with respect to time gives:
+\[
+\dot{x} = \frac{d}{dt} \Phi(q) = D\Phi(q) \dot{q}.
+\]
+
+Substituting \( \dot{q} = V(q) \), we obtain:
+\[
+\dot{x} = D\Phi(q) V(q).
+\]
+
+Rewriting in terms of \( x \), where \( q = \Phi^{-1}(x) \), the transformed vector field in the new coordinates is:
+\[
+\dot{x} = (D\Phi \circ \Phi^{-1}) V(\Phi^{-1}(x)).
+\]
+
+Thus, the transformed vector field is:
+\[
+V' = \Phi_* V = (D\Phi \circ \Phi^{-1}) \cdot (V \circ \Phi^{-1}).
+\]
+
+This describes how a diffeomorphism \( \Phi \) acts on the vector field governing the dynamics.
+
+
+
+\subsection{Reconstructing dynamics}\label{sec:rec_dyn}
+\subsubsection{NODE}
+\citep{finlay2020trainnode}
+
+\end{document}
+
