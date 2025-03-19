@@ -221,7 +221,7 @@ Furthermore, smooth ODES in $\reals^3$ can simulate arbitrary Turing machines \c
 RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
 Finally, any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuous time symmetric Hopfield nets \citep{sima2003continuous}.
 
-\ascomment{TODO: orgnize} 
+\ascomment{TODO: organize} 
 \citep{moore1990unpredictability,moore1998finite}
 \citep{cabessa2019turing}
 \citep{perez2019turing}
@@ -240,7 +240,8 @@ Any function can be approximated arbitrarily well in probability with a recurren
 % where ... can be computed by one neuron whose activation function $\sigma$ possesses a local linearity.\citep{hammer2000approximation}
 RNNs with continuous sigmoidal activation function have the UAP for finite number of time steps \citep{schafer2006recurrent, schafer2007uap}.
 Furthermore, locally recurrent networks with two hidden layers is able to approximate a state-space trajectory produced by any Lipschitz continuous function with arbitrary accuracy\citep{patan2008approximation}.
-Finally, more recently it was shown that discrete-time RNNs are finite-time horizon universal approximators of discrete-time systems \citep{aguiar2023universal} and the universality of linear recurrences followed by nonlinear projections for finite time was established \citep{orvieto2023universality}.
+More recently, it was shown that discrete-time RNNs are finite-time horizon universal approximators of discrete-time systems \citep{aguiar2023universal} and the universality of linear recurrences followed by nonlinear projections for finite time was established \citep{orvieto2023universality}.
+Finally, it was shown that RNNs are universal approximators of continuous past-dependent sequence-to-sequence functions\citep{song2023minimal}.% RNNs with  a non-degenerate activation function
 
 
 %\paragraph{RBF neural networks}
@@ -458,11 +459,11 @@ Finally, we would like to mention the possibility to construct dynamics with Coh
 
 
 First, we define the target class (the dynamical systems we approximate), the hypothesis class (the systems we approximate with), and the metric used to quantify approximation error (Sec.~\ref{sec:target}, \ref{sec:metric}). We then establish our universal approximation property (UAP) by progressively constructing the target class:
-\begin{itemize}
+\begin{enumerate}
 \item Structurally stable systems with a finite number of hyperbolic fixed points (Sec.~\ref{sec:fp_theorem}).
 \item Systems with a finite number of hyperbolic limit cycles (Sec.~\ref{sec:lc_theorem}).
 \item Systems with a finite set of continuous attractors, including chaotic orbits (Sec.~\ref{sec:ca_theorem}, \ref{sec:chaos}).
-\end{itemize}
+\end{enumerate}
 Finally, we extend these results to non-autonomous dynamical systems (Sec.~\ref{sec:nonautonomous}). Throughout, we consider approximation in a metric measuring the expectation of the uniform norm difference between flows, ensuring that the probability of large deviations is arbitrarily small. Each result applies to compact, globally attractive spaces.
 
 
@@ -472,13 +473,14 @@ Finally, we extend these results to non-autonomous dynamical systems (Sec.~\ref{
 %Structurally stable+Fixed points = hyperbolic fixed points
 %The dynamics is globally attractive / There exist a compact set that with the fixed points inside that is forward invariant 
 For our approximation results, we consider the following dynamics.
-Let $D$ be an open subset of $\mathbb{R}^n$,
- $f\colon D \to \mathbb{R}^m$ be a $C^1$-mapping,
-  and $I$ be a compact subset of $D$ such that any solution $x(t)$ with initial value $x(0) \in I$ of the ordinary differential equation
+Let $\mathcal{X}$ be an open subset of $\mathbb{R}^n$,
+ $f\colon \mathcal{X} \to \mathbb{R}^m$ be a $C^1$-mapping,
+%  and $I$ be a compact subset of $\mathcal{X}$
+ such that any solution $x(t)$ with initial value $x(0) \in \mathcal{X}$ of the ordinary differential equation %replaced from I(0)
 \begin{equation}\label{eq:mlp_vf}
     \dot{x} = f(x),
 \end{equation}
-is defined for $t\in\reals_{+}$ and $x(t)$ is included in $I$.
+is defined for $t\in\reals_{+}$ and $x(t)$ is included in $\mathcal{X}$. %replaced from I
 This defines a flow $\varphi(\cdot, \cdot)$ by the Picard-Lindel\"of theorem (see Supp.Sec.\ref{sec:solutions}).
 For Sec.~\ref{sec:fp_theorem} we assume that the only $\omega$-limit sets of  $f$ are a finite number of hyperbolic fixed points.
 For Sec.~\ref{sec:lc_theorem} we assume that $f$ has a finite set of hyperbolic stable periodic orbits.
@@ -690,38 +692,48 @@ By Sec.\ref{sec:separatrix_approx} (Prop.~\ref{prop:min_sep_bound}) we can make 
 By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can make the trajectory-wise error smaller than $\varepsilon$.
 \end{proof}
 
-\paragraph{Bookkeeping}
-\ascomment{Express everything in terms of $\varepsilon$ and $\delta$}
-\begin{enumerate}[start=0]
-\item $\varepsilon_{top.eq.}$ for topological equivalence (structural stability)
-\item Bounding the volume of separatix mismatch regions
-\begin{enumerate}
-\item Rolling back time until $T$ to get isolating neighborhood ($\eta_T$ share of $\mathcal{X}$ not included after this time (call the separatrix mismatch regions $\operatorname{sepmiss}$, which decreases monotonically for $T$)
-\item Approximation of isolating neighborhood: $\mu$ close in vf space implies $\mathcal{O}(\mu)$ closeness of persisting isolating neighbourhood (part of state space not covered in basin of attraction guarantee: $\widehat{\operatorname{sepmis}}$)
-\item $\Gamma(\eta_T, k\mu) <  \delta$ gives a bound on how close our approximation needs to be in vector space
-\item Need at least $\eta_T<k\mu$ (?)
-\item So if we have $\| f - g\|<\tfrac{1}{k}\delta$ then $\vol(\widehat{\operatorname{sepmis}})<\delta$
-\end{enumerate}
-\item Bounding the flow errors inside basins (remaining space $\mathcal{X}-\widehat{\operatorname{sepmis}}$)
-\begin{enumerate}
-\item Per basin: $\Psi_i(\varepsilon)$ so that flow is $\varepsilon$ close (from previous finite time horizon + trajectory closeness to attractor after finite time or from FMP based results)
-\item Take minimum from these bounds $\Psi_{\min}(\varepsilon)$
-\end{enumerate}
-\item Take minimum $\{\tfrac{1}{k}\delta, \Psi_{\min}(\varepsilon),\varepsilon_{top.eq.}\}$ guarantees $\varepsilon$,$\delta$-approximation
-\end{enumerate}
+%\paragraph{Bookkeeping}
+%\ascomment{Express everything in terms of $\varepsilon$ and $\delta$}
+%\begin{enumerate}[start=0]
+%\item $\varepsilon_{top.eq.}$ for topological equivalence (structural stability)
+%\item Bounding the volume of separatix mismatch regions
+%\begin{enumerate}
+%\item Rolling back time until $T$ to get isolating neighborhood ($\eta_T$ share of $\mathcal{X}$ not included after this time (call the separatrix mismatch regions $\operatorname{sepmiss}$, which decreases monotonically for $T$)
+%\item Approximation of isolating neighborhood: $\mu$ close in vf space implies $\mathcal{O}(\mu)$ closeness of persisting isolating neighbourhood (part of state space not covered in basin of attraction guarantee: $\widehat{\operatorname{sepmis}}$)
+%\item $\Gamma(\eta_T, k\mu) <  \delta$ gives a bound on how close our approximation needs to be in vector space
+%\item Need at least $\eta_T<k\mu$ (?)
+%\item So if we have $\| f - g\|<\tfrac{1}{k}\delta$ then $\vol(\widehat{\operatorname{sepmis}})<\delta$
+%\end{enumerate}
+%\item Bounding the flow errors inside basins (remaining space $\mathcal{X}-\widehat{\operatorname{sepmis}}$)
+%\begin{enumerate}
+%\item Per basin: $\Psi_i(\varepsilon)$ so that flow is $\varepsilon$ close (from previous finite time horizon + trajectory closeness to attractor after finite time or from FMP based results)
+%\item Take minimum from these bounds $\Psi_{\min}(\varepsilon)$
+%\end{enumerate}
+%\item Take minimum $\{\tfrac{1}{k}\delta, \Psi_{\min}(\varepsilon),\varepsilon_{top.eq.}\}$ guarantees $\varepsilon$,$\delta$-approximation
+%\end{enumerate}
 
 
-\paragraph{Bookkeeping}  
+\paragraph{Expressing the maximal error in vector field in terms of $\epsilon$ and $\delta$}  
 To express all approximations in terms of $\varepsilon$ and $\delta$, we introduce a few key quantities. First, we define $\varepsilon_{top.eq.}$ as the tolerance ensuring topological equivalence, which guarantees structural stability.  
+To bound the volume of separatrix mismatch regions, we consider rolling back time to $T$ to obtain an isolating neighborhood.
+Importantly, the volume of these regions decreases monotonically as $T$ increases.
+%the separatrix mismatch regions, $\operatorname{SMM}$.
 
-To bound the volume of separatrix mismatch regions, we consider rolling back time to $T$ to obtain an isolating neighborhood. After this rollback, a fraction $\eta_T$ of $\mathcal{X}$ remains outside this neighborhood, defining the separatrix mismatch regions, $\operatorname{sepmiss}$. Importantly, the volume of these regions decreases monotonically as $T$ increases. To approximate the isolating neighborhood, we observe that if two vector fields differ by at most $\mu$, then the resulting isolating neighborhoods remain within $\mathcal{O}(\mu)$ proximity. This leads to an upper bound on the portion of the state space not covered by the basin of attraction guarantee, which we denote as $\widehat{\operatorname{sepmis}}$. If the function $\Gamma(\eta_T, k\mu)$ satisfies $\Gamma(\eta_T, k\mu) < \delta$, we obtain a condition on the required accuracy of our vector field approximation. In particular, ensuring $\eta_T < k\mu$ implies that if $\| f - g \| < \tfrac{1}{k} \delta$, then the volume of the uncovered region is bounded by $\vol(\widehat{\operatorname{sepmis}}) < \delta$.  
+ To approximate the isolating neighborhood, we observe that if two vector fields differ by at most $\mu$, then the resulting isolating neighborhoods remain within $\mathcal{O}(\mu)$ proximity. This leads to an upper bound on the portion of the state space not covered by the basin of attraction guarantee, which we denote as $\widehat{\operatorname{SMM}}$.
+  If we have $\Gamma(\eta_T, k\mu) < \delta$, then we obtain a condition on the required accuracy of our vector field approximation.
+ In particular, ensuring $\eta_T < k\mu$ implies that if $\| f - g \| < \tfrac{1}{k} \delta$, then the volume of the uncovered region is bounded by $\vol(\widehat{\operatorname{SMM}}) < \delta$.  
 
-Within the remaining portion of the state space, $\mathcal{X} - \widehat{\operatorname{sepmis}}$, we control the flow error. For each basin, we define a function $\Psi_i(\varepsilon)$ that quantifies how closely the flow remains within $\varepsilon$ of the true trajectory. This bound follows either from finite-time trajectory closeness to the attractor or from results based on the Finite-Time Mapping Property (FMP). Taking the minimum across all basins, we obtain a global bound, $\Psi_{\min}(\varepsilon)$.  
-Combining these results, we conclude that setting $\varepsilon$ and $\delta$ according to $\min \left\{ \frac{1}{k} \delta, \Psi_{\min}(\varepsilon), \varepsilon_{top.eq.} \right\} $
+Within the remaining portion of the state space, $\mathcal{X} - \widehat{\operatorname{SMM}}$, we control the flow error.
+ For each basin, we define a function $\Psi_i(\varepsilon)$ that quantifies how closely the flow remains within $\varepsilon$ of the true trajectory.
+  This bound follows either from finite-time trajectory closeness to the attractor or from results based on the Finite-Time Mapping Property (FMP). Taking the minimum across all basins, we obtain a global bound, $\Psi_{\min}(\varepsilon)$.  
+Combining these results, we conclude that  a vector field error of $\min \left\{ \frac{1}{k} \delta, \Psi_{\min}(\varepsilon), \varepsilon_{top.eq.} \right\} $
 ensures a valid $(\varepsilon, \delta)$-approximation.
 
 
 
+
+
+%%%%%%%%LC
 \subsection{Approximation of stable limit cycles}\label{sec:lc_theorem}
 %TODO:  name for type III error: L-type (limit cycle) P-type (period)
 As we have seen in Sec.~\ref{sec:beyondfinitetime}, any mismatch in periods in the period of stable limit cycles introduces an error.
@@ -775,27 +787,40 @@ where $\hat{\varepsilon}\bar{f}_{\operatorname{bump}} = f_{\operatorname{bump}} 
 See further Supp.Sec.~\ref{sec:lc_extras}.
 
 
-\paragraph{Bookkeeping}
-\begin{enumerate}
-\item How small needs the tubular neighbourhood to be for the bump? 
-\begin{enumerate}
-\item Small enough so that it is included inside the basin of attraction
-\item Should not change flow to introduce more than $\varepsilon$ error flow type error.
-\end{enumerate}
-\item How big should $a_{\varepsilon_T}$ be: Initial period mismatch $\varepsilon_T$, then $a_{\varepsilon_T}< \Lambda(\varepsilon_T)$ %TODO: specify function $\Lambda$...
-\item How big can the bump approximation error be?
-\begin{enumerate}
-\item Should not shift location of limit cycle by more than $\varepsilon$.
-\item See below.
-\end{enumerate}
-\item How small does the initial period error need to be and how is this expressed in vector field space distance?
-\begin{enumerate}
-\item We need that the adjustment still has at most $\varepsilon$ error in basins and that only $\delta$ part of the state space is in the problematic separatrix mismatch region
-\item Separatrices are persistent so they will be shifted $\mathcal{O}(a_{\varepsilon_T}\hat \varepsilon)$. So we need $ka_{\varepsilon_T}\hat \varepsilon < \tfrac{1}{2}\delta$ and if we require for the initial mismatch error to be $\kappa<\tfrac{1}{2}\delta$ we get the total to be less than $\delta$. 
-\item The vector field outside the tubular neighborhood is $f - \eta\bar f  + a_{\varepsilon_T}\hat \varepsilon\bar f_{\operatorname{bump}}$. 
-We have that $\|\eta\bar f  + a_{\varepsilon_T}\hat \varepsilon\bar f_{\operatorname{bump}}\| < \eta + a_{\varepsilon_T}\hat \varepsilon$ (triangle inequality and absolute homogeneity of norm). Therefore, we can take $\hat f$ to be  $\Psi_{\min}(\eta + a_{\varepsilon_T}\hat \varepsilon)$ close to $f$ to guarantee $\varepsilon$,$\delta$-approximation
-\end{enumerate}
-\end{enumerate}
+%\paragraph{Expressing the maximal error in vector field in terms of $\epsilon$ and $\delta$}  
+%\begin{enumerate}
+%\item How small needs the tubular neighbourhood to be for the bump? 
+%\begin{enumerate}
+%\item Small enough so that it is included inside the basin of attraction
+%\item Should not change flow to introduce more than $\varepsilon$ error flow type error.
+%\end{enumerate}
+%\item How big should $a_{\varepsilon_T}$ be: Initial period mismatch $\varepsilon_T$, then $a_{\varepsilon_T}< \Lambda(\varepsilon_T)$ %TODO: specify function $\Lambda$...
+%\item How big can the bump approximation error be?
+%\begin{enumerate}
+%\item Should not shift location of limit cycle by more than $\varepsilon$.
+%\item See below.
+%\end{enumerate}
+%\item How small does the initial period error need to be and how is this expressed in vector field space distance?
+%\begin{enumerate}
+%\item We need that the adjustment still has at most $\varepsilon$ error in basins and that only $\delta$ part of the state space is in the problematic separatrix mismatch region
+%\item Separatrices are persistent so they will be shifted $\mathcal{O}(a_{\varepsilon_T}\hat \varepsilon)$. So we need $ka_{\varepsilon_T}\hat \varepsilon < \tfrac{1}{2}\delta$ and if we require for the initial mismatch error to be $\kappa<\tfrac{1}{2}\delta$ we get the total to be less than $\delta$. 
+%\item The vector field outside the tubular neighborhood is $f - \eta\bar f  + a_{\varepsilon_T}\hat \varepsilon\bar f_{\operatorname{bump}}$. 
+%We have that $\|\eta\bar f  + a_{\varepsilon_T}\hat \varepsilon\bar f_{\operatorname{bump}}\| < \eta + a_{\varepsilon_T}\hat \varepsilon$ (triangle inequality and absolute homogeneity of norm). Therefore, we can take $\hat f$ to be  $\Psi_{\min}(\eta + a_{\varepsilon_T}\hat \varepsilon)$ close to $f$ to guarantee $\varepsilon$,$\delta$-approximation
+%\end{enumerate}
+%\end{enumerate}
+
+\paragraph{Bounding the Approximation Error in Terms of $\varepsilon$ and $\delta$}  
+
+To ensure the approximation remains within the desired accuracy, the tubular neighborhood for the bump function must be small enough to stay inside the basin of attraction while limiting flow errors to at most $\varepsilon$. The rescaling factor $a_{\varepsilon_T}$, which corrects the period mismatch $\varepsilon_T$, must remain within a bound $\Lambda(\varepsilon_T)$ to preserve the structure of the vector field. Additionally, the perturbation must not shift the limit cycle by more than $\varepsilon$, ensuring topological equivalence.
+ Since separatrices persist under small perturbations, their displacement scales with $a_{\varepsilon_T} \hat{\varepsilon}$ and must satisfy $k a_{\varepsilon_T} \hat{\varepsilon} < \frac{1}{2} \delta$.
+  Likewise, the initial period mismatch should be below $\frac{1}{2} \delta$ to keep the total error within acceptable bounds.
+  Outside the tubular neighborhood, the perturbed vector field satisfies $\| \eta \bar{f} + a_{\varepsilon_T} \hat{\varepsilon} \bar{f}_{\operatorname{bump}} \| < \eta + a_{\varepsilon_T} \hat{\varepsilon}$, ensuring that the deviation from the target remains controlled.  
+
+Combining these results, we conclude that a vector field error of $\min \left\{ \frac{1}{k} \delta, \Psi_{\min}(\varepsilon), \varepsilon_{top.eq.} \right\}$ ensures a valid $(\varepsilon, \delta)$-approximation.
+ The same bound applies to the limit cycle case, where the perturbation must ensure the cycle remains within $\mathcal{O}(\varepsilon)$ of the target in Hausdorff distance, while the period discrepancy remains at most $\varepsilon_T$.
+ This guarantees that both the vector field and the limit cycle retain their structural properties under the approximation.  
+
+
 
 \paragraph{Summary}
 We can choose the initial approximation $\hat{f}$ such that the period difference is smaller than $\varepsilon_T$.
@@ -830,11 +855,10 @@ For a proof , see Supp.Sec.~\ref{sec:mlc_extras}.
 %TODO:  name for type V error: D-type (discretization) 
 %for the extension of continuous attractors we need to assume that all maximally invariant sets are normally hyperbolic
 
-%continuous attractor (zero flow)
+
 If $f$ has a normally hyperbolic continuous attractor, we can tile the continuous attractor with a uniform grid of stable fixed points \citep{Sagodi2024a}.
 Each of the neighboring stable fixed points can be at most $\varepsilon$ apart. %needs to be smaller because of $\mathcal{O}(\varepsilon)$ dispacement of stable FP of approx?
-Because this is structurally stable dynamics,  we can approximate its vector field with $\varepsilon$ accuracy and we are guaranteed to have a topologically equivalent system to it with the fixed points being moved at most $\mathcal{O}(\varepsilon)$. 
-%
+Because this is a structurally stable dynamical system,  we can approximate its vector field with $\varepsilon$ accuracy and we are guaranteed to have a topologically equivalent system to it with the fixed points being moved at most $\mathcal{O}(\varepsilon)$ by Theorem~\ref{thrm:approx}. 
 Finally, for $f$ with a continuum of attractors (nonzero flow in at least one dimension): e.g. torus of limit cycles, we can tile the continuous attractor with a uniform grid of stable limit cycles, see Section S5 in \citep{Sagodi2024a}.
 
 
@@ -924,12 +948,11 @@ such that only a measure-zero set of input sequences that lead to non-hyperbolic
 MLP for autonomous vector field $f$ as in Eq.~\ref{eq:mlp_vf}.
 For the input-driven part of the vector field we have an MLP:
  $\hat g\colon \reals^{n+m} \rightarrow \reals^{n}$ with $m$ the dimensionality of the input.
-%
-For the metric to compare input-driven systems with their approximations, see Sec.\ref{sec:inputdriven_metric}.
+
 
 
 \subsubsection{Metric}\label{sec:input_metric} 
-
+For the metric to compare input-driven systems with their approximations, see Sec.\ref{sec:inputdriven_metric}.
 
 \subsection{Theorem}
 \begin{theorem}
@@ -1071,7 +1094,7 @@ Asymptotically ($t\rightarrow\infty$): $d(p(x_1,\infty),\hat p(x_1,\infty))$ is 
 \subsection{Concluding remarks on nonautonomus systems}
 
 \paragraph{Bookkeping}
-\ascomment{What is the maximal error $g-\hat g$ we can allow for the $\varepsilon$-$\delta$ distance in flow fields to hold?}
+\ascomment{What is the maximal non-autonomous vector field error $g-\hat g$ we can allow for the $\varepsilon$-$\delta$ distance in flow fields to hold?}
 
 
 
@@ -1117,7 +1140,7 @@ the constraints of computing with biological wet-ware may make chaotic dynamics 
 \citep{hart2021echo}
 \citep{chen2022universal} 
 \citep{wei2022statistically}
-\citep{bishop2023recurrent}
+Recurrent Neural Networks and Universal Approximation of Bayesian Filters \citep{bishop2023recurrent}
 \citep{plate2024optimal}
 %\paragraph{Flow Matching}
 \citep{mishne2024elucidating}
