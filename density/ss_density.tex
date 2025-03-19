@@ -744,6 +744,7 @@ In our metric, this error is of the size of the volume of the basin of attractio
 Is it possible to perfectly match target limit cycle periods?
 We will describe a recipe for systems with single and multiple limit cycles.
 
+\ascomment{A simple method: only rescale, see Supp.Sec.~\ref{sec:rescale_period}.}
 
 \subsubsection{A single stable limit cycle}
 Again, we start out with an approximation of the target vector field with an $\varepsilon_{top.eq.}$ small difference so that topological equivalence is guaranteed ($C^1$ distance between the vector fields).
@@ -753,18 +754,18 @@ Denote the set of points in the limit cycles by $\gamma_f$ and $\gamma_g$ for th
 %However, we can correct this discrepancy.
 We typically have a difference between the periods of limit cycle of the target $T_f$ and of the approximation $\hat T$: $\varepsilon_T\coloneqq T_f- T_g>0$
 with \[T_f\coloneqq\frac{1}{\int_{\gamma}\|f(x)\|dx} \text{ and } T_g\coloneqq\frac{1}{\int_{\hat{\gamma}}\|g(x)\|dx}.\]
-%
-We will apply a perturbation $\bar{f}$ to our approximation, $\tilde f = g + \bar f$, that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
+
+We will apply a perturbation $\bar{g}$ to our approximation, so that the new approximation becomes $\tilde g = g + \bar g$, that is small enough for the persistence of the limit cycle ($\delta$ needs to be small enough) 
 so that 
 \begin{equation}\label{eq:lc_constraint}
-\int_{\tilde{\gamma}}\|\tilde{f}(x)\| dx = \frac{1}{T}. 	% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
+\int_{\tilde{\gamma}}\|\tilde{g}(x)\| dx = \frac{1}{T}. 	% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
 \end{equation}
 The existence of such a perturbation (i.e. that indeed it will be \emph{small} enough) requires that the initial difference between the periods is small:
 if the approximation vector field is close enough to the target vector field, then the periods will be guaranteed to be close (see for the precise statement and proof Supp.Sec.~\ref{sec:periodcloseness}).
 %this quarantees that top.eq. is not violated
 
 We can use the fact that the tubular neighborhood of diameter $\delta_T$ around the limit cycle is an (inflowing) normally hyperbolic invariant manifold.
-We will now construct the correction $\bar{f}$ so that the period of our approximation matches the targets.
+We will now construct the correction $\bar{g}$ so that the period of our approximation matches the targets.
 This implies that there exists a 3 layer FNN $g_{\operatorname{bump}}$ that approximates the vector field $f_{\operatorname{bump}}$ that is a bump function around the limit cycle (similar idea as Supp.Sec.~5 in \citep{Sagodi2024a}). %but this would be an actual possible implementation
 Then we know that this NHIM will persist (from Fenichel's PMT, see Supp.Sec~\ref{sec:fenichel}).
 We also know that there is a maximal perturbation size ($\varepsilon_{LC}$) for which the limit cycle persists.
@@ -776,10 +777,10 @@ The only thing we now need to worry about is how the length of the limit cycle c
 %
 The resulting total approximation is %replace a(\varepsilon_T) with just an optimal constant?
 \begin{equation}\label{eq:lc_correction}
-\tilde{f}= g+a_{\varepsilon_T}^*g_{\operatorname{bump}} = 
-g + a_{\varepsilon_T}^*(f_{\operatorname{bump}}+ \hat{\varepsilon}\bar{f}_{\operatorname{bump}}),
+\tilde{g}= g+a_{\varepsilon_T}^*g_{\operatorname{bump}} = 
+g + a_{\varepsilon_T}^*(g_{\operatorname{bump}}+ \hat{\varepsilon}\bar{g}_{\operatorname{bump}}),
  \end{equation}
-where $\hat{\varepsilon}\bar{f}_{\operatorname{bump}} = f_{\operatorname{bump}} - g_{\operatorname{bump}}$ with $\|\bar f\|=1$ and $\hat \varepsilon <\max(\varepsilon_T,\varepsilon_{LC})$. %actually this should be a function of epsilon T so that closeness in Supp.Sec.~\ref{sec:periodcloseness} is guaranteed
+where $\hat{\varepsilon}\bar{g}_{\operatorname{bump}} = g_{\operatorname{bump}} - g_{\operatorname{bump}}$ with $\|\bar g\|=1$ and $\hat \varepsilon <\max(\varepsilon_T,\varepsilon_{LC})$. %actually this should be a function of epsilon T so that closeness in Supp.Sec.~\ref{sec:periodcloseness} is guaranteed
 %no this is not the bound that belongs to hat epsilon!!!!!!!!!!!
 %it should be \|f_{\operatorname{bump}\| < some epsilon...
 %
@@ -809,7 +810,7 @@ See further Supp.Sec.~\ref{sec:lc_extras}.
 %\end{enumerate}
 %\end{enumerate}
 
-\paragraph{Bounding the Approximation Error in Terms of $\varepsilon$ and $\delta$}  
+\paragraph{Bounding the approximation error in terms of $\varepsilon$ and $\delta$}  
 
 To ensure the approximation remains within the desired accuracy, the tubular neighborhood for the bump function must be small enough to stay inside the basin of attraction while limiting flow errors to at most $\varepsilon$. The rescaling factor $a_{\varepsilon_T}$, which corrects the period mismatch $\varepsilon_T$, must remain within a bound $\Lambda(\varepsilon_T)$ to preserve the structure of the vector field. Additionally, the perturbation must not shift the limit cycle by more than $\varepsilon$, ensuring topological equivalence.
  Since separatrices persist under small perturbations, their displacement scales with $a_{\varepsilon_T} \hat{\varepsilon}$ and must satisfy $k a_{\varepsilon_T} \hat{\varepsilon} < \frac{1}{2} \delta$.
@@ -2447,7 +2448,7 @@ and for the singular vectors:
 
 
 
-\subsubsection{Period matching}
+
 %obsolete?
 \subsubsection{Applying Melnikov’s Method to Limit Cycles}
 
@@ -2532,6 +2533,33 @@ The existence of isochrons was proven in \citep{guckenheimer1975isochrons}.
 %-  $\tilde\varepsilon$ needs to be small enough so that effect of correction outside of the tubular neighborhood doesn't affect attractors and separatrices too much.
 %
 %-- These should be also taken into account when choosing an initial approximation $\hat f$ to which to apply the correction.
+
+\subsubsection{Rescale full vector space}\label{sec:rescale_period}
+The perturbation \( \bar{g}(x) \) is a small rescaling of \( g(x) \):
+\[
+\bar{g}(x) = -\alpha g(x),
+\]
+
+where \( \alpha \) is chosen to correct the period:
+\[
+T + \epsilon_T = \int_0^{T+\epsilon_T} dt = \int_0^{T+\epsilon_T} \frac{d\theta}{\omega}.
+\]
+
+Modifying the vector field as \( g(x) + \epsilon \bar{g}(x) \) should ensure that the new cycle satisfies:
+\[
+T = \int_0^T \frac{d\theta}{\omega + \epsilon \Delta \omega}.
+\]
+
+This suggests choosing \( \alpha \) as:
+
+\[
+\alpha = \frac{\epsilon_T}{T + \epsilon_T}.
+\]
+
+So the perturbation takes the form:
+\[
+\bar{g}(x) = -\frac{\epsilon_T}{T + \epsilon_T} g(x).
+\]
 
 
 \subsubsection{Multiple}\label{sec:mlc_extras}
