@@ -1060,7 +1060,7 @@ p(x_1,t) = p(x_0)p(x_0,t).
 
 Approximation $\hat p(x_1,t)$
 
-Up to finite $T$: $d(p(x_1,t),\hat p(x_1,t))<\mu$.
+Up to finite $T$: $d(p(x_1,t),\hat p(x_1,t))<\mu$. % distance?
 
 Asymptotically ($t\rightarrow\infty$): $d(p(x_1,\infty),\hat p(x_1,\infty))$ is given by initial separatrix mismatch + contribution from aut asym separatrix mismatch(es).
 
@@ -1454,6 +1454,7 @@ DS definitions and terms
 Semiflow \ref{sec:semiflow}
 Existence and uniqueness of flow of an ODE \ref{sec:solutions}
 
+Topological conjugacy \ref{sec:top_conj}
 Fundamental theorem of DSs \ref{sec:fundamental}
 Conley Index theory\ref{sec:cit}
 Structural stability \ref{sec:ss}
@@ -1620,8 +1621,34 @@ A sufficient condition for the solutions to exist globally is that \( f(x) \) an
 %%%%
 \subsubsection{Gronwall's lemma}\label{sec:gronwall}
 \begin{lemma}\label{lemma:gronwall}
-
+Let \( u: [a,b] \to \mathbb{R} \) be a continuous function satisfying the integral inequality
+\[
+u(t) \leq C + \int_a^t \alpha(s) u(s) \, ds, \quad \text{for all } t \in [a,b],
+\]
+where \( C \geq 0 \) is a constant and \( \alpha: [a,b] \to \mathbb{R} \) is a continuous, nonnegative function. Then, the following bound holds:
+\[
+u(t) \leq C \exp \left( \int_a^t \alpha(s) \, ds \right), \quad \text{for all } t \in [a,b].
+\]
 \end{lemma}
+
+
+
+\subsection{Topological conjugacy}\label{sec:top_conj}
+\begin{definition}
+Let \( f: X \to X \) and \( g: Y \to Y \) be two continuous dynamical systems, where \( X \) and \( Y \) are topological spaces.
+ The systems are said to be \emph{topologically conjugate} if there exists a homeomorphism \( h: X \to Y \) such that the following conjugacy condition holds:
+\[
+h \circ f = g \circ h.
+\]
+That is, the following diagram commutes:
+\[
+\begin{array}{ccc}
+X & \xrightarrow{f} & X \\
+\downarrow h &  & \downarrow h \\
+Y & \xrightarrow{g} & Y
+\end{array}
+\]
+\end{definition}
 
 %%%%
 \subsection{The Fundamental Theorem of Dynamical Systems}\label{sec:fundamental}
