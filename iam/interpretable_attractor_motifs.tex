@@ -111,8 +111,8 @@ MARBLE \citep{gosztolai2025marble}
 %Comparison of dynamical systems
 Concepts:
 \begin{itemize}
-\item topological conjugacy (Def.~\ref{def:top_conj}).%/equivalence
-\item 
+\item equivalence of systems: topological conjugacy (Def.~\ref{def:top_conj}).%/equivalence
+\item asymptotic behavior: $\omega$-limit sets
 \end{itemize}
 
 Taking apart topological conjugacy (diffeomorphism from motif):
@@ -147,6 +147,8 @@ into basins of attraction through Conley’s Fundamental Theorem for Dynamical S
 FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
 Behaviorism is based on an engineering approach, treating the mind as a control system for the organism. This corresponds to an approximation of the recurrent neural dynamics (brain states) by finite state automata (behavioral states). Another approximations to neural dynamics is described, leading to a Platonic-like model of mind based on psychological spaces. \citep{duch1998platonic}
 
+For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron–Frobenius operator describes transitions.
+
 Main shortcoming: difficulty with dealing with complicated attractors.
 When is decomposition of attractor into motifs possible?
 
@@ -173,7 +175,19 @@ We can simplify it's dynamics by looking at its normal form.
 
 
 
+\section{The model}
+\subsection{Description}
 
+\subsection{Application on simple example}
+
+\subsection{Comparison to other methods}
+
+
+\section{Applications}
+
+
+
+\section{Discussion}
 
 
 
@@ -183,6 +197,7 @@ We can simplify it's dynamics by looking at its normal form.
 \bibliography{../all_ref.bib,../catniplab.bib}
 \newpage
 \appendix
+
 
 
 %%%%%TOP
@@ -208,13 +223,44 @@ diffeomorphisms from gradient information of desired costs \citep{lai2021paralle
 
 
 
+\subsubsection{Decomposing diffeomorphisms}\label{sec:diff_dec}
+\paragraph{Lie}
+Since diffeomorphisms form a Lie group under composition, a diffeomorphism 
+\( f \) can be written formally as:
+\[
+f = \exp(X),
+\]
+where \( X \) is a vector field (i.e., an element of the Lie algebra of the diffeomorphism group). Expanding \( X \) in a Fourier basis:
+\[
+X(x) = \sum_k \hat{X}(k) e^{i k \cdot x}
+\]
+provides a Fourier-like decomposition of the infinitesimal generator.
+
+
+
+\section{Geometry}
+
+Geometric Learning on Manifolds\citep{mostowsky2024geometrickernels}
+
+
+\paragraph{Standard Matérn Kernel (Based on Geodesic Distance)}
+Replace the Euclidean distance  $\| x - x' \|$  in the Matérn kernel with the distance to the manifold  $ d_{\text{manifold}}(x, x')$. 
+This distance is now the measure of how far two points are from each other, but considering the geometry of the manifold.
+\begin{equation}
+k(x, x') = \frac{1}{\Gamma(\nu)} \left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x, x')}{\ell} \right)^\nu K_\nu\left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x, x')}{\ell} \right).
+\end{equation}
+
+
+
+
 
 
 
 %%%%%DS
 \section{Dynamical systems background}
 
-\subsection{Topological conjugacy}\label{sec:top_conj}
+\subsection{Comparing dynamics}
+\subsubsection{Exact equivalence: Topological conjugacy}\label{sec:top_conj}
 \begin{definition}\label{def:top_conj}
 Let \( f: X \to X \) and \( g: Y \to Y \) be two continuous dynamical systems, where \( X \) and \( Y \) are topological spaces.
  The systems are said to be \emph{topologically conjugate} if there exists a homeomorphism \( h: X \to Y \) such that the following conjugacy condition holds:
@@ -232,7 +278,26 @@ Y & \xrightarrow{g} & Y
 \end{definition}
 
 
-\subsection{The flow under a diffeomorphism}
+
+\subsubsection{Defective equivalence: Mostly Conjugate Dynamical Systems}
+\citep{skufca2007relaxing, skufca2008mostlyconjugate, bollt2010comparing}
+
+
+
+
+\subsection{Normal forms}
+
+Examples
+Saddle ring
+\begin{equation}
+\begin{aligned}
+\dot{x} &= (\sqrt{x^2 + y^2} - 1) x, \\
+\dot{y} &= (\sqrt{x^2 + y^2} - 1) y.
+\end{aligned}
+\end{equation}
+
+
+\subsubsection{Pushforward of the vector field: flow under a diffeomorphism}
 See e.g., Eq.1.2 in \citep{agrachev2013control}.
 
 Given a diffeomorphism \( \Phi: M \to M \), we consider the vector field \( V \in \text{Vec}(M) \), governing the dynamical system:
@@ -240,12 +305,10 @@ Given a diffeomorphism \( \Phi: M \to M \), we consider the vector field \( V \i
 \dot{q} = V(q).
 \]
 
-\paragraph{Pushforward of the Vector Field}
 The diffeomorphism \( \Phi \) induces a pushforward of the vector field \( V \), given by:
 \[
 (\Phi_* V)(p) = D\Phi(\Phi^{-1}(p)) V(\Phi^{-1}(p)),
 \]
-
 where \( D\Phi \) is the differential (Jacobian) of \( \Phi \).  
 
 \paragraph{Transformed Dynamical System}
@@ -268,14 +331,45 @@ Thus, the transformed vector field is:
 \[
 V' = \Phi_* V = (D\Phi \circ \Phi^{-1}) \cdot (V \circ \Phi^{-1}).
 \]
-
 This describes how a diffeomorphism \( \Phi \) acts on the vector field governing the dynamics.
+
+
+
+
+
+\subsection{Coherence in behavior}
+\subsubsection{Perfect coherence: Invariant manifolds}%+forward invariance
+
+
+\subsubsection{Asymptotic behavior}\label{sec:asymptotic}
+Infinite time horizon perfect coherence
+
+
+
+
+
+\subsubsection{Imperfect coherence}%+forward invariance
+\paragraph{Almost invariant manifolds}
+ Almost-invariant regions are identified via eigenvectors of a transfer operator and are ranked by the corresponding eigenvalues in the order of the sets' invariance or ``leakiness'' \citep{froyland2009almost}.
+    
+    
+    
+\paragraph{Metastable behavior}\label{sec:metastable}
+    
+    
+    
+\paragraph{Coherent regions}
+Regions that remain coherent and relatively nondispersive over finite periods of time \citep{fackeldey2019metastable}.
 
 
 
 \subsection{Reconstructing dynamics}\label{sec:rec_dyn}
 \subsubsection{NODE}
 \citep{finlay2020trainnode}
+
+
+
+
 
 \end{document}
 
