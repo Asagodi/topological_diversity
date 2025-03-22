@@ -1,6 +1,7 @@
 \documentclass{article}
 %\usepackage{arxiv}
 \usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2024
+%\usepackage[natbib,style=authoryear,refsection=chapter]{biblatex} %for splitting refs:main-appendix?
 \usepackage[preprint]{neurips_2024}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
@@ -1057,11 +1058,45 @@ p(x_1,t) = p(x_0)p(x_0,t).
 %$p(x_{i+1},t+s) = p(x_i,t)p(x_{i+1},s)$
 
 
-Approximation $\hat p(x_1,t)$
 
 Up to finite $T$: $d(p(x_1,t),\hat p(x_1,t))<\mu$. % distance?
 
 Asymptotically ($t\rightarrow\infty$): $d(p(x_1,\infty),\hat p(x_1,\infty))$ is given by initial separatrix mismatch + contribution from aut asym separatrix mismatch(es).
+
+\paragraph{Time evolution of probability density}
+To express how the density of states changes over time, or how the change is bounded by properties of the vector field, we need to analyze the evolution of the probability distribution of the system over time.
+
+For an ODE as in Eq.~\ref{eq:inputdriven_asymp}, the probability density evolves according to the Liouville's equation:
+\begin{equation}
+\frac{\partial p(x,t)}{\partial t} + \nabla \cdot \left( p(x,t) g(x,t) \right) = 0
+\end{equation}
+So the difference in state densities between the autonomous and input-driven systems becomes:
+\begin{equation}
+\Delta p(x,t) = p_{g}(x,t) - p_{\operatorname{aut}}(x,t) \approx \eta \cdot \int_0^t \nabla \cdot \left( p(x,t) h_{\operatorname{inp}}(x(t), u(t)) \right) \, dt.
+\end{equation}
+
+Approximation $\hat p(x,t)$:
+for approximation of $h_{\operatorname{aut}}$, i.e.,  $\hat h_{\operatorname{aut}} = h_{\operatorname{aut}} + \kappa h_{\operatorname{error}}$
+with $\|h_{\operatorname{error}}\|=1$ and $\kappa \ll 1$. %For $h_aut(x)$ there is a $\hat h_aut$ that is $\epsilon_h$-$\delta_h$ close.
+\begin{equation}
+\Delta p(x,t) = p_{\operatorname{aut}}(x,t) - p_{\hat{h}}(x,t) \approx \kappa \cdot \int_0^t \nabla \cdot \left( p_{\operatorname{aut}}(x,t) h_{\operatorname{error}}(x) \right) \, dt.
+\end{equation}
+
+
+\paragraph{Asymptotic probability density}
+$p_{h_{inpt}}(x,t) \rightarrow p_{h_{aut}}(x)$ for $t\rightarrow \infty$ %delta functions on attractors
+$p_{h_{aut}}(x) = \int \mu_i(x)\delta_i(x)dx$ where $\mu$ captures which proportion of the state space converged to attractor $i$.
+
+$h_{\operatorname{aut}}(x(t)) + \eta h_{\operatorname{inp}}(x(t), u(t))$
+
+\paragraph{Relating approximation distance to probability density distance}
+\begin{equation}
+d_\varepsilon(\varphi,\hat \varphi) < d_W(p_{h_{aut}}, p_{\hat h})
+\end{equation}
+for the Wasserstein metric $d_W$.
+\ascomment{Moving of unit over a distance of  less than $\epsilon$ does not contribute to $d_\varepsilon$ distance. }
+
+
 
 
 %\subsection{General}\label{sec:generalnonautonomous}%includes time-varying 
