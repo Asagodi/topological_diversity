@@ -516,7 +516,7 @@ Expectation of the error over all initial points (similar to the metric in \cite
 \|\varphi-\hat \varphi\|_\varepsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0)-\hat \varphi(\cdot,x_0)\|_\infty>\varepsilon\right).
 \end{equation}
 %where $\mathds{1}[\cdot]$ is the indicator function. 
-
+We refer to approximations of a system that satisfy Eq.\ref{eq:initerror} as $\epsilon$-$\delta$ close (in behavior space).
 
 %why we cannot stricten the metric
 For a multistable system it is not possible to find a universal approximation result if we consider a more strict notion of difference between the target and approximant.
@@ -911,20 +911,20 @@ We assume the solutions to be unique (see Sec.~\ref{sec:inputunique}).
 
 
 \subsubsection{Targets: Constraints on $g$}\label{sec:input_target}
-%Similarly, as for the autonous case, $g$ needs to be smooth enough as a function of $x$ and $u$ (at least Lipschitz or $C^1$). %C^1 for persistence!
-%%
+
 %Needs to be hyperbolic (in the limit $t\rightarrow\infty$) for each $u(\infty)$. %u(\infty) only makes sense for convergent u ? or we need to take equivalence classes that are invariant wrt changes in u.
-%%
 %Can only have a finite set of fixed points (in the limit $t\rightarrow\infty$) for each $u(\infty)$. %so that we can use the autonomous UAP theory.
 
 
-We assume that $g(x,u(t))$ is exponentially asymptotically autonomous dynamics for each $u$ (Def.~\ref{def:eaa_input} with $\sigma,\gamma=1$). %Supp.Sec.~\ref{sec:eea_input}
-%
-Furthermore, we assume that $g$ converges to a finite number of topological equivalence classes of asymptotically autonomous vector fields.
-%can we increase it to countable?
+We assume that $g(x,u(t))$ is exponentially asymptotically autonomous (EAA) dynamics for each $u$ (Def.~\ref{def:eaa_input} with $\sigma,\gamma=1$). %Supp.Sec.~\ref{sec:eea_input}
+Similarly, as for the autonomous case, $g$ needs to be smooth enough as a function of $x$ and $u$ (at least Lipschitz or $C^1$). %C^1 for persistence!
+Furthermore, we assume that $g$ converges to a finite number of topological equivalence classes of asymptotically autonomous vector fields. %can we increase it to countable?
+If the function $g$ cannot have limit cycles  in the asymptotic vector field  if there is periodic forcing.
+
+\ascomment{Another case: $g$ is exponentially asymptotically periodic (EAP) \label{sec:eea_input_periodic}, where the asymptotic vector field only contains  fixed points.}
 
 
-\paragraph{How does this relate to the input class? Constraints on $u(t)$}
+\paragraph{Implication on the constraints of the input class $u(t)$}
 This would guarantee exponential asymptotic autonomy for minimal assumptions about $g$. %SPECIFY
 
 We will now characterize the input space 
@@ -937,11 +937,6 @@ We assume that $u(t)$ converges (exponentially) to a periodic function, i.e., %o
 such that only a measure-zero set of input sequences that lead to non-hyperbolic asymptotically autonomous vector fields.
 %include more general u class?
 
-
-
-%Alternative assumptions:
-%epsilon, delta dependent input space
-
 %-or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback} \citep{giesl2012numerical} \citep{cheban2002relationship}
 
 
@@ -951,10 +946,13 @@ For the input-driven part of the vector field we have an MLP:
  $\hat g\colon \reals^{n+m} \rightarrow \reals^{n}$ with $m$ the dimensionality of the input.
 
 
-
 \subsubsection{Metric}\label{sec:input_metric} 
 For the metric to compare input-driven systems with their approximations, see Sec.\ref{sec:inputdriven_metric}.
 
+
+
+
+%%%%
 \subsection{Theorem}
 \begin{theorem}
 For an input-driven system as in Sec.~\ref{sec:input_target} % Eq.~\ref{eq:inputdriven} %+assymptions...
@@ -1036,7 +1034,7 @@ The approximation asymptotic autonomous vector field converges at most  $\eta+\k
 
 \paragraph{Step 4}
 \begin{enumerate}
-\item Characterize proportion of “bad” initial positions for each input sequence and measure the proportion in terms of the probability measure for $\mathcal{U}$ (Supp.Sec.~\ref{sec:inputspace_measure})
+\item Characterize proportion of “bad” initial positions for each input sequence and measure the proportion in terms of the probability measure for $\mathcal{U}$ (Supp.Sec.~\ref{sec:inputdriven_metric})
 \begin{enumerate}
 \item Input brings state to separatrix mismatch: 
 	Can be controlled by size of mismatch region (and hence autonomous part of the vf (or the asymptotically autonomous vf))
@@ -1150,7 +1148,14 @@ Recurrent Neural Networks and Universal Approximation of Bayesian Filters \citep
 \paragraph{PDEs}
 \citep{richter2022neural}
 
+
+%%%%
 \subsection{Practicalities}
+\paragraph{Finding a close enough vector field}
+It is impossible to look get infinite time horizon trajectories from a system.
+What we can do is approximate point-wise the vector field.
+Under some assumptions about the smoothness of the vector field, this can allow us to get an approximate system that is $\epsilon$-$\delta$ close (in behavior space).
+
 \paragraph{Performance after learning and noise}
 learning related generalization \citep{marion2023generalization}\citep{bleistein2023generalization}
 
@@ -1986,21 +1991,39 @@ where \( g, h \in C^\sigma \) and \( g(t,x) \to h(x) \) in the following sense: 
 for all multi-indices \( \gamma \) with \( |\gamma| \leq \sigma \), for all \( x \in K \), and for all \( t > T \).
 \end{definition}
 
-\paragraph{EAA for each input}\label{sec:eea_input}
+\paragraph{EAP for each input}\label{sec:eea_input}
 \begin{definition}\label{def:eaa_input}
-Let \(\sigma \in \mathbb{N}\). Consider the exponentially asymptotically autonomous equation  
+Let \(\sigma \in \mathbb{N}\).
+We define \emph{exponentially asymptotically autonomous equation  }
 \[
 \dot{x} = g(x,u(t)), \quad x \in \mathbb{R}^n,
 \]
-where \( g, h \in C^\sigma \) and \( g(u(t),x) \to h(x) \) in the following sense: for each compact set \( K \subset \mathbb{R}^n \) and each \( \varepsilon > 0 \), there exists \( T \) such that  
+where \( g, h_u \in C^\sigma \). Suppose that there exists a family of limiting vector fields \( h_u(x) \), parametrized by \( u \), such that for each compact set \( K \subset \mathbb{R}^n \) and each \( \varepsilon > 0 \), there exists \( T > 0 \) and a decay rate \( \alpha > 0 \) such that  
 \[
-\|\partial^\gamma g(u(t),x) - \partial^\gamma h_u(x)\| e^{\alpha t} < \varepsilon
+\|\partial^\gamma g(x, u(t)) - \partial^\gamma h_u(x)\| e^{\alpha t} < \varepsilon
 \]
 for all multi-indices \( \gamma \) with \( |\gamma| \leq \sigma \), for all \( x \in K \), and for all \( t > T \).
 \end{definition}
 
-\paragraph{Class of EEA}
-We take $\sigma\geq 1$.
+Class of EEA: 
+we take $\sigma =  1$.
+
+\paragraph{exponentially asymptotically periodic (EAP) for each input}\label{sec:eea_input_periodic}
+\begin{definition}\label{def:eaa_periodic}
+Let \(\sigma \in \mathbb{N}\).
+ Consider the non-autonomous differential equation  
+\[
+\dot{x} = g(x,u(t)), \quad x \in \mathbb{R}^n.
+\]
+We say that \( g(x, u(t)) \) is \emph{exponentially asymptotically periodic} if there exists a time-periodic vector field \( h_u(x,t) \) with period \( T_p > 0 \), such that for each compact set \( K \subset \mathbb{R}^n \) and each \( \varepsilon > 0 \), there exist \( T > 0 \) and a decay rate \( \alpha > 0 \) such that  
+\[
+\|\partial^\gamma g(x, u(t)) - \partial^\gamma h_u(x,t)\| e^{\alpha t} < \varepsilon
+\]
+for all multi-indices \( \gamma \) with \( |\gamma| \leq \sigma \), for all \( x \in K \), and for all \( t > T \).
+
+Additionally, we assume that \( g(x, u(t)) \) is at least Lipschitz or \( C^1 \) in both \( x \) and \( u \) to ensure persistence of dynamical properties. The asymptotic vector field \( h_u(x,t) \) belongs to a finite number of topological equivalence classes. If \( g \) is subject to periodic forcing, then it cannot admit limit cycles in the asymptotic vector field.
+\end{definition}
+
 
 
 \subsubsection{BoA}
@@ -2539,7 +2562,6 @@ The perturbation \( \bar{g}(x) \) is a small rescaling of \( g(x) \):
 \[
 \bar{g}(x) = -\alpha g(x),
 \]
-
 where \( \alpha \) is chosen to correct the period:
 \[
 T + \epsilon_T = \int_0^{T+\epsilon_T} dt = \int_0^{T+\epsilon_T} \frac{d\theta}{\omega}.
@@ -2620,13 +2642,36 @@ Alternatively, we can guarantee that the shift representation of the dynamics is
 
 
 
-\subsection{Input-driven extras}\label{sec:input_driven_app} 
+\subsection{Input-driven systems}\label{sec:input_driven_app} 
 Unlike autonomous systems, where the evolution is determined solely by the state variable $x$, non-autonomous systems incorporate an explicit time dependence in the function $h(x,t)$:
 \begin{equation}
 \dot x = h(x,t).
 \end{equation}
 
-\subsubsection{Measure for input functions}\label{sec:inputspace_measure}
+
+\subsubsection{Why this target class?}
+%\paragraph{In terms of general non-autonomous dynamics}
+%mention? convergence depends on x_0? this allows us to formulate coupled system with hyperbolic system for parameters?
+If an sequence doesn't converge (i.e. it has a mixing property) we get the same issue with approximating the system as with chaotic orbits.
+%and the input is not in the kernel of the input function
+If it converges to a fixed point: then it is asymptotically autonomous. Necessary if $f(x)$ has a continuous attractor.
+If it converges to a limit cycle: then we have periodic forcing. 
+If it doesn't converge, we cannot approximate.  
+% cannot have limit cycles  in the asymptotic vector field  if there is periodic forcing.
+% continuous attractors?
+
+
+
+\subsubsection{Defining the metric for the approximation of non-autonomous systems}\label{sec:inputdriven_metric}
+%Reconsider $\delta$:
+We now also keep track of which proportion of input space leads to bigger than $\varepsilon$ trajectory error.
+So we define 
+\begin{equation}%indicate X,U spaces?
+d_\varepsilon(\varphi,\hat \varphi) \coloneqq  \mathbb{P}_{x_0}^{u}\left(\|\varphi(\cdot,x_0,u)-\hat \varphi(\cdot,x_0,u)\|_\infty>\varepsilon\right).
+\end{equation}
+
+
+\subsubsection{Measure for input functions}%\label{sec:inputspace_measure}
 Uniform Lebesgue Measure on a Bounded Subset of \( C([0,T], \reals^m) \)
 If \( u(t) \) is continuous and satisfies a uniform bound
 \[
@@ -2640,13 +2685,6 @@ Here, \( \|u\|_\infty = \sup_{t \in [0,T]} \|u(t)\| \), and the measure is suppo
 
 With this we can capture what proportion of inputs lead the system to the separatrix mismatch regions $\boa(A_i^f)\cap\boa(A_j^{\hat{f}})$. %TODO introduce some nice notation
 
-\subsubsection{Defining the metric for the approximation of non-autonomous systems}\label{sec:inputdriven_metric}
-%Reconsider $\delta$:
-We now also keep track of which proportion of input space leads to bigger than $\varepsilon$ trajectory error.
-So we define 
-\begin{equation}%indicate X,U spaces?
-d_\varepsilon(\varphi,\hat \varphi) \coloneqq  \mathbb{P}_{x_0}^{u}\left(\|\varphi(\cdot,x_0,u)-\hat \varphi(\cdot,x_0,u)\|_\infty>\varepsilon\right).
-\end{equation}
 
 
 Path integral representation of the distribution of $x(t,u)$ when integrating over all possible input functions $u(t)$:
@@ -2667,16 +2705,7 @@ Consideration of $p(x,t)$ after some time passed %calculating path integral from
 \end{equation}
 
 
-\subsubsection{Why this target class?}
-%\paragraph{In terms of general non-autonomous dynamics}
-%mention? convergence depends on x_0? this allows us to formulate coupled system with hyperbolic system for parameters?
-If an sequence doesn't converge (i.e. it has a mixing property) we get the same issue with approximating the system as with chaotic orbits.
-%and the input is not in the kernel of the input function
-If it converges to a fixed point: then it is Asymptotically autonomous. Necessary if $f(x)$ has a continuous attractor.
-If it converges to a limit cycle: then we have periodic forcing. 
-If it doesn't converge, we cannot approximate.  %?
-%except systems that have the inputs in some nullspaces
-%In any case we cannot have a continuous attractor in the asymptotic vector field. %or can we?
+
 
 
 %%with convergent u, we can inlude LCs and CAs!
