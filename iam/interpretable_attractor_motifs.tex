@@ -173,15 +173,15 @@ In each basin of attraction we have one attractor.
 We can simplify it's dynamics by looking at its normal form.
 
 \begin{itemize}
-\item approximation based (model order reduction): schilders2008model
-\item topology based Delay Embedding and Takens' Theorem and Morse Decomposition
-\item \citep{zemlianova2024dynamical}
+\item approximation based (model order reduction): \citep{schilders2008model}
+\item topology based Delay Embedding and Takens' Theorem  and Morse Decomposition 
+\item low-dimensional reduced model \citep{zemlianova2024dynamical}
 \item motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} (also referred to as prototypes in literature)
-\item  \citep{mezic2005spectral}
+\item  Spectral properties of dynamical systems, model reduction and decompositions \citep{mezic2005spectral}
 \item libraries \citep{brunton2014compressive}
-\item  primitives (more for behavioral) \citep{ijspeert2013dynamical}
+\item  primitives: linear \citep{kaul2020linear} (more for behavioral \citep{ijspeert2013dynamical})
 \item fast-slow \citep{dsilva2016data} \citep{haller2017exact}
-\item averaging methods
+\item averaging methods \citep{sanders2007averaging} (invariant tori\citep{novaes2024invariant})
 \item FSMs: \citep{giles1991extracting, casey1996dynamics, giles1999equivalence, oliva2019fsm, ceni2020excitable, cotteret2024fsm, aichernig2024learning} + weighted\citep{wei2024weighted}
 \end{itemize}
 
@@ -205,7 +205,7 @@ Manipulating and measuring model interpretability\citep{poursabzi2021manipulatin
 \citep{quinn2022information}
 
 
-\subsubsection{Interpretability attempts}
+\subsubsection{Interpretability in RNNs}
 SVCCA\citep{raghu2017svcca}
 MinimalRNN\citep{chen2017minimalrnn}
 Towards interpreting recurrent neural networks through probabilistic abstraction \citep{dong2020towards}
@@ -215,9 +215,40 @@ Almost-Linear RNNs Yield Highly Interpretable Symbolic Codes in Dynamical System
 \citep{he2024multilevel}
 
 
+\subsubsection{In neuroscience}
+\paragraph{Motor primitives}
+In motor cortex, neural trajectories during reaching movements often evolve along a low-dimensional cyclic structure, making it possible to interpret them as dynamical primitives for movement \citep{ijspeert2013dynamical}.
 
-\section{The model}
-\subsection{Description}
+
+
+\section{Matching dynamical motifs}
+\subsection{An interpretable motif-centered metric for dynamical systems}
+
+\subsubsection{Recognizable geometric-topological features}
+fixed points, limit cycles
+
+continuous attractors
+
+invariant manifolds
+
+approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
+
+
+\subsection{Motifs: The building blocks}
+\subsubsection{Guiding principles}
+Attractors reduce behavior to "basins" in phase space
+
+human-compatible descriptions
+
+\subsubsection{The base case}
+
+
+\subsubsection{Constructing}
+
+
+
+
+\subsection{Per atttractor basin motif matching}
 \subsubsection{Single global attractor}
 We consider a target dynamical system $\dot{x} = f(x)$ which has a single global attractor.
  We assume that this system is topologically equivalent to one of a family of attractor motifs defined by dynamical systems $\dot{y} = g_i(y)$ where each $g_i$ represents a different canonical attractor in its normal form.
@@ -243,9 +274,9 @@ where \( y_{\text{model}}(t) \) is computed via numerical integration of \( g_i 
 
 The final optimization objective is:
 \[
-\min_{\theta, i} \mathcal{L}(\theta, i) % + \lambda \mathcal{R}(\theta), %regularization? NODE\citep{finlay2020trainnode}
+\min_{\theta, i} \mathcal{L}(\theta, i). % + \lambda \mathcal{R}(\theta), %regularization? NODE\citep{finlay2020trainnode}
 \]
-where \( \lambda \) is a regularization coefficient.
+%where \( \lambda \) is a regularization coefficient.
 
 This formulation allows for the joint identification of both the correct attractor motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form while only requiring topological equivalence rather than explicit vector
 
@@ -365,7 +396,8 @@ Y & \xrightarrow{g} & Y
 \]
 \end{definition}
 
-
+\paragraph{Topological conjugacy of time series}
+\citep{dlotko2024topconj}
 
 \subsubsection{Defective equivalence: Mostly Conjugate Dynamical Systems}
 \citep{skufca2007relaxing, skufca2008mostlyconjugate, bollt2010comparing}
