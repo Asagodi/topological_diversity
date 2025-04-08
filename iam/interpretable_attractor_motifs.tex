@@ -11,6 +11,8 @@
 \usepackage{forloop}
 \usepackage[pdftex]{graphicx}  %remove demo option in your document
 \usepackage{sidecap}
+\usepackage{enumerate}
+\usepackage[shortlabels]{enumitem} %easy customization of itemize/enumerate lists
 \PassOptionsToPackage{dvipsnames}{xcolor}
 \usepackage{xcolor}
 \definecolor{ForestGreen}{rgb}{0.13, 0.55, 0.13}
@@ -107,6 +109,15 @@ A theory of (neural) computation\citep{jaeger2021theory, jaeger2023timescales, j
 - Dynamical system theory as the source for the syntax for the language of neural computation.
 
 
+\subsection{Computation through dynamics}
+\citep{versteeg2023expressive, sedler2023expressive}
+
+CtD benchmark \citep{versteeg2025computation}
+
+\subsubsection{Theoretical neuroscience}
+\citep{thompson2021explanation}
+\citep{levenstein2023theory}
+
 \subsection{Existing methods for dynamics}
 \subsubsection{Reconstructing dynamics}
 
@@ -145,7 +156,7 @@ TWA\citep{moriel2024timewarpattend}
 
 SVCCA\citep{raghu2017svcca}
 
-Dynamical Similarity Analysis\citep{ostrow2024beyond}
+Dynamical Similarity Analysis\citep{ostrow2024beyond} \citep{kamiya2024koopman}
 
 Diffeomorphic vector field alignment for comparing dynamics across learned models\citep{chen2024dform}
 - orbital similarity loss (Eq.5)
@@ -158,6 +169,8 @@ into basins of attraction through Conley’s Fundamental Theorem for Dynamical S
 FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
 Behaviorism is based on an engineering approach, treating the mind as a control system for the organism. This corresponds to an approximation of the recurrent neural dynamics (brain states) by finite state automata (behavioral states). Another approximations to neural dynamics is described, leading to a Platonic-like model of mind based on psychological spaces. \citep{duch1998platonic}
 
+neural automata\citep{goles2013neural, uria2024invariants}
+
 For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron–Frobenius operator describes transitions.
 
 Main shortcoming: difficulty with dealing with complicated attractors.
@@ -165,6 +178,14 @@ When is decomposition of attractor into motifs possible?
 
 On the lifting and reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
 
+\citep{driscoll2024flexible}
+
+compositional tasks \citep{tafazoli2024building}
+
+
+
+\paragraph{Neural ensembles}
+\citep{yuste2024ensembles}
 
 
 
@@ -178,7 +199,7 @@ We can simplify it's dynamics by looking at its normal form.
 \item low-dimensional reduced model \citep{zemlianova2024dynamical}
 \item motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} (also referred to as prototypes in literature)
 \item  Spectral properties of dynamical systems, model reduction and decompositions \citep{mezic2005spectral}
-\item libraries \citep{brunton2014compressive}
+\item libraries \citep{brunton2014compressive}, SINDy  one starts with a large library of candidate functions (or dynamical motifs) that could potentially describe the dynamics of a system. The method then uses sparse regression techniques to select a few terms that best capture the observed time-series data \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
 \item  primitives: linear \citep{kaul2020linear} (more for behavioral \citep{ijspeert2013dynamical})
 \item fast-slow \citep{dsilva2016data} \citep{haller2017exact}
 \item averaging methods \citep{sanders2007averaging} (invariant tori\citep{novaes2024invariant})
@@ -187,6 +208,7 @@ We can simplify it's dynamics by looking at its normal form.
 
 
 \subsection{Interpretability}
+\ascomment{Should this come before Reduction?}
 What is interpretability? \citep{erasmus2021interpretability}
 \citep{kar2022interpretability}
 \citep{whiteway2019interpretable}
@@ -208,12 +230,14 @@ Manipulating and measuring model interpretability\citep{poursabzi2021manipulatin
 \subsubsection{Interpretability in RNNs}
 SVCCA\citep{raghu2017svcca}
 MinimalRNN\citep{chen2017minimalrnn}
+Tiny RNN\citep{jian2023tinyrnn}
 Towards interpreting recurrent neural networks through probabilistic abstraction \citep{dong2020towards}
 Expressive architectures enhance interpretability of dynamics-based neural population models \citep{sedler2023expressive}
 Interpretable Latent Factors with Sparse Component Analysis \citep{zimnik2024identifying}
 Almost-Linear RNNs Yield Highly Interpretable Symbolic Codes in Dynamical Systems Reconstruction \citep{brenner2024almost}
 \citep{he2024multilevel}
 
+\citep{turner2023simplicity}
 
 \subsubsection{In neuroscience}
 \paragraph{Motor primitives}
@@ -223,6 +247,15 @@ In motor cortex, neural trajectories during reaching movements often evolve alon
 
 \section{Matching dynamical motifs}
 \subsection{An interpretable motif-centered metric for dynamical systems}
+
+Let $f\in C^1$ define the vector field of our target system
+and let $g_i$ be a dynamical motif.
+Then, there exists a perturbation $p\in C^1$ and a homeomorphism $\Phi:\reals^n\rightarrow\reals^n$ such that 
+$\|\psi_{f+p} - \Phi(\psi_{g_i})\|_\infty = 0$.
+
+Therefore, we can define the distance w.r.t. each motif as $d(f,g) = \inf \|p\|$ with the above constraint.
+
+Projection of $f$ onto library:
 
 \subsubsection{Recognizable geometric-topological features}
 fixed points, limit cycles
@@ -240,10 +273,21 @@ Attractors reduce behavior to "basins" in phase space
 
 human-compatible descriptions
 
-\subsubsection{The base case}
+%\subsubsection{The base case} % \subsubsection{Constructing}
 
 
-\subsubsection{Constructing}
+\paragraph{Enumerating attractors dimension-wise}
+In dynamical systems, attractors can be systematically classified according to their topological dimension, with the simplest topological spaces serving as the fundamental building blocks at each level. This perspective provides a principled way to enumerate attractors that can arise in ordinary differential equations (ODEs).
+\begin{enumerate}[start=0,label={\bfseries Dim \arabic*:}]
+\item  Stable fixed point
+\item  Bounded line attractor ($[0,1]\subset\reals$), ring attractor ($S_0^1$), stable limit cycle ($S_1^1$)
+\item Bounded square attractor ($[0,1]^2$), Torus attractor ($(S_0^1)^2$), LC-torus attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
+\item ...
+\end{enumerate}
+
+This pattern continues, with higher-dimensional attractors constructed from fundamental topological spaces such as $S^n$ or their Cartesian and toroidal products.
+
+\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$?}
 
 
 
