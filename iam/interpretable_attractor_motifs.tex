@@ -92,7 +92,8 @@ Understanding the relationship between neural activity and behavior is a fundame
 
 Behavior, in many cases, is surprisingly simple. Even in seemingly complex tasks, animals and humans exhibit structured, stereotyped actions that can often be described using a small number of latent variables.
  From motor control to decision-making, behavioral trajectories unfold in a manner that is both predictable and constrained, hinting at a fundamental simplicity underlying observed actions.
- This raises an important question: if neural activity underlies behavior, should it not also exhibit similar simplicity?
+
+justify assumption: if neural activity underlies behavior, should it not also exhibit similar simplicity
 
 If neural dynamics are indeed tuned to drive behavior, we should expect a correspondence between the low-dimensional structure of neural activity and the inherent simplicity of behavior.
  This suggests that much of the apparent complexity in neural recordings may stem from redundant or task-irrelevant variability rather than meaningful high-dimensional computation.
@@ -108,25 +109,43 @@ If neural dynamics are indeed tuned to drive behavior, we should expect a corres
 A theory of (neural) computation\citep{jaeger2021theory, jaeger2023timescales, jaeger2023theory}
 - Dynamical system theory as the source for the syntax for the language of neural computation.
 
+Similar idea: DYNAMO \citep{cotler2023analyzing}
+
+a language describing the axes of the space of possible dynamical solutions and their characteristics \citep{pagan2022dm}
 
 \subsection{Computation through dynamics}
+\citep{mante2013context}
+\citep{sussillo2014neural}
+\citep{vyas2020ctd}
 \citep{versteeg2023expressive, sedler2023expressive}
+\citep{dinc2025latentcomputing}
+
+latent state space modeling \citep{zoltowski2020general} 
 
 CtD benchmark \citep{versteeg2025computation}
 
-\subsubsection{Theoretical neuroscience}
-\citep{thompson2021explanation}
-\citep{levenstein2023theory}
+RNNs for neural computation \citep{chaisangmongkon2017transience}
+Black box \citep{sussillo2013blackbox}
+Reverse-engineering \citep{maheswaranathan2019reverse} \citep{golub2018fixedpointfinder} \citep{smith2021reverse}
+Diversity of solutions \citep{maheswaranathan2019universality}\citep{jarne2023initialization} \citep{turner2021charting} \citep{nayebi2021heterogeneity} \citep{zhong2023mechanistic}
+
+
+%\subsubsection{Theoretical neuroscience}
+%\citep{thompson2021explanation}
+%\citep{levenstein2023theory}
+
+\subsubsection{Canonical models for neural computation}
+\citep{chirimuuta2014minimal}
 
 \subsection{Existing methods for dynamics}
 \subsubsection{Reconstructing dynamics}
-
 Learning interpretable continuous-time models of latent stochastic dynamical systems \citep{duncker2019learning}
 
 Phase2vec \citep{ricci2022phase2vec}
-
+\citep{moriel2024timewarpattend}
+Smooth Prototype Equivalences \citep{friedman2025characterizing}
+f
 MARBLE \citep{gosztolai2025marble}
-
 
 
 \subsubsection{Methods to compare/classify dynamics}\label{sec:compare}
@@ -156,7 +175,9 @@ TWA\citep{moriel2024timewarpattend}
 
 SVCCA\citep{raghu2017svcca}
 
-Dynamical Similarity Analysis\citep{ostrow2024beyond} \citep{kamiya2024koopman}
+Dynamical Similarity Analysis\citep{ostrow2024beyond} \citep{kamiya2024koopman}\\
+What we lose (because of the truncation): limit cycles, multistability
+But we can capture some slow manifold behavior!
 
 Diffeomorphic vector field alignment for comparing dynamics across learned models\citep{chen2024dform}
 - orbital similarity loss (Eq.~5)
@@ -202,39 +223,72 @@ We can simplify it's dynamics by looking at its normal form.
 \item libraries \citep{brunton2014compressive}, SINDy  one starts with a large library of candidate functions (or dynamical motifs) that could potentially describe the dynamics of a system. The method then uses sparse regression techniques to select a few terms that best capture the observed time-series data \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
 \item  primitives: linear \citep{kaul2020linear} (more for behavioral \citep{ijspeert2013dynamical})
 \item fast-slow \citep{dsilva2016data} \citep{haller2017exact}
-\item averaging methods \citep{sanders2007averaging} (invariant tori\citep{novaes2024invariant})
+\item averaging methods \citep{sanders2007averaging} (invariant tori\citep{novaes2024invariant}), Theorem 9.4 in \citep{hoppensteadt2012weakly}
 \item FSMs: \citep{giles1991extracting, casey1996dynamics, giles1999equivalence, oliva2019fsm, ceni2020excitable, cotteret2024fsm, aichernig2024learning} + weighted\citep{wei2024weighted}
+\item effective dynamics \citep{menier2025interpretable}
 \end{itemize}
 
 
 \subsection{Interpretability}
 \ascomment{Should this come before Reduction?}
+%phos
 What is interpretability? \citep{erasmus2021interpretability}
-\citep{kar2022interpretability}
-\citep{whiteway2019interpretable}
+\citep{madsen2024interpretability}
 levels \citep{hochstein2022levels}
+
+%neuro
+\citep{whiteway2019interpretable}
+\citep{kar2022interpretability}
 extrinsic and intrinsic dimensionality\citep{jazayeri2021interpreting}
 
  machine learning: important yet slippery\citep{lipton2018mythos}	
  Building Blocks of Interpretability \citep{olah2018interpretability}
 \citep{beisbart2022interpretability}
 simple isn't easy \citep{raz2024ml}
-Manipulating and measuring model interpretability\citep{poursabzi2021manipulating}
-
+Manipulating and measuring model interpretability\citep{poursabzi2021manipulating}: \ascomment{A way to compare?}
+\citep{he2024multilevel}
 
 \subsubsection{Simplicity}
 \citep{gao2015simplicity}
 \citep{dyer2023simplest}
 \citep{quinn2022information}
 
+\subsection{Minimal}
+\citep{beer1996toward}
+\citep{chirimuuta2014minimal}
+\citep{batterman2014minimal}
+\citep{brancazio2023minimal}
+
+
+\paragraph{Reduction/idealization/simplification/abstraction}
+\citep{marr1976computation, marr2010vision}
+
+\citep{chirimuuta2018mmm} %chirimuuta2022artifacts, chirimuuta2024analogies
+
+\citep{potochnik2021levels,
+potochnik2020idealization,
+potochnik2017idealization}
+
+\citep{stinson2020idealized}
+\citep{chirimuuta2024brain} 
+
 \subsubsection{Understanding}
 \citep{deregt2017understanding}
 \citep{potochnik2017idealization}
-Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards}
 \citep{guest2023logical}
 
+Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding}
+prediction vs understanding \citep{chirimuuta2021prediction}
 
 
+\subsubsection{Works mentioning interpretability}
+\citep{whiteway2019interpretable}
+\citep{kar2022interpretability}
+ Making hippocampal manifolds physiologically interpretable \citep{esparza2023interpretable}
+black box to mixture of interpretable models \citep{ghosh2023blackbox}
+\citep{schneider2023learnable}
+\citep{brenner2024almost}
+\citep{menier2025interpretable}
 
 \subsubsection{Our levels of interperetability}
 Proposal: guiding principles for a hierarchy of interpretability
@@ -249,7 +303,7 @@ Message: reducing complexity, introducing hierarchy
 
 \subsubsection{Interpretability in RNNs}
 SVCCA\citep{raghu2017svcca}
-MinimalRNN\citep{chen2017minimalrnn}
+%MinimalRNN\citep{chen2017minimalrnn} more about simplifying gates
 Tiny RNN\citep{jian2023tinyrnn}
 Towards interpreting recurrent neural networks through probabilistic abstraction \citep{dong2020towards}
 Expressive architectures enhance interpretability of dynamics-based neural population models \citep{sedler2023expressive}
@@ -258,6 +312,10 @@ Almost-Linear RNNs Yield Highly Interpretable Symbolic Codes in Dynamical System
 \citep{he2024multilevel}
 \citep{schaeffer2020reverseengineering} Representations and Dynamics Distillations (RADD)
 \citep{turner2023simplicity}
+FSM: \citep{oliva2019fsm}, \citep{cotteret2024fsm},  ENA \citep{ceni2020interpreting}
+low-rank RNNs \citep{beiran2021shaping, valente2022extracting, valente2022probing}
+
+Understanding and controlling the geometry of memory organization in RNNs \citep{haputhanthri2025understanding}
 
 \subsubsection{In neuroscience}
 \paragraph{Motor primitives}
@@ -289,6 +347,14 @@ fixed points, limit cycles
 continuous attractors
 
 invariant manifolds
+manifolds neuro/RNN\citep{langdon2023unifying, can2021emergence,
+cueva2021continuous,
+gort2024emergence,
+mishra2021continual,
+chaudhuri2019attractor, ghazizadeh2021slowmanifold, duncker2021dynamics, pezon2024linking}
+neuro \citep{fortunato2024nonlinear}
+
+manifold alginment \citep{kuoch2024probing}
 
 approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
 
@@ -298,6 +364,8 @@ approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
 Attractors reduce behavior to "basins" in phase space
 
 human-compatible descriptions
+
+motifs should be all topologically distinct (not topologically conjugate)
 
 %\subsubsection{The base case} % \subsubsection{Constructing}
 
