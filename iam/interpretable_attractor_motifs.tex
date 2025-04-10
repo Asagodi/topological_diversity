@@ -144,7 +144,7 @@ Learning interpretable continuous-time models of latent stochastic dynamical sys
 Phase2vec \citep{ricci2022phase2vec}
 \citep{moriel2024timewarpattend}
 Smooth Prototype Equivalences \citep{friedman2025characterizing}
-f
+
 MARBLE \citep{gosztolai2025marble}
 
 
@@ -320,6 +320,8 @@ Understanding and controlling the geometry of memory organization in RNNs \citep
 \subsubsection{In neuroscience}
 \paragraph{Motor primitives}
 In motor cortex, neural trajectories during reaching movements often evolve along a low-dimensional cyclic structure, making it possible to interpret them as dynamical primitives for movement \citep{ijspeert2013dynamical}.
+
+\citep{marton2021efficient}
 
 
 
@@ -547,6 +549,7 @@ Y & \xrightarrow{g} & Y
 
 \subsection{Normal forms}
 
+\subsubsection{Normal forms for autonomous dynamics}
 Examples
 Saddle ring
 \begin{equation}
@@ -596,6 +599,11 @@ This describes how a diffeomorphism \( \Phi \) acts on the vector field governin
 
 
 
+\subsubsection{Normal forms for input-driven dynamics}
+Normal form representation of control systems  \citep{gilbert1963controllability}
+Brunovsky normal form is a canonical form for controllable linear systems.
+
+
 
 \subsection{Coherence in behavior}
 \subsubsection{Perfect coherence: Invariant manifolds}%+forward invariance
@@ -628,8 +636,25 @@ Regions that remain coherent and relatively nondispersive over finite periods of
 \citep{finlay2020trainnode}
 
 
+\section{Interpretability}
+Interpretability is ofter used, yet is typically not defined in computational neuroscience\citep{duncker2019learning}.
+
+\subsection{DS}
+Why are LDSs interpretable?
+- asymptotic behavior is given
+- time reparametrization = eigenspectrum of Jacobian.
 
 
+\subsection{Input-driven}
+Why are input-driven systems difficult to characterize? The lesson from our hierarchy of interpretability.
+The input acts on an infinite dimensional space in a nonlinear manner.
+We cannot easily reduce this (without losing some of the details of the action).
+
+
+
+\subsection{Latent variable models}
+For these systems the details don't make much sense any ways!
+There is already so much abstraction!
 
 \end{document}
 
