@@ -37,6 +37,7 @@
 \newtheorem{corollary}{Corollary}[theorem]
 \theoremstyle{definition} \newtheorem{definition}{Definition}
 \theoremstyle{remark} \newtheorem{remark}{Remark}
+\theoremstyle{example} \newtheorem{example}{Example}
 
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\sep}{\operatorname{sep}}
@@ -93,12 +94,19 @@ Understanding the relationship between neural activity and behavior is a fundame
 Behavior, in many cases, is surprisingly simple. Even in seemingly complex tasks, animals and humans exhibit structured, stereotyped actions that can often be described using a small number of latent variables.
  From motor control to decision-making, behavioral trajectories unfold in a manner that is both predictable and constrained, hinting at a fundamental simplicity underlying observed actions.
 
-justify assumption: if neural activity underlies behavior, should it not also exhibit similar simplicity
+\ascomment{justify assumption: if neural activity underlies behavior, should it not also exhibit similar simplicity}
 
 If neural dynamics are indeed tuned to drive behavior, we should expect a correspondence between the low-dimensional structure of neural activity and the inherent simplicity of behavior.
  This suggests that much of the apparent complexity in neural recordings may stem from redundant or task-irrelevant variability rather than meaningful high-dimensional computation.
   In this work, we explore the hypothesis that neural representations of behavior are fundamentally simple, reflecting a constrained, low-dimensional organization that enables efficient motor control, decision-making, and cognitive processing.
  Through computational modeling and empirical analyses, we demonstrate how low-dimensional neural manifolds can emerge and how their structure aligns with behavioral simplicity, providing insights into the fundamental principles governing neural computation.
+ 
+ 
+ 
+ %big datas
+ As the number of simultaneously recorded neurons increases and experimental paradigms become more complex (e.g. freely behaving animals), it becomes increasingly challenging to develop computational models that can describe the population activity while still providing a meaningful interpretation of how it relates to system-level function.
+
+
 
 \subsection{Our contribution}\label{sec:contribution}
 
@@ -162,6 +170,13 @@ Taking apart topological conjugacy (diffeomorphism from motif):
 \item On asymptotic / $\omega$-limit set / invariant set
 \item On transients
 \end{itemize}
+
+
+DS/RNN analysis
+Dyn Sys: Linking parameters and behavior: bifurcation, asymptotic behavior,  topological equivalence \citep{beer1995ctrnn, beer2006parameterspace}
+
+For task-trained neural networks
+\citep{huang2024measuring}
 
 
 \paragraph{SOTA}
@@ -236,6 +251,19 @@ We can simplify it's dynamics by looking at its normal form.
 \paragraph{Reduction of dynamics to extract computation}
 Formalize through input-output functional.
 
+The \emph{transfer functional} \( \mathcal{T}_f \) maps an input signal \( u(\cdot) \) to an output signal \( y(\cdot) \), possibly given an initial condition \( x_0 \):
+\[
+\mathcal{T}_f[u](t) = h(x(t)),
+\]
+where \( x(t) \) is the solution of the initial value problem:
+\[
+\dot{x}(t) = f(x(t), u(t)), \quad x(0) = x_0.
+\]
+
+What is the distance between $H(f)$ and $H(\phi^{-1}(f+p))$?
+
+
+\ascomment{What is simple behavior in terms of the transfer function?}
 
 
 \subsection{Interpretability}
@@ -292,8 +320,16 @@ prediction vs understanding \citep{chirimuuta2021prediction}
 \paragraph{Explanations: understanding scientific phenomena}
 
 \paragraph{Contextuality and understanding}
+What are we interpreting \emph{for}?
 
+Context: Behavior %Computational theory in Marr's levels?
+Interpretation in terms of contributions of the transfer functional.
+
+
+%context: computation %Representation and algorithm in Marr's levels
 \paragraph{Understanding computation in terms of dynamics}
+Interpretation in terms of a ``compressed'' description of the dynamics.
+
 
 
 \subsubsection{Works mentioning interpretability}
@@ -317,7 +353,10 @@ Message: reducing complexity, introducing hierarchy
 
 
 \subsubsection{Interpretability in RNNs}
+%static
 SVCCA\citep{raghu2017svcca}
+dPCA\citep{kobak2016demixed} Principal Component Analysis as a supervised dimensionality reduction method that finds dimensions in population activity space related to experimentally-defined variables, aiding in the interpretation of complex and heterogeneous single-neuron responses
+
 %MinimalRNN\citep{chen2017minimalrnn} more about simplifying gates
 Tiny RNN\citep{jian2023tinyrnn}
 Towards interpreting recurrent neural networks through probabilistic abstraction \citep{dong2020towards}
@@ -512,6 +551,7 @@ Freia\citep{freia} %https://github.com/vislearn/FrEIA
 
 
 
+\newpage
 \section{Geometry}
 Geometric Learning on Manifolds\citep{mostowsky2024geometrickernels}
 
@@ -533,6 +573,7 @@ k(x, x') = \frac{1}{\Gamma(\nu)} \left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x,
 
 
 %%%%%DS
+\newpage
 \section{Dynamical systems background}
 
 \subsection{Comparing dynamics}
@@ -651,8 +692,83 @@ Regions that remain coherent and relatively nondispersive over finite periods of
 \citep{finlay2020trainnode}
 
 
+
+
+\section{Dynamical systems contributions}
+\subsection{The action of the input on the attractor manifold}
+For continuous attractors, the following can be done to describe the action of the input.
+For limit cycle type attractors, the action needs to be defined in terms of the phase resetting curve.
+
+\subsubsection{Control-affine}
+Let the system evolve according to the control-affine dynamics:
+\[
+\dot{x}(t) = f(x(t)) + \sum_{i=1}^m u_i(t) g_i(x(t)),
+\]
+where \( x(t) \in \mathbb{R}^n \) is the state, \( u(t) \in \mathbb{R}^m \) is the input, \( f : \mathbb{R}^n \to \mathbb{R}^n \) governs the autonomous dynamics, and \( g_i : \mathbb{R}^n \to \mathbb{R}^n \) are the input vector fields.
+
+Suppose the system admits a manifold \( \mathcal{M} \subset \mathbb{R}^n \) of fixed points under the autonomous dynamics:
+\[
+\mathcal{M} = \{ x \in \mathbb{R}^n \mid f(x) = 0 \}.
+\]
+We assume that each input vector field \( g_i \) is tangent to the manifold at every point:
+\[
+g_i(x) \in T_x \mathcal{M}, \quad \forall x \in \mathcal{M}, \quad i = 1, \dots, m.
+\]
+Define \( \mathfrak{g}_x = \operatorname{span} \{ g_1(x), \dots, g_m(x) \} \subset T_x \mathcal{M} \) to be the subspace of directions accessible by the inputs at state \( x \in \mathcal{M} \). Let \( \mathcal{L}_x \) denote the Lie algebra generated by \( \{g_1, \dots, g_m\} \) under the Lie bracket of vector fields, evaluated at \( x \):
+\[
+\mathcal{L}_x = \operatorname{span} \left\{ Y(x) \,\middle|\, Y \in \mathrm{Lie}(g_1, \dots, g_m) \right\}.
+\]
+Since the Lie brackets of tangent vector fields remain tangent, it follows that \( \mathcal{L}_x \subseteq T_x \mathcal{M} \) for all \( x \in \mathcal{M} \). Thus, the integral manifolds (or orbits) generated by the Lie algebra \( \mathrm{Lie}(g_1, \dots, g_m) \) are contained in \( \mathcal{M} \), and describe the directions along which the state can be moved by time-varying inputs:
+\[
+\mathcal{O}(x) = \left\{ \phi_{t_k}^{Y_k} \circ \cdots \circ \phi_{t_1}^{Y_1}(x) \,\middle|\, Y_j \in \mathrm{Lie}(g_1, \dots, g_m),\ t_j \in \mathbb{R} \right\} \subseteq \mathcal{M},
+\]
+where \( \phi_t^Y \) denotes the flow of the vector field \( Y \) at time \( t \). In this sense, the input acts as a generator of motion along the manifold \( \mathcal{M} \) via the action of the associated Lie algebra.
+
+
+\subsubsection{Non-Affine Case}
+Linearize!
+
+Assuming smoothness, we expand the input-driven dynamics \( F(x, u) \) in a Taylor series around \( u = 0 \):
+\[
+F(x, u) = f(x) + \sum_{i} u_i g_i(x) + \sum_{i,j} u_i u_j h_{ij}(x) + \cdots,
+\]
+where
+\begin{align}
+f(x) &= F(x, 0),\\
+g_i(x) &= \left. \frac{\partial F}{\partial u_i}(x, u) \right|_{u = 0},\\
+h_{ij}(x) &= \left. \frac{1}{2} \frac{\partial^2 F}{\partial u_i \partial u_j}(x, u) \right|_{u = 0}.
+\end{align}
+
+Here, \( \{g_i(x)\} \) represents the first-order (linear) influence of the inputs on the dynamics, corresponding to the control-affine approximation. The higher-order terms \( h_{ij}(x) \) and beyond capture nonlinear interactions between input components and their influence on state evolution.
+
+
+%v-equation and r-equation \citep{miller2012mathematical}
+\paragraph{Voltage rate} 
+Consider the continuous-time RNN dynamics:
+\[
+\dot{x} = F(x, u) = -x + W\phi(x) + B u,
+\]
+where \( x \in \mathbb{R}^n \) is the state, \( u \in \mathbb{R}^m \) is the input, \( W \in \mathbb{R}^{n \times n} \) is the recurrent weight matrix, \( B \in \mathbb{R}^{n \times m} \) is the input weight matrix, and \( \phi : \mathbb{R}^n \to \mathbb{R}^n \) is a smooth nonlinearity applied elementwise.
+Then, $g_i(x) = B_i$, where \( B_i \) denotes the \( i \)-th column of \( B \).
+
+Since the \( g_i \) are constant vector fields, the control vector fields are automatically tangent to \( \mathcal{M} \) if and only if \( B_i \in T_x \mathcal{M} \) for all \( x \in \mathcal{M} \).
+ That is, the inputs move the state along the manifold only if the input directions lie in the tangent bundle of \( \mathcal{M} \).
+
+
+The Lie algebra generated by the constant vector fields \( \{g_i\} \) is abelian:
+\[
+[g_i, g_j] = 0 \quad \text{for all } i, j,
+\]
+so the input-induced motion lies within a linear subspace of \( \mathbb{R}^n \), which intersects \( \mathcal{M} \) nontrivially if and only if the span of \( \{B_i\} \) is contained in \( T_x \mathcal{M} \) at every \( x \in \mathcal{M} \).
+
+
+\paragraph{Vanilla RNNs}
+
+
+
+\newpage
 \section{Interpretability}
-Interpretability is ofter used, yet is typically not defined in computational neuroscience\citep{duncker2019learning}.
+Interpretability is ofter used, yet is typically not defined in computational neuroscience\citep{Zhao2016d, duncker2019learning}.
 
 \subsection{DS}
 Why are LDSs interpretable?
@@ -664,7 +780,6 @@ Why are LDSs interpretable?
 Why are input-driven systems difficult to characterize? The lesson from our hierarchy of interpretability.
 The input acts on an infinite dimensional space in a nonlinear manner.
 We cannot easily reduce this (without losing some of the details of the action).
-
 
 
 \subsection{Latent variable models}
