@@ -246,6 +246,9 @@ We can simplify it's dynamics by looking at its normal form.
 \item averaging methods \citep{sanders2007averaging} (invariant tori\citep{novaes2024invariant}), Theorem 9.4 in \citep{hoppensteadt2012weakly}
 \item FSMs: \citep{giles1991extracting, casey1996dynamics, giles1999equivalence, oliva2019fsm, ceni2020excitable, cotteret2024fsm, aichernig2024learning} + weighted\citep{wei2024weighted}
 \item effective dynamics \citep{menier2025interpretable}
+\item Reduction of Limit-Cycle Oscillators to Phase–Amplitude and Phase Models \citep{ashwin2016mathematical} (def. limit-cycle oscillator: attracting and hyperbolic periodic orbit, reduction: reduce per orb. to a description that involves a phase that lives on a topological circle that can be thought of as an interval)
+%and T −  are close for  small
+%define a phase θ modulo T, 
 \end{itemize}
 
 low-dim \citep{nonnenmacher2017extracting}
@@ -700,10 +703,49 @@ Regions that remain coherent and relatively nondispersive over finite periods of
 
 
 \section{Dynamical systems contributions}
+
+
 \subsection{The action of the input on the attractor manifold}
 For continuous attractors, the following can be done to describe the action of the input.
 For limit cycle type attractors, the action needs to be defined in terms of the phase resetting curve.
-\ascomment{input-dependent isochrons}
+
+
+
+\subsubsection{input-dependent isochrons}
+Isochrons can also be interpreted as the leaves of the stable manifold of a hyperbolic limit cycle \citep{ashwin2016mathematical}.
+ They fully specify the dynamics in the absence of perturbations \citep{guckenheimer1975isochrons}. %lossless reduction!
+Explanation: Roughly speaking, a trajectory with the initial condition $x\in \mathcal{I}_\theta$ asymptotically approaches a (periodic) trajectory on the limit cycle characterized by an initial condition associated with the phase $\theta$.
+ Since the two trajectories have the same asymptotic behavior, whether the initial condition is on the limit cycle or not, the phase h can also be assigned to the initial condition $x\not\in\Gamma$.
+ 
+ an isochron extends the notion of phase off the cycle (within its basin of attraction)
+ Isochrons can also be interpreted as the leaves of the stable manifold of a hyperbolic limit cycle.
+ 
+ Computing the isochron foliation of the basin of attraction of a limit cycle is a major challenge since it requires knowledge of the limit cycle and therefore can only be computed in special cases or numerically.
+forward integration method using the Koopman operator and Fourier averages as introduced \citep{mauroy2012use}, see description in \citep{ashwin2016mathematical}
+
+\paragraph{Phase response curve (PRC)}
+the phase-reduction formalism is useful in quantifying how a system (on or close to a cycle) responds to weak forcing
+
+
+iPRC
+can be written, for a given ODE model, as the solution to an adjoint equation
+
+The iPRC at a point on cycle is equal to the gradient of the (isochronal) phase at that point.
+
+PRC
+phase response to a perturbation \citep{rinzel1998analysis}
+%see 5.5 in ashwin2016mathematical
+
+simplest example of an averaged phase dynamics: Adler equation \citep{adler1946study}
+
+\subsubsection{Phase–Amplitude Models}
+amplitude: notion of distance from the limit cycle \citep{hale2009ordinary} \citep{ermentrout1991multiple}
+
+
+from PAM to isochrons: limit of strong attraction\citep{ermentrout1990oscillator}
+
+
+
 
 \subsubsection{Control-affine}
 Let the system evolve according to the control-affine dynamics:
