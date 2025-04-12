@@ -135,16 +135,33 @@ CtD benchmark \citep{versteeg2025computation}
 
 RNNs for neural computation \citep{chaisangmongkon2017transience}
 Black box \citep{sussillo2013blackbox}
-Reverse-engineering \citep{maheswaranathan2019reverse} \citep{golub2018fixedpointfinder} \citep{smith2021reverse}
+Reverse-engineering \citep{maheswaranathan2019reverse} \citep{golub2018fixedpointfinder} \citep{smith2021reverse} \citep{rivkind2017local}
 Diversity of solutions \citep{maheswaranathan2019universality}\citep{jarne2023initialization} \citep{turner2021charting} \citep{nayebi2021heterogeneity} \citep{zhong2023mechanistic}
 
+engineering neural computation \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe} \citep{beiran2023rnns}
+Engineering RNNs that embody latent task dynamics (EMPJ) \citep{pollock2020engineering}
 
 %\subsubsection{Theoretical neuroscience}
 %\citep{thompson2021explanation}
 %\citep{levenstein2023theory}
 
+\subsubsection{Examples of neural computation}
+\paragraph{Working memory}
+Discrete 
+
+Continuous 
+
+\paragraph{Decision making}
+
+\paragraph{Motor control}
+\citep{wang2022representation}
+
 \subsubsection{Canonical models for neural computation}
 \citep{chirimuuta2014minimal}
+
+Variability in implementation
+
+
 
 \subsection{Existing methods for dynamics}
 \subsubsection{Reconstructing dynamics}
@@ -223,7 +240,7 @@ On the lifting and reconstruction of nonlinear systems with multiple invariant s
 
 compositional tasks \citep{tafazoli2024building}
 
-
+decomposition through population-based modeling\citep{glaser2020recurrent} 
 
 \paragraph{Neural ensembles}
 \citep{yuste2024ensembles}
@@ -237,7 +254,7 @@ We can simplify it's dynamics by looking at its normal form.
 \begin{itemize}
 \item approximation based (model order reduction): \citep{schilders2008model}
 \item topology based Delay Embedding and Takens' Theorem  and Morse Decomposition 
-\item low-dimensional reduced model \citep{zemlianova2024dynamical}
+\item low-dimensional reduced model \citep{zemlianova2024dynamical} \citep{nonnenmacher2017extracting}
 \item motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} (also referred to as prototypes in literature)
 \item  Spectral properties of dynamical systems, model reduction and decompositions \citep{mezic2005spectral}
 \item libraries \citep{brunton2014compressive}, SINDy  one starts with a large library of candidate functions (or dynamical motifs) that could potentially describe the dynamics of a system. The method then uses sparse regression techniques to select a few terms that best capture the observed time-series data \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
@@ -249,9 +266,11 @@ We can simplify it's dynamics by looking at its normal form.
 \item Reduction of Limit-Cycle Oscillators to Phase–Amplitude and Phase Models \citep{ashwin2016mathematical} (def. limit-cycle oscillator: attracting and hyperbolic periodic orbit, reduction: reduce per orb. to a description that involves a phase that lives on a topological circle that can be thought of as an interval)
 %and T −  are close for  small
 %define a phase θ modulo T, 
+\item contractivity \citep{lohmiller1998contraction}\citep{bullo2023contraction} \citep{revay2020contracting} \citep{tsukamoto2021contraction} \citep{davydov2022rnn, davydov2024noneuclidean}
+\item \citep{li2021novel}
 \end{itemize}
 
-low-dim \citep{nonnenmacher2017extracting}
+
 
 \paragraph{Reduction of dynamics to extract computation}
 Formalize through input-output functional.
@@ -267,6 +286,9 @@ where \( x(t) \) is the solution of the initial value problem:
 
 What is the distance between $H(f)$ and $H(\phi^{-1}(f+p))$?
 
+
+\paragraph{Reduction of dynamics}
+Embed attractor of intrinsic dimension $N$ into $\reals^{n+1}$ to be able to map point in the basin of attraction onto representative points on the stable manifold of the attractor motif.
 
 \ascomment{What is simple behavior in terms of the transfer function?}
 
@@ -303,6 +325,7 @@ Canonical realization = the simplest system (in some sense) that produces the sa
 \citep{batterman2014minimal}
 \citep{brancazio2023minimal}
 
+\citep{Jordan2019a}
 
 \paragraph{Reduction/idealization/simplification/abstraction}
 \citep{marr1976computation, marr2010vision}
@@ -324,7 +347,10 @@ potochnik2017idealization}
 Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding}
 prediction vs understanding \citep{chirimuuta2021prediction}
 
+Understanding information propagation using dynamical systems tools \citep{vogt2022lyapunov}
+
 \paragraph{Explanations: understanding scientific phenomena}
+\citep{parascandolo2021learning}
 
 \paragraph{Contextuality and understanding}
 What are we interpreting \emph{for}?
@@ -366,7 +392,8 @@ SVCCA\citep{raghu2017svcca}
 dPCA\citep{kobak2016demixed} Principal Component Analysis as a supervised dimensionality reduction method that finds dimensions in population activity space related to experimentally-defined variables, aiding in the interpretation of complex and heterogeneous single-neuron responses
 
 %MinimalRNN\citep{chen2017minimalrnn} more about simplifying gates
-Tiny RNN\citep{jian2023tinyrnn}
+Tiny RNN\citep{jian2023tinyrnn}: analysis of the predictive performance of RNNs with varying sizes revealed that merely 1-4 dynamical variables were adequate for an optimal explanation of behavior in reward learning tasks, suggesting that the behavior of animals in these tasks is low-dimensional
+model identification of classes of cognitive models\citep{rmus2024artificial}
 Towards interpreting recurrent neural networks through probabilistic abstraction \citep{dong2020towards}
 Expressive architectures enhance interpretability of dynamics-based neural population models \citep{sedler2023expressive}
 Interpretable Latent Factors with Sparse Component Analysis \citep{zimnik2024identifying}
@@ -376,6 +403,8 @@ Almost-Linear RNNs Yield Highly Interpretable Symbolic Codes in Dynamical System
 \citep{turner2023simplicity}
 FSM: \citep{oliva2019fsm}, \citep{cotteret2024fsm},  ENA \citep{ceni2020interpreting}
 low-rank RNNs \citep{beiran2021shaping, valente2022extracting, valente2022probing}
+mechanistic \citep{qian2024partial}
+\citep{Nassar2018b}
 
 Understanding and controlling the geometry of memory organization in RNNs \citep{haputhanthri2025understanding}
 
@@ -687,7 +716,7 @@ Infinite time horizon perfect coherence
     
     
 \paragraph{Metastable behavior}\label{sec:metastable}
-    
+   \citep{brinkman2022metastable}
     
     
 \paragraph{Coherent regions}
@@ -701,53 +730,18 @@ Regions that remain coherent and relatively nondispersive over finite periods of
 
 
 
-
-\section{Dynamical systems contributions}
-
-
-\subsection{The action of the input on the attractor manifold}
-For continuous attractors, the following can be done to describe the action of the input.
-For limit cycle type attractors, the action needs to be defined in terms of the phase resetting curve.
+\newpage
+%\section{Dynamical systems contributions}
+%Overview  
 
 
-
-\subsubsection{input-dependent isochrons}
-Isochrons can also be interpreted as the leaves of the stable manifold of a hyperbolic limit cycle \citep{ashwin2016mathematical}.
- They fully specify the dynamics in the absence of perturbations \citep{guckenheimer1975isochrons}. %lossless reduction!
-Explanation: Roughly speaking, a trajectory with the initial condition $x\in \mathcal{I}_\theta$ asymptotically approaches a (periodic) trajectory on the limit cycle characterized by an initial condition associated with the phase $\theta$.
- Since the two trajectories have the same asymptotic behavior, whether the initial condition is on the limit cycle or not, the phase h can also be assigned to the initial condition $x\not\in\Gamma$.
- 
- an isochron extends the notion of phase off the cycle (within its basin of attraction)
- Isochrons can also be interpreted as the leaves of the stable manifold of a hyperbolic limit cycle.
- 
- Computing the isochron foliation of the basin of attraction of a limit cycle is a major challenge since it requires knowledge of the limit cycle and therefore can only be computed in special cases or numerically.
-forward integration method using the Koopman operator and Fourier averages as introduced \citep{mauroy2012use}, see description in \citep{ashwin2016mathematical}
-
-\paragraph{Phase response curve (PRC)}
-the phase-reduction formalism is useful in quantifying how a system (on or close to a cycle) responds to weak forcing
+\section{The action of the input on the attractor manifold}
+For stationary attractors (continuous attractors), the control-affine framework characterizes the simplest way to describe the action of the input (see Supp.Sec.~\ref{sec:statattaction}).
+For periodic attractors, the action needs to be defined in terms of the phase resetting curve (see Supp.Sec.~\ref{sec:perattaction}).
 
 
-iPRC
-can be written, for a given ODE model, as the solution to an adjoint equation
-
-The iPRC at a point on cycle is equal to the gradient of the (isochronal) phase at that point.
-
-PRC
-phase response to a perturbation \citep{rinzel1998analysis}
-%see 5.5 in ashwin2016mathematical
-
-simplest example of an averaged phase dynamics: Adler equation \citep{adler1946study}
-
-\subsubsection{Phase–Amplitude Models}
-amplitude: notion of distance from the limit cycle \citep{hale2009ordinary} \citep{ermentrout1991multiple}
-
-
-from PAM to isochrons: limit of strong attraction\citep{ermentrout1990oscillator}
-
-
-
-
-\subsubsection{Control-affine}
+\subsection{Action of the input on  stationary attractors}\label{sec:statattaction}
+\subsubsection{Control-affine}\label{sec:controlaffine}
 Let the system evolve according to the control-affine dynamics:
 \[
 \dot{x}(t) = f(x(t)) + \sum_{i=1}^m u_i(t) g_i(x(t)),
@@ -766,14 +760,15 @@ Define \( \mathfrak{g}_x = \operatorname{span} \{ g_1(x), \dots, g_m(x) \} \subs
 \[
 \mathcal{L}_x = \operatorname{span} \left\{ Y(x) \,\middle|\, Y \in \mathrm{Lie}(g_1, \dots, g_m) \right\}.
 \]
-Since the Lie brackets of tangent vector fields remain tangent, it follows that \( \mathcal{L}_x \subseteq T_x \mathcal{M} \) for all \( x \in \mathcal{M} \). Thus, the integral manifolds (or orbits) generated by the Lie algebra \( \mathrm{Lie}(g_1, \dots, g_m) \) are contained in \( \mathcal{M} \), and describe the directions along which the state can be moved by time-varying inputs:
+Since the Lie brackets of tangent vector fields remain tangent, it follows that \( \mathcal{L}_x \subseteq T_x \mathcal{M} \) for all \( x \in \mathcal{M} \).
+Thus, the integral manifolds generated by the Lie algebra \( \mathrm{Lie}(g_1, \dots, g_m) \) are contained in \( \mathcal{M} \), and describe the directions along which the state can be moved by time-varying inputs:
 \[
 \mathcal{O}(x) = \left\{ \phi_{t_k}^{Y_k} \circ \cdots \circ \phi_{t_1}^{Y_1}(x) \,\middle|\, Y_j \in \mathrm{Lie}(g_1, \dots, g_m),\ t_j \in \mathbb{R} \right\} \subseteq \mathcal{M},
 \]
 where \( \phi_t^Y \) denotes the flow of the vector field \( Y \) at time \( t \). In this sense, the input acts as a generator of motion along the manifold \( \mathcal{M} \) via the action of the associated Lie algebra.
 
 
-\subsubsection{Non-Affine Case}
+\subsubsection{Non-Affine Case}\label{sec:controlaffine}
 Linearize!
 
 Assuming smoothness, we expand the input-driven dynamics \( F(x, u) \) in a Taylor series around \( u = 0 \):
@@ -791,7 +786,7 @@ Here, \( \{g_i(x)\} \) represents the first-order (linear) influence of the inpu
 
 
 %v-equation and r-equation \citep{miller2012mathematical}
-\paragraph{Voltage rate} 
+\paragraph{Voltage rate} %easy!
 Consider the continuous-time RNN dynamics:
 \[
 \dot{x} = F(x, u) = -x + W\phi(x) + B u,
@@ -811,6 +806,55 @@ so the input-induced motion lies within a linear subspace of \( \mathbb{R}^n \),
 
 
 \paragraph{Vanilla RNNs}
+
+
+\paragraph{Important non-linearities: boundary of the attractor}
+When the attractor has a boundary, the usual Lie algebra formalism (which assumes smooth vector fields generating flows on manifolds without boundary) breaks down.
+
+At each point \( x \in \partial \mathcal{M} \), define a cone of admissible input directions:
+\[
+\mathcal{C}(x) = \left\{ v \in \mathbb{R}^n \,\middle|\, F(x, u) \in T_x \mathcal{M} \text{ and does not point outward} \right\}.
+\]
+This set captures the directions in which the system can legally move without leaving the attractor.
+ You can think of it as a generalization of the tangent space, but adapted to systems with boundaries.
+
+
+\subsection{Action of the input on periodic attractors}\label{sec:perattaction}
+\subsubsection{Input-dependent isochrons}\label{sec:iprc}
+Isochrons can also be interpreted as the leaves of the stable manifold of a hyperbolic limit cycle \citep{ashwin2016mathematical}.
+ They fully specify the dynamics in the absence of perturbations \citep{guckenheimer1975isochrons}. %lossless reduction!
+Explanation: Roughly speaking, a trajectory with the initial condition $x\in \mathcal{I}_\theta$ asymptotically approaches a (periodic) trajectory on the limit cycle characterized by an initial condition associated with the phase $\theta$.
+ Since the two trajectories have the same asymptotic behavior, whether the initial condition is on the limit cycle or not, the phase h can also be assigned to the initial condition $x\not\in\Gamma$.
+ 
+ an isochron extends the notion of phase off the cycle (within its basin of attraction)
+ Isochrons can also be interpreted as the leaves of the stable manifold of a hyperbolic limit cycle.
+ 
+ Computing the isochron foliation of the basin of attraction of a limit cycle is a major challenge since it requires knowledge of the limit cycle and therefore can only be computed in special cases or numerically.
+forward integration method using the Koopman operator and Fourier averages as introduced \citep{mauroy2012use}, see description in \citep{ashwin2016mathematical}
+
+
+\paragraph{Phase response curve (PRC)}
+the phase-reduction formalism is useful in quantifying how a system (on or close to a cycle) responds to weak forcing
+
+iPRC
+can be written, for a given ODE model, as the solution to an adjoint equation
+
+The iPRC at a point on cycle is equal to the gradient of the (isochronal) phase at that point.
+
+PRC
+phase response to a perturbation \citep{rinzel1998analysis}
+%see 5.5 in ashwin2016mathematical
+
+simplest example of an averaged phase dynamics: Adler equation \citep{adler1946study}
+
+\subsubsection{Phase–Amplitude Models}
+amplitude: notion of distance from the limit cycle \citep{hale2009ordinary} \citep{ermentrout1991multiple}
+
+
+from PAM to isochrons: limit of strong attraction\citep{ermentrout1990oscillator}
+
+
+\subsection{Action of constant inputs: shifting of attractor}
 
 
 
