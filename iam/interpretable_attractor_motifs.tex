@@ -424,11 +424,13 @@ Let $f\in C^1$ define the vector field of our target system
 and let $g_i$ be a dynamical motif.
 Then, there exists a perturbation $p\in C^1$ 
  and a homeomorphism $\Phi:\reals^n\rightarrow\reals^n$ such that 
-$\|\psi_{f+p} - \Phi(\psi_{g_i})\|_\infty = 0$.
+\begin{equation}\label{eq:perfect_motif_fit}
+\|\psi_{f+p} - \Phi(\psi_{g_i})\|_\infty = 0.
+\end{equation}
 
 Therefore, we can define the distance w.r.t. each motif as $d(f,g_i) = \inf \|p\|$ with the above constraint.
 
-Projection of $f$ onto library
+Projection of $f$ onto library: we get a vector representing the distances to the motifs in the library.
 
 \ascomment{Convergence during training of RNNs: for task that relies on analog memory to low distance to dynamical motif that is a continuous attractor diffeomorphic to the memory manifold.}
 
@@ -806,7 +808,27 @@ so the input-induced motion lies within a linear subspace of \( \mathbb{R}^n \),
 
 
 \paragraph{Vanilla RNNs}
+We consider the system:
+\[
+\dot{x} = F(x, u) = -x + \phi(Wx + Bu),
+\]
+where \( \phi : \mathbb{R}^n \to \mathbb{R}^n \) is a smooth nonlinearity applied elementwise.
 
+We expand \( F(x, u) \) in a Taylor series around \( u = 0 \):
+\[
+F(x, u) = f(x) + \sum_i u_i g_i(x) + \sum_{i,j} u_i u_j h_{ij}(x) + \cdots,
+\]
+with:
+\[
+f(x) = -x + \phi(Wx),
+\]
+\[
+g_i(x) = D\phi(Wx) \cdot B_i,
+\]
+\[
+h_{ij}(x) = \frac{1}{2} B_i^\top H_\phi(Wx) B_j,
+\]
+where \( D\phi(Wx) \) is the Jacobian of \( \phi \) evaluated at \( Wx \), and \( H_\phi(Wx) \) is the Hessian (or second derivative tensor) of \( \phi \), applied elementwise.
 
 \paragraph{Important non-linearities: boundary of the attractor}
 When the attractor has a boundary, the usual Lie algebra formalism (which assumes smooth vector fields generating flows on manifolds without boundary) breaks down.
