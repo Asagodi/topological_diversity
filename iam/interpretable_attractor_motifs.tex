@@ -107,6 +107,9 @@ If neural dynamics are indeed tuned to drive behavior, we should expect a corres
  As the number of simultaneously recorded neurons increases and experimental paradigms become more complex (e.g. freely behaving animals), it becomes increasingly challenging to develop computational models that can describe the population activity while still providing a meaningful interpretation of how it relates to system-level function.
 
 
+%multi
+Multiple animals \citep{depasquale2021accumulation}
+
 
 \subsection{Our contribution}\label{sec:contribution}
 
@@ -185,7 +188,7 @@ Concepts:
 Taking apart topological conjugacy (diffeomorphism from motif):
 \begin{itemize}
 \item On asymptotic / $\omega$-limit set / invariant set
-\item On transients
+\item On transients \citep{koch2024biological}
 \end{itemize}
 
 
@@ -197,10 +200,13 @@ For task-trained neural networks
 
 
 \paragraph{SOTA}
+\citep{mezic2004comparison}
+
 assess the limit sets
 Fixed-point based \citep{sussillo2013blackbox,katz2017fibers,golub2018fixedpointfinder}
 
 Also limit cycles 
+LCs in RNNs \citep{townley2000existence} \citep{pals2024inferring}
 
 slow invariant manifolds\citep{Sagodi2024a}
 
@@ -256,10 +262,11 @@ We can simplify it's dynamics by looking at its normal form.
 \item topology based Delay Embedding and Takens' Theorem  and Morse Decomposition 
 \item low-dimensional reduced model \citep{zemlianova2024dynamical} \citep{nonnenmacher2017extracting}
 \item motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} (also referred to as prototypes in literature)
-\item  Spectral properties of dynamical systems, model reduction and decompositions \citep{mezic2005spectral}
+\item Koopman  Spectral properties of dynamical systems, model reduction and decompositions \citep{mezic2005spectral}, Dynamic Mode Decomposition\citep{rowley2009spectral}, EDMD \citep{mezic2005spectral}
+\item \citep{rowley2017model}
 \item libraries \citep{brunton2014compressive}, SINDy  one starts with a large library of candidate functions (or dynamical motifs) that could potentially describe the dynamics of a system. The method then uses sparse regression techniques to select a few terms that best capture the observed time-series data \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
 \item  primitives: linear \citep{kaul2020linear} (more for behavioral \citep{ijspeert2013dynamical})
-\item fast-slow \citep{dsilva2016data} \citep{haller2017exact}
+\item fast-slow \citep{jones1995gspt} \citep{verhulst2006methods}  \citep{dsilva2016data} \citep{haller2017exact}
 \item averaging methods \citep{sanders2007averaging} (invariant tori\citep{novaes2024invariant}), Theorem 9.4 in \citep{hoppensteadt2012weakly}
 \item FSMs: \citep{giles1991extracting, casey1996dynamics, giles1999equivalence, oliva2019fsm, ceni2020excitable, cotteret2024fsm, aichernig2024learning} + weighted\citep{wei2024weighted}
 \item effective dynamics \citep{menier2025interpretable}
@@ -268,6 +275,9 @@ We can simplify it's dynamics by looking at its normal form.
 %define a phase θ modulo T, 
 \item contractivity \citep{lohmiller1998contraction}\citep{bullo2023contraction} \citep{revay2020contracting} \citep{tsukamoto2021contraction} \citep{davydov2022rnn, davydov2024noneuclidean}
 \item \citep{li2021novel}
+\item surrogate dynamical systems
+\item \citep{otto2023learning}
+\item vector fields projected onto the manifold \citep{roy2021extracting, luo2023noncanonical}
 \end{itemize}
 
 
@@ -363,6 +373,8 @@ Interpretation in terms of contributions of the transfer functional.
 \paragraph{Understanding computation in terms of dynamics}
 Interpretation in terms of a ``compressed'' description of the dynamics.
 
+task's computational demands (e.g., continuous parametrization of memory)
+
 
 
 \subsubsection{Works mentioning interpretability}
@@ -417,7 +429,7 @@ In motor cortex, neural trajectories during reaching movements often evolve alon
 
 
 \section{Matching dynamical motifs}
-\subsection{An interpretable motif-centered metric for dynamical systems}
+\subsection{An interpretable motif-centered metric for dynamical systems}\label{sec:aut_motif_metric}
 Consider our target dynamical system to be defined on a compact subset of $\reals^n$.
 
 Let $f\in C^1$ define the vector field of our target system
@@ -527,6 +539,11 @@ This formulation allows for the joint identification of both the correct attract
 
 
 \section{Discussion}
+
+Limits to neuroscientific understanding \citep{chirimuuta2024brain}
+
+
+simplest isn't always the best \citep{dyer2023simplest}
 
 
 
@@ -736,8 +753,29 @@ Regions that remain coherent and relatively nondispersive over finite periods of
 %\section{Dynamical systems contributions}
 %Overview  
 
+\section{Generalizing motif metric to input-driven systems}
+We generalize the idea of autonomous attractors (Sec.~\ref{sec:aut_motif_metric}) for input-driven systems.
 
-\section{The action of the input on the attractor manifold}
+Let the target system be
+\[
+\dot{x} = f(x) + g(u, x),
+\]
+where \( g(u, x) \in C^1 \) captures the input-driven dynamics.
+
+Let \( \{ g_i(x) \} \) be a fixed set of motif vector fields defining a canonical control-affine structure (see Supp.Sec.~\ref{sec:attaction}):
+\[
+g_{\text{affine}}(u, x) := \sum_i u_i g_i(x).
+\]
+
+We define the distance between the true input dynamics and the control-affine approximation as
+\[
+d(g(u, x), \{ g_i(x) \}) := \inf_{\{ g_i \}} \left\| g(u, x) - \sum_i u_i g_i(x) \right\|_{\mathcal{U}, \infty},
+\]
+where the norm \( \| \cdot \|_{\mathcal{U}, \infty} \) is taken over a compact domain \( \mathcal{U} \times \mathcal{X} \subset \mathbb{R}^m \times \mathbb{R}^n \), and the infimum may be constrained to a motif class.
+
+This distance quantifies the degree to which the system's input-driven dynamics can be expressed as a linear combination of the motif vector fields.
+
+\section{The action of the input on the attractor manifold}\label{sec:attaction}
 For stationary attractors (continuous attractors), the control-affine framework characterizes the simplest way to describe the action of the input (see Supp.Sec.~\ref{sec:statattaction}).
 For periodic attractors, the action needs to be defined in terms of the phase resetting curve (see Supp.Sec.~\ref{sec:perattaction}).
 
