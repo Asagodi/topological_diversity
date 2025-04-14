@@ -91,10 +91,8 @@ Understanding the relationship between neural activity and behavior is a fundame
  Recent research has demonstrated that despite the complexity of neuronal networks, their activity often resides in a low-dimensional manifold, capturing only a fraction of the potential complexity of the system \citep{duncker2021dynamics}.
  This observation suggests that neural activity is shaped by strong underlying constraints, possibly imposed by behaviorally relevant computations and external environmental demands.
 
-Behavior, in many cases, is surprisingly simple. Even in seemingly complex tasks, animals and humans exhibit structured, stereotyped actions that can often be described using a small number of latent variables.
- From motor control to decision-making, behavioral trajectories unfold in a manner that is both predictable and constrained, hinting at a fundamental simplicity underlying observed actions.
-
-\ascomment{justify assumption: if neural activity underlies behavior, should it not also exhibit similar simplicity}
+Behavior, in many cases, is surprisingly simple. Even in seemingly complex tasks, animals and humans exhibit structured, stereotyped actions that can often be described using a small number of latent variables. From motor control to decision-making, behavioral trajectories unfold in a manner that is both predictable and constrained, hinting at a fundamental simplicity underlying observed actions.
+If neural activity is the substrate that generates behavior, then it is natural to expect that it too is organized around similarly low-dimensional, structured dynamics. This assumption motivates the search for interpretable motifs in neural dynamics that mirror the simplicity and regularity of behavior.
 
 If neural dynamics are indeed tuned to drive behavior, we should expect a correspondence between the low-dimensional structure of neural activity and the inherent simplicity of behavior.
  This suggests that much of the apparent complexity in neural recordings may stem from redundant or task-irrelevant variability rather than meaningful high-dimensional computation.
@@ -104,14 +102,23 @@ If neural dynamics are indeed tuned to drive behavior, we should expect a corres
  
  
  %big datas
+\paragraph{Large datasets}
  As the number of simultaneously recorded neurons increases and experimental paradigms become more complex (e.g. freely behaving animals), it becomes increasingly challenging to develop computational models that can describe the population activity while still providing a meaningful interpretation of how it relates to system-level function.
 
 
 %multi
+\paragraph{Multi-X datasets}
 Multiple animals \citep{depasquale2021accumulation}
 
+Multiple tasks \citep{}
 
 \subsection{Our contribution}\label{sec:contribution}
+\begin{itemize}
+\item 
+\item 
+\item 
+\end{itemize}
+
 
 
 
@@ -168,7 +175,7 @@ Variability in implementation
 
 \subsection{Existing methods for characterizing dynamics}
 
-\begin{figure}
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.5\linewidth]{ds_landscape_carving}
     \caption{Caption}
@@ -303,7 +310,17 @@ where \( x(t) \) is the solution of the initial value problem:
 \dot{x}(t) = f(x(t), u(t)), \quad x(0) = x_0.
 \]
 
-What is the distance between $H(f)$ and $H(\phi^{-1}(f+p))$?
+What is the distance between $\mathcal{T}_f(f)$ and $\mathcal{T}_f(\Phi^{-1}(f+p))$?
+A natural notion of distance between the transfer functionals is
+\[
+\|\mathcal{T}_f - \mathcal{T}_{\Phi^{-1}(f+p)}\| 
+:= \sup_{u \in \mathcal{U}} \sup_{t \in [0, T]} 
+\left\| \mathcal{T}_f[u](t) - \mathcal{T}_{\Phi^{-1}(f+p)}[u](t) \right\|,
+\]
+where \( \mathcal{U} \) is a suitable class of input signals (e.g., all inputs with bounded \( L^\infty \)-norm or from a compact set in \( C([0,T], \mathbb{R}^m) \)).
+
+%adjust h to minimize output error of f+p?
+find a new readout map $\tilde h$  so that the output error between $f$ and $f+p$ is minimized.
 
 
 \paragraph{Reduction of dynamics}
@@ -406,6 +423,8 @@ Message: reducing complexity, introducing hierarchy
 \citep{Vermani2024b}
 \citep{geadah2024parsing, geadah2025modeling}
 
+Message: leaving out details for understanding (abstraction), trade-off between interpretability and accuracy
+
 
 \subsubsection{Interpretability in RNNs}
 %static
@@ -491,7 +510,7 @@ In dynamical systems, attractors can be systematically classified according to t
 \begin{enumerate}[start=0,label={\bfseries Dim \arabic*:}]
 \item  Stable fixed point
 \item  Bounded line attractor ($[0,1]\subset\reals$), ring attractor ($S_0^1$), stable limit cycle ($S_1^1$)
-\item Bounded square attractor ($[0,1]^2$), Torus attractor ($(S_0^1)^2$), LC-torus attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
+\item Bounded square attractor ($[0,1]^2$), Cylinder attractor ($[0,1]\times S_0^1$), Cylinder-LC ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), LC-torus attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
 \item ...
 \end{enumerate}
 
@@ -538,9 +557,9 @@ This formulation allows for the joint identification of both the correct attract
 
 
 \subsection{Application on simple example}
-\begin{figure}
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.5\linewidth]{all_motifs_vdp}
+    \includegraphics[width=.9\linewidth]{all_motifs_vdp}
     \caption{Caption}
     \label{fig:all_motifs_vdp}
 \end{figure}
@@ -559,6 +578,7 @@ Limits to neuroscientific understanding \citep{chirimuuta2024brain}
 
 
 simplest isn't always the best \citep{dyer2023simplest}
+
 
 
 
