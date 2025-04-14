@@ -948,5 +948,65 @@ We cannot easily reduce this (without losing some of the details of the action).
 For these systems the details don't make much sense any ways!
 There is already so much abstraction!
 
+
+\newpage
+\section{The library of motifs}
+\subsection{Fixed point}
+\[
+\begin{aligned}
+\dot{x} &= -x, \\
+\dot{y} &= -y
+\end{aligned}
+\]
+
+\subsection{Limit cycle}
+Polar Coordinates
+\[
+\begin{aligned}
+\dot{r} &= -r(r - 1), \\
+\dot{\theta} &= 1 %more generally, we can allow for different speeds along the LC
+\end{aligned}
+\]
+
+Cartesian Coordinates
+\[
+\begin{aligned}
+\dot{x} &= -\left( \sqrt{x^2 + y^2} - 1 \right) x - y, \\
+\dot{y} &= -\left( \sqrt{x^2 + y^2} - 1 \right) y + x
+\end{aligned}
+\]
+
+\subsection{Ring attractor}
+Polar Coordinates
+\[
+\begin{aligned}
+\dot{r} &= -r(r - 1), \\
+\dot{\theta} &= 0
+\end{aligned}
+\]
+
+Cartesian Coordinates
+\[
+\begin{aligned}
+\dot{x} &= -\left( \sqrt{x^2 + y^2} - 1 \right) x, \\
+\dot{y} &= -\left( \sqrt{x^2 + y^2} - 1 \right) y
+\end{aligned}
+\]
+
+\section{Experiments}
+
+\subsection{Limit cycle fitting}
+\subsubsection{Van der Pol}
+The Van der Pol equation is given by 
+\begin{equation}
+\begin{aligned}
+\dot{x} &= y, \\
+\dot{y} &= \mu (1 - x^2) y - x.
+\end{aligned}
+\end{equation}
+
+In Fig.~\ref{fig:all_motifs_vdp} we used $\mu=0.4$.
+
+
 \end{document}
 
