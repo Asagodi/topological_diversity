@@ -10,7 +10,7 @@ class DynamicalSystem(nn.Module):
     Base class for a dynamical system. 
     Any subclass should implement the `forward` method defining dx/dt = f(t, x).
     """
-    def __init__(self, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 10), noise_level: float = 0.0) -> None:
+    def __init__(self, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_level: float = 0.0) -> None:
         super().__init__()
         self.dim = dim
         self.dt = dt
@@ -67,10 +67,12 @@ class RingAttractor(DynamicalSystem):
 
 # Van der Pol oscillator as an example target system
 class VanDerPol(DynamicalSystem):
-    def __init__(self, mu: float = 1.0, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 10), noise_level: float=0.) -> None:
+    def __init__(self, mu: float = 1.0, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_level: float=0.) -> None:
         super().__init__(dim=dim, dt=dt, time_span=time_span)
         self.mu = mu
         self.noise_level = noise_level
+        self.time_span = time_span
+        self.dt = dt
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         # Ensure that x is a 2D tensor, even if batch_size = 1
@@ -87,12 +89,14 @@ class LinearSystem(DynamicalSystem):
     A linear dynamical system of the form dx/dt = Ax.
     """
 
-    def __init__(self, A: torch.Tensor):
+    def __init__(self, A: torch.Tensor, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
         """
         :param A: Square matrix defining the linear system.
         """
         super().__init__()
         self.A = A
+        self.time_span = time_span
+        self.dt = dt
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         return torch.matmul(x, self.A.T)  # Ensure correct matrix multiplication
@@ -102,7 +106,7 @@ class BoundedLineAttractor(DynamicalSystem):
     A nonlinear dynamical system of the form dx/dt = -x + ReLU(Wx + b).
     """
 
-    def __init__(self, W: torch.Tensor, b: torch.Tensor):
+    def __init__(self, W: torch.Tensor, b: torch.Tensor, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
         """
         :param W: Weight matrix.
         :param b: Bias vector.
@@ -111,6 +115,8 @@ class BoundedLineAttractor(DynamicalSystem):
         self.W = W
         self.b = b
         self.relu = nn.ReLU()
+        self.time_span = time_span
+        self.dt = dt
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         linear_part = torch.matmul(x, self.W.T) + self.b
@@ -121,12 +127,14 @@ class NonlinearSystem(DynamicalSystem):
     A general nonlinear system where the dynamics are defined by an arbitrary function.
     """
 
-    def __init__(self, f: Callable[[torch.Tensor, torch.Tensor], torch.Tensor]):
+    def __init__(self, f: Callable[[torch.Tensor, torch.Tensor], torch.Tensor], dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
         """
         :param f: Function that computes dx/dt given (t, x).
         """
         super().__init__()
         self.f = f
+        self.time_span = time_span
+        self.dt = dt
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         return self.f(t, x)

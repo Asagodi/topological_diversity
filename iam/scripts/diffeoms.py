@@ -2,6 +2,8 @@ import numpy as np
 import itertools
 import torch
 import torch.nn as nn
+from typing import Callable, Tuple, List
+
 
 class PeriodicActivation(nn.Module):
     """Implements a periodic activation function."""
@@ -119,6 +121,46 @@ class DiffeomorphismNetwork(nn.Module):
         for _ in range(steps):
             y = x - self.forward(y) + y
         return y
+
+
+class ResidualBlock(nn.Module):
+    def __init__(self, dim: int, hidden_dim: int):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.utils.spectral_norm(nn.Linear(dim, hidden_dim)),
+            nn.ReLU(),
+            nn.utils.spectral_norm(nn.Linear(hidden_dim, dim)),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x + self.net(x)
+
+
+class iResNet(nn.Module):
+    def __init__(self, dim: int, n_blocks: int = 5, hidden_dim: int = 64):
+        super().__init__()
+        self.blocks = nn.ModuleList([
+            ResidualBlock(dim, hidden_dim) for _ in range(n_blocks)
+        ])
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        for block in self.blocks:
+            x = block(x)
+        return x
+
+    def inverse(self, y: torch.Tensor, max_iter: int = 10) -> torch.Tensor:
+        """
+        Fixed-point iteration for inverting the residual network.
+        Assumes that each block is contractive (Lipschitz constant < 1).
+        """
+        x = y.clone()
+        for _ in range(max_iter):
+            for block in reversed(self.blocks):
+                x = x - (block(x) - x)
+        return x
+    
+
+
 
 
 # Function to generate diffeomorphism with grid points

@@ -184,12 +184,13 @@ def plot_trajectories_stt(trajectories_source, transformed_trajectories, traject
 
 
 def plot_trajectories_allmotifs(
-    trajectories_source_list, transformed_trajectories_list, trajectories_target, 
+    trajectories_source_list, transformed_trajectories_list, trajectories_target, asymptotic_trajectories_list=None,
     num_points=10, bounds=(2.0, 2.0), alpha=0.7,
     target_color='firebrick', 
-    base_colors = ["#006400", "#00BFFF", "#8B008B"],  # Deep green → Bright cyan → Vibrant magenta
+    base_colors = ["mediumseagreen", "#00BFFF", "#8B008B"],  # Deep green → Bright cyan → Vibrant magenta
+    asymptotic_colors=['#d3869b', 'seagreen', 'navy', 'purple'],  # target, 3 motifs 
     source_names = ["Source 1", "Source 2", "Source 3"],
-    save_name=None
+    save_name=None, show_fig=True
 ):
     """
     Plot multiple sets of source and transformed trajectories with matched colors.
@@ -197,7 +198,7 @@ def plot_trajectories_allmotifs(
     - Left subplot: Different sources vs. their transformed counterparts (same color, solid vs. dashed).
     - Right subplot: Transformed vs. single target trajectories.
     """
-    fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(12, 6), sharey=True, sharex=True)
 
     # Set axis limits and labels
     for ax in axes:
@@ -226,9 +227,18 @@ def plot_trajectories_allmotifs(
             else:
                 axes[0].plot(source_traj[:, 0], source_traj[:, 1], color=color, alpha=alpha)
                 axes[0].plot(transformed_traj[:, 0], transformed_traj[:, 1], color=color, linestyle="--", alpha=alpha)
+        
 
-    axes[0].xaxis.set_major_locator(MaxNLocator(integer=True))
-    axes[0].yaxis.set_major_locator(MaxNLocator(integer=True))
+    #axes[0].xaxis.set_major_locator(MaxNLocator(integer=True))
+    #axes[0].yaxis.set_major_locator(MaxNLocator(integer=True))
+    xlims = axes[0].get_xlim()
+    ticks = [xlims[0], 0, xlims[1]]  # Set ticks to include 0
+    #axes[0].set_xticks(ticks)                        
+    axes[0].xaxis.set_major_formatter(plt.FuncFormatter(
+    lambda x, _: f"{x:g}" if x in ticks else ""  ))
+    axes[0].yaxis.set_major_formatter(plt.FuncFormatter(
+    lambda x, _: f"{x:g}" if x in ticks else ""  ))
+
     axes[0].set_title('Source & Transformed Trajectories')
 
     # --- Right subplot: Transformed vs. Target trajectories ---
@@ -252,8 +262,20 @@ def plot_trajectories_allmotifs(
                 axes[1].plot(transformed_traj[:, 0], transformed_traj[:, 1], color=color, linestyle="--", alpha=alpha)
                 axes[1].plot(target_traj[:, 0], target_traj[:, 1], color=target_color, alpha=0.9)
 
-    axes[1].xaxis.set_major_locator(MaxNLocator(integer=True))
-    axes[1].yaxis.set_major_locator(MaxNLocator(integer=True))
+    # Plot asymptotic trajectories
+            if i==0 and asymptotic_trajectories_list is not None:
+                axes[1].plot(asymptotic_trajectories_list[idx+1][:, 0], asymptotic_trajectories_list[idx+1][:, 1], color=asymptotic_colors[idx+1], alpha=1, label='Asymptotic '+source_names[idx], zorder=100)
+                if asymptotic_trajectories_list[idx+1].shape[0] == 1:
+                    axes[1].plot(asymptotic_trajectories_list[idx+1][:, 0], asymptotic_trajectories_list[idx+1][:, 1], 'o', color=asymptotic_colors[idx+1], alpha=1, label='Asymptotic '+source_names[idx])
+    if asymptotic_trajectories_list is not None:
+        axes[1].plot(asymptotic_trajectories_list[0][:, 0], asymptotic_trajectories_list[0][:, 1], color=asymptotic_colors[0], alpha=1, label='Asymptotic target')
+
+    #axes[1].xaxis.set_major_locator(MaxNLocator(integer=True))
+    #axes[1].yaxis.set_major_locator(MaxNLocator(integer=True))
+    axes[1].xaxis.set_major_formatter(plt.FuncFormatter(
+    lambda x, _: f"{x:g}" if x in ticks else "" ))
+    axes[1].yaxis.set_major_formatter(plt.FuncFormatter(
+    lambda x, _: f"{x:g}" if x in ticks else "" ))
     axes[1].set_title('Transformed & Target Trajectories')
 
     # Combine legends from both subplots into a single legend under the figure
@@ -262,17 +284,32 @@ def plot_trajectories_allmotifs(
     # Add only the target handle and label to the legend (first label in right subplot)
     handles.append(target_handle[0])
     labels.append(target_label[0])
+    #handles.extend(target_handle[-4:])  # Add the rest of the handles from the right subplot
+    #labels.extend(target_label[-4:])  # Add the rest of the labels from the right subplot
+    print(target_label)
     fig.legend(
-        handles, labels, loc='center', ncol=2,  # Use two columns
+        handles, labels, loc='center', ncol=4,  # ncol columns
         bbox_to_anchor=(0.5, -0.05),  # Position the legend below the subplots
         frameon=False, columnspacing=1,  # Adjust spacing between columns
         handlelength=2, fontsize=12  # Adjust handle size and font size
     )
+
+    if asymptotic_trajectories_list is not None:
+        fig.legend(
+            handles=target_handle[2::2], 
+            labels=target_label[2::2], 
+            loc='center', ncol=4,
+            bbox_to_anchor=(0.5, -0.13),  # lower than the first legend
+            frameon=False, columnspacing=1,
+            handlelength=2, fontsize=12
+        )
+    
     plt.tight_layout()
 
     if save_name:
         plt.savefig(save_name, dpi=300, bbox_inches='tight', transparent=True)
 
-    plt.show()
+    if show_fig:
+        plt.show()
 
     return fig, axes
