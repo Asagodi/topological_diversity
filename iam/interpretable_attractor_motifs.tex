@@ -21,6 +21,8 @@
 \definecolor{Plum}{rgb}{0.56, 0.27, 0.52}
 \usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}
 \hypersetup{breaklinks=true}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
 
 %for comments
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
@@ -72,7 +74,9 @@
 
 
 %\title{Interpretable attractor motifs for a new language for neural computation}
-\title{Attractor motifs for an interpretable language for neural computation}
+\title{Attractor motifs for an interpretable language for working memory-type neural computation}
+%Dynamical Motif Extraction for Interpretable Neural Computation
+% Interpretable Neural Computation via Canonical Dynamical Motifs
 \author{\'Abel S\'agodi and Il Memming Park}
 \date{\today}
 
@@ -81,9 +85,19 @@
 \begin{document}
 \maketitle
 
+% keywords: interpretability; similarity metric; neural computation; working memory; computation through dynamics
+
 \section*{Abstract}
 
-
+Understanding computation in dynamical neural systems often requires interpreting the behavior of large, black-box models.
+This poses challenges for both interpretability and cross-model comparison—particularly when comparing models from different sources, such as two animals.
+To address this, we propose a framework for interpreting neural computation in working memory through \emph{dynamical motifs}—canonical, human-understandable building blocks of dynamics.
+Within this framework, we introduce a model reduction method that approximates the essential computational mechanism in a neural system by identifying small perturbations that render two systems diffeomorphic.
+This allows us to define and quantify similarity between systems in terms of shared dynamical structure.
+The extracted motifs are robust to architectural and parametric variation, suggesting they reflect stable computational strategies rather than model idiosyncrasies.
+Our method uses a curated library of low-dimensional canonical motifs (e.g., limit cycles, ring attractors, bounded line attractors) to explain the core dynamics.
+We demonstrate the approach by extracting a ring attractor motif from a high-dimensional RNN trained on a delayed match-to-sample task, and show how the motif captures the essential geometry and dynamics underlying working memory.
+Our results highlight the utility of this method for robust interpretation and cross-system comparison within the computation-through-dynamics paradigm.
 
 
 \section{Introduction}\label{sec:intro}
@@ -141,6 +155,7 @@ a language describing the axes of the space of possible dynamical solutions and 
 latent state space modeling \citep{zoltowski2020general} 
 XFADS\citep{Dowling2024b}
 
+Neural Latents Benchmark \citep{pei2neural}
 CtD benchmark \citep{versteeg2025computation}
 
 RNNs for neural computation \citep{chaisangmongkon2017transience}
@@ -298,6 +313,7 @@ We can simplify it's dynamics by looking at its normal form.
 \item surrogate dynamical systems
 \item \citep{otto2023learning}
 \item vector fields projected onto the manifold \citep{roy2021extracting, luo2023noncanonical}
+\item spectral submanifold \citep{cenedese2022data, axaas2023fast}
 \end{itemize}
 
 
@@ -380,6 +396,9 @@ potochnik2017idealization}
 \citep{stinson2020idealized}
 \citep{chirimuuta2024brain} 
 
+Solomonoff's theory of inductive inference
+
+
 \subsubsection{Understanding}
 \citep{deregt2017understanding}
 \citep{potochnik2017idealization}
@@ -421,14 +440,15 @@ black box to mixture of interpretable models \citep{ghosh2023blackbox}
 \subsubsection{Our levels of interperetability}
 Proposal: guiding principles for a hierarchy of interpretability
 
+1. Message: poset of interpretable models
 
-Message: poset of interpretable models
-
-Message: reducing complexity, introducing hierarchy 
+2. Message: Actions we can perform to reduce complexity
+I. introducing hierarchy 
 \citep{Vermani2024b}
 \citep{geadah2024parsing, geadah2025modeling}
+II. decomposition
 
-Message: leaving out details for understanding (abstraction), trade-off between interpretability and accuracy
+3. Message: leaving out details for understanding (abstraction), trade-off between interpretability and accuracy
 
 
 \subsubsection{Interpretability in RNNs}
@@ -1031,7 +1051,67 @@ The Van der Pol equation is given by
 \end{aligned}
 \end{equation}
 
-In Fig.~\ref{fig:all_motifs_vdp} we used $\mu=0.4$.
+In Fig.~\ref{fig:all_motifs_vdp} we used $\mu=0.3$.
+
+
+
+\section{Architecture}
+
+\subsection{Naive MLP}
+\begin{tikzpicture}[
+    node distance=0.5cm,
+    neuron/.style={circle, draw, minimum size=0.6cm},
+    layer label/.style={font=\small, anchor=west},
+    every node/.append style={font=\small}
+  ]
+
+  % Input Layer (2 units)
+  \node[layer label] at (-.5, 0.3) {Input};
+  \foreach \i in {1,2} {
+    \node[neuron] (i\i) at (0, -\i) {};
+  }
+
+  % Hidden Layer 1 (8 units, condensed)
+  \node[layer label] at (1.5, 0.3) {$\tanh$};
+  \foreach \i/\y in {1/0.75,3/2.25} {
+    \node[neuron] (h1\i) at (2, -\y) {};
+  }
+  \node at (2, -1.5) {\vdots};
+
+  % Hidden Layer 2 (16 units, condensed)
+  \node[layer label] at (4., 0.3) {$\tanh$};
+  \foreach \i/\y in {1/0.75,3/2.25} {
+    \node[neuron] (h2\i) at (4.5, -\y) {};
+  }
+  \node at (4.5, -1.5) {\vdots};
+
+  % Output Layer (2 units)
+  \node[layer label] at (6.5, 0.3) {Output};
+  \foreach \i in {1,2} {
+    \node[neuron] (o\i) at (6.5, -\i) {};
+  }
+
+  % Connections (sparse for clarity)
+  \foreach \i in {1,2} {
+    \foreach \j in {1,3} {
+      \draw[->] (i\i) -- (h1\j);
+    }
+  }
+
+  \foreach \i in {1,3} {
+    \foreach \j in {1,3} {
+      \draw[->] (h1\i) -- (h2\j);
+    }
+  }
+
+  \foreach \i in {1,3} {
+    \foreach \j in {1,2} {
+      \draw[->] (h2\i) -- (o\j);
+    }
+  }
+
+\end{tikzpicture}
+
 
 
 \end{document}
