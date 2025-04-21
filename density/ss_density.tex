@@ -185,7 +185,7 @@ The solutions to ODEs can generate smooth transformations on manifolds.
 The flow \( \phi_t \) of the vector field \( X \) defines a map from \( M \) to itself for each fixed time \( t \). Under appropriate conditions (such as \( X \) being complete), \( \phi_t \) is a diffeomorphism of \( M \) for each \( t \). In other words, \( \phi_t \) is smooth, bijective, and its inverse \( \phi_{-t} \) is also smooth.
 Thus, the solutions (flows) of ODEs associated with smooth vector fields give rise to a one-parameter family of diffeomorphisms.
 %
-NODEs and invertible neural networks are a sup-universal approximator for a fairly large class of diffeomorphisms, i.e., smooth invertible maps with smooth inverse \citep{huang2018neural, jaini2019sum, teshima2020uap, teshima2020coupling, ishikawa2023uap}.
+NODEs and invertible neural networks are a sup-universal approximator for a fairly large class of diffeomorphisms, i.e., smooth invertible maps with smooth inverse \citep{huang2018neural, jaini2019sum, teshima2020uap, teshima2020coupling, ishikawa2023uap, massaroli2020dissecting}.
 %rem
 For dynamical systems, however, this only guarantees a finite time approximation.
 We will now consider compact time interval approximation results in more detail.
@@ -389,7 +389,7 @@ If the domain of the functional $H$ is restricted to a space of uniformly bounde
  linear systems with polynomial or neural network readouts \citep{boyd1985fading,grigoryeva2018universal,gonon2019reservoir}, state-affine systems with linear readouts \citep{grigoryeva2018universal}, or echo state networks \citep{grigoryeva2018echo,gonon2019reservoir,gonon2021fading,gonon2023approximation}.
  More recently, Simple Cycle Reservoirs were shown to be universal for this set of systems \citep{li2023simple}.
 % In other words, any of these families exhibit universality properties in the fading memory category.
-Finally, a new method was developed to approximate Fading Memory Systems (FMS) by using a kernel representation (instead of a state-space representation) of the model \citep{huo2024kernel}. %approximate all fading memory functionals
+Finally, a new method was developed to approximate FMP systems by using a kernel representation (instead of a state-space representation) of the model \citep{huo2024kernel}. %approximate all fading memory functionals
 
 %Echo state networks are universal \citep{grigoryeva2018echo} [Grig 18a]
 %Universal discrete-time reservoir computers with stochastic inputs and linear readouts using non-homogeneous state-affine systems \citep{grigoryeva2018universal} [Grig 18b]
@@ -421,6 +421,7 @@ Therefore, FPM systems cannot have multi-stability which makes this framework ex
 Why should we assume that the underlying dynamics in neural networks converge to a fixed point?
 Models of neural computation should cover a broader class of dynamics, e.g, oscillations \citep{townley2000existence, kag2020rnns, chang2019antisymmetricrnn,rapp1987periodic}. %could convey preferred capabilities in learning 
 
+\citep{williams2024expressivity}
 
 %\paragraph{Stability implies FNNs are enough}%crit
 %When Recurrent Models Don't Need to Be Recurrent \citep{miller2018stable}.
