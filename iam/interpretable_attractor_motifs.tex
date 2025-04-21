@@ -92,7 +92,7 @@
 Understanding computation in dynamical neural systems often requires interpreting the behavior of large, black-box models.
 This poses challenges for both interpretability and cross-model comparison—particularly when comparing models from different sources, such as two animals.
 To address this, we propose a framework for interpreting neural computation in working memory through \emph{dynamical motifs}—canonical, human-understandable building blocks of dynamics.
-Within this framework, we introduce a model reduction method that approximates the essential computational mechanism in a neural system by identifying small perturbations that render two systems diffeomorphic.
+Within this framework, we introduce a model reduction method that approximates the essential computational mechanism in a neural system by identifying small perturbations that render two systems topologically conjugate.
 This allows us to define and quantify similarity between systems in terms of shared dynamical structure.
 The extracted motifs are robust to architectural and parametric variation, suggesting they reflect stable computational strategies rather than model idiosyncrasies.
 Our method uses a curated library of low-dimensional canonical motifs (e.g., limit cycles, ring attractors, bounded line attractors) to explain the core dynamics.
@@ -312,7 +312,7 @@ We can simplify it's dynamics by looking at its normal form.
 \item \citep{li2021novel}
 \item \citep{otto2023learning}
 \item vector fields projected onto the manifold \citep{roy2021extracting, luo2023noncanonical}
-\item spectral submanifold \citep{cenedese2022data, axaas2023fast, kaszas2024data}
+\item spectral submanifold \citep{cenedese2022data, axaas2023fast, bettini2024model, kaszas2024data}
 \item surrogate dynamical systems (any citations?)
 \end{itemize}
 
@@ -481,7 +481,19 @@ In motor cortex, neural trajectories during reaching movements often evolve alon
 
 
 
+\subsection{A timescale angle to reduction}
+\citep{cavanagh2020diversity}
+
 \section{Matching dynamical motifs}
+\subsection{Similarity metric}
+Let $f, g\in C^1$ be the vector fields.
+Then, there exists a perturbation $p\in C^1$ 
+ and a homeomorphism $\Phi:\reals^n\rightarrow\reals^n$ such that 
+\begin{equation}\label{eq:}
+\|\psi_{f+p} - \Phi(\psi_{g})\|_\infty = 0.
+\end{equation}
+
+
 \subsection{An interpretable motif-centered metric for dynamical systems}\label{sec:aut_motif_metric}
 Consider our target dynamical system to be defined on a compact subset of $\reals^n$.
 
@@ -590,11 +602,27 @@ This formulation allows for the joint identification of both the correct attract
     \label{fig:all_motifs_vdp}
 \end{figure}
 
-\subsection{Comparison to other methods}
+
+
+\subsection{Reducing the dimensionality} % to a minimal dimensional motif
+\subsubsection{Homeomorphism from minimal dimensional motif}
+Let \( f \in C^1 \) define the vector field of a target dynamical system on \( \mathbb{R}^n \), and let \( g_i \in C^1(\mathbb{R}^m, \mathbb{R}^m) \) be a dynamical motif of minimal dimension \( m \leq n \) that captures the essential dynamics of \( f \). Then there exists a perturbation \( p \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) and a homeomorphism \( \Phi: \mathbb{R}^m \to \mathbb{R}^n \) such that the flow \( \psi_{f+p} \) of the perturbed system is topologically conjugate to the embedded flow \( \Phi \circ \psi_{g_i} \), i.e.,
+\begin{equation}\label{eq:hom_from_motif}
+\|\psi_{f+p} - \Phi \circ \psi_{g_i} \|_\infty = 0.
+\end{equation}
+
+
+\subsubsection{Surjective mapping to minimal dimensional motif}
+Let \( f \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) define the vector field of a target dynamical system, and let \( g_i \in C^1(\mathbb{R}^m, \mathbb{R}^m) \) be a dynamical motif of minimal dimension \( m \leq n \) that captures the essential dynamics of \( f \). Then there exists a perturbation \( p \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) and a surjective continuous map \( \Phi: \mathbb{R}^n \to \mathbb{R}^m \) such that the flow \( \psi_{g_i} \) of the motif is semi-conjugate to the flow \( \psi_{f+p} \) of the perturbed system via \( \Phi \), i.e.,
+\begin{equation}\label{eq:perfect_motif_fit}
+\| \psi_{g_i} - \Phi \circ \psi_{f+p} \|_\infty = 0.
+\end{equation}
 
 
 
-\section{Applications}
+
+
+\section{Comparison to other methods}
 
 
 
