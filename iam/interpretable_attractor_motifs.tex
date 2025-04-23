@@ -256,7 +256,7 @@ But we can capture some slow manifold behavior!
 
 \citep{libedinsky2023comparing}
 \citep{lipshutz2024disentangling} 
-\citep{nejatbakhsh2024comparing}
+\citep{nejatbakhsh2024comparing} Optimal transport
 \citep{barbosa2025quantifying}
 
 Diffeomorphic vector field alignment for comparing dynamics across learned models\citep{chen2024dform}
@@ -381,6 +381,7 @@ Canonical realization = the simplest system (in some sense) that produces the sa
 
 
 \paragraph{Visualization}
+\citep{deregt2017understanding}
 \citep{karpathy2015visualizing}
 PHATE \citep{moon2017visualizing}
 MPHATE\citep{gigante2019visualizing}
@@ -746,18 +747,28 @@ k(x, x') = \frac{1}{\Gamma(\nu)} \left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x,
 \subsection{Comparing dynamics}
 \subsubsection{Exact equivalence: Topological conjugacy}\label{sec:top_conj}
 \begin{definition}\label{def:top_conj}
-Let \( f: X \to X \) and \( g: Y \to Y \) be two continuous dynamical systems, where \( X \) and \( Y \) are topological spaces.
- The systems are said to be \emph{topologically conjugate} if there exists a homeomorphism \( h: X \to Y \) such that the following conjugacy condition holds:
+let $\phi$ be a flow on $X$, and $\psi$ a flow on $Y$, with $X$, $Y$, and $h\colon Y \to X$ as above.
+
+We say that $\phi$ is \emph{topologically semiconjugate} to $\psi$ if, by definition, $h$ is a surjection such that
 \[
-h \circ f = g \circ h.
+\phi(h(y), t) = h \circ \psi(y, t), \quad \text{for all } y \in Y, \; t \in \mathbb{R}.
 \]
-That is, the following diagram commutes:
-\begin{tikzcd}[row sep=large, column sep=large]
-X \arrow[r, "f"] \arrow[d, "h"'] & X \arrow[d, "h"] \\
-Y \arrow[r, "g"'] & Y
-\arrow[from=1-2, to=2-1, phantom, "\circlearrowleft", description, pos=0.5]
-\end{tikzcd}
+Furthermore, $\phi$ and $\psi$ are said to be \emph{topologically conjugate} if they are topologically semiconjugate and $h$ is a homeomorphism.
 \end{definition}
+
+%\begin{definition}\label{def:top_conj}
+%Let \( f: X \to X \) and \( g: Y \to Y \) be two continuous dynamical systems, where \( X \) and \( Y \) are topological spaces.
+% The systems are said to be \emph{topologically conjugate} if there exists a homeomorphism \( h: X \to Y \) such that the following conjugacy condition holds:
+%\[
+%h \circ f = g \circ h.
+%\]
+%That is, the following diagram commutes:
+%\begin{tikzcd}[row sep=large, column sep=large]
+%X \arrow[r, "f"] \arrow[d, "h"'] & X \arrow[d, "h"] \\
+%Y \arrow[r, "g"'] & Y
+%\arrow[from=1-2, to=2-1, phantom, "\circlearrowleft", description, pos=0.5]
+%\end{tikzcd}
+%\end{definition}
 
 \paragraph{Topological conjugacy of time series}
 \citep{dlotko2024topconj}
