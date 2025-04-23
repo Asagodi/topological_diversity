@@ -745,7 +745,15 @@ k(x, x') = \frac{1}{\Gamma(\nu)} \left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x,
 \section{Dynamical systems background}
 
 \subsection{Comparing dynamics}
+Binary/Discrete: equivalence
+
+Continuous comparison: metric/distance/dissimilarity
+
+
+
 \subsubsection{Exact equivalence: Topological conjugacy}\label{sec:top_conj}
+
+Topological conjugacy is an equivalence relation on the category of flows.
 \begin{definition}\label{def:top_conj}
 let $\phi$ be a flow on $X$, and $\psi$ a flow on $Y$, with $X$, $Y$, and $h\colon Y \to X$ as above.
 
@@ -754,6 +762,19 @@ We say that $\phi$ is \emph{topologically semiconjugate} to $\psi$ if, by defini
 \phi(h(y), t) = h \circ \psi(y, t), \quad \text{for all } y \in Y, \; t \in \mathbb{R}.
 \]
 Furthermore, $\phi$ and $\psi$ are said to be \emph{topologically conjugate} if they are topologically semiconjugate and $h$ is a homeomorphism.
+\end{definition}
+
+Smooth equivalence is an equivalence relation in the category of smooth manifolds with vector fields.
+\begin{definition}\label{def:smooth_equivalence}
+Two dynamical systems defined by the differential equations 
+\[
+\dot{x} = f(x) \quad \text{and} \quad \dot{y} = g(y)
+\]
+are said to be \emph{smoothly equivalent} if there exists a diffeomorphism \( h \colon X \to Y \) such that
+\[
+f(x) = M^{-1}(x) \, g(h(x)) \quad \text{where} \quad M(x) = \frac{d h(x)}{d x}.
+\]
+In that case, the dynamical systems can be transformed into each other by the coordinate transformation \( y = h(x) \).
 \end{definition}
 
 %\begin{definition}\label{def:top_conj}
