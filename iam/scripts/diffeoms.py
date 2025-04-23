@@ -189,7 +189,103 @@ def generate_random_diffeomorphism(dim: int, num_samples: int = 10, epsilon: flo
 
 
 
+#####NORMALIZING FLOWS#####
+import normflows as nf
 
+class NormFlowDiffeomorphism(nn.Module):
+    def __init__(self, dim: int = 2, layer_sizes: list[int] = [64, 64], num_layers: int = 32):
+        super().__init__()
+        self.dim = dim
+        self.flow = self._build_flow(dim, layer_sizes, num_layers)
+
+    def _build_flow(self, dim: int, layer_sizes: list[int], num_layers: int):
+        base = nf.distributions.base.DiagGaussian(dim)
+        flows = []
+        for _ in range(num_layers):
+            param_map = nf.nets.MLP([dim // 2] + layer_sizes + [dim], init_zeros=True)
+            flows.append(nf.flows.AffineCouplingBlock(param_map))
+            flows.append(nf.flows.Permute(dim, mode='swap'))
+        return nf.NormalizingFlow(base, flows)
+
+    def _flatten_time(self, x: torch.Tensor) -> torch.Tensor:
+        return x.view(-1, x.shape[-1])
+
+    def _restore_time(self, x: torch.Tensor, shape: torch.Size) -> torch.Tensor:
+        return x.view(shape)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Map from source system to target space (x -> y)."""
+        original_shape = x.shape
+        x_flat = self._flatten_time(x)
+        y_flat = self.flow.forward(x_flat)  # Returns (z, log_det); we discard log_det
+        #y_flat = torch.clamp(y_flat, -10, 10)
+        return self._restore_time(y_flat, original_shape)
+
+    def inverse(self, y: torch.Tensor) -> torch.Tensor:
+        """Map from target space to source system (y -> x)."""
+        original_shape = y.shape
+        y_flat = self._flatten_time(y)
+        x_flat = self.flow.inverse(y_flat)
+        #x_flat = torch.clamp(x_flat, -10, 10)
+        return self._restore_time(x_flat, original_shape)
+
+
+#### NODEs
+import torchdiffeq
+
+class NeuralODE(nn.Module):
+    def __init__(self, dim: int, layer_sizes: list[int]):
+        super(NeuralODE, self).__init__()
+        self.dim = dim
+        # Define a simple MLP to be used as the neural network in the ODE
+        self.mlp = nn.Sequential(
+            nn.Linear(dim, layer_sizes[0]),
+            nn.ReLU(),
+            nn.Linear(layer_sizes[0], layer_sizes[1]),
+            nn.ReLU(),
+            nn.Linear(layer_sizes[1], dim)
+        )
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        return self.mlp(x)
+
+class NODEDiffeomorphism(nn.Module):
+    """Represents a diffeomorphic transformation using a Neural ODE."""
+    def __init__(self, dim: int, layer_sizes: list[int] = [64, 64], epsilon: float = None, t_span: tuple = (0.0, 1.0)) -> None:
+        super().__init__()
+        self.epsilon = epsilon
+        self.t_span = torch.tensor(t_span)  # Default integration time span
+        self.neural_ode = NeuralODE(dim, layer_sizes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Map from source to target space."""
+        t = self.t_span.to(x.device)
+        y = torchdiffeq.odeint(self.neural_ode, x, t)
+        return y[-1]  # Final state
+
+    def inverse(self, y: torch.Tensor) -> torch.Tensor:
+        """Map from target to source space."""
+        t = self.t_span.flip(0).to(y.device)
+        x = torchdiffeq.odeint(self.neural_ode, y, t)
+        return x[-1]
+
+    def jacobian(self, x: torch.Tensor) -> torch.Tensor:
+        x.requires_grad_(True)
+        output = self.forward(x)
+
+        jacobian = []
+        for i in range(output.shape[1]):
+            grad_output = torch.zeros_like(output)
+            grad_output[:, i] = 1
+            grad_i = torch.autograd.grad(output, x, grad_outputs=grad_output, create_graph=False)[0]
+            jacobian.append(grad_i.unsqueeze(1))
+        return torch.cat(jacobian, dim=1)
+
+    def inverse_approximation(self, x: torch.Tensor, steps: int = 5) -> torch.Tensor:
+        y = x.clone()
+        for _ in range(steps):
+            y = x - self.forward(y) + y
+        return y
 
 
 def test_diffeom_networks(
@@ -198,7 +294,8 @@ def test_diffeom_networks(
     diffeo_networks: List[torch.nn.Module],
     generate_trajectories_scipy,
     num_points: int,
-    plot_first_n: int = 5
+    plot_first_n: int = 5,
+    time_span: torch.Tensor=None,
 ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
     """
     Transforms target trajectories back to the source domain using inverse diffeomorphisms,
@@ -218,6 +315,7 @@ def test_diffeom_networks(
             - transformed_trajectories_list: Re-transformed trajectories using diffeomorphisms.
     """
     # Get initial conditions from target trajectories
+
     initial_conditions_np = np.array([
         trajectories_target[i][0].detach().numpy() for i in range(num_points)
     ])
@@ -227,13 +325,16 @@ def test_diffeom_networks(
     transformed_trajectories_list = []
 
     for motif, diffeo_net in zip(motif_library, diffeo_networks):
+        if time_span is None:
+            time_span = motif.time_span
         # Transform initial conditions to source space
         initial_conditions_src = diffeo_net.inverse(initial_conditions)
 
         # Generate source trajectories
         t_values, trajectories_source, _ = generate_trajectories_scipy(
             system=motif,
-            predefined_initial_conditions=initial_conditions_src
+            predefined_initial_conditions=initial_conditions_src,
+            time_span=time_span
         )
 
         # Map trajectories back to target space using diffeomorphism

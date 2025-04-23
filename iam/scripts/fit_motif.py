@@ -15,7 +15,8 @@ def train_diffeomorphism(
     use_transformed_system: bool,
     initial_conditions_target: torch.Tensor,
     optimizer: torch.optim.Optimizer,
-    num_epochs: int = 100
+    num_epochs: int = 100,
+    lambda_reg: float = 0.0
 ):
     """
     Train the diffeomorphism network while tracking training time and epoch time.
@@ -38,6 +39,12 @@ def train_diffeomorphism(
         trajectories_target_detached = [traj.detach() for traj in trajectories_target]
 
         loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target_detached, transformed_trajectories)) / num_points
+
+        torch.nn.utils.clip_grad_norm_(diffeo_net.parameters(), max_norm=1.0)
+
+        if torch.isnan(loss).any() or torch.isinf(loss).any():
+            print(f"NaN or Inf detected in loss at epoch {epoch}.")
+            break
 
         #target_batch = torch.stack(trajectories_target_detached)  # [N, T, d]
         #transformed_batch = torch.stack(transformed_trajectories)  # [N, T, d]
@@ -71,3 +78,6 @@ def train_all_motifs(motif_library, diffeo_networks, trajectories_target, initia
             num_epochs=num_epochs, use_transformed_system=use_transformed_system
         )
     return diffeo_networks
+
+
+
