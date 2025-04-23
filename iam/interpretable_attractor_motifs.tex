@@ -79,7 +79,7 @@
 %\title{Interpretable attractor motifs for a new language for neural computation}
 \title{Attractor motifs for an interpretable language for working memory-type neural computation}
 %Dynamical Motif Extraction for Interpretable Neural Computation
-% Interpretable Neural Computation via Canonical Dynamical Motifs
+% Interpretable Neural Computation via Dynamical Motifs
 \author{\'Abel S\'agodi and Il Memming Park}
 \date{\today}
 
@@ -227,7 +227,7 @@ Taking apart topological conjugacy (diffeomorphism from motif):
 
 
 DS/RNN analysis
-Dyn Sys: Linking parameters and behavior: bifurcation, asymptotic behavior,  topological equivalence \citep{beer1995ctrnn, beer2006parameterspace}
+Dyn Sys: Linking parameters and behavior: bifurcation, asymptotic behavior, topological equivalence \citep{beer1995ctrnn, beer2006parameterspace}
 
 For task-trained neural networks
 \citep{huang2024measuring}
@@ -378,6 +378,14 @@ Manipulating and measuring model interpretability\citep{poursabzi2021manipulatin
 \citep{quinn2022information}
 
 Canonical realization = the simplest system (in some sense) that produces the same behavior
+
+
+\paragraph{Visualization}
+\citep{karpathy2015visualizing}
+PHATE \citep{moon2017visualizing}
+MPHATE\citep{gigante2019visualizing}
+MMPHA\citep{xie2024multiway} 
+\citep{madsen2019visualizing}
 
 \subsection{Minimal}
 \citep{beer1996toward}
@@ -679,6 +687,7 @@ the layers of a ResNet can be considered as Euler-discretization of the integrat
 
 \paragraph{Flow-based}
 NODE\citep{finlay2020trainnode}
+\citep{torchdiffeq}
 
 Conjugate Mappings \citep{bramburger2021conjugate}
 
@@ -775,7 +784,52 @@ Saddle ring
 \subsubsection{Beyond isolated fixed points}
 How do we define a normal form when the system has a continuous attractor, such as a manifold of stable fixed points or limit cycles?
 
+\paragraph{Limit cycles}%exists
+Let 
+\[
+\dot{x} = f(x), \quad x \in \mathbb{R}^n,
+\]
+with a \emph{hyperbolic limit cycle} \( \gamma(t) \) of period \( T \), meaning:
+\[
+\gamma(t + T) = \gamma(t), \quad \dot{\gamma}(t) = f(\gamma(t)).
+\]
+The linearized dynamics transverse to the cycle have no Floquet multipliers on the unit circle except the trivial one corresponding to time shift.
 
+Let \( x = \Phi(\theta, r) \), where: %Phi is a diffeom
+\begin{itemize}
+  \item \( \theta \in \mathbb{S}^1 \): phase variable (e.g., time along the cycle),
+  \item \( r \in \mathbb{R}^{n-1} \): transverse coordinates.
+\end{itemize}
+In these coordinates, the system becomes:
+\[
+\begin{aligned}
+\dot{\theta} &= 1 + a_1(r) + a_2(r) + \dots, \\
+\dot{r} &= \Lambda(\theta) r + b_2(\theta, r) + b_3(\theta, r) + \dots,
+\end{aligned}
+\]
+where \( \Lambda(\theta) \) is the linearized transverse dynamics (from Floquet theory),
+and  \( a_k(r) \in \mathbb{R} \), \( b_k(\theta, r) \in \mathbb{R}^{n-1} \) are \( \mathcal{O}(\|r\|^k) \).
+The system can be simplified via near-identity, time-periodic coordinate transformations (sometimes called Floquet–normal form reduction).
+
+\textbf{Example: Van der Pol.} 
+The Van der Pol oscillator is a system described by the equations:
+\[
+\dot{x}_1 = x_2, \quad \dot{x}_2 = \mu (1 - x_1^2) x_2 - x_1,
+\]
+where \( \mu \) is a nonlinearity parameter.
+
+To analyze the limit cycle behavior, we use polar coordinates \( x_1 = r \cos(\theta) \) and \( x_2 = r \sin(\theta) \), where:
+\[
+\dot{r} = -\mu r + \mathcal{O}(r^2), \quad \dot{\theta} = 1 + \mathcal{O}(r).
+\]
+Thus, the normal form near the limit cycle is:
+\[
+\dot{\theta} = 1, \quad \dot{r} = -\mu r + \mathcal{O}(r^2),
+\]
+which describes a stable limit cycle with phase \( \theta \) evolving uniformly and radial contraction controlled by \( \mu \).
+
+
+\paragraph{Continuous attractors}%our proposal
 Let $\manifold\subset\reals^n$  be a smooth normally hyperbolic invariant manifold (NHIM).
 A \emph{normal form} near a continuous attractor \(\manifold \subset \mathbb{R}^n \) is a change of coordinates 
 \( x = \Phi(\theta, r) \), with:
@@ -793,6 +847,9 @@ such that the vector field becomes:
 where \( \Lambda(\theta) \) is positive definite, ensuring contraction toward the attractor \(\manifold\).
 
 Equivariant bifurcation theory provides normal forms that are invariant under group action
+
+
+\paragraph{Translation to center around origin}
 
 
 
