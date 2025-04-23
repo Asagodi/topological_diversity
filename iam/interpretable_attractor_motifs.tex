@@ -23,6 +23,8 @@
 \hypersetup{breaklinks=true}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
+\usepackage{tikz-cd}
+
 
 %for comments
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
@@ -57,6 +59,7 @@
 \newcommand{\Diff}{\operatorname{Diff}}
 \newcommand{\Hpert}{H^{\text{pert}}}
 \newcommand{\inv}{\operatorname{Inv}}
+\newcommand{\manifold}{\mathcal{M}}
 
 \newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
 \newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
@@ -140,6 +143,7 @@ Multiple tasks \citep{}
 \section{Background and related work}\label{sec:background}
 A theory of (neural) computation\citep{jaeger2021theory, jaeger2023timescales, jaeger2023theory}
 - Dynamical system theory as the source for the syntax for the language of neural computation.
+\citep{elgazzar2024universal}
 
 Similar idea: DYNAMO \citep{cotler2023analyzing}
 
@@ -174,7 +178,7 @@ Engineering RNNs that embody latent task dynamics (EMPJ) \citep{pollock2020engin
 \paragraph{Working memory}
 Discrete 
 
-Continuous 
+Continuous \citep{hoeller2024bridging} \citep{zhang2022translation}
 
 \paragraph{Decision making}
 
@@ -493,6 +497,8 @@ Then, there exists a perturbation $p\in C^1$
 \|\psi_{f+p} - \Phi(\psi_{g})\|_\infty = 0.
 \end{equation}
 
+Therefore, we can define the distance metric $d(f,g) = \inf \|p\|$ with the above constraint.
+
 
 \subsection{An interpretable motif-centered metric for dynamical systems}\label{sec:aut_motif_metric}
 Consider our target dynamical system to be defined on a compact subset of $\reals^n$.
@@ -648,8 +654,18 @@ planning: complex dynamical motifs that correspond to current and future actions
 %%%%%TOP
 \section{Topology}\label{sec:topology}
 
+\subsection{Approximating homeomorphisms}\label{sec:homeomorphisms}
 
-\subsection{Diffeomorphisms in practice}\label{sec:diffeomorphisms}
+
+Any homeomorphism on a $p$-dimensional Euclidean space can be approximated by a Neural ODE or an i-ResNet operating on a $2p$-dimensional Euclidean space \citep{zhang2020approximation}.
+
+Capping a Neural ODE or an i-ResNet with a single linear layer is sufficient to turn the model into a universal approximator for non-invertible continuous functions \citep{zhang2020approximation}.
+
+\subsubsection{Implementations}
+
+
+
+\subsection{Approximating diffeomorphisms}\label{sec:diffeomorphisms}
 
 a simple sufficient condition for a family of flows on a smooth compact manifold $M$ to generate the group $\Diff0_(M)$ of all diffeomorphisms of M that are isotopic to the identity \citep{caponigro2010families}.
 
@@ -670,9 +686,6 @@ Conjugate Mappings \citep{bramburger2021conjugate}
 Any homeomorphism of $\mathbb {R} ^{n}$ can be approximated by a neural ODE operating on $\mathbb {R} ^{2n+1}$, proved by combining Whitney embedding theorem for manifolds and the universal approximation theorem for neural networks  \citep{zhang2020approximation}
 
 diffeomorphisms from gradient information of desired costs \citep{lai2021parallelised}
-
-
-
 
 \subsubsection{Decomposing diffeomorphisms}\label{sec:diff_dec}
 \paragraph{Lie}
@@ -730,13 +743,11 @@ Let \( f: X \to X \) and \( g: Y \to Y \) be two continuous dynamical systems, w
 h \circ f = g \circ h.
 \]
 That is, the following diagram commutes:
-\[
-\begin{array}{ccc}
-X & \xrightarrow{f} & X \\
-\downarrow h &  & \downarrow h \\
-Y & \xrightarrow{g} & Y
-\end{array}
-\]
+\begin{tikzcd}[row sep=large, column sep=large]
+X \arrow[r, "f"] \arrow[d, "h"'] & X \arrow[d, "h"] \\
+Y \arrow[r, "g"'] & Y
+\arrow[from=1-2, to=2-1, phantom, "\circlearrowleft", description, pos=0.5]
+\end{tikzcd}
 \end{definition}
 
 \paragraph{Topological conjugacy of time series}
@@ -750,7 +761,7 @@ Y & \xrightarrow{g} & Y
 
 \subsection{Normal forms}
 
-\subsubsection{Normal forms for autonomous dynamics}
+\subsubsection{Normal forms for autonomous dynamics}%ISOLATED FPS
 Examples
 Saddle ring
 \begin{equation}
@@ -761,7 +772,32 @@ Saddle ring
 \end{equation}
 
 
-\subsubsection{Pushforward of the vector field: flow under a diffeomorphism}
+\subsubsection{Beyond isolated fixed points}
+How do we define a normal form when the system has a continuous attractor, such as a manifold of stable fixed points or limit cycles?
+
+
+Let $\manifold\subset\reals^n$  be a smooth normally hyperbolic invariant manifold (NHIM).
+A \emph{normal form} near a continuous attractor \(\manifold \subset \mathbb{R}^n \) is a change of coordinates 
+\( x = \Phi(\theta, r) \), with:
+\begin{itemize}
+  \item \( \theta \in \mathbb{R}^d \): coordinates on the attractor \( \manifold\),
+  \item \( r \in \mathbb{R}^{n-d} \): coordinates transverse to \(\manifold \),
+\end{itemize}
+such that the vector field becomes:
+\[
+\begin{aligned}
+\dot{\theta} &= 0, \\
+\dot{r} &= -\Lambda(\theta) r + \mathcal{O}(\|r\|^2),
+\end{aligned}
+\]
+where \( \Lambda(\theta) \) is positive definite, ensuring contraction toward the attractor \(\manifold\).
+
+Equivariant bifurcation theory provides normal forms that are invariant under group action
+
+
+
+
+\subsection{Pushforward of the vector field: flow under a diffeomorphism}
 See e.g., Eq.1.2 in \citep{agrachev2013control}.
 
 Given a diffeomorphism \( \Phi: M \to M \), we consider the vector field \( V \in \text{Vec}(M) \), governing the dynamical system:
