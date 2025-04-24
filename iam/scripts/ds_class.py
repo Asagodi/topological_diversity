@@ -10,12 +10,12 @@ class DynamicalSystem(nn.Module):
     Base class for a dynamical system. 
     Any subclass should implement the `forward` method defining dx/dt = f(t, x).
     """
-    def __init__(self, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_level: float = 0.0) -> None:
+    def __init__(self, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0) -> None:
         super().__init__()
         self.dim = dim
         self.dt = dt
         self.time_span = time_span
-        self.noise_level = noise_level
+        self.noise_std = noise_std
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         """
@@ -67,10 +67,10 @@ class RingAttractor(DynamicalSystem):
 
 # Van der Pol oscillator as an example target system
 class VanDerPol(DynamicalSystem):
-    def __init__(self, mu: float = 1.0, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_level: float=0.) -> None:
+    def __init__(self, mu: float = 1.0, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float=0.) -> None:
         super().__init__(dim=dim, dt=dt, time_span=time_span)
         self.mu = mu
-        self.noise_level = noise_level
+        self.noise_std = noise_std
         self.time_span = time_span
         self.dt = dt
 
@@ -279,7 +279,7 @@ def generate_initial_conditions(
 
 def generate_trajectories(
     system: DynamicalSystem,
-    noise_level: float=None,
+    noise_std: float=None,
     sampling_method: str=None,
     init_points_bounds: tuple=None,
     num_points: int=None,
@@ -319,7 +319,7 @@ def generate_trajectories(
     trajectories = []
     def system_with_noise(t, y):
             dydt = system(t, y)
-            noise = torch.randn_like(y) * system.noise_level
+            noise = torch.randn_like(y) * system.noise_std
             return dydt + noise
         
     for initial_condition in initial_conditions:
@@ -368,7 +368,8 @@ def generate_trajectories_scipy(
     sampling_method: str=None,
     num_points: int=None,
     init_points_bounds: tuple=None,
-    predefined_initial_conditions=None
+    predefined_initial_conditions=None,
+    noise_std: float=0.0
 ):
     """
     Generates trajectories using SciPy's solve_ivp instead of torchdiffeq.odeint.
@@ -400,6 +401,7 @@ def generate_trajectories_scipy(
     def scipy_rhs(t, x):
         x_tensor = torch.tensor(x, dtype=torch.float32).unsqueeze(0)  # Convert to tensor
         dx_dt = system.forward(torch.tensor([t], dtype=torch.float32), x_tensor).squeeze(0)  # Compute dynamics
+        noise = torch.randn_like(dx_dt) * noise_std  # Gaussian noise (could also be more complex)
         return dx_dt.detach().numpy()
 
     trajectories = []
