@@ -414,7 +414,7 @@ def generate_trajectories_scipy(
 
 import time
 
-def generate_trajectories_for_training(diffeo_net, source_system, use_transformed_system, initial_conditions_target):
+def generate_trajectories_for_training(diffeo_net, source_system, use_transformed_system, initial_conditions_target, noise_std=0.0):
     initial_conditions_source = diffeo_net.inverse(initial_conditions_target)  
 
     if use_transformed_system:
@@ -425,10 +425,10 @@ def generate_trajectories_for_training(diffeo_net, source_system, use_transforme
             )
     else:
         with torch.no_grad():  
-
             _, trajectories_source, _ = generate_trajectories_scipy(
                 system=source_system,
-                predefined_initial_conditions=initial_conditions_source
+                predefined_initial_conditions=initial_conditions_source,
+                noise_std=noise_std
             )
         transformed_trajectories = [diffeo_net(traj.requires_grad_()) for traj in trajectories_source]
         transformed_trajectories = torch.stack(transformed_trajectories)
