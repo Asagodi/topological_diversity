@@ -317,12 +317,18 @@ We can simplify it's dynamics by looking at its normal form.
 \item \citep{otto2023learning}
 \item vector fields projected onto the manifold \citep{roy2021extracting, luo2023noncanonical}
 \item spectral submanifold \citep{cenedese2022data, axaas2023fast, bettini2024model, kaszas2024data}
+\item mean-field\citep{bick2020understanding}
 \item surrogate dynamical systems (any citations?)
 \end{itemize}
 
 
 
 \paragraph{Reduction of dynamics to extract computation}
+Encoding-Decoding framework
+
+\citep{zhang2025neural} NEDS
+
+
 Formalize through input-output functional.
 
 The \emph{transfer functional} \( \mathcal{T}_f \) maps an input signal \( u(\cdot) \) to an output signal \( y(\cdot) \), possibly given an initial condition \( x_0 \):
@@ -371,6 +377,16 @@ extrinsic and intrinsic dimensionality\citep{jazayeri2021interpreting}
 simple isn't easy \citep{raz2024ml}
 Manipulating and measuring model interpretability\citep{poursabzi2021manipulating}: \ascomment{A way to compare?}
 \citep{he2024multilevel}
+
+\paragraph{ML}
+\citep{montavon2018methods}: \emph{An interpretation is the mapping of an abstract concept (e.g., a predicted class) into a domain that the human can make sense of.}
+
+\citep{ehrhardt2017learning, guidotti2018survey}: Interpretations can be obtained by way of understandable proxy models, which approximate the predictions of a more complex approach
+
+Longstanding approaches involve linear models, decision trees and rule extraction.
+
+extraction of information from the input and the output of a learned model is also called post hoc interpretability or reverse engineering
+
 
 \subsubsection{Simplicity}
 \citep{gao2015simplicity}
@@ -449,6 +465,7 @@ black box to mixture of interpretable models \citep{ghosh2023blackbox}
 \citep{brenner2024almost}
 \citep{menier2025interpretable}
 \citep{nonnenmacher2017extracting}
+\citep{zhang2025netformer}: recovering dynamical connectivity in neuronal population dynamics
 
 \subsubsection{Our levels of interperetability}
 Proposal: guiding principles for a hierarchy of interpretability
@@ -498,7 +515,7 @@ In motor cortex, neural trajectories during reaching movements often evolve alon
 \citep{cavanagh2020diversity}
 
 \section{Matching dynamical motifs}
-\subsection{Similarity metric}
+\subsection{Dissimilarity measure}
 Let $f, g\in C^1$ be the vector fields.
 Then, there exists a perturbation $p\in C^1$ 
  and a homeomorphism $\Phi:\reals^n\rightarrow\reals^n$ such that 
@@ -507,6 +524,20 @@ Then, there exists a perturbation $p\in C^1$
 \end{equation}
 
 Therefore, we can define the distance metric $d(f,g) = \inf \|p\|$ with the above constraint.
+
+\subsubsection{The complexity of the homeomorphism}
+List of tentative deformation operations
+translation, permutation, and rotation of the space
+uniform scaling of the space
+non-uniform scaling of the space
+scaling global speed (multiplicative to vector field)
+homeomorphism
+diffeomorphism
+measure-preserving (Hamiltonian) transformation
+
+\paragraph{Wasserstein distance between the distribution over trajectories}
+\citep{bion2019wasserstein}
+
 
 
 \subsection{An interpretable motif-centered metric for dynamical systems}\label{sec:aut_motif_metric}
@@ -525,7 +556,6 @@ Therefore, we can define the distance w.r.t. each motif as $d(f,g_i) = \inf \|p\
 Projection of $f$ onto library: we get a vector representing the distances to the motifs in the library.
 
 \ascomment{Convergence during training of RNNs: for task that relies on analog memory to low distance to dynamical motif that is a continuous attractor diffeomorphic to the memory manifold.}
-
 
 
 \subsubsection{Recognizable geometric-topological features}
@@ -582,6 +612,7 @@ We consider a target dynamical system $\dot{x} = f(x)$ which has a single global
   Assuming smoothness, we model $\Phi$ as a diffeomorphism.
 Our goal is to determine both the correct (best fitting/most explanatory) attractor motif $g_i$ and the diffeomorphism $\Phi$ given only observed trajectories $\{x_j(t_k)\}$ sampled from $f$.
 
+
 \paragraph{Trajectory based loss function}
 Since we do not have direct access to the vector field but only to sampled trajectories, we approximate the system using a learned diffeomorphism \( \hat{\Phi}_\theta \), parameterized by a normalizing flow\citep{kobyzev2020normalizing,papamakarios2021normalizing}, an invertible ResNet\citep{he2016deep}, or a Neural ODE (NODE) \citep{chen2018neural}.
  We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
@@ -596,7 +627,7 @@ where \( y(t) \) is a trajectory obtained by integrating \( \dot{y} = g_i(y) \) 
 
 A loss function capturing this trajectory discrepancy is given by:
 \[
-\mathcal{L}(\theta, i) = \sum_{t} \Big\| (x(t)) - \hat{\Phi}_\theta^{-1}(y(t)) \Big\|^2,
+\mathcal{L}(\theta, i) = \sum_{t} \Big\| (x(t)) - \hat{\Phi}_\theta(y(t)) \Big\|^2,
 \]
 where \( y_{\text{model}}(t) \) is computed via numerical integration of \( g_i \) from an initial condition inferred from the transformed data.
 
@@ -608,6 +639,14 @@ The final optimization objective is:
 
 This formulation allows for the joint identification of both the correct attractor motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical/normal form.
 
+
+\paragraph{Noisy motif trajectories}
+We consider noisy versions of motif trajectories governed by stochastic differential equations (SDEs) of the form
+\begin{equation}
+\dot x = g_i(x) + \sigma \, dW_t
+\end{equation}
+where \( g_i(x) \) denotes the deterministic dynamics of the \( i \)-th motif, \( \sigma \) controls the noise amplitude, and \( W_t \) is a standard Wiener process.
+To stabilize the trajectory alignment or improve optimization in the presence of noise, we incorporate simulated annealing by gradually decreasing \( \sigma \) over time.
 
 \subsection{Application on simple example}
 \begin{figure}[htbp]
@@ -753,8 +792,8 @@ Continuous comparison: metric/distance/dissimilarity
 
 \subsubsection{Exact equivalence: Topological conjugacy}\label{sec:top_conj}
 
-Topological conjugacy is an equivalence relation on the category of flows.
-\begin{definition}\label{def:top_conj}
+Topological conjugacy is an equivalence relation on the category of flows. %Behavioral space
+\begin{definition}[Topological conjugacy]\label{def:top_conj}
 let $\phi$ be a flow on $X$, and $\psi$ a flow on $Y$, with $X$, $Y$, and $h\colon Y \to X$ as above.
 
 We say that $\phi$ is \emph{topologically semiconjugate} to $\psi$ if, by definition, $h$ is a surjection such that
@@ -764,8 +803,8 @@ We say that $\phi$ is \emph{topologically semiconjugate} to $\psi$ if, by defini
 Furthermore, $\phi$ and $\psi$ are said to be \emph{topologically conjugate} if they are topologically semiconjugate and $h$ is a homeomorphism.
 \end{definition}
 
-Smooth equivalence is an equivalence relation in the category of smooth manifolds with vector fields.
-\begin{definition}\label{def:smooth_equivalence}
+Smooth equivalence is an equivalence relation in the category of smooth manifolds with vector fields. %model space
+\begin{definition}[Smooth equivalence]\label{def:smooth_equivalence}
 Two dynamical systems defined by the differential equations 
 \[
 \dot{x} = f(x) \quad \text{and} \quad \dot{y} = g(y)
@@ -776,6 +815,38 @@ f(x) = M^{-1}(x) \, g(h(x)) \quad \text{where} \quad M(x) = \frac{d h(x)}{d x}.
 \]
 In that case, the dynamical systems can be transformed into each other by the coordinate transformation \( y = h(x) \).
 \end{definition}
+
+\begin{definition}[Orbital equivalence]
+Two dynamical systems on the same state space, defined by 
+\[
+\dot{x} = f(x) \quad \text{and} \quad \dot{x} = g(x),
+\]
+are said to be \emph{orbitally equivalent} if there exists a positive function \( \mu \colon X \to \mathbb{R} \) such that
+\[
+g(x) = \mu(x) f(x).
+\]
+\end{definition}
+Orbitally equivalent systems differ only in their time parametrization.
+
+
+\subsection{}
+Two dynamical systems on the same state space:
+\[
+\dot{x} = f(x) \quad \text{and} \quad \dot{x} = g(x).
+\]
+
+Let 
+\begin{itemize}
+\item $p\in C^1$
+\item $\Phi$ a homeomorphism
+\item $\mu\colon \reals^n\rightarrow \reals$ positive function
+\end{itemize}
+such that 
+\begin{enumerate}
+\item $\psi_{\mu \cdot (f+p)}$ is topologically conjugate to $\psi_{g}$
+\item Take $\inf_p \|p\|$, $\inf_\mu \|\mu\|$, $\inf_\Phi \|\Phi\|$
+%\item $f(x) = \mu(x) D\Phi(x)^{-1}(x) \, g(h(x))$ % is topologically conjugate
+\end{enumerate}
 
 %\begin{definition}\label{def:top_conj}
 %Let \( f: X \to X \) and \( g: Y \to Y \) be two continuous dynamical systems, where \( X \) and \( Y \) are topological spaces.
@@ -1192,9 +1263,21 @@ Cartesian Coordinates
 \end{aligned}
 \]
 
+
+
+
+\newpage
 \section{Experiments}
+\subsection{}
+
+
+ \subsection{Toy models}
+ Time points: 100
+ Trajectories: 15
 
 \subsection{Limit cycle fitting}
+\subsubsection{Random diffeomorphism of a limit cycle}
+
 \subsubsection{Van der Pol}
 The Van der Pol equation is given by 
 \begin{equation}
@@ -1206,64 +1289,92 @@ The Van der Pol equation is given by
 
 In Fig.~\ref{fig:all_motifs_vdp} we used $\mu=0.3$.
 
+\subsection{Approximate continuous attractors}
+\subsubsection{Line attractor}
+
+\subsubsection{Ring attractor}
 
 
-\section{Architecture}
+\newpage
+\section{Architectures}
+\subsection{Neural ODE}
 
-\subsection{Naive MLP}
-\begin{tikzpicture}[
-    node distance=0.5cm,
-    neuron/.style={circle, draw, minimum size=0.6cm},
-    layer label/.style={font=\small, anchor=west},
-    every node/.append style={font=\small}
-  ]
 
-  % Input Layer (2 units)
-  \node[layer label] at (-.5, 0.3) {Input};
-  \foreach \i in {1,2} {
-    \node[neuron] (i\i) at (0, -\i) {};
-  }
+\paragraph{Other proposals}
+Neural manifold ordinary differential equations \citep{lou2020neural}
 
-  % Hidden Layer 1 (8 units, condensed)
-  \node[layer label] at (1.5, 0.3) {$\tanh$};
-  \foreach \i/\y in {1/0.75,3/2.25} {
-    \node[neuron] (h1\i) at (2, -\y) {};
-  }
-  \node at (2, -1.5) {\vdots};
+\subsection{Normalizing flow}
 
-  % Hidden Layer 2 (16 units, condensed)
-  \node[layer label] at (4., 0.3) {$\tanh$};
-  \foreach \i/\y in {1/0.75,3/2.25} {
-    \node[neuron] (h2\i) at (4.5, -\y) {};
-  }
-  \node at (4.5, -1.5) {\vdots};
 
-  % Output Layer (2 units)
-  \node[layer label] at (6.5, 0.3) {Output};
-  \foreach \i in {1,2} {
-    \node[neuron] (o\i) at (6.5, -\i) {};
-  }
+%\subsection{Naive MLP}
+%\begin{tikzpicture}[
+%    node distance=0.5cm,
+%    neuron/.style={circle, draw, minimum size=0.6cm},
+%    layer label/.style={font=\small, anchor=west},
+%    every node/.append style={font=\small}
+%  ]
+%
+%  % Input Layer (2 units)
+%  \node[layer label] at (-.5, 0.3) {Input};
+%  \foreach \i in {1,2} {
+%    \node[neuron] (i\i) at (0, -\i) {};
+%  }
+%
+%  % Hidden Layer 1 (8 units, condensed)
+%  \node[layer label] at (1.5, 0.3) {$\tanh$};
+%  \foreach \i/\y in {1/0.75,3/2.25} {
+%    \node[neuron] (h1\i) at (2, -\y) {};
+%  }
+%  \node at (2, -1.5) {\vdots};
+%
+%  % Hidden Layer 2 (16 units, condensed)
+%  \node[layer label] at (4., 0.3) {$\tanh$};
+%  \foreach \i/\y in {1/0.75,3/2.25} {
+%    \node[neuron] (h2\i) at (4.5, -\y) {};
+%  }
+%  \node at (4.5, -1.5) {\vdots};
+%
+%  % Output Layer (2 units)
+%  \node[layer label] at (6.5, 0.3) {Output};
+%  \foreach \i in {1,2} {
+%    \node[neuron] (o\i) at (6.5, -\i) {};
+%  }
+%
+%  % Connections (sparse for clarity)
+%  \foreach \i in {1,2} {
+%    \foreach \j in {1,3} {
+%      \draw[->] (i\i) -- (h1\j);
+%    }
+%  }
+%
+%  \foreach \i in {1,3} {
+%    \foreach \j in {1,3} {
+%      \draw[->] (h1\i) -- (h2\j);
+%    }
+%  }
+%
+%  \foreach \i in {1,3} {
+%    \foreach \j in {1,2} {
+%      \draw[->] (h2\i) -- (o\j);
+%    }
+%  }
+%
+%\end{tikzpicture}
 
-  % Connections (sparse for clarity)
-  \foreach \i in {1,2} {
-    \foreach \j in {1,3} {
-      \draw[->] (i\i) -- (h1\j);
-    }
-  }
 
-  \foreach \i in {1,3} {
-    \foreach \j in {1,3} {
-      \draw[->] (h1\i) -- (h2\j);
-    }
-  }
 
-  \foreach \i in {1,3} {
-    \foreach \j in {1,2} {
-      \draw[->] (h2\i) -- (o\j);
-    }
-  }
+\newpage
+\section{Training}
 
-\end{tikzpicture}
+\subsection{Training parameters}
+
+
+
+\subsection{Cross-validation}
+
+\subsubsection{Validation data}
+
+\subsubsection{Regularization}
 
 
 
