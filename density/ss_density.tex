@@ -269,7 +269,7 @@ A fundamental result in this domain is that any given trajectory of a dynamical 
 Finite-time horizon approximation results for input-driven systems with NODEs have been developed more recently \citep{li2022deep, ko2023homotopy, zakwan2023universal}.
 Finally, neural flows have been proposed as an alternative to NODEs with comparable approximation capabilities\citep{bilos2021neural}.
 
-\citep{lou2020neural}
+%Neural manifold ordinary differential equations \citep{lou2020neural}%no approximation result...
 	
 %time-variant	
 \paragraph{Time variant systems}
@@ -875,9 +875,8 @@ Finally, for $f$ with a continuum of attractors (nonzero flow in at least one di
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Non-autonomous dynamics}\label{sec:nonautonomous}
-%We will consider input-driven systems (Sec.~\ref{sec:inputdriven}).  %general non-autonomous systems (Sec.~\ref{sec:generalnonautonomous}) 
-
+\section{Input-driven dynamics}\label{sec:inputdriven}
+We will consider input-driven systems.  %general non-autonomous systems (Sec.~\ref{sec:generalnonautonomous}) 
 
 \subsection{Target and hypothesis class for input-driven systems}\label{sec:inputdriven}
 In many dynamical systems, external inputs influence the system's evolution over time. Such systems can be described by differential equations of the form
@@ -885,9 +884,8 @@ In many dynamical systems, external inputs influence the system's evolution over
 \dot x(t) = f(x(t)) + g(x(t),u(t)),
 \end{equation}
 where $x(t)\in\reals^n$  represents the system state and $u(t)\in\reals^m$ is an input function.
-%
 The solutions of this system, denoted as $\psi(t,x_0,u)$, depend on the initial condition $x(0) = x_0$  and the input $u(t)$.
-We assume the solutions to be unique (see Sec.~\ref{sec:inputunique}).
+We assume the solutions to be unique (see Supp.Sec.~\ref{sec:inputunique}).
 
 
 
