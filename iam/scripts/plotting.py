@@ -26,8 +26,8 @@ def plot_sampled_trajectories(trajectories, initial_conditions, bounds):
 
 
 
-# Function to plot the action of the diffeomorphism with optional grid points
-def plot_diffeomorphism_action(original_samples, transformed_samples, bounds):
+# Function to plot the action of the homeomorphism with optional grid points
+def plot_homeomorphism_action(original_samples, transformed_samples, bounds):
     # Create a subplot
     fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 
@@ -36,24 +36,24 @@ def plot_diffeomorphism_action(original_samples, transformed_samples, bounds):
     axes[1].set_xlim([bounds[0], bounds[1]])
     axes[1].set_ylim([bounds[0], bounds[1]])
 
-    # Original space (before diffeomorphism)
+    # Original space (before homeomorphism)
     axes[0].scatter(original_samples[:, 0].detach().numpy(), original_samples[:, 1].detach().numpy(), color='blue', label='Original Points')
     axes[0].quiver(original_samples[:, 0].detach().numpy(), original_samples[:, 1].detach().numpy(),
                    transformed_samples[:, 0].detach().numpy() - original_samples[:, 0].detach().numpy(),
                    transformed_samples[:, 1].detach().numpy() - original_samples[:, 1].detach().numpy(),
                    angles='xy', scale_units='xy', scale=1, color='blue', alpha=0.5)
-    axes[0].set_title('Action of Diffeomorphism (Original Space)')
+    axes[0].set_title('Action of Homeomorphism (Original Space)')
     axes[0].set_xlabel('x')
     axes[0].set_ylabel('y')
     axes[0].grid(True)
 
-    # Transformed space (after diffeomorphism)
+    # Transformed space (after homeomorphism)
     axes[1].scatter(transformed_samples[:, 0].detach().numpy(), transformed_samples[:, 1].detach().numpy(), color='red', label='Transformed Points')
     axes[1].quiver(transformed_samples[:, 0].detach().numpy(), transformed_samples[:, 1].detach().numpy(),
                    original_samples[:, 0].detach().numpy() - transformed_samples[:, 0].detach().numpy(),
                    original_samples[:, 1].detach().numpy() - transformed_samples[:, 1].detach().numpy(),
                    angles='xy', scale_units='xy', scale=1, color='red', alpha=0.5)
-    axes[1].set_title('Inverse Action of Diffeomorphism (Transformed Space)')
+    axes[1].set_title('Inverse Action of Homeomorphism (Transformed Space)')
     axes[1].set_xlabel('x')
     axes[1].set_ylabel('y')
     axes[1].grid(True)
@@ -63,10 +63,10 @@ def plot_diffeomorphism_action(original_samples, transformed_samples, bounds):
 
 def plot_trajectories_comparison(original_trajectories, transformed_trajectories, bounds=(2.0, 2.0)):
     """
-    Plot the original and transformed trajectories to compare the effect of the diffeomorphism.
+    Plot the original and transformed trajectories to compare the effect of the homeomorphism.
 
-    :param original_trajectories: Original trajectories before applying the diffeomorphism.
-    :param transformed_trajectories: Transformed trajectories after applying the diffeomorphism.
+    :param original_trajectories: Original trajectories before applying the homeomorphism.
+    :param transformed_trajectories: Transformed trajectories after applying the homeomorphism.
     :param num_points: Number of trajectories to plot.
     :param bounds: Tuple specifying the limits for x and y axes.
     """
@@ -78,7 +78,7 @@ def plot_trajectories_comparison(original_trajectories, transformed_trajectories
     axes[1].set_xlim([-bounds[0], bounds[0]])
     axes[1].set_ylim([-bounds[1], bounds[1]])
 
-    # Plot original trajectories (before diffeomorphism)
+    # Plot original trajectories (before homeomorphism)
     for i in range(len(original_trajectories)):
         axes[0].plot(original_trajectories[i][:, 0].detach().numpy(), original_trajectories[i][:, 1].detach().numpy(), color='blue')
     axes[0].set_title('Original LimitCycle Trajectories')
@@ -86,10 +86,10 @@ def plot_trajectories_comparison(original_trajectories, transformed_trajectories
     axes[0].set_ylabel('y')
     axes[0].grid(True)
 
-    # Plot transformed trajectories (after diffeomorphism)
+    # Plot transformed trajectories (after homeomorphism)
     for i in range(len(transformed_trajectories)):
         axes[1].plot(transformed_trajectories[i][:, 0].detach().numpy(), transformed_trajectories[i][:, 1].detach().numpy(), color='red')
-    axes[1].set_title('Transformed LimitCycle Trajectories (Under Diffeomorphism)')
+    axes[1].set_title('Transformed LimitCycle Trajectories (Under Homeomorphism)')
     axes[1].set_xlabel('x')
     axes[1].set_ylabel('y')
     axes[1].grid(True)

@@ -27,6 +27,24 @@ class DynamicalSystem(nn.Module):
         """
         raise NotImplementedError("Subclasses must implement the forward method.")
 
+
+class LearnableDynamicalSystem(nn.Module):
+    """
+    A base class for dynamical systems with learnable parameters.
+    Subclasses should define the specific system dynamics.
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass that computes the time derivatives for a given state.
+        This should be overridden by subclasses to define specific dynamics.
+        """
+        raise NotImplementedError
+
+
     
 class LimitCycle(DynamicalSystem):
     """
@@ -43,6 +61,41 @@ class LimitCycle(DynamicalSystem):
         
         dx_dt = -r * ((r - 1) * torch.cos(theta) - torch.sin(theta))
         dy_dt = -r * ((r - 1) * torch.sin(theta) + torch.cos(theta))
+        
+        return torch.stack([dx_dt, dy_dt], dim=1)
+
+
+class LearnableLimitCycle(LearnableDynamicalSystem):
+    """
+    A simple limit cycle system with dynamics defined in polar coordinates.
+    The system includes learnable speed and lambda parameters.
+    """
+    def __init__(self, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0, speed_init: float = 1.0, lambda_init: float = 1.0):
+        super().__init__()
+        self.dim = dim
+        self.dt = dt
+        self.time_span = time_span
+        self.noise_std = noise_std
+        # Initialize learnable parameters for speed and lambda
+        self.speed = nn.Parameter(torch.tensor(speed_init, dtype=torch.float32))
+        self.lambda_ = nn.Parameter(torch.tensor(lambda_init, dtype=torch.float32))
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Ensure batch dimension
+        
+        # Extract the polar coordinates
+        x_val, y_val = x[:, 0], x[:, 1]
+        r = torch.sqrt(x_val**2 + y_val**2)
+        theta = torch.atan2(y_val, x_val)
+
+        # Define the dynamics in polar coordinates
+        dtheta_dt = self.speed  # Constant speed
+        dr_dt = self.lambda_ * r * (1 - r)  # Lambda-driven radial dynamics
+        
+        # Convert the dynamics to Euclidean coordinates
+        dx_dt = dr_dt * torch.cos(theta) - r * torch.sin(theta) * dtheta_dt
+        dy_dt = dr_dt * torch.sin(theta) + r * torch.cos(theta) * dtheta_dt
         
         return torch.stack([dx_dt, dy_dt], dim=1)
     
@@ -310,7 +363,12 @@ def generate_trajectories(
 
     if predefined_initial_conditions is not None:
         # Ensure predefined initial conditions are in tensor format
-        initial_conditions = torch.tensor(predefined_initial_conditions, dtype=torch.float32)
+        if isinstance(predefined_initial_conditions, torch.Tensor):
+            initial_conditions = predefined_initial_conditions.clone().float() #.detach().float()
+            initial_conditions.requires_grad_(True)
+
+        else:
+            initial_conditions = torch.tensor(predefined_initial_conditions, dtype=torch.float32)
     else:
        initial_conditions = generate_initial_conditions(sampling_method=sampling_method, bounds=init_points_bounds, num_points=num_points, kernel_fn=kernel_fn) 
 
@@ -414,22 +472,66 @@ def generate_trajectories_scipy(
 
 import time
 
-def generate_trajectories_for_training(diffeo_net, source_system, use_transformed_system, initial_conditions_target, noise_std=0.0):
-    initial_conditions_source = diffeo_net.inverse(initial_conditions_target)  
+# def generate_trajectories_for_training(diffeo_net, source_system, use_transformed_system, initial_conditions_target, noise_std=0.0):
+#     initial_conditions_source = diffeo_net.inverse(initial_conditions_target)  
 
-    if use_transformed_system:
-        transformed_system = PhiSystemPhiInv(source_system, diffeo_net)
-        _, transformed_trajectories, _ = generate_trajectories(
-                system=transformed_system,
-                predefined_initial_conditions=initial_conditions_source
-            )
-    else:
-        with torch.no_grad():  
-            _, trajectories_source, _ = generate_trajectories_scipy(
-                system=source_system,
-                predefined_initial_conditions=initial_conditions_source,
-                noise_std=noise_std
-            )
+#     if use_transformed_system:
+#         transformed_system = PhiSystemPhiInv(source_system, diffeo_net)
+#         _, transformed_trajectories, _ = generate_trajectories(
+#                 system=transformed_system,
+#                 predefined_initial_conditions=initial_conditions_source
+#             )
+#     else:
+#         with torch.no_grad():  
+#             _, trajectories_source, _ = generate_trajectories_scipy(
+#                 system=source_system,
+#                 predefined_initial_conditions=initial_conditions_source,
+#                 noise_std=noise_std
+#             )
+#         transformed_trajectories = [diffeo_net(traj.requires_grad_()) for traj in trajectories_source]
+#         transformed_trajectories = torch.stack(transformed_trajectories)
+#     return transformed_trajectories
+
+
+def generate_trajectories_for_training(
+    diffeo_net, 
+    source_system, 
+    use_transformed_system, 
+    initial_conditions_target, 
+    noise_std=0.0
+):
+    initial_conditions_source = diffeo_net.inverse(initial_conditions_target)
+
+    if isinstance(source_system, LearnableDynamicalSystem):
+        # If the source system is a learnable dynamical system, we need to forward it without torch.no_grad()
+        # This will allow gradients to flow through the learnable system
+        _, trajectories_source, _ = generate_trajectories(
+            system=source_system, 
+            predefined_initial_conditions=initial_conditions_source, 
+            noise_std=noise_std
+        )
+        # Apply the diffeomorphism network to the trajectories generated by the learnable system
         transformed_trajectories = [diffeo_net(traj.requires_grad_()) for traj in trajectories_source]
         transformed_trajectories = torch.stack(transformed_trajectories)
+        
+    else:
+        # If the source system is not learnable, use the existing method for generating trajectories
+        if use_transformed_system:
+            transformed_system = PhiSystemPhiInv(source_system, diffeo_net)
+            _, transformed_trajectories, _ = generate_trajectories(
+                system=transformed_system,
+                predefined_initial_conditions=initial_conditions_source, noise_std=noise_std
+
+            )
+        else:
+            with torch.no_grad():  # Only use no_grad for fixed systems (non-learnable systems)
+                _, trajectories_source, _ = generate_trajectories_scipy(
+                    system=source_system,
+                    predefined_initial_conditions=initial_conditions_source,
+                    noise_std=noise_std
+                )
+            # Apply the diffeomorphism network to the fixed system's trajectories
+            transformed_trajectories = [diffeo_net(traj.requires_grad_()) for traj in trajectories_source]
+            transformed_trajectories = torch.stack(transformed_trajectories)
+
     return transformed_trajectories
