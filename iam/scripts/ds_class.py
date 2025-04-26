@@ -64,6 +64,39 @@ class LimitCycle(DynamicalSystem):
         
         return torch.stack([dx_dt, dy_dt], dim=1)
 
+class NDLimitCycle(DynamicalSystem):
+    """
+    N-dimensional limit cycle system.
+    The first two coordinates define a planar limit cycle.
+    All remaining dimensions are attracted toward the 2D plane.
+    """
+
+    def __init__(self, dim: int, attraction_rate: float = 1.0):
+        super().__init__()
+        assert dim >= 2, "Dimension must be at least 2."
+        self.dim = dim
+        self.attraction_rate = attraction_rate
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Ensure batch dimension
+
+        x1, x2 = x[:, 0], x[:, 1]
+        r = torch.sqrt(x1**2 + x2**2)
+        theta = torch.atan2(x2, x1)
+
+        dx1_dt = -r * ((r - 1) * torch.cos(theta) - torch.sin(theta))
+        dx2_dt = -r * ((r - 1) * torch.sin(theta) + torch.cos(theta))
+
+        dx_dt = [dx1_dt, dx2_dt]
+
+        # Remaining dimensions flow toward 0 (attractive dynamics)
+        if self.dim > 2:
+            residual = x[:, 2:]
+            d_residual_dt = -self.attraction_rate * residual
+            dx_dt.append(d_residual_dt)
+
+        return torch.cat(dx_dt, dim=1)
 
 class LearnableLimitCycle(LearnableDynamicalSystem):
     """
@@ -91,7 +124,7 @@ class LearnableLimitCycle(LearnableDynamicalSystem):
 
         # Define the dynamics in polar coordinates
         dtheta_dt = self.speed  # Constant speed
-        dr_dt = self.lambda_ * r * (1 - r)  # Lambda-driven radial dynamics
+        dr_dt = - self.lambda_ * r * (1 - r)  #  radial dynamics
         
         # Convert the dynamics to Euclidean coordinates
         dx_dt = dr_dt * torch.cos(theta) - r * torch.sin(theta) * dtheta_dt
@@ -118,24 +151,6 @@ class RingAttractor(DynamicalSystem):
         
         return torch.stack([dx_dt, dy_dt], dim=1)
 
-# Van der Pol oscillator as an example target system
-class VanDerPol(DynamicalSystem):
-    def __init__(self, mu: float = 1.0, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float=0.) -> None:
-        super().__init__(dim=dim, dt=dt, time_span=time_span)
-        self.mu = mu
-        self.noise_std = noise_std
-        self.time_span = time_span
-        self.dt = dt
-
-    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        # Ensure that x is a 2D tensor, even if batch_size = 1
-        if x.dim() == 1:
-            x = x.unsqueeze(0)  # Add a batch dimension if it's missing
-
-        dxdt = torch.zeros_like(x)
-        dxdt[:, 0] = x[:, 1]
-        dxdt[:, 1] = self.mu * (1 - x[:, 0] ** 2) * x[:, 1] - x[:, 0]
-        return dxdt
 
 class LinearSystem(DynamicalSystem):
     """
@@ -264,7 +279,56 @@ class PhiJacSystem(DynamicalSystem):
         return dx_dt_transformed.squeeze(0)  # Restore original shape if needed
     
 
+#Target systems for testing
+# Van der Pol oscillator as an example target system
+class VanDerPol(DynamicalSystem):
+    def __init__(self, mu: float = 1.0, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float=0.) -> None:
+        super().__init__(dim=dim, dt=dt, time_span=time_span)
+        self.mu = mu
+        self.noise_std = noise_std
+        self.time_span = time_span
+        self.dt = dt
 
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        # Ensure that x is a 2D tensor, even if batch_size = 1
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Add a batch dimension if it's missing
+
+        dxdt = torch.zeros_like(x)
+        dxdt[:, 0] = x[:, 1]
+        dxdt[:, 1] = self.mu * (1 - x[:, 0] ** 2) * x[:, 1] - x[:, 0]
+        return dxdt
+
+class FitzHughNagumo(DynamicalSystem):
+    def __init__(self, a: float = 0.7, b: float = 0.8, c: float = 0.8, d: float = 0.4,
+                 dim: int = 3, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0) -> None:
+        super().__init__(dim=dim, dt=dt, time_span=time_span)
+        self.a = a
+        self.b = b
+        self.c = c
+        self.d = d
+        self.noise_std = noise_std
+        self.time_span = time_span
+        self.dt = dt
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        # Ensure that x is a 2D tensor, even if batch_size = 1
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Add a batch dimension if it's missing
+        
+        # Initialize the derivative tensor
+        dxdt = torch.zeros_like(x)
+
+        # FitzHugh-Nagumo equations
+        dxdt[:, 0] = x[:, 0] - (x[:, 0] ** 3) / 3 - x[:, 1]  # dx/dt
+        dxdt[:, 1] = self.a + self.b * x[:, 0] - self.c * x[:, 1]  # dy/dt
+        dxdt[:, 2] = self.d * (x[:, 0] - x[:, 2])  # dz/dt
+
+        return dxdt
+
+
+
+###integrating and generating trajectories
 def generate_initial_conditions(
     sampling_method: str,
     bounds: tuple,
@@ -273,45 +337,50 @@ def generate_initial_conditions(
     predefined_initial_conditions=None
 ) -> torch.Tensor:
     """
-    Generates initial conditions for the dynamical system.
+    Generates initial conditions for an N-dimensional dynamical system.
 
     :param sampling_method: Method for sampling initial conditions ('uniform', 'grid', 'density').
-    :param bounds: Tuple (max_x, max_y) to define the bounds of sampling space.
+    :param bounds: Tuple of tuples, each containing the (min, max) bounds for each dimension.
     :param num_points: Number of initial points to sample.
     :param kernel_fn: Kernel function used to determine the density of sampling (if 'density' sampling is used).
     :param predefined_initial_conditions: Predefined list of initial conditions for trajectories.
-    :return: Tensor of initial conditions.
+    :return: Tensor of initial conditions with shape (num_points, N).
     """
-    max_x, max_y = bounds
+    # Number of dimensions
+    N = len(bounds)
 
     # Handle predefined initial conditions if provided
+    if predefined_initial_conditions is not None:
+        # Ensure predefined initial conditions are in tensor format
+        if isinstance(predefined_initial_conditions, torch.Tensor):
+            initial_conditions = predefined_initial_conditions.clone().float()
+        else:
+            initial_conditions = torch.tensor(predefined_initial_conditions, dtype=torch.float32)
+        return initial_conditions
 
-    
     initial_conditions = []
+
     # Sample initial points based on the chosen method
     if sampling_method == 'uniform':
-        # Sample random points uniformly within the bounds
+        # Sample random points uniformly within the bounds for each dimension
         for _ in range(num_points):
-            x = np.random.uniform(-max_x, max_x)
-            y = np.random.uniform(-max_y, max_y)
-            initial_conditions.append([x, y])
+            point = [np.random.uniform(min_bound, max_bound) for min_bound, max_bound in bounds]
+            initial_conditions.append(point)
 
     elif sampling_method == 'grid':
-        # Sample points on a grid
-        x_vals = np.linspace(-max_x, max_x, int(np.sqrt(num_points)))
-        y_vals = np.linspace(-max_y, max_y, int(np.sqrt(num_points)))
-        for x in x_vals:
-            for y in y_vals:
-                initial_conditions.append([x, y])
+        # Sample points on a grid for each dimension
+        grid_points = [np.linspace(min_bound, max_bound, int(np.cbrt(num_points))) for min_bound, max_bound in bounds]
+        grid_combinations = np.array(np.meshgrid(*grid_points)).T.reshape(-1, N)
+        
+        # Select a subset of grid points if the total grid size exceeds num_points
+        initial_conditions = grid_combinations[:num_points].tolist()
 
     elif sampling_method == 'density' and kernel_fn is not None:
         # Sample based on a custom probability density (using a given kernel function)
         points = []
         weights = []
         for _ in range(num_points):
-            x = np.random.uniform(-max_x, max_x)
-            y = np.random.uniform(-max_y, max_y)
-            point = torch.tensor([x, y], dtype=torch.float32)
+            point = torch.tensor([np.random.uniform(min_bound, max_bound) for min_bound, max_bound in bounds], dtype=torch.float32)
             weight = kernel_fn(point)  # Use the kernel function directly
             points.append(point)
             weights.append(weight)
@@ -324,7 +393,7 @@ def generate_initial_conditions(
         indices = torch.multinomial(weights, num_samples=num_points, replacement=True)
         initial_conditions = [points[i].numpy() for i in indices]
 
-    # Convert initial conditions to a numpy array and then to a tensor
+    # Convert initial conditions to a tensor
     initial_conditions = torch.tensor(np.array(initial_conditions), dtype=torch.float32)
 
     return initial_conditions
@@ -366,7 +435,6 @@ def generate_trajectories(
         if isinstance(predefined_initial_conditions, torch.Tensor):
             initial_conditions = predefined_initial_conditions.clone().float() #.detach().float()
             initial_conditions.requires_grad_(True)
-
         else:
             initial_conditions = torch.tensor(predefined_initial_conditions, dtype=torch.float32)
     else:
@@ -449,7 +517,11 @@ def generate_trajectories_scipy(
     t_eval = np.arange(time_span[0], time_span[1], dt)
 
     if predefined_initial_conditions is not None:
-        initial_conditions = torch.tensor(predefined_initial_conditions, dtype=torch.float32)
+        if isinstance(predefined_initial_conditions, torch.Tensor):
+            initial_conditions = predefined_initial_conditions.clone().float() #.detach().float()
+            initial_conditions.requires_grad_(True)
+        else:
+            initial_conditions = torch.tensor(predefined_initial_conditions, dtype=torch.float32)
     else:
         if sampling_method == 'uniform':
             min_x, max_x = init_points_bounds
@@ -464,7 +536,7 @@ def generate_trajectories_scipy(
 
     trajectories = []
     for x0 in initial_conditions:
-        sol = solve_ivp(scipy_rhs, (t_eval[0], t_eval[-1]), x0.numpy(), t_eval=t_eval, method='RK45')
+        sol = solve_ivp(scipy_rhs, (t_eval[0], t_eval[-1]), x0.detach().numpy(), t_eval=t_eval, method='RK45')
         trajectories.append(torch.tensor(sol.y.T, dtype=torch.float32).detach())  # Detach computation graph
 
     trajectories = torch.stack(trajectories)
