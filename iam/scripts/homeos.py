@@ -234,17 +234,20 @@ class NormFlowHomeomorphism(nn.Module):
 import torchdiffeq
 
 class NeuralODE(nn.Module):
-    def __init__(self, dim: int, layer_sizes: list[int]):
-        super(NeuralODE, self).__init__()
+    def __init__(self, dim: int, layer_sizes: list[int]) -> None:
+        super().__init__()
         self.dim = dim
-        # Define a simple MLP to be used as the neural network in the ODE
-        self.mlp = nn.Sequential(
-            nn.Linear(dim, layer_sizes[0]),
-            nn.ReLU(),
-            nn.Linear(layer_sizes[0], layer_sizes[1]),
-            nn.ReLU(),
-            nn.Linear(layer_sizes[1], dim)
-        )
+        
+        layers = []
+        input_dim = dim
+        for hidden_dim in layer_sizes:
+            layers.append(nn.Linear(input_dim, hidden_dim))
+            layers.append(nn.ReLU())
+            input_dim = hidden_dim
+        
+        layers.append(nn.Linear(input_dim, dim))  # Final layer back to dim
+        
+        self.mlp = nn.Sequential(*layers)
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         return self.mlp(x)
@@ -281,11 +284,11 @@ class NODEHomeomorphism(nn.Module):
             jacobian.append(grad_i.unsqueeze(1))
         return torch.cat(jacobian, dim=1)
 
-    def inverse_approximation(self, x: torch.Tensor, steps: int = 5) -> torch.Tensor:
-        y = x.clone()
-        for _ in range(steps):
-            y = x - self.forward(y) + y
-        return y
+    # def inverse_approximation(self, x: torch.Tensor, steps: int = 5) -> torch.Tensor:
+    #     y = x.clone()
+    #     for _ in range(steps):
+    #         y = x - self.forward(y) + y
+    #     return y
 
 
 def test_homeo_networks(
@@ -293,7 +296,6 @@ def test_homeo_networks(
     motif_library: List,
     homeo_networks: List[torch.nn.Module],
     generate_trajectories_scipy,
-    num_points: int,
     plot_first_n: int = 5,
     time_span: torch.Tensor=None,
 ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
@@ -317,7 +319,7 @@ def test_homeo_networks(
     # Get initial conditions from target trajectories
 
     initial_conditions_np = np.array([
-        trajectories_target[i][0].detach().numpy() for i in range(num_points)
+        trajectories_target[i][0].detach().numpy() for i in range(plot_first_n)
     ])
     initial_conditions = torch.tensor(initial_conditions_np, dtype=torch.float32)[:plot_first_n, :]
 
@@ -352,3 +354,122 @@ def test_homeo_networks(
         transformed_trajectories_list.append(transformed_trajectories)
 
     return trajectories_source_list, transformed_trajectories_list
+
+
+
+###
+def jacobian_matrix(h, x):
+    """
+    Computes the Jacobian of the homeomorphism `h(x)` at the batch of points `x`.
+    h: homeomorphism function
+    x: tensor of shape (batch_size, dim)
+    Returns:
+        jacobian: (batch_size, output_dim, input_dim)
+    """
+    x = x.requires_grad_(True)
+    def h_sum(x):
+        return h(x)
+
+    jac = torch.autograd.functional.jacobian(h_sum, x, create_graph=False)
+    # jac shape: (batch_size, output_dim, input_dim)
+    return jac
+
+def jacobian_matrix_pointwise(h, x_batch):
+    """
+    Computes the Jacobians of h(x) for a batch of points x_batch.
+    Returns a tensor of shape (batch_size, dim_out, dim_in).
+    """
+    batch_size, input_dim = x_batch.shape
+    jacobians = []
+    for i in range(batch_size):
+        x = x_batch[i].unsqueeze(0).detach().requires_grad_(True)
+        y = h(x)  # shape (1, output_dim)
+
+        jac = []
+        for j in range(y.shape[1]):
+            grad = torch.autograd.grad(y[0, j], x, retain_graph=True, create_graph=False)[0]
+            jac.append(grad.squeeze(0))  # shape (input_dim,)
+        jac = torch.stack(jac, dim=0)  # shape (output_dim, input_dim)
+        jacobians.append(jac)
+
+    jacobians = torch.stack(jacobians, dim=0)  # (batch_size, output_dim, input_dim)
+    return jacobians
+
+
+def transform_vector_field(homeo_ds_net, xlim=(-2, 2), ylim=(-2, 2), num_points=15):
+    """
+    Transforms the vector field using the homeomorphism and its Jacobian.
+    homeo_net: trained homeomorphism network (function `h(x)`)
+    dynamical_system: the dynamical system defining the vector field `g(x)`
+    grid_points: points at which to evaluate the vector field
+    """
+        # Create aligned grid
+    x = np.linspace(xlim[0], xlim[1], num_points)
+    y = np.linspace(ylim[0], ylim[1], num_points)
+    X, Y = np.meshgrid(x, y)
+    grid_points = np.stack([X.ravel(), Y.ravel()], axis=1)
+    grid_tensor = torch.tensor(grid_points, dtype=torch.float32)
+
+    dynamical_system = homeo_ds_net.dynamical_system
+    homeo_net = homeo_ds_net.homeo_network
+
+    grid_tensor = torch.tensor(grid_points, dtype=torch.float32)
+
+    # 1. Get the vector field `g(x)` at the points in the source space
+    vector_field = dynamical_system.forward(None, grid_tensor)  # <--- FIXED
+
+    # 2. Apply the homeomorphism to the grid points
+    transformed_points = homeo_net.forward(grid_tensor)
+    jacobian = jacobian_matrix_pointwise(homeo_net.forward, grid_tensor)  # shape (batch_size, 2, 2)
+
+    # Now invert each Jacobian matrix
+    jacobian_inv = torch.linalg.inv(jacobian)  # still (batch_size, 2, 2)
+
+    # vector_field is (batch_size, 2)
+    # Apply inverse Jacobian to vector_field pointwise
+    transformed_vector_field = torch.bmm(jacobian_inv, vector_field.unsqueeze(-1)).squeeze(-1)  # (batch_size, 2)
+
+    return transformed_points, transformed_vector_field
+
+
+#Link
+class Homeo_DS_Net(nn.Module):
+    def __init__(self, homeo_network: nn.Module, dynamical_system: nn.Module):
+        """
+        A class to link a homeomorphism network and a learnable dynamical system.
+        
+        :param homeo_network: The homeomorphism network module (e.g., a feed-forward neural network).
+        :param dynamical_system: The learnable dynamical system (e.g., LearnableDynamicalSystem).
+        """
+        super(Homeo_DS_Net, self).__init__()
+        self.homeo_network = homeo_network
+        self.dynamical_system = dynamical_system
+
+
+
+def save_homeo_ds_net(model: Homeo_DS_Net, file_path: str):
+    """
+    Save the Homeo_DS_Net model to a file.
+    
+    :param model: The Homeo_DS_Net model to save.
+    :param file_path: Path to the file where the model should be saved.
+    """
+    torch.save(model.state_dict(), file_path)
+    print(f"Model saved to {file_path}")
+
+
+def load_homeo_ds_net(homeo_network: nn.Module, dynamical_system: nn.Module, file_path: str) -> Homeo_DS_Net:
+    """
+    Load the Homeo_DS_Net model from a saved file.
+    
+    :param homeo_network: The homeomorphism network model to use.
+    :param dynamical_system: The dynamical system model to use.
+    :param file_path: Path to the file where the model is saved.
+    :return: The loaded Homeo_DS_Net model.
+    """
+    model = Homeo_DS_Net(homeo_network=homeo_network, dynamical_system=dynamical_system)
+    model.load_state_dict(torch.load(file_path))
+    print(f"Model loaded from {file_path}")
+    return model
+
+
