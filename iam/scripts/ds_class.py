@@ -280,6 +280,8 @@ class PhiJacSystem(DynamicalSystem):
     
 
 #Target systems for testing
+
+#2D systems
 # Van der Pol oscillator as an example target system
 class VanDerPol(DynamicalSystem):
     def __init__(self, mu: float = 1.0, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float=0.) -> None:
@@ -299,14 +301,13 @@ class VanDerPol(DynamicalSystem):
         dxdt[:, 1] = self.mu * (1 - x[:, 0] ** 2) * x[:, 1] - x[:, 0]
         return dxdt
 
+
 class FitzHughNagumo(DynamicalSystem):
-    def __init__(self, a: float = 0.7, b: float = 0.8, c: float = 0.8, d: float = 0.4,
-                 dim: int = 3, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0) -> None:
+    def __init__(self, a: float = 0.7, b: float = 0.8, c: float = 0.8, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0) -> None:
         super().__init__(dim=dim, dt=dt, time_span=time_span)
         self.a = a
         self.b = b
         self.c = c
-        self.d = d
         self.noise_std = noise_std
         self.time_span = time_span
         self.dt = dt
@@ -320,12 +321,126 @@ class FitzHughNagumo(DynamicalSystem):
         dxdt = torch.zeros_like(x)
 
         # FitzHugh-Nagumo equations
-        dxdt[:, 0] = x[:, 0] - (x[:, 0] ** 3) / 3 - x[:, 1]  # dx/dt
-        dxdt[:, 1] = self.a + self.b * x[:, 0] - self.c * x[:, 1]  # dy/dt
-        dxdt[:, 2] = self.d * (x[:, 0] - x[:, 2])  # dz/dt
+        dxdt[:, 0] = self.c * (x[:, 0] - x[:, 0] ** 3 / 3 - x[:, 1])  # dx/dt
+        dxdt[:, 1] = - (x[:, 0] - self.a + self.b * x[:, 1]) / self.c  # dy/dt
 
         return dxdt
 
+
+#3D systems
+class LorenzSystem(DynamicalSystem):
+    def __init__(self, sigma: float = 10.0, beta: float = 8.0 / 3.0, rho: float = 28.0, dim: int = 3, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0) -> None:
+        super().__init__(dim=dim, dt=dt, time_span=time_span)
+        self.sigma = sigma
+        self.beta = beta
+        self.rho = rho
+        self.noise_std = noise_std
+        self.time_span = time_span
+        self.dt = dt
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        # Ensure that x is a 3D tensor, even if batch_size = 1
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Add a batch dimension if it's missing
+        
+        # Initialize the derivative tensor
+        dxdt = torch.zeros_like(x)
+
+        # Lorenz system equations
+        dxdt[:, 0] = self.sigma * (x[:, 1] - x[:, 0])  # dx/dt
+        dxdt[:, 1] = x[:, 0] * (self.rho - x[:, 2]) - x[:, 1]  # dy/dt
+        dxdt[:, 2] = x[:, 0] * x[:, 1] - self.beta * x[:, 2]  # dz/dt
+
+        return dxdt
+
+class MayLeonardSystem(DynamicalSystem):
+    def __init__(self, a: float = 1.2, b: float = 0.8, 
+                 dim: int = 3, 
+                 dt: float = 0.05, 
+                 time_span: Tuple[float, float] = (0, 50), 
+                 noise_std: float = 0.0) -> None:
+        """
+        Initializes the 3-species May-Leonard system (generalized Lotka-Volterra).
+
+        :param a: Competition coefficient against the next species in cyclic order.
+        :param b: Competition coefficient against the following species in cyclic order.
+        :param dim: Number of species (should be 3 for May-Leonard system).
+        :param dt: Time step.
+        :param time_span: Simulation time span.
+        :param noise_std: Standard deviation of Gaussian noise (optional).
+        """
+        super().__init__(dim=dim, dt=dt, time_span=time_span)
+        assert dim == 3, "May-Leonard model is defined for 3 species."
+        self.a = a
+        self.b = b
+        self.noise_std = noise_std
+        self.dt = dt
+        self.time_span = time_span
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        """
+        Computes the May-Leonard dynamics.
+        
+        :param t: Time tensor (not used; system is autonomous).
+        :param x: Tensor of shape (batch_size, dim) representing the populations.
+        :return: Time derivatives of populations.
+        """
+        if x.dim() == 1:
+            x = x.unsqueeze(0)
+
+        dxdt = torch.zeros_like(x)
+
+        # Dynamics with cyclic interactions
+        dxdt[:, 0] = x[:, 0] * (1.0 - x[:, 0] - self.a * x[:, 1] - self.b * x[:, 2])
+        dxdt[:, 1] = x[:, 1] * (1.0 - x[:, 1] - self.a * x[:, 2] - self.b * x[:, 0])
+        dxdt[:, 2] = x[:, 2] * (1.0 - x[:, 2] - self.a * x[:, 0] - self.b * x[:, 1])
+
+        if self.noise_std > 0:
+            noise = torch.randn_like(x) * self.noise_std
+            dxdt += noise
+
+        return dxdt
+
+#ND systems
+class LotkaVolterraSystem(DynamicalSystem):
+    def __init__(self, alpha: torch.Tensor, beta: torch.Tensor, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0) -> None:
+        """
+        Initializes the N-dimensional Lotka-Volterra system.
+
+        :param alpha: Tensor of size (dim,) containing the intrinsic growth rates of the species.
+        :param beta: Tensor of size (dim, dim) containing the interaction coefficients.
+        :param dim: The number of species (dimension of the system).
+        :param dt: Time step for the simulation.
+        :param time_span: Tuple specifying the start and end time.
+        :param noise_std: Standard deviation of Gaussian noise to be added to the system (optional).
+        """
+        super().__init__(dim=dim, dt=dt, time_span=time_span)
+        self.alpha = alpha
+        self.beta = beta
+        self.noise_std = noise_std
+        self.time_span = time_span
+        self.dt = dt
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        """
+        Computes the derivatives for the Lotka-Volterra system.
+
+        :param t: Time tensor (not used in this case since the system is autonomous).
+        :param x: Tensor of size (batch_size, dim) representing the current populations.
+        :return: Tensor of size (batch_size, dim) representing the population growth rates.
+        """
+        # Ensure that x is at least 2D (batch_size, dim)
+        if x.dim() == 1:
+            x = x.unsqueeze(0)
+
+        dxdt = torch.zeros_like(x)
+
+        # Lotka-Volterra equations
+        for i in range(self.dim):
+            interaction_term = torch.sum(self.beta[i] * x, dim=1)
+            dxdt[:, i] = x[:, i] * (self.alpha[i] - interaction_term)
+
+        return dxdt
 
 
 ###integrating and generating trajectories
