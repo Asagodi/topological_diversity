@@ -133,12 +133,29 @@ Multiple tasks \citep{}
 \begin{itemize}
 \item we propose a formalism for interpretability for the purpose of identifying neural computations in models of neural dynamics;
 \item we propose a way to measure the loss of details in the process of abstraction/reduction to achieve more interpretable models;
-\item 
+\item our class of theories for neural computation consist of:
+	\begin{itemize}
+\item topological equivalence classes of computations as interpretable dynamical motifs
+\item time parameterization different levels:
+%Single scalar for speed time parametrization
+Scalars for time parametrization on and off of manifold 
+\end{itemize}
 \end{itemize}
 
 
+Scope of neural computations under consideration:
+\begin{itemize}
+\item Classification
+\item Working memory
+\end{itemize}
 
+Theory we want to express:
+\begin{itemize}
+\item Infinite time horizon
+\item Finite time horizon
+\end{itemize}
 
+Message: finite time series cannot distinguish between some theories (which are the same on a finite time horizon but different on an infinite time horizon), but vector fields can
 
 \section{Background and related work}\label{sec:background}
 A theory of (neural) computation\citep{jaeger2021theory, jaeger2023timescales, jaeger2023theory}
@@ -194,11 +211,12 @@ Variability in implementation
 
 \subsection{Existing methods for characterizing dynamics}
 
+%ds_landscape_carving?
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.75\linewidth]{ds_landscape_carving}
-    \caption{Caption}
-    \label{fig:ds_landscape_carving}
+    \includegraphics[width=0.75\linewidth]{parameterspace_motifs}
+    \caption{Localizing a model in parameter space through dynamical motifs.}
+    \label{fig:ds_landscape}
 \end{figure}
 
 \subsubsection{Reconstructing dynamics}
@@ -401,7 +419,7 @@ Canonical realization = the simplest system (in some sense) that produces the sa
 \citep{karpathy2015visualizing}
 PHATE \citep{moon2017visualizing}
 MPHATE\citep{gigante2019visualizing}
-MMPHA\citep{xie2024multiway} 
+MMPHATE\citep{xie2024multiway} 
 \citep{madsen2019visualizing}
 
 \subsection{Minimal}
@@ -578,7 +596,7 @@ approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
 
 \subsection{Motifs: The building blocks}
 \subsubsection{Guiding principles}
-Attractors reduce behavior to "basins" in phase space
+Attractors reduce behavior to ``basins'' in phase space
 
 human-compatible descriptions
 
@@ -613,27 +631,29 @@ We consider a target dynamical system $\dot{x} = f(x)$ which has a single global
 Our goal is to determine both the correct (best fitting/most explanatory) attractor motif $g_i$ and the diffeomorphism $\Phi$ given only observed trajectories $\{x_j(t_k)\}$ sampled from $f$.
 
 
-\paragraph{Trajectory based loss function}
+\subsubsection{Trajectory based loss function}
 Since we do not have direct access to the vector field but only to sampled trajectories, we approximate the system using a learned diffeomorphism \( \hat{\Phi}_\theta \), parameterized by a normalizing flow\citep{kobyzev2020normalizing,papamakarios2021normalizing}, an invertible ResNet\citep{he2016deep}, or a Neural ODE (NODE) \citep{chen2018neural}.
  We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
 
-%time repraram
- If the correct motif \( g_i \) is selected, then there should exist an approximate reparametrization of time \( \tau(t) \) such that
+%time repraram%
+ If the correct motif \( g_i \) is selected (in orbit equivalence sense), then there should exist an approximate reparametrization of time \( \tau(t) \) such that
 \[
 y(\tau(t)) \approx x(t),
 \]
-where \( y(t) \) is a trajectory obtained by integrating \( \dot{y} = g_i(y) \) from an initial condition \( y(0) \). % (close to y(0))
+where \( y(t) \) is a trajectory obtained by integrating \( \dot{y} = g_i(y) \) from an initial condition \( y(0) \). 
+So there exists $\mu(x)$ positive such that 
+We simplify this by assuming symmetry: $\mu\in\reals_{>0}$.
 
 
 A loss function capturing this trajectory discrepancy is given by:
 \[
-\mathcal{L}(\theta, i) = \sum_{t} \Big\| (x(t)) - \hat{\Phi}_\theta(y(t)) \Big\|^2,
+\mathcal{L}(\theta, \mu, i) = \sum_{t} \Big\| (x_k(t)) - \Phi_\theta(\hat{x}_k(t)) \Big\|^2,
 \]
-where \( y_{\text{model}}(t) \) is computed via numerical integration of \( g_i \) from an initial condition inferred from the transformed data.
+where the trajectories \( \hat{x}_k(t) \) are computed via numerical integration of \(\dot x = \mu g_i(x) \) from an initial condition $\hat x_k(0) = \Phi_\theta^{-1}(x_k(0))$.
 
 The final optimization objective is:
 \[
-\min_{\theta, i} \mathcal{L}(\theta, i). % + \lambda \mathcal{R}(\theta), %regularization? NODE\citep{finlay2020trainnode}
+\min_{\theta, \mu,  i} \mathcal{L}(\theta, \mu, i). % + \lambda \mathcal{R}(\theta), %regularization? NODE\citep{finlay2020trainnode}
 \]
 %where \( \lambda \) is a regularization coefficient.
 
@@ -648,6 +668,10 @@ We consider noisy versions of motif trajectories governed by stochastic differen
 where \( g_i(x) \) denotes the deterministic dynamics of the \( i \)-th motif, \( \sigma \) controls the noise amplitude, and \( W_t \) is a standard Wiener process.
 To stabilize the trajectory alignment or improve optimization in the presence of noise, we incorporate simulated annealing by gradually decreasing \( \sigma \) over time.
 
+
+
+
+
 \subsection{Application on simple example}
 \begin{figure}[htbp]
     \centering
@@ -655,6 +679,10 @@ To stabilize the trajectory alignment or improve optimization in the presence of
     \caption{Comparison of fitting different motifs to the noisy trajectories generated by a Van der Pol oscillator. The motifs considered in the fitting process include a ring attractor, limit cycle, and fixed point/linear system, sourced from a predefined motif library. The fitting is evaluated based on how well each motif captures the dynamics of the noisy oscillatory data.}
     \label{fig:all_motifs_vdp}
 \end{figure}
+
+We illustrate the application of our method on a simple example in Figure~\ref{fig:all_motifs_vdp}, where different motifs from the library are fitted to noisy trajectories generated by a Van der Pol oscillator.
+Observe that the limit cycle motif provides the best fit, capturing the underlying oscillatory dynamics more accurately than the alternatives.
+
 
 
 
@@ -677,6 +705,12 @@ Let \( f \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) define the vector field of a tar
 
 
 \section{Comparison to other methods}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\linewidth]{dsa_vs_mbs}
+    \caption{DSA vs Motif Based Similarity.}
+    \label{fig:ds_vs_mbs}
+\end{figure}
 
 
 
@@ -694,9 +728,10 @@ planning: complex dynamical motifs that correspond to current and future actions
 \newpage
 \bibliographystyle{unsrtnat_IMP_v1}
 \bibliography{../all_ref.bib,../catniplab.bib}
+
+
 \newpage
 \appendix
-
 
 
 %%%%%TOP
@@ -774,6 +809,8 @@ k(x, x') = \frac{1}{\Gamma(\nu)} \left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x,
 \subsection{Implementations}
 \citep{miolane2020geomstats}
 %https://github.com/geomstats/geomstats?tab=readme-ov-file
+
+
 
 
 
@@ -1233,7 +1270,7 @@ There is already so much abstraction!
 Polar Coordinates
 \[
 \begin{aligned}
-\dot{r} &= -r(r - 1), \\
+\dot{r} &= r(r - 1), \\
 \dot{\theta} &= 1 %more generally, we can allow for different speeds along the LC
 \end{aligned}
 \]
@@ -1250,7 +1287,7 @@ Cartesian Coordinates
 Polar Coordinates
 \[
 \begin{aligned}
-\dot{r} &= -r(r - 1), \\
+\dot{r} &= r(r - 1), \\
 \dot{\theta} &= 0
 \end{aligned}
 \]
@@ -1277,6 +1314,12 @@ Cartesian Coordinates
 
 \subsection{Limit cycle fitting}
 \subsubsection{Random diffeomorphism of a limit cycle}
+
+[Trajectories figure]
+
+[Loss figure] (?)
+
+
 
 \subsubsection{Van der Pol}
 The Van der Pol equation is given by 
