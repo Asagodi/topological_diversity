@@ -116,7 +116,7 @@ def train_homeomorphism(
 
     params_to_optimize = list(homeo_net.parameters())
     if isinstance(source_system, LearnableDynamicalSystem):
-        print(list(source_system.parameters()))
+        #print(list(source_system.parameters()))
         params_to_optimize += list(source_system.parameters())
 
     optimizer=optim.Adam(params_to_optimize, lr=lr)
@@ -157,8 +157,8 @@ def train_homeomorphism(
         optimizer.step()
         losses.append(loss.item())  # Store loss for this epoch
         if epoch % 10 == 0:
-            print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
-            print(source_system.speed, source_system.lambda_)
+            print(f"Epoch {epoch}, log(Loss)= {np.log(loss.item()):.4f}")
+            print("Speed: ", source_system.speed.detach().cpu().numpy(), " Lambda: ", source_system.lambda_.detach().cpu().numpy())
             #print("Param grad:", source_system.speed.grad, source_system.lambda_.grad)
 
 
@@ -168,17 +168,20 @@ def train_homeomorphism(
     homeo_net.losses = losses  # Store losses 
     homeo_net.grad_norms = grad_norms  
 
-    return homeo_net
+    return Homeo_DS_Net(homeo_network=homeo_net, dynamical_system=source_system)
 
 
-def train_all_motifs(motif_library, homeo_networks, trajectories_target, initial_conditions_target,lr=0.001, num_epochs=100, use_transformed_system=False, 
+def train_all_motifs(motif_library, homeo_networks, trajectories_target, initial_conditions_target,
+    lr=0.001, num_epochs=100, use_transformed_system=False, 
     annealing_params=None):
     """
     Train all motifs in the library using the same target trajectories and homeomorphism networks.
     """
+    homeo_ds_nets = []
+
     for motif, homeo_net in zip(motif_library, homeo_networks):
         print("Training homeomorphism for motif:", motif.__class__.__name__)
-        homeo_net = train_homeomorphism(
+        homeo_ds_net = train_homeomorphism(
             homeo_net, source_system=motif,
             lr=lr,
             trajectories_target=trajectories_target,
@@ -186,7 +189,8 @@ def train_all_motifs(motif_library, homeo_networks, trajectories_target, initial
             num_epochs=num_epochs, use_transformed_system=use_transformed_system,
             annealing_params=annealing_params
         )
-    return homeo_networks
+        homeo_ds_nets.append(homeo_ds_net)
+    return homeo_ds_nets
 
 
 

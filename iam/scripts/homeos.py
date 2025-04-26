@@ -233,8 +233,17 @@ class NormFlowHomeomorphism(nn.Module):
 #### NODEs
 import torchdiffeq
 
+import torch
+import torch.nn as nn
+from typing import Callable
+
 class NeuralODE(nn.Module):
-    def __init__(self, dim: int, layer_sizes: list[int]) -> None:
+    def __init__(
+        self, 
+        dim: int, 
+        layer_sizes: list[int], 
+        activation: Callable[[], nn.Module] = nn.Tanh
+    ) -> None:
         super().__init__()
         self.dim = dim
         
@@ -242,7 +251,7 @@ class NeuralODE(nn.Module):
         input_dim = dim
         for hidden_dim in layer_sizes:
             layers.append(nn.Linear(input_dim, hidden_dim))
-            layers.append(nn.ReLU())
+            layers.append(activation())  # <-- use the passed activation function
             input_dim = hidden_dim
         
         layers.append(nn.Linear(input_dim, dim))  # Final layer back to dim
@@ -252,13 +261,15 @@ class NeuralODE(nn.Module):
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         return self.mlp(x)
 
+
 class NODEHomeomorphism(nn.Module):
     """Represents a homeomorphic transformation using a Neural ODE."""
-    def __init__(self, dim: int, layer_sizes: list[int] = [64, 64], epsilon: float = None, t_span: tuple = (0.0, 1.0)) -> None:
+    def __init__(self, dim: int, layer_sizes: list[int] = [64, 64],
+                activation: Callable[[], nn.Module] = nn.Tanh,
+                t_span: tuple = (0.0, 1.0)) -> None:
         super().__init__()
-        self.epsilon = epsilon
         self.t_span = torch.tensor(t_span)  # Default integration time span
-        self.neural_ode = NeuralODE(dim, layer_sizes)
+        self.neural_ode = NeuralODE(dim, layer_sizes, activation=activation)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Map from source to target space."""

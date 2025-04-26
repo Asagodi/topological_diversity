@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import MaxNLocator
 import seaborn as sns
+
+from typing import List, Optional
 sns.set(style="darkgrid", palette="muted", font="serif")
 plt.rcParams.update(plt.rcParamsDefault)
 
@@ -270,8 +272,6 @@ def plot_trajectories_allmotifs(
     if asymptotic_trajectories_list is not None:
         axes[1].plot(asymptotic_trajectories_list[0][:, 0], asymptotic_trajectories_list[0][:, 1], color=asymptotic_colors[0], alpha=1, label='Asymptotic target')
 
-    #axes[1].xaxis.set_major_locator(MaxNLocator(integer=True))
-    #axes[1].yaxis.set_major_locator(MaxNLocator(integer=True))
     axes[1].xaxis.set_major_formatter(plt.FuncFormatter(
     lambda x, _: f"{x:g}" if x in ticks else "" ))
     axes[1].yaxis.set_major_formatter(plt.FuncFormatter(
@@ -313,3 +313,90 @@ def plot_trajectories_allmotifs(
         plt.show()
 
     return fig, axes
+
+from mpl_toolkits.mplot3d import Axes3D
+
+def plot_trajectories_3d(
+    trajectories_list,
+    colors: Optional[List[str]] = None,
+    elev: float = 20,
+    azim: float = 30,
+) -> None:
+    """
+    Visualizes multiple sets of 3D trajectories in a 3D plot using Matplotlib.
+
+    :param trajectories_list: A list of tensors, each of shape (num_trajectories x num_time_points x 3).
+    :param colors: Optional list of colors for each set of trajectories.
+    :param elev: Elevation angle for the 3D view. Default is 20.
+    :param azim: Azimuth angle for the 3D view. Default is 30.
+    """
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+
+    if colors is None:
+        colors = ['C' + str(i) for i in range(len(trajectories_list))]  # Default color cycle
+
+    for idx, trajectories in enumerate(trajectories_list):
+        color = colors[idx % len(colors)]  # Cycle if not enough colors provided
+        initial_conditions = trajectories[:, 0, :]
+
+        for i in range(trajectories.shape[0]):
+            ax.plot(
+                trajectories[i, :, 0],
+                trajectories[i, :, 1],
+                trajectories[i, :, 2],
+                color=color,
+                alpha=0.8,
+            )
+            ax.scatter(
+                initial_conditions[i, 0],
+                initial_conditions[i, 1],
+                initial_conditions[i, 2],
+                color='black',
+                marker='o',
+                s=50,
+                alpha=0.8,
+            )
+
+    # Labeling
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+    # Set view angle
+    ax.view_init(elev=elev, azim=azim)
+
+    # Only show min and max ticks
+    for axis in [ax.xaxis, ax.yaxis, ax.zaxis]:
+        locs = axis.get_data_interval()
+        axis.set_ticks([locs[0], locs[1]])
+
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_transformed_vector_field(transformed_points, transformed_vector_field):
+    """
+    Plot the transformed vector field using the homeomorphism.
+    """
+
+    # Plot the transformed vector field
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.quiver(transformed_points[:, 0].detach().numpy(), transformed_points[:, 1].detach().numpy(),
+               transformed_vector_field[:, 0].detach().numpy(), transformed_vector_field[:, 1].detach().numpy(),
+               angles='xy', scale_units='xy', scale=1)
+    #plt.xlabel("x")
+    #plt.ylabel("y")
+
+    #TODO: add target vector field
+    # XY = torch.tensor(np.stack([X.ravel(), Y.ravel()], axis=1), dtype=torch.float32)
+    # with torch.no_grad():
+    #     dXY = vdp_system.forward(t=torch.tensor(0.0), x=XY).numpy()
+    # U = dXY[:, 0].reshape(X.shape)
+    # V = dXY[:, 1].reshape(Y.shape)
+    # ax.quiver(X, Y, U, V, angles='xy', scale_units='xy', scale=5, color='red')
+    ax.set_xlim(-2, 2)
+    ax.set_ylim(-2, 2)
+    ax.set_aspect('equal')
+    ax.grid()
+    plt.show()
