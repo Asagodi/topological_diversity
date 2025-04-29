@@ -3,7 +3,7 @@ import itertools
 import torch
 import torch.nn as nn
 from typing import Callable, Tuple, List
-
+from .irevnet import *
 
 class PeriodicActivation(nn.Module):
     """Implements a periodic activation function."""
@@ -302,6 +302,51 @@ class NODEHomeomorphism(nn.Module):
     #     return y
 
 
+
+###Invertible Residual Networks (iResNet)###
+class InvertibleResNetBlock(nn.Module):
+    def __init__(self, in_channels: int, hidden_channels: int):
+        super(InvertibleResNetBlock, self).__init__()
+        self.fc1 = nn.Linear(in_channels // 2, hidden_channels)
+        self.fc2 = nn.Linear(hidden_channels, in_channels // 2)
+        self.activation = nn.ELU()  # invertible activation
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x1, x2 = x.chunk(2, dim=1)
+        z = self.activation(self.fc1(x1))
+        x1_out = x1 + self.fc2(z)
+        return torch.cat([x1_out, x2], dim=1)
+
+    def inverse(self, y: torch.Tensor) -> torch.Tensor:
+        y1, y2 = y.chunk(2, dim=1)
+        z = self.activation(self.fc1(y1))
+        y1_inv = y1 - self.fc2(z)
+        return torch.cat([y1_inv, y2], dim=1)
+
+class InvertibleResNet(nn.Module):
+    def __init__(self, in_channels: int, layer_sizes: List[int]):
+        super(InvertibleResNet, self).__init__()
+        self.blocks = nn.ModuleList([
+            InvertibleResNetBlock(in_channels, hidden_size)
+            for hidden_size in layer_sizes
+        ])
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        for block in self.blocks:
+            x = block(x)
+        return x
+
+    def inverse(self, y: torch.Tensor) -> torch.Tensor:
+        for block in reversed(self.blocks):
+            y = block.inverse(y)
+        return y
+
+
+
+
+
+
+############## testing homeomorphisms ##############
 def test_homeo_networks(
     trajectories_target: List[torch.Tensor],
     motif_library: List,
