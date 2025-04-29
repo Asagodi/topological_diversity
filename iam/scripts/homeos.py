@@ -520,18 +520,8 @@ def save_homeo_ds_net(model: Homeo_DS_Net, file_path: str):
     print(f"Model saved to {file_path}")
 
 
-def load_homeo_ds_net(homeo_network: nn.Module, dynamical_system: nn.Module, file_path: str) -> Homeo_DS_Net:
-    """
-    Load the Homeo_DS_Net model from a saved file.
-    
-    :param homeo_network: The homeomorphism network model to use.
-    :param dynamical_system: The dynamical system model to use.
-    :param file_path: Path to the file where the model is saved.
-    :return: The loaded Homeo_DS_Net model.
-    """
-    model = Homeo_DS_Net(homeo_network=homeo_network, dynamical_system=dynamical_system)
-    model.load_state_dict(torch.load(file_path))
-    print(f"Model loaded from {file_path}")
+def load_homeo_ds_net(file_path: str) -> Homeo_DS_Net:
+    model = torch.load(file_path)
+    print(f"Full model loaded from {file_path}")
     return model
-
 
