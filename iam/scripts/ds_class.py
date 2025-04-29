@@ -71,11 +71,14 @@ class NDLimitCycle(DynamicalSystem):
     All remaining dimensions are attracted toward the 2D plane.
     """
 
-    def __init__(self, dim: int, attraction_rate: float = 1.0):
+    def __init__(self, dim: int, attraction_rate: float = 1.0, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
         super().__init__()
         assert dim >= 2, "Dimension must be at least 2."
         self.dim = dim
         self.attraction_rate = attraction_rate
+
+        self.dt = dt
+        self.time_span = time_span
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         if x.dim() == 1:
@@ -85,8 +88,8 @@ class NDLimitCycle(DynamicalSystem):
         r = torch.sqrt(x1**2 + x2**2)
         theta = torch.atan2(x2, x1)
 
-        dx1_dt = -r * ((r - 1) * torch.cos(theta) - torch.sin(theta))
-        dx2_dt = -r * ((r - 1) * torch.sin(theta) + torch.cos(theta))
+        dx1_dt = (-r * ((r - 1) * torch.cos(theta) - torch.sin(theta))).unsqueeze(1)
+        dx2_dt = (-r * ((r - 1) * torch.sin(theta) + torch.cos(theta))).unsqueeze(1)
 
         dx_dt = [dx1_dt, dx2_dt]
 
@@ -98,20 +101,26 @@ class NDLimitCycle(DynamicalSystem):
 
         return torch.cat(dx_dt, dim=1)
 
-class LearnableLimitCycle(LearnableDynamicalSystem):
+
+
+###########learnable time parametrization systems
+class LearnableLimitCycle(LearnableDynamicalSystem): #encorporated in LearnableNDLimitCycle, special case 2D
     """
     A simple limit cycle system with dynamics defined in polar coordinates.
-    The system includes learnable speed and lambda parameters.
+    The system includes learnable velocity parameters. #alpha?
     """
-    def __init__(self, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0, speed_init: float = 1.0, lambda_init: float = 1.0):
+    def __init__(self, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0,
+     radius: float = 1.0, velocity_init: float = 1.0): #, alpha_init: float = -1.0):
         super().__init__()
         self.dim = dim
         self.dt = dt
         self.time_span = time_span
         self.noise_std = noise_std
-        # Initialize learnable parameters for speed and lambda
-        self.speed = nn.Parameter(torch.tensor(speed_init, dtype=torch.float32))
-        self.lambda_ = nn.Parameter(torch.tensor(lambda_init, dtype=torch.float32))
+        # Initialize learnable parameters for velocity 
+        self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
+        #self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        
+        self.radius = 1.0  # Fixed radius for the limit cycle
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         if x.dim() == 1:
@@ -123,15 +132,78 @@ class LearnableLimitCycle(LearnableDynamicalSystem):
         theta = torch.atan2(y_val, x_val)
 
         # Define the dynamics in polar coordinates
-        dtheta_dt = self.speed  # Constant speed
-        dr_dt = - self.lambda_ * r * (1 - r)  #  radial dynamics
-        
+        dtheta_dt = self.velocity  # Constant velocity
+        #dr_dt =  self.alpha * r * (self.radius - r)  #  radial dynamics
+        dr_dt =  - r * (self.radius - r)
         # Convert the dynamics to Euclidean coordinates
         dx_dt = dr_dt * torch.cos(theta) - r * torch.sin(theta) * dtheta_dt
         dy_dt = dr_dt * torch.sin(theta) + r * torch.cos(theta) * dtheta_dt
         
         return torch.stack([dx_dt, dy_dt], dim=1)
     
+
+class LearnableNDLimitCycle(LearnableDynamicalSystem):
+    """
+    N-dimensional limit cycle system with learnable velocity and alpha parameters.
+    The first two coordinates define a planar limit cycle (polar coordinates dynamics),
+    while the remaining dimensions are attracted toward the 2D plane using the same alpha.
+    """
+
+    def __init__(
+        self,
+        dim: int,
+        dt: float = 0.05,
+        time_span: Tuple[float, float] = (0, 5),
+        noise_std: float = 0.0,
+        radius: float = 1.0,  
+        velocity_init: float = -1.0,
+        #alphainit: float = -1.0,
+    ):
+        super().__init__()
+        assert dim >= 2, "Dimension must be at least 2."
+        self.dim = dim
+        self.dt = dt
+        self.time_span = time_span
+        self.noise_std = noise_std
+        self.radius = radius  # Fixed radius for the limit cycle
+
+        # Learnable parameters
+        self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
+        #self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Ensure batch dimension
+
+        # Planar (r, theta) dynamics
+        x_val, y_val = x[:, 0], x[:, 1]
+        r = torch.sqrt(x_val**2 + y_val**2)
+        theta = torch.atan2(y_val, x_val)
+
+        dtheta_dt = self.velocity  # Learnable velocity
+        #dr_dt =  - self.alpha * r * (self.radius - r)  # Radial dynamics
+        dr_dt =   r * (self.radius - r)  # Radial dynamics
+
+
+        # Convert polar derivatives back to Cartesian
+        dx_dt = dr_dt * torch.cos(theta) - r * torch.sin(theta) * dtheta_dt
+        dy_dt = dr_dt * torch.sin(theta) + r * torch.cos(theta) * dtheta_dt
+
+        dx_dt = dx_dt.unsqueeze(1)
+        dy_dt = dy_dt.unsqueeze(1)
+
+        derivatives = [dx_dt, dy_dt]
+
+        # Higher dimensions: attraction toward (0, 0) with the same alpha
+        if self.dim > 2:
+            residual = x[:, 2:]
+            #d_residual_dt = self.alpha * residual
+            d_residual_dt = - residual
+            derivatives.append(d_residual_dt)
+
+        return torch.cat(derivatives, dim=1)
+
+
 
 class RingAttractor(DynamicalSystem):
     """
@@ -329,7 +401,7 @@ class FitzHughNagumo(DynamicalSystem):
 
 #3D systems
 class LorenzSystem(DynamicalSystem):
-    def __init__(self, sigma: float = 10.0, beta: float = 8.0 / 3.0, rho: float = 28.0, dim: int = 3, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0) -> None:
+    def __init__(self, sigma: float = 10.0, beta: float = 12., rho: float = 65., dim: int = 3, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0) -> None:
         super().__init__(dim=dim, dt=dt, time_span=time_span)
         self.sigma = sigma
         self.beta = beta
@@ -400,6 +472,77 @@ class MayLeonardSystem(DynamicalSystem):
             dxdt += noise
 
         return dxdt
+
+
+#4D systems
+class HodgkinHuxleySystem(DynamicalSystem):
+    def __init__(self, 
+                 I_ext: float = 10.0, 
+                 dt: float = 0.01, 
+                 time_span: Tuple[float, float] = (0, 50),
+                 noise_std: float = 0.0) -> None:
+        super().__init__(dim=4, dt=dt, time_span=time_span)
+        self.I_ext = I_ext  # external current
+        self.noise_std = noise_std
+        
+        # Parameters
+        self.C_m = 1.0  # membrane capacitance, uF/cm^2
+        self.g_Na = 120.0  # maximum sodium conductance, mS/cm^2
+        self.g_K = 36.0    # maximum potassium conductance, mS/cm^2
+        self.g_L = 0.3     # leak conductance, mS/cm^2
+        self.E_Na = 50.0   # sodium reversal potential, mV
+        self.E_K = -77.0   # potassium reversal potential, mV
+        self.E_L = -54.387 # leak reversal potential, mV
+
+    def alpha_m(self, V: torch.Tensor) -> torch.Tensor:
+        return 0.1 * (25.0 - V) / (torch.exp((25.0 - V) / 10.0) - 1.0)
+
+    def beta_m(self, V: torch.Tensor) -> torch.Tensor:
+        return 4.0 * torch.exp(-V / 18.0)
+
+    def alpha_h(self, V: torch.Tensor) -> torch.Tensor:
+        return 0.07 * torch.exp(-V / 20.0)
+
+    def beta_h(self, V: torch.Tensor) -> torch.Tensor:
+        return 1.0 / (torch.exp((30.0 - V) / 10.0) + 1.0)
+
+    def alpha_n(self, V: torch.Tensor) -> torch.Tensor:
+        return 0.01 * (10.0 - V) / (torch.exp((10.0 - V) / 10.0) - 1.0)
+
+    def beta_n(self, V: torch.Tensor) -> torch.Tensor:
+        return 0.125 * torch.exp(-V / 80.0)
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        """
+        State x: [V, m, h, n]
+        """
+        if x.dim() == 1:
+            x = x.unsqueeze(0)
+
+        V, m, h, n = x[:, 0], x[:, 1], x[:, 2], x[:, 3]
+
+        # Ionic currents
+        I_Na = self.g_Na * (m ** 3) * h * (V - self.E_Na)
+        I_K = self.g_K * (n ** 4) * (V - self.E_K)
+        I_L = self.g_L * (V - self.E_L)
+
+        # dV/dt
+        dVdt = (self.I_ext - I_Na - I_K - I_L) / self.C_m
+
+        # Gating variables
+        dm_dt = self.alpha_m(V) * (1.0 - m) - self.beta_m(V) * m
+        dh_dt = self.alpha_h(V) * (1.0 - h) - self.beta_h(V) * h
+        dn_dt = self.alpha_n(V) * (1.0 - n) - self.beta_n(V) * n
+
+        dxdt = torch.stack([dVdt, dm_dt, dh_dt, dn_dt], dim=1)
+
+        if self.noise_std > 0:
+            noise = torch.randn_like(x) * self.noise_std
+            dxdt += noise
+
+        return dxdt
+
+
 
 #ND systems
 class LotkaVolterraSystem(DynamicalSystem):
@@ -689,7 +832,15 @@ def generate_trajectories_for_training(
 ):
     initial_conditions_source = diffeo_net.inverse(initial_conditions_target)
 
-    if isinstance(source_system, LearnableDynamicalSystem):
+    if isinstance(source_system, AnalyticDynamicalSystem):
+        # If the source system is analytical, use the method from the AnalyticDynamicalSystem class
+        trajectories_source = source_system.compute_trajectory(initial_conditions_source).requires_grad_()
+
+        # Apply the diffeomorphism network to the trajectories generated by the analytical system
+        transformed_trajectories = [diffeo_net(traj.requires_grad_()) for traj in trajectories_source]
+        transformed_trajectories = torch.stack(transformed_trajectories)
+
+    elif isinstance(source_system, LearnableDynamicalSystem):
         # If the source system is a learnable dynamical system, we need to forward it without torch.no_grad()
         # This will allow gradients to flow through the learnable system
         _, trajectories_source, _ = generate_trajectories(
@@ -722,3 +873,114 @@ def generate_trajectories_for_training(
             transformed_trajectories = torch.stack(transformed_trajectories)
 
     return transformed_trajectories
+
+
+
+
+
+
+
+
+
+#Analytical classes
+
+class AnalyticDynamicalSystem(nn.Module):
+    """
+    A superclass for dynamical systems with analytical solutions. This class provides a method
+    to compute trajectories directly based on the system's analytical solution.
+    """
+    def __init__(self, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
+        """
+        Initialize the system with a given time step and time span.
+        
+        :param dt: Time step for trajectory generation.
+        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
+        """
+        super().__init__()
+        self.dt = dt
+        self.time_span = time_span
+    
+    def compute_trajectory(self) -> torch.Tensor:
+        """
+        This method should be implemented by subclasses. It computes the trajectory using the 
+        analytical solution of the dynamical system.
+        
+        :return: A tensor containing the trajectory over the time span.
+        """
+        raise NotImplementedError("Subclasses must implement this method to compute the trajectory.")
+
+
+import torch
+import torch.nn as nn
+from typing import Tuple
+
+class AnalyticalLimitCycle(AnalyticDynamicalSystem):
+    """
+    Computes the trajectory of a limit cycle system defined by r_dot = r(r-1) and theta_dot = v.
+    This class uses analytical solutions for r(t) and theta(t) based on the initial condition and velocity.
+    """
+    def __init__(self, velocity_init: float, alpha_init: float,  dim: int, 
+                 time_span: Tuple[float, float] = (0.0, 5.0), dt: float = 0.05):
+        """
+        Initialize the class with the given velocity, time span, and time step.
+        
+        :param velocity_init: Initial velocity (v) in the angular direction (theta_dot = v).
+        :param dim: The dimensionality of the system. For a 2D system, dim = 2.
+        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
+        :param dt: The time step used for discretizing the trajectory.
+        """
+        # Initialize parent class with dt and time_span
+        super().__init__(dt, time_span)
+        self.time_span = time_span
+        self.dt = dt
+        # Make the velocity a learnable parameter
+        self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))  # Learnable parameter
+        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        self.dim = dim
+
+    def compute_trajectory(self, initial_position: torch.Tensor):
+        """
+        Computes the trajectory using the analytical solutions for r(t) and theta(t).
+
+        :param initial_position: A tensor of shape (batch_size, dim) representing the initial positions.
+        :return: A tensor of shape (batch_size, N, dim) where N is the number of time steps, and each row is [x(t), y(t), ...].
+        """
+        # Ensure initial_position is of shape (batch_size, dim)
+        batch_size = initial_position.shape[0]
+
+        # Compute initial radius (r0) and angle (theta0) for the first 2 dimensions
+        x0, y0 = initial_position[:, 0], initial_position[:, 1]  # Assuming 2D system for r and theta
+        r0 = torch.sqrt(x0**2 + y0**2)  # Initial radius as a scalar for each sample in the batch
+        theta0 = torch.atan2(y0, x0)    # Initial angle for each sample in the batch
+
+        # Create time vector (shape: N)
+        t_start, t_end = self.time_span
+        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # Time steps
+
+        # Expand t_values to (batch_size, N) for broadcasting
+        t_values_expanded = t_values.unsqueeze(0).expand(batch_size, -1)
+
+        # Compute the trajectory using the analytical solutions for r(t) and theta(t)
+        r_t = (r0.unsqueeze(1) * torch.exp(self.alpha * t_values.unsqueeze(0))) / \
+      (1 + r0.unsqueeze(1) * (torch.exp(self.alpha * t_values.unsqueeze(0)) - 1))
+        theta_t = self.velocity * t_values_expanded + theta0.unsqueeze(1)  # theta(t)
+
+        # Convert polar to Cartesian coordinates for the 2D part
+        x_t = r_t * torch.cos(theta_t)
+        y_t = r_t * torch.sin(theta_t)
+
+        # Concatenate x_t and y_t to form the 2D trajectory
+        trajectory = torch.stack([x_t, y_t], dim=2)  # Shape: (batch_size, N, 2)
+
+        # Handle higher dimensions: attraction toward origin (-x) for residual dimensions
+        if self.dim > 2:
+            residual = initial_position[:, 2:]  # Get the residual higher dimensions (3D and beyond)
+            
+            # Dynamics for higher dimensions: attraction to origin (-x)
+            d_residual_dt = -residual  # As you mentioned, dot x = -x
+            residual_t = residual.unsqueeze(1) + d_residual_dt.unsqueeze(1) * t_values_expanded.unsqueeze(2)  # Broadcast over time
+
+            # Concatenate the 2D part with the higher-dimensional residual
+            trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, N, dim)
+
+        return trajectory
