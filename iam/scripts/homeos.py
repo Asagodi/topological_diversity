@@ -348,10 +348,8 @@ class InvertibleResNet(nn.Module):
 
 ############## testing homeomorphisms ##############
 def test_homeo_networks(
-    trajectories_target: List[torch.Tensor],
-    motif_library: List,
-    homeo_networks: List[torch.nn.Module],
-    generate_trajectories_scipy,
+    trajectories_target: torch.Tensor,
+    homeo_ds_networks: List[Homeo_DS_Net], 
     plot_first_n: int = 5,
     time_span: torch.Tensor=None,
 ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
@@ -362,8 +360,7 @@ def test_homeo_networks(
     Args:
         trajectories_target: List of target domain trajectories (each a torch.Tensor).
         motif_library: List of systems/motifs used to generate source trajectories.
-        homeo_networks: List of homeomorphism networks (with inverse method).
-        generate_trajectories_scipy: Function to generate trajectories for a given system.
+        homeo_networks: List of homeomorphism networks 
         num_points: Total number of points/trajectories available.
         plot_first_n: Number of trajectories to process (default is 5).
 
@@ -374,42 +371,51 @@ def test_homeo_networks(
     """
     # Get initial conditions from target trajectories
 
-    initial_conditions_np = np.array([
-        trajectories_target[i][0].detach().numpy() for i in range(plot_first_n)
-    ])
-    initial_conditions = torch.tensor(initial_conditions_np, dtype=torch.float32)[:plot_first_n, :]
+
+    initial_conditions = torch.stack([traj[0] for traj in trajectories_target[:plot_first_n]])
 
     trajectories_source_list = []
     transformed_trajectories_list = []
 
-    for motif, homeo_net in zip(motif_library, homeo_networks):
+    for homeo_ds_net in homeo_ds_networks:
+        source_system = homeo_ds_net.dynamical_system
+        homeo_net = homeo_ds_net.homeo_network
+
         if time_span is None:
-            time_span = motif.time_span
+            time_span = source_system.time_span
         # Transform initial conditions to source space
         initial_conditions_src = homeo_net.inverse(initial_conditions)
 
         # Generate source trajectories
-        t_values, trajectories_source, _ = generate_trajectories_scipy(
-            system=motif,
-            predefined_initial_conditions=initial_conditions_src,
-            time_span=time_span
-        )
+        if isinstance(source_system, AnalyticalLimitCycle):
+            trajectories_source = source_system.compute_trajectory(initial_conditions_src)
+        else:
+            t_values, trajectories_source, _ = generate_trajectories_scipy(
+                system=source_system,
+                predefined_initial_conditions=initial_conditions_src,
+                time_span=time_span
+            )
 
         # Map trajectories back to target space using homeomorphism
         with torch.no_grad():
-            transformed_trajectories = np.array([
-                homeo_net(traj.requires_grad_()).detach().numpy() for traj in trajectories_source
-            ])
-
+            transformed_trajectories = np.array([homeo_net(traj).detach().numpy() for traj in trajectories_source])
         # Convert source trajectories to numpy
-        trajectories_source_np = np.array([
-            traj.requires_grad_().detach().numpy() for traj in trajectories_source
-        ])
+        trajectories_source_np = np.array([traj.detach().numpy() for traj in trajectories_source])
 
         trajectories_source_list.append(trajectories_source_np)
         transformed_trajectories_list.append(transformed_trajectories)
 
-    return trajectories_source_list, transformed_trajectories_list
+    transformed = torch.stack([
+        torch.tensor(traj, dtype=torch.float32) for traj in transformed_trajectories_list
+    ])
+    target = torch.stack([
+        traj if isinstance(traj, torch.Tensor) else torch.tensor(traj, dtype=torch.float32)
+        for traj in trajectories_target[:len(transformed_trajectories_list)]
+    ])
+
+    loss_fn = nn.MSELoss(reduction='mean')
+    loss = loss_fn(transformed, target)
+    return trajectories_source_list, transformed_trajectories_list, loss.item()
 
 
 
