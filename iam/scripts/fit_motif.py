@@ -7,6 +7,7 @@ import time
 from typing import Optional
 from .homeos import *
 from .ds_class import *
+from .torch_utils import *
 
 def update_leaky_running_avg(current_value: float, running_avg: float, alpha: float = 0.9) -> float:
     """
@@ -100,6 +101,7 @@ def train_homeomorphism(
     lambda_reg:  Optional[float] = 0.,  # Default: no regularization
     max_grad_norm: Optional[float] = None,  # Default: no clipping
     annealing_params: Optional[dict] = None,  # Default: no annealing
+    early_stopping_patience: Optional[int] = 50,
 ):
     """
     Train the homeomorphism network while tracking training time and epoch time.
@@ -115,11 +117,12 @@ def train_homeomorphism(
     source_system = source_system.to(device)
 
     params_to_optimize = list(homeo_net.parameters())
-    if isinstance(source_system, LearnableDynamicalSystem):
-        #print(list(source_system.parameters()))
+    if isinstance(source_system, (LearnableDynamicalSystem, AnalyticalLimitCycle)):
         params_to_optimize += list(source_system.parameters())
 
     optimizer=optim.Adam(params_to_optimize, lr=lr)
+    early_stopper = EarlyStopping(patience=early_stopping_patience)
+    best_model_saver = BestModelSaver(model=)
 
     losses = []  # Store losses for each epoch
     grad_norms = []
@@ -156,18 +159,24 @@ def train_homeomorphism(
             torch.nn.utils.clip_grad_norm_(homeo_net.parameters(), max_grad_norm)
         optimizer.step()
         losses.append(loss.item())  # Store loss for this epoch
+        saver(homeo_net, source_system, loss.item())  # Track best model
+
         if epoch % 10 == 0:
-            print(f"Epoch {epoch}, log(Loss)= {np.log(loss.item()):.4f}")
-            print("Speed: ", source_system.speed.detach().cpu().numpy(), " Lambda: ", source_system.lambda_.detach().cpu().numpy())
-            #print("Param grad:", source_system.speed.grad, source_system.lambda_.grad)
+            if hasattr(source_system, 'velocity'):
+                print(f"Epoch {epoch}, log(Loss)= {np.log(loss.item()):.4f}", "Velocity: ", np.round(source_system.velocity.detach().cpu().numpy(),3)) # " Lambda: ", source_system.lambda_.detach().cpu().numpy())
+            else:
+                print(f"Epoch {epoch}, log(Loss)= {np.log(loss.item()):.4f}") 
 
-
+        early_stopper.step(loss.item())
+        if early_stopper.should_stop:
+            print(f"Early stopping triggered at epoch {epoch}. log(Loss)= {np.log(loss.item()):.4f}")
+            break
 
     total_time = time.time() - start_time  # Compute total training time
     print(f"Total training time: {total_time:.2f} seconds, Avg time per epoch: {total_time / num_epochs:.4f} sec")
     homeo_net.losses = losses  # Store losses 
     homeo_net.grad_norms = grad_norms  
-
+    saver.restore(homeo_net, source_system)  #  Restore best model 
     return Homeo_DS_Net(homeo_network=homeo_net, dynamical_system=source_system)
 
 
@@ -191,6 +200,7 @@ def train_all_motifs(motif_library, homeo_networks, trajectories_target, initial
         )
         homeo_ds_nets.append(homeo_ds_net)
     return homeo_ds_nets
+
 
 
 
