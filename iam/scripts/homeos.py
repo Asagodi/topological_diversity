@@ -388,7 +388,7 @@ def test_homeo_networks(
 
         # Generate source trajectories
         if isinstance(source_system, AnalyticalLimitCycle):
-            trajectories_source = source_system.compute_trajectory(initial_conditions_src)
+            trajectories_source = source_system.compute_trajectory(initial_conditions_src, time_span=time_span)
         else:
             t_values, trajectories_source, _ = generate_trajectories_scipy(
                 system=source_system,

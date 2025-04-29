@@ -938,7 +938,7 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
         self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
         self.dim = dim
 
-    def compute_trajectory(self, initial_position: torch.Tensor):
+    def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float,float]]) -> torch.Tensor:
         """
         Computes the trajectory using the analytical solutions for r(t) and theta(t).
 
@@ -946,6 +946,8 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
         :return: A tensor of shape (batch_size, N, dim) where N is the number of time steps, and each row is [x(t), y(t), ...].
         """
         # Ensure initial_position is of shape (batch_size, dim)
+        if time_span is None:
+            time_span = self.time_span
         batch_size = initial_position.shape[0]
 
         # Compute initial radius (r0) and angle (theta0) for the first 2 dimensions
@@ -954,7 +956,7 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
         theta0 = torch.atan2(y0, x0)    # Initial angle for each sample in the batch
 
         # Create time vector (shape: N)
-        t_start, t_end = self.time_span
+        t_start, t_end = time_span
         t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # Time steps
 
         # Expand t_values to (batch_size, N) for broadcasting
