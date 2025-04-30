@@ -2,11 +2,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import MaxNLocator
+from matplotlib.lines import Line2D
 import seaborn as sns
 
 from typing import List, Optional
 sns.set(style="darkgrid", palette="muted", font="serif")
 plt.rcParams.update(plt.rcParamsDefault)
+
+
+
+def clean_tick(value: float) -> float:
+    if abs(value) >= 1:
+        return round(value)  # Whole number
+    else:
+        return round(value, 1)  # One decimal place
+
+
 
 
 def plot_sampled_trajectories(trajectories, initial_conditions, bounds):
@@ -316,17 +327,21 @@ def plot_trajectories_allmotifs(
 
 from mpl_toolkits.mplot3d import Axes3D
 
+from matplotlib.lines import Line2D
+
 def plot_trajectories_3d(
     trajectories_list,
     colors: Optional[List[str]] = None,
+    labels: Optional[List[str]] = None,
     elev: float = 20,
     azim: float = 30,
 ) -> None:
     """
-    Visualizes multiple sets of 3D trajectories in a 3D plot using Matplotlib.
+    Visualizes multiple sets of 3D trajectories in a 3D plot.
 
     :param trajectories_list: A list of tensors, each of shape (num_trajectories x num_time_points x 3).
     :param colors: Optional list of colors for each set of trajectories.
+    :param labels: Optional list of legend labels for each trajectory set.
     :param elev: Elevation angle for the 3D view. Default is 20.
     :param azim: Azimuth angle for the 3D view. Default is 30.
     """
@@ -334,10 +349,16 @@ def plot_trajectories_3d(
     ax = fig.add_subplot(111, projection='3d')
 
     if colors is None:
-        colors = ['C' + str(i) for i in range(len(trajectories_list))]  # Default color cycle
+        colors = ['C' + str(i) for i in range(len(trajectories_list))]
+
+    if labels is None:
+        labels = [f"Set {i+1}" for i in range(len(trajectories_list))]
+
+    legend_elements = []
 
     for idx, trajectories in enumerate(trajectories_list):
-        color = colors[idx % len(colors)]  # Cycle if not enough colors provided
+        color = colors[idx % len(colors)]
+        label = labels[idx]
         initial_conditions = trajectories[:, 0, :]
 
         for i in range(trajectories.shape[0]):
@@ -358,6 +379,9 @@ def plot_trajectories_3d(
                 alpha=0.8,
             )
 
+        # One legend entry per trajectory set
+        legend_elements.append(Line2D([0], [0], color=color, lw=2, label=label))
+
     # Labeling
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
@@ -366,11 +390,13 @@ def plot_trajectories_3d(
     # Set view angle
     ax.view_init(elev=elev, azim=azim)
 
-    # Only show min and max ticks
+    # Only show min and max ticks (rounded)
     for axis in [ax.xaxis, ax.yaxis, ax.zaxis]:
         locs = axis.get_data_interval()
-        axis.set_ticks([locs[0], locs[1]])
+        ticks = [clean_tick(locs[0]), clean_tick(locs[1])]
+        axis.set_ticks(ticks)
 
+    ax.legend(handles=legend_elements)
     plt.tight_layout()
     plt.show()
 
