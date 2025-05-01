@@ -27,184 +27,6 @@ class DynamicalSystem(nn.Module):
         """
         raise NotImplementedError("Subclasses must implement the forward method.")
 
-
-class LearnableDynamicalSystem(nn.Module):
-    """
-    A base class for dynamical systems with learnable parameters.
-    Subclasses should define the specific system dynamics.
-    """
-
-    def __init__(self):
-        super().__init__()
-
-    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        """
-        Forward pass that computes the time derivatives for a given state.
-        This should be overridden by subclasses to define specific dynamics.
-        """
-        raise NotImplementedError
-
-
-    
-class LimitCycle(DynamicalSystem):
-    """
-    A simple limit cycle system with dynamics defined in polar coordinates.
-    """
-
-    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        if x.dim() == 1:
-            x = x.unsqueeze(0)  # Ensure batch dimension
-        
-        x_val, y_val = x[:, 0], x[:, 1]
-        r = torch.sqrt(x_val**2 + y_val**2)
-        theta = torch.atan2(y_val, x_val)
-        
-        dx_dt = -r * ((r - 1) * torch.cos(theta) - torch.sin(theta))
-        dy_dt = -r * ((r - 1) * torch.sin(theta) + torch.cos(theta))
-        
-        return torch.stack([dx_dt, dy_dt], dim=1)
-
-class NDLimitCycle(DynamicalSystem):
-    """
-    N-dimensional limit cycle system.
-    The first two coordinates define a planar limit cycle.
-    All remaining dimensions are attracted toward the 2D plane.
-    """
-
-    def __init__(self, dim: int, attraction_rate: float = 1.0, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
-        super().__init__()
-        assert dim >= 2, "Dimension must be at least 2."
-        self.dim = dim
-        self.attraction_rate = attraction_rate
-
-        self.dt = dt
-        self.time_span = time_span
-
-    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        if x.dim() == 1:
-            x = x.unsqueeze(0)  # Ensure batch dimension
-
-        x1, x2 = x[:, 0], x[:, 1]
-        r = torch.sqrt(x1**2 + x2**2)
-        theta = torch.atan2(x2, x1)
-
-        dx1_dt = (-r * ((r - 1) * torch.cos(theta) - torch.sin(theta))).unsqueeze(1)
-        dx2_dt = (-r * ((r - 1) * torch.sin(theta) + torch.cos(theta))).unsqueeze(1)
-
-        dx_dt = [dx1_dt, dx2_dt]
-
-        # Remaining dimensions flow toward 0 (attractive dynamics)
-        if self.dim > 2:
-            residual = x[:, 2:]
-            d_residual_dt = -self.attraction_rate * residual
-            dx_dt.append(d_residual_dt)
-
-        return torch.cat(dx_dt, dim=1)
-
-
-
-###########learnable time parametrization systems
-class LearnableLimitCycle(LearnableDynamicalSystem): #encorporated in LearnableNDLimitCycle, special case 2D
-    """
-    A simple limit cycle system with dynamics defined in polar coordinates.
-    The system includes learnable velocity parameters. #alpha?
-    """
-    def __init__(self, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0,
-     radius: float = 1.0, velocity_init: float = 1.0, alpha_init: float = -1.0):
-        super().__init__()
-        self.dim = dim
-        self.dt = dt
-        self.time_span = time_span
-        self.noise_std = noise_std
-        # Initialize learnable parameters for velocity 
-        self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
-        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
-        
-        self.radius = 1.0  # Fixed radius for the limit cycle
-
-    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        if x.dim() == 1:
-            x = x.unsqueeze(0)  # Ensure batch dimension
-        
-        # Extract the polar coordinates
-        x_val, y_val = x[:, 0], x[:, 1]
-        r = torch.sqrt(x_val**2 + y_val**2)
-        theta = torch.atan2(y_val, x_val)
-
-        # Define the dynamics in polar coordinates
-        dtheta_dt = self.velocity  # Constant velocity
-        dr_dt = - self.alpha * r * (self.radius - r)  #  radial dynamics
-        #dr_dt =  - r * (self.radius - r)
-        # Convert the dynamics to Euclidean coordinates
-        dx_dt = dr_dt * torch.cos(theta) - r * torch.sin(theta) * dtheta_dt
-        dy_dt = dr_dt * torch.sin(theta) + r * torch.cos(theta) * dtheta_dt
-        
-        return torch.stack([dx_dt, dy_dt], dim=1)
-    
-
-class LearnableNDLimitCycle(LearnableDynamicalSystem):
-    """
-    N-dimensional limit cycle system with learnable velocity and alpha parameters.
-    The first two coordinates define a planar limit cycle (polar coordinates dynamics),
-    while the remaining dimensions are attracted toward the 2D plane using the same alpha.
-    """
-
-    def __init__(
-        self,
-        dim: int,
-        dt: float = 0.05,
-        time_span: Tuple[float, float] = (0, 5),
-        noise_std: float = 0.0,
-        radius: float = 1.0,  
-        velocity_init: float = -1.0,
-        alpha_init: float = -1.0,
-    ):
-        super().__init__()
-        assert dim >= 2, "Dimension must be at least 2."
-        self.dim = dim
-        self.dt = dt
-        self.time_span = time_span
-        self.noise_std = noise_std
-        self.radius = radius  # Fixed radius for the limit cycle
-
-        # Learnable parameters
-        self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
-        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
-
-    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        if x.dim() == 1:
-            x = x.unsqueeze(0)  # Ensure batch dimension
-
-        # Planar (r, theta) dynamics
-        x_val, y_val = x[:, 0], x[:, 1]
-        r = torch.sqrt(x_val**2 + y_val**2)
-        theta = torch.atan2(y_val, x_val)
-
-        dtheta_dt = self.velocity  # Learnable velocity
-        dr_dt =  - self.alpha * r * (self.radius - r)  # Radial dynamics
-       # dr_dt =   r * (self.radius - r)  # Radial dynamics
-
-
-        # Convert polar derivatives back to Cartesian
-        dx_dt = dr_dt * torch.cos(theta) - r * torch.sin(theta) * dtheta_dt
-        dy_dt = dr_dt * torch.sin(theta) + r * torch.cos(theta) * dtheta_dt
-
-        dx_dt = dx_dt.unsqueeze(1)
-        dy_dt = dy_dt.unsqueeze(1)
-
-        derivatives = [dx_dt, dy_dt]
-
-        # Higher dimensions: attraction toward (0, 0) with the same alpha
-        if self.dim > 2:
-            residual = x[:, 2:]
-            d_residual_dt = self.alpha * residual
-            #d_residual_dt = - residual
-            derivatives.append(d_residual_dt)
-
-        return torch.cat(derivatives, dim=1)
-
-
-
 class RingAttractor(DynamicalSystem):
     """
     A simple ring attractor system with dynamics defined in polar coordinates.
@@ -350,6 +172,255 @@ class PhiJacSystem(DynamicalSystem):
         dx_dt_transformed = torch.matmul(jacobian, dx_dt_transformed.unsqueeze(-1)).squeeze(-1)
         return dx_dt_transformed.squeeze(0)  # Restore original shape if needed
     
+
+
+class LimitCycle(DynamicalSystem):
+    """
+    A simple limit cycle system with dynamics defined in polar coordinates.
+    """
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Ensure batch dimension
+        
+        x_val, y_val = x[:, 0], x[:, 1]
+        r = torch.sqrt(x_val**2 + y_val**2)
+        theta = torch.atan2(y_val, x_val)
+        
+        dx_dt = -r * ((r - 1) * torch.cos(theta) - torch.sin(theta))
+        dy_dt = -r * ((r - 1) * torch.sin(theta) + torch.cos(theta))
+        
+        return torch.stack([dx_dt, dy_dt], dim=1)
+
+class NDLimitCycle(DynamicalSystem):
+    """
+    N-dimensional limit cycle system.
+    The first two coordinates define a planar limit cycle.
+    All remaining dimensions are attracted toward the 2D plane.
+    """
+
+    def __init__(self, dim: int, attraction_rate: float = 1.0, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
+        super().__init__()
+        assert dim >= 2, "Dimension must be at least 2."
+        self.dim = dim
+        self.attraction_rate = attraction_rate
+
+        self.dt = dt
+        self.time_span = time_span
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Ensure batch dimension
+
+        x1, x2 = x[:, 0], x[:, 1]
+        r = torch.sqrt(x1**2 + x2**2)
+        theta = torch.atan2(x2, x1)
+
+        dx1_dt = (-r * ((r - 1) * torch.cos(theta) - torch.sin(theta))).unsqueeze(1)
+        dx2_dt = (-r * ((r - 1) * torch.sin(theta) + torch.cos(theta))).unsqueeze(1)
+
+        dx_dt = [dx1_dt, dx2_dt]
+
+        # Remaining dimensions flow toward 0 (attractive dynamics)
+        if self.dim > 2:
+            residual = x[:, 2:]
+            d_residual_dt = -self.attraction_rate * residual
+            dx_dt.append(d_residual_dt)
+
+        return torch.cat(dx_dt, dim=1)
+
+
+
+###########learnable time parametrization systems
+class LearnableDynamicalSystem(nn.Module):
+    """
+    A base class for dynamical systems with learnable parameters.
+    Subclasses should define the specific system dynamics.
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass that computes the time derivatives for a given state.
+        This should be overridden by subclasses to define specific dynamics.
+        """
+        raise NotImplementedError
+
+class LearnableLimitCycle(LearnableDynamicalSystem): #encorporated in LearnableNDLimitCycle, special case 2D
+    """
+    A simple limit cycle system with dynamics defined in polar coordinates.
+    The system includes learnable velocity parameters. #alpha?
+    """
+    def __init__(self, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0,
+     radius: float = 1.0, velocity_init: float = 1.0, alpha_init: float = -1.0):
+        super().__init__()
+        self.dim = dim
+        self.dt = dt
+        self.time_span = time_span
+        self.noise_std = noise_std
+        # Initialize learnable parameters for velocity         
+        if velocity_init is None:
+            velocity_init = 1.0
+        else:
+            self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
+        if alpha_init is None:
+            alpha_init = -1.0
+        else:
+            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        
+        self.radius = 1.0  # Fixed radius for the limit cycle
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Ensure batch dimension
+        
+        # Extract the polar coordinates
+        x_val, y_val = x[:, 0], x[:, 1]
+        r = torch.sqrt(x_val**2 + y_val**2)
+        theta = torch.atan2(y_val, x_val)
+
+        # Define the dynamics in polar coordinates
+        dtheta_dt = self.velocity  # Constant velocity
+        dr_dt = - self.alpha * r * (self.radius - r)  #  radial dynamics
+        #dr_dt =  - r * (self.radius - r)
+        # Convert the dynamics to Euclidean coordinates
+        dx_dt = dr_dt * torch.cos(theta) - r * torch.sin(theta) * dtheta_dt
+        dy_dt = dr_dt * torch.sin(theta) + r * torch.cos(theta) * dtheta_dt
+        
+        return torch.stack([dx_dt, dy_dt], dim=1)
+    
+
+class LearnableNDLimitCycle(LearnableDynamicalSystem):
+    """
+    N-dimensional limit cycle system with learnable velocity and alpha parameters.
+    The first two coordinates define a planar limit cycle (polar coordinates dynamics),
+    while the remaining dimensions are attracted toward the 2D plane using the same alpha.
+    """
+
+    def __init__(
+        self,
+        dim: int,
+        dt: float = 0.05,
+        time_span: Tuple[float, float] = (0, 5),
+        noise_std: float = 0.0,
+        radius: float = 1.0,  
+        velocity_init: float = -1.0,
+        alpha_init: float = -1.0,
+    ):
+        super().__init__()
+        assert dim >= 2, "Dimension must be at least 2."
+        self.dim = dim
+        self.dt = dt
+        self.time_span = time_span
+        self.noise_std = noise_std
+        self.radius = radius  # Fixed radius 
+
+        # Learnable parameters
+        if velocity_init is None:
+            velocity_init = 1.0
+        else:
+            self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
+        if alpha_init is None:
+            alpha_init = -1.0
+        else:
+            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Ensure batch dimension
+
+        # Planar (r, theta) dynamics
+        x_val, y_val = x[:, 0], x[:, 1]
+        r = torch.sqrt(x_val**2 + y_val**2)
+        theta = torch.atan2(y_val, x_val)
+
+        dtheta_dt = self.velocity  # Learnable velocity
+        dr_dt =  - self.alpha * r * (self.radius - r)  # Radial dynamics
+       # dr_dt =   r * (self.radius - r)  # Radial dynamics
+
+
+        # Convert polar derivatives back to Cartesian
+        dx_dt = dr_dt * torch.cos(theta) - r * torch.sin(theta) * dtheta_dt
+        dy_dt = dr_dt * torch.sin(theta) + r * torch.cos(theta) * dtheta_dt
+
+        dx_dt = dx_dt.unsqueeze(1)
+        dy_dt = dy_dt.unsqueeze(1)
+
+        derivatives = [dx_dt, dy_dt]
+
+        # Higher dimensions: attraction toward (0, 0) with the same alpha
+        if self.dim > 2:
+            residual = x[:, 2:]
+            d_residual_dt = self.alpha * residual
+            #d_residual_dt = - residual
+            derivatives.append(d_residual_dt)
+
+        return torch.cat(derivatives, dim=1)
+
+class LearnableNDRingAttractor(LearnableDynamicalSystem):
+    """
+    N-dimensional ring attractor system with learnable alpha parameters.
+    The first two coordinates define a planar limit cycle (polar coordinates dynamics),
+    while the remaining dimensions are attracted toward the 2D plane using the same alpha.
+    """
+
+    def __init__(
+        self,
+        dim: int,
+        dt: float = 0.05,
+        time_span: Tuple[float, float] = (0, 5),
+        noise_std: float = 0.0,
+        radius: float = 1.0,  
+        alpha_init: float = -1.0,
+    ):
+        super().__init__()
+        assert dim >= 2, "Dimension must be at least 2."
+        self.dim = dim
+        self.dt = dt
+        self.time_span = time_span
+        self.noise_std = noise_std
+        self.radius = radius  # Fixed radius for the limit cycle
+
+        # Learnable parameters
+        if alpha_init is None:
+            alpha_init = -1.0
+        else:
+            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Ensure batch dimension
+
+        # Planar (r, theta) dynamics
+        x_val, y_val = x[:, 0], x[:, 1]
+        r = torch.sqrt(x_val**2 + y_val**2)
+        theta = torch.atan2(y_val, x_val)
+
+        dtheta_dt = 0 
+        dr_dt =  - self.alpha * r * (self.radius - r)  # Radial dynamics
+
+        # Convert polar derivatives back to Cartesian
+        dx_dt = dr_dt * torch.cos(theta) - r * torch.sin(theta) * dtheta_dt
+        dy_dt = dr_dt * torch.sin(theta) + r * torch.cos(theta) * dtheta_dt
+
+        dx_dt = dx_dt.unsqueeze(1)
+        dy_dt = dy_dt.unsqueeze(1)
+
+        derivatives = [dx_dt, dy_dt]
+
+        # Higher dimensions: attraction toward (0, 0) with the same alpha
+        if self.dim > 2:
+            residual = x[:, 2:]
+            d_residual_dt = self.alpha * residual
+            #d_residual_dt = - residual
+            derivatives.append(d_residual_dt)
+
+        return torch.cat(derivatives, dim=1)
+
+
+
 
 #Target systems for testing
 
@@ -943,7 +1014,7 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
         Computes the trajectory using the analytical solutions for r(t) and theta(t).
 
         :param initial_position: A tensor of shape (batch_size, dim) representing the initial positions.
-        :return: A tensor of shape (batch_size, N, dim) where N is the number of time steps, and each row is [x(t), y(t), ...].
+        :return: A tensor of shape (batch_size, T, dim) where T is the number of time steps, and each row is [x(t), y(t), ...].
         """
         # Ensure initial_position is of shape (batch_size, dim)
         if time_span is None:
@@ -951,20 +1022,20 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
         batch_size = initial_position.shape[0]
 
         # Compute initial radius (r0) and angle (theta0) for the first 2 dimensions
-        x0, y0 = initial_position[:, 0], initial_position[:, 1]  # Assuming 2D system for r and theta
+        x0, y0 = initial_position[:, 0], initial_position[:, 1]  # 2D system for r and theta
         r0 = torch.sqrt(x0**2 + y0**2)  # Initial radius as a scalar for each sample in the batch
         theta0 = torch.atan2(y0, x0)    # Initial angle for each sample in the batch
 
-        # Create time vector (shape: N)
+        # Create time vector (shape: T)
         t_start, t_end = time_span
         t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # Time steps
 
-        # Expand t_values to (batch_size, N) for broadcasting
+        # Expand t_values to (batch_size, T) for broadcasting
         t_values_expanded = t_values.unsqueeze(0).expand(batch_size, -1)
 
         # Compute the trajectory using the analytical solutions for r(t) and theta(t)
-        r_t = (r0.unsqueeze(1) * torch.exp(self.alpha * t_values.unsqueeze(0))) / \
-      (1 + r0.unsqueeze(1) * (torch.exp(self.alpha * t_values.unsqueeze(0)) - 1))
+        r_t = (r0.unsqueeze(1) * torch.exp(- self.alpha * t_values.unsqueeze(0))) / \
+      (1 + r0.unsqueeze(1) * (torch.exp(- self.alpha * t_values.unsqueeze(0)) - 1))
         theta_t = self.velocity * t_values_expanded + theta0.unsqueeze(1)  # theta(t)
 
         # Convert polar to Cartesian coordinates for the 2D part
@@ -972,18 +1043,18 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
         y_t = r_t * torch.sin(theta_t)
 
         # Concatenate x_t and y_t to form the 2D trajectory
-        trajectory = torch.stack([x_t, y_t], dim=2)  # Shape: (batch_size, N, 2)
+        trajectory = torch.stack([x_t, y_t], dim=2)  # Shape: (batch_size, T, 2)
 
         # Handle higher dimensions: attraction toward origin (-x) for residual dimensions
         if self.dim > 2:
             residual = initial_position[:, 2:]  # Get the residual higher dimensions (3D and beyond)
             
             # Dynamics for higher dimensions: attraction to origin (-x)
-            d_residual_dt = -residual  # As you mentioned, dot x = -x
-            residual_t = residual.unsqueeze(1) + d_residual_dt.unsqueeze(1) * t_values_expanded.unsqueeze(2)  # Broadcast over time
+            d_residual_dt = self.alpha*residual  # 
+            residual_t = residual.unsqueeze(1) + d_residual_dt.unsqueeze(1) * t_values_expanded.unsqueeze(2)  
 
             # Concatenate the 2D part with the higher-dimensional residual
-            trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, N, dim)
+            trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, T, dim)
 
         return trajectory
 
@@ -1013,7 +1084,7 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
         Computes the trajectory using the analytical solutions for r(t) and theta(t).
 
         :param initial_position: A tensor of shape (batch_size, dim) representing the initial positions.
-        :return: A tensor of shape (batch_size, N, dim) where N is the number of time steps, and each row is [x(t), y(t), ...].
+        :return: A tensor of shape (batch_size, T, dim) where T is the number of time steps, and each row is [x(t), y(t), ...].
         """
         # Ensure initial_position is of shape (batch_size, dim)
         if time_span is None:
@@ -1025,16 +1096,16 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
         r0 = torch.sqrt(x0**2 + y0**2)  # Initial radius as a scalar for each sample in the batch
         theta0 = torch.atan2(y0, x0)    # Initial angle for each sample in the batch
 
-        # Create time vector (shape: N)
+        # Create time vector (shape: T)
         t_start, t_end = time_span
         t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # Time steps
 
-        # Expand t_values to (batch_size, N) for broadcasting
+        # Expand t_values to (batch_size, T) for broadcasting
         t_values_expanded = t_values.unsqueeze(0).expand(batch_size, -1)
 
         # Compute the trajectory using the analytical solutions for r(t) and theta(t)
-        r_t = (r0.unsqueeze(1) * torch.exp(self.alpha * t_values.unsqueeze(0))) / \
-      (1 + r0.unsqueeze(1) * (torch.exp(self.alpha * t_values.unsqueeze(0)) - 1))
+        r_t = (r0.unsqueeze(1) * torch.exp(- self.alpha * t_values.unsqueeze(0))) / \
+      (1 + r0.unsqueeze(1) * (torch.exp(- self.alpha * t_values.unsqueeze(0)) - 1))
         theta_t = theta0.unsqueeze(1)  # theta(t)
 
         # Convert polar to Cartesian coordinates for the 2D part
@@ -1042,17 +1113,17 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
         y_t = r_t * torch.sin(theta_t)
 
         # Concatenate x_t and y_t to form the 2D trajectory
-        trajectory = torch.stack([x_t, y_t], dim=2)  # Shape: (batch_size, N, 2)
+        trajectory = torch.stack([x_t, y_t], dim=2)  # Shape: (batch_size, T, 2)
 
         # Handle higher dimensions: attraction toward origin (-x) for residual dimensions
         if self.dim > 2:
             residual = initial_position[:, 2:]  # Get the residual higher dimensions (3D and beyond)
             
             # Dynamics for higher dimensions: attraction to origin (-x)
-            d_residual_dt = -residual  # As you mentioned, dot x = -x
+            d_residual_dt = self.alpha * residual  # 
             residual_t = residual.unsqueeze(1) + d_residual_dt.unsqueeze(1) * t_values_expanded.unsqueeze(2)  # Broadcast over time
 
             # Concatenate the 2D part with the higher-dimensional residual
-            trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, N, dim)
+            trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, T, dim)
 
         return trajectory
