@@ -2,8 +2,10 @@ import numpy as np
 import itertools
 import torch
 import torch.nn as nn
-from typing import Callable, Tuple, List
-from .irevnet import *
+from typing import Callable, Tuple, List, Optional
+import torchdiffeq
+
+from .ds_class import *
 
 class PeriodicActivation(nn.Module):
     """Implements a periodic activation function."""
@@ -20,7 +22,7 @@ class PeriodicActivation(nn.Module):
         return self.func(x)
 
 class HomeomorphismNetwork(nn.Module):
-    """Represents a homeomorphic transformation close to the identity.
+    """Represents a homeomorphic transformation
     Can be initialized as a perturbation-based transformation with a fixed normalization.
     """
     def __init__(self, dim: int, layer_sizes: list=3*[64], activation: str = "tanh", epsilon: float = None, grid_size: int = 10, grid_bound: float = 1) -> None:
@@ -122,47 +124,6 @@ class HomeomorphismNetwork(nn.Module):
             y = x - self.forward(y) + y
         return y
 
-
-class ResidualBlock(nn.Module):
-    def __init__(self, dim: int, hidden_dim: int):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.utils.spectral_norm(nn.Linear(dim, hidden_dim)),
-            nn.ReLU(),
-            nn.utils.spectral_norm(nn.Linear(hidden_dim, dim)),
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return x + self.net(x)
-
-
-class iResNet(nn.Module):
-    def __init__(self, dim: int, n_blocks: int = 5, hidden_dim: int = 64):
-        super().__init__()
-        self.blocks = nn.ModuleList([
-            ResidualBlock(dim, hidden_dim) for _ in range(n_blocks)
-        ])
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        for block in self.blocks:
-            x = block(x)
-        return x
-
-    def inverse(self, y: torch.Tensor, max_iter: int = 10) -> torch.Tensor:
-        """
-        Fixed-point iteration for inverting the residual network.
-        Assumes that each block is contractive (Lipschitz constant < 1).
-        """
-        x = y.clone()
-        for _ in range(max_iter):
-            for block in reversed(self.blocks):
-                x = x - (block(x) - x)
-        return x
-    
-
-
-
-
 # Function to generate homeomorphism with grid points
 def generate_random_homeomorphism(dim: int, num_samples: int = 10, epsilon: float = 0.01, grid_points: bool = False, bounds: tuple = (-2,2), activation: str= 'tanh') -> torch.Tensor:
     """
@@ -186,6 +147,170 @@ def generate_random_homeomorphism(dim: int, num_samples: int = 10, epsilon: floa
 
     return homeomorphism_network, random_samples, transformed_samples
 
+
+#### NODEs
+class NeuralODE(nn.Module):
+    def __init__(
+        self, 
+        dim: int, 
+        layer_sizes: list[int], 
+        activation: Callable[[], nn.Module] = nn.Tanh
+    ) -> None:
+        super().__init__()
+        self.dim = dim
+        
+        layers = []
+        input_dim = dim
+        for hidden_dim in layer_sizes:
+            layers.append(nn.Linear(input_dim, hidden_dim))
+            layers.append(activation())  # <-- use the passed activation function
+            input_dim = hidden_dim
+        
+        layers.append(nn.Linear(input_dim, dim))  # Final layer back to dim
+        
+        self.mlp = nn.Sequential(*layers)
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        return self.mlp(x)
+
+
+class NODEHomeomorphism(nn.Module):
+    """Represents a homeomorphic transformation using a Neural ODE."""
+    def __init__(self, dim: int, layer_sizes: list[int] = [64, 64],
+                 activation: Callable[[], nn.Module] = nn.Tanh,
+                 use_identity_init: bool = False,
+                 t_span: tuple = (0.0, 1.0)) -> None:
+        super().__init__()
+        self.t_span = torch.tensor(t_span)  # Default integration time span
+        self.neural_ode = NeuralODE(dim, layer_sizes, activation=activation)
+        self.dim = dim
+        self.layer_sizes = layer_sizes
+        if use_identity_init:
+            self._initialize_identity_weights()  # Initialize the layers as identity mapping
+
+    def _initialize_identity_weights(self) -> None:
+        """Initialize the neural ODE layers to represent the identity map."""
+        for layer in self.neural_ode.mlp:
+            if isinstance(layer, nn.Linear):
+                # Use small values for weights, ensuring it's close to identity
+                nn.init.zeros_(layer.weight)
+                #nn.init.normal_(layer.weight, mean=0.0, std=1e-3)  # Small variance initialization
+                nn.init.zeros_(layer.bias)  # Set bias to zero
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Map from source to target space."""
+        t = self.t_span.to(x.device)
+        y = torchdiffeq.odeint(self.neural_ode, x, t)
+        return y[-1]  # Final state
+
+    def inverse(self, y: torch.Tensor) -> torch.Tensor:
+        """Map from target to source space."""
+        t = self.t_span.flip(0).to(y.device)
+        x = torchdiffeq.odeint(self.neural_ode, y, t)
+        return x[-1]
+
+    def jacobian(self, x: torch.Tensor) -> torch.Tensor:
+        x = x.requires_grad_(True)
+        output = self.forward(x)
+
+        jacobian = []
+        for i in range(output.shape[1]):
+            grad_output = torch.zeros_like(output)
+            grad_output[:, i] = 1
+            grad_i = torch.autograd.grad(
+                output, x, grad_outputs=grad_output,
+                create_graph=True, retain_graph=True
+            )[0]
+            jacobian.append(grad_i.unsqueeze(1))
+        return torch.cat(jacobian, dim=1)
+
+
+    # def inverse_approximation(self, x: torch.Tensor, steps: int = 5) -> torch.Tensor:
+    #     y = x.clone()
+    #     for _ in range(steps):
+    #         y = x - self.forward(y) + y
+    #     return y
+
+
+
+###Invertible Residual Networks (iResNet)
+import math
+
+class InvertibleResNetBlock(nn.Module):
+    def __init__(self, in_channels: int, hidden_channels: int, use_identity_init: bool = False):
+        super(InvertibleResNetBlock, self).__init__()
+        self.in_channels = in_channels
+        self.hidden_channels = hidden_channels
+        self.split_size = in_channels #// 2  # Floor division
+
+        self.fc1 = nn.Linear(self.split_size, hidden_channels)
+        self.fc2 = nn.Linear(hidden_channels, self.split_size)
+        self.activation = nn.ELU()
+
+        if use_identity_init:
+            self._initialize_identity()
+        else:
+            self._initialize_default()
+    
+    def _initialize_identity(self):
+        nn.init.kaiming_uniform_(self.fc1.weight, a=math.sqrt(5))
+        if self.fc1.bias is not None:
+            fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.fc1.weight)
+            bound = 1 / math.sqrt(fan_in)
+            nn.init.uniform_(self.fc1.bias, -bound, bound)
+        nn.init.zeros_(self.fc2.weight)
+        nn.init.zeros_(self.fc2.bias)
+
+    def _initialize_default(self):
+        nn.init.kaiming_uniform_(self.fc1.weight, a=math.sqrt(5))
+        nn.init.kaiming_uniform_(self.fc2.weight, a=math.sqrt(5))
+        if self.fc1.bias is not None:
+            fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.fc1.weight)
+            bound = 1 / math.sqrt(fan_in)
+            nn.init.uniform_(self.fc1.bias, -bound, bound)
+        if self.fc2.bias is not None:
+            fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.fc2.weight)
+            bound = 1 / math.sqrt(fan_in)
+            nn.init.uniform_(self.fc2.bias, -bound, bound)
+
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Split into (split_size, remaining)
+        x1 = x[:, :self.split_size]
+        x2 = x[:, self.split_size:]
+        z = self.activation(self.fc1(x1))
+        x1_out = x1 + self.fc2(z)
+        return torch.cat([x1_out, x2], dim=1)
+
+    def inverse(self, y: torch.Tensor) -> torch.Tensor:
+        y1 = y[:, :self.split_size]
+        y2 = y[:, self.split_size:]
+        z = self.activation(self.fc1(y1))
+        y1_inv = y1 - self.fc2(z)
+        return torch.cat([y1_inv, y2], dim=1)
+
+
+
+
+class InvertibleResNet(nn.Module):
+    def __init__(self, dim: int, layer_sizes: List[int], use_identity_init: bool = False):
+        super(InvertibleResNet, self).__init__()
+        self.dim = dim
+        self.layer_sizes = layer_sizes
+        self.blocks = nn.ModuleList([
+            InvertibleResNetBlock(dim, hidden_size, use_identity_init=use_identity_init)
+            for hidden_size in layer_sizes
+        ])
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        for block in self.blocks:
+            x = block(x)
+        return x
+
+    def inverse(self, y: torch.Tensor) -> torch.Tensor:
+        for block in reversed(self.blocks):
+            y = block.inverse(y)
+        return y
 
 
 
@@ -230,126 +355,12 @@ class NormFlowHomeomorphism(nn.Module):
         return self._restore_time(x_flat, original_shape)
 
 
-#### NODEs
-import torchdiffeq
-
-import torch
-import torch.nn as nn
-from typing import Callable
-
-class NeuralODE(nn.Module):
-    def __init__(
-        self, 
-        dim: int, 
-        layer_sizes: list[int], 
-        activation: Callable[[], nn.Module] = nn.Tanh
-    ) -> None:
-        super().__init__()
-        self.dim = dim
-        
-        layers = []
-        input_dim = dim
-        for hidden_dim in layer_sizes:
-            layers.append(nn.Linear(input_dim, hidden_dim))
-            layers.append(activation())  # <-- use the passed activation function
-            input_dim = hidden_dim
-        
-        layers.append(nn.Linear(input_dim, dim))  # Final layer back to dim
-        
-        self.mlp = nn.Sequential(*layers)
-
-    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        return self.mlp(x)
 
 
-class NODEHomeomorphism(nn.Module):
-    """Represents a homeomorphic transformation using a Neural ODE."""
-    def __init__(self, dim: int, layer_sizes: list[int] = [64, 64],
-                activation: Callable[[], nn.Module] = nn.Tanh,
-                t_span: tuple = (0.0, 1.0)) -> None:
-        super().__init__()
-        self.t_span = torch.tensor(t_span)  # Default integration time span
-        self.neural_ode = NeuralODE(dim, layer_sizes, activation=activation)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Map from source to target space."""
-        t = self.t_span.to(x.device)
-        y = torchdiffeq.odeint(self.neural_ode, x, t)
-        return y[-1]  # Final state
-
-    def inverse(self, y: torch.Tensor) -> torch.Tensor:
-        """Map from target to source space."""
-        t = self.t_span.flip(0).to(y.device)
-        x = torchdiffeq.odeint(self.neural_ode, y, t)
-        return x[-1]
-
-    def jacobian(self, x: torch.Tensor) -> torch.Tensor:
-        x.requires_grad_(True)
-        output = self.forward(x)
-
-        jacobian = []
-        for i in range(output.shape[1]):
-            grad_output = torch.zeros_like(output)
-            grad_output[:, i] = 1
-            grad_i = torch.autograd.grad(output, x, grad_outputs=grad_output, create_graph=False)[0]
-            jacobian.append(grad_i.unsqueeze(1))
-        return torch.cat(jacobian, dim=1)
-
-    # def inverse_approximation(self, x: torch.Tensor, steps: int = 5) -> torch.Tensor:
-    #     y = x.clone()
-    #     for _ in range(steps):
-    #         y = x - self.forward(y) + y
-    #     return y
-
-
-
-###Invertible Residual Networks (iResNet)###
-class InvertibleResNetBlock(nn.Module):
-    def __init__(self, in_channels: int, hidden_channels: int):
-        super(InvertibleResNetBlock, self).__init__()
-        self.fc1 = nn.Linear(in_channels // 2, hidden_channels)
-        self.fc2 = nn.Linear(hidden_channels, in_channels // 2)
-        self.activation = nn.ELU()  # invertible activation
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x1, x2 = x.chunk(2, dim=1)
-        z = self.activation(self.fc1(x1))
-        x1_out = x1 + self.fc2(z)
-        return torch.cat([x1_out, x2], dim=1)
-
-    def inverse(self, y: torch.Tensor) -> torch.Tensor:
-        y1, y2 = y.chunk(2, dim=1)
-        z = self.activation(self.fc1(y1))
-        y1_inv = y1 - self.fc2(z)
-        return torch.cat([y1_inv, y2], dim=1)
-
-class InvertibleResNet(nn.Module):
-    def __init__(self, in_channels: int, layer_sizes: List[int]):
-        super(InvertibleResNet, self).__init__()
-        self.blocks = nn.ModuleList([
-            InvertibleResNetBlock(in_channels, hidden_size)
-            for hidden_size in layer_sizes
-        ])
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        for block in self.blocks:
-            x = block(x)
-        return x
-
-    def inverse(self, y: torch.Tensor) -> torch.Tensor:
-        for block in reversed(self.blocks):
-            y = block.inverse(y)
-        return y
-
-
-
-
-
-
-############## testing homeomorphisms ##############
+############## testing homeomorphisms 
 def test_homeo_networks(
     trajectories_target: torch.Tensor,
-    homeo_ds_networks: List[Homeo_DS_Net], 
+    homeo_ds_networks: List[nn.Module], 
     plot_first_n: int = 5,
     time_span: torch.Tensor=None,
 ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
@@ -387,7 +398,7 @@ def test_homeo_networks(
         initial_conditions_src = homeo_net.inverse(initial_conditions)
 
         # Generate source trajectories
-        if isinstance(source_system, AnalyticalLimitCycle):
+        if isinstance(source_system, AnalyticDynamicalSystem):
             trajectories_source = source_system.compute_trajectory(initial_conditions_src, time_span=time_span)
         else:
             t_values, trajectories_source, _ = generate_trajectories_scipy(
@@ -419,45 +430,52 @@ def test_homeo_networks(
 
 
 
-###
-def jacobian_matrix(h, x):
+### JACOBIAN ###
+from typing import Callable, Literal
+
+def jacobian_norm_over_batch(
+    phi: Callable[[torch.Tensor], torch.Tensor],
+    x: torch.Tensor,
+    p: float = 2.0,
+    norm_type: Literal["fro", "spectral"] = "fro",
+    normalize: bool = True
+) -> torch.Tensor:
     """
-    Computes the Jacobian of the homeomorphism `h(x)` at the batch of points `x`.
-    h: homeomorphism function
-    x: tensor of shape (batch_size, dim)
+    Computes empirical L^p norm of Jacobian norms of phi over a batch of points.
+
+    Args:
+        phi: R^n -> R^m function
+        x: Tensor of shape (B, D): batch of input points
+        p: Exponent in L^p norm
+        norm_type: 'fro' or 'spectral'
+        normalize: If True, divide each norm by sqrt(D)
+
     Returns:
-        jacobian: (batch_size, output_dim, input_dim)
+        Scalar tensor: empirical L^p norm of ||J_phi(x)|| across x in batch
     """
-    x = x.requires_grad_(True)
-    def h_sum(x):
-        return h(x)
+    B, D = x.shape
 
-    jac = torch.autograd.functional.jacobian(h_sum, x, create_graph=False)
-    # jac shape: (batch_size, output_dim, input_dim)
-    return jac
+    def compute_norm(xi: torch.Tensor) -> torch.Tensor:
+        xi = xi.detach().unsqueeze(0).requires_grad_(True)  # shape (1, D)
+        y = phi(xi).squeeze(0)  # shape (D_out,)
+        assert y.ndim == 1, "phi(x) must return a 1D output (R^m)"
+        grads = [torch.autograd.grad(y[i], xi, retain_graph=True, create_graph=False)[0].squeeze(0) for i in range(y.shape[0])]
+        J = torch.stack(grads)  # (m, n)
+        if norm_type == "fro":
+            norm = torch.norm(J, p='fro')
+        elif norm_type == "spectral":
+            norm = torch.linalg.svdvals(J)[0]
+        else:
+            raise ValueError(f"Unsupported norm_type: {norm_type}")
+        return norm / D**0.5 if normalize else norm
 
-def jacobian_matrix_pointwise(h, x_batch):
-    """
-    Computes the Jacobians of h(x) for a batch of points x_batch.
-    Returns a tensor of shape (batch_size, dim_out, dim_in).
-    """
-    batch_size, input_dim = x_batch.shape
-    jacobians = []
-    for i in range(batch_size):
-        x = x_batch[i].unsqueeze(0).detach().requires_grad_(True)
-        y = h(x)  # shape (1, output_dim)
-
-        jac = []
-        for j in range(y.shape[1]):
-            grad = torch.autograd.grad(y[0, j], x, retain_graph=True, create_graph=False)[0]
-            jac.append(grad.squeeze(0))  # shape (input_dim,)
-        jac = torch.stack(jac, dim=0)  # shape (output_dim, input_dim)
-        jacobians.append(jac)
-
-    jacobians = torch.stack(jacobians, dim=0)  # (batch_size, output_dim, input_dim)
-    return jacobians
+    norms = torch.stack([compute_norm(x[i]) for i in range(B)])
+    return norms.pow(p).mean().pow(1 / p)
 
 
+
+
+############
 def transform_vector_field(homeo_ds_net, xlim=(-2, 2), ylim=(-2, 2), num_points=15):
     """
     Transforms the vector field using the homeomorphism and its Jacobian.
@@ -494,7 +512,10 @@ def transform_vector_field(homeo_ds_net, xlim=(-2, 2), ylim=(-2, 2), num_points=
     return transformed_points, transformed_vector_field
 
 
-#Link
+
+
+
+#######Link
 class Homeo_DS_Net(nn.Module):
     def __init__(self, homeo_network: nn.Module, dynamical_system: nn.Module):
         """
