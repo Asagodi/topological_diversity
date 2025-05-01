@@ -122,7 +122,7 @@ def train_homeomorphism(
 
     optimizer=optim.Adam(params_to_optimize, lr=lr)
     early_stopper = EarlyStopping(patience=early_stopping_patience)
-    best_model_saver = BestModelSaver(model=)
+    best_model_saver = BestModelSaver(homeo_net=homeo_net, source_system=source_system)
 
     losses = []  # Store losses for each epoch
     grad_norms = []
@@ -159,7 +159,7 @@ def train_homeomorphism(
             torch.nn.utils.clip_grad_norm_(homeo_net.parameters(), max_grad_norm)
         optimizer.step()
         losses.append(loss.item())  # Store loss for this epoch
-        saver(homeo_net, source_system, loss.item())  # Track best model
+        best_model_saver.step(loss.item())  # Track best model
 
         if epoch % 10 == 0:
             if hasattr(source_system, 'velocity'):
@@ -176,7 +176,7 @@ def train_homeomorphism(
     print(f"Total training time: {total_time:.2f} seconds, Avg time per epoch: {total_time / num_epochs:.4f} sec")
     homeo_net.losses = losses  # Store losses 
     homeo_net.grad_norms = grad_norms  
-    saver.restore(homeo_net, source_system)  #  Restore best model 
+    best_model_saver.restore()  #  Restore best model 
     return Homeo_DS_Net(homeo_network=homeo_net, dynamical_system=source_system)
 
 
