@@ -5,6 +5,41 @@ from typing import Callable, Tuple, Optional, List
 from torchdiffeq import odeint
 from scipy.integrate import solve_ivp
 
+
+
+
+class TrainablePeriodicFunction(nn.Module):
+    """Implements a periodic function."""
+    def __init__(self, num_terms: int = 5):
+        super().__init__()
+        self.num_terms = num_terms
+        self.a = nn.Parameter(torch.randn(num_terms)*0.01)  #small cosine coefficients
+        self.b = nn.Parameter(torch.randn(num_terms)*0.01)  #small sine coefficients
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Assumes x in [0, 2pi]
+        result = torch.zeros_like(x)
+        for n in range(1, self.num_terms + 1):
+            result += self.a[n-1] * torch.cos(n * x) + self.b[n-1] * torch.sin(n * x)
+        return result
+
+class CircleNN(nn.Module):
+    """Implements a near periodic function."""
+    def __init__(self, hidden_dim: int = 64):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(2, hidden_dim),
+            nn.Tanh(),
+            nn.Linear(hidden_dim, 1)
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Map scalar x to (cos(x), sin(x))
+        x_embed = torch.stack([torch.cos(x), torch.sin(x)], dim=-1)
+        return self.net(x_embed).squeeze(-1)
+
+
+
 class DynamicalSystem(nn.Module):
     """
     Base class for a dynamical system. 
@@ -326,6 +361,7 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
             alpha_init = -1.0
         else:
             self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         if x.dim() == 1:
@@ -374,6 +410,7 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
         noise_std: float = 0.0,
         radius: float = 1.0,  
         alpha_init: float = -1.0,
+        vf_on_ring_enabled: bool = False
     ):
         super().__init__()
         assert dim >= 2, "Dimension must be at least 2."
@@ -388,6 +425,9 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
             alpha_init = -1.0
         else:
             self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        if vf_on_ring_enabled:
+            self.vf_on_ring = TrainablePeriodicFunction(num_terms=5)
+            self.vf_on_ring_enabled = vf_on_ring_enabled
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         if x.dim() == 1:
@@ -399,6 +439,15 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
         theta = torch.atan2(y_val, x_val)
 
         dtheta_dt = 0 
+        if self.vf_on_ring_enabled:
+            #dtheta_dt = self.vf_on_ring(theta)
+
+            #with gaussian envelope
+            angular_perturb = self.vf_on_ring(theta)
+            sigma = 0.05  # width of radial band around the ring
+            bump = torch.exp(-((r - self.radius) ** 2) / (2 * sigma**2))
+            dtheta_dt = bump * angular_perturb
+
         dr_dt =  - self.alpha * r * (self.radius - r)  # Radial dynamics
 
         # Convert polar derivatives back to Cartesian
