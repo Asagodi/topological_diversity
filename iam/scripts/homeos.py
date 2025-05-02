@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import itertools
 import torch
@@ -6,6 +7,8 @@ from typing import Callable, Tuple, List, Optional
 import torchdiffeq
 
 from .ds_class import *
+
+
 
 class PeriodicActivation(nn.Module):
     """Implements a periodic activation function."""
@@ -20,6 +23,7 @@ class PeriodicActivation(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.func(x)
+
 
 class HomeomorphismNetwork(nn.Module):
     """Represents a homeomorphic transformation
@@ -225,12 +229,6 @@ class NODEHomeomorphism(nn.Module):
         return torch.cat(jacobian, dim=1)
 
 
-    # def inverse_approximation(self, x: torch.Tensor, steps: int = 5) -> torch.Tensor:
-    #     y = x.clone()
-    #     for _ in range(steps):
-    #         y = x - self.forward(y) + y
-    #     return y
-
 
 
 ###Invertible Residual Networks (iResNet)
@@ -241,7 +239,7 @@ class InvertibleResNetBlock(nn.Module):
         super(InvertibleResNetBlock, self).__init__()
         self.in_channels = in_channels
         self.hidden_channels = hidden_channels
-        self.split_size = in_channels #// 2  # Floor division
+        self.split_size = in_channels 
 
         self.fc1 = nn.Linear(self.split_size, hidden_channels)
         self.fc2 = nn.Linear(hidden_channels, self.split_size)
@@ -293,6 +291,7 @@ class InvertibleResNetBlock(nn.Module):
 
 
 class InvertibleResNet(nn.Module):
+    """Represents a homeomorphic transformation using an invertible Residual Network."""
     def __init__(self, dim: int, layer_sizes: List[int], use_identity_init: bool = False):
         super(InvertibleResNet, self).__init__()
         self.dim = dim
@@ -318,6 +317,8 @@ class InvertibleResNet(nn.Module):
 import normflows as nf
 
 class NormFlowHomeomorphism(nn.Module):
+    """Represents a homeomorphic transformation using a Normalizing Flow."""
+
     def __init__(self, dim: int = 2, layer_sizes: list[int] = [64, 64], num_layers: int = 32):
         super().__init__()
         self.dim = dim
@@ -381,13 +382,13 @@ def test_homeo_networks(
             - transformed_trajectories_list: Re-transformed trajectories using homeomorphisms.
     """
     # Get initial conditions from target trajectories
-
-
+    loss_fn = nn.MSELoss(reduction='mean')
+    num_points = len(trajectories_target)
     initial_conditions = torch.stack([traj[0] for traj in trajectories_target[:plot_first_n]])
 
     trajectories_source_list = []
     transformed_trajectories_list = []
-
+    losses = []
     for homeo_ds_net in homeo_ds_networks:
         source_system = homeo_ds_net.dynamical_system
         homeo_net = homeo_ds_net.homeo_network
@@ -401,32 +402,22 @@ def test_homeo_networks(
         if isinstance(source_system, AnalyticDynamicalSystem):
             trajectories_source = source_system.compute_trajectory(initial_conditions_src, time_span=time_span)
         else:
-            t_values, trajectories_source, _ = generate_trajectories_scipy(
-                system=source_system,
-                predefined_initial_conditions=initial_conditions_src,
-                time_span=time_span
-            )
+            _, trajectories_source, _ = generate_trajectories_scipy(system=source_system,predefined_initial_conditions=initial_conditions_src,time_span=time_span)
+            transformed_trajectories = generate_trajectories_for_training(homeo_net, source_system, initial_conditions_target=initial_conditions, use_transformed_system=False)
 
         # Map trajectories back to target space using homeomorphism
-        with torch.no_grad():
-            transformed_trajectories = np.array([homeo_net(traj).detach().numpy() for traj in trajectories_source])
+        # with torch.no_grad():
+        #     transformed_trajectories = np.array([homeo_net(traj).detach().numpy() for traj in trajectories_source])
         # Convert source trajectories to numpy
         trajectories_source_np = np.array([traj.detach().numpy() for traj in trajectories_source])
 
         trajectories_source_list.append(trajectories_source_np)
         transformed_trajectories_list.append(transformed_trajectories)
 
-    transformed = torch.stack([
-        torch.tensor(traj, dtype=torch.float32) for traj in transformed_trajectories_list
-    ])
-    target = torch.stack([
-        traj if isinstance(traj, torch.Tensor) else torch.tensor(traj, dtype=torch.float32)
-        for traj in trajectories_target[:len(transformed_trajectories_list)]
-    ])
-
-    loss_fn = nn.MSELoss(reduction='mean')
-    loss = loss_fn(transformed, target)
-    return trajectories_source_list, transformed_trajectories_list, loss.item()
+        loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target, transformed_trajectories)) / num_points
+        #loss = loss_fn(transformed, target)
+        losses.append(loss.item())
+    return trajectories_source_list, transformed_trajectories_list, losses
 
 
 
