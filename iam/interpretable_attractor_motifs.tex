@@ -489,7 +489,7 @@ black box to mixture of interpretable models \citep{ghosh2023blackbox}
 \citep{menier2025interpretable}
 \citep{nonnenmacher2017extracting}
 \citep{zhang2025netformer}: recovering dynamical connectivity in neuronal population dynamics
-\citep{klindt2025superposition}
+\citep{klindt2023identifying,klindt2025superposition}
 
 \subsubsection{Our levels of interperetability}
 Proposal: guiding principles for a hierarchy of interpretability
@@ -766,7 +766,7 @@ a simple sufficient condition for a family of flows on a smooth compact manifold
 
 Stability of diffeomorphisms implies that $\Diff(M)\subset C^1(M,M)$  is an open subset.
 
-Normalizing flows\citep{kobyzev2020normalizing}
+% Normalizing flows\citep{kobyzev2020normalizing}
 
 \paragraph{ResNets}
 the layers of a ResNet can be considered as Euler-discretization of the integration of a flow of a diffeomorphism\citep{rousseau2020residual}
@@ -779,9 +779,11 @@ NODE\citep{finlay2020trainnode}
 Conjugate Mappings \citep{bramburger2021conjugate}
 
 %any homeomorphism on a $p$-dimensional Euclidean space can be approximated by a Neural ODE or an i-ResNet operating on a $2p$-dimensional Euclidean space \citep{zhang2020approximation}
-Any homeomorphism of $\mathbb {R} ^{n}$ can be approximated by a neural ODE operating on $\mathbb {R} ^{2n+1}$, proved by combining Whitney embedding theorem for manifolds and the universal approximation theorem for neural networks  \citep{zhang2020approximation}
+Any homeomorphism of $\mathbb {R} ^{n}$ can be approximated by a neural ODE operating on $\mathbb {R} ^{2n+1}$, proved by combining Whitney embedding theorem for manifolds and the universal approximation theorem for neural networks  \citep{zhang2020approximation}.
 
 diffeomorphisms from gradient information of desired costs \citep{lai2021parallelised}
+
+
 
 \subsubsection{Decomposing diffeomorphisms}\label{sec:diff_dec}
 \paragraph{Lie}
@@ -802,6 +804,28 @@ Freia\citep{freia} %https://github.com/vislearn/FrEIA
 \citep{dinh2016density} % https://github.com/AxelNathanson/pytorch-normalizing-flows?tab=readme-ov-file
 
 \citep{stimper2023normflows} % https://github.com/VincentStimper/normalizing-flows
+
+
+
+\subsubsection{Jacobian of homeomorphism}
+ For a smooth homeomorphism \( \Phi \), the Jacobian \( J_{\Phi}(x) \in \mathbb{R}^{n \times n} \) is the matrix of partial derivatives:
+\[
+J_{\Phi}(x) = \left[ \frac{\partial \Phi_i}{\partial x_j}(x) \right]_{i,j}.
+\]
+
+\paragraph{Norm of the Jacobian at a point \( x \).} Typically, we use either the operator norm (e.g., induced 2-norm) or the Frobenius norm:
+\[
+\|J_{\Phi}(x)\| :=
+\begin{cases}
+\|J_{\Phi}(x)\|_2 & \text{(spectral/operator norm)} \\
+\|J_{\Phi}(x)\|_F = \left( \sum_{i,j} \left| \frac{\partial \Phi_i}{\partial x_j}(x) \right|^2 \right)^{1/2} & \text{(Frobenius norm)}.
+\end{cases}
+\]
+
+\paragraph{\( L^p \) norm of the Jacobian over a domain \( \Omega \subseteq \mathbb{R}^n \), with respect to a measure \( \mu \):}
+\[
+\|J_{\Phi}\|_{L^p(\mu)} = \left( \int_{\Omega} \|J_{\Phi}(x)\|^p \, d\mu(x) \right)^{1/p}.
+\]
 
 
 
@@ -1325,6 +1349,7 @@ Cartesian Coordinates
  Trajectories: 15
 
 \subsection{Limit cycle fitting}
+
 \subsubsection{Random diffeomorphism of a limit cycle}
 
 [Trajectories figure]
@@ -1344,6 +1369,13 @@ The Van der Pol equation is given by
 
 In Fig.~\ref{fig:all_motifs_vdp} we used $\mu=0.3$.
 
+
+\subsubsection{Sel'kov}
+\citep{selkov1968self}
+
+
+
+
 \subsection{Approximate continuous attractors}
 \subsubsection{Line attractor}
 
@@ -1352,13 +1384,43 @@ In Fig.~\ref{fig:all_motifs_vdp} we used $\mu=0.3$.
 
 \newpage
 \section{Architectures}
-\subsection{Neural ODE}
 
+\subsection{Invertible ResNet}
+
+
+
+
+\subsection{Neural Ordinary Differential Equations (Neural ODEs)}
+A Neural Ordinary Differential Equation (Neural ODE) is a continuous-time model where the evolution of a system is governed by an ordinary differential equation (ODE) with a neural network defining the dynamics. Specifically, let \( x(t) \in \mathbb{R}^d \) be the state of the system at time \( t \). The evolution of \( x(t) \) is described by the differential equation:
+\begin{equation}
+    \frac{d}{dt} x(t) = f_\Theta(x(t), t),
+\end{equation}
+where \( f_\Theta(x(t), t) \) is a neural network parameterized by \( \Theta \), and typically \( f_\Theta \) does not explicitly depend on time \( t \) (i.e., it is a time-invariant system).
+ The solution to this equation can is using the Runge-Kutta numerical integration method, with initial condition \( x(0) = x_0 \).
 
 \paragraph{Other proposals}
-Neural manifold ordinary differential equations \citep{lou2020neural}
+Neural manifold ordinary differential equations \citep{lou2020neural}.
 
-\subsection{Normalizing flow}
+\subsection{Invertible ResNet}
+The basic unit of an Invertible ResNet is the \textit{Invertible ResNet Block}, which operates by splitting the input \( x \in \mathbb{R}^d \) into two parts, \( x_1 \) and \( x_2 \), and applying a transformation only to \( x_1 \). The output is:
+\[
+ \begin{bmatrix} x_1 + f(x_1) \\ x_2 \end{bmatrix},
+\]
+where \( f(x_1) = W_2 \cdot \text{ELU}(W_1 \cdot x_1 + b_1) + b_2 \) is a fully connected transformation. %other activation functions?
+The block is initialized with identity mapping to ensure invertibility, where \( W_2 = 0 \) and \( W_1 \) is initialized using Kaiming uniform.
+
+The Invertible ResNet consists of stacking multiple Invertible ResNet Blocks. For input \( x \), the forward pass is:
+\[
+y = \text{InvertibleResNet}(x) = \text{Block}_L(\dots \text{Block}_1(x)),
+\]
+and the inverse is computed by reversing the block order:
+\[
+x = \text{InvertibleResNet}^{-1}(y) = \text{Block}_1^{-1}(\dots \text{Block}_L^{-1}(y)).
+\]
+
+This structure guarantees that the network is bijective, preserving the volume and making it suitable for density estimation and transformations in generative models.
+
+%\subsection{Normalizing flow}
 
 
 %\subsection{Naive MLP}
