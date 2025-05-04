@@ -3,12 +3,13 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import MaxNLocator
 from matplotlib.lines import Line2D
+from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
-
 from typing import List, Optional
+
+
 sns.set(style="darkgrid", palette="muted", font="serif")
 plt.rcParams.update(plt.rcParamsDefault)
-
 
 
 def clean_tick(value: float) -> float:
@@ -16,8 +17,6 @@ def clean_tick(value: float) -> float:
         return round(value)  # Whole number
     else:
         return round(value, 1)  # One decimal place
-
-
 
 
 def plot_sampled_trajectories(trajectories, initial_conditions, bounds):
@@ -35,8 +34,6 @@ def plot_sampled_trajectories(trajectories, initial_conditions, bounds):
     ax.grid(True)
     ax.legend()
     plt.show()
-
-
 
 
 # Function to plot the action of the homeomorphism with optional grid points
@@ -196,138 +193,143 @@ def plot_trajectories_stt(trajectories_source, transformed_trajectories, traject
 
 
 
-def plot_trajectories_allmotifs(
-    trajectories_source_list, transformed_trajectories_list, trajectories_target, asymptotic_trajectories_list=None,
-    num_points=10, bounds=(2.0, 2.0), alpha=0.7,
-    target_color='firebrick', 
-    base_colors = ["mediumseagreen", "#00BFFF", "#8B008B"],  # Deep green → Bright cyan → Vibrant magenta
-    asymptotic_colors=['#d3869b', 'seagreen', 'navy', 'purple'],  # target, 3 motifs 
-    source_names = ["Source 1", "Source 2", "Source 3"],
-    save_name=None, show_fig=True
+def plot_single_motif_trajectories(
+    trajectories_source: np.ndarray,
+    transformed_trajectories: np.ndarray,
+    trajectories_target: np.ndarray,
+    source_name: str = "Source",
+    trajectory_colors = {"target": "firebrick", "source": "mediumseagreen", "asymptotic_target": "#d3869b", "asymptotic_source": "seagreen"},
+    asymptotic_target: Optional[np.ndarray] = None,
+    asymptotic_source_transformed: Optional[np.ndarray] = None,
+    num_points: int = 10,
+    bounds: tuple = (2.0, 2.0),
+    alpha: float = 0.7,
+    which_axis: str = "both",
+    ax_source: Optional[plt.Axes] = None,
+    ax_target: Optional[plt.Axes] = None,
+    save_name: Optional[str] = None,
+    show_fig: bool = True,
 ):
-    """
-    Plot multiple sets of source and transformed trajectories with matched colors.
+    assert which_axis in {"first", "second", "both"}
 
-    - Left subplot: Different sources vs. their transformed counterparts (same color, solid vs. dashed).
-    - Right subplot: Transformed vs. single target trajectories.
-    """
-    fig, axes = plt.subplots(1, 2, figsize=(12, 6), sharey=True, sharex=True)
+    target_color = trajectory_colors["target"]
+    source_color = trajectory_colors["source"]
+    asymptotic_target_color = trajectory_colors["asymptotic_target"]
+    asymptotic_source_color = trajectory_colors["asymptotic_source"]
 
-    # Set axis limits and labels
-    for ax in axes:
-        ax.set_xlim([-bounds[0], bounds[0]])
-        ax.set_ylim([-bounds[1], bounds[1]])
-        ax.set_xlabel(r'$x$', fontsize=14)
-        ax.set_ylabel(r'$y$', fontsize=14)
-        ax.grid(True)
+    if not ax_source and not ax_target:
+        fig, ax = plt.subplots(figsize=(4, 4))
+        ax_target = ax
+    K, T, N = transformed_trajectories.shape
+    num_points = min(num_points, K)
 
-    # Use a color map for distinct source-transformed pairs
-    num_sources = len(trajectories_source_list)
-    color_map = mcolors.LinearSegmentedColormap.from_list("custom_colormap", base_colors, N=num_sources)
+    if which_axis in ("first", "both") and ax_source is not None:
+        ax_source.set_xlim([-bounds[0], bounds[0]])
+        ax_source.set_ylim([-bounds[1], bounds[1]])
+        ax_source.set_xlabel(r'$x$', fontsize=14)
+        ax_source.set_ylabel(r'$y$', fontsize=14)
+        ax_source.grid(True)
+        for i in range(num_points):
+            ax_source.plot(trajectories_source[i, :, 0], trajectories_source[i, :, 1], color=source_color, alpha=alpha, linestyle="--",)
+            ax_source.plot(transformed_trajectories[i, :, 0], transformed_trajectories[i, :, 1], color=source_color,  alpha=alpha)
+        ax_source.set_title(f'{source_name}: Source & Transformed')
 
-    # --- Left subplot: Sources vs. Transformed Trajectories (Matched Colors) ---
-    for idx, (trajectories_source, transformed_trajectories) in enumerate(zip(trajectories_source_list, transformed_trajectories_list)):
-        color = color_map(idx)  # Assign a unique color per source-transformed pair
-        K, T, N = trajectories_source.shape  # Get shape
-
-        for i in range(min(num_points, K)):
-            source_traj = trajectories_source[i]  # Shape: (T, N)
-            transformed_traj = transformed_trajectories[i]  # Shape: (T, N)
-
-            if i == 0:
-                axes[0].plot(source_traj[:, 0], source_traj[:, 1], color=color, alpha=alpha, label=source_names[idx])
-                axes[0].plot(transformed_traj[:, 0], transformed_traj[:, 1], color=color, linestyle="--", alpha=alpha, label='Transformed '+source_names[idx])
-            else:
-                axes[0].plot(source_traj[:, 0], source_traj[:, 1], color=color, alpha=alpha)
-                axes[0].plot(transformed_traj[:, 0], transformed_traj[:, 1], color=color, linestyle="--", alpha=alpha)
-        
-
-    #axes[0].xaxis.set_major_locator(MaxNLocator(integer=True))
-    #axes[0].yaxis.set_major_locator(MaxNLocator(integer=True))
-    xlims = axes[0].get_xlim()
-    ticks = [xlims[0], 0, xlims[1]]  # Set ticks to include 0
-    #axes[0].set_xticks(ticks)                        
-    axes[0].xaxis.set_major_formatter(plt.FuncFormatter(
-    lambda x, _: f"{x:g}" if x in ticks else ""  ))
-    axes[0].yaxis.set_major_formatter(plt.FuncFormatter(
-    lambda x, _: f"{x:g}" if x in ticks else ""  ))
-
-    axes[0].set_title('Source & Transformed Trajectories')
-
-    # --- Right subplot: Transformed vs. Target trajectories ---
-    K, T, N = trajectories_target.shape  # Ensure shape consistency
-
-    for i in range(min(num_points, K)):
-        target_traj = trajectories_target[i]  # Shape: (T, N)
-
-        for idx, transformed_trajectories in enumerate(transformed_trajectories_list):
-            transformed_traj = transformed_trajectories[i]  # Shape: (T, N)
-            color = color_map(idx)  # Use same color as source
-
-            if  i == 0:
-                if idx == 0:
-                    axes[1].plot(target_traj[:, 0], target_traj[:, 1], color=target_color, alpha=0.9, label='Target')
-                else:
-                    axes[1].plot(target_traj[:, 0], target_traj[:, 1], color=target_color, alpha=0.9)
-                axes[1].plot(transformed_traj[:, 0], transformed_traj[:, 1], color=color, linestyle="--", alpha=alpha, label='Transformed '+source_names[idx])
-
-            else:
-                axes[1].plot(transformed_traj[:, 0], transformed_traj[:, 1], color=color, linestyle="--", alpha=alpha)
-                axes[1].plot(target_traj[:, 0], target_traj[:, 1], color=target_color, alpha=0.9)
-
-    # Plot asymptotic trajectories
-            if i==0 and asymptotic_trajectories_list is not None:
-                axes[1].plot(asymptotic_trajectories_list[idx+1][:, 0], asymptotic_trajectories_list[idx+1][:, 1], color=asymptotic_colors[idx+1], alpha=1, label='Asymptotic '+source_names[idx], zorder=100)
-                if asymptotic_trajectories_list[idx+1].shape[0] == 1:
-                    axes[1].plot(asymptotic_trajectories_list[idx+1][:, 0], asymptotic_trajectories_list[idx+1][:, 1], 'o', color=asymptotic_colors[idx+1], alpha=1, label='Asymptotic '+source_names[idx])
-    if asymptotic_trajectories_list is not None:
-        axes[1].plot(asymptotic_trajectories_list[0][:, 0], asymptotic_trajectories_list[0][:, 1], color=asymptotic_colors[0], alpha=1, label='Asymptotic target')
-
-    axes[1].xaxis.set_major_formatter(plt.FuncFormatter(
-    lambda x, _: f"{x:g}" if x in ticks else "" ))
-    axes[1].yaxis.set_major_formatter(plt.FuncFormatter(
-    lambda x, _: f"{x:g}" if x in ticks else "" ))
-    axes[1].set_title('Transformed & Target Trajectories')
-
-    # Combine legends from both subplots into a single legend under the figure
-    handles, labels = axes[0].get_legend_handles_labels()
-    target_handle, target_label = axes[1].get_legend_handles_labels()
-    # Add only the target handle and label to the legend (first label in right subplot)
-    handles.append(target_handle[0])
-    labels.append(target_label[0])
-    #handles.extend(target_handle[-4:])  # Add the rest of the handles from the right subplot
-    #labels.extend(target_label[-4:])  # Add the rest of the labels from the right subplot
-    print(target_label)
-    fig.legend(
-        handles, labels, loc='center', ncol=4,  # ncol columns
-        bbox_to_anchor=(0.5, -0.05),  # Position the legend below the subplots
-        frameon=False, columnspacing=1,  # Adjust spacing between columns
-        handlelength=2, fontsize=12  # Adjust handle size and font size
-    )
-
-    if asymptotic_trajectories_list is not None:
-        fig.legend(
-            handles=target_handle[2::2], 
-            labels=target_label[2::2], 
-            loc='center', ncol=4,
-            bbox_to_anchor=(0.5, -0.13),  # lower than the first legend
-            frameon=False, columnspacing=1,
-            handlelength=2, fontsize=12
-        )
+    if which_axis in ("second", "both") and ax_target is not None:
+        ax_target.set_xlim([-bounds[0], bounds[0]])
+        ax_target.set_ylim([-bounds[1], bounds[1]])
+        ax_target.set_xlabel(r'$x$', fontsize=14)
+        ax_target.set_ylabel(r'$y$', fontsize=14)
+        ax_target.grid(True)
+        for i in range(num_points):
+            ax_target.plot(trajectories_target[i, :, 0], trajectories_target[i, :, 1], color=target_color, alpha=alpha)
+            ax_target.plot(transformed_trajectories[i, :, 0], transformed_trajectories[i, :, 1], color=source_color, alpha=alpha)
+        if asymptotic_target is not None:
+            ax_target.plot(asymptotic_target[:, 0], asymptotic_target[:, 1], color=asymptotic_target_color, linewidth=2, alpha=1.0)
+        if asymptotic_source_transformed is not None:
+            ax_target.plot(asymptotic_source_transformed[:, 0], asymptotic_source_transformed[:, 1], color=asymptotic_source_color, linewidth=2, alpha=1.0)
+        ax_target.set_title(f'{source_name}: Transformed & Target')
     
     plt.tight_layout()
-
     if save_name:
         plt.savefig(save_name, dpi=300, bbox_inches='tight', transparent=True)
+    if show_fig:
+        plt.show()
 
+
+def plot_trajectories_allmotifs(
+    trajectories_source_list,
+    transformed_trajectories_list,
+    trajectories_target,
+    asymptotic_trajectories_list=None,
+    num_points=10,
+    bounds=(2.0, 2.0),
+    alpha=0.7,
+    target_color='firebrick',
+    base_colors=["mediumseagreen", "#00BFFF", "#8B008B"],
+    asymptotic_colors=['#d3869b', 'seagreen', 'navy', 'purple'],
+    source_names=["Source 1", "Source 2", "Source 3"],
+    save_name=None,
+    show_fig=True,
+    which_axis: str = "both"
+):
+    num_motifs = len(trajectories_source_list)
+    num_subplots = 2 if which_axis == "both" else 1
+
+    fig, axes = plt.subplots(
+        num_motifs, num_subplots,
+        figsize=(6 * num_subplots, 4 * num_motifs),
+        squeeze=False,
+        sharex=True, sharey=True
+    )
+
+    for i in range(num_motifs):
+        color = base_colors[i % len(base_colors)]
+        asym_color = asymptotic_colors[i % len(asymptotic_colors)]
+        source_name = source_names[i] if i < len(source_names) else f"Source {i+1}"
+        asym = asymptotic_trajectories_list[i + 1] if asymptotic_trajectories_list else None
+
+        ax_source = axes[i, 0] if which_axis in ("first", "both") else None
+        ax_target = axes[i, 1] if which_axis == "both" else axes[i, 0]
+
+        plot_single_motif_trajectories(
+            trajectories_source=trajectories_source_list[i],
+            transformed_trajectories=transformed_trajectories_list[i],
+            trajectories_target=trajectories_target,
+            source_name=source_name,
+            target_color=target_color,
+            source_color=color,
+            asymptotic_trajectory=asym,
+            asymptotic_color=asym_color,
+            num_points=num_points,
+            bounds=bounds,
+            alpha=alpha,
+            which_axis=which_axis,
+            ax_source=ax_source,
+            ax_target=ax_target,
+        )
+
+    if asymptotic_trajectories_list is not None:
+        ax_target = axes[0, 1] if which_axis == "both" else axes[0, 0]
+        ax_target.plot(
+            asymptotic_trajectories_list[0][:, 0],
+            asymptotic_trajectories_list[0][:, 1],
+            color=asymptotic_colors[0],
+            linewidth=2,
+            alpha=1.0,
+            label='Asymptotic target'
+        )
+
+    plt.tight_layout()
+    if save_name:
+        plt.savefig(save_name, dpi=300, bbox_inches='tight', transparent=True)
     if show_fig:
         plt.show()
 
     return fig, axes
 
-from mpl_toolkits.mplot3d import Axes3D
 
-from matplotlib.lines import Line2D
+
+
 
 def plot_trajectories_3d(
     trajectories_list,

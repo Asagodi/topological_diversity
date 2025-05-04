@@ -288,8 +288,6 @@ class InvertibleResNetBlock(nn.Module):
         return torch.cat([y1_inv, y2], dim=1)
 
 
-
-
 class InvertibleResNet(nn.Module):
     """Represents a homeomorphic transformation using an invertible Residual Network."""
     def __init__(self, dim: int, layer_sizes: List[int], use_identity_init: bool = False):
@@ -356,67 +354,94 @@ class NormFlowHomeomorphism(nn.Module):
         return self._restore_time(x_flat, original_shape)
 
 
+#building
+def build_homeomorphism(params: dict) -> nn.Module:
+    homeo_type = params['homeo_type']
+    if homeo_type == 'iresnet':
+        cls = InvertibleResNet
+        allowed_keys = {'dim', 'layer_sizes', 'use_identity_init'}
+    elif homeo_type == 'nodehomeom':
+        cls = NODEHomeomorphism
+        allowed_keys = {'dim', 'layer_sizes', 'use_identity_init'}
+    else:
+        raise ValueError(f"Unknown architecture: {homeo_type}")
+
+    filtered_args = {k: v for k, v in params.items() if k in allowed_keys}
+    return cls(**filtered_args)
 
 
-############## testing homeomorphisms 
-def test_homeo_networks(
-    trajectories_target: torch.Tensor,
-    homeo_ds_networks: List[nn.Module], 
+############## testing homeomorphism-dynamical system networks
+def test_single_homeo_ds_net(
+    homeo_ds_net: nn.Module,
+    trajectories_target: List[torch.Tensor],
     plot_first_n: int = 5,
-    time_span: torch.Tensor=None,
-) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+    time_span: Optional[torch.Tensor] = None,
+) -> Tuple[np.ndarray, np.ndarray, float]:
     """
-    Transforms target trajectories back to the source domain using inverse homeomorphisms,
-    generates source trajectories, and maps them forward again for comparison.
-
-    Args:
-        trajectories_target: List of target domain trajectories (each a torch.Tensor).
-        motif_library: List of systems/motifs used to generate source trajectories.
-        homeo_networks: List of homeomorphism networks 
-        num_points: Total number of points/trajectories available.
-        plot_first_n: Number of trajectories to process (default is 5).
+    Test a single homeo_ds_net by mapping target trajectories back, regenerating them, and comparing.
 
     Returns:
-        Tuple of two lists:
-            - trajectories_source_list: Source domain trajectories.
-            - transformed_trajectories_list: Re-transformed trajectories using homeomorphisms.
+        - np array of source trajectories
+        - np array of transformed trajectories
+        - scalar MSE loss
     """
-    # Get initial conditions from target trajectories
     loss_fn = nn.MSELoss(reduction='mean')
     num_points = len(trajectories_target)
+    source_system = homeo_ds_net.dynamical_system
+    homeo_net = homeo_ds_net.homeo_network
+
+    if time_span is None:
+        time_span = source_system.time_span
+
+    # Get initial conditions from first n trajectories
     initial_conditions = torch.stack([traj[0] for traj in trajectories_target[:plot_first_n]])
 
+    # Transform to source domain
+    initial_conditions_src = homeo_net.inverse(initial_conditions)
+
+    # Generate source trajectories
+    if isinstance(source_system, AnalyticDynamicalSystem):
+        trajectories_source = source_system.compute_trajectory(initial_conditions_src, time_span=time_span)
+    else:
+        _, trajectories_source, _ = generate_trajectories(
+            source_system, predefined_initial_conditions=initial_conditions_src, time_span=time_span
+        )
+
+    # Transform forward
+    transformed_trajectories = [homeo_net(traj) for traj in trajectories_source]
+
+    # Compute loss
+    loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target, transformed_trajectories)) / num_points
+
+    trajectories_source_np = np.array([traj.detach().cpu().numpy() for traj in trajectories_source])
+    transformed_trajectories_np = np.array([traj.detach().cpu().numpy() for traj in transformed_trajectories])
+    return trajectories_source_np, transformed_trajectories_np, loss.item()
+
+
+def test_homeo_ds_nets(
+    trajectories_target: List[torch.Tensor],
+    homeo_ds_nets: List[nn.Module], 
+    plot_first_n: int = 5,
+    time_span: Optional[torch.Tensor] = None,
+) -> Tuple[List[np.ndarray], List[np.ndarray], List[float]]:
+    """
+    Evaluate each homeo_ds_net on the target trajectories.
+    """
     trajectories_source_list = []
     transformed_trajectories_list = []
     losses = []
-    for homeo_ds_net in homeo_ds_networks:
-        source_system = homeo_ds_net.dynamical_system
-        homeo_net = homeo_ds_net.homeo_network
 
-        if time_span is None:
-            time_span = source_system.time_span
-        # Transform initial conditions to source space
-        initial_conditions_src = homeo_net.inverse(initial_conditions)
+    for homeo_ds_net in homeo_ds_nets:
+        traj_src_np, traj_trans_np, loss = test_single_homeo_ds_net(
+            homeo_ds_net,
+            trajectories_target=trajectories_target,
+            plot_first_n=plot_first_n,
+            time_span=time_span
+        )
+        trajectories_source_list.append(traj_src_np)
+        transformed_trajectories_list.append(traj_trans_np)
+        losses.append(loss)
 
-        # Generate source trajectories
-        if isinstance(source_system, AnalyticDynamicalSystem):
-            trajectories_source = source_system.compute_trajectory(initial_conditions_src, time_span=time_span)
-        else:
-            _, trajectories_source, _ = generate_trajectories_scipy(system=source_system,predefined_initial_conditions=initial_conditions_src,time_span=time_span)
-            transformed_trajectories = generate_trajectories_for_training(homeo_net, source_system, initial_conditions_target=initial_conditions, use_transformed_system=False)
-
-        # Map trajectories back to target space using homeomorphism
-        # with torch.no_grad():
-        #     transformed_trajectories = np.array([homeo_net(traj).detach().numpy() for traj in trajectories_source])
-        # Convert source trajectories to numpy
-        trajectories_source_np = np.array([traj.detach().numpy() for traj in trajectories_source])
-
-        trajectories_source_list.append(trajectories_source_np)
-        transformed_trajectories_list.append(transformed_trajectories)
-
-        loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target, transformed_trajectories)) / num_points
-        #loss = loss_fn(transformed, target)
-        losses.append(loss.item())
     return trajectories_source_list, transformed_trajectories_list, losses
 
 
@@ -518,6 +543,18 @@ class Homeo_DS_Net(nn.Module):
         super(Homeo_DS_Net, self).__init__()
         self.homeo_network = homeo_network
         self.dynamical_system = dynamical_system
+
+    def forward(self, y: torch.Tensor, noise_std: float=0) -> torch.Tensor:
+        """Apply inverse homeomorphism to map y to source, then evolve, then re-apply homeo."""
+        x0 = self.homeo_network.inverse(y)
+        if isinstance(self.dynamical_system, AnalyticDynamicalSystem):
+            traj = self.dynamical_system.compute_trajectory(x0)
+        else:
+            _, traj, _ = generate_trajectories(self.dynamical_system, predefined_initial_conditions=x0, noise_std=noise_std)
+        return self.homeo_network(traj) 
+
+    def trajectory(self, y0: torch.Tensor, noise_std: float=0) -> list[torch.Tensor]:
+        return self.forward(y0, noise_std)
 
 
 
