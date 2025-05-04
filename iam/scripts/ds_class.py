@@ -975,7 +975,6 @@ def generate_trajectories_for_training(
 
 
 
-
 def generate_trajectories_from_initial_conditions(homeo_ds_network, initial_conditions_trg, time_span):
     homeo_net = homeo_ds_network.homeo_network
     source_system = homeo_ds_network.dynamical_system
@@ -989,7 +988,7 @@ def generate_trajectories_from_initial_conditions(homeo_ds_network, initial_cond
             _, trajectories_source, _ = generate_trajectories_scipy(system=source_system,predefined_initial_conditions=initial_conditions_src,time_span=time_span)
             transformed_trajectories = [homeo_net(traj) for traj in trajectories_source]
     transformed_trajectories = torch.stack(transformed_trajectories).detach().numpy()
-    return transformed_trajectories
+    return trajectories_source, transformed_trajectories
 
 
 

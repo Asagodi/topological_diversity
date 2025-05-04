@@ -101,7 +101,7 @@ def train_homeo_ds_net(
     Train the homeomorphism network (now encapsulated in homeo_ds_net) while tracking training time and epoch time.
     """
     loss_fn = nn.MSELoss(reduction='mean')
-    num_points = len(trajectories_target)
+    num_points = trajectories_target.shape[0]  
     
     start_time = time.time()  # Track total training time
 
@@ -164,6 +164,9 @@ def train_homeo_ds_net(
             break
 
     total_time = time.time() - start_time  # Compute total training time
+    transformed_trajectories = homeo_ds_net(initial_conditions_target, noise_std)
+    trajectories_target_detached = [traj.detach() for traj in trajectories_target]
+    loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target_detached, transformed_trajectories)) / num_points
     print(f"Final log(Loss)= {np.log10(loss.item()):.4f}, Total training time: {total_time:.2f} seconds, Avg time per epoch: {total_time / num_epochs:.4f} sec")
     homeo_ds_net.losses = losses  # Store losses 
     homeo_ds_net.grad_norms = grad_norms

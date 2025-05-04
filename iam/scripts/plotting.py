@@ -220,6 +220,7 @@ def plot_single_motif_trajectories(
     if not ax_source and not ax_target:
         fig, ax = plt.subplots(figsize=(4, 4))
         ax_target = ax
+
     K, T, N = transformed_trajectories.shape
     num_points = min(num_points, K)
 
@@ -247,7 +248,7 @@ def plot_single_motif_trajectories(
             ax_target.plot(asymptotic_target[:, 0], asymptotic_target[:, 1], color=asymptotic_target_color, linewidth=2, alpha=1.0)
         if asymptotic_source_transformed is not None:
             ax_target.plot(asymptotic_source_transformed[:, 0], asymptotic_source_transformed[:, 1], color=asymptotic_source_color, linewidth=2, alpha=1.0)
-        ax_target.set_title(f'{source_name}: Transformed & Target')
+        ax_target.set_title(f'{source_name}')
     
     plt.tight_layout()
     if save_name:

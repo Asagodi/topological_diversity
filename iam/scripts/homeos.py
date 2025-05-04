@@ -373,8 +373,7 @@ def build_homeomorphism(params: dict) -> nn.Module:
 ############## testing homeomorphism-dynamical system networks
 def test_single_homeo_ds_net(
     homeo_ds_net: nn.Module,
-    trajectories_target: List[torch.Tensor],
-    plot_first_n: int = 5,
+    trajectories_target: torch.Tensor,
     time_span: Optional[torch.Tensor] = None,
 ) -> Tuple[np.ndarray, np.ndarray, float]:
     """
@@ -386,29 +385,27 @@ def test_single_homeo_ds_net(
         - scalar MSE loss
     """
     loss_fn = nn.MSELoss(reduction='mean')
-    num_points = len(trajectories_target)
+    num_points = trajectories_target.shape[0]
     source_system = homeo_ds_net.dynamical_system
     homeo_net = homeo_ds_net.homeo_network
 
     if time_span is None:
-        time_span = source_system.time_span
+        time_span = homeo_ds_net.dynamical_system.time_span
 
     # Get initial conditions from first n trajectories
-    initial_conditions = torch.stack([traj[0] for traj in trajectories_target[:plot_first_n]])
+    initial_conditions_target = trajectories_target[:,0, :].clone().detach().requires_grad_(True)
 
     # Transform to source domain
-    initial_conditions_src = homeo_net.inverse(initial_conditions)
+    initial_conditions_source = homeo_ds_net.homeo_network.inverse(initial_conditions_target)
+    transformed_trajectories = homeo_ds_net(initial_conditions_target)
 
-    # Generate source trajectories
+    # # Generate source trajectories
     if isinstance(source_system, AnalyticDynamicalSystem):
-        trajectories_source = source_system.compute_trajectory(initial_conditions_src, time_span=time_span)
+        trajectories_source = source_system.compute_trajectory(initial_conditions_source, time_span=time_span)
     else:
         _, trajectories_source, _ = generate_trajectories(
-            source_system, predefined_initial_conditions=initial_conditions_src, time_span=time_span
+            source_system, predefined_initial_conditions=initial_conditions_source, time_span=time_span
         )
-
-    # Transform forward
-    transformed_trajectories = [homeo_net(traj) for traj in trajectories_source]
 
     # Compute loss
     loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target, transformed_trajectories)) / num_points

@@ -3,6 +3,7 @@ from scipy.integrate import solve_ivp
 from scipy.interpolate import RegularGridInterpolator
 import tqdm
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel 
+from typing import Optional
 
 def ra_ode(t, x):
     x1, x2 = x
@@ -50,14 +51,24 @@ def simulate_network_ntimes(Nsims, grid_u, grid_v, perturb_grid_u, perturb_grid_
         sols[ni,...] = sol.sol(t).T.copy()
     return sols
 
-def create_invariant_manifold(grid_u, grid_v, perturb_grid_u, perturb_grid_v, interpol_param, initial_conditions, nonlinearity_ode=vector_field_ode):
+def create_invariant_manifold(grid_u, grid_v, perturb_grid_u, perturb_grid_v, initial_conditions, interpol_param=1, nonlinearity_ode=vector_field_ode):
     Nsims = initial_conditions.shape[0]
+
     trajectories = simulate_network_ntimes(Nsims, grid_u, grid_v, perturb_grid_u, perturb_grid_v, interpol_param,
                                            nonlinearity_ode=nonlinearity_ode, 
                                            y0s=initial_conditions, maxT=5, tsteps=2001)
     inv_man = trajectories[:,1000,:]
     inv_man = np.vstack([inv_man, inv_man[0]])
     return inv_man
+
+def create_invariant_manifold_fromring(grid_u, grid_v, perturb_grid_u, perturb_grid_v, interpol_param=1, num_points=100, nonlinearity_ode=vector_field_ode,
+                                       radius = 1.):
+    angles = np.linspace(0, 2 * np.pi, num_points, endpoint=False)
+    initial_conditions = np.array([(radius * np.cos(angle), radius * np.sin(angle)) for angle in angles])
+    inv_man = create_invariant_manifold(grid_u, grid_v, perturb_grid_u, perturb_grid_v, initial_conditions=initial_conditions,
+                                         interpol_param=interpol_param, nonlinearity_ode=vector_field_ode)
+    return inv_man
+
 
 def create_invman_sequence(perturb_grid_u, perturb_grid_v, n_pert_steps, initial_conditions, num_points,nonlinearity_ode=vector_field_ode):
     angles = np.linspace(0, 2 * np.pi, num_points, endpoint=False)
@@ -159,9 +170,6 @@ def vector_field_ode(t, x, grid_u, grid_v, perturb_grid_u, perturb_grid_v, inter
 
 
 
-import numpy as np
-from typing import Optional
-
 def prepare_initial_conditions(
     mode: str = "around_ring",  # "random", "around_ring", "invariant_manifold"
     num_points: int = 60,
@@ -198,7 +206,11 @@ def prepare_initial_conditions(
         angles = np.linspace(0, 2 * np.pi, half, endpoint=False)
         inner = [(radius - margin) * np.array([np.cos(θ), np.sin(θ)]) for θ in angles]
         outer = [(radius + margin) * np.array([np.cos(θ), np.sin(θ)]) for θ in angles]
-        return np.array(inner + outer)
+        points = []
+        for i in range(half):
+            points.append(inner[i])
+            points.append(outer[i])
+        return np.array(points)
 
     elif mode == "invariant_manifold":
         if invariant_manifold is None:
@@ -208,3 +220,23 @@ def prepare_initial_conditions(
     else:
         raise ValueError(f"Unknown mode: {mode}")
 
+def build_perturbed_ringattractor(perturbation_norm = 0.1, random_seed = 313, min_val_sim=3, n_grid = 40, add_limit_cycle=False,
+                                  num_points_invman = 200, maxT = 5, tsteps = 100, number_of_target_trajectories = 100, initial_conditions_mode="around_ring", init_margin=0.1):
+    """
+    Build and simulate a perturbed ring attractor and approximate its invariant manifold.
+    """
+    Y, X = np.mgrid[-min_val_sim:min_val_sim:complex(0, n_grid), -min_val_sim:min_val_sim:complex(0, n_grid)]
+    U, V = X * (1- np.sqrt(X**2 + Y**2)), Y * (1- np.sqrt(X**2 + Y**2))
+    #U_pert, V_pert, perturb_u, perturb_v,  grid_u, grid_v, perturb_grid_u, perturb_grid_v, full_grid_u, full_grid_v, inv_mans = get_all(U, V, random_seed, norm=norm, n_pert_steps=15*2)
+
+    U_pert, V_pert, _, _ = get_random_vector_field_from_ringattractor(min_val_sim=min_val_sim, n_grid=n_grid, norm=perturbation_norm, random_seed=random_seed, add_limit_cycle=add_limit_cycle)
+    grid_u, grid_v, perturb_grid_u, perturb_grid_v, full_grid_u, full_grid_v = initialize_grids(U, V, U_pert, V_pert, min_val_sim, n_grid)
+    inv_man = create_invariant_manifold_fromring(grid_u, grid_v, perturb_grid_u, perturb_grid_v, num_points=num_points_invman, nonlinearity_ode=vector_field_ode)
+
+    #tsteps = maxT*20
+    initial_conditions_pertring = prepare_initial_conditions(mode=initial_conditions_mode, invariant_manifold=inv_man, num_points=number_of_target_trajectories, margin=init_margin)
+    number_of_target_trajectories = initial_conditions_pertring.shape[0]
+    trajectories_pertring = simulate_network_ntimes(number_of_target_trajectories, grid_u, grid_v, perturb_grid_u, perturb_grid_v, 1, nonlinearity_ode=vector_field_ode, 
+                                            y0s=initial_conditions_pertring, maxT=maxT, tsteps=tsteps)
+
+    return X, Y, U_pert, V_pert, grid_u, grid_v, perturb_grid_u, perturb_grid_v, full_grid_u, full_grid_v, inv_man, trajectories_pertring
