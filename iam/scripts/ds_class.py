@@ -102,7 +102,7 @@ class DynamicalSystem(nn.Module):
             trajectory = odeint(system_with_noise, initial_conditions[i], t_values, method='rk4')
             trajectories.append(trajectory)
 
-        return t_values, torch.stack(trajectories)
+        return torch.stack(trajectories)
 
 class RingAttractor(DynamicalSystem):
     """
@@ -1159,7 +1159,10 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
         super().__init__(dt, time_span)
         self.time_span = time_span
         self.dt = dt
-        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        if not alpha_init is None:
+            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        else:
+            self.alpha = -1.
         self.dim = dim
 
     def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float,float]] = None) -> torch.Tensor:
@@ -1222,6 +1225,7 @@ def build_ds_motif(
     dt: Optional[float] = None,
     analytic: bool = False,
     vf_on_ring_enabled: bool = False,
+    alpha_init: Optional[float] = -1.,
 ) -> object:
     """
     Constructs a dynamical system motif based on the motif type and whether it's analytic or learnable.
@@ -1258,7 +1262,7 @@ def build_ds_motif(
 
     # Instantiate with appropriate parameters
     if analytic:
-        ds = DSClass(dim=dim, dt=dt, time_span=time_span)
+        ds = DSClass(dim=dim, dt=dt, time_span=time_span, alpha_init=alpha_init)
     else:
         ds = DSClass(dim=dim, dt=dt, time_span=time_span, vf_on_ring_enabled=vf_on_ring_enabled)
 
