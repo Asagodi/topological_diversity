@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 from typing import Callable, Tuple, List, Optional
 import torchdiffeq
+import time
 
 from .ds_class import *
 
@@ -232,14 +233,71 @@ class NODEHomeomorphism(nn.Module):
 
 
 ###Invertible Residual Networks (iResNet)
-import math
+class LipschitzMLP(nn.Module):
+    """A simple 2-layer Lipschitz-constrained MLP using spectral norm with choosable activation."""
+    def __init__(self, dim: int, hidden: int, activation: Callable[[], nn.Module] = nn.ELU):
+        super().__init__()
+        self.fc1 = nn.utils.spectral_norm(nn.Linear(dim, hidden))
+        self.fc2 = nn.utils.spectral_norm(nn.Linear(hidden, dim))
+        self.activation = activation()  # Call the activation function to create an instance
 
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = self.fc1(x)  # Apply first linear transformation
+        x = self.activation(x)  # Apply the chosen activation function
+        x = self.fc2(x)  # Apply second linear transformation
+        return x  # Return the output
+
+class iResBlock(nn.Module):
+    def __init__(self, dim: int, hidden: int, activation: Callable[[], nn.Module] = nn.ELU, n_inverse_iter: int = 10, use_identity_init: bool = False):
+        super().__init__()
+        self.f = LipschitzMLP(dim, hidden, activation)
+        self.n_inverse_iter = n_inverse_iter  # # of steps for fixed-point inversion
+
+        if use_identity_init:
+            self._initialize_identity()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x + self.f(x)
+
+    def inverse(self, y: torch.Tensor) -> torch.Tensor:
+        x = y.clone().detach()
+        for _ in range(self.n_inverse_iter):
+            x = y - self.f(x)
+        return x
+
+    def _initialize_identity(self):
+        # Initialize the network parameters for identity mapping (if required)
+        nn.init.zeros_(self.f.fc1.weight)
+        nn.init.zeros_(self.f.fc2.weight)
+        nn.init.zeros_(self.f.fc1.bias)
+        nn.init.zeros_(self.f.fc2.bias)
+
+class iResNet(nn.Module):
+    def __init__(self, dim: int, layer_sizes: list[int], activation: Callable[[], nn.Module] = nn.ELU, n_layers: int = 5, use_identity_init: bool = False):
+        super().__init__()
+        self.blocks = nn.ModuleList([
+            iResBlock(dim, layer_sizes[i], activation, use_identity_init=use_identity_init) for i in range(n_layers)
+        ])
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        for block in self.blocks:
+            x = block(x)
+        return x
+
+    def inverse(self, y: torch.Tensor) -> torch.Tensor:
+        for block in reversed(self.blocks):
+            y = block.inverse(y)
+        return y
+
+
+
+##old
 class InvertibleResNetBlock(nn.Module):
     def __init__(self, in_channels: int, hidden_channels: int, use_identity_init: bool = False):
         super(InvertibleResNetBlock, self).__init__()
         self.in_channels = in_channels
         self.hidden_channels = hidden_channels
-        self.split_size = in_channels 
+        self.split_size = in_channels # // 2
 
         self.fc1 = nn.Linear(self.split_size, hidden_channels)
         self.fc2 = nn.Linear(hidden_channels, self.split_size)
@@ -358,11 +416,11 @@ class NormFlowHomeomorphism(nn.Module):
 def build_homeomorphism(params: dict) -> nn.Module:
     homeo_type = params['homeo_type']
     if homeo_type == 'iresnet':
-        cls = InvertibleResNet
-        allowed_keys = {'dim', 'layer_sizes', 'use_identity_init'}
-    elif homeo_type == 'nodehomeom':
+        cls = iResNet
+        allowed_keys = {'dim', 'layer_sizes', 'use_identity_init', 'activation'}
+    elif homeo_type == 'node':
         cls = NODEHomeomorphism
-        allowed_keys = {'dim', 'layer_sizes', 'use_identity_init'}
+        allowed_keys = {'dim', 'layer_sizes', 'use_identity_init', 'activation'}
     else:
         raise ValueError(f"Unknown architecture: {homeo_type}")
 
@@ -397,15 +455,15 @@ def test_single_homeo_ds_net(
 
     # Transform to source domain
     initial_conditions_source = homeo_ds_net.homeo_network.inverse(initial_conditions_target)
-    transformed_trajectories = homeo_ds_net(initial_conditions_target)
+    #transformed_trajectories = homeo_ds_net(initial_conditions_target)
 
     # # Generate source trajectories
     if isinstance(source_system, AnalyticDynamicalSystem):
         trajectories_source = source_system.compute_trajectory(initial_conditions_source, time_span=time_span)
     else:
-        _, trajectories_source, _ = generate_trajectories(
-            source_system, predefined_initial_conditions=initial_conditions_source, time_span=time_span
-        )
+        _, trajectories_source, _ = generate_trajectories(source_system, predefined_initial_conditions=initial_conditions_source, time_span=time_span)
+    
+    transformed_trajectories = homeo_net(trajectories_source)
 
     # Compute loss
     loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target, transformed_trajectories)) / num_points
@@ -467,7 +525,8 @@ def jacobian_norm_over_batch(
         Scalar tensor: empirical L^p norm of ||J_phi(x)|| across x in batch
     """
     B, D = x.shape
-
+    print("Computing Jacobian norms...")
+    start = time.time()
     def compute_norm(xi: torch.Tensor) -> torch.Tensor:
         xi = xi.detach().unsqueeze(0).requires_grad_(True)  # shape (1, D)
         y = phi(xi).squeeze(0)  # shape (D_out,)
@@ -483,6 +542,9 @@ def jacobian_norm_over_batch(
         return norm / D**0.5 if normalize else norm
 
     norms = torch.stack([compute_norm(x[i]) for i in range(B)])
+    end = time.time()
+    print("Time elapsed for Jacobian: ", end - start)
+
     return norms.pow(p).mean().pow(1 / p)
 
 
