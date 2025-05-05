@@ -143,21 +143,9 @@ Scalars for time parametrization on and off of manifold
 \item we get a generative model of the data, unlike pure comparison methods
 \end{itemize}
 
-
-Scope of neural computations under consideration:
-\begin{itemize}
-\item Classification
-\item Working memory
-\item persistent neural representation (e.g. head direction) % stabilized by recurrent dynamics
-\end{itemize}
-
-Theory we want to express:
-\begin{itemize}
-\item Infinite time horizon
-\item Finite time horizon (e.g. echo state networks)
-\end{itemize}
-
-Message: finite time series cannot distinguish between some theories (which are the same on a finite time horizon but different on an infinite time horizon), but vector fields can
+This framework applies to core neural computations such as classification, working memory, and persistent representations (e.g., head direction cells).
+ It accommodates both infinite-horizon systems and finite-horizon systems like echo state networks, highlighting that time-limited trajectories may obscure deeper structural distinctions only visible in the full vector field.
+%Message: finite time series cannot distinguish between some theories (which are the same on a finite time horizon but different on an infinite time horizon), but vector fields can
 
 \section{Background and related work}\label{sec:background}
 A theory of (neural) computation\citep{jaeger2021theory, jaeger2023timescales, jaeger2023theory}
@@ -193,7 +181,7 @@ Engineering RNNs that embody latent task dynamics (EMPJ) \citep{pollock2020engin
 %\citep{thompson2021explanation}
 %\citep{levenstein2023theory}
 
-\subsubsection{Examples of neural computation}
+\subsubsection{Examples of neural computation}\label{sec:neurcompex}
 \paragraph{Working memory}
 Discrete 
 
@@ -302,15 +290,13 @@ When is decomposition of attractor into motifs possible?
 
 On the lifting and reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
 
-\citep{driscoll2024flexible}
+dynamical motifs in task-trained RNNs \citep{driscoll2024flexible}
 
 compositional tasks \citep{tafazoli2024building}
 
 decomposition through population-based modeling\citep{glaser2020recurrent} 
 
 \citep{mudrik2024decomposed}
-
-\paragraph{Neural ensembles}
 \citep{yuste2024ensembles}
 
 
@@ -433,25 +419,21 @@ MMPHATE\citep{xie2024multiway}
 \citep{chirimuuta2014minimal}
 \citep{batterman2014minimal}
 \citep{brancazio2023minimal}
-
 \citep{Jordan2019a}
 
 \paragraph{Reduction/idealization/simplification/abstraction}
 \citep{marr1976computation, marr2010vision}
-
 \citep{chirimuuta2018mmm} %chirimuuta2022artifacts, chirimuuta2024analogies
-
 \citep{potochnik2021levels,
 potochnik2020idealization,
 potochnik2017idealization}
-
 \citep{stinson2020idealized}
 \citep{chirimuuta2024brain} 
 
-Solomonoff's theory of inductive inference
+%Solomonoff's theory of inductive inference (formalizes Occam's razor)
 
 
-\subsubsection{Understanding}
+\subsubsection{Understanding}\label{sec:understanding}
 \citep{deregt2017understanding}
 \citep{potochnik2017idealization}
 \citep{guest2023logical}
@@ -535,8 +517,8 @@ In motor cortex, neural trajectories during reaching movements often evolve alon
 
 
 
-\subsection{A timescale angle to reduction}
-\citep{cavanagh2020diversity}
+%\subsection{A timescale angle to reduction}
+%\citep{cavanagh2020diversity}
 
 
 
@@ -563,49 +545,38 @@ Therefore, we can define the dissimilarity measure $d(f,g) = \inf \|p\|$ with th
 
 
 
+
 \subsection{An interpretable motif-centered metric for dynamical systems}\label{sec:aut_motif_metric}
-Consider our target dynamical system to be defined on a compact subset of $\reals^n$.
+Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs. Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
 
-Let $f\in C^1$ define the vector field of our target system
-and let $g_i$ be a dynamical motif.
-Then, there exists a perturbation $p\in C^1$ 
- and a homeomorphism $\Phi:\reals^n\rightarrow\reals^n$ such that 
-\begin{equation}\label{eq:perfect_motif_fit}
-\|\psi_{f+p} - \Phi(\psi_{g_i})\|_\infty = 0.
-\end{equation}
+The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
+ This procedure enables us to project the target system onto the motif library, yielding a vector that represents the distances to each motif in the library.
+%Projection of $f$ onto library: we get a vector representing the distances to the motifs in the library.
 
-Therefore, we can define the distance w.r.t. each motif as $d(f,g_i) = \inf \|p\|$ with the above constraint.
-
-Projection of $f$ onto library: we get a vector representing the distances to the motifs in the library.
-
-\ascomment{Convergence during training of RNNs: for task that relies on analog memory to low distance to dynamical motif that is a continuous attractor diffeomorphic to the memory manifold.}
+%intuition
+Convergence during training of RNNs: for tasks that rely on analog memory, the system's trajectory should exhibit a low dissimilarity to a dynamical motif that is a continuous attractor diffeomorphic to the memory manifold. This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
 
 
 \subsubsection{Recognizable geometric-topological features}
-fixed points, limit cycles
-
-continuous attractors
+%repetition with sec:neurcompex
+ Fixed points and limit cycles, for instance, are foundational to many dynamical systems.
+Fixed points correspond to steady-state solutions where the system’s state does not change, while limit cycles describe periodic orbits that repeat over time.
+ In neural models, fixed points are often used to model persistent activity patterns, while limit cycles can be observed in oscillatory behaviors that may correspond to specific memory or decision-making processes. Continuous attractors, on the other hand, are critical for understanding memory in dynamical systems.
+These attractors provide a set of states toward which the system evolves over time, capturing the essence of systems that store and retrieve information.
+ In neuroscience, they are essential in models of continuous-position coding, where the system must maintain a range of values for memory retrieval.
 
 invariant manifolds
-manifolds neuro/RNN\citep{langdon2023unifying, can2021emergence,
-cueva2021continuous,
-gort2024emergence,
-mishra2021continual,
-chaudhuri2019attractor, ghazizadeh2021slowmanifold, duncker2021dynamics, pezon2024linking}
+manifolds neuro/RNN\citep{langdon2023unifying, can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor, ghazizadeh2021slowmanifold, duncker2021dynamics, pezon2024linking}
 neuro \citep{fortunato2024nonlinear}
-
 manifold alginment \citep{kuoch2024probing}
-
 approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
 
 
-\subsection{Motifs: The building blocks}
-\subsubsection{Guiding principles}
-Attractors reduce behavior to ``basins'' in phase space
+\subsubsection{Motifs: The building blocks}
+We use dynamical motifs are the fundamental building blocks of dynamical systems, capturing distinct and interpretable behaviors such as attractors, which simplify complex dynamics into stable basins in phase space.
+ These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
+  By maintaining topological distinctness, motifs offer a framework for understanding complex systems in a way that aligns with human intuition, especially in fields like neuroscience and decision-making.
 
-human-compatible descriptions
-
-motifs should be all topologically distinct (not topologically conjugate)
 
 %\subsubsection{The base case} % \subsubsection{Constructing}
 
@@ -616,9 +587,8 @@ In dynamical systems, attractors can be systematically classified according to t
 \item  Stable fixed point
 \item  Bounded line attractor ($[0,1]\subset\reals$), ring attractor ($S_0^1$), stable limit cycle ($S_1^1$)
 \item Plane attractor ($[0,1]^2$), Cylinder attractor ($[0,1]\times S_0^1$), Cylinder-LC attractor ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
-\item ...
+%\item ...
 \end{enumerate}
-
 This pattern continues, with higher-dimensional attractors constructed from fundamental topological spaces such as $S^n$ or their Cartesian and toroidal products.
 
 \ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
