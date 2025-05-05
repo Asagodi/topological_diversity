@@ -197,7 +197,14 @@ def prepare_initial_conditions(
     np.random.seed(seed)
 
     if mode == "random":
-        return np.random.uniform(-min_val, min_val, size=(num_points, 2))
+        # Uniform sampling in an annulus between (radius - margin) and (radius + margin)
+        r_low = max(0, radius - margin)
+        r_high = radius + margin
+        angles = np.random.uniform(0, 2 * np.pi, size=num_points)
+        radii = np.sqrt(np.random.uniform(r_low**2, r_high**2, size=num_points))  # sqrt for uniform area sampling
+        x = radii * np.cos(angles)
+        y = radii * np.sin(angles)
+        return np.stack([x, y], axis=1)
 
     elif mode == "around_ring":
         if num_points % 2 != 0:

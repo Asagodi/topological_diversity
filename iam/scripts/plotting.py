@@ -202,7 +202,7 @@ def plot_single_motif_trajectories(
     asymptotic_target: Optional[np.ndarray] = None,
     asymptotic_source_transformed: Optional[np.ndarray] = None,
     num_points: int = 10,
-    bounds: tuple = (2.0, 2.0),
+    bounds: tuple | str = (2.0, 2.0),
     alpha: float = 0.7,
     which_axis: str = "both",
     ax_source: Optional[plt.Axes] = None,
@@ -211,6 +211,13 @@ def plot_single_motif_trajectories(
     show_fig: bool = True,
 ):
     assert which_axis in {"first", "second", "both"}
+
+    if isinstance(bounds, str) and bounds == 'from_targ_traj':
+        # Assume trajectories_target shape: (batch_size, time_steps, dim)
+        min_val = np.amin(trajectories_target)  # shape: (dim,)
+        max_val = np.amax(trajectories_target)  # shape: (dim,)
+        max_abs = np.maximum(np.abs(min_val), np.abs(max_val))  # symmetric bound
+        bounds = (max_abs, max_abs)
 
     target_color = trajectory_colors["target"]
     source_color = trajectory_colors["source"]
@@ -242,7 +249,8 @@ def plot_single_motif_trajectories(
         ax_target.set_ylabel(r'$y$', fontsize=14)
         ax_target.grid(True)
         for i in range(num_points):
-            ax_target.plot(trajectories_target[i, :, 0], trajectories_target[i, :, 1], color=target_color, alpha=alpha)
+            if trajectories_target.shape[0] >= num_points:
+                ax_target.plot(trajectories_target[i, :, 0], trajectories_target[i, :, 1], color=target_color, alpha=alpha)
             ax_target.plot(transformed_trajectories[i, :, 0], transformed_trajectories[i, :, 1], color=source_color, alpha=alpha)
         if asymptotic_target is not None:
             ax_target.plot(asymptotic_target[:, 0], asymptotic_target[:, 1], color=asymptotic_target_color, linewidth=2, alpha=1.0)
