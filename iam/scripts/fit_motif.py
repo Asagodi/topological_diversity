@@ -9,6 +9,23 @@ from .homeos import *
 from .ds_class import *
 from .torch_utils import *
 
+def make_transition_pairs(trajectories: torch.Tensor) -> torch.Tensor:
+    """
+    Given trajectories of shape (B, T, N), return (B*(T-1), 2, N)
+    where each entry is (x_t, x_{t+1}).
+    """
+    B, T, N = trajectories.shape
+    x_t   = trajectories[:, :-1, :]    # (B, T-1, N)
+    x_t1  = trajectories[:, 1:, :]     # (B, T-1, N)
+
+    # Stack along new axis for the pair: (B, T-1, 2, N)
+    pairs = torch.stack((x_t, x_t1), dim=2)
+
+    # Flatten batch and time: (B*(T-1), 2, N)
+    pairs = pairs.reshape(-1, 2, N)
+
+    return pairs
+
 def update_leaky_running_avg(current_value: float, running_avg: float, alpha: float = 0.9) -> float:
     """
     Update the exponentially weighted moving average.
@@ -87,6 +104,106 @@ def get_annealed_noise_std(
     
     return noise_std
 
+from torch.utils.data import DataLoader, TensorDataset
+
+def train_homeo_ds_net_batched(
+    homeo_ds_net: nn.Module,  
+    lr: float,
+    trajectories_target: torch.Tensor,
+    batch_size: int = 0,  # 0 or None means full-batch
+    use_transformed_system: bool = False,
+    num_epochs: int = 100,
+    max_grad_norm: Optional[float] = None,
+    annealing_params: Optional[dict] = None,
+    early_stopping_patience: Optional[int] = 50,
+):
+    """
+    Train the homeomorphism network with automatic full-batch or mini-batch support.
+    """
+    loss_fn = nn.MSELoss(reduction='mean')
+    device = next(homeo_ds_net.parameters()).device
+    trajectories_target = trajectories_target.to(device)
+    B,T,N = trajectories_target.shape
+
+    # Decide batching mode
+    if batch_size is None or batch_size <= 0 or batch_size >= B:
+        dataloader = [(trajectories_target,)]
+    else:
+        dataset = TensorDataset(trajectories_target)
+        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    params_to_optimize = list(homeo_ds_net.homeo_network.parameters())
+    if isinstance(homeo_ds_net.dynamical_system, (LearnableDynamicalSystem, AnalyticDynamicalSystem)):
+        params_to_optimize += list(homeo_ds_net.dynamical_system.parameters())
+    optimizer=optim.Adam(params_to_optimize, lr=lr)
+    early_stopper = EarlyStopping(patience=early_stopping_patience)
+    best_model_saver = BestModelSaver(homeo_net=homeo_ds_net.homeo_network, source_system=homeo_ds_net.dynamical_system)
+
+    losses, grad_norms = [], []
+    start_time = time.time()
+
+    for epoch in range(num_epochs):
+        epoch_losses = []
+        epoch_start = time.time()
+
+        for batch in dataloader:
+            optimizer.zero_grad()
+            batch_target = batch[0]  # (B, T, D)
+            initial_conditions_target = batch_target[:, 0, :].detach().clone()
+
+            running_loss = update_leaky_running_avg
+            if annealing_params is not None:
+                if annealing_params['dynamic']:
+                    current_loss = losses[-1] if losses else 0.0
+                    noise_std = get_annealed_noise_std(epoch, num_epochs, **annealing_params, current_loss=current_loss, running_loss=running_loss)
+                else:
+                    noise_std = get_annealed_noise_std(epoch, num_epochs, **annealing_params)
+            else:
+                noise_std = 0.0
+
+            transformed_trajectories = homeo_ds_net(initial_conditions_target, noise_std)
+            batch_target_detached = batch_target.detach()
+            loss = loss_fn(transformed_trajectories[:, 1:, :], batch_target_detached[:, 1:, :])
+            #first time point is skipped because it is the initial condition that was just mapped back and forth by the homeo_net
+            if torch.isnan(loss).any() or torch.isinf(loss).any():
+                break
+
+            loss.backward()
+            total_norm = torch.norm(torch.stack([
+                p.grad.norm(2) for p in params_to_optimize if p.grad is not None
+            ]), 2)
+            grad_norms.append(total_norm.item())
+
+            if max_grad_norm is not None:
+                torch.nn.utils.clip_grad_norm_(homeo_ds_net.parameters(), max_grad_norm)
+
+            optimizer.step()
+            epoch_losses.append(loss.item())
+
+        mean_epoch_loss = np.mean(epoch_losses)
+        losses.append(mean_epoch_loss)
+        best_model_saver.step(mean_epoch_loss)
+
+        if epoch % 10 == 0:
+            if hasattr(homeo_ds_net.dynamical_system, 'velocity'):
+                print(f"Epoch {epoch}, log(Loss)= {np.log10(mean_epoch_loss):.4f}", "Velocity: ", np.round(homeo_ds_net.dynamical_system.velocity.detach().cpu().numpy(),3))
+            else:
+                print(f"Epoch {epoch}, log(Loss)= {np.log10(mean_epoch_loss):.4f}")
+
+        early_stopper.step(mean_epoch_loss)
+        if early_stopper.should_stop:
+            print(f"Early stopping triggered at epoch {epoch}. log(Loss)= {np.log10(mean_epoch_loss):.4f}")
+            break
+
+    total_time = time.time() - start_time
+    print(f"Final log(Loss)= {np.log10(mean_epoch_loss):.4f}, Total training time: {total_time:.2f} sec, Avg epoch time: {total_time / num_epochs:.4f} sec")
+
+    homeo_ds_net.losses = losses
+    homeo_ds_net.grad_norms = grad_norms
+    best_model_saver.restore()
+    return homeo_ds_net
+
+
 def train_homeo_ds_net(
     homeo_ds_net: nn.Module,  
     lr: float,
@@ -101,7 +218,7 @@ def train_homeo_ds_net(
     Train the homeomorphism network (now encapsulated in homeo_ds_net) while tracking training time and epoch time.
     """
     loss_fn = nn.MSELoss(reduction='mean')
-    num_points = trajectories_target.shape[0]  
+    T = trajectories_target.shape[1]  
     
     start_time = time.time()  # Track total training time
 
@@ -109,8 +226,10 @@ def train_homeo_ds_net(
     trajectories_target = trajectories_target.to(device)  
     initial_conditions_target = trajectories_target[:,0,:].detach().clone().to(device)  # Use the first trajectory as initial conditions
 
-    params_to_optimize = list(homeo_ds_net.parameters())
-
+    params_to_optimize = list(homeo_ds_net.homeo_network.parameters())
+    if isinstance(homeo_ds_net.dynamical_system, (LearnableDynamicalSystem, AnalyticDynamicalSystem)):
+        print("Training with learnable dynamical system")
+        params_to_optimize += list(homeo_ds_net.dynamical_system.parameters())
     optimizer = optim.Adam(params_to_optimize, lr=lr)
     early_stopper = EarlyStopping(patience=early_stopping_patience)
     best_model_saver = BestModelSaver(homeo_net=homeo_ds_net.homeo_network, source_system=homeo_ds_net.dynamical_system)
@@ -135,7 +254,7 @@ def train_homeo_ds_net(
         trajectories_target_detached = [traj.detach() for traj in trajectories_target]
 
         # Compute loss
-        loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target_detached, transformed_trajectories)) / num_points
+        loss = loss_fn(transformed_trajectories[:, 1:, :], batch_target_detached[:, 1:, :])
 
         if torch.isnan(loss).any() or torch.isinf(loss).any():
             print(f"NaN or Inf detected in loss at epoch {epoch}.")
@@ -166,12 +285,13 @@ def train_homeo_ds_net(
     total_time = time.time() - start_time  # Compute total training time
     transformed_trajectories = homeo_ds_net(initial_conditions_target, noise_std)
     trajectories_target_detached = [traj.detach() for traj in trajectories_target]
-    loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target_detached, transformed_trajectories)) / num_points
+    loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target_detached, transformed_trajectories)) / T
     print(f"Final log(Loss)= {np.log10(loss.item()):.4f}, Total training time: {total_time:.2f} seconds, Avg time per epoch: {total_time / num_epochs:.4f} sec")
     homeo_ds_net.losses = losses  # Store losses 
     homeo_ds_net.grad_norms = grad_norms
     best_model_saver.restore()  # Restore best model 
     return homeo_ds_net
+
 
 
 def train_homeomorphism(
@@ -192,7 +312,7 @@ def train_homeomorphism(
     Train the homeomorphism network while tracking training time and epoch time.
     """
     loss_fn = nn.MSELoss(reduction='mean')
-    num_points = len(trajectories_target)
+    T = trajectories_target.shape[1]  
     
     start_time = time.time()  # Track total training time
 
@@ -204,7 +324,6 @@ def train_homeomorphism(
     params_to_optimize = list(homeo_net.parameters())
     if isinstance(source_system, (LearnableDynamicalSystem, AnalyticalLimitCycle)):
         params_to_optimize += list(source_system.parameters())
-
     optimizer=optim.Adam(params_to_optimize, lr=lr)
     early_stopper = EarlyStopping(patience=early_stopping_patience)
     best_model_saver = BestModelSaver(homeo_net=homeo_net, source_system=source_system)
@@ -226,7 +345,7 @@ def train_homeomorphism(
         transformed_trajectories = generate_trajectories_for_training(homeo_net=homeo_net, source_system=source_system, initial_conditions_target=initial_conditions_target, noise_std=noise_std)
         trajectories_target_detached = [traj.detach() for traj in trajectories_target]
 
-        loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target_detached, transformed_trajectories)) / num_points
+        loss = sum(loss_fn(x_t, phi_y_t) for x_t, phi_y_t in zip(trajectories_target_detached, transformed_trajectories)) / T
 
         if torch.isnan(loss).any() or torch.isinf(loss).any():
             print(f"NaN or Inf detected in loss at epoch {epoch}.")
