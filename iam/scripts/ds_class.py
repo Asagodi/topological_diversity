@@ -59,6 +59,51 @@ class DynamicalSystem(nn.Module):
         """
         raise NotImplementedError("Subclasses must implement the forward method.")
 
+
+    def compute_trajectory(self,
+        initial_conditions: torch.Tensor,
+        noise_std: Optional[float] = None,
+        dt: Optional[float] = None,
+        time_span: Optional[Tuple[float, float]] = None,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        """
+        Computes the trajectory of the system starting from given initial conditions.
+
+        :param initial_conditions: Tensor of shape (batch_size, dim) or (dim,).
+        :param noise_std: Optional override for noise standard deviation.
+        :param dt: Optional override for time step.
+        :param time_span: Optional override for time span (start, end).
+        :return: Tuple (t_values, trajectories) where:
+                 - t_values is a tensor of shape (T,)
+                 - trajectories is a tensor of shape (batch_size, T, dim)
+        """
+        if initial_conditions.dim() == 1:
+            initial_conditions = initial_conditions.unsqueeze(0)
+
+        batch_size = initial_conditions.shape[0]
+
+        if time_span is None:
+            time_span = self.time_span
+        if dt is None:
+            dt = self.dt
+        if noise_std is None:
+            noise_std = self.noise_std
+
+        t_values = torch.arange(time_span[0], time_span[1], dt)
+
+        def system_with_noise(t, y):
+            dydt = self(t, y)
+            if noise_std > 0:
+                dydt += torch.randn_like(y) * noise_std
+            return dydt
+
+        trajectories = []
+        for i in range(batch_size):
+            trajectory = odeint(system_with_noise, initial_conditions[i], t_values, method='rk4')
+            trajectories.append(trajectory)
+
+        return t_values, torch.stack(trajectories)
+
 class RingAttractor(DynamicalSystem):
     """
     A simple ring attractor system with dynamics defined in polar coordinates.
@@ -425,6 +470,7 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
         if vf_on_ring_enabled:
             self.vf_on_ring = TrainablePeriodicFunction(num_terms=5)
         self.vf_on_ring_enabled = vf_on_ring_enabled
+        self.sigma = nn.Parameter(torch.tensor(.05, dtype=torch.float32))  # width of radial band around the ring
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         if x.dim() == 1:
@@ -441,8 +487,8 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
 
             #with gaussian envelope
             angular_perturb = self.vf_on_ring(theta)
-            sigma = 0.05  # width of radial band around the ring
-            bump = torch.exp(-((r - self.radius) ** 2) / (2 * sigma**2))
+            #sigma = 0.05  # width of radial band around the ring
+            bump = torch.exp(-((r - self.radius) ** 2) / (2 * self.sigma**2))
             dtheta_dt = bump * angular_perturb
 
         dr_dt =  - self.alpha * r * (self.radius - r)  # Radial dynamics
@@ -1212,7 +1258,7 @@ def build_ds_motif(
 
     # Instantiate with appropriate parameters
     if analytic:
-        ds = DSClass(dim=dim, time_span=time_span)
+        ds = DSClass(dim=dim, dt=dt, time_span=time_span)
     else:
         ds = DSClass(dim=dim, dt=dt, time_span=time_span, vf_on_ring_enabled=vf_on_ring_enabled)
 
