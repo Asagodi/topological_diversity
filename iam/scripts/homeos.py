@@ -168,7 +168,7 @@ class NeuralODE(nn.Module):
         input_dim = dim
         for hidden_dim in layer_sizes:
             layers.append(nn.Linear(input_dim, hidden_dim))
-            layers.append(activation())  # <-- use the passed activation function
+            layers.append(activation())  
             input_dim = hidden_dim
         
         layers.append(nn.Linear(input_dim, dim))  # Final layer back to dim
@@ -183,24 +183,47 @@ class NODEHomeomorphism(nn.Module):
     """Represents a homeomorphic transformation using a Neural ODE."""
     def __init__(self, dim: int, layer_sizes: list[int] = [64, 64],
                  activation: Callable[[], nn.Module] = nn.Tanh,
-                 use_identity_init: bool = False,
+                 init_type: str = False, init_mean: float = 0.0, init_std: float = 1e-3, scale: float = 1.0,
                  t_span: tuple = (0.0, 1.0)) -> None:
         super().__init__()
         self.t_span = torch.tensor(t_span)  # Default integration time span
         self.neural_ode = NeuralODE(dim, layer_sizes, activation=activation)
         self.dim = dim
         self.layer_sizes = layer_sizes
-        if use_identity_init:
+        if init_type == 'identity':
             self._initialize_identity_weights()  # Initialize the layers as identity mapping
+        elif init_type == 'small':
+            self._initialize_small_weights(mean=init_mean, std=init_std)
+        elif init_type == 'scaled':
+            self._initialize_scaled_weights(scale=scale, mean=init_mean, std=init_std)
 
     def _initialize_identity_weights(self) -> None:
         """Initialize the neural ODE layers to represent the identity map."""
         for layer in self.neural_ode.mlp:
             if isinstance(layer, nn.Linear):
-                # Use small values for weights, ensuring it's close to identity
                 nn.init.zeros_(layer.weight)
-                #nn.init.normal_(layer.weight, mean=0.0, std=1e-3)  # Small variance initialization
-                nn.init.zeros_(layer.bias)  # Set bias to zero
+                nn.init.zeros_(layer.bias)  
+
+    def _initialize_small_weights(self, mean: float = 0.0, std: float = 1e-3) -> None:
+        """Initialize the neural ODE layers with random values."""
+        for layer in self.neural_ode.mlp:
+            if isinstance(layer, nn.Linear):              # Use small values for weights, ensuring it's close to identity
+                nn.init.normal_(layer.weight, mean=mean, std=std) 
+                #nn.init.zeros_(layer.bias)  # Initialize bias ?
+
+    def _initialize_scaled_weights(self, scale: float = 1.0, mean: float = 0.0, std: float = 1e-3) -> None:
+        """Initialize MLP with small weights and rescale only the last layer to control vector field norm."""
+        last_linear = None
+
+        for layer in self.neural_ode.mlp:
+            if isinstance(layer, nn.Linear):
+                nn.init.normal_(layer.weight, mean=mean, std=std)
+                nn.init.zeros_(layer.bias)
+                last_linear = layer  # Keep track of the last Linear layer
+
+        if last_linear is not None:
+            last_linear.weight.data.mul_(scale)
+            last_linear.bias.data.mul_(scale)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Map from source to target space."""
@@ -228,8 +251,6 @@ class NODEHomeomorphism(nn.Module):
             )[0]
             jacobian.append(grad_i.unsqueeze(1))
         return torch.cat(jacobian, dim=1)
-
-
 
 
 ###Invertible Residual Networks (iResNet)
@@ -273,8 +294,9 @@ class iResBlock(nn.Module):
         nn.init.zeros_(self.f.fc2.bias)
 
 class iResNet(nn.Module):
-    def __init__(self, dim: int, layer_sizes: list[int], activation: Callable[[], nn.Module] = nn.ELU, n_layers: int = 5, use_identity_init: bool = False):
+    def __init__(self, dim: int, layer_sizes: list[int], activation: Callable[[], nn.Module] = nn.ELU, use_identity_init: bool = False):
         super().__init__()
+        n_layers = len(layer_sizes)
         self.blocks = nn.ModuleList([
             iResBlock(dim, layer_sizes[i], activation, use_identity_init=use_identity_init) for i in range(n_layers)
         ])
@@ -289,6 +311,86 @@ class iResNet(nn.Module):
             y = block.inverse(y)
         return y
 
+
+
+
+###Invertible Residual Networks (iResNet)
+# class LipschitzMLP(nn.Module):
+#     def __init__(self, dim: int, hidden: int, activation: Callable[[], nn.Module] = nn.ELU,
+#                  init_type: str = None, init_mean: float = 0.0, init_std: float = 1e-3, bias_value: float = 0.0):
+#         super().__init__()
+
+#         fc1 = nn.Linear(dim, hidden)
+#         fc2 = nn.Linear(hidden, dim)
+
+#         if init_type == 'identity':
+#             nn.init.zeros_(fc1.weight)
+#             nn.init.zeros_(fc2.weight)
+#             nn.init.constant_(fc1.bias, bias_value)
+#             nn.init.constant_(fc2.bias, bias_value)
+#         elif init_type == 'small':
+#             nn.init.normal_(fc1.weight, mean=init_mean, std=init_std)
+#             nn.init.normal_(fc2.weight, mean=init_mean, std=init_std)
+#             # Leave biases alone or initialize as you wish
+
+#         # Now apply spectral norm
+#         self.fc1 = nn.utils.spectral_norm(fc1)
+#         self.fc2 = nn.utils.spectral_norm(fc2)
+#         self.activation = activation()
+
+#     def forward(self, x: torch.Tensor) -> torch.Tensor:
+#         x = self.fc1(x)
+#         x = self.activation(x)
+#         x = self.fc2(x)
+#         return x
+
+
+
+# class iResBlock(nn.Module):
+#     def __init__(self, dim: int, hidden: int,
+#                  activation: Callable[[], nn.Module] = nn.ELU,
+#                  n_inverse_iter: int = 10,
+#                  init_type: str = None,
+#                  init_mean: float = 0.0, init_std: float = 1e-3, bias_value: float = 0.0):
+#         super().__init__()
+#         self.f = LipschitzMLP(dim, hidden, activation,
+#                               init_type=init_type,
+#                               init_mean=init_mean, init_std=init_std,
+#                               bias_value=bias_value)
+#         self.n_inverse_iter = n_inverse_iter
+
+#     def forward(self, x: torch.Tensor) -> torch.Tensor:
+#         return x + self.f(x)
+
+#     def inverse(self, y: torch.Tensor) -> torch.Tensor:
+#         x = y.clone().detach()
+#         for _ in range(self.n_inverse_iter):
+#             x = y - self.f(x)
+#         return x
+
+
+# class iResNet(nn.Module):
+#     def __init__(self, dim: int, layer_sizes: list[int] = [64, 64],
+#                  activation: Callable[[], nn.Module] = nn.ELU,
+#                  init_type: str = 'identity', n_inverse_iter: int = 10,
+#                  init_mean: float = 0.0, init_std: float = 1e-3, bias_value: float = 0.0):
+#         super().__init__()
+#         self.blocks = nn.ModuleList([
+#             iResBlock(dim, hidden_size, activation,
+#                       init_type=init_type,
+#                       init_mean=init_mean, init_std=init_std, bias_value=bias_value)
+#             for hidden_size in layer_sizes
+#         ])
+
+#     def forward(self, x: torch.Tensor) -> torch.Tensor:
+#         for block in self.blocks:
+#             x = block(x)
+#         return x
+
+#     def inverse(self, y: torch.Tensor) -> torch.Tensor:
+#         for block in reversed(self.blocks):
+#             y = block.inverse(y)
+#         return y
 
 
 ##old
@@ -417,10 +519,10 @@ def build_homeomorphism(params: dict) -> nn.Module:
     homeo_type = params['homeo_type']
     if homeo_type == 'iresnet':
         cls = iResNet
-        allowed_keys = {'dim', 'layer_sizes', 'use_identity_init', 'activation'}
+        allowed_keys = {'dim', 'layer_sizes', 'init_type', 'activation', 'init_std', 'init_mean'}
     elif homeo_type == 'node':
         cls = NODEHomeomorphism
-        allowed_keys = {'dim', 'layer_sizes', 'use_identity_init', 'activation'}
+        allowed_keys = {'dim', 'layer_sizes', 'init_type', 'activation', 'init_std', 'init_mean', 'scale'}
     else:
         raise ValueError(f"Unknown architecture: {homeo_type}")
 
@@ -509,7 +611,8 @@ def jacobian_norm_over_batch(
     x: torch.Tensor,
     p: float = 2.0,
     norm_type: Literal["fro", "spectral"] = "fro",
-    normalize: bool = True
+    normalize: bool = True,
+    subtract_identity: bool = True,
 ) -> torch.Tensor:
     """
     Computes empirical L^p norm of Jacobian norms of phi over a batch of points.
@@ -520,25 +623,34 @@ def jacobian_norm_over_batch(
         p: Exponent in L^p norm
         norm_type: 'fro' or 'spectral'
         normalize: If True, divide each norm by sqrt(D)
+        subtract_identity: If True, compute ||J_phi(x) - I|| instead of ||J_phi(x)||
 
     Returns:
-        Scalar tensor: empirical L^p norm of ||J_phi(x)|| across x in batch
+        Scalar tensor: empirical L^p norm of the chosen Jacobian expression across x in batch
     """
     B, D = x.shape
     print("Computing Jacobian norms...")
     start = time.time()
+
     def compute_norm(xi: torch.Tensor) -> torch.Tensor:
         xi = xi.detach().unsqueeze(0).requires_grad_(True)  # shape (1, D)
         y = phi(xi).squeeze(0)  # shape (D_out,)
         assert y.ndim == 1, "phi(x) must return a 1D output (R^m)"
         grads = [torch.autograd.grad(y[i], xi, retain_graph=True, create_graph=False)[0].squeeze(0) for i in range(y.shape[0])]
-        J = torch.stack(grads)  # (m, n)
+        J = torch.stack(grads)  # shape (m, n)
+
+        if subtract_identity:
+            if J.shape[0] != J.shape[1]:
+                raise ValueError("Cannot subtract identity from a non-square Jacobian.")
+            J = J - torch.eye(J.shape[0], device=J.device, dtype=J.dtype)
+
         if norm_type == "fro":
             norm = torch.norm(J, p='fro')
         elif norm_type == "spectral":
             norm = torch.linalg.svdvals(J)[0]
         else:
             raise ValueError(f"Unsupported norm_type: {norm_type}")
+
         return norm / D**0.5 if normalize else norm
 
     norms = torch.stack([compute_norm(x[i]) for i in range(B)])
@@ -546,6 +658,7 @@ def jacobian_norm_over_batch(
     print("Time elapsed for Jacobian: ", end - start)
 
     return norms.pow(p).mean().pow(1 / p)
+
 
 
 
