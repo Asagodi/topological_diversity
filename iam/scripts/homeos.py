@@ -655,7 +655,7 @@ def jacobian_norm_over_batch(
 
     norms = torch.stack([compute_norm(x[i]) for i in range(B)])
     end = time.time()
-    print("Time elapsed for Jacobian: ", end - start)
+    #print("Time elapsed for Jacobian: ", end - start)
 
     return norms.pow(p).mean().pow(1 / p)
 
@@ -700,7 +700,72 @@ def transform_vector_field(homeo_ds_net, xlim=(-2, 2), ylim=(-2, 2), num_points=
     return transformed_points, transformed_vector_field
 
 
+def interpolate_node_homeomorphisms(model_1: NODEHomeomorphism, model_2: NODEHomeomorphism, alpha: float) -> NODEHomeomorphism:
+    """Interpolates between two NODEHomeomorphisms using the given alpha."""
+    
+    # Ensure both models have the same dimension and layer sizes
+    assert model_1.dim == model_2.dim
+    assert model_1.layer_sizes == model_2.layer_sizes
 
+    # Create a new NODEHomeomorphism to hold the interpolated model
+    interpolated_model = NODEHomeomorphism(
+        dim=model_1.dim, 
+        layer_sizes=model_1.layer_sizes,
+        activation=model_1.neural_ode.mlp[1].__class__,  # Same activation function
+        t_span=model_1.t_span.tolist()  # Same time span
+    )
+    
+    # Interpolate weights and biases of the neural ODE layers
+    for layer_1, layer_2, layer_interp in zip(model_1.neural_ode.mlp, model_2.neural_ode.mlp, interpolated_model.neural_ode.mlp):
+        if isinstance(layer_1, nn.Linear):  # Check if it's a Linear layer
+            # Interpolate weights
+            with torch.no_grad():
+                layer_interp.weight.data = (1 - alpha) * layer_1.weight.data + alpha * layer_2.weight.data
+                layer_interp.bias.data = (1 - alpha) * layer_1.bias.data + alpha * layer_2.bias.data
+
+    return interpolated_model
+
+
+
+def rescale_node_vf(model: NODEHomeomorphism, scale: float) -> NODEHomeomorphism:
+    """Returns a new NODEHomeomorphism with the final layer of the vector field scaled by a scalar."""
+    
+    # Clone model config
+    rescaled_model = NODEHomeomorphism(
+        dim=model.dim,
+        layer_sizes=model.layer_sizes,
+        activation=model.neural_ode.mlp[1].__class__,
+        t_span=model.t_span.tolist()
+    )
+
+    # Copy parameters from model
+    for src_layer, dst_layer in zip(model.neural_ode.mlp, rescaled_model.neural_ode.mlp):
+        if isinstance(src_layer, nn.Linear):
+            with torch.no_grad():
+                dst_layer.weight.data = src_layer.weight.data.clone()
+                dst_layer.bias.data = src_layer.bias.data.clone()
+
+    # Rescale only the last linear layer
+    for layer in reversed(rescaled_model.neural_ode.mlp):
+        if isinstance(layer, nn.Linear):
+            with torch.no_grad():
+                layer.weight.data.mul_(scale)
+                layer.bias.data.mul_(scale)
+            break  # only rescale the final Linear layer
+
+    return rescaled_model
+
+
+
+### testing 
+def get_homeo_invman(homeo_network):
+    #assuming ring is invariant manifold (works for ring and lc)
+    radius=1
+    angles = np.linspace(0, 2 * np.pi, 100)
+    ring_points = np.array([(radius * np.cos(angle), radius * np.sin(angle)) for angle in angles])
+    fit_ra_points = homeo_network(torch.tensor(ring_points, dtype=torch.float32)).detach().numpy()
+    fit_ra_points = np.vstack([fit_ra_points, fit_ra_points[0]])
+    return fit_ra_points
 
 
 #######Link
@@ -741,8 +806,9 @@ def save_homeo_ds_net(model: Homeo_DS_Net, file_path: str):
     print(f"Model saved to {file_path}")
 
 
-def load_homeo_ds_net(file_path: str) -> Homeo_DS_Net:
-    model = torch.load(file_path)
-    print(f"Full model loaded from {file_path}")
+def load_homeo_ds_net(file_path: str, homeo_network: nn.Module, dynamical_system: nn.Module) -> Homeo_DS_Net:
+    model = Homeo_DS_Net(homeo_network, dynamical_system)
+    state_dict = torch.load(file_path)
+    model.load_state_dict(state_dict)
+    print(f"Model loaded from {file_path}")
     return model
-
