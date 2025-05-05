@@ -309,7 +309,7 @@ class NDLimitCycle(DynamicalSystem):
 
 
 ###########learnable time parametrization systems
-class LearnableDynamicalSystem(nn.Module):
+class LearnableDynamicalSystem(DynamicalSystem):
     """
     A base class for dynamical systems with learnable parameters.
     Subclasses should define the specific system dynamics.
