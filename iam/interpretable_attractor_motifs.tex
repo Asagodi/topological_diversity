@@ -538,32 +538,28 @@ In motor cortex, neural trajectories during reaching movements often evolve alon
 \subsection{A timescale angle to reduction}
 \citep{cavanagh2020diversity}
 
-\section{Matching dynamical motifs}
+
+
+
+%%%%%%%%%%%%
+\section{Matching dynamical motifs}We aim to develop a method for comparing dynamical systems for several purposes, such as identifying the underlying computations being performed or determining whether two brains are processing information in a similar manner. In nature, it is unlikely that two dynamical systems will be exactly identical.
+ While topological conjugacy provides a precise comparison, it is often too strict for practical use.
+ On the other hand, directly comparing the differences in vector fields is not always interpretable, as it does not provide immediate insights into the similarities or the specific behaviors of the systems.
+  To address this, we propose a framework for comparing dynamical systems by fitting them to motif dynamical systems using a generative model. This approach allows for more interpretable comparisons, offering a meaningful way to evaluate how similar two systems are based on their underlying dynamics.
+
+
+
 \subsection{Dissimilarity measure}
-Let $f, g\in C^1$ be the vector fields.
-Then, there exists a perturbation $p\in C^1$ 
- and a homeomorphism $\Phi:\reals^n\rightarrow\reals^n$ such that 
+In the context of comparing dynamical systems, we define a dissimilarity measure between two vector fields \( f \) and \( g \), both of which belong to \( C^1 \). Specifically, we assume that there exists a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the trajectories induced by the perturbed vector field \( f + p \) and the vector field \( g \) can be made indistinguishable under \( \Phi \). Formally, this condition is given by:
 \begin{equation}\label{eq:}
 \|\psi_{f+p} - \Phi(\psi_{g})\|_\infty = 0.
 \end{equation}
-
-Therefore, we can define the distance metric $d(f,g) = \inf \|p\|$ with the above constraint.
-
-\subsubsection{The complexity of the homeomorphism}
-To assess how much a learned homeomorphism $\Phi$ deforms space, we distinguish between a set of canonical transformation types, such as translations, permutations, rotations, uniform and non-uniform scalings, and multiplicative rescaling of the vector field (which affects global speed; see [ref]).
- While these operations are useful for interpreting specific deformation modes, they are not directly included in our complexity measure.
-Instead, we capture the full, potentially nonlinear deformation induced by $\Phi$ by evaluating how much it deviates locally from the identity map. This is quantified using the Jacobian:
+Here, \( \psi_{f} \) and \( \psi_{g} \) represent the flow maps of the vector fields \( f \) and \( g \), respectively. Based on this relationship, we define the dissimilarity measure between \( f \) and \( g \) as the minimal perturbation \( p \) required to align their flows under the homeomorphism \( \Phi \). This is expressed as:
 \[
-\left\|\frac{\partial \Phi}{\partial x} - \mathbb{I}\right\|
+d(f, g) = \inf \|p\|,  %symmetrify? d sym (f,g)=max(d(f,g),d(g,f))
 \]
-which captures how much the local linear behavior of $\Phi$ differs from that of the identity transformation.
-The norm of this deviation is computed either using the Frobenius norm or the spectral norm.
-Finally, the \( L^p \) norm of the batch of Jacobians is computed, providing a scalar value that quantifies the overall local deformation across the space. A norm close to zero indicates that the transformation is nearly identity, while higher values suggest more significant deformations.
-
-%measure-preserving (Hamiltonian) transformation
-
-\paragraph{Wasserstein distance between the distribution over trajectories}
-\citep{bion2019wasserstein}
+where the infimum is taken over all possible perturbations \( p \) that satisfy the above condition.
+Therefore, we can define the dissimilarity measure $d(f,g) = \inf \|p\|$ with the above constraint.
 
 
 
@@ -678,6 +674,38 @@ where \( g_i(x) \) denotes the deterministic dynamics of the \( i \)-th motif, \
 To stabilize the trajectory alignment or improve optimization in the presence of noise, we incorporate simulated annealing by gradually decreasing \( \sigma \) over time.
 
 
+\subsubsection{Parameterized motifs}
+We consider parameterized versions of motifs that involve rescaling the vector field both on- and off-manifold.
+As an example, consider the stable limit cycle, which can be described by two scalar parameters: \( v \) and \( \alpha < 0 \). The dynamics are given by:
+\begin{equation}
+\dot{r} = \alpha r (r - 1),
+\quad \dot{\theta} = v
+\end{equation}
+where \( r \) represents the radial coordinate and \( \theta \) the angular coordinate. Here, \( v \) controls the angular velocity, and \( \alpha \) determines the dynamics of the radial direction, where the system exhibits stable behavior at \( r = 1 \). This formulation allows for exploration of the effects of rescaling on the stability and behavior of the system, both in the radial and angular components of the phase space.
+
+More generally, one can define a $d$-dimensional vector field for a $d$-dimensional attractor motif.
+
+
+\subsubsection{The complexity of the homeomorphism}
+To assess how much a learned homeomorphism $\Phi$ deforms space, we distinguish between a set of canonical transformation types, such as translations, permutations, rotations, uniform and non-uniform scalings, and multiplicative rescaling of the vector field (which affects global speed; see [ref]).
+ While these operations are useful for interpreting specific deformation modes, they are not directly included in our complexity measure.
+Instead, we capture the full, potentially nonlinear deformation induced by $\Phi$ by evaluating how much it deviates locally from the identity map. This is quantified using the Jacobian:
+\[
+\left\|\frac{\partial \Phi}{\partial x} - \mathbb{I}\right\|
+\]
+which captures how much the local linear behavior of $\Phi$ differs from that of the identity transformation.
+The norm of this deviation is computed either using the Frobenius norm or the spectral norm.
+Finally, the \( L^p \) norm of the batch of Jacobians is computed, providing a scalar value that quantifies the overall local deformation across the space. A norm close to zero indicates that the transformation is nearly identity, while higher values suggest more significant deformations.
+
+%measure-preserving (Hamiltonian) transformation
+
+\paragraph{Wasserstein distance between the distribution over trajectories}
+\citep{bion2019wasserstein}
+
+The Wasserstein distance evaluates how these local distortions aggregate over the distribution of trajectories.
+The Jacobian norm relates to the Wasserstein distance by capturing local distortions that contribute to the global changes in the distribution, which are reflected in the Wasserstein distance between the trajectories' distributions.
+
+
 
 
 
@@ -713,6 +741,8 @@ Let \( f \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) define the vector field of a tar
 Problem: trivial solution $\Phi(x) = 0$ for $x\in\mathcal{D}$.\\
 Solution (?): injectivity per orbit (still allow for non-injectivity across orbits)
 
+
+\section{}
 
 
 
