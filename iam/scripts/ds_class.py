@@ -1066,6 +1066,91 @@ class AnalyticDynamicalSystem(nn.Module):
         raise NotImplementedError("Subclasses must implement this method to compute the trajectory.")
 
 
+class AnalyticalLinearSystem(AnalyticDynamicalSystem):
+    """
+    Computes the trajectory of a linear dynamical system defined by \dot{x} = A x,
+    where A is a learnable constant matrix initialized to -I.
+    """
+    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
+        """
+        Initialize the class with a learnable matrix A initialized to -I.
+
+        :param dim: The dimensionality of the system.
+        :param dt: The time step used for discretizing the trajectory.
+        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
+        """
+        super().__init__(dt=dt, time_span=time_span)
+        self.dim = dim
+        # Initialize A as a learnable parameter with -I
+        A_init = -torch.eye(dim)
+        self.A = nn.Parameter(A_init)
+
+    def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
+        """
+        Computes the trajectory for the linear system using the analytical solution x(t) = exp(tA)x₀.
+
+        :param initial_position: A tensor of shape (batch_size, dim) representing the initial positions.
+        :param time_span: Optional tuple specifying the time range for the trajectory.
+        :return: A tensor of shape (batch_size, T, dim) where T is the number of time steps.
+        """
+        if time_span is None:
+            time_span = self.time_span
+        batch_size = initial_position.shape[0]
+
+        # Create time vector (shape: T)
+        t_start, t_end = time_span
+        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # shape: (T,)
+
+        # Compute exp(tA) for each t and apply to x₀
+        trajectory = torch.zeros(batch_size, len(t_values), self.dim, device=initial_position.device)
+        for t_idx, t in enumerate(t_values):
+            exp_tA = torch.matrix_exp(self.A * t)
+            trajectory[:, t_idx] = initial_position @ exp_tA.T  # shape: (batch_size, dim)
+
+        return trajectory
+
+class AnalyticalBoundedLineAttractor(AnalyticDynamicalSystem):
+    """
+    Analytic approximation of a nonlinear system dx/dt = -x + ReLU(Wx + b),
+    assuming ReLU activations remain fixed over the integration interval.
+    """
+
+    def __init__(self, W: torch.Tensor, b: torch.Tensor,
+                 dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
+        super().__init__(dt, time_span)
+        self.W = nn.Parameter(W)  # Optionally make this learnable
+        self.b = nn.Parameter(b)  # Optionally make this learnable
+        self.relu = nn.ReLU()
+
+    def compute_trajectory(self, initial_position: torch.Tensor,
+                           time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
+        if time_span is None:
+            time_span = self.time_span
+        t_start, t_end = time_span
+        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # (T,)
+        T = len(t_values)
+        batch_size, dim = initial_position.shape
+
+        # Compute fixed ReLU mask
+        z = torch.matmul(initial_position, self.W.T) + self.b
+        mask = (z > 0).float()
+        W_eff = self.W * mask.unsqueeze(1)  # (dim, dim)
+        b_eff = self.b * mask  # (dim,)
+
+        # Effective linear system: dx/dt = A x + b
+        A = W_eff - torch.eye(dim, device=initial_position.device)
+        A_exp = torch.matrix_exp(A * self.dt)
+        A_inv = torch.linalg.pinv(A)  # Stable even if A is singular
+        B_term = torch.matmul((A_exp - torch.eye(dim, device=initial_position.device)), torch.matmul(A_inv, b_eff))
+
+        # Build trajectory
+        trajectory = torch.zeros(batch_size, T, dim, device=initial_position.device)
+        x_t = initial_position
+        for t_idx in range(T):
+            x_t = torch.matmul(x_t, A_exp.T) + B_term
+            trajectory[:, t_idx] = x_t
+
+        return trajectory
 
 
 class AnalyticalLimitCycle(AnalyticDynamicalSystem):
