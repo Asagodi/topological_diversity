@@ -169,15 +169,14 @@ def vector_field_ode(t, x, grid_u, grid_v, perturb_grid_u, perturb_grid_v, inter
 
 
 
-
 def prepare_initial_conditions(
     mode: str = "around_ring",  # "random", "around_ring", "invariant_manifold"
     num_points: int = 60,
     radius: float = 1.0,
     margin: float = 0.1,
-    min_val: float = 1.5,
     invariant_manifold: Optional[np.ndarray] = None,
-    seed: int = 42
+    seed: int = 42,
+    dim: int = 2  # total dimension of the space
 ) -> np.ndarray:
     """
     Prepares initial conditions for simulating target trajectories.
@@ -185,47 +184,54 @@ def prepare_initial_conditions(
     Args:
         mode: "random", "around_ring", or "invariant_manifold".
         num_points: Number of points to generate.
-        radius: Radius for the ring (only in "around_ring").
-        margin: Perturbation inward/outward from ring (only in "around_ring").
-        min_val: Bound for uniform sampling (only in "random").
+        radius: Radius for the ring (only in "around_ring" or "random").
+        margin: Perturbation or bound for sampling in other dimensions.
         invariant_manifold: Data for initialization if using "invariant_manifold".
         seed: Random seed for reproducibility.
+        dim: Total number of dimensions for the initial condition vectors.
 
     Returns:
-        Initial conditions array of shape (num_points, 2).
+        Initial conditions array of shape (num_points, dim).
     """
     np.random.seed(seed)
 
+    if dim < 2:
+        raise ValueError("dim must be at least 2 to define ring-based initialization")
+
     if mode == "random":
-        # Uniform sampling in an annulus between (radius - margin) and (radius + margin)
+        # Uniform sampling in a 2D annulus + uniform [-margin, margin] in other dims
         r_low = max(0, radius - margin)
         r_high = radius + margin
         angles = np.random.uniform(0, 2 * np.pi, size=num_points)
-        radii = np.sqrt(np.random.uniform(r_low**2, r_high**2, size=num_points))  # sqrt for uniform area sampling
+        radii = np.sqrt(np.random.uniform(r_low**2, r_high**2, size=num_points))
         x = radii * np.cos(angles)
         y = radii * np.sin(angles)
-        return np.stack([x, y], axis=1)
+        others = np.random.uniform(-margin, margin, size=(num_points, dim - 2))
+        return np.concatenate([x[:, None], y[:, None], others], axis=1)
 
     elif mode == "around_ring":
-        if num_points % 2 != 0:
-            raise ValueError("num_points must be even in 'around_ring' mode.")
-        half = num_points // 2
-        angles = np.linspace(0, 2 * np.pi, half, endpoint=False)
-        inner = [(radius - margin) * np.array([np.cos(θ), np.sin(θ)]) for θ in angles]
-        outer = [(radius + margin) * np.array([np.cos(θ), np.sin(θ)]) for θ in angles]
-        points = []
-        for i in range(half):
-            points.append(inner[i])
-            points.append(outer[i])
-        return np.array(points)
+        # Uniform angles around the ring with slight radial noise
+        angles = np.linspace(0, 2 * np.pi, num_points, endpoint=False)
+        radii = radius + np.random.uniform(-margin, margin, size=num_points)
+        x = radii * np.cos(angles)
+        y = radii * np.sin(angles)
+        others = np.random.uniform(-margin, margin, size=(num_points, dim - 2))
+        return np.concatenate([x[:, None], y[:, None], others], axis=1)
 
     elif mode == "invariant_manifold":
         if invariant_manifold is None:
-            raise ValueError("Must provide invariant_manifold array for this mode.")
-        return invariant_manifold
+            raise ValueError("invariant_manifold must be provided for 'invariant_manifold' mode.")
+        if invariant_manifold.shape[1] != dim:
+            raise ValueError(f"invariant_manifold must have shape (_, {dim})")
+        indices = np.random.choice(invariant_manifold.shape[0], size=num_points, replace=True)
+        return invariant_manifold[indices]
 
     else:
-        raise ValueError(f"Unknown mode: {mode}")
+        raise ValueError(f"Unsupported mode: {mode}")
+
+
+
+
 
 def build_perturbed_ringattractor(perturbation_norm = 0.1, random_seed = 313, min_val_sim=3, n_grid = 40, add_limit_cycle=False,
                                   num_points_invman = 200, maxT = 5, tsteps = 100, number_of_target_trajectories = 100, initial_conditions_mode="around_ring", init_margin=0.1):
