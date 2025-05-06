@@ -169,7 +169,7 @@ def train_homeo_ds_net_batched(
     num_epochs: int = 100,
     max_grad_norm: Optional[float] = None,
     annealing_params: Optional[dict] = None,
-    early_stopping_patience: Optional[int] = 50,
+    early_stopping_patience: Optional[int] = None,
 ):
     """
     Train the homeomorphism network with automatic full-batch or mini-batch support.
@@ -190,6 +190,8 @@ def train_homeo_ds_net_batched(
     if isinstance(homeo_ds_net.dynamical_system, (LearnableDynamicalSystem, AnalyticDynamicalSystem)):
         params_to_optimize += list(homeo_ds_net.dynamical_system.parameters())
     optimizer = optim.Adam(params_to_optimize, lr=lr)
+    if early_stopping_patience is None:
+        early_stopping_patience = num_epochs 
     early_stopper = EarlyStopping(patience=early_stopping_patience)
     best_model_saver = BestModelSaver(homeo_net=homeo_ds_net.homeo_network, source_system=homeo_ds_net.dynamical_system)
 
