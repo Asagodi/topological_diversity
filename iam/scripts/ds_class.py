@@ -326,6 +326,47 @@ class LearnableDynamicalSystem(DynamicalSystem):
         raise NotImplementedError
     
 
+class LearnableLinearSystem(LearnableDynamicalSystem):
+    """
+    A linear dynamical system dx/dt = Ax, where A is either a full or diagonal learnable matrix.
+    """
+
+    def __init__(
+        self,
+        dim: int,
+        dt: float = 0.05,
+        time_span: Tuple[float, float] = (0, 5),
+        A_init: Optional[Union[torch.Tensor, np.ndarray, str]] = None,
+        diagonal_only: bool = False
+    ):
+        super().__init__()
+        self.dim = dim
+        self.dt = dt
+        self.time_span = time_span
+        self.diagonal_only = diagonal_only
+
+        # Default initialization
+        if A_init is None or A_init == 'stable':
+            A_init = -torch.ones(dim) if diagonal_only else -torch.eye(dim)
+
+        elif isinstance(A_init, np.ndarray):
+            A_init = torch.tensor(A_init, dtype=torch.float32)
+
+        # Register parameter
+        if diagonal_only:
+            assert A_init.shape == (dim,), "For diagonal_only=True, A_init must be a vector of shape (dim,)"
+            self.A_diag = nn.Parameter(A_init)
+        else:
+            assert A_init.shape == (dim, dim), "For diagonal_only=False, A_init must be a matrix of shape (dim, dim)"
+            self.A = nn.Parameter(A_init)
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if self.diagonal_only:
+            return x * self.A_diag  # Elementwise
+        else:
+            return torch.matmul(x, self.A.T)  # Standard matrix multiplication
+
+
 class LearnableNDLimitCycle(LearnableDynamicalSystem):
     """
     N-dimensional limit cycle system with learnable velocity and alpha parameters.
@@ -470,38 +511,6 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
 
 
 
-class LearnableLinearSystem(LearnableDynamicalSystem):
-    """
-    A linear dynamical system of the form dx/dt = Ax, where A is a learnable matrix.
-    """
-
-    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), 
-    A_init: Optional[torch.Tensor] = None):
-        """
-        :param dim: Dimensionality of the system.
-        :param dt: Time step for trajectory generation.
-        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
-        """
-        super().__init__()
-        self.dim = dim
-        self.dt = dt
-        self.time_span = time_span
-        # Initialize A as a (learnable) parameter
-        if A_init is None:
-            A_init = -torch.eye(dim)  
-            self.A = A_init
-        elif isinstance(A_init, np.ndarray):
-            # Convert numpy array to torch tensor if A_init is a numpy array
-            A_init = torch.tensor(A_init, dtype=torch.float32)
-            self.A = nn.Parameter(A_init)  
-        elif isinstance(A_init, torch.Tensor):
-            self.A = nn.Parameter(A_init) 
-        elif A_init == 'stable':
-            A_init = -torch.eye(dim)
-            self.A = nn.Parameter(A_init) 
-
-    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        return torch.matmul(x, self.A.T)   # assumes that x has shape (batch_size, dim)
 
 
 
@@ -789,20 +798,26 @@ def build_ds_motif(
     time_span: tuple[float, float],
     dt: Optional[float] = None,
     analytic: bool = False,
+    canonical: bool = True,
     vf_on_ring_enabled: bool = False,
     alpha_init: Optional[float] = -1.,
+    velocity_init: Optional[float] = -1.,
 ) -> object:
     """
-    Constructs a dynamical system motif based on the motif type and whether it's analytic or learnable.
-
+    Constructs a dynamical system motif based on the motif type and analytic/numerical type.
     Args:
-        ds_motif: One of "ring", "lc".
+        ds_motif: One of "ring", "lc", "lds", "bla".
+            1. "ring": Ring attractor system.
+            2. "lc": Limit cycle system.
+            3. "lds": Linear dynamical system.
+            4. "bla": Bounded line attractor system. 
         dim: Dimensionality of the system.
         time_span: Time interval for simulation.
         dt: Time step (required for learnable systems).
         analytic: Whether to use an analytical system.
+        canonical: No time parametrization if True.
         vf_on_ring_enabled: Additional option for learnable ring attractor.
-
+        alpha_init, velocity_init: Initial values for learnable parameters.
     Returns:
         Instantiated dynamical system object.
     """
@@ -830,17 +845,40 @@ def build_ds_motif(
     if analytic not in ds_class_map[ds_motif]:
         raise ValueError(f"No class defined for ds_motif='{ds_motif}' with analytic={analytic}")
 
+    #DSClass = ds_class_map[ds_motif][analytic]
+    # # Instantiate with appropriate parameters
+    # if analytic:
+    #     if canonical:
+    #         ds = DSClass(dim=dim, dt=dt, time_span=time_span)
+    #     else:
+    #         ds = DSClass(dim=dim, dt=dt, time_span=time_span, alpha_init=alpha_init, velocity_init=velocity_init)
+    # else:
+    #     if canonical:
+    #         ds = DSClass(dim=dim, dt=dt, time_span=time_span)
+    #     else:
+    #         ds = DSClass(dim=dim, dt=dt, time_span=time_span, vf_on_ring_enabled=vf_on_ring_enabled, alpha_init=alpha_init, velocity_init=velocity_init)
+
+    # return ds
+
     DSClass = ds_class_map[ds_motif][analytic]
+    init_params = inspect.signature(DSClass.__init__).parameters
 
-    # Instantiate with appropriate parameters
-    if analytic:
-        ds = DSClass(dim=dim, dt=dt, time_span=time_span, alpha_init=alpha_init)
-    else:
-        ds = DSClass(dim=dim, dt=dt, time_span=time_span, vf_on_ring_enabled=vf_on_ring_enabled)
+    kwargs = {
+        'dim': dim,
+        'dt': dt,
+        'time_span': time_span,
+    }
 
-    return ds
+    # Add only if not canonical
+    if not canonical:
+        if 'alpha_init' in init_params:
+            kwargs['alpha_init'] = alpha_init
+        if 'velocity_init' in init_params:
+            kwargs['velocity_init'] = velocity_init
+        if 'vf_on_ring_enabled' in init_params:
+            kwargs['vf_on_ring_enabled'] = vf_on_ring_enabled
 
-
+    return DSClass(**kwargs)
 
 
 
@@ -1370,3 +1408,21 @@ def generate_trajectories_from_initial_conditions(homeo_ds_network, initial_cond
             transformed_trajectories = [homeo_net(traj) for traj in trajectories_source]
     transformed_trajectories = torch.stack(transformed_trajectories).detach().numpy()
     return trajectories_source, transformed_trajectories
+
+def get_ds_vf(model, bounds, num_points=15):
+    """
+    Get the vector field of the system for a grid.
+    """
+
+    x = np.linspace(bounds[0], bounds[1], 15)
+    y = np.linspace(bounds[0], bounds[1], 15)
+    X, Y = np.meshgrid(x, y)
+    XY = torch.tensor(np.stack([X.ravel(), Y.ravel()], axis=1), dtype=torch.float32)
+
+    # Compute vector field
+    with torch.no_grad():
+        dXY = model.forward(t=torch.tensor(0.0), x=XY).numpy()
+
+    U = dXY[:, 0].reshape(X.shape)
+    V = dXY[:, 1].reshape(Y.shape)
+    return X, Y, U, V
