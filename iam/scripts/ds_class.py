@@ -1111,44 +1111,57 @@ class AnalyticalLinearSystem(AnalyticDynamicalSystem):
 
 class AnalyticalBoundedLineAttractor(AnalyticDynamicalSystem):
     """
-    Analytic approximation of a nonlinear system dx/dt = -x + ReLU(Wx + b),
-    assuming ReLU activations remain fixed over the integration interval.
+    Piecewise-analytic integration of dx/dt = -x + ReLU(Wx + b),
+    detecting activation regime switches and analytically integrating within each regime.
     """
 
     def __init__(self, W: torch.Tensor, b: torch.Tensor,
                  dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
         super().__init__(dt, time_span)
-        self.W = nn.Parameter(W)  # Optionally make this learnable
-        self.b = nn.Parameter(b)  # Optionally make this learnable
+        self.W = nn.Parameter(W)
+        self.b = nn.Parameter(b)
         self.relu = nn.ReLU()
 
     def compute_trajectory(self, initial_position: torch.Tensor,
                            time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
         if time_span is None:
             time_span = self.time_span
+
         t_start, t_end = time_span
         t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # (T,)
         T = len(t_values)
         batch_size, dim = initial_position.shape
 
-        # Compute fixed ReLU mask
-        z = torch.matmul(initial_position, self.W.T) + self.b
-        mask = (z > 0).float()
-        W_eff = self.W * mask.unsqueeze(1)  # (dim, dim)
-        b_eff = self.b * mask  # (dim,)
-
-        # Effective linear system: dx/dt = A x + b
-        A = W_eff - torch.eye(dim, device=initial_position.device)
-        A_exp = torch.matrix_exp(A * self.dt)
-        A_inv = torch.linalg.pinv(A)  # Stable even if A is singular
-        B_term = torch.matmul((A_exp - torch.eye(dim, device=initial_position.device)), torch.matmul(A_inv, b_eff))
-
-        # Build trajectory
         trajectory = torch.zeros(batch_size, T, dim, device=initial_position.device)
-        x_t = initial_position
+        x_t = initial_position.clone()
+
         for t_idx in range(T):
-            x_t = torch.matmul(x_t, A_exp.T) + B_term
+            # Store current state
             trajectory[:, t_idx] = x_t
+
+            # Detect activation pattern
+            z = torch.matmul(x_t, self.W.T) + self.b  # (batch_size, dim)
+            mask = (z > 0).float()  # (batch_size, dim)
+
+            # Prepare next state for each batch independently
+            next_x = torch.zeros_like(x_t)
+
+            for i in range(batch_size):
+                m = mask[i]  # (dim,)
+                W_eff = self.W * m.unsqueeze(1)  # Keep active units
+                b_eff = self.b * m
+
+                A = W_eff - torch.eye(dim, device=x_t.device)
+                try:
+                    A_exp = torch.matrix_exp(A * self.dt)
+                    A_inv = torch.linalg.pinv(A)
+                    B_term = (A_exp - torch.eye(dim, device=x_t.device)) @ (A_inv @ b_eff)
+                    next_x[i] = (A_exp @ x_t[i]) + B_term
+                except RuntimeError:
+                    # Fallback to Euler step in rare singular matrix cases
+                    next_x[i] = x_t[i] + self.dt * (-x_t[i] + self.relu(torch.matmul(x_t[i], self.W.T) + self.b))
+
+            x_t = next_x
 
         return trajectory
 
