@@ -337,7 +337,7 @@ class LearnableLinearSystem(LearnableDynamicalSystem):
         dt: float = 0.05,
         time_span: Tuple[float, float] = (0, 5),
         A_init: Optional[Union[torch.Tensor, np.ndarray, str]] = None,
-        diagonal_only: bool = False
+        diagonal_only: bool = True
     ):
         super().__init__()
         self.dim = dim
@@ -383,6 +383,7 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
         radius: float = 1.0,  
         velocity_init: float = -1.0,
         alpha_init: float = -1.0,
+        theta_modulation_num_terms: int = 5,
     ):
         super().__init__()
         assert dim >= 2, "Dimension must be at least 2."
@@ -390,12 +391,16 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
         self.dt = dt
         self.time_span = time_span
         self.noise_std = noise_std
-        self.radius = radius  # Fixed radius 
+        self.radius = radius   
+        self.use_theta_modulation = use_theta_modulation
 
+        # Learnable modulation of angular velocity
+        if use_theta_modulation:
+            self.theta_modulator = TrainablePeriodicFunction(num_terms=theta_modulation_num_terms)
         # Learnable parameters
         if velocity_init is None:
             velocity_init = 1.0
-        else:
+        elif not use_theta_modulation: #only if not using theta modulation
             self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
         if alpha_init is None:
             alpha_init = -1.0
@@ -412,10 +417,11 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
         r = torch.sqrt(x_val**2 + y_val**2)
         theta = torch.atan2(y_val, x_val)
 
-        dtheta_dt = self.velocity  # Learnable velocity
+        if self.use_theta_modulation:
+            dtheta_dt = self.theta_modulator(theta)  # purely theta-based modulation
+        else:
+            dtheta_dt = self.velocity  # Learnable velocity
         dr_dt =  - self.alpha * r * (self.radius - r)  # Radial dynamics
-       # dr_dt =   r * (self.radius - r)  # Radial dynamics
-
 
         # Convert polar derivatives back to Cartesian
         dx_dt = dr_dt * torch.cos(theta) - r * torch.sin(theta) * dtheta_dt
@@ -430,7 +436,6 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
         if self.dim > 2:
             residual = x[:, 2:]
             d_residual_dt = self.alpha * residual
-            #d_residual_dt = - residual
             derivatives.append(d_residual_dt)
 
         return torch.cat(derivatives, dim=1)
@@ -450,7 +455,9 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
         noise_std: float = 0.0,
         radius: float = 1.0,  
         alpha_init: float = -1.0,
-        vf_on_ring_enabled: bool = False
+        sigma_init: float = 0.05,
+        vf_on_ring_enabled: bool = False,
+        vf_on_ring_num_terms: int = 5
     ):
         super().__init__()
         assert dim >= 2, "Dimension must be at least 2."
@@ -466,9 +473,9 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
         else:
             self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
         if vf_on_ring_enabled:
-            self.vf_on_ring = TrainablePeriodicFunction(num_terms=5)
+            self.vf_on_ring = TrainablePeriodicFunction(num_terms=vf_on_ring_num_terms)
         self.vf_on_ring_enabled = vf_on_ring_enabled
-        self.sigma = nn.Parameter(torch.tensor(.05, dtype=torch.float32))  # width of radial band around the ring
+        self.sigma = nn.Parameter(torch.tensor(sigma_init, dtype=torch.float32))  # width of radial band around the ring
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         if x.dim() == 1:
@@ -481,11 +488,8 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
 
         dtheta_dt = 0 
         if self.vf_on_ring_enabled:
-            #dtheta_dt = self.vf_on_ring(theta)
-
             #with gaussian envelope
             angular_perturb = self.vf_on_ring(theta)
-            #sigma = 0.05  # width of radial band around the ring
             bump = torch.exp(-((r - self.radius) ** 2) / (2 * self.sigma**2))
             dtheta_dt = bump * angular_perturb
 
