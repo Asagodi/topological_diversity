@@ -592,7 +592,6 @@ def test_homeo_ds_nets(
         traj_src_np, traj_trans_np, loss = test_single_homeo_ds_net(
             homeo_ds_net,
             trajectories_target=trajectories_target,
-            plot_first_n=plot_first_n,
             time_span=time_span
         )
         trajectories_source_list.append(traj_src_np)
@@ -758,14 +757,38 @@ def rescale_node_vf(model: NODEHomeomorphism, scale: float) -> NODEHomeomorphism
 
 
 ### testing 
-def get_homeo_invman(homeo_network):
-    #assuming ring is invariant manifold (works for ring and lc)
-    radius=1
-    angles = np.linspace(0, 2 * np.pi, 100)
-    ring_points = np.array([(radius * np.cos(angle), radius * np.sin(angle)) for angle in angles])
-    fit_ra_points = homeo_network(torch.tensor(ring_points, dtype=torch.float32)).detach().numpy()
-    fit_ra_points = np.vstack([fit_ra_points, fit_ra_points[0]])
-    return fit_ra_points
+def get_homeo_invman(homeo_network, dim: int = 2, num_points: int = 100) -> np.ndarray:
+    """
+    Generates points on a 2D ring embedded in the first two dimensions of a higher-dimensional space,
+    applies the homeomorphism, and returns the transformed ring points.
+
+    Args:
+        homeo_network: A PyTorch model representing the homeomorphism.
+        dim: Dimensionality of the input space (>=2).
+        num_points: Number of points to sample around the ring.
+
+    Returns:
+        Transformed ring points as a NumPy array of shape (num_points + 1, dim).
+    """
+    assert dim >= 2, "Dimension must be at least 2"
+
+    # Sample angles around the unit circle
+    radius = 1.0
+    angles = np.linspace(0, 2 * np.pi, num_points, endpoint=False)
+    ring_2d = np.stack([radius * np.cos(angles), radius * np.sin(angles)], axis=1)
+
+    # Embed in higher-dimensional space by padding with zeros
+    ring_nd = np.zeros((num_points, dim), dtype=np.float32)
+    ring_nd[:, :2] = ring_2d
+
+    # Apply homeomorphism
+    fit_nd = homeo_network(torch.tensor(ring_nd)).detach().numpy()
+
+    # Close the ring by appending the first point at the end
+    fit_nd = np.vstack([fit_nd, fit_nd[0]])
+
+    return fit_nd
+
 
 
 #######Link
