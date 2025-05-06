@@ -121,13 +121,9 @@ If neural dynamics are indeed tuned to drive behavior, we should expect a corres
  %big datas
 \paragraph{Large datasets}
  As the number of simultaneously recorded neurons increases and experimental paradigms become more complex (e.g. freely behaving animals), it becomes increasingly challenging to develop computational models that can describe the population activity while still providing a meaningful interpretation of how it relates to system-level function.
-
-
-%multi
-\paragraph{Multi-X datasets}
-Multiple animals \citep{depasquale2021accumulation}
-
-Multiple tasks \citep{}
+%multi\paragraph{Multi-X datasets}
+%Multiple animals \citep{depasquale2021accumulation}
+%Multiple tasks \citep{}
 
 \subsection{Our contribution}\label{sec:contribution}
 \begin{itemize}
@@ -148,15 +144,13 @@ This framework applies to core neural computations such as classification, worki
 %Message: finite time series cannot distinguish between some theories (which are the same on a finite time horizon but different on an infinite time horizon), but vector fields can
 
 \section{Background and related work}\label{sec:background}
-A theory of (neural) computation\citep{jaeger2021theory, jaeger2023timescales, jaeger2023theory}
-- Dynamical system theory as the source for the syntax for the language of neural computation.
-\citep{elgazzar2024universal}
+Our goal is to develop a framework that makes neural dynamics interpretable by grounding them in a structured theory of computation.
+In this section, we outline how dynamical systems theory provides a formal language for describing neural computations \citep{jaeger2021theory, jaeger2023timescales, elgazzar2024universal}, review existing approaches for characterizing and comparing dynamics% such as DYNAMO \citep{cotler2023analyzing} and \citep{pagan2022dm},
+and define the scope of our contribution across three axes: the class of computations under study (Computation-through-Dynamics working memory and persistent type), the state of the art in model reduction and system identification, and the interpretability of the resulting abstractions.
 
-Similar idea: DYNAMO \citep{cotler2023analyzing}
 
-a language describing the axes of the space of possible dynamical solutions and their characteristics \citep{pagan2022dm}
-
-\subsection{Computation through dynamics}
+%%%%
+\subsection{Computation through dynamics}\label{sec:ctd}
 \citep{mante2013context}
 \citep{sussillo2014neural}
 \citep{vyas2020ctd}
@@ -182,47 +176,38 @@ Engineering RNNs that embody latent task dynamics (EMPJ) \citep{pollock2020engin
 %\citep{levenstein2023theory}
 
 \subsubsection{Examples of neural computation}\label{sec:neurcompex}
-\paragraph{Working memory}
-Discrete 
-
-Continuous \citep{hoeller2024bridging} \citep{zhang2022translation}
-
-\paragraph{Short-term memory}
-\citep{kurtkaya2025dynamical}
-
-\paragraph{Decision making}
-
-\paragraph{Motor control}
-\citep{wang2022representation}
-
-\subsubsection{Canonical models for neural computation}
-\citep{chirimuuta2014minimal}
-
-Variability in implementation
+Neural computations such as working memory, short-term memory, and motor control have been extensively studied through dynamical systems. Discrete and continuous forms of working memory, for example, can be modeled as attractor dynamics that stabilize persistent representations \citep{zhang2022translation, hoeller2024bridging}.
+ Short-term memory, involving transient yet structured activity, has been explored in dynamical models capturing task-dependent variability \citep{kurtkaya2025dynamical}.
+ Motor control, too, exhibits low-dimensional dynamics shaped by recurrent structure \citep{wang2022representation}.
+ While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
 
 
 
-\subsection{Existing methods for characterizing dynamics}
-
+\subsection{Existing methods for characterizing, reducing and comparing dynamics}\label{sec:sota_methods}
 %ds_landscape_carving?
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.75\linewidth]{parameterspace_motifs}
-    \caption{Localizing a model in parameter space through dynamical motifs.}
-    \label{fig:ds_landscape}
-\end{figure}
 
-\subsubsection{Reconstructing dynamics}
+Reconstruction: Sec.~\ref{sec:reconstruction}
+Comparison: Sec.~\ref{sec:comparison}
+Decomposition: Sec.~\ref{sec:decomposition}
+Reduction\ref{sec:reduction}
+
+
+%%%
+\subsubsection{Reconstructing dynamics}\label{sec:reconstruction}
 Learning interpretable continuous-time models of latent stochastic dynamical systems \citep{duncker2019learning}
-
+%
+SSMLearn \citep{cenedese2022data}
+%
 Phase2vec \citep{ricci2022phase2vec}
-\citep{moriel2024timewarpattend}
+DFORM \citep{chen2024dform}
+TWA \citep{moriel2024timewarpattend}
 Smooth Prototype Equivalences \citep{friedman2025characterizing}
-
+%
 MARBLE \citep{gosztolai2025marble}
 
 
-\subsubsection{Methods to compare/classify dynamics}\label{sec:compare}
+%%%
+\subsubsection{Methods to compare/classify dynamics}\label{sec:comparison}
 %Comparison of dynamical systems
 Concepts:
 \begin{itemize}
@@ -246,8 +231,9 @@ For task-trained neural networks
 Bisimilarity\citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar}
 approximate bisim\citep{girard2011approximate}
 
-\paragraph{SOTA}
+%\paragraph{SOTA}
 \citep{mezic2004comparison}
+SVCCA\citep{raghu2017svcca}
 
 assess the limit sets
 Fixed-point based \citep{sussillo2013blackbox,katz2017fibers,golub2018fixedpointfinder}
@@ -257,9 +243,6 @@ LCs in RNNs \citep{townley2000existence} \citep{pals2024inferring}
 
 slow invariant manifolds\citep{Sagodi2024a}
 
-TWA\citep{moriel2024timewarpattend}
-
-SVCCA\citep{raghu2017svcca}
 
 Dynamical Similarity Analysis (DSA) \citep{ostrow2024beyond} \citep{kamiya2024koopman}\\
 What we lose (because of the truncation): limit cycles, multistability
@@ -268,13 +251,14 @@ But we can capture some slow manifold behavior!
 \citep{libedinsky2023comparing}
 \citep{lipshutz2024disentangling} 
 \citep{nejatbakhsh2024comparing} Optimal transport
-\citep{barbosa2025quantifying}
+\citep{barbosa2025quantifying} %not dynamics
 
+TWA\citep{moriel2024timewarpattend}
 Diffeomorphic vector field alignment for comparing dynamics across learned models\citep{chen2024dform}
 - orbital similarity loss (Eq.~5)
 
 
-
+%%%
 \subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
 into basins of attraction through Conley’s Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
 
@@ -332,14 +316,12 @@ We can simplify it's dynamics by looking at its normal form.
 
 
 
+\subsubsection{Our proposal to decompose, reduce, compare and reconstruct}
 \paragraph{Reduction of dynamics to extract computation}
 Encoding-Decoding framework
-
 \citep{zhang2025neural} NEDS
 
-
 Formalize through input-output functional.
-
 The \emph{transfer functional} \( \mathcal{T}_f \) maps an input signal \( u(\cdot) \) to an output signal \( y(\cdot) \), possibly given an initial condition \( x_0 \):
 \[
 \mathcal{T}_f[u](t) = h(x(t)),
@@ -357,15 +339,12 @@ A natural notion of distance between the transfer functionals is
 \left\| \mathcal{T}_f[u](t) - \mathcal{T}_{\Phi^{-1}(f+p)}[u](t) \right\|,
 \]
 where \( \mathcal{U} \) is a suitable class of input signals (e.g., all inputs with bounded \( L^\infty \)-norm or from a compact set in \( C([0,T], \mathbb{R}^m) \)).
-
 %adjust h to minimize output error of f+p?
-find a new readout map $\tilde h$  so that the output error between $f$ and $f+p$ is minimized.
+%find a new readout map $\tilde h$  so that the output error between $f$ and $f+p$ is minimized. %???
 
-
-\paragraph{Reduction of dynamics}
-Embed attractor of intrinsic dimension $N$ into $\reals^{n+1}$ to be able to map point in the basin of attraction onto representative points on the stable manifold of the attractor motif.
-
-\ascomment{What is simple behavior in terms of the transfer function?}
+%\paragraph{Reduction of dynamics}
+%Embed attractor of intrinsic dimension $N$ into $\reals^{n+1}$ to be able to map point in the basin of attraction onto representative points on the stable manifold of the attractor motif.
+%\ascomment{What is simple behavior in terms of the transfer function?}
 
 
 \subsection{Interpretability}
@@ -400,8 +379,8 @@ extraction of information from the input and the output of a learned model is al
 \subsubsection{Simplicity}
 \citep{gao2015simplicity}
 \citep{dyer2023simplest}
-\citep{quinn2022information}
-
+\citep{quinn2022information}%
+%
 Canonical realization = the simplest system (in some sense) that produces the same behavior
 
 
@@ -413,7 +392,7 @@ MPHATE\citep{gigante2019visualizing}
 MMPHATE\citep{xie2024multiway} 
 \citep{madsen2019visualizing}
 
-\subsection{Minimal}
+\subsubsection{Minimal}
 \citep{beer1996toward}
 \citep{lafferriere2000minimal}
 \citep{chirimuuta2014minimal}
@@ -421,7 +400,7 @@ MMPHATE\citep{xie2024multiway}
 \citep{brancazio2023minimal}
 \citep{Jordan2019a}
 
-\paragraph{Reduction/idealization/simplification/abstraction}
+\subsubsection{Reduction/idealization/simplification/abstraction}
 \citep{marr1976computation, marr2010vision}
 \citep{chirimuuta2018mmm} %chirimuuta2022artifacts, chirimuuta2024analogies
 \citep{potochnik2021levels,
@@ -429,7 +408,6 @@ potochnik2020idealization,
 potochnik2017idealization}
 \citep{stinson2020idealized}
 \citep{chirimuuta2024brain} 
-
 %Solomonoff's theory of inductive inference (formalizes Occam's razor)
 
 
@@ -437,10 +415,10 @@ potochnik2017idealization}
 \citep{deregt2017understanding}
 \citep{potochnik2017idealization}
 \citep{guest2023logical}
-
+%
 Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding}
 prediction vs understanding \citep{chirimuuta2021prediction}
-
+%
 Understanding information propagation using dynamical systems tools \citep{vogt2022lyapunov}
 
 \paragraph{Explanations: understanding scientific phenomena}
@@ -456,7 +434,7 @@ Interpretation in terms of contributions of the transfer functional.
 %context: computation %Representation and algorithm in Marr's levels
 \paragraph{Understanding computation in terms of dynamics}
 Interpretation in terms of a ``compressed'' description of the dynamics.
-
+%
 task's computational demands (e.g., continuous parametrization of memory)
 
 
@@ -472,19 +450,10 @@ black box to mixture of interpretable models \citep{ghosh2023blackbox}
 \citep{nonnenmacher2017extracting}
 \citep{zhang2025netformer}: recovering dynamical connectivity in neuronal population dynamics
 \citep{klindt2023identifying,klindt2025superposition}
+%\paragraph{Motor primitives} \subsubsection{In neuroscience}
+In motor cortex, neural trajectories during reaching movements often evolve along a low-dimensional cyclic structure, making it possible to interpret them as dynamical primitives for movement \citep{ijspeert2013dynamical}.
 
-\subsubsection{Our levels of interperetability}
-Proposal: guiding principles for a hierarchy of interpretability
-
-1. Message: poset of interpretable models
-
-2. Message: Actions we can perform to reduce complexity
-I. introducing hierarchy 
-\citep{Vermani2024b}
-\citep{geadah2024parsing, geadah2025modeling}
-II. decomposition
-
-3. Message: leaving out details for understanding (abstraction), trade-off between interpretability and accuracy
+\citep{marton2021efficient}
 
 
 \subsubsection{Interpretability in RNNs}
@@ -509,12 +478,24 @@ mechanistic \citep{qian2024partial}
 
 Understanding and controlling the geometry of memory organization in RNNs \citep{haputhanthri2025understanding}
 
-\subsubsection{In neuroscience}
-\paragraph{Motor primitives}
-In motor cortex, neural trajectories during reaching movements often evolve along a low-dimensional cyclic structure, making it possible to interpret them as dynamical primitives for movement \citep{ijspeert2013dynamical}.
 
-\citep{marton2021efficient}
 
+
+
+
+%%%%%%%%%%
+\subsubsection{Our levels of interperetability}
+Proposal: guiding principles for a hierarchy of interpretability
+
+1. Message: poset of interpretable models
+
+2. Message: Actions we can perform to reduce complexity
+I. introducing hierarchy 
+\citep{Vermani2024b}
+\citep{geadah2024parsing, geadah2025modeling}
+II. decomposition
+
+3. Message: leaving out details for understanding (abstraction), trade-off between interpretability and accuracy
 
 
 %\subsection{A timescale angle to reduction}
@@ -524,10 +505,12 @@ In motor cortex, neural trajectories during reaching movements often evolve alon
 
 
 %%%%%%%%%%%%
-\section{Matching dynamical motifs}We aim to develop a method for comparing dynamical systems for several purposes, such as identifying the underlying computations being performed or determining whether two brains are processing information in a similar manner. In nature, it is unlikely that two dynamical systems will be exactly identical.
+\section{Dynamical motif matching}\label{sec:dmm}
+We aim to develop a method for comparing dynamical systems for several purposes, such as identifying the underlying computations being performed or determining whether two brains are processing information in a similar manner. In nature, it is unlikely that two dynamical systems will be exactly identical.
  While topological conjugacy provides a precise comparison, it is often too strict for practical use.
  On the other hand, directly comparing the differences in vector fields is not always interpretable, as it does not provide immediate insights into the similarities or the specific behaviors of the systems.
-  To address this, we propose a framework for comparing dynamical systems by fitting them to motif dynamical systems using a generative model. This approach allows for more interpretable comparisons, offering a meaningful way to evaluate how similar two systems are based on their underlying dynamics.
+  To address this, we propose a framework for comparing dynamical systems by fitting them to motif dynamical systems using a generative model.
+   This approach allows for more interpretable comparisons, offering a meaningful way to evaluate how similar two systems are based on their underlying dynamics.
 
 
 
@@ -570,6 +553,13 @@ manifolds neuro/RNN\citep{langdon2023unifying, can2021emergence,cueva2021continu
 neuro \citep{fortunato2024nonlinear}
 manifold alginment \citep{kuoch2024probing}
 approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\linewidth]{parameterspace_motifs}
+    \caption{Localizing a model in parameter space through dynamical motifs.}
+    \label{fig:ds_landscape}
+\end{figure}
 
 
 \subsubsection{Motifs: The building blocks}
