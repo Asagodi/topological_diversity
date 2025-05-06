@@ -245,10 +245,10 @@ def train_homeo_ds_net_batched(
         best_model_saver.step(mean_epoch_loss)
 
         if epoch % 10 == 0:
-            if hasattr(homeo_ds_net.dynamical_system, 'velocity'):
-                print(f"Epoch {epoch}, log(Loss)= {np.log10(mean_epoch_loss):.4f}", "Velocity: ", np.round(homeo_ds_net.dynamical_system.velocity.detach().cpu().numpy(), 3))
-            else:
-                print(f"Epoch {epoch}, log(Loss)= {np.log10(mean_epoch_loss):.4f}")
+            # if hasattr(homeo_ds_net.dynamical_system, 'velocity') and homeo_ds_net.dynamical_system.velocity isinstance(nn.Parameter):
+            #     print(f"Epoch {epoch}, log(Loss)= {np.log10(mean_epoch_loss):.4f}", "Velocity: ", np.round(homeo_ds_net.dynamical_system.velocity.detach().cpu().numpy(), 3))
+            #else:
+            print(f"Epoch {epoch}, log(Loss)= {np.log10(mean_epoch_loss):.4f}")
 
         early_stopper.step(mean_epoch_loss)
         if early_stopper.should_stop:
@@ -264,9 +264,29 @@ def train_homeo_ds_net_batched(
 
 
 
+def train_all_hdsns(homeo_ds_nets, trajectories_target, initial_conditions_target,
+    lr: float, num_epochs=100, use_inverse_formulation=False, 
+    annealing_params=None, early_stopping_patience=None):
+    """
+    Train all Homeo-DS-Nets in the library using the same target trajectories.
+    """
+    all_losses = []
+    all_grad_norms = []
+    for motif, homeo_net in homeo_ds_nets:
+        print("Training homeomorphism for motif:", motif.__class__.__name__)
+        homeo_ds_net, losses, all_grad_norms = train_homeomorphism(homeo_net, source_system=motif, lr=lr,
+            trajectories_target=trajectories_target, initial_conditions_target=initial_conditions_target,
+            num_epochs=num_epochs, use_inverse_formulation=use_inverse_formulation,
+            annealing_params=annealing_params, early_stopping_patience=early_stopping_patience
+        )
+        homeo_ds_nets.append(homeo_ds_net)
+        all_losses.append(losses)
+        all_grad_norms.append(all_grad_norms)
+    return homeo_ds_nets, all_losses, all_grad_norms
 
 
 
+#old 
 def train_homeomorphism(
     homeo_net: nn.Module,
     lr: float,
@@ -358,8 +378,8 @@ def train_homeomorphism(
 
 
 def train_all_motifs(motif_library, homeo_networks, trajectories_target, initial_conditions_target,
-    lr=0.001, num_epochs=100, use_transformed_system=False, 
-    annealing_params=None, early_stopping_patience=50):
+    lr: float, num_epochs=100, use_transformed_system=False, 
+    annealing_params=None, early_stopping_patience=None):
     """
     Train all motifs in the library using the same target trajectories and homeomorphism networks.
     """
@@ -367,11 +387,8 @@ def train_all_motifs(motif_library, homeo_networks, trajectories_target, initial
 
     for motif, homeo_net in zip(motif_library, homeo_networks):
         print("Training homeomorphism for motif:", motif.__class__.__name__)
-        homeo_ds_net = train_homeomorphism(
-            homeo_net, source_system=motif,
-            lr=lr,
-            trajectories_target=trajectories_target,
-            initial_conditions_target=initial_conditions_target,
+        homeo_ds_net = train_homeomorphism(homeo_net, source_system=motif, lr=lr,
+            trajectories_target=trajectories_target, initial_conditions_target=initial_conditions_target,
             num_epochs=num_epochs, use_transformed_system=use_transformed_system,
             annealing_params=annealing_params, early_stopping_patience=early_stopping_patience
         )

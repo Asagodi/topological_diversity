@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from typing import Callable, Tuple, Optional, List, Literal
+from typing import Callable, Tuple, Optional, List, Literal, Union
 from torchdiffeq import odeint
 from scipy.integrate import solve_ivp
 
@@ -326,7 +326,7 @@ class LearnableDynamicalSystem(DynamicalSystem):
         raise NotImplementedError
     
 
-class LearnableLinearSystem(LearnableDynamicalSystem):
+class LearnableNDLinearSystem(LearnableDynamicalSystem):
     """
     A linear dynamical system dx/dt = Ax, where A is either a full or diagonal learnable matrix.
     """
@@ -661,13 +661,17 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
         :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
         :param dt: The time step used for discretizing the trajectory.
         """
-        # Initialize parent class with dt and time_span
         super().__init__(dt, time_span)
         self.time_span = time_span
         self.dt = dt
-        # Make the velocity a learnable parameter
-        self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))  # Learnable parameter
-        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        if not velocity_init is None:         # Make the velocity a learnable parameter
+            self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
+        else:
+            self.velocity = -1. 
+        if not alpha_init is None:
+            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        else:
+            self.alpha = -1.        
         self.dim = dim
 
     def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float,float]] = None) -> torch.Tensor:
@@ -711,8 +715,7 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
             residual = initial_position[:, 2:]  # Get the residual higher dimensions (3D and beyond)
             
             # Dynamics for higher dimensions: attraction to origin (-x)
-            d_residual_dt = self.alpha*residual  # 
-            residual_t = residual.unsqueeze(1) + d_residual_dt.unsqueeze(1) * t_values_expanded.unsqueeze(2)  
+            residual_t = residual.unsqueeze(1) * torch.exp(self.alpha * t_values_expanded.unsqueeze(2))
 
             # Concatenate the 2D part with the higher-dimensional residual
             trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, T, dim)
@@ -783,9 +786,8 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
         if self.dim > 2:
             residual = initial_position[:, 2:]  # Get the residual higher dimensions (3D and beyond)
             
-            # Dynamics for higher dimensions: attraction to origin (-x)
-            d_residual_dt = self.alpha * residual  # 
-            residual_t = residual.unsqueeze(1) + d_residual_dt.unsqueeze(1) * t_values_expanded.unsqueeze(2)  # Broadcast over time
+            # Dynamics for higher dimensions: attraction to origin (for negative alpha)
+            residual_t = residual.unsqueeze(1) * torch.exp(self.alpha * t_values_expanded.unsqueeze(2))
 
             # Concatenate the 2D part with the higher-dimensional residual
             trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, T, dim)
