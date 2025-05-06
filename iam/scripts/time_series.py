@@ -41,3 +41,23 @@ def resample_equal_arc_length(X: np.ndarray, num_points: int) -> np.ndarray:
     resampled = np.stack([f(uniform_arc) for f in interpolators], axis=1)
     
     return resampled
+
+
+
+#centering and scaling
+def normalize_scale_pair(trajectories_target_full, training_pairs=False):
+    # Compute mean and std for normalization
+    mean = trajectories_target_full.mean(dim=(0, 1), keepdim=True)
+    std = trajectories_target_full.std(dim=(0, 1), keepdim=True)
+
+    # Apply normalization
+    trajectories_target_full = (trajectories_target_full - mean) / std
+
+    if training_pairs:
+        # Generate training pairs
+        trajectories_target = make_transition_pairs(trajectories_target_full)
+    else:
+        # Use full trajectories
+        trajectories_target = trajectories_target_full.clone()
+    
+    return trajectories_target_full, trajectories_target, mean, std
