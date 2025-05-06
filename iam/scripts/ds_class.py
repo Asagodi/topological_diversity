@@ -36,7 +36,7 @@ class CircleNN(nn.Module):
         return self.net(x_embed).squeeze(-1)
 
 
-
+### Base class for dynamical systems
 class DynamicalSystem(nn.Module):
     """
     Base class for a dynamical system. 
@@ -324,49 +324,6 @@ class LearnableDynamicalSystem(DynamicalSystem):
         This should be overridden by subclasses to define specific dynamics.
         """
         raise NotImplementedError
-
-class LearnableLimitCycle(LearnableDynamicalSystem): #encorporated in LearnableNDLimitCycle, special case 2D
-    """
-    A simple limit cycle system with dynamics defined in polar coordinates.
-    The system includes learnable velocity parameters. #alpha?
-    """
-    def __init__(self, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.0,
-     radius: float = 1.0, velocity_init: float = 1.0, alpha_init: float = -1.0):
-        super().__init__()
-        self.dim = dim
-        self.dt = dt
-        self.time_span = time_span
-        self.noise_std = noise_std
-        # Initialize learnable parameters for velocity         
-        if velocity_init is None:
-            velocity_init = 1.0
-        else:
-            self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
-        if alpha_init is None:
-            alpha_init = -1.0
-        else:
-            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
-        
-        self.radius = 1.0  # Fixed radius for the limit cycle
-
-    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        if x.dim() == 1:
-            x = x.unsqueeze(0)  # Ensure batch dimension
-        
-        # Extract the polar coordinates
-        x_val, y_val = x[:, 0], x[:, 1]
-        r = torch.sqrt(x_val**2 + y_val**2)
-        theta = torch.atan2(y_val, x_val)
-
-        # Define the dynamics in polar coordinates
-        dtheta_dt = self.velocity  # Constant velocity
-        dr_dt = - self.alpha * r * (self.radius - r)  #  radial dynamics
-        #dr_dt =  - r * (self.radius - r)
-        # Convert the dynamics to Euclidean coordinates
-        dx_dt = dr_dt * torch.cos(theta) - r * torch.sin(theta) * dtheta_dt
-        dy_dt = dr_dt * torch.sin(theta) + r * torch.cos(theta) * dtheta_dt
-        
-        return torch.stack([dx_dt, dy_dt], dim=1)
     
 
 class LearnableNDLimitCycle(LearnableDynamicalSystem):
@@ -510,6 +467,381 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
             derivatives.append(d_residual_dt)
 
         return torch.cat(derivatives, dim=1)
+
+
+
+class LearnableLinearSystem(LearnableDynamicalSystem):
+    """
+    A linear dynamical system of the form dx/dt = Ax, where A is a learnable matrix.
+    """
+
+    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), 
+    A_init: Optional[torch.Tensor] = None):
+        """
+        :param dim: Dimensionality of the system.
+        :param dt: Time step for trajectory generation.
+        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
+        """
+        super().__init__()
+        self.dim = dim
+        self.dt = dt
+        self.time_span = time_span
+        # Initialize A as a (learnable) parameter
+        if A_init is None:
+            A_init = -torch.eye(dim)  
+            self.A = A_init
+        elif isinstance(A_init, np.ndarray):
+            # Convert numpy array to torch tensor if A_init is a numpy array
+            A_init = torch.tensor(A_init, dtype=torch.float32)
+            self.A = nn.Parameter(A_init)  
+        elif isinstance(A_init, torch.Tensor):
+            self.A = nn.Parameter(A_init) 
+        elif A_init == 'stable':
+            A_init = -torch.eye(dim)
+            self.A = nn.Parameter(A_init) 
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        return torch.matmul(x, self.A.T)   # assumes that x has shape (batch_size, dim)
+
+
+
+
+#Analytical classes
+class AnalyticDynamicalSystem(nn.Module):
+    """
+    A superclass for dynamical systems with analytical solutions. This class provides a method
+    to compute trajectories directly based on the system's analytical solution.
+    """
+    def __init__(self, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
+        """
+        Initialize the system with a given time step and time span.
+        
+        :param dt: Time step for trajectory generation.
+        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
+        """
+        super().__init__()
+        self.dt = dt
+        self.time_span = time_span
+    
+    def compute_trajectory(self) -> torch.Tensor:
+        """
+        This method should be implemented by subclasses. It computes the trajectory using the 
+        analytical solution of the dynamical system.
+        
+        :return: A tensor containing the trajectory over the time span.
+        """
+        raise NotImplementedError("Subclasses must implement this method to compute the trajectory.")
+
+
+class AnalyticalLinearSystem(AnalyticDynamicalSystem):
+    """
+    Computes the trajectory of a linear dynamical system defined by \dot{x} = A x,
+    where A is a learnable constant matrix initialized to -I.
+    """
+    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
+        """
+        Initialize the class with a learnable matrix A initialized to -I.
+
+        :param dim: The dimensionality of the system.
+        :param dt: The time step used for discretizing the trajectory.
+        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
+        """
+        super().__init__(dt=dt, time_span=time_span)
+        self.dim = dim
+        # Initialize A as a learnable parameter with -I
+        A_init = -torch.eye(dim)
+        self.A = nn.Parameter(A_init)
+
+    def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
+        """
+        Computes the trajectory for the linear system using the analytical solution x(t) = exp(tA)x₀.
+
+        :param initial_position: A tensor of shape (batch_size, dim) representing the initial positions.
+        :param time_span: Optional tuple specifying the time range for the trajectory.
+        :return: A tensor of shape (batch_size, T, dim) where T is the number of time steps.
+        """
+        if time_span is None:
+            time_span = self.time_span
+        batch_size = initial_position.shape[0]
+
+        # Create time vector (shape: T)
+        t_start, t_end = time_span
+        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # shape: (T,)
+
+        # Compute exp(tA) for each t and apply to x₀
+        trajectory = torch.zeros(batch_size, len(t_values), self.dim, device=initial_position.device)
+        for t_idx, t in enumerate(t_values):
+            exp_tA = torch.matrix_exp(self.A * t)
+            trajectory[:, t_idx] = initial_position @ exp_tA.T  # shape: (batch_size, dim)
+
+        return trajectory
+
+class AnalyticalBoundedLineAttractor(AnalyticDynamicalSystem):
+    """
+    Piecewise-analytic integration of dx/dt = -x + ReLU(Wx + b),
+    detecting activation regime switches and analytically integrating within each regime.
+    """
+
+    def __init__(self, W: torch.Tensor, b: torch.Tensor,
+                 dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
+        super().__init__(dt, time_span)
+        self.W = nn.Parameter(W)
+        self.b = nn.Parameter(b)
+        self.relu = nn.ReLU()
+
+    def compute_trajectory(self, initial_position: torch.Tensor,
+                           time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
+        if time_span is None:
+            time_span = self.time_span
+
+        t_start, t_end = time_span
+        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # (T,)
+        T = len(t_values)
+        batch_size, dim = initial_position.shape
+
+        trajectory = torch.zeros(batch_size, T, dim, device=initial_position.device)
+        x_t = initial_position.clone()
+
+        for t_idx in range(T):
+            # Store current state
+            trajectory[:, t_idx] = x_t
+
+            # Detect activation pattern
+            z = torch.matmul(x_t, self.W.T) + self.b  # (batch_size, dim)
+            mask = (z > 0).float()  # (batch_size, dim)
+
+            # Prepare next state for each batch independently
+            next_x = torch.zeros_like(x_t)
+
+            for i in range(batch_size):
+                m = mask[i]  # (dim,)
+                W_eff = self.W * m.unsqueeze(1)  # Keep active units
+                b_eff = self.b * m
+
+                A = W_eff - torch.eye(dim, device=x_t.device)
+                try:
+                    A_exp = torch.matrix_exp(A * self.dt)
+                    A_inv = torch.linalg.pinv(A)
+                    B_term = (A_exp - torch.eye(dim, device=x_t.device)) @ (A_inv @ b_eff)
+                    next_x[i] = (A_exp @ x_t[i]) + B_term
+                except RuntimeError:
+                    # Fallback to Euler step in rare singular matrix cases
+                    next_x[i] = x_t[i] + self.dt * (-x_t[i] + self.relu(torch.matmul(x_t[i], self.W.T) + self.b))
+
+            x_t = next_x
+
+        return trajectory
+
+
+class AnalyticalLimitCycle(AnalyticDynamicalSystem):
+    """
+    Computes the trajectory of a limit cycle system defined by r_dot = r(r-1) and theta_dot = v.
+    This class uses analytical solutions for r(t) and theta(t) based on the initial condition and velocity.
+    """
+    def __init__(self, dim: int,  velocity_init: float = 1., alpha_init: float = -1.,  
+                 time_span: Tuple[float, float] = (0.0, 5.0), dt: float = 0.05):
+        """
+        Initialize the class with the given velocity, time span, and time step.
+        
+        :param velocity_init: Initial velocity (v) in the angular direction (theta_dot = v).
+        :param dim: The dimensionality of the system. For a 2D system, dim = 2.
+        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
+        :param dt: The time step used for discretizing the trajectory.
+        """
+        # Initialize parent class with dt and time_span
+        super().__init__(dt, time_span)
+        self.time_span = time_span
+        self.dt = dt
+        # Make the velocity a learnable parameter
+        self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))  # Learnable parameter
+        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        self.dim = dim
+
+    def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float,float]] = None) -> torch.Tensor:
+        """
+        Computes the trajectory using the analytical solutions for r(t) and theta(t).
+
+        :param initial_position: A tensor of shape (batch_size, dim) representing the initial positions.
+        :return: A tensor of shape (batch_size, T, dim) where T is the number of time steps, and each row is [x(t), y(t), ...].
+        """
+        # Ensure initial_position is of shape (batch_size, dim)
+        if time_span is None:
+            time_span = self.time_span
+        batch_size = initial_position.shape[0]
+
+        # Compute initial radius (r0) and angle (theta0) for the first 2 dimensions
+        x0, y0 = initial_position[:, 0], initial_position[:, 1]  # 2D system for r and theta
+        r0 = torch.sqrt(x0**2 + y0**2)  # Initial radius as a scalar for each sample in the batch
+        theta0 = torch.atan2(y0, x0)    # Initial angle for each sample in the batch
+
+        # Create time vector (shape: T)
+        t_start, t_end = time_span
+        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # Time steps
+
+        # Expand t_values to (batch_size, T) for broadcasting
+        t_values_expanded = t_values.unsqueeze(0).expand(batch_size, -1)
+
+        # Compute the trajectory using the analytical solutions for r(t) and theta(t)
+        r_t = (r0.unsqueeze(1) * torch.exp(- self.alpha * t_values.unsqueeze(0))) / \
+      (1 + r0.unsqueeze(1) * (torch.exp(- self.alpha * t_values.unsqueeze(0)) - 1))
+        theta_t = self.velocity * t_values_expanded + theta0.unsqueeze(1)  # theta(t)
+
+        # Convert polar to Cartesian coordinates for the 2D part
+        x_t = r_t * torch.cos(theta_t)
+        y_t = r_t * torch.sin(theta_t)
+
+        # Concatenate x_t and y_t to form the 2D trajectory
+        trajectory = torch.stack([x_t, y_t], dim=2)  # Shape: (batch_size, T, 2)
+
+        # Handle higher dimensions: attraction toward origin (-x) for residual dimensions
+        if self.dim > 2:
+            residual = initial_position[:, 2:]  # Get the residual higher dimensions (3D and beyond)
+            
+            # Dynamics for higher dimensions: attraction to origin (-x)
+            d_residual_dt = self.alpha*residual  # 
+            residual_t = residual.unsqueeze(1) + d_residual_dt.unsqueeze(1) * t_values_expanded.unsqueeze(2)  
+
+            # Concatenate the 2D part with the higher-dimensional residual
+            trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, T, dim)
+
+        return trajectory
+
+
+class AnalyticalRingAttractor(AnalyticDynamicalSystem):
+    """
+    Computes the trajectory of a limit cycle system defined by r_dot = r(r-1) and theta_dot = v.
+    This class uses analytical solutions for r(t) and theta(t) based on the initial condition and velocity.
+    """
+    def __init__(self,  dim: int, alpha_init: float = -1.,
+                 time_span: Tuple[float, float] = (0.0, 5.0), dt: float = 0.05):
+        """
+        Initialize the class with the given velocity, time span, and time step.
+        :param dim: The dimensionality of the system. For a 2D system, dim = 2.
+        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
+        :param dt: The time step used for discretizing the trajectory.
+        """
+        # Initialize parent class with dt and time_span
+        super().__init__(dt, time_span)
+        self.time_span = time_span
+        self.dt = dt
+        if not alpha_init is None:
+            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        else:
+            self.alpha = -1.
+        self.dim = dim
+
+    def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float,float]] = None) -> torch.Tensor:
+        """
+        Computes the trajectory using the analytical solutions for r(t) and theta(t).
+
+        :param initial_position: A tensor of shape (batch_size, dim) representing the initial positions.
+        :return: A tensor of shape (batch_size, T, dim) where T is the number of time steps, and each row is [x(t), y(t), ...].
+        """
+        # Ensure initial_position is of shape (batch_size, dim)
+        if time_span is None:
+            time_span = self.time_span
+        batch_size = initial_position.shape[0]
+
+        # Compute initial radius (r0) and angle (theta0) for the first 2 dimensions
+        x0, y0 = initial_position[:, 0], initial_position[:, 1]  # Assuming 2D system for r and theta
+        r0 = torch.sqrt(x0**2 + y0**2)  # Initial radius as a scalar for each sample in the batch
+        theta0 = torch.atan2(y0, x0)    # Initial angle for each sample in the batch
+
+        # Create time vector (shape: T)
+        t_start, t_end = time_span
+        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # Time steps
+
+        # Expand t_values to (batch_size, T) for broadcasting
+        t_values_expanded = t_values.unsqueeze(0).expand(batch_size, -1)
+
+        # Compute the trajectory using the analytical solutions for r(t) and theta(t)
+        r_t = (r0.unsqueeze(1) * torch.exp(- self.alpha * t_values.unsqueeze(0))) / \
+      (1 + r0.unsqueeze(1) * (torch.exp(- self.alpha * t_values.unsqueeze(0)) - 1))
+        theta_t = theta0.unsqueeze(1)  # theta(t)
+
+        # Convert polar to Cartesian coordinates for the 2D part
+        x_t = r_t * torch.cos(theta_t)
+        y_t = r_t * torch.sin(theta_t)
+
+        # Concatenate x_t and y_t to form the 2D trajectory
+        trajectory = torch.stack([x_t, y_t], dim=2)  # Shape: (batch_size, T, 2)
+
+        # Handle higher dimensions: attraction toward origin (-x) for residual dimensions
+        if self.dim > 2:
+            residual = initial_position[:, 2:]  # Get the residual higher dimensions (3D and beyond)
+            
+            # Dynamics for higher dimensions: attraction to origin (-x)
+            d_residual_dt = self.alpha * residual  # 
+            residual_t = residual.unsqueeze(1) + d_residual_dt.unsqueeze(1) * t_values_expanded.unsqueeze(2)  # Broadcast over time
+
+            # Concatenate the 2D part with the higher-dimensional residual
+            trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, T, dim)
+
+        return trajectory
+
+
+
+
+
+def build_ds_motif(
+    ds_motif: Literal["lds", "bla", "ring", "lc", ],
+    dim: int,
+    time_span: tuple[float, float],
+    dt: Optional[float] = None,
+    analytic: bool = False,
+    vf_on_ring_enabled: bool = False,
+    alpha_init: Optional[float] = -1.,
+) -> object:
+    """
+    Constructs a dynamical system motif based on the motif type and whether it's analytic or learnable.
+
+    Args:
+        ds_motif: One of "ring", "lc".
+        dim: Dimensionality of the system.
+        time_span: Time interval for simulation.
+        dt: Time step (required for learnable systems).
+        analytic: Whether to use an analytical system.
+        vf_on_ring_enabled: Additional option for learnable ring attractor.
+
+    Returns:
+        Instantiated dynamical system object.
+    """
+    ds_class_map = {
+        'ring': {
+            True: AnalyticalRingAttractor,
+            False: LearnableNDRingAttractor,
+        },
+        'lc': {
+            True: AnalyticalLimitCycle,
+            False: LearnableNDLimitCycle,
+        },
+        'lds': {
+            True: AnalyticalLinearSystem,
+            False: LearnableNDLinearSystem,
+        },
+        'bla': {
+            True: AnalyticalBoundedLineAttractor,
+            False: LearnableNDBoundedLineAttractor,
+        },
+    }
+
+    if ds_motif not in ds_class_map:
+        raise ValueError(f"Unknown ds_motif '{ds_motif}'. Valid options: {list(ds_class_map.keys())}")
+    if analytic not in ds_class_map[ds_motif]:
+        raise ValueError(f"No class defined for ds_motif='{ds_motif}' with analytic={analytic}")
+
+    DSClass = ds_class_map[ds_motif][analytic]
+
+    # Instantiate with appropriate parameters
+    if analytic:
+        ds = DSClass(dim=dim, dt=dt, time_span=time_span, alpha_init=alpha_init)
+    else:
+        ds = DSClass(dim=dim, dt=dt, time_span=time_span, vf_on_ring_enabled=vf_on_ring_enabled)
+
+    return ds
+
+
+
 
 
 
@@ -747,6 +1079,9 @@ class LotkaVolterraSystem(DynamicalSystem):
             dxdt[:, i] = x[:, i] * (self.alpha[i] - interaction_term)
 
         return dxdt
+
+
+
 
 
 ###integrating and generating trajectories
@@ -1035,333 +1370,3 @@ def generate_trajectories_from_initial_conditions(homeo_ds_network, initial_cond
             transformed_trajectories = [homeo_net(traj) for traj in trajectories_source]
     transformed_trajectories = torch.stack(transformed_trajectories).detach().numpy()
     return trajectories_source, transformed_trajectories
-
-
-
-
-#Analytical classes
-class AnalyticDynamicalSystem(nn.Module):
-    """
-    A superclass for dynamical systems with analytical solutions. This class provides a method
-    to compute trajectories directly based on the system's analytical solution.
-    """
-    def __init__(self, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
-        """
-        Initialize the system with a given time step and time span.
-        
-        :param dt: Time step for trajectory generation.
-        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
-        """
-        super().__init__()
-        self.dt = dt
-        self.time_span = time_span
-    
-    def compute_trajectory(self) -> torch.Tensor:
-        """
-        This method should be implemented by subclasses. It computes the trajectory using the 
-        analytical solution of the dynamical system.
-        
-        :return: A tensor containing the trajectory over the time span.
-        """
-        raise NotImplementedError("Subclasses must implement this method to compute the trajectory.")
-
-
-class AnalyticalLinearSystem(AnalyticDynamicalSystem):
-    """
-    Computes the trajectory of a linear dynamical system defined by \dot{x} = A x,
-    where A is a learnable constant matrix initialized to -I.
-    """
-    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
-        """
-        Initialize the class with a learnable matrix A initialized to -I.
-
-        :param dim: The dimensionality of the system.
-        :param dt: The time step used for discretizing the trajectory.
-        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
-        """
-        super().__init__(dt=dt, time_span=time_span)
-        self.dim = dim
-        # Initialize A as a learnable parameter with -I
-        A_init = -torch.eye(dim)
-        self.A = nn.Parameter(A_init)
-
-    def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
-        """
-        Computes the trajectory for the linear system using the analytical solution x(t) = exp(tA)x₀.
-
-        :param initial_position: A tensor of shape (batch_size, dim) representing the initial positions.
-        :param time_span: Optional tuple specifying the time range for the trajectory.
-        :return: A tensor of shape (batch_size, T, dim) where T is the number of time steps.
-        """
-        if time_span is None:
-            time_span = self.time_span
-        batch_size = initial_position.shape[0]
-
-        # Create time vector (shape: T)
-        t_start, t_end = time_span
-        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # shape: (T,)
-
-        # Compute exp(tA) for each t and apply to x₀
-        trajectory = torch.zeros(batch_size, len(t_values), self.dim, device=initial_position.device)
-        for t_idx, t in enumerate(t_values):
-            exp_tA = torch.matrix_exp(self.A * t)
-            trajectory[:, t_idx] = initial_position @ exp_tA.T  # shape: (batch_size, dim)
-
-        return trajectory
-
-class AnalyticalBoundedLineAttractor(AnalyticDynamicalSystem):
-    """
-    Piecewise-analytic integration of dx/dt = -x + ReLU(Wx + b),
-    detecting activation regime switches and analytically integrating within each regime.
-    """
-
-    def __init__(self, W: torch.Tensor, b: torch.Tensor,
-                 dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
-        super().__init__(dt, time_span)
-        self.W = nn.Parameter(W)
-        self.b = nn.Parameter(b)
-        self.relu = nn.ReLU()
-
-    def compute_trajectory(self, initial_position: torch.Tensor,
-                           time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
-        if time_span is None:
-            time_span = self.time_span
-
-        t_start, t_end = time_span
-        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # (T,)
-        T = len(t_values)
-        batch_size, dim = initial_position.shape
-
-        trajectory = torch.zeros(batch_size, T, dim, device=initial_position.device)
-        x_t = initial_position.clone()
-
-        for t_idx in range(T):
-            # Store current state
-            trajectory[:, t_idx] = x_t
-
-            # Detect activation pattern
-            z = torch.matmul(x_t, self.W.T) + self.b  # (batch_size, dim)
-            mask = (z > 0).float()  # (batch_size, dim)
-
-            # Prepare next state for each batch independently
-            next_x = torch.zeros_like(x_t)
-
-            for i in range(batch_size):
-                m = mask[i]  # (dim,)
-                W_eff = self.W * m.unsqueeze(1)  # Keep active units
-                b_eff = self.b * m
-
-                A = W_eff - torch.eye(dim, device=x_t.device)
-                try:
-                    A_exp = torch.matrix_exp(A * self.dt)
-                    A_inv = torch.linalg.pinv(A)
-                    B_term = (A_exp - torch.eye(dim, device=x_t.device)) @ (A_inv @ b_eff)
-                    next_x[i] = (A_exp @ x_t[i]) + B_term
-                except RuntimeError:
-                    # Fallback to Euler step in rare singular matrix cases
-                    next_x[i] = x_t[i] + self.dt * (-x_t[i] + self.relu(torch.matmul(x_t[i], self.W.T) + self.b))
-
-            x_t = next_x
-
-        return trajectory
-
-
-class AnalyticalLimitCycle(AnalyticDynamicalSystem):
-    """
-    Computes the trajectory of a limit cycle system defined by r_dot = r(r-1) and theta_dot = v.
-    This class uses analytical solutions for r(t) and theta(t) based on the initial condition and velocity.
-    """
-    def __init__(self, dim: int,  velocity_init: float = 1., alpha_init: float = -1.,  
-                 time_span: Tuple[float, float] = (0.0, 5.0), dt: float = 0.05):
-        """
-        Initialize the class with the given velocity, time span, and time step.
-        
-        :param velocity_init: Initial velocity (v) in the angular direction (theta_dot = v).
-        :param dim: The dimensionality of the system. For a 2D system, dim = 2.
-        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
-        :param dt: The time step used for discretizing the trajectory.
-        """
-        # Initialize parent class with dt and time_span
-        super().__init__(dt, time_span)
-        self.time_span = time_span
-        self.dt = dt
-        # Make the velocity a learnable parameter
-        self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))  # Learnable parameter
-        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
-        self.dim = dim
-
-    def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float,float]] = None) -> torch.Tensor:
-        """
-        Computes the trajectory using the analytical solutions for r(t) and theta(t).
-
-        :param initial_position: A tensor of shape (batch_size, dim) representing the initial positions.
-        :return: A tensor of shape (batch_size, T, dim) where T is the number of time steps, and each row is [x(t), y(t), ...].
-        """
-        # Ensure initial_position is of shape (batch_size, dim)
-        if time_span is None:
-            time_span = self.time_span
-        batch_size = initial_position.shape[0]
-
-        # Compute initial radius (r0) and angle (theta0) for the first 2 dimensions
-        x0, y0 = initial_position[:, 0], initial_position[:, 1]  # 2D system for r and theta
-        r0 = torch.sqrt(x0**2 + y0**2)  # Initial radius as a scalar for each sample in the batch
-        theta0 = torch.atan2(y0, x0)    # Initial angle for each sample in the batch
-
-        # Create time vector (shape: T)
-        t_start, t_end = time_span
-        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # Time steps
-
-        # Expand t_values to (batch_size, T) for broadcasting
-        t_values_expanded = t_values.unsqueeze(0).expand(batch_size, -1)
-
-        # Compute the trajectory using the analytical solutions for r(t) and theta(t)
-        r_t = (r0.unsqueeze(1) * torch.exp(- self.alpha * t_values.unsqueeze(0))) / \
-      (1 + r0.unsqueeze(1) * (torch.exp(- self.alpha * t_values.unsqueeze(0)) - 1))
-        theta_t = self.velocity * t_values_expanded + theta0.unsqueeze(1)  # theta(t)
-
-        # Convert polar to Cartesian coordinates for the 2D part
-        x_t = r_t * torch.cos(theta_t)
-        y_t = r_t * torch.sin(theta_t)
-
-        # Concatenate x_t and y_t to form the 2D trajectory
-        trajectory = torch.stack([x_t, y_t], dim=2)  # Shape: (batch_size, T, 2)
-
-        # Handle higher dimensions: attraction toward origin (-x) for residual dimensions
-        if self.dim > 2:
-            residual = initial_position[:, 2:]  # Get the residual higher dimensions (3D and beyond)
-            
-            # Dynamics for higher dimensions: attraction to origin (-x)
-            d_residual_dt = self.alpha*residual  # 
-            residual_t = residual.unsqueeze(1) + d_residual_dt.unsqueeze(1) * t_values_expanded.unsqueeze(2)  
-
-            # Concatenate the 2D part with the higher-dimensional residual
-            trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, T, dim)
-
-        return trajectory
-
-
-class AnalyticalRingAttractor(AnalyticDynamicalSystem):
-    """
-    Computes the trajectory of a limit cycle system defined by r_dot = r(r-1) and theta_dot = v.
-    This class uses analytical solutions for r(t) and theta(t) based on the initial condition and velocity.
-    """
-    def __init__(self,  dim: int, alpha_init: float = -1.,
-                 time_span: Tuple[float, float] = (0.0, 5.0), dt: float = 0.05):
-        """
-        Initialize the class with the given velocity, time span, and time step.
-        :param dim: The dimensionality of the system. For a 2D system, dim = 2.
-        :param time_span: Tuple (t_start, t_end) specifying the time range for the trajectory.
-        :param dt: The time step used for discretizing the trajectory.
-        """
-        # Initialize parent class with dt and time_span
-        super().__init__(dt, time_span)
-        self.time_span = time_span
-        self.dt = dt
-        if not alpha_init is None:
-            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
-        else:
-            self.alpha = -1.
-        self.dim = dim
-
-    def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float,float]] = None) -> torch.Tensor:
-        """
-        Computes the trajectory using the analytical solutions for r(t) and theta(t).
-
-        :param initial_position: A tensor of shape (batch_size, dim) representing the initial positions.
-        :return: A tensor of shape (batch_size, T, dim) where T is the number of time steps, and each row is [x(t), y(t), ...].
-        """
-        # Ensure initial_position is of shape (batch_size, dim)
-        if time_span is None:
-            time_span = self.time_span
-        batch_size = initial_position.shape[0]
-
-        # Compute initial radius (r0) and angle (theta0) for the first 2 dimensions
-        x0, y0 = initial_position[:, 0], initial_position[:, 1]  # Assuming 2D system for r and theta
-        r0 = torch.sqrt(x0**2 + y0**2)  # Initial radius as a scalar for each sample in the batch
-        theta0 = torch.atan2(y0, x0)    # Initial angle for each sample in the batch
-
-        # Create time vector (shape: T)
-        t_start, t_end = time_span
-        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # Time steps
-
-        # Expand t_values to (batch_size, T) for broadcasting
-        t_values_expanded = t_values.unsqueeze(0).expand(batch_size, -1)
-
-        # Compute the trajectory using the analytical solutions for r(t) and theta(t)
-        r_t = (r0.unsqueeze(1) * torch.exp(- self.alpha * t_values.unsqueeze(0))) / \
-      (1 + r0.unsqueeze(1) * (torch.exp(- self.alpha * t_values.unsqueeze(0)) - 1))
-        theta_t = theta0.unsqueeze(1)  # theta(t)
-
-        # Convert polar to Cartesian coordinates for the 2D part
-        x_t = r_t * torch.cos(theta_t)
-        y_t = r_t * torch.sin(theta_t)
-
-        # Concatenate x_t and y_t to form the 2D trajectory
-        trajectory = torch.stack([x_t, y_t], dim=2)  # Shape: (batch_size, T, 2)
-
-        # Handle higher dimensions: attraction toward origin (-x) for residual dimensions
-        if self.dim > 2:
-            residual = initial_position[:, 2:]  # Get the residual higher dimensions (3D and beyond)
-            
-            # Dynamics for higher dimensions: attraction to origin (-x)
-            d_residual_dt = self.alpha * residual  # 
-            residual_t = residual.unsqueeze(1) + d_residual_dt.unsqueeze(1) * t_values_expanded.unsqueeze(2)  # Broadcast over time
-
-            # Concatenate the 2D part with the higher-dimensional residual
-            trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, T, dim)
-
-        return trajectory
-
-
-
-
-
-def build_ds_motif(
-    ds_motif: Literal["ring", "lc"],
-    dim: int,
-    time_span: tuple[float, float],
-    dt: Optional[float] = None,
-    analytic: bool = False,
-    vf_on_ring_enabled: bool = False,
-    alpha_init: Optional[float] = -1.,
-) -> object:
-    """
-    Constructs a dynamical system motif based on the motif type and whether it's analytic or learnable.
-
-    Args:
-        ds_motif: One of "ring", "lc".
-        dim: Dimensionality of the system.
-        time_span: Time interval for simulation.
-        dt: Time step (required for learnable systems).
-        analytic: Whether to use an analytical system.
-        vf_on_ring_enabled: Additional option for learnable ring attractor.
-
-    Returns:
-        Instantiated dynamical system object.
-    """
-    ds_class_map = {
-        'ring': {
-            True: AnalyticalRingAttractor,
-            False: LearnableNDRingAttractor,
-        },
-        'lc': {
-            True: AnalyticalLimitCycle,
-            False: LearnableNDLimitCycle,
-        },
-        # Extend for other motifs 
-    }
-
-    if ds_motif not in ds_class_map:
-        raise ValueError(f"Unknown ds_motif '{ds_motif}'. Valid options: {list(ds_class_map.keys())}")
-    if analytic not in ds_class_map[ds_motif]:
-        raise ValueError(f"No class defined for ds_motif='{ds_motif}' with analytic={analytic}")
-
-    DSClass = ds_class_map[ds_motif][analytic]
-
-    # Instantiate with appropriate parameters
-    if analytic:
-        ds = DSClass(dim=dim, dt=dt, time_span=time_span, alpha_init=alpha_init)
-    else:
-        ds = DSClass(dim=dim, dt=dt, time_span=time_span, vf_on_ring_enabled=vf_on_ring_enabled)
-
-    return ds
