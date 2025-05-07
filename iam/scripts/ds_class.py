@@ -4,6 +4,7 @@ import torch.nn as nn
 from typing import Callable, Tuple, Optional, List, Literal, Union
 from torchdiffeq import odeint
 from scipy.integrate import solve_ivp
+import inspect
 
 class TrainablePeriodicFunction(nn.Module):
     """Implements a periodic function."""
