@@ -132,11 +132,11 @@ If neural dynamics are indeed tuned to drive behavior, we should expect a corres
 \item our class of theories for neural computation consist of:
 	\begin{itemize}
 \item topological equivalence classes of computations as interpretable dynamical motifs
-\item time parameterization different levels:
+\item time parameterization different levels
 %Single scalar for speed time parametrization
-Scalars for time parametrization on and off of manifold 
+%scalars for time parametrization on and off of manifold 
 \end{itemize}
-\item we get a generative model of the data, unlike pure comparison methods
+\item for a matching dynamical motif, the result of our method is a simple generative model of the data, unlike pure comparison methods
 \end{itemize}
 
 This framework applies to core neural computations such as classification, working memory, and persistent representations (e.g., head direction cells).
@@ -295,7 +295,7 @@ We can simplify it's dynamics by looking at its normal form.
 \item low-dimensional reduced model \citep{zemlianova2024dynamical} \citep{nonnenmacher2017extracting}
 \item motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} (also referred to as prototypes in literature)
 \item Koopman  Spectral properties of dynamical systems, model reduction and decompositions \citep{mezic2005spectral}, Dynamic Mode Decomposition\citep{rowley2009spectral}, EDMD \citep{mezic2005spectral}
-\item \citep{rowley2017model}
+\item proper orthogonal decomposition, Galerkin projection, balanced truncation, dynamic mode decomposition, Koopman operator, kernel method \citep{rowley2017model}
 \item libraries \citep{brunton2014compressive}, SINDy  one starts with a large library of candidate functions (or dynamical motifs) that could potentially describe the dynamics of a system. The method then uses sparse regression techniques to select a few terms that best capture the observed time-series data \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
 \item  primitives: linear \citep{kaul2020linear} (more for behavioral \citep{ijspeert2013dynamical})
 \item fast-slow \citep{jones1995gspt} \citep{verhulst2006methods}  \citep{dsilva2016data} \citep{haller2017exact}
@@ -307,11 +307,11 @@ We can simplify it's dynamics by looking at its normal form.
 %define a phase θ modulo T, 
 \item contractivity \citep{lohmiller1998contraction}\citep{bullo2023contraction} \citep{revay2020contracting} \citep{tsukamoto2021contraction} \citep{davydov2022rnn, davydov2024noneuclidean}
 \item \citep{li2021novel}
-\item \citep{otto2023learning}
+\item nonlinear projections for reduced-order modeling of dynamical systems using constrained autoencoders\citep{otto2023learning}
 \item vector fields projected onto the manifold \citep{roy2021extracting, luo2023noncanonical}
 \item spectral submanifold \citep{cenedese2022data, axaas2023fast, bettini2024model, kaszas2024data}
 \item mean-field\citep{bick2020understanding}
-\item surrogate dynamical systems (any citations?)
+%\item surrogate dynamical systems (any citations?)
 \end{itemize}
 
 
@@ -556,9 +556,11 @@ approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.75\linewidth]{parameterspace_motifs}
-    \caption{Localizing a model in parameter space through dynamical motifs.}
-    \label{fig:ds_landscape}
+    \includegraphics[width=0.75\linewidth]{motifpspace_dssimilarity}
+    \caption{
+    \textbf{(A)} Localizing a model in parameter space through dynamical motifs.
+     \textbf{(B)} }
+    \label{fig:motifpspace_dssimilarity}
 \end{figure}
 
 
@@ -572,7 +574,8 @@ We use dynamical motifs are the fundamental building blocks of dynamical systems
 
 
 \paragraph{Enumerating attractors dimension-wise}
-In dynamical systems, attractors can be systematically classified according to their topological dimension, with the simplest topological spaces serving as the fundamental building blocks at each level. This perspective provides a principled way to enumerate attractors that can arise in ordinary differential equations (ODEs).
+In dynamical systems, attractors can be systematically classified according to their topological dimension, with the simplest topological spaces serving as the fundamental building blocks at each level.
+ This perspective provides a principled way to enumerate attractors that can arise in ordinary differential equations (ODEs).
 \begin{enumerate}[start=0,label={\bfseries Dim \arabic*:}]
 \item  Stable fixed point
 \item  Bounded line attractor ($[0,1]\subset\reals$), ring attractor ($S_0^1$), stable limit cycle ($S_1^1$)
@@ -581,7 +584,7 @@ In dynamical systems, attractors can be systematically classified according to t
 \end{enumerate}
 This pattern continues, with higher-dimensional attractors constructed from fundamental topological spaces such as $S^n$ or their Cartesian and toroidal products.
 
-\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
+%\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
 
 
 \paragraph{Manifold decomposition}
@@ -636,7 +639,8 @@ To stabilize the trajectory alignment or improve optimization in the presence of
 
 \subsubsection{Parameterized motifs}
 We consider parameterized versions of motifs that involve rescaling the vector field both on- and off-manifold.
-As an example, consider the stable limit cycle, which can be described by two scalar parameters: \( v \) and \( \alpha < 0 \). The dynamics are given by:
+As an example, consider the stable limit cycle, which can be described by two scalar parameters: \( v \) and \( \alpha < 0 \).
+The dynamics are given by:
 \begin{equation}
 \dot{r} = \alpha r (r - 1),
 \quad \dot{\theta} = v
@@ -1295,40 +1299,88 @@ There is already so much abstraction!
 \end{aligned}
 \]
 
+
+%%LC eqs
 \subsection{Limit cycle}
-Polar Coordinates
+The limit cycle system is defined in polar coordinates as follows:
+\begin{align}%\label{eq:lc}
+\dot{r} &= \alpha r(r - 1), \label{eq:lc_radial} \\
+\dot{\theta} &= v, \label{eq:lc_angular} %more generally, we can allow for different speeds along the LC
+\end{align}
+where \( \alpha \) controls the rate of radial convergence to the unit circle, and \( v \) determines the angular velocity.
+The limit cycle lies at \( r = 1 \).
+
+Transforming to Cartesian coordinates using \( x = r \cos\theta \) and \( y = r \sin\theta \), the dynamics become:
 \[
 \begin{aligned}
-\dot{r} &= r(r - 1), \\
-\dot{\theta} &= 1 %more generally, we can allow for different speeds along the LC
+\dot{x} &= \alpha \left( \sqrt{x^2 + y^2} - 1 \right) x - v y, \\
+\dot{y} &= \alpha \left( \sqrt{x^2 + y^2} - 1 \right) y + v x.
 \end{aligned}
 \]
+Higher dimensional: $\dot x_i = \alpha x_i$ for $i=3, \dots, D$ for $x\in \reals^D$.
 
-Cartesian Coordinates
+For the canonical limit cycle  $\alpha=-1$ and $v=-1$.
+
+%
+\subsubsection{Analytical limit cycle}\label{sec:analytical_lc}
+Given the radial dynamics in Eq.~\ref{eq:lc_radial} the solution is:
 \[
-\begin{aligned}
-\dot{x} &= -\left( \sqrt{x^2 + y^2} - 1 \right) x - y, \\
-\dot{y} &= -\left( \sqrt{x^2 + y^2} - 1 \right) y + x
-\end{aligned}
+r(t) = \frac{1}{1 + C' e^{-\alpha t}}, \quad \text{where } C' = \frac{1 - r_0}{r_0}
+\]
+\[
+r(t) = \frac{1}{1 + C' e^{-t}}, \quad \text{where } C' = \frac{1 - r_0}{r_0}.
 \]
 
+For the angular dynamics  in Eq.~\ref{eq:lc_angular} the solution is:
+\[
+\dot{\theta} = v
+\quad \Rightarrow \quad 
+\theta(t) = vt + \theta_0
+\]
+
+For the linear differential equation
+\[
+\dot{x} = \alpha x,
+\]
+the solution is:
+\[
+x(t) = x_0 e^{\alpha t}.
+\]
+
+
+%%RA eqs
 \subsection{Ring attractor}
-Polar Coordinates
+The ring attractor system is defined in polar coordinates as follows:
 \[
 \begin{aligned}
-\dot{r} &= r(r - 1), \\
-\dot{\theta} &= 0
+\dot{r} &= \alpha r(r - 1), \\
+\dot{\theta} &= 0.
 \end{aligned}
 \]
 
-Cartesian Coordinates
+Transforming to Cartesian coordinates using \( x = r \cos\theta \) and \( y = r \sin\theta \), the dynamics become:
 \[
 \begin{aligned}
-\dot{x} &= -\left( \sqrt{x^2 + y^2} - 1 \right) x, \\
-\dot{y} &= -\left( \sqrt{x^2 + y^2} - 1 \right) y
+\dot{x} &= \alpha\left( \sqrt{x^2 + y^2} - 1 \right) x, \\
+\dot{y} &= \alpha\left( \sqrt{x^2 + y^2} - 1 \right) y.
 \end{aligned}
 \]
+Higher dimensional: $\dot x_i = \alpha x_i$ for $i=3, \dots, D$ for $x\in \reals^D$.
 
+for canonical ring attractor $\alpha=-1$.
+
+
+\subsubsection{Analytical}
+See Supp.Sec.~\ref{sec:analytical_lc}.
+
+
+\subsubsection{Bump-modulated perturbation on the ring}
+modifying the angular dynamics from a static $\dot\theta=0$ to a \emph{bump-modulated perturbation} on the ring.
+The dynamics are given by
+\begin{align}
+\dot{\theta} &= \exp\left(-\frac{(r - 1)^2}{2\sigma^2} \right) \cdot \psi(\theta), \label{eq:bumpmod_angular}
+\end{align}
+where \( \psi(\theta) \) is a learnable \( 2\pi \)-periodic function defining angular velocity perturbations on the ring, and the Gaussian bump localizes the effect to a narrow band around the unit circle.
 
 
 
