@@ -415,6 +415,7 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
         radius: float = 1.0,  
         velocity_init: float = -1.0,
         alpha_init: float = -1.0,
+        use_theta_modulation: bool = False,
         theta_modulation_num_terms: int = 5,
     ):
         super().__init__()
@@ -678,6 +679,7 @@ class AnalyticalBoundedLineAttractor(AnalyticDynamicalSystem):
         return trajectory
 
 
+
 class AnalyticalLimitCycle(AnalyticDynamicalSystem):
     """
     Computes the trajectory of a limit cycle system defined by r_dot = r(r-1) and theta_dot = v.
@@ -696,7 +698,7 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
         super().__init__(dt, time_span)
         self.time_span = time_span
         self.dt = dt
-        if not velocity_init is None:         # Make the velocity a learnable parameter
+        if not velocity_init is None:         
             self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
         else:
             self.velocity = -1. 
