@@ -366,6 +366,37 @@ class LearnableNDLinearSystem(LearnableDynamicalSystem):
         else:
             return torch.matmul(x, self.A.T)  # Standard matrix multiplication
 
+class LearnableNDBoundedLineAttractor(LearnableDynamicalSystem):
+    """
+    A learnable bounded line attractor: dx/dt = alpha * (-x + ReLU(Wx + b)).
+    alpha is a learnable scalar controlling global speed.
+    """
+
+    def __init__(
+        self,
+        W: torch.Tensor,
+        b: torch.Tensor,
+        dt: float = 0.05,
+        time_span: Tuple[float, float] = (0, 5),
+        alpha_init: float = 1.0,
+    ):
+        """
+        :param W: Weight matrix (fixed, not learnable).
+        :param b: Bias vector (fixed, not learnable).
+        :param alpha_init: Initial value for the learnable scaling factor alpha.
+        """
+        super().__init__()
+        self.W = W
+        self.b = b
+        self.relu = nn.ReLU()
+        self.dt = dt
+        self.time_span = time_span
+        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        linear_part = torch.matmul(x, self.W.T) + self.b
+        dx_dt = -x + self.relu(linear_part)
+        return self.alpha * dx_dt
 
 class LearnableNDLimitCycle(LearnableDynamicalSystem):
     """
