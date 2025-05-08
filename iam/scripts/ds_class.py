@@ -552,12 +552,7 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
 
 
 #Sphere attractor
-import torch
-import torch.nn as nn
-import warnings
-from typing import Tuple
-
-class LearnableEmbeddedSphereAttractor(LearnableDynamicalSystem):
+class LearnableSphereAttractor(LearnableDynamicalSystem):
     """
     Embeds an S^d sphere inside R^D (D > d), with radial attraction toward the sphere
     and optional tangent dynamics + residual attraction.
@@ -837,7 +832,7 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
 
         return trajectory
 
-
+#RA
 class AnalyticalRingAttractor(AnalyticDynamicalSystem):
     """
     Computes the trajectory of a limit cycle system defined by r_dot = r(r-1) and theta_dot = v.
@@ -908,6 +903,124 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
             trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, T, dim)
 
         return trajectory
+
+#analytical sphere attractor
+
+class AnalyticalSphereAttractor(AnalyticDynamicalSystem):
+    """
+    Computes the trajectory of an attractor system embedded in S^d inside R^D.
+    The system has radial attraction toward the sphere and optional tangent dynamics.
+    The dynamics in the residual dimensions are attracted toward the origin.
+    """
+
+    def __init__(
+        self,
+        dim: int,
+        sphere_dim: int = 2,  # Default sphere_dim set to 2 for S^2 (3D sphere)
+        radius: float = 1.0,
+        alpha_init: float = -1.0,
+        time_span: Tuple[float, float] = (0.0, 5.0),
+        dt: float = 0.05,
+    ):
+        """
+        Initializes the attractor system.
+
+        :param dim: The total dimensionality of the system (R^D).
+        :param sphere_dim: The dimension of the embedded sphere (S^d).
+        :param radius: The radius of the sphere for attraction.
+        :param alpha_init: The strength of radial attraction.
+        :param time_span: The time range for the trajectory.
+        :param dt: The time step for discretization.
+        """
+        super().__init__(dt, time_span)
+        self.dim = dim
+        self.sphere_dim = sphere_dim
+        self.radius = radius
+        self.alpha = alpha_init
+        self.dt = dt
+
+        if self.sphere_dim > 2:
+            raise NotImplementedError(
+                f"Spherical attractor only implemented for sphere_dim ≤ 2 (got {self.sphere_dim})."
+            )
+
+    def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
+        """
+        Computes the trajectory using the analytical solutions for the embedded sphere.
+
+        :param initial_position: A tensor of shape (batch_size, dim) representing the initial positions.
+        :return: A tensor of shape (batch_size, T, dim) where T is the number of time steps.
+        """
+        # Ensure initial_position is of shape (batch_size, dim)
+        if time_span is None:
+            time_span = self.time_span
+        batch_size = initial_position.shape[0]
+
+        # Extract sphere components (first `sphere_dim + 1` dimensions)
+        print(initial_position.shape)
+        x_sphere = initial_position[:, :self.sphere_dim + 1]
+        x_residual = initial_position[:, self.sphere_dim + 1:] if self.dim > self.sphere_dim + 1 else None
+        print(x_sphere.shape)
+
+
+        # Compute initial radial distance
+        norm = torch.norm(x_sphere, dim=1, keepdim=True)
+        r0 = norm  # Initial radius (scalar for each sample)
+        
+        # Create time vector (shape: T)
+        t_start, t_end = time_span
+        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)
+
+        # Expand t_values to (batch_size, T) for broadcasting
+        t_values_expanded = t_values.unsqueeze(0).expand(batch_size, -1)
+
+        # Radial dynamics (attraction to the sphere)
+        # Compute radial distance over time
+        r_t = (r0.unsqueeze(1) * torch.exp(-self.alpha * t_values.unsqueeze(0))) / \
+            (1 + r0.unsqueeze(1) * (torch.exp(-self.alpha * t_values.unsqueeze(0)) - 1))
+        r_t = r_t.permute(0, 2, 1)  # Change the shape to (batch_size, T, 1)
+
+        # Initialize the trajectory in spherical coordinates (r_t)
+        trajectory_sphere = torch.zeros(batch_size, t_values_expanded.shape[1], self.sphere_dim + 1, device=initial_position.device)
+
+        # For S^1 (2D sphere), calculate azimuthal angle (theta)
+        if self.sphere_dim == 1:  # 2D sphere in 2D (circle)
+            theta0 = torch.atan2(x_sphere[:, 1], x_sphere[:, 0])  # Azimuthal angle (in 2D)
+            # Expand the angles across time
+            theta_t = theta0.unsqueeze(1)
+
+            # Update the trajectory with the spherical coordinates
+            trajectory_sphere[:, 0, :] = r_t * torch.cos(theta_t)  # x-component
+            trajectory_sphere[:, 1, :] = r_t * torch.sin(theta_t)  # y-component
+
+        # For higher spheres (e.g., S^2 in 3D)
+        elif self.sphere_dim == 2:  # S^2 (3D sphere)
+            r0 = r0.squeeze()
+            theta0 = torch.acos(x_sphere[:, 2] / r0)  # Polar angle
+
+            norm_xy = torch.norm(x_sphere[:, :2], dim=1)  
+            phi0 = torch.sign(x_sphere[:, 1]) * torch.acos(x_sphere[:, 0] / norm_xy)  
+
+            theta0 = theta0.unsqueeze(1).unsqueeze(2)  # [B] → [B, 1, 1]
+            phi0 = phi0.unsqueeze(1).unsqueeze(2)      # [B] → [B, 1, 1]
+            # Update the trajectory with the spherical coordinates
+            trajectory_sphere[:, :, 0] = (r_t * torch.sin(theta0) * torch.cos(phi0)).squeeze()  # x-component
+            trajectory_sphere[:, :, 1] = (r_t * torch.sin(theta0) * torch.sin(phi0)).squeeze()  # y-component
+            trajectory_sphere[:, :, 2] = (r_t * torch.cos(theta0)).squeeze()  # z-component
+
+
+        # Concatenate the residual dynamics (if there are residual dimensions)
+        if self.dim > self.sphere_dim + 1:
+            residual = initial_position[:, self.sphere_dim + 1:]  # Higher dimensions
+            residual_t = residual * torch.exp(self.alpha * t_values_expanded.unsqueeze(2))
+
+            # Concatenate the sphere dynamics with the residual dynamics
+            trajectory = torch.cat([trajectory_sphere, residual_t], dim=2)
+        else:
+            trajectory = trajectory_sphere
+
+        return trajectory
+
 
 
 
