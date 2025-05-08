@@ -1,4 +1,7 @@
 import numpy as np
+from scipy.ndimage import gaussian_filter
+from scipy.interpolate import griddata
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import MaxNLocator
@@ -6,10 +9,15 @@ from matplotlib.lines import Line2D
 from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from typing import List, Optional
-
-
-sns.set(style="darkgrid", palette="muted", font="serif")
-plt.rcParams.update(plt.rcParamsDefault)
+import pandas as pd
+plt.rcParams['xtick.labelsize'] = 14  # font size
+plt.rcParams['ytick.labelsize'] = 14
+plt.rcParams["font.family"] = "serif"
+mpl.rcParams['pdf.fonttype'] = 42  # Use TrueType fonts (editable in Illustrator)
+mpl.rcParams['ps.fonttype'] = 42   # Same for EPS
+mpl.rcParams['svg.fonttype'] = 'none'  # Keep text as text in SVG
+# plt.rcParams.update(plt.rcParamsDefault) # Reset to default settings
+plt.rcParams.update({'font.size': 12, 'text.usetex': True,'text.latex.preamble': r'\usepackage{amsfonts}'})
 
 
 def clean_tick(value: float) -> float:
@@ -437,3 +445,232 @@ def plot_transformed_vector_field(transformed_points, transformed_vector_field):
     ax.set_aspect('equal')
     ax.grid()
     plt.show()
+
+
+
+
+
+def radial_scale(r: np.ndarray, r_threshold: float = 1.1) -> np.ndarray:
+    """Scale factor that increases up to r_threshold and flattens after."""
+    scale = np.ones_like(r)
+    mask = r <= r_threshold
+    scale[mask] = r_threshold / (r[mask] + 1e-8)  # Avoid division by zero
+    scale[~mask] = 1.0
+    return scale
+
+def plot_vector_field_fixedquivernorm_speedcontour(X, Y, U, V, trajectories_pertring, title=None,
+                                                   scale=1.0, color='teal', cmap='plasma', traj_color='k',
+                                                   alpha=0.5, min_val_plot=1.25, vmin_log=-6, vmax_log=4,
+                                                   smoothing_sigma=1.0, upsample_factor=8):
+    """Plot a vector field with scaling and fixed log speed contour range."""
+    speed = np.sqrt(U**2 + V**2)
+    log_speed = np.log(speed + 1e-8)
+
+    R = np.sqrt(X**2 + Y**2)
+    scale_factor = radial_scale(R)
+    U_scaled = U * scale_factor
+    V_scaled = V * scale_factor
+
+    # Normalize vectors for uniform arrow length
+    U_unit = U / (speed + 1e-8)
+    V_unit = V / (speed + 1e-8)
+
+    # Interpolation to a finer grid
+    x_fine = np.linspace(X.min(), X.max(), X.shape[1] * upsample_factor)
+    y_fine = np.linspace(Y.min(), Y.max(), Y.shape[0] * upsample_factor)
+    X_fine, Y_fine = np.meshgrid(x_fine, y_fine)
+
+    log_speed_fine = griddata(
+        (X.flatten(), Y.flatten()),
+        log_speed.flatten(),
+        (X_fine, Y_fine),
+        method='cubic',
+        fill_value=np.nan
+    )
+
+    # Optional Gaussian smoothing
+    log_speed_fine = gaussian_filter(log_speed_fine, sigma=smoothing_sigma)
+
+    # Clip the log speed to a fixed range
+    log_speed_fine = np.clip(log_speed_fine, vmin_log, vmax_log)
+
+    # Plot setup
+    plt.rcParams['axes.facecolor'] = 'black'
+    plt.rcParams['figure.facecolor'] = 'black'
+    fig, ax = plt.subplots(figsize=(4, 4))
+    ax.set_aspect('equal')
+    ax.set_facecolor('black')
+    ax.set_title(title, color='white')
+
+    # Contour plot with fixed color limits
+    contour = ax.contourf(X_fine, Y_fine, log_speed_fine, levels=100, cmap=cmap, alpha=0.8, vmin=vmin_log, vmax=vmax_log)
+
+    # Colorbar
+    cbar = plt.colorbar(contour, ax=ax, shrink=0.75)
+    cbar.set_label('log speed', color='white')
+    cbar.ax.yaxis.set_tick_params(color='white')
+    plt.setp(plt.getp(cbar.ax.axes, 'yticklabels'), color='white')
+
+    # Quiver
+    ax.quiver(X, Y, U_unit, V_unit, color='white', scale=30)
+
+    # Trajectories
+    for i in range(trajectories_pertring.shape[0]):
+        ax.plot(trajectories_pertring[i, :, 0], trajectories_pertring[i, :, 1], color=traj_color, alpha=0.5)
+
+    ax.set_xlim(-min_val_plot, min_val_plot)
+    ax.set_ylim(-min_val_plot, min_val_plot)
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    plt.show()
+
+
+def plot_vector_field_coloredquivernorm(X, Y, U, V, trajectories_pertring, title=None, normalize_quivers=False,
+                                        cmap='plasma', traj_color='orange', alpha=0.5, save_name=None,
+                                        min_val_plot=1.25, vmin_log=None, vmax_log=None, background_color='white'):
+    """Plot vector field with fixed-length quivers colored by log speed."""
+    speed = np.sqrt(U**2 + V**2)
+    log_speed = np.log(speed + 1e-8)
+    if vmin_log is None:
+        vmin_log = np.min(log_speed)
+    if vmax_log is None:
+        vmax_log = np.max(log_speed)
+    log_speed = np.clip(log_speed, vmin_log, vmax_log)
+
+    R = np.sqrt(X**2 + Y**2)
+    scale_factor = radial_scale(R)
+    U_scaled = U * scale_factor
+    V_scaled = V * scale_factor
+
+    # Normalize vectors for uniform arrow length
+    if normalize_quivers:
+        U = U / (speed + 1e-8)
+        V = V / (speed + 1e-8)
+
+    if background_color == 'black':
+        font_color = 'white'
+    else:
+        font_color = 'black'
+    # Plot setup
+    plt.rcParams['axes.facecolor'] = background_color
+    plt.rcParams['figure.facecolor'] = background_color
+    fig, ax = plt.subplots(figsize=(4, 4))
+    ax.set_aspect('equal')
+    ax.set_facecolor(background_color)
+    ax.set_title(title, color=font_color)
+
+    # Quiver plot colored by log speed
+    quiv = ax.quiver(X, Y, U, V, log_speed,
+                     cmap=cmap, clim=(vmin_log, vmax_log), scale=30)
+
+    # Colorbar for log speed
+    cbar = plt.colorbar(quiv, ax=ax, shrink=0.75)
+    cbar.set_label('log speed', color=font_color)
+    cbar.ax.yaxis.set_tick_params(color=font_color)
+    plt.setp(plt.getp(cbar.ax.axes, 'yticklabels'), color=font_color)
+
+    # Plot trajectories
+    for i in range(trajectories_pertring.shape[0]):
+        ax.plot(trajectories_pertring[i, :, 0], trajectories_pertring[i, :, 1],
+                color=traj_color, alpha=alpha)
+
+    ax.set_xlim(-min_val_plot, min_val_plot)
+    ax.set_ylim(-min_val_plot, min_val_plot)
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+
+    if save_name:
+        plt.savefig(save_name, bbox_inches='tight', dpi=300)
+
+    plt.show()
+
+
+
+
+
+
+
+
+
+
+###plotting results
+#jacobians
+# Define consistent colors
+JACOBIAN_NORM_COLOR = '#D2691E'   # Chocolate
+TRAIN_LOSS_COLOR = '#6B8E23'      # Olive Green
+TEST_LOSS_COLOR = '#4682B4'       # Steel Blue
+POINT_ALPHA = 0.5
+
+def plot_jacobian_norms(df: pd.DataFrame, save_dir: str, save_name: str = "jacobian_norms.pdf") -> None:
+    sns.set(style="darkgrid", palette="muted", font="serif")
+
+    fig, ax = plt.subplots(figsize=(5, 5))
+
+    # Scatter points
+    for _, row in df.iterrows():
+        target_jacobian_norm = row['target_jacobian_norm']
+        jacobian_norm = row['jacobian_norm']
+        ax.plot(target_jacobian_norm, jacobian_norm, 'o', color=JACOBIAN_NORM_COLOR, alpha=POINT_ALPHA)
+
+    # Identity line y = x
+    all_vals = pd.concat([df['target_jacobian_norm'], df['jacobian_norm']])
+    min_val, max_val = all_vals.min(), all_vals.max()
+    ax.plot([min_val, max_val], [min_val, max_val], 'k--', linewidth=1, label='$y = x$')
+
+    ax.set_xlabel("Target Jacobian norm", fontsize=14)
+    ax.set_ylabel("Learned Jacobian norm", fontsize=14)
+    ax.legend()
+
+    plt.savefig(f"{save_dir}/{save_name}", bbox_inches='tight')
+    plt.show()
+
+    sns.set(style="white", palette="deep", font="sans-serif")  # Reset seaborn
+
+
+def plot_losses_and_jacobian_norms(
+    df: pd.DataFrame,
+    save_dir: str,
+    save_name: str = "losses_and_jacobian_norms.pdf",
+    value_name: str = "value",
+    figsize: tuple = (5, 5)
+) -> None:
+    sns.set(style="white", palette="muted", font="serif")
+
+    fig, ax1 = plt.subplots(figsize=figsize)
+    ax2 = ax1.twinx()
+
+    # Plot losses
+    for i, row in df.iterrows():
+        value = row[value_name]
+        train_loss = row['train_loss']
+        test_loss = row['test_loss']
+        ax1.plot(value, train_loss, 'o', color=TRAIN_LOSS_COLOR, alpha=POINT_ALPHA, label='Train' if i == 0 else "")
+        ax1.plot(value, test_loss, 'o', color=TEST_LOSS_COLOR, alpha=POINT_ALPHA, label='Test' if i == 0 else "")
+
+    # Plot Jacobian norm
+    for i, row in df.iterrows():
+        value = row[value_name]
+        jacobian_norm = row['jacobian_norm']
+        ax2.plot(value, jacobian_norm, 'o', color=JACOBIAN_NORM_COLOR, alpha=POINT_ALPHA,
+                 label=r'Complexity ($\|\partial\Phi/\partial x - \mathbb{I}\|$)' if i == 0 else "")
+
+    ax1.set_yscale('log')
+    ax1.set_ylabel('Distance (log MSE)', color=TRAIN_LOSS_COLOR)
+    ax1.tick_params(axis='y', labelcolor=TRAIN_LOSS_COLOR)
+
+    ax2.set_ylabel('Complexity (Jacobian norm)', color=JACOBIAN_NORM_COLOR)
+    ax2.tick_params(axis='y', labelcolor=JACOBIAN_NORM_COLOR)
+
+    ax1.legend(loc='upper left')
+    ax2.legend(loc='lower right')
+
+    plt.savefig(f"{save_dir}/{save_name}", dpi=300, bbox_inches='tight')
+    plt.show()
+
+    sns.set(style="white", palette="deep", font="sans-serif")  # Reset seaborn
