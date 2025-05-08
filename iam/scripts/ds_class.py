@@ -5,6 +5,8 @@ from typing import Callable, Tuple, Optional, List, Literal, Union
 from torchdiffeq import odeint
 from scipy.integrate import solve_ivp
 import inspect
+import warnings
+from scripts.utils import set_seed
 
 class TrainablePeriodicFunction(nn.Module):
     """Implements a periodic function."""
@@ -367,6 +369,7 @@ class LearnableNDLinearSystem(LearnableDynamicalSystem):
         else:
             return torch.matmul(x, self.A.T)  # Standard matrix multiplication
 
+#BLA
 class LearnableNDBoundedLineAttractor(LearnableDynamicalSystem):
     """
     A learnable bounded line attractor: dx/dt = alpha * (-x + ReLU(Wx + b)).
@@ -399,6 +402,7 @@ class LearnableNDBoundedLineAttractor(LearnableDynamicalSystem):
         dx_dt = -x + self.relu(linear_part)
         return self.alpha * dx_dt
 
+#LC 
 class LearnableNDLimitCycle(LearnableDynamicalSystem):
     """
     N-dimensional limit cycle system with learnable velocity and alpha parameters.
@@ -440,7 +444,6 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
         else:
             self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
         
-
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         if x.dim() == 1:
             x = x.unsqueeze(0)  # Ensure batch dimension
@@ -473,6 +476,7 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
 
         return torch.cat(derivatives, dim=1)
 
+#RA
 class LearnableNDRingAttractor(LearnableDynamicalSystem):
     """
     N-dimensional ring attractor system with learnable alpha parameters.
@@ -546,6 +550,82 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
 
         return torch.cat(derivatives, dim=1)
 
+
+#Sphere attractor
+import torch
+import torch.nn as nn
+import warnings
+from typing import Tuple
+
+class LearnableEmbeddedSphereAttractor(LearnableDynamicalSystem):
+    """
+    Embeds an S^d sphere inside R^D (D > d), with radial attraction toward the sphere
+    and optional tangent dynamics + residual attraction.
+    """
+
+    def __init__(
+        self,
+        dim: int,
+        sphere_dim: int = 2,
+        dt: float = 0.05,
+        time_span: Tuple[float, float] = (0, 5),
+        noise_std: float = 0.0,
+        radius: float = 1.0,
+        alpha_init: float = -1.0,
+        sigma_init: float = 0.05,
+        vf_on_sphere_enabled: bool = False,
+        vf_on_sphere_num_terms: int = 5,
+    ):
+        super().__init__()
+        assert dim >= sphere_dim + 1, "Embedding requires dim >= sphere_dim + 1"
+        self.dim = dim
+        self.sphere_dim = sphere_dim
+        self.radius = radius
+        self.dt = dt
+        self.time_span = time_span
+        self.noise_std = noise_std
+
+        # Learnable parameters
+        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        self.sigma = nn.Parameter(torch.tensor(sigma_init, dtype=torch.float32))
+
+        # Optionally enable the tangent vector field
+        self.vf_on_sphere_enabled = vf_on_sphere_enabled
+        if self.vf_on_sphere_enabled:
+            warnings.warn(
+                "vf_on_sphere_enabled=True, but tangent dynamics on the sphere have not yet been implemented. "
+                "Currently, only radial attraction is active."
+            )
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)
+
+        # Extract the sphere part and residual part
+        x_sphere = x[:, :self.sphere_dim + 1]
+        x_residual = x[:, self.sphere_dim + 1:] if self.dim > self.sphere_dim + 1 else None
+
+        # Radial unit vector and deviation from radius
+        norm = torch.norm(x_sphere, dim=1, keepdim=True) + 1e-8  # avoid division by zero
+        radial_unit = x_sphere / norm
+        deviation = norm - self.radius
+        dr_dt = self.alpha * deviation
+        dx_sphere_radial = dr_dt * radial_unit
+
+        # Placeholder for tangent vector field (currently no implementation)
+        dx_sphere_tangent = torch.zeros_like(x_sphere)
+
+        # Radial + Tangent dynamics
+        dx_sphere = dx_sphere_radial + dx_sphere_tangent
+
+        # If there is a residual part (dimensions beyond the sphere), apply attraction
+        if x_residual is not None:
+            dx_residual = self.alpha * x_residual  # attraction towards the origin
+            dx_dt = torch.cat([dx_sphere, dx_residual], dim=1)
+        else:
+            dx_dt = dx_sphere
+
+        return dx_dt
 
 
 
@@ -622,6 +702,7 @@ class AnalyticalLinearSystem(AnalyticDynamicalSystem):
 
         return trajectory
 
+#TODO: make diagonal (option)
 class AnalyticalBoundedLineAttractor(AnalyticDynamicalSystem):
     """
     Piecewise-analytic integration of dx/dt = -x + ReLU(Wx + b),
@@ -1168,7 +1249,8 @@ def generate_initial_conditions(
     bounds: tuple,
     num_points: int,
     kernel_fn=None,
-    predefined_initial_conditions=None
+    predefined_initial_conditions=None,
+    seed: int = None
 ) -> torch.Tensor:
     """
     Generates initial conditions for an N-dimensional dynamical system.
@@ -1182,6 +1264,9 @@ def generate_initial_conditions(
     """
     # Number of dimensions
     N = len(bounds)
+
+    if seed is not None:
+        set_seed(seed)
 
     # Handle predefined initial conditions if provided
     if predefined_initial_conditions is not None:
