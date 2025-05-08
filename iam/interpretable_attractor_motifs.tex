@@ -706,12 +706,23 @@ Problem: trivial solution $\Phi(x) = 0$ for $x\in\mathcal{D}$.\\
 Solution (?): injectivity per orbit (still allow for non-injectivity across orbits)
 
 
-\section{}
+\section{Results}
 
 
 
 %%%%%%%%%%%%%%%%%
-\section{Comparison to other methods}
+\subsection{Comparison to other methods}
+
+\subsubsection{DSA}
+DSA learns a linear coordinate transformation which maximizes the cosine similarity between the vector fields of two linear time-invariant systems\citep{ostrow2024beyond}.
+
+
+\subsubsection{SPE}
+\citep{friedman2025characterizing}
+
+
+
+\subsubsection{Comparison to DSA and SPE}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\linewidth]{dsa_vs_mbs}
@@ -1325,11 +1336,11 @@ For the canonical limit cycle  $\alpha=-1$ and $v=-1$.
 \subsubsection{Analytical limit cycle}\label{sec:analytical_lc}
 Given the radial dynamics in Eq.~\ref{eq:lc_radial} the solution is:
 \[
-r(t) = \frac{1}{1 + C' e^{-\alpha t}}, \quad \text{where } C' = \frac{1 - r_0}{r_0}
+r(t) = \frac{1}{1 + C' e^{-\alpha t}}, \quad \text{where } C' = \frac{1 - r_0}{r_0}.
 \]
-\[
-r(t) = \frac{1}{1 + C' e^{-t}}, \quad \text{where } C' = \frac{1 - r_0}{r_0}.
-\]
+%\[
+%r(t) = \frac{1}{1 + C' e^{-t}}, \quad \text{where } C' = \frac{1 - r_0}{r_0}.
+%\]
 
 For the angular dynamics  in Eq.~\ref{eq:lc_angular} the solution is:
 \[
@@ -1544,7 +1555,18 @@ This structure guarantees that the network is bijective, preserving the volume a
 
 \subsubsection{Regularization}
 
+\newpage
+\section{Analysis}
+\subsection{Comparing and evaluating}
 
+\subsubsection{Jacobian}
+
+
+\subsubsection{Invariant manifold}
+\paragraph{Hausdorff distance}
+\[
+d_H(A, B) = \max\left\{ \sup_{a \in A} \inf_{b \in B} \|a - b\|, \sup_{b \in B} \inf_{a \in A} \|b - a\| \right\}
+\]
 
 \end{document}
 
