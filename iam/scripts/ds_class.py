@@ -624,6 +624,45 @@ class LearnableSphereAttractor(LearnableDynamicalSystem):
 
 
 
+class LearnableCompositeSystem(LearnableDynamicalSystem):
+    """
+    A composite dynamical system formed by concatenating multiple sub-systems.
+    Each sub-system operates on a distinct subset of the full state space.
+    """
+
+    def __init__(
+        self,
+        systems: List[LearnableDynamicalSystem],
+        dims: List[int],  # dimensions of each sub-system
+        dt: float = 0.05,
+        time_span: Tuple[float, float] = (0, 5),
+    ):
+        super().__init__()
+        assert len(systems) == len(dims), "Each system must have a corresponding dimension."
+        self.systems = nn.ModuleList(systems)
+        self.dims = dims
+        self.dt = dt
+        self.time_span = time_span
+        self.total_dim = sum(dims)
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        """
+        Compute the composite dynamics by splitting the state and applying each sub-system.
+        """
+        if x.dim() == 1:
+            x = x.unsqueeze(0)
+
+        assert x.shape[1] == self.total_dim, f"Input must have {self.total_dim} dimensions."
+
+        dx_parts = []
+        start = 0
+        for system, dim in zip(self.systems, self.dims):
+            x_part = x[:, start:start + dim]
+            dx_part = system(t, x_part)
+            dx_parts.append(dx_part)
+            start += dim
+
+        return torch.cat(dx_parts, dim=1)
 
 
 
