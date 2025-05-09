@@ -526,9 +526,9 @@ In the context of comparing dynamical systems, we define a dissimilarity measure
 \|\psi_{f+p} - \Phi(\psi_{g})\|_\infty = 0.
 \end{equation}
 Here, \( \psi_{f} \) and \( \psi_{g} \) represent the flow maps of the vector fields \( f \) and \( g \), respectively. Based on this relationship, we define the dissimilarity measure between \( f \) and \( g \) as the minimal perturbation \( p \) required to align their flows under the homeomorphism \( \Phi \). This is expressed as:
-\[
+\begin{equation}
 d(f, g) = \inf \|p\|,  %symmetrify? d sym (f,g)=max(d(f,g),d(g,f))
-\]
+\end{equation}
 where the infimum is taken over all possible perturbations \( p \) that satisfy the above condition.
 Therefore, we can define the dissimilarity measure $d(f,g) = \inf \|p\|$ with the above constraint.
 
@@ -562,7 +562,7 @@ approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.75\linewidth]{motifpspace_dssimilarity}
+    \includegraphics[width=\linewidth]{motifpspace_dssimilarity}
     \caption{
     \textbf{(A)} Localizing a model in parameter space through dynamical motifs.
      \textbf{(B)} }
@@ -686,8 +686,8 @@ The Jacobian norm relates to the Wasserstein distance by capturing local distort
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=.9\linewidth]{ring_pert_fig}
-    \caption{
-    (\textbf{A})
+    \caption{Finding (approximate) ring attractors. 
+    (\textbf{A}) 
     (\textbf{B})
     }
     \label{fig:ring_pert_fig}
