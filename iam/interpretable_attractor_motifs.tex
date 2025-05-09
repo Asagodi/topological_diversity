@@ -90,7 +90,7 @@
 
 % keywords: interpretability; similarity metric; neural computation; working memory; computation through dynamics
 
-\section*{Abstract}
+\begin{abstract}
 
 Understanding computation in dynamical neural systems often requires interpreting the behavior of large, black-box models.
 This poses challenges for both interpretability and cross-model comparison—particularly when comparing models from different sources, such as two animals.
@@ -102,6 +102,7 @@ Our method uses a curated library of low-dimensional canonical motifs (e.g., lim
 We demonstrate the approach by extracting a ring attractor motif from a high-dimensional RNN trained on a delayed match-to-sample task, and show how the motif captures the essential geometry and dynamics underlying working memory.
 Our results highlight the utility of this method for robust interpretation and cross-system comparison within the computation-through-dynamics paradigm.
 
+\end{abstract}
 
 \section{Introduction}\label{sec:intro}
 Understanding the relationship between neural activity and behavior is a fundamental question in neuroscience.
@@ -592,9 +593,9 @@ This pattern continues, with higher-dimensional attractors constructed from fund
 
 %\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
 
-
-\paragraph{Manifold decomposition}
-Triangulation
+%
+%\paragraph{Manifold decomposition}
+%Triangulation
 
 \subsection{Dynamical motif matching}
 \subsubsection{Single global attractor}
@@ -615,15 +616,14 @@ Since we do not have direct access to the vector field but only to sampled traje
 y(\tau(t)) \approx x(t),
 \]
 where \( y(t) \) is a trajectory obtained by integrating \( \dot{y} = g_i(y) \) from an initial condition \( y(0) \). 
-So there exists $\mu(x)$ positive such that 
-We simplify this by assuming symmetry: $\mu\in\reals_{>0}$.
-
+%So there exists $\mu(x)$ positive such that 
+%We simplify this by assuming symmetry across space $\mu\in\reals_{>0}$.
 
 A loss function capturing this trajectory discrepancy is given by:
 \[
 \mathcal{L}(\theta, \mu, i) = \sum_{t} \Big\| (x_k(t)) - \Phi_\theta(\hat{x}_k(t)) \Big\|^2,
 \]
-where the trajectories \( \hat{x}_k(t) \) are computed via numerical integration of \(\dot x = \mu g_i(x) \) from an initial condition $\hat x_k(0) = \Phi_\theta^{-1}(x_k(0))$.
+where the trajectories \( \hat{x}_k(t) \) are computed via numerical integration of \(\dot x =  g_i(x) \) from an initial condition $\hat x_k(0) = \Phi_\theta^{-1}(x_k(0))$. %add scaling by mu?
 
 The final optimization objective is:
 \[
