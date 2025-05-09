@@ -472,46 +472,46 @@ class InvertibleResNet(nn.Module):
 
 
 #####NORMALIZING FLOWS#####
-import normflows as nf
+# import normflows as nf
 
-class NormFlowHomeomorphism(nn.Module):
-    """Represents a homeomorphic transformation using a Normalizing Flow."""
+# class NormFlowHomeomorphism(nn.Module):
+#     """Represents a homeomorphic transformation using a Normalizing Flow."""
 
-    def __init__(self, dim: int = 2, layer_sizes: list[int] = [64, 64], num_layers: int = 32):
-        super().__init__()
-        self.dim = dim
-        self.flow = self._build_flow(dim, layer_sizes, num_layers)
+#     def __init__(self, dim: int = 2, layer_sizes: list[int] = [64, 64], num_layers: int = 32):
+#         super().__init__()
+#         self.dim = dim
+#         self.flow = self._build_flow(dim, layer_sizes, num_layers)
 
-    def _build_flow(self, dim: int, layer_sizes: list[int], num_layers: int):
-        base = nf.distributions.base.DiagGaussian(dim)
-        flows = []
-        for _ in range(num_layers):
-            param_map = nf.nets.MLP([dim // 2] + layer_sizes + [dim], init_zeros=True)
-            flows.append(nf.flows.AffineCouplingBlock(param_map))
-            flows.append(nf.flows.Permute(dim, mode='swap'))
-        return nf.NormalizingFlow(base, flows)
+#     def _build_flow(self, dim: int, layer_sizes: list[int], num_layers: int):
+#         base = nf.distributions.base.DiagGaussian(dim)
+#         flows = []
+#         for _ in range(num_layers):
+#             param_map = nf.nets.MLP([dim // 2] + layer_sizes + [dim], init_zeros=True)
+#             flows.append(nf.flows.AffineCouplingBlock(param_map))
+#             flows.append(nf.flows.Permute(dim, mode='swap'))
+#         return nf.NormalizingFlow(base, flows)
 
-    def _flatten_time(self, x: torch.Tensor) -> torch.Tensor:
-        return x.view(-1, x.shape[-1])
+#     def _flatten_time(self, x: torch.Tensor) -> torch.Tensor:
+#         return x.view(-1, x.shape[-1])
 
-    def _restore_time(self, x: torch.Tensor, shape: torch.Size) -> torch.Tensor:
-        return x.view(shape)
+#     def _restore_time(self, x: torch.Tensor, shape: torch.Size) -> torch.Tensor:
+#         return x.view(shape)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Map from source system to target space (x -> y)."""
-        original_shape = x.shape
-        x_flat = self._flatten_time(x)
-        y_flat = self.flow.forward(x_flat)  # Returns (z, log_det); we discard log_det
-        #y_flat = torch.clamp(y_flat, -10, 10)
-        return self._restore_time(y_flat, original_shape)
+#     def forward(self, x: torch.Tensor) -> torch.Tensor:
+#         """Map from source system to target space (x -> y)."""
+#         original_shape = x.shape
+#         x_flat = self._flatten_time(x)
+#         y_flat = self.flow.forward(x_flat)  # Returns (z, log_det); we discard log_det
+#         #y_flat = torch.clamp(y_flat, -10, 10)
+#         return self._restore_time(y_flat, original_shape)
 
-    def inverse(self, y: torch.Tensor) -> torch.Tensor:
-        """Map from target space to source system (y -> x)."""
-        original_shape = y.shape
-        y_flat = self._flatten_time(y)
-        x_flat = self.flow.inverse(y_flat)
-        #x_flat = torch.clamp(x_flat, -10, 10)
-        return self._restore_time(x_flat, original_shape)
+#     def inverse(self, y: torch.Tensor) -> torch.Tensor:
+#         """Map from target space to source system (y -> x)."""
+#         original_shape = y.shape
+#         y_flat = self._flatten_time(y)
+#         x_flat = self.flow.inverse(y_flat)
+#         #x_flat = torch.clamp(x_flat, -10, 10)
+#         return self._restore_time(x_flat, original_shape)
 
 
 #building
@@ -815,6 +815,15 @@ class Homeo_DS_Net(nn.Module):
 
     def trajectory(self, y0: torch.Tensor, noise_std: float=0) -> list[torch.Tensor]:
         return self.forward(y0, noise_std)
+
+    def invariant_manifold(self, num_points: int = 100) -> np.ndarray:
+        """
+        Generate points on the invariant manifold of the homeomorphism.
+        
+        :param num_points: Number of points to sample on the manifold.
+        :return: Transformed points on the invariant manifold.
+        """
+        return self.homeo_network(self.dynamical_system.invariant_manifold(num_points))
 
 
 
