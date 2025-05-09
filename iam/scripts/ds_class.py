@@ -6,6 +6,8 @@ from torchdiffeq import odeint
 from scipy.integrate import solve_ivp
 import inspect
 import warnings
+import itertools
+
 from scripts.utils import set_seed
 
 class TrainablePeriodicFunction(nn.Module):
@@ -327,7 +329,13 @@ class LearnableDynamicalSystem(DynamicalSystem):
         This should be overridden by subclasses to define specific dynamics.
         """
         raise NotImplementedError
-    
+
+    def invariant_manifold(self) -> torch.Tensor:
+        """
+        Computes the invariant manifold for the linear system.
+        For a linear system, the invariant manifold is simply the fixed point at the origin.
+        """
+        NotImplementedError    
 
 class LearnableNDLinearSystem(LearnableDynamicalSystem):
     """
@@ -369,7 +377,15 @@ class LearnableNDLinearSystem(LearnableDynamicalSystem):
         else:
             return torch.matmul(x, self.A.T)  # Standard matrix multiplication
 
-#BLA
+    def invariant_manifold(self) -> torch.Tensor:
+        """
+        Gives the invariant manifold for the linear system.
+        For a linear system, the invariant manifold is simply the fixed point at the origin.
+        """
+        return torch.zeros(self.dim)
+
+
+#BLA (better to use BCA with bca_dim=1)
 class LearnableNDBoundedLineAttractor(LearnableDynamicalSystem):
     """
     A learnable bounded line attractor: dx/dt = alpha * (-x + ReLU(Wx + b)).
@@ -476,6 +492,19 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
 
         return torch.cat(derivatives, dim=1)
 
+    def invariant_manifold(self) -> torch.Tensor:
+        """
+        Gives the invariant manifold for the limit cycle system.
+        For a limit cycle system, the invariant manifold is the circle of radius self.radius.
+        """
+        theta = torch.linspace(0, 2 * np.pi, 100)
+        x_circle = self.radius * torch.stack([torch.cos(theta), torch.sin(theta)], dim=1)
+        # Add zeros for the remaining dimensions
+        if self.dim > 2:
+            x_circle = torch.cat([x_circle, torch.zeros(x_circle.shape[0], self.dim - 2)], dim=1)
+        return x_circle
+
+
 #RA
 class LearnableNDRingAttractor(LearnableDynamicalSystem):
     """
@@ -550,6 +579,18 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
 
         return torch.cat(derivatives, dim=1)
 
+    def invariant_manifold(self) -> torch.Tensor:
+        """
+        Gives the invariant manifold for the limit cycle system.
+        For a limit cycle system, the invariant manifold is the circle of radius self.radius.
+        """
+        theta = torch.linspace(0, 2 * np.pi, 100)
+        x_circle = self.radius * torch.stack([torch.cos(theta), torch.sin(theta)], dim=1)
+        # Add zeros for the remaining dimensions
+        if self.dim > 2:
+            x_circle = torch.cat([x_circle, torch.zeros(x_circle.shape[0], self.dim - 2)], dim=1)
+        return x_circle
+
 
 #Sphere attractor
 class LearnableSphereAttractor(LearnableDynamicalSystem):
@@ -622,9 +663,42 @@ class LearnableSphereAttractor(LearnableDynamicalSystem):
 
         return dx_dt
 
+    def invariant_manifold(self) -> torch.Tensor:
+        """
+        Generates a set of points on the invariant manifold for a spherical attractor,
+        specifically for a 2-sphere embedded in ℝ^dim.
+
+        For sphere_dim = 2, this uses spherical coordinates (theta, phi) to generate points
+        on the surface of a sphere of radius `self.radius`.
+        """
+        if self.sphere_dim != 2:
+            raise NotImplementedError("Only 2-sphere invariant manifold is implemented.")
+
+        num_points_per_angle = 30  # Adjust for resolution
+        theta = torch.linspace(0, 2 * np.pi, num_points_per_angle)
+        phi = torch.linspace(0, np.pi, num_points_per_angle)
+        theta_grid, phi_grid = torch.meshgrid(theta, phi, indexing='ij')  # shape: (T, P)
+
+        # Compute Cartesian coordinates on sphere
+        x = self.radius * torch.sin(phi_grid) * torch.cos(theta_grid)
+        y = self.radius * torch.sin(phi_grid) * torch.sin(theta_grid)
+        z = self.radius * torch.cos(phi_grid)
+
+        # Flatten to (T*P, 3)
+        inv_man = torch.stack([x, y, z], dim=-1).reshape(-1, 3)
+
+        # Pad with zeros for remaining dimensions
+        if self.dim > 3:
+            pad = torch.zeros(inv_man.shape[0], self.dim - 3)
+            inv_man = torch.cat([inv_man, pad], dim=1)
+
+        return inv_man  # shape: (T*P, dim)
+
 #BCA
-class BoundedContinuousAttractor(LearnableDynamicalSystem):
-    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), bounds: float = 1.0):
+class LearnableBoundedContinuousAttractor(LearnableDynamicalSystem):
+    def __init__(self, dim: int, bca_dim: int, 
+                dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), bounds: float = 1.0,
+                 alpha_init: Optional[float] = None):
         """
         A bounded continuous attractor with:
         - Zero flow inside [-1, 1]^D
@@ -639,6 +713,12 @@ class BoundedContinuousAttractor(LearnableDynamicalSystem):
         self.dt = dt
         self.time_span = time_span
         self.bounds = bounds
+        self.dim = dim
+        self.bca_dim = bca_dim
+        if alpha_init is None:
+            self.alpha = -1.0
+        else:
+            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))  # Learnable scaling factor
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -652,7 +732,13 @@ class BoundedContinuousAttractor(LearnableDynamicalSystem):
         """
         projected = torch.clamp(x, -self.bounds, self.bounds)
         mask = (x < -self.bounds) | (x > self.bounds)
-        flow = torch.where(mask, projected - x, torch.zeros_like(x))
+        flow = torch.where(mask, - self.alpha * (projected - x), torch.zeros_like(x))
+
+        if self.dim > bca_dim:
+            residual = x[:, bca_dim:]
+            d_residual_dt = self.alpha * residual
+            flow.append(d_residual_dt)
+
         return flow
 
     def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
@@ -682,6 +768,25 @@ class BoundedContinuousAttractor(LearnableDynamicalSystem):
             x = x + self.dt * dx
 
         return trajectory
+
+    def invariant_manifold(self) -> torch.Tensor:
+        """
+        Compute the invariant manifold for the bounded continuous attractor.
+        For this system, the invariant manifold is the hypercube [-1, 1]^D.
+
+        Returns:
+            torch.Tensor: shape (num_points, D)
+        """
+        num_points = 10
+        # Generate 1D points
+        points_1d = torch.linspace(-self.bounds, self.bounds, num_points)
+        mesh = torch.tensor(list(itertools.product(points_1d, repeat=self.bca_dim)))
+        #fill zeros for the rest of the dimensions
+        if self.dim > self.bca_dim:
+            zeros = torch.zeros(mesh.shape[0], self.dim - self.bca_dim, device=mesh.device)
+            mesh = torch.cat([mesh, zeros], dim=1)
+        return mesh
+
 
 # Composite systems
 class LearnableCompositeSystem(LearnableDynamicalSystem):
@@ -795,6 +900,13 @@ class AnalyticalLinearSystem(AnalyticDynamicalSystem):
             trajectory[:, t_idx] = initial_position @ exp_tA.T  # shape: (batch_size, dim)
 
         return trajectory
+
+    def invariant_manifold(self) -> torch.Tensor:
+        """
+        Computes the invariant manifold for the linear system.
+        For a linear system, the invariant manifold is simply the fixed point at the origin.
+        """
+        return torch.zeros(self.dim)
 
 #TODO: make diagonal (option)
 class AnalyticalBoundedLineAttractor(AnalyticDynamicalSystem):
@@ -930,6 +1042,18 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
 
         return trajectory
 
+    def invariant_manifold(self) -> torch.Tensor:
+        """
+        Gives the invariant manifold for the limit cycle system.
+        For a limit cycle system, the invariant manifold is the circle of radius self.radius.
+        """
+        theta = torch.linspace(0, 2 * np.pi, 100)
+        x_circle = self.radius * torch.stack([torch.cos(theta), torch.sin(theta)], dim=1)
+        # Add zeros for the remaining dimensions
+        if self.dim > 2:
+            x_circle = torch.cat([x_circle, torch.zeros(x_circle.shape[0], self.dim - 2)], dim=1)
+        return x_circle
+
 #RA
 class AnalyticalRingAttractor(AnalyticDynamicalSystem):
     """
@@ -1001,6 +1125,18 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
             trajectory = torch.cat([trajectory, residual_t], dim=2)  # Shape: (batch_size, T, dim)
 
         return trajectory
+    
+    def invariant_manifold(self) -> torch.Tensor:
+        """
+        Gives the invariant manifold for the limit cycle system.
+        For a limit cycle system, the invariant manifold is the circle of radius self.radius.
+        """
+        theta = torch.linspace(0, 2 * np.pi, 100)
+        x_circle = self.radius * torch.stack([torch.cos(theta), torch.sin(theta)], dim=1)
+        # Add zeros for the remaining dimensions
+        if self.dim > 2:
+            x_circle = torch.cat([x_circle, torch.zeros(x_circle.shape[0], self.dim - 2)], dim=1)
+        return x_circle
 
 #analytical sphere attractor
 class AnalyticalSphereAttractor(AnalyticDynamicalSystem):
@@ -1115,9 +1251,39 @@ class AnalyticalSphereAttractor(AnalyticDynamicalSystem):
 
         return trajectory
 
+    def invariant_manifold(self) -> torch.Tensor:
+        """
+        Generates a set of points on the invariant manifold for a spherical attractor,
+        specifically for a 2-sphere embedded in ℝ^dim.
+
+        For sphere_dim = 2, this uses spherical coordinates (theta, phi) to generate points
+        on the surface of a sphere of radius `self.radius`.
+        """
+        if self.sphere_dim != 2:
+            raise NotImplementedError("Only 2-sphere invariant manifold is implemented.")
+
+        num_points_per_angle = 30  # Adjust for resolution
+        theta = torch.linspace(0, 2 * np.pi, num_points_per_angle)
+        phi = torch.linspace(0, np.pi, num_points_per_angle)
+        theta_grid, phi_grid = torch.meshgrid(theta, phi, indexing='ij')  # shape: (T, P)
+
+        # Compute Cartesian coordinates on sphere
+        x = self.radius * torch.sin(phi_grid) * torch.cos(theta_grid)
+        y = self.radius * torch.sin(phi_grid) * torch.sin(theta_grid)
+        z = self.radius * torch.cos(phi_grid)
+
+        # Flatten to (T*P, 3)
+        inv_man = torch.stack([x, y, z], dim=-1).reshape(-1, 3)
+
+        # Pad with zeros for remaining dimensions
+        if self.dim > 3:
+            pad = torch.zeros(inv_man.shape[0], self.dim - 3)
+            inv_man = torch.cat([inv_man, pad], dim=1)
+
+        return inv_man  # shape: (T*P, dim)
+
 
 #ABCA
-
 class AnalyticalBoundedContinuousAttractor(AnalyticDynamicalSystem):
     def __init__(self, dim: int, bca_dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), bounds: float = 1.0, alpha: float = -1.0):
         """
@@ -1192,6 +1358,23 @@ class AnalyticalBoundedContinuousAttractor(AnalyticDynamicalSystem):
 
         return trajectory
 
+    def invariant_manifold(self) -> torch.Tensor:
+        """
+        Compute the invariant manifold for the bounded continuous attractor.
+        For this system, the invariant manifold is the hypercube [-1, 1]^D.
+
+        Returns:
+            torch.Tensor: shape (num_points, D)
+        """
+        num_points = 10
+        # Generate 1D points
+        points_1d = torch.linspace(-self.bounds, self.bounds, num_points)
+        mesh = torch.tensor(list(itertools.product(points_1d, repeat=self.bca_dim)))
+        #fill zeros for the rest of the dimensions
+        if self.dim > self.bca_dim:
+            zeros = torch.zeros(mesh.shape[0], self.dim - self.bca_dim, device=mesh.device)
+            mesh = torch.cat([mesh, zeros], dim=1)
+        return mesh
 
 
 
