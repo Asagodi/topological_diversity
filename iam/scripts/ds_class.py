@@ -622,8 +622,68 @@ class LearnableSphereAttractor(LearnableDynamicalSystem):
 
         return dx_dt
 
+#BCA
+class BoundedContinuousAttractor(LearnableDynamicalSystem):
+    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), bounds: float = 1.0):
+        """
+        A bounded continuous attractor with:
+        - Zero flow inside [-1, 1]^D
+        - Linear flow to nearest boundary outside
 
+        Args:
+            dim (int): Dimensionality D of the system
+            dt (float): Time step for numerical integration
+            time_span (Tuple[float, float]): Start and end times for trajectory
+        """
+        super().__init__(dim=dim)
+        self.dt = dt
+        self.time_span = time_span
+        self.bounds = bounds
 
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Compute flow vector at input point x.
+
+        Args:
+            x (torch.Tensor): shape (..., D)
+
+        Returns:
+            torch.Tensor: flow vectors, shape (..., D)
+        """
+        projected = torch.clamp(x, -self.bounds, self.bounds)
+        mask = (x < -self.bounds) | (x > self.bounds)
+        flow = torch.where(mask, projected - x, torch.zeros_like(x))
+        return flow
+
+    def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
+        """
+        Simulate trajectory using Euler integration.
+
+        Args:
+            initial_position (torch.Tensor): (batch_size, D)
+            time_span (Optional[Tuple[float, float]]): overrides default time span
+
+        Returns:
+            torch.Tensor: (batch_size, T, D)
+        """
+        if time_span is None:
+            time_span = self.time_span
+        t_start, t_end = time_span
+        t_values = torch.arange(t_start, t_end, self.dt, device=initial_position.device)
+        num_steps = len(t_values)
+
+        batch_size, dim = initial_position.shape
+        trajectory = torch.zeros(batch_size, num_steps, dim, device=initial_position.device)
+        x = initial_position.clone()
+
+        for i in range(num_steps):
+            trajectory[:, i] = x
+            dx = self.forward(x)
+            x = x + self.dt * dx
+
+        return trajectory
+
+# Composite systems
 class LearnableCompositeSystem(LearnableDynamicalSystem):
     """
     A composite dynamical system formed by concatenating multiple sub-systems.
@@ -794,7 +854,6 @@ class AnalyticalBoundedLineAttractor(AnalyticDynamicalSystem):
         return trajectory
 
 
-
 class AnalyticalLimitCycle(AnalyticDynamicalSystem):
     """
     Computes the trajectory of a limit cycle system defined by r_dot = r(r-1) and theta_dot = v.
@@ -944,7 +1003,6 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
         return trajectory
 
 #analytical sphere attractor
-
 class AnalyticalSphereAttractor(AnalyticDynamicalSystem):
     """
     Computes the trajectory of an attractor system embedded in S^d inside R^D.
@@ -996,11 +1054,8 @@ class AnalyticalSphereAttractor(AnalyticDynamicalSystem):
         batch_size = initial_position.shape[0]
 
         # Extract sphere components (first `sphere_dim + 1` dimensions)
-        print(initial_position.shape)
         x_sphere = initial_position[:, :self.sphere_dim + 1]
         x_residual = initial_position[:, self.sphere_dim + 1:] if self.dim > self.sphere_dim + 1 else None
-        print(x_sphere.shape)
-
 
         # Compute initial radial distance
         norm = torch.norm(x_sphere, dim=1, keepdim=True)
@@ -1061,10 +1116,86 @@ class AnalyticalSphereAttractor(AnalyticDynamicalSystem):
         return trajectory
 
 
+#ABCA
+
+class AnalyticalBoundedContinuousAttractor(AnalyticDynamicalSystem):
+    def __init__(self, dim: int, bca_dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), bounds: float = 1.0, alpha: float = -1.0):
+        """
+        A bounded continuous attractor with:
+        - Zero flow inside [-1, 1]^bca_dim
+        - Linear flow to nearest boundary outside for bca_dim dimensions
+        - Exponential decay \(\dot{x} = \alpha x\) for dimensions dim - bca_dim
+
+        Args:
+            dim (int): Dimensionality of the system (total space)
+            bca_dim (int): Dimensionality of the bounded continuous attractor
+            dt (float): Time step for numerical integration
+            time_span (Tuple[float, float]): Start and end times for trajectory
+            bounds (float): The bounds of the attractor (typically [-1, 1] for each dimension)
+            alpha (float): Decay rate for the dimensions outside the BCA
+        """
+        super().__init__()
+        self.dim = dim
+        self.bca_dim = bca_dim
+        self.dt = dt
+        self.time_span = time_span
+        self.bounds = bounds
+        self.alpha = alpha
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Compute the flow vector for each point x ∈ ℝ^{..., D}, where the first bca_dim dimensions
+        form a bounded continuous attractor.
+
+        Outside the box [-bounds, bounds]^bca_dim, flow pushes linearly toward the closest point on the box boundary.
+        """
+        flow = torch.zeros_like(x)
+
+        x_bca = x[..., :self.bca_dim]
+        x_proj = torch.clamp(x_bca, -self.bounds, self.bounds)
+        bca_flow = x_proj - x_bca  # zero inside box, vector toward projection outside
+
+        flow[..., :self.bca_dim] = bca_flow
+
+        # Outside the attractor: exponential decay
+        if self.bca_dim < self.dim:
+            flow[..., self.bca_dim:] = self.alpha * x[..., self.bca_dim:]
+
+        return flow
+
+
+    def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
+        """
+        Computes the trajectory based on the analytical solution.
+
+        Args:
+            initial_position (torch.Tensor): (batch_size, dim)
+            time_span (Optional[Tuple[float, float]]): Overrides the default time span
+
+        Returns:
+            torch.Tensor: (batch_size, T, dim)
+        """
+        if time_span is None:
+            time_span = self.time_span
+        t_start, t_end = time_span
+        t_values = torch.arange(t_start, t_end, self.dt, device=initial_position.device)
+        num_steps = len(t_values)
+
+        batch_size, dim = initial_position.shape
+        trajectory = torch.zeros(batch_size, num_steps, dim, device=initial_position.device)
+        x = initial_position.clone()
+
+        for i in range(num_steps):
+            trajectory[:, i] = x
+            dx = self.forward(x)
+            x = x + self.dt * dx
+
+        return trajectory
 
 
 
 
+#### Dynamical system motif construction function
 def build_ds_motif(
     ds_motif: Literal["lds", "bla", "ring", "lc", ],
     dim: int,
