@@ -204,7 +204,7 @@ Learning interpretable continuous-time models of latent stochastic dynamical sys
 SSMLearn \citep{cenedese2022data}
 %
 Phase2vec \citep{ricci2022phase2vec}
-DFORM \citep{chen2024dform}
+DFORM \citep{chen2024dform}: DFORM orbital similarity a noisy measure of topological equivalence
 TWA \citep{moriel2024timewarpattend}
 Smooth Prototype Equivalences \citep{friedman2025characterizing}
 %
@@ -220,36 +220,29 @@ Concepts:
 \item asymptotic behavior: $\omega$-limit sets
 \end{itemize}
 
+DS/RNN analysis
+Dyn Sys: Linking parameters and behavior: bifurcation, asymptotic behavior, topological equivalence \citep{beer1995ctrnn, beer2006parameterspace}
+
 Taking apart topological conjugacy (homeomorphism from motif):
 \begin{itemize}
 \item On asymptotic / $\omega$-limit set / invariant set
 \item On transients \citep{koch2024biological}
 \end{itemize}
 
-
-DS/RNN analysis
-Dyn Sys: Linking parameters and behavior: bifurcation, asymptotic behavior, topological equivalence \citep{beer1995ctrnn, beer2006parameterspace}
-
-For task-trained neural networks
-\citep{huang2024measuring}
-
+DS comparison basics: 
+realization \citep{grigoryeva2020dimension} \citet{gonon2023approximation}
 Bisimilarity\citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar}
 approximate bisim\citep{girard2011approximate}
 
-realization
-
 %\paragraph{SOTA}
-\citep{mezic2004comparison}
+Koopman \citep{mezic2004comparison}
 SVCCA\citep{raghu2017svcca}
 
 assess the limit sets
-Fixed-point based \citep{sussillo2013blackbox,katz2017fibers,golub2018fixedpointfinder}
-
-Also limit cycles 
+- Fixed-point based \citep{sussillo2013blackbox,katz2017fibers,golub2018fixedpointfinder}
+- limit cycles 
 LCs in RNNs \citep{townley2000existence} \citep{pals2024inferring}
-
-slow invariant manifolds\citep{Sagodi2024a}
-
+- slow invariant manifolds\citep{Sagodi2024a}
 
 Dynamical Similarity Analysis (DSA) \citep{ostrow2024beyond} \citep{kamiya2024koopman}\\
 What we lose (because of the truncation): limit cycles, multistability
@@ -264,31 +257,8 @@ TWA\citep{moriel2024timewarpattend}
 Diffeomorphic vector field alignment for comparing dynamics across learned models\citep{chen2024dform}
 - orbital similarity loss (Eq.~5)
 
-
-%%%
-\subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
-into basins of attraction through Conley’s Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
-
-FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
-Behaviorism is based on an engineering approach, treating the mind as a control system for the organism. This corresponds to an approximation of the recurrent neural dynamics (brain states) by finite state automata (behavioral states). Another approximations to neural dynamics is described, leading to a Platonic-like model of mind based on psychological spaces. \citep{duch1998platonic}
-
-neural automata\citep{goles2013neural, uria2024invariants}
-
-For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron–Frobenius operator describes transitions.
-
-Main shortcoming: difficulty with dealing with complicated attractors.
-When is decomposition of attractor into motifs possible?
-
-On the lifting and reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
-
-dynamical motifs in task-trained RNNs \citep{driscoll2024flexible}
-
-compositional tasks \citep{tafazoli2024building}
-
-decomposition through population-based modeling\citep{glaser2020recurrent} 
-
-\citep{mudrik2024decomposed}
-\citep{yuste2024ensembles}
+For task-trained neural networks
+\citep{huang2024measuring}
 
 
 
@@ -321,6 +291,32 @@ We can simplify it's dynamics by looking at its normal form.
 %\item surrogate dynamical systems (any citations?)
 \end{itemize}
 
+%%%decomposition is a form of reduction?
+\subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
+Basins of attraction + Conley’s Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
+
+FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
+Behaviorism is based on an engineering approach, treating the mind as a control system for the organism.
+This corresponds to an approximation of the recurrent neural dynamics (brain states) by finite state automata (behavioral states).
+Another approximations to neural dynamics is described, leading to a Platonic-like model of mind based on psychological spaces. \citep{duch1998platonic}
+
+neural automata\citep{goles2013neural, uria2024invariants}
+
+For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron–Frobenius operator describes transitions.
+
+Main shortcoming: difficulty with dealing with complicated attractors.
+When is decomposition of attractor into motifs possible?
+
+On the lifting and reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
+%
+dynamical motifs in task-trained RNNs \citep{driscoll2024flexible}
+%
+compositional tasks \citep{tafazoli2024building}
+%
+decomposition through population-based modeling\citep{glaser2020recurrent} 
+
+\citep{mudrik2024decomposed}
+\citep{yuste2024ensembles}
 
 
 \subsubsection{Our proposal to decompose, reduce, compare and reconstruct}
@@ -459,7 +455,7 @@ black box to mixture of interpretable models \citep{ghosh2023blackbox}
 \citep{klindt2023identifying,klindt2025superposition}
 %\paragraph{Motor primitives} \subsubsection{In neuroscience}
 In motor cortex, neural trajectories during reaching movements often evolve along a low-dimensional cyclic structure, making it possible to interpret them as dynamical primitives for movement \citep{ijspeert2013dynamical}.
-
+%
 \citep{marton2021efficient}
 
 
@@ -618,20 +614,17 @@ y(\tau(t)) \approx x(t),
 where \( y(t) \) is a trajectory obtained by integrating \( \dot{y} = g_i(y) \) from an initial condition \( y(0) \). 
 %So there exists $\mu(x)$ positive such that 
 %We simplify this by assuming symmetry across space $\mu\in\reals_{>0}$.
-
 A loss function capturing this trajectory discrepancy is given by:
 \[
 \mathcal{L}(\theta, \mu, i) = \sum_{t} \Big\| (x_k(t)) - \Phi_\theta(\hat{x}_k(t)) \Big\|^2,
 \]
 where the trajectories \( \hat{x}_k(t) \) are computed via numerical integration of \(\dot x =  g_i(x) \) from an initial condition $\hat x_k(0) = \Phi_\theta^{-1}(x_k(0))$. %add scaling by mu?
-
-The final optimization objective is:
-\[
-\min_{\theta, \mu,  i} \mathcal{L}(\theta, \mu, i). % + \lambda \mathcal{R}(\theta), %regularization? NODE\citep{finlay2020trainnode}
-\]
+%The final optimization objective is:
+%\[
+%\min_{\theta, \mu,  i} \mathcal{L}(\theta, \mu, i). % + \lambda \mathcal{R}(\theta), %regularization? NODE\citep{finlay2020trainnode}
+%\]
 %where \( \lambda \) is a regularization coefficient.
-
-This formulation allows for the joint identification of both the correct attractor motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical/normal form.
+This formulation allows for the joint identification of both the correct attractor motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
 
 
 \paragraph{Noisy motif trajectories}
@@ -648,12 +641,11 @@ We consider parameterized versions of motifs that involve rescaling the vector f
 As an example, consider the stable limit cycle, which can be described by two scalar parameters: \( v \) and \( \alpha < 0 \).
 The dynamics are given by:
 \begin{equation}
-\dot{r} = \alpha r (r - 1),
+\dot{r} = \alpha r (r - 1), %r_0?
 \quad \dot{\theta} = v
 \end{equation}
 where \( r \) represents the radial coordinate and \( \theta \) the angular coordinate. Here, \( v \) controls the angular velocity, and \( \alpha \) determines the dynamics of the radial direction, where the system exhibits stable behavior at \( r = 1 \). This formulation allows for exploration of the effects of rescaling on the stability and behavior of the system, both in the radial and angular components of the phase space.
 
-More generally, one can define a $d$-dimensional vector field for a $d$-dimensional attractor motif.
 
 
 \subsubsection{The complexity of the homeomorphism}
@@ -671,7 +663,6 @@ Finally, the \( L^p \) norm of the batch of Jacobians is computed, providing a s
 
 \paragraph{Wasserstein distance between the distribution over trajectories}
 \citep{bion2019wasserstein}
-
 The Wasserstein distance evaluates how these local distortions aggregate over the distribution of trajectories.
 The Jacobian norm relates to the Wasserstein distance by capturing local distortions that contribute to the global changes in the distribution, which are reflected in the Wasserstein distance between the trajectories' distributions.
 
@@ -723,16 +714,19 @@ Solution (?): injectivity per orbit (still allow for non-injectivity across orbi
 %%%%%%%%%%%%%%%%%
 \subsection{Comparison to other methods}
 
-\subsubsection{DSA}
+
+\paragraph{DSA}
 DSA learns a linear coordinate transformation which maximizes the cosine similarity between the vector fields of two linear time-invariant systems\citep{ostrow2024beyond}.
 
 
-\subsubsection{SPE}
-\citep{friedman2025characterizing}
+\paragraph{SPE}
+Smooth prototype equivalences (SPE) is a method that fits a diffeomorphism from the given data to normal forms \citep{friedman2025characterizing}.
+However, their method is dependent on knowledge of the vector field of the target system.
+Furthermore, they have only considered limit cycle versus fixed point dynamics for their library.
 
 
 
-\subsubsection{Comparison to DSA and SPE}
+%\subsubsection{Comparison to DSA and SPE}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\linewidth]{dsa_vs_mbs}
