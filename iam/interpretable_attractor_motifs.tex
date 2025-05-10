@@ -168,7 +168,7 @@ XFADS\citep{Dowling2024b}
 Neural Latents Benchmark \citep{pei2neural}
 CtD benchmark \citep{versteeg2025computation}
 
-RNNs for neural computation \citep{chaisangmongkon2017transience}
+RNNs for neural computation \citep{chaisangmongkon2017transience} and behavior \citep{sani2021nonlinearity} \citep{yang2019task, yang2019multiple, yang2020artificial}
 Black box \citep{sussillo2013blackbox}
 Reverse-engineering \citep{maheswaranathan2019reverse} \citep{golub2018fixedpointfinder} \citep{smith2021reverse} \citep{rivkind2017local}
 Diversity of solutions \citep{maheswaranathan2019universality}\citep{jarne2023initialization} \citep{turner2021charting} \citep{nayebi2021heterogeneity} \citep{zhong2023mechanistic}
@@ -270,7 +270,7 @@ We can simplify it's dynamics by looking at its normal form.
 \item approximation based (model order reduction): \citep{schilders2008model}
 \item topology based Delay Embedding and Takens' Theorem  and Morse Decomposition 
 \item low-dimensional reduced model \citep{zemlianova2024dynamical} \citep{nonnenmacher2017extracting}
-\item motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} (also referred to as prototypes in literature)
+\item motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} \citep{yair2017normalforms} (also referred to as prototypes in literature)
 \item Koopman  Spectral properties of dynamical systems, model reduction and decompositions \citep{mezic2005spectral}, Dynamic Mode Decomposition\citep{rowley2009spectral}, EDMD \citep{mezic2005spectral}
 \item proper orthogonal decomposition, Galerkin projection, balanced truncation, dynamic mode decomposition, Koopman operator, kernel method \citep{rowley2017model}
 \item libraries \citep{brunton2014compressive}, SINDy  one starts with a large library of candidate functions (or dynamical motifs) that could potentially describe the dynamics of a system. The method then uses sparse regression techniques to select a few terms that best capture the observed time-series data \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
@@ -286,8 +286,9 @@ We can simplify it's dynamics by looking at its normal form.
 \item \citep{li2021novel}
 \item nonlinear projections for reduced-order modeling of dynamical systems using constrained autoencoders\citep{otto2023learning}
 \item vector fields projected onto the manifold \citep{roy2021extracting, luo2023noncanonical}
-\item spectral submanifold \citep{cenedese2022data, axaas2023fast, bettini2024model, kaszas2024data}
+\item  spectral submanifold (SSM)\citep{cenedese2022data, axaas2023fast, bettini2024model, kaszas2024data}  \citep{pozzi2025topology}
 \item mean-field\citep{bick2020understanding}
+\item preferential subspace identification (PSID) \citep{sani2021modeling}
 %\item surrogate dynamical systems (any citations?)
 \end{itemize}
 
@@ -350,6 +351,9 @@ where \( \mathcal{U} \) is a suitable class of input signals (e.g., all inputs w
 %\ascomment{What is simple behavior in terms of the transfer function?}
 
 
+
+
+%INTERPRET
 \subsection{Interpretability}
 \ascomment{Should this come before Reduction?}
 %phos
@@ -377,70 +381,6 @@ Manipulating and measuring model interpretability\citep{poursabzi2021manipulatin
 Longstanding approaches involve linear models, decision trees and rule extraction.
 
 extraction of information from the input and the output of a learned model is also called post hoc interpretability or reverse engineering
-
-
-\subsubsection{Simplicity}
-\citep{gao2015simplicity}
-\citep{dyer2023simplest}
-\citep{quinn2022information}%
-%
-Canonical realization = the simplest system (in some sense) that produces the same behavior
-
-
-\paragraph{Visualization}
-\citep{deregt2017understanding}
-\citep{karpathy2015visualizing}
-PHATE \citep{moon2017visualizing}
-MPHATE\citep{gigante2019visualizing}
-MMPHATE\citep{xie2024multiway} 
-\citep{madsen2019visualizing}
-
-\subsubsection{Minimal}
-\citep{beer1996toward}
-\citep{lafferriere2000minimal}
-\citep{chirimuuta2014minimal}
-\citep{batterman2014minimal}
-\citep{brancazio2023minimal}
-\citep{Jordan2019a}
-
-\subsubsection{Reduction/idealization/simplification/abstraction}
-\citep{marr1976computation, marr2010vision}
-\citep{chirimuuta2018mmm} %chirimuuta2022artifacts, chirimuuta2024analogies
-\citep{potochnik2021levels,
-potochnik2020idealization,
-potochnik2017idealization}
-\citep{stinson2020idealized}
-\citep{chirimuuta2024brain} 
-%Solomonoff's theory of inductive inference (formalizes Occam's razor)
-
-
-\subsubsection{Understanding}\label{sec:understanding}
-\citep{deregt2017understanding}
-\citep{potochnik2017idealization}
-\citep{guest2023logical}
-%
-Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding}
-prediction vs understanding \citep{chirimuuta2021prediction}
-%
-Understanding information propagation using dynamical systems tools \citep{vogt2022lyapunov}
-
-\paragraph{Explanations: understanding scientific phenomena}
-\citep{parascandolo2021learning}
-
-\paragraph{Contextuality and understanding}
-What are we interpreting \emph{for}?
-
-Context: Behavior %Computational theory in Marr's levels?
-Interpretation in terms of contributions of the transfer functional.
-
-
-%context: computation %Representation and algorithm in Marr's levels
-\paragraph{Understanding computation in terms of dynamics}
-Interpretation in terms of a ``compressed'' description of the dynamics.
-%
-task's computational demands (e.g., continuous parametrization of memory)
-
-
 
 \subsubsection{Works mentioning interpretability}
 \citep{whiteway2019interpretable}
@@ -482,8 +422,67 @@ mechanistic \citep{qian2024partial}
 Understanding and controlling the geometry of memory organization in RNNs \citep{haputhanthri2025understanding}
 
 
+\subsubsection{Understanding}\label{sec:understanding}
+\citep{deregt2017understanding}
+\citep{potochnik2017idealization}
+\citep{guest2023logical}
+%
+Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding}
+prediction vs understanding \citep{chirimuuta2021prediction}
+%
+Understanding information propagation using dynamical systems tools \citep{vogt2022lyapunov}
+
+\paragraph{Explanations: understanding scientific phenomena}
+\citep{parascandolo2021learning}
+
+\paragraph{Contextuality and understanding}
+What are we interpreting \emph{for}?
+
+Context: Behavior %Computational theory in Marr's levels?
+Interpretation in terms of contributions of the transfer functional.
 
 
+%context: computation %Representation and algorithm in Marr's levels
+\paragraph{Understanding computation in terms of dynamics}
+Interpretation in terms of a ``compressed'' description of the dynamics.
+%
+task's computational demands (e.g., continuous parametrization of memory)
+
+
+\subsubsection{Simplicity}
+\citep{gao2015simplicity}
+\citep{dyer2023simplest}
+\citep{quinn2022information}%
+%
+Canonical realization = the simplest system (in some sense) that produces the same behavior
+
+
+\paragraph{Visualization}
+\citep{deregt2017understanding}
+\citep{karpathy2015visualizing}
+PHATE \citep{moon2017visualizing}
+MPHATE\citep{gigante2019visualizing}
+MMPHATE\citep{xie2024multiway} 
+\citep{madsen2019visualizing}
+
+\subsubsection{Minimal}
+\citep{beer1996toward}
+\citep{lafferriere2000minimal}
+\citep{chirimuuta2014minimal}
+\citep{batterman2014minimal}
+\citep{brancazio2023minimal}
+\citep{Jordan2019a}
+
+
+\subsubsection{Reduction/idealization/simplification/abstraction}
+\citep{marr1976computation, marr2010vision}
+\citep{chirimuuta2018mmm} %chirimuuta2022artifacts, chirimuuta2024analogies
+\citep{potochnik2021levels,
+potochnik2020idealization,
+potochnik2017idealization}
+\citep{stinson2020idealized}
+\citep{chirimuuta2024brain} 
+%Solomonoff's theory of inductive inference (formalizes Occam's razor)
 
 
 %%%%%%%%%%
@@ -499,6 +498,8 @@ I. introducing hierarchy
 II. decomposition
 
 3. Message: leaving out details for understanding (abstraction), trade-off between interpretability and accuracy
+
+4. Finite time, linear dynamical systems (are they really interpretable?) 
 
 
 %\subsection{A timescale angle to reduction}
@@ -545,9 +546,10 @@ Convergence during training of RNNs: for tasks that rely on analog memory, the s
 
 \subsubsection{Recognizable geometric-topological features}
 %repetition with sec:neurcompex
- Fixed points and limit cycles, for instance, are foundational to many dynamical systems.
+ Fixed points and limit cycles are fundamental to neural computations.
 Fixed points correspond to steady-state solutions where the system’s state does not change, while limit cycles describe periodic orbits that repeat over time.
- In neural models, fixed points are often used to model persistent activity patterns, while limit cycles can be observed in oscillatory behaviors that may correspond to specific memory or decision-making processes. Continuous attractors, on the other hand, are critical for understanding memory in dynamical systems.
+ In neural models, fixed points are often used to model persistent activity patterns, while limit cycles can be observed in oscillatory behaviors that may correspond to specific memory or decision-making processes.
+  Continuous attractors, on the other hand, are critical for understanding memory in dynamical systems.
 These attractors provide a set of states toward which the system evolves over time, capturing the essence of systems that store and retrieve information.
  In neuroscience, they are essential in models of continuous-position coding, where the system must maintain a range of values for memory retrieval.
 
@@ -710,6 +712,7 @@ Solution (?): injectivity per orbit (still allow for non-injectivity across orbi
 
 %%%%%%%%%%%%%%%%%
 \section{Results}
+
 
 \subsection{Testing the method on many target systems}\label{sec:testing}
 Supp.Sec.~\ref{sec:target_systems}
