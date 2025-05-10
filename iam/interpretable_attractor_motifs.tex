@@ -780,28 +780,56 @@ Capping a Neural ODE or an i-ResNet with a single linear layer is sufficient to 
 
 
 \subsection{Approximating diffeomorphisms}\label{sec:diffeomorphisms}
-
-a simple sufficient condition for a family of flows on a smooth compact manifold $M$ to generate the group $\Diff0_(M)$ of all diffeomorphisms of M that are isotopic to the identity \citep{caponigro2010families}.
-
-Stability of diffeomorphisms implies that $\Diff(M)\subset C^1(M,M)$  is an open subset.
-
-% Normalizing flows\citep{kobyzev2020normalizing}
-
-\paragraph{ResNets}
-the layers of a ResNet can be considered as Euler-discretization of the integration of a flow of a diffeomorphism\citep{rousseau2020residual}
-
-
-\paragraph{Flow-based}
-NODE\citep{finlay2020trainnode}
-\citep{torchdiffeq}
-
-Conjugate Mappings \citep{bramburger2021conjugate}
-
 %any homeomorphism on a $p$-dimensional Euclidean space can be approximated by a Neural ODE or an i-ResNet operating on a $2p$-dimensional Euclidean space \citep{zhang2020approximation}
 Any homeomorphism of $\mathbb {R} ^{n}$ can be approximated by a neural ODE operating on $\mathbb {R} ^{2n+1}$, proved by combining Whitney embedding theorem for manifolds and the universal approximation theorem for neural networks  \citep{zhang2020approximation}.
 
-diffeomorphisms from gradient information of desired costs \citep{lai2021parallelised}
+%diffeomorphisms from gradient information of desired costs \citep{lai2021parallelised}
 
+\subsubsection{Flow-based}
+\paragraph{Neural ODEs}
+Neural ODEs \citep{chen2018neural} represent the latest instance of continuous deep learning model for time series, first developed in the context of continuous recurrent networks \citep{cohen1983absolute}.
+%
+Neural ODEs model the continuous trajectory of the hidden state \( \mathbf{h}(t) \) as the solution to an ordinary differential equation parameterized by a neural network. Mathematically, the dynamics are defined by:
+
+\[
+\frac{d \mathbf{h}(t)}{dt} = f(\mathbf{h}(t), t, \theta)
+\]
+
+where \( \mathbf{h}(t) \) is the hidden state at time \( t \), \( f \) is a neural network with parameters \( \theta \), and \( t \) represents time. Given an initial condition \( \mathbf{h}(t_0) = \mathbf{h}_0 \), the evolution of the hidden state over time is computed by solving the ODE using numerical solvers, allowing the model to capture complex, continuous transformations.
+
+%example of f
+\textbf{Fully Connected Neural Network (Feedforward Network)}:
+
+\[
+f(\mathbf{h}(t), t, \theta) = W_2 \sigma(W_1 \mathbf{h}(t) + \mathbf{b}_1) + \mathbf{b}_2
+\]
+
+Here, \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( W_1, W_2 \) are weight matrices, and \( \mathbf{b}_1, \mathbf{b}_2 \) are bias vectors.
+ This form models the ODE dynamics using a simple two-layer feedforward network.
+
+Universal approximation properties of neural operator architectures \citep{lu2021learning, kissas2022learning, kovachki2021universal}.
+
+NODE\citep{finlay2020trainnode}
+\citep{torchdiffeq}
+
+
+\paragraph{Applications}
+%NODEs in neuroscience%
+Neural ordinary differential equations (NODEs) are being increasingly adopted in computational and systems neuroscience, showing improved performance compared to current approaches \citep{kim2021inferring,geenjaar2023learning,sedler2023expressive,elgazzar2024universal,rubanova2019latent,coelho2024enhancing}.
+
+
+
+\subsubsection{Invertible ResNets}
+the layers of a ResNet can be considered as Euler-discretization of the integration of a flow of a diffeomorphism\citep{rousseau2020residual}
+
+
+
+
+
+
+% Normalizing flows\citep{kobyzev2020normalizing}
+
+Conjugate Mappings \citep{bramburger2021conjugate}
 
 
 \subsubsection{Decomposing diffeomorphisms}\label{sec:diff_dec}
@@ -817,11 +845,16 @@ X(x) = \sum_k \hat{X}(k) e^{i k \cdot x}
 \]
 provides a Fourier-like decomposition of the infinitesimal generator.
 
+\paragraph{}
+A simple sufficient condition for a family of flows on a smooth compact manifold $M$ to generate the group $\Diff0_(M)$ of all diffeomorphisms of $M$ that are isotopic to the identity \citep{caponigro2010families}.
+
+Stability of diffeomorphisms implies that $\Diff(M)\subset C^1(M,M)$  is an open subset.
+
+
 \subsubsection{Implementations}
 Freia\citep{freia} %https://github.com/vislearn/FrEIA
-
-\citep{dinh2016density} % https://github.com/AxelNathanson/pytorch-normalizing-flows?tab=readme-ov-file
-
+Torchdiffeq: \citep{torchdiffeq}
+NF\citep{dinh2016density} % https://github.com/AxelNathanson/pytorch-normalizing-flows?tab=readme-ov-file
 \citep{stimper2023normflows} % https://github.com/VincentStimper/normalizing-flows
 
 
@@ -1123,9 +1156,9 @@ Regions that remain coherent and relatively nondispersive over finite periods of
 
 
 
-\subsection{Reconstructing dynamics}\label{sec:rec_dyn}
-\subsubsection{NODE}
-\citep{finlay2020trainnode}
+%\subsection{Reconstructing dynamics}\label{sec:rec_dyn}
+%\subsubsection{NODE}
+%\citep{finlay2020trainnode}
 
 
 
@@ -1505,7 +1538,7 @@ If $\rho>313$, then the unique stable limit cycle is an attractor in the Lorenz 
 
 \paragraph{Vector field based perturbation}
  A smooth perturbation is sampled from a zero-mean Gaussian process with RBF kernel $k(x, x') = \sigma^2 \exp(-\|x - x'\|^2 / 2\ell^2)$, where $\ell$ is drawn uniformly from $[0.1, 1.0]$.
- The perturbation is normalized to have fixed norm (\texttt{norm}).
+ The perturbation is normalized to have fixed norm.
 %LC: a rotational term $(-y, x)$ can be added to the perturbation before normalization to inject limit-cycle-like structure.
 
 
