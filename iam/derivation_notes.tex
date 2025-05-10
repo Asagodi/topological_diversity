@@ -1,0 +1,212 @@
+\documentclass[a4paper,twoside]{article}
+
+% baseline packages
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.mps,.eps,.ps}
+\graphicspath{{figures/}{.}}
+\usepackage[numbers,sort&compress,super,comma]{natbib}
+\usepackage[table]{xcolor}
+\usepackage{booktabs} % professional-quality tables
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{hyperref} % for clickable links
+\hypersetup{
+    colorlinks = true,
+    citecolor = .,
+    linkcolor = .
+    }
+\usepackage{url}
+
+% make it pretty
+\usepackage{microtype} % improve typography
+\usepackage[T1]{fontenc} % T1 encoding helps proper hyphenation and text rendering in European languages (without this OT1 is default)
+\usepackage[default]{lato} % make Lato the default font
+\usepackage{fancyhdr}
+\usepackage{titling}
+
+\pagestyle{fancy}
+
+% Horizontal line settings
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{1pt}
+
+% Header and footer setup
+\fancyhead{} % clear all fields
+\fancyhead[C]{\emph{internal notes}}
+\fancyhead[L]{Park et. al.}
+\fancyfoot[C]{\thepage}
+
+% Title setup with affiliations
+\pretitle{\begin{center}\LARGE}
+\posttitle{\end{center}}
+\preauthor{\begin{center}
+\large \lineskip 0.5em}
+\postauthor{\par\end{center}
+\begin{center}
+\textit{
+$^1$Champalimaud Centre for the Unknown, Champalimaud Foundation, Lisbon, Portugal
+}
+%\\
+%$^\ast$corresponding author, \url{memming.park@research.fchampalimaud.org}
+\end{center}}
+
+\title{Deriving measures of dissimilarity between systems}
+\author{
+I.~Memming~Park$^{1}$ and
+Abel S\'agodi$^{1}$
+}
+\date{\today}
+
+% math & font packages
+\usepackage[fleqn]{amsmath} % align equations left
+\usepackage{amssymb}
+\usepackage{mathtools} % \DeclarePairedDelimiter
+\usepackage{bm} % bold greek
+
+% cosmetics
+\usepackage{letltxmacro}
+\LetLtxMacro{\originaleqref}{\eqref}
+\renewcommand{\eqref}{Eq.~\originaleqref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% bold vectors for each alphabet vx
+\usepackage{forloop}
+\newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
+\newcounter{ct}
+\forLoop{1}{26}{ct}{
+    \edef\letter{\alph{ct}}
+    \expandafter\defvec\letter
+}
+
+% captial \vA
+\forLoop{1}{26}{ct}{
+    \edef\letter{\Alph{ct}}
+    \expandafter\defvec\letter
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Automatically make all greek letters bold by prepending 'v'
+\usepackage{expl3}
+
+\ExplSyntaxOn
+% Define a sequence of Greek letters
+\cs_new:Nn \define_bold_greek:
+ {
+  \seq_map_inline:Nn \g_greek_letters_seq
+   {
+    \cs_new:cpn { v##1 } { \bm { \csname ##1 \endcsname } }
+   }
+ }
+
+% Initialize the sequence of Greek letters
+\seq_new:N \g_greek_letters_seq
+\seq_set_split:Nnn \g_greek_letters_seq { , }
+ {
+  alpha,beta,gamma,delta,epsilon,zeta,eta,theta,iota,kappa,lambda,
+  mu,nu,xi,pi,rho,sigma,tau,upsilon,phi,chi,psi,omega,
+  Delta
+ }
+
+% Call the function to define bold Greek macros
+\define_bold_greek:
+\ExplSyntaxOff
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Math commands
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator*{\tr}{tr} % trace
+\DeclareMathOperator*{\var}{var}
+\DeclareMathOperator*{\cov}{cov}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+\newcommand{\inv}{^{-1}}
+\newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
+\newcommand{\RN}[2]{\frac{\dm{#1}}{\dm{#2}}} % (Radon-Nikodym) derivative
+\newcommand{\PD}[2]{\frac{\partial #1}{\partial #2}} % partial derivative
+
+\newcommand{\field}[1]{\ensuremath{\mathbb{#1}}}
+\newcommand{\reals}{\field{R}}
+\newcommand{\complex}{\field{C}}
+\newcommand{\integers}{\field{Z}}
+\newcommand{\naturalNumbers}{\field{N}}
+\newcommand{\trp}{{^\top}} % transpose
+\newcommand{\identity}{\ensuremath{\mathbb{I}}}
+\newcommand{\ones}{\ensuremath{\mathbf{1}}}
+\newcommand{\indicator}[1]{\mathbf{1}_{#1}} % indicator function
+\newcommand{\stateSpace}{\reals^n}
+\newcommand{\DF}{\nabla_{\vx}\vf} %\newcommand{\DF}{\mathcal{D}\vf}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
+\newcommand{\TODO}[1]{(\textbf{TODO:\ }\textcolor{mpcolor}{#1})}
+
+\definecolor{c:adjointidx}{rgb}{0.15,0.55,0.7}
+\definecolor{c:time}{rgb}{0.50,0.12,0.7}
+\newcommand{\homeo}{\vh}
+\newcommand{\invhomeo}{\homeo\inv}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\section{Background}
+Let us consider two autonomous dynamical systems defined on the same space:
+\begin{align}
+    \dot{\vx} &= \vf(\vx)
+    \\
+    \dot{\vx} &= \vg(\vx)
+\end{align}
+
+If the two systems are topologically conjugate, there exists a homeomorphism $\homeo$ that maps orbits of one system to the other. Furthermore, if the flow of time is preserved, they are topologically equivalent.
+
+Let $\homeo$ be a diffeomorphism (which means $\homeo$ is a smooth homeomorphism).
+\begin{align}
+    \vy &= \homeo(\vx)
+    \\
+    \dot{\vy} &=
+	\nabla\homeo(\vx)\dot{\vx}
+    =
+	\nabla\homeo(\vx) \vf(\vx)
+    =
+	\nabla\homeo(\invhomeo(\vy)) \vf(\invhomeo(\vy))
+    \\
+    \dot{\vx} &= \nabla\homeo(\vx)\inv \dot{\vy}
+\end{align}
+where $\nabla$ is the Jacobian operator, and $\nabla\homeo(\cdot)$ is a matrix function.
+The two systems are \emph{smoothly equivalent} if
+\begin{align}
+    \dot{\vx} &= \nabla\homeo(\vx)\inv \vg(\homeo(\vx)) = \vf(\vx)
+\end{align}
+
+Recall that a vector field is called \emph{structurally stable} if all vector fields in its neighborhood (in $C^1$ topology), are topologically equivalent to the given vector field~\cite{Chicone2006}.
+
+\section{Distortions, Perturbations, Deformation, or Imperfections}
+Let us consider two kinds of distortions.
+First we have additive vector field perturbation by $\vDelta(\cdot)$.
+\begin{align}
+    \dot{\vx} &= \vf(\vx) + \vDelta(\vx)
+\end{align}
+For a finite time horizon $T$ and assuming a Lipschitz bound $L$ for $\vf$ in the relevant domain, a uniform bound on $\norm{\vDelta(\cdot)}$, we can bound the trajectory deviation from the unperturbed system.
+By Gr\"onwall inequality\cite{Howard2025}:
+\begin{align}
+    \norm{
+	\phi(\vf, \vx_0, t)
+	-
+	\phi(\vg, \vx_0, t)
+    }
+    &\leq
+	e^{Lt} \int_0^t e^{-Ls} \norm{\vDelta(s)} \mathrm{d}s
+\\
+    &\leq
+	(\max_s \norm{\vDelta(s)}) e^{Lt} \int_0^t e^{-Ls} \mathrm{d}s
+    =
+	(\max_s \norm{\vDelta(s)}) \frac{1}{L} (e^{Lt} - 1)
+\end{align}
+
+\bibliographystyle{unsrtnat_IMP_v1}
+\bibliography{../all_ref.bib,imprefs,../catniplab.bib}
+\end{document}
