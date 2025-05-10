@@ -708,7 +708,7 @@ class LearnableBoundedContinuousAttractor(LearnableDynamicalSystem):
             dt (float): Time step for numerical integration
             time_span (Tuple[float, float]): Start and end times for trajectory
         """
-        super().__init__(dim=dim)
+        super().__init__()
         self.dt = dt
         self.time_span = time_span
         self.bounds = bounds
@@ -719,7 +719,7 @@ class LearnableBoundedContinuousAttractor(LearnableDynamicalSystem):
         else:
             self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))  # Learnable scaling factor
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         """
         Compute flow vector at input point x.
 
@@ -733,8 +733,8 @@ class LearnableBoundedContinuousAttractor(LearnableDynamicalSystem):
         mask = (x < -self.bounds) | (x > self.bounds)
         flow = torch.where(mask, - self.alpha * (projected - x), torch.zeros_like(x))
 
-        if self.dim > bca_dim:
-            residual = x[:, bca_dim:]
+        if self.dim > self.bca_dim:
+            residual = x[:, self.bca_dim:]
             d_residual_dt = self.alpha * residual
             flow.append(d_residual_dt)
 
@@ -1326,7 +1326,7 @@ class AnalyticalBoundedContinuousAttractor(AnalyticDynamicalSystem):
         self.bounds = bounds
         self.alpha = alpha
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         """
         Compute the flow vector for each point x ∈ ℝ^{..., D}, where the first bca_dim dimensions
         form a bounded continuous attractor.
