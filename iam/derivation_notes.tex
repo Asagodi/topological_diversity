@@ -174,6 +174,7 @@ Let $\homeo$ be a diffeomorphism (which means $\homeo$ is a smooth homeomorphism
 	\nabla\homeo(\vx) \vf(\vx)
     =
 	\nabla\homeo(\invhomeo(\vy)) \vf(\invhomeo(\vy))
+	\label{eq:distortion:homeo}
     \\
     \dot{\vx} &= \nabla\homeo(\vx)\inv \dot{\vy}
 \end{align}
@@ -199,22 +200,42 @@ By Gr\"onwall inequality\cite{Howard2025}:
     \norm{
 	\phi(\vf, \vx_0, t)
 	-
-	\phi(\vg, \vx_0, t)
+	\phi(\vf + \vDelta, \vx_0, t)
     }
     &\leq
-	e^{Lt} \int_0^t e^{-Ls} \norm{\vDelta(s)} \mathrm{d}s
+	e^{Lt} \int_0^t e^{-Ls} \norm{\vDelta(s)} \,\mathrm{d}s
 \\
     &\leq
-	(\max_s \norm{\vDelta(s)}) e^{Lt} \int_0^t e^{-Ls} \mathrm{d}s
+	\left(\sup_s \norm{\vDelta(s)}\right) e^{Lt} \int_0^t e^{-Ls} \,\mathrm{d}s
     =
-	(\max_s \norm{\vDelta(s)}) \frac{1}{L} (e^{Lt} - 1)
+	\left(\sup_s \norm{\vDelta(s)}\right) \frac{1}{L} (e^{Lt} - 1)
 \end{align}
-for any norm $\norm{\cdot}$.
+for any norm $\norm{\cdot}$ and where $\phi$ denotes the trajectory (solution to the initial value problem).
 Thus, for small additive perturbation, the trajectories are robust as long as the Lipschitz constant is not too wild.
 
 Note that additive perturbation can change the stability structure such that topological conjugacy and equivalence are broken.
 
 \subsection{Homeomorphic/Diffeomorphic Perturbation}
+The second kind of distortion is a deformation with a diffeomorphism $\homeo$.
+The perturbed system is given by \eqref{eq:distortion:homeo}.
+As it preserves the topological structure of the system, it behaves qualitatively the same.
+However, depending on the ``complexity'' of $\homeo$, it may distort more or less which can be quantified locally by how much it stretches and shrinks in various directions.
+\begin{align}
+    \dot{\vx} &= \vf(\vx)
+    \\
+    \dot{\vy} &= \vg(\vy)
+	= \nabla\homeo(\invhomeo(\vy)) \vf(\invhomeo(\vy))
+    % = \nabla\homeo(\vx) \vf(\vx)
+\end{align}
+If we take the difference of vector field to relate to equivalent additive perturbation, we get
+\begin{align}
+    \vDelta_h(\vx) &\coloneqq \vf(\vx) - \vg(\vx) =
+	\vf(\vx) -
+	\nabla\homeo(\invhomeo(\vx)) \vf(\invhomeo(\vx))
+\end{align}
+
+
+\section{Dissimilarity}
 
 \bibliographystyle{unsrtnat_IMP_v1}
 \bibliography{../all_ref.bib,imprefs,../catniplab.bib}
