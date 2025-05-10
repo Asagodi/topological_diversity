@@ -187,6 +187,8 @@ Recall that a vector field is called \emph{structurally stable} if all vector fi
 
 \section{Distortions, Perturbations, Deformation, or Imperfections}
 Let us consider two kinds of distortions.
+
+\subsection{Additive Perturbation}
 First we have additive vector field perturbation by $\vDelta(\cdot)$.
 \begin{align}
     \dot{\vx} &= \vf(\vx) + \vDelta(\vx)
@@ -207,6 +209,12 @@ By Gr\"onwall inequality\cite{Howard2025}:
     =
 	(\max_s \norm{\vDelta(s)}) \frac{1}{L} (e^{Lt} - 1)
 \end{align}
+for any norm $\norm{\cdot}$.
+Thus, for small additive perturbation, the trajectories are robust as long as the Lipschitz constant is not too wild.
+
+Note that additive perturbation can change the stability structure such that topological conjugacy and equivalence are broken.
+
+\subsection{Homeomorphic/Diffeomorphic Perturbation}
 
 \bibliographystyle{unsrtnat_IMP_v1}
 \bibliography{../all_ref.bib,imprefs,../catniplab.bib}
