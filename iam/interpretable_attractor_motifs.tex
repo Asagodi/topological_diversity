@@ -230,7 +230,7 @@ Taking apart topological conjugacy (homeomorphism from motif):
 \end{itemize}
 
 DS comparison basics: 
-realization \citep{grigoryeva2020dimension} \citet{gonon2023approximation}
+realization \citep{grigoryeva2020dimension} \citep{gonon2023approximation}
 Bisimilarity\citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar}
 approximate bisim\citep{girard2011approximate}
 
@@ -632,7 +632,7 @@ This formulation allows for the joint identification of both the correct attract
 \paragraph{Noisy motif trajectories}
 We consider noisy versions of motif trajectories governed by stochastic differential equations (SDEs) of the form
 \begin{equation}
-\dot x = g_i(x) + \sigma \, dW_t
+\dot x = g_i(x) + \sigma \, dW_t,
 \end{equation}
 where \( g_i(x) \) denotes the deterministic dynamics of the \( i \)-th motif, \( \sigma \) controls the noise amplitude, and \( W_t \) is a standard Wiener process.
 To stabilize the trajectory alignment or improve optimization in the presence of noise, we incorporate simulated annealing by gradually decreasing \( \sigma \) over time.
@@ -679,9 +679,10 @@ The Jacobian norm relates to the Wasserstein distance by capturing local distort
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=.9\linewidth]{ring_pert_fig}
-    \caption{Finding (approximate) ring attractors. 
-    (\textbf{A}) 
-    (\textbf{B})
+    \caption{Finding deformed ring attractors. 
+    (\textbf{A}) We consider two types of perturbations to a ring attractor that are controlled by a scalar perturbation size.
+    (\textbf{B}) The first type considers a perturbation that leaves the continuum of fixed points intact: it merely deforms the ring attractor and the transient orbits but the perturbed system is still topologically conjugate to the original.
+    (\textbf{C}) The second type is a perturbation to the vector field. 
     }
     \label{fig:ring_pert_fig}
 \end{figure}
@@ -1499,6 +1500,14 @@ If $\rho>313$, then the unique stable limit cycle is an attractor in the Lorenz 
 \subsubsection{Line attractor}
 
 \subsubsection{Ring attractor}
+\paragraph{Homeomorphism based perturbation}
+
+
+\paragraph{Vector field based perturbation}
+ A smooth perturbation is sampled from a zero-mean Gaussian process with RBF kernel $k(x, x') = \sigma^2 \exp(-\|x - x'\|^2 / 2\ell^2)$, where $\ell$ is drawn uniformly from $[0.1, 1.0]$.
+ The perturbation is normalized to have fixed norm (\texttt{norm}).
+%LC: a rotational term $(-y, x)$ can be added to the perturbation before normalization to inject limit-cycle-like structure.
+
 
 
 \newpage
