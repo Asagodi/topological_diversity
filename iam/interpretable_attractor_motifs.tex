@@ -91,7 +91,7 @@
 \begin{document}
 \maketitle
 
-% keywords: interpretability, similarity metric, neural computation, working memory, computation through dynamics
+% keywords: interpretability, dynamical dissimilarity, dynamical motifs, neural computation, working memory, computation through dynamics
 
 \begin{abstract}
 The study of neural computation aims to understand the function of the brain as an information processing machine.
@@ -118,31 +118,36 @@ We argue that abstract canonical computation motifs, rather than detailed dynami
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
-Understanding the relationship between neural activity and behavior is a fundamental question in neuroscience.
- Recent research has demonstrated that despite the complexity of neuronal networks, their activity often resides in a low-dimensional manifold, capturing only a fraction of the potential complexity of the system \citep{duncker2021dynamics}.
- This observation suggests that neural activity is shaped by strong underlying constraints, possibly imposed by behaviorally relevant computations and external environmental demands.
+%Understanding the relationship between neural activity and behavior is a fundamental question in neuroscience.
+Understanding neural computation requires more than capturing the details of neural dynamics; it necessitates the development of conceptual models that simplify and abstract the complexity of these processes into forms that are humanly interpretable.
+Through abstraction and idealization, we can distill the essential features of neural activity, enabling meaningful understanding rather than merely presenting a detailed but opaque description.
 
-Behavior, in many cases, is surprisingly simple. Even in seemingly complex tasks, animals and humans exhibit structured, stereotyped actions that can often be described using a small number of latent variables. From motor control to decision-making, behavioral trajectories unfold in a manner that is both predictable and constrained, hinting at a fundamental simplicity underlying observed actions.
-If neural activity is the substrate that generates behavior, then it is natural to expect that it too is organized around similarly low-dimensional, structured dynamics. This assumption motivates the search for interpretable motifs in neural dynamics that mirror the simplicity and regularity of behavior.
+%why no 20D attractors?
+Recent research has shown that, despite the inherent complexity of neuronal networks, their activity often resides on a low-dimensional manifold, representing only a small fraction of the system's full potential complexity \citep{duncker2021dynamics}.
+This empirical finding suggests that neural computation is governed by underlying constraints—potentially driven by task-relevant computations or external environmental factors—that allow for such a reduction in complexity.
+ Such constraints not only make the idealization of neural systems feasible but also provide a path toward more interpretable models of neural activity.
 
-If neural dynamics are indeed tuned to drive behavior, we should expect a correspondence between the low-dimensional structure of neural activity and the inherent simplicity of behavior.
- This suggests that much of the apparent complexity in neural recordings may stem from redundant or task-irrelevant variability rather than meaningful high-dimensional computation.
-  In this work, we explore the hypothesis that neural representations of behavior are fundamentally simple, reflecting a constrained, low-dimensional organization that enables efficient motor control, decision-making, and cognitive processing.
- Through computational modeling and empirical analyses, we demonstrate how low-dimensional neural manifolds can emerge and how their structure aligns with behavioral simplicity, providing insights into the fundamental principles governing neural computation.
+%another perspective 
+%Behavior, in many cases, is surprisingly simple. Even in seemingly complex tasks, animals and humans exhibit structured, stereotyped actions that can often be described using a small number of latent variables. From motor control to decision-making, behavioral trajectories unfold in a manner that is both predictable and constrained, hinting at a fundamental simplicity underlying observed actions.
+%If neural activity is the substrate that generates behavior, then it is natural to expect that it too is organized around similarly low-dimensional, structured dynamics. This assumption motivates the search for interpretable motifs in neural dynamics that mirror the simplicity and regularity of behavior.
+%If neural dynamics are indeed tuned to drive behavior, we should expect a correspondence between the low-dimensional structure of neural activity and the inherent simplicity of behavior.
+% This suggests that much of the apparent complexity in neural recordings may stem from redundant or task-irrelevant variability rather than meaningful high-dimensional computation.
+%  In this work, we explore the hypothesis that neural representations of behavior are fundamentally simple, reflecting a constrained, low-dimensional organization that enables efficient motor control, decision-making, and cognitive processing.
  
  
  
  %big datas
-\paragraph{Large datasets}
- As the number of simultaneously recorded neurons increases and experimental paradigms become more complex (e.g. freely behaving animals), it becomes increasingly challenging to develop computational models that can describe the population activity while still providing a meaningful interpretation of how it relates to system-level function.
+%\paragraph{Large datasets}
+% As the number of simultaneously recorded neurons increases and experimental paradigms become more complex (e.g. freely behaving animals), it becomes increasingly challenging to develop computational models that can describe the population activity while still providing a meaningful interpretation of how it relates to system-level function.
 %multi\paragraph{Multi-X datasets}
 %Multiple animals \citep{depasquale2021accumulation}
-%Multiple tasks \citep{}
+
 
 \subsection{Our contribution}\label{sec:contribution}
 \begin{itemize}
-\item we propose a formalism for interpretability for the purpose of identifying neural computations in models of neural dynamics;
+%\item we propose a formalism for interpretability for the purpose of identifying neural computations in models of neural dynamics;
 \item we propose a way to measure the loss of details in the process of abstraction/reduction to achieve more interpretable models;
+\item We derive novel distance measures that quantify how well an idealized model, i.e. a dynamical motif, explains the original system’s computation and how complicated the correspondence is between them.
 \item our class of theories for neural computation consist of:
 	\begin{itemize}
 \item topological equivalence classes of computations as interpretable dynamical motifs
@@ -747,6 +752,8 @@ Furthermore, they have only considered limit cycle versus fixed point dynamics f
 %\paragraph{SSMLearn} %https://github.com/haller-group/SSMLearnPy/tree/main
 
 % \paragraph{MARBLE}
+%MARBLE \citep{gosztolai2025marble} proposes a similarity measure based on local vector field features (vectors and higher-order derivatives) sampled from across the phase space.
+% The features are embedded into lower-dimensional space through contrastive learning, and the embedded distributions from different systems can be compared using an optimal transport distance.
 
 %\subsubsection{Comparison to DSA and SPE}
 \begin{figure}[htbp]
