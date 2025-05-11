@@ -609,7 +609,7 @@ def jacobian_norm_over_batch(
     phi: Callable[[torch.Tensor], torch.Tensor],
     x: torch.Tensor,
     p: float = 2.0,
-    norm_type: Literal["fro", "spectral"] = "fro",
+    norm_type: Literal["fro", "spectral"] = "spectral",
     normalize: bool = True,
     subtract_identity: bool = True,
 ) -> torch.Tensor:
