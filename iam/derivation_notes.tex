@@ -262,6 +262,89 @@ Now, we want to consider the complexity of $\homeo$ and trade-off with additive 
 For this, we will do a first-order perturbation analysis.
 
 \subsection{First-order bound and the Pareto frontier}
+To link the complexity of diffeomorphism to the magnitude of additive perturbation, we seek to find the equivalence up to first order of the vector field corresponding to the diffeomorphism.
+That is, we seek to find $\vDelta(\vx)$ that maintains the topological conjugacy,
+\begin{align}
+    \dot\vx = \vf(\vx) + \epsilon \vDelta(\vx)
+    \overset{\text{t.c.}}{\sim}
+    \vg(\vx)
+    \label{eq:pareto:tc}
+\end{align}
+where $\epsilon > 0$.
+
+We assume an Ansatz for the diffeomorphism, under the assumption that it is close to identity:
+\begin{align}\label{eq:h:ansatz}
+    \vy &= \homeo(\vx) = \vx + \epsilon \tilde\homeo(\vx) + O(\epsilon^2)
+\end{align}
+By taking the time derivative, we get
+\begin{align}
+    \dot{\vy} &= \dot{\vx} + \epsilon \nabla\tilde\homeo(\vx)\dot{\vx} + O(\epsilon^2)
+    \\
+    &=
+	\vf(\vx) + \epsilon \vDelta(\vx)
+	+ \epsilon \nabla\tilde\homeo(\vx)
+	\left(
+	    \vf(\vx) + \epsilon \vDelta(\vx)
+	\right)
+	+ O(\epsilon^2)
+    \\
+    &=
+	\vf(\vx) + \epsilon \vDelta(\vx)
+	+ \epsilon \nabla\tilde\homeo(\vx)
+	    \vf(\vx)
+	+ O(\epsilon^2)
+\end{align}
+At the same time, the Taylor expansion of the unperturbed system transformed with the diffeomorphism gives,
+\begin{align}
+    \dot\vy &= \vf(\vy)
+	= \vf(
+	    \vx + \epsilon \tilde\homeo(\vx) + O(\epsilon^2)
+	)
+	\\
+	&=
+	    \vf(\vx) + \epsilon (\nabla\vf(\vx)) \tilde\homeo(\vx)
+	    + O(\epsilon^2)
+\end{align}
+By comparing terms, we conclude the form of $\vDelta$ up to first order:
+\begin{align}
+    \epsilon \vDelta(\vx) &=
+	\epsilon (\nabla\tilde\homeo(\vx)) \vf(\vx)
+	-
+	\epsilon (\nabla\vf(\vx)) \tilde\homeo(\vx)
+	+ O(\epsilon^2)
+\end{align}
+
+We can use this to derive the following bound:
+\begin{align}
+    \norm{\vDelta(\vx)} 
+    &\leq
+	\norm{(\nabla\tilde\homeo(\vx)) \vf(\vx)
+	+
+	(\nabla\vf(\vx)) \tilde\homeo(\vx)}
+	+ O(\epsilon)
+    \\
+    &\leq
+	\norm{(\nabla\tilde\homeo(\vx)) \vf(\vx)}
+	+
+	\norm{(\nabla\vf(\vx)) \tilde\homeo(\vx)}
+	+ O(\epsilon)
+    \\
+    &\leq
+	\norm{\vf(\vx)}
+	\cdot
+	\norm{\nabla\tilde\homeo(\vx)}
+	+
+	\norm{\nabla\vf(\vx)}
+	\cdot
+	\norm{\tilde\homeo(\vx)}
+	+ O(\epsilon)
+\end{align}
+for appropriate vector and corresponding matrix norms.
+
+Note that from \eqref{eq:h:ansatz}, we have
+\begin{align}
+    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2)
+\end{align}
 
 \bibliographystyle{unsrtnat_IMP_v1}
 \bibliography{../all_ref.bib,imprefs,../catniplab.bib}
