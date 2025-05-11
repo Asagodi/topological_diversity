@@ -332,14 +332,19 @@ We can use this to derive the following bound:
     &\leq
 	\norm{\vf(\vx)}
 	\cdot
-	\norm{\nabla\tilde\homeo(\vx)}
+	\underbrace{
+	    \norm{\nabla\tilde\homeo(\vx)}
+	}_{\substack{\text{scale c.}}}
 	+
 	\norm{\nabla\vf(\vx)}
 	\cdot
+	\underbrace{
 	\norm{\tilde\homeo(\vx)}
+	}_{\substack{\text{translation c.}}}
 	+ O(\epsilon)
 \end{align}
 for appropriate vector and corresponding matrix norms.
+We recognize two kinds of complexities of the diffeomorphism: (1) scale complexity which is a function of the Jacobian of diffeomorphism $\nabla\vh(\vx)$, and (2) translation complexity.
 
 Note that from \eqref{eq:h:ansatz}, we have
 \begin{align}
