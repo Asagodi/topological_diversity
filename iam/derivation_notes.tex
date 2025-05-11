@@ -125,6 +125,7 @@ Abel S\'agodi$^{1}$
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 \DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
 
+\DeclareMathOperator*{\E}{\rm E} % expectation
 \newcommand{\inv}{^{-1}}
 \newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
 \newcommand{\RN}[2]{\frac{\dm{#1}}{\dm{#2}}} % (Radon-Nikodym) derivative
@@ -320,7 +321,7 @@ By comparing terms, we conclude the form of $\vDelta$ up to first order:
 
 We can use this to derive the following bound that holds for all $\vx$:
 \begin{align}
-    \norm{\vDelta(\vx)} 
+    \norm{\vDelta(\vx)}
     &\leq
 	\norm{(\nabla\tilde\homeo(\vx)) \vf(\vx)
 	+
@@ -346,6 +347,7 @@ We can use this to derive the following bound that holds for all $\vx$:
 	\norm{\tilde\homeo(\vx)}
 	}_{\substack{\text{translation c.}}}
 	+ O(\epsilon)
+    \label{eq:h:bound}
 \end{align}
 for appropriate vector and corresponding matrix norms.
 We recognize two kinds of complexities of the diffeomorphism: (1) scale complexity which is a function of the Jacobian of diffeomorphism $\nabla\vh(\vx)$, and (2) translation complexity.
@@ -374,6 +376,29 @@ Figure~\ref{fig:pareto} shows what this means.
 \caption{The two measures of distortion to map the source system to the target system forms a Pareto frontier boundary. See.~\eqref{eq:decomp:triple} for the symbols.}
 \label{fig:pareto}
 \end{figure}
+
+\subsection{Integrated bound}
+The bound \eqref{eq:h:bound} holds point-wise.
+Given a distribution over trajectories (orbits of finite duration),
+$p(\phi(\vx_0,T_\text{max}))$, we can integrate the inequality over the marginal probability measure $p(\vx)$:
+\begin{align}\label{eq:h:bound:integrated}
+    \E_\vx \norm{\vDelta(\vx)}
+    &\leq
+	\E_\vx
+	\left[
+	    \norm{\vf(\vx)}
+	    \cdot
+	    \norm{\nabla\tilde\homeo(\vx)}
+	\right]
+	+
+	\E_\vx
+	\left[
+	    \norm{\nabla\vf(\vx)}
+	    \cdot
+	    \norm{\tilde\homeo(\vx)}
+	\right]
+	+ O(\epsilon)
+\end{align}
 
 \bibliographystyle{unsrtnat_IMP_v1}
 \bibliography{../all_ref.bib,imprefs,../catniplab.bib}
