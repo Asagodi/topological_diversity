@@ -115,7 +115,10 @@ Abel S\'agodi$^{1}$
 
 % Math commands
 \DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\vecOp}{\rm vec} % vec operator
 \DeclareMathOperator*{\tr}{tr} % trace
+\DeclareMathOperator*{\argmax}{\rm argmax}
+\DeclareMathOperator*{\argmin}{\rm argmin}
 \DeclareMathOperator*{\var}{var}
 \DeclareMathOperator*{\cov}{cov}
 
@@ -234,8 +237,31 @@ If we take the difference of vector field to relate to equivalent additive pertu
 	\nabla\homeo(\invhomeo(\vx)) \vf(\invhomeo(\vx))
 \end{align}
 
+\subsection{Affine transformation}
+We treat systems equivalent if an invertible affine transformation maps one system to another.
 
 \section{Dissimilarity}
+Give a source and target system pair and distribution over trajectories, we would like to measure their dissimilarity.
+First, we consider a point-wise measure of dissimilarity measures required additive and diffeomorphic perturbation to apply to the source system to obtain the target system.
+
+Mapping the asymptotic structure of the two systems to align is a preferable distortion, however, since diffeomorphism is limited to smoothly equivalent systems, we need the additive perturbation to take into account the slack.
+Therefore, we first consider the minimum additive perturbation to achieve topological conjugacy.
+\begin{align}
+    \vDelta_1(\vx) &= \argmin \norm{\tilde \vDelta}
+    \label{eq:d1:min}
+    \\
+    & \text{s.t.} \quad
+    \vf(\vx) + \tilde \vDelta(\vx)
+    \overset{\text{t.c.}}{\sim}
+    \vg(\vx)
+    \label{eq:d1:tc}
+\end{align}
+
+Let $\homeo^\ast$ be a diffeomorphism that can be used for achieving the smooth conjugacy in \eqref{eq:d1:tc}.
+Now, we want to consider the complexity of $\homeo$ and trade-off with additive perturbation.
+For this, we will do a first-order perturbation analysis.
+
+\subsection{First-order bound and the Pareto frontier}
 
 \bibliographystyle{unsrtnat_IMP_v1}
 \bibliography{../all_ref.bib,imprefs,../catniplab.bib}
