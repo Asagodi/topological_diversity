@@ -276,7 +276,11 @@ We assume an Ansatz for the diffeomorphism, under the assumption that it is clos
 \begin{align}\label{eq:h:ansatz}
     \vy &= \homeo(\vx) = \vx + \epsilon \tilde\homeo(\vx) + O(\epsilon^2)
 \end{align}
-By taking the time derivative, we get
+Note that from \eqref{eq:h:ansatz}, we have
+\begin{align}
+    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2)
+\end{align}
+By taking the time derivative of \eqref{eq:h:ansatz}, we get
 \begin{align}
     \dot{\vy} &= \dot{\vx} + \epsilon \nabla\tilde\homeo(\vx)\dot{\vx} + O(\epsilon^2)
     \\
@@ -314,7 +318,7 @@ By comparing terms, we conclude the form of $\vDelta$ up to first order:
 	+ O(\epsilon^2)
 \end{align}
 
-We can use this to derive the following bound:
+We can use this to derive the following bound that holds for all $\vx$:
 \begin{align}
     \norm{\vDelta(\vx)} 
     &\leq
@@ -346,10 +350,30 @@ We can use this to derive the following bound:
 for appropriate vector and corresponding matrix norms.
 We recognize two kinds of complexities of the diffeomorphism: (1) scale complexity which is a function of the Jacobian of diffeomorphism $\nabla\vh(\vx)$, and (2) translation complexity.
 
-Note that from \eqref{eq:h:ansatz}, we have
-\begin{align}
-    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2)
+Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of two complexity measures of the diffeomorphism can be traded off with the additive perturbation.
+Thus, the smallest additive perturbation for given the complexity of the diffeomorphism can be described in the following total additive formulation:
+\begin{align}\label{eq:decomp:triple}
+    \vg(\vx) &= 
+	\vf(\vx)
+	\\
+	&\quad+\vDelta_1(\vx)
+	&\qquad\text{min. required for topological conjugacy}
+	\\
+	&\quad+\vDelta_2(\vx, \homeo)
+	&\qquad\text{covered by diffeomorphism}
+	\\
+	&\quad+\vDelta_3(\vx, \homeo)
+	&\qquad\text{remaining gap}
 \end{align}
+
+Figure~\ref{fig:pareto} shows what this means.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{pareto}
+\caption{The two measures of distortion to map the source system to the target system forms a Pareto frontier boundary. See.~\eqref{eq:decomp:triple} for the symbols.}
+\label{fig:pareto}
+\end{figure}
 
 \bibliographystyle{unsrtnat_IMP_v1}
 \bibliography{../all_ref.bib,imprefs,../catniplab.bib}
