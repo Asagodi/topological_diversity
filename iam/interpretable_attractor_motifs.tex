@@ -1,7 +1,7 @@
 \documentclass{article}
 %\usepackage{arxiv}
 \usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2024
-\usepackage[preprint]{neurips_2025}
+\usepackage[]{neurips_2025}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{amssymb, amsmath, amsthm, amsfonts}
@@ -77,7 +77,9 @@
 
 
 %\title{Interpretable attractor motifs for a new language for neural computation}
-\title{Attractor motifs for an interpretable language for working memory-type neural computation}
+%\title{Attractor motifs for an interpretable language for working memory-type neural computation}
+%\title{Imposing interpretability of neural computation by extracting effective behavior through dynamical motifs}
+\title{Understanding neural working memory through canonical dynamical motifs}
 %Dynamical Motif Extraction for Interpretable Neural Computation
 % Interpretable Neural Computation via Dynamical Motifs
 \author{\'Abel S\'agodi and Il Memming Park}
@@ -92,15 +94,18 @@
 
 \begin{abstract}
 
-Understanding computation in dynamical neural systems often requires interpreting the behavior of large, black-box models.
+Understanding neural computation in dynamical neural systems often requires interpreting the behavior of large, black-box models.
 This poses challenges for both interpretability and cross-model comparison—particularly when comparing models from different sources, such as two animals.
-To address this, we propose a framework for interpreting neural computation in working memory through \emph{dynamical motifs}—canonical, human-understandable building blocks of dynamics.
-Within this framework, we introduce a model reduction method that approximates the essential computational mechanism in a neural system by identifying small perturbations that render two systems topologically conjugate.
+To address this, we propose a framework for interpreting neural computation for working memory through \emph{dynamical motifs}—canonical, human-understandable building blocks of dynamics.
+Within this framework, we introduce a model reduction method that approximates the essential computational mechanism in a system by identifying small perturbations that render two systems topologically conjugate.
+This method fits the homeomorphism that establishes the topological conjugacy as a Neural ODE.
+%theory
+Our method uses a curated library of low-dimensional canonical motifs (e.g., limit cycles and various continuous attractors) to explain the core dynamics.
 This allows us to define and quantify similarity between systems in terms of shared dynamical structure.
-The extracted motifs are robust to architectural and parametric variation, suggesting they reflect stable computational strategies rather than model idiosyncrasies.
-Our method uses a curated library of low-dimensional canonical motifs (e.g., limit cycles, ring attractors, bounded line attractors) to explain the core dynamics.
-We demonstrate the approach by extracting a ring attractor motif from a high-dimensional RNN trained on a delayed match-to-sample task, and show how the motif captures the essential geometry and dynamics underlying working memory.
-Our results highlight the utility of this method for robust interpretation and cross-system comparison within the computation-through-dynamics paradigm.
+The extracted motifs are robust to parametric variation, suggesting they reflect stable computational strategies rather than model idiosyncrasies.
+We demonstrate the approach on various toy examples, most importantly approximate continuous attractors.
+Furthermore, we extract an approximate ring attractors from a high-dimensional RNNs trained on a angular velocity integration task, and show how the found homeomorphism captures the complexity of the geometry of the emdedding of the ring.
+Our results highlight the utility of this method for robust interpretation and cross-system comparison within the computation-through-dynamics framework.
 
 \end{abstract}
 
@@ -146,8 +151,8 @@ This framework applies to core neural computations such as classification, worki
 
 \section{Background and related work}\label{sec:background}
 Our goal is to develop a framework that makes neural dynamics interpretable by grounding them in a structured theory of computation.
-In this section, we outline how dynamical systems theory provides a formal language for describing neural computations \citep{jaeger2021theory, jaeger2023timescales, elgazzar2024universal}, review existing approaches for characterizing and comparing dynamics% such as DYNAMO \citep{cotler2023analyzing} and \citep{pagan2022dm},
-and define the scope of our contribution across three axes: the class of computations under study (Computation-through-Dynamics working memory and persistent type), the state of the art in model reduction and system identification, and the interpretability of the resulting abstractions.
+In this section, we outline how dynamical systems theory provides a formal language for describing neural computations \citep{jaeger2021theory, jaeger2023timescales, elgazzar2024universal}, review existing approaches for characterizing and comparing dynamics % such as DYNAMO \citep{cotler2023analyzing} and \citep{pagan2022dm},
+and define the scope of our contribution across three axes: the class of computations under study (Computation-through-Dynamics working-memory and persistent type), the state of the art in model reduction and system identification, and the interpretability of the resulting abstractions.
 
 
 %%%%
@@ -156,15 +161,18 @@ Discovering how the brain contributes to behavior is the central aim of systems 
 We need a language that can describe how neural populations transform inputs into goal-directed behavior.
 Here we focus on the memory maintenance part of this transformation.
 
+%DS/RNN analysis
+%Dyn Sys:
+ Linking parameters and behavior: bifurcation, asymptotic behavior, topological equivalence \citep{beer1995ctrnn, beer2006parameterspace}
+
+%latents + ctd
 \citep{mante2013context}
 \citep{sussillo2014neural}
 \citep{vyas2020ctd}
 \citep{versteeg2023expressive, sedler2023expressive}
 \citep{dinc2025latentcomputing}
-
 latent state space modeling \citep{zoltowski2020general} 
 XFADS\citep{Dowling2024b}
-
 Neural Latents Benchmark \citep{pei2neural}
 CtD benchmark \citep{versteeg2025computation}
 
@@ -213,30 +221,22 @@ MARBLE \citep{gosztolai2025marble}
 
 %%%
 \subsubsection{Methods to compare/classify dynamics}\label{sec:comparison}
-%Comparison of dynamical systems
-Concepts:
-\begin{itemize}
-\item equivalence of systems: topological conjugacy (Def.~\ref{def:top_conj}).%/equivalence
-\item asymptotic behavior: $\omega$-limit sets
-\end{itemize}
-
-DS/RNN analysis
-Dyn Sys: Linking parameters and behavior: bifurcation, asymptotic behavior, topological equivalence \citep{beer1995ctrnn, beer2006parameterspace}
-
-Taking apart topological conjugacy (homeomorphism from motif):
-\begin{itemize}
-\item On asymptotic / $\omega$-limit set / invariant set
-\item On transients \citep{koch2024biological}
-\end{itemize}
+One foundational concept is topological conjugacy, which formalizes the notion of two systems being dynamically equivalent under a homeomorphism that maps trajectories of one system to the other while preserving the temporal ordering (Def.~\ref{def:top_conj}).
+Another key approach focuses on asymptotic behavior, particularly through the study of $\omega$-limit sets, which describe the long-term evolution of trajectories.
+These sets help characterize the stability and attractor structure of a system and are often used to classify systems based on the geometry and topology of their invariant sets.
+Together, these methods provide a basis for principled comparisons of dynamical systems that go beyond superficial similarity of trajectories.
 
 DS comparison basics: 
 realization \citep{grigoryeva2020dimension} \citep{gonon2023approximation}
 Bisimilarity\citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar}
 approximate bisim\citep{girard2011approximate}
 
-%\paragraph{SOTA}
+%Koopman / linear 
 Koopman \citep{mezic2004comparison}
 SVCCA\citep{raghu2017svcca}
+Dynamical Similarity Analysis (DSA) \citep{ostrow2024beyond} \citep{kamiya2024koopman}\\
+What we lose (because of the truncation): limit cycles, multistability
+But we can capture some slow manifold behavior!
 
 assess the limit sets
 - Fixed-point based \citep{sussillo2013blackbox,katz2017fibers,golub2018fixedpointfinder}
@@ -244,19 +244,17 @@ assess the limit sets
 LCs in RNNs \citep{townley2000existence} \citep{pals2024inferring}
 - slow invariant manifolds\citep{Sagodi2024a}
 
-Dynamical Similarity Analysis (DSA) \citep{ostrow2024beyond} \citep{kamiya2024koopman}\\
-What we lose (because of the truncation): limit cycles, multistability
-But we can capture some slow manifold behavior!
-
 \citep{libedinsky2023comparing}
 \citep{lipshutz2024disentangling} 
 \citep{nejatbakhsh2024comparing} Optimal transport
 \citep{barbosa2025quantifying} %not dynamics
 
+%VF
 TWA\citep{moriel2024timewarpattend}
 Diffeomorphic vector field alignment for comparing dynamics across learned models\citep{chen2024dform}
 - orbital similarity loss (Eq.~5)
 
+%for rnns
 For task-trained neural networks
 \citep{huang2024measuring}
 
@@ -277,7 +275,7 @@ We can simplify it's dynamics by looking at its normal form.
 \item  primitives: linear \citep{kaul2020linear} (more for behavioral \citep{ijspeert2013dynamical})
 \item fast-slow \citep{jones1995gspt} \citep{verhulst2006methods}  \citep{dsilva2016data} \citep{haller2017exact}
 \item averaging methods \citep{sanders2007averaging} (invariant tori\citep{novaes2024invariant}), Theorem 9.4 in \citep{hoppensteadt2012weakly}
-\item FSMs: \citep{giles1991extracting, casey1996dynamics, giles1999equivalence, oliva2019fsm, ceni2020excitable, cotteret2024fsm, aichernig2024learning} + weighted\citep{wei2024weighted}
+\item FSMs: \citep{giles1991extracting, casey1996dynamics, giles1999equivalence, oliva2019fsm, ceni2020excitable, cotteret2024fsm, aichernig2024learning} + weighted\citep{wei2024weighted} Boolean \citep{li2025dynamics}
 \item effective dynamics \citep{menier2025interpretable}
 \item Reduction of Limit-Cycle Oscillators to Phase–Amplitude and Phase Models \citep{ashwin2016mathematical} (def. limit-cycle oscillator: attracting and hyperbolic periodic orbit, reduction: reduce per orb. to a description that involves a phase that lives on a topological circle that can be thought of as an interval)
 %and T −  are close for  small
@@ -296,18 +294,16 @@ We can simplify it's dynamics by looking at its normal form.
 \subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
 Basins of attraction + Conley’s Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
 
-FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
+\paragraph{FSM} FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
 Behaviorism is based on an engineering approach, treating the mind as a control system for the organism.
 This corresponds to an approximation of the recurrent neural dynamics (brain states) by finite state automata (behavioral states).
 Another approximations to neural dynamics is described, leading to a Platonic-like model of mind based on psychological spaces. \citep{duch1998platonic}
-
+%
 neural automata\citep{goles2013neural, uria2024invariants}
 
+\paragraph{Other}
 For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron–Frobenius operator describes transitions.
-
-Main shortcoming: difficulty with dealing with complicated attractors.
-When is decomposition of attractor into motifs possible?
-
+%
 On the lifting and reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
 %
 dynamical motifs in task-trained RNNs \citep{driscoll2024flexible}
@@ -315,9 +311,13 @@ dynamical motifs in task-trained RNNs \citep{driscoll2024flexible}
 compositional tasks \citep{tafazoli2024building}
 %
 decomposition through population-based modeling\citep{glaser2020recurrent} 
-
+%
 \citep{mudrik2024decomposed}
 \citep{yuste2024ensembles}
+
+\paragraph{The issue}
+Main shortcoming: difficulty with dealing with complicated attractors.
+When is decomposition of attractor into motifs possible?
 
 
 \subsubsection{Our proposal to decompose, reduce, compare and reconstruct}
@@ -437,9 +437,8 @@ Understanding information propagation using dynamical systems tools \citep{vogt2
 
 \paragraph{Contextuality and understanding}
 What are we interpreting \emph{for}?
-
 Context: Behavior %Computational theory in Marr's levels?
-Interpretation in terms of contributions of the transfer functional.
+Interpretation in terms of contributions of the transfer functional. 
 
 
 %context: computation %Representation and algorithm in Marr's levels
@@ -533,7 +532,7 @@ Therefore, we can define the dissimilarity measure $d(f,g) = \inf \|p\|$ with th
 
 
 
-\subsection{An interpretable motif-centered metric for dynamical systems}\label{sec:aut_motif_metric}
+\subsection{An interpretable motif-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
 Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs. Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
 
 The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
@@ -541,7 +540,8 @@ The dissimilarity between \( f \) and each motif \( g_i \) is defined as the min
 %Projection of $f$ onto library: we get a vector representing the distances to the motifs in the library.
 
 %intuition
-Convergence during training of RNNs: for tasks that rely on analog memory, the system's trajectory should exhibit a low dissimilarity to a dynamical motif that is a continuous attractor diffeomorphic to the memory manifold. This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
+Convergence during training of RNNs: for tasks that rely on analog memory, the system's trajectory should exhibit a low dissimilarity to a dynamical motif that is a continuous attractor diffeomorphic to the memory manifold.
+ This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
 
 
 \subsubsection{Recognizable geometric-topological features}
@@ -723,6 +723,7 @@ Supp.Sec.~\ref{sec:target_systems}
 
 
 \paragraph{DSA}
+DSA utilizes a high-dimensional embedding to identify a linear vector field representation of a nonlinear system, which captures spatiotemporally coherent features of its dynamics, referred to as Koopman modes and identified via Dynamic Mode Decomposition (DMD).
 DSA learns a linear coordinate transformation which maximizes the cosine similarity between the vector fields of two linear time-invariant systems\citep{ostrow2024beyond}.
 
 
@@ -993,9 +994,17 @@ such that
 \paragraph{Topological conjugacy of time series}
 \citep{dlotko2024topconj}
 
+
+\paragraph{Topological conjugacy on and off the invariant manifold}
+Taking apart topological conjugacy (homeomorphism from motif):
+\begin{itemize}
+\item On asymptotic / $\omega$-limit set / invariant set
+\item On transients \citep{koch2024biological}
+\end{itemize}
+
+
 \subsubsection{Defective equivalence: Mostly Conjugate Dynamical Systems}
 \citep{skufca2007relaxing, skufca2008mostlyconjugate, bollt2010comparing}
-
 
 
 
