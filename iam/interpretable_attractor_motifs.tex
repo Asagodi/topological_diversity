@@ -151,9 +151,7 @@ This empirical finding suggests that neural computation is governed by underlyin
 \item our class of theories for neural computation consist of:
 	\begin{itemize}
 \item topological equivalence classes of computations as interpretable dynamical motifs
-\item time parameterization different levels
-%Single scalar for speed time parametrization
-%scalars for time parametrization on and off of manifold 
+\item time parameterization at different levels of detail
 \end{itemize}
 \item for a matching dynamical motif, the result of our method is a simple generative model of the data, unlike pure comparison methods
 \end{itemize}
@@ -165,7 +163,7 @@ This framework applies to core neural computations such as classification, worki
 \section{Background and related work}\label{sec:background}
 Our goal is to develop a framework that makes neural dynamics interpretable by grounding them in a structured theory of computation.
 In this section, we outline how dynamical systems theory provides a formal language for describing neural computations \citep{jaeger2021theory, jaeger2023timescales, elgazzar2024universal}, review existing approaches for characterizing and comparing dynamics % such as DYNAMO \citep{cotler2023analyzing} and \citep{pagan2022dm},
-and define the scope of our contribution across three axes: the class of computations under study (Computation-through-Dynamics working-memory and persistent type), the state of the art in model reduction and system identification, and the interpretability of the resulting abstractions.
+and define the scope of our contribution across three axes: the class of computations under study, the state of the art in model reduction and system identification, and the interpretability of the resulting abstractions.
 
 
 %%%%
@@ -174,14 +172,16 @@ Discovering how the brain contributes to behavior is the central aim of systems 
 We need a language that can describe how neural populations transform inputs into goal-directed behavior.
 Here we focus on the memory maintenance part of this transformation.
 
-%DS/RNN analysis
-%Dyn Sys:
- Linking parameters and behavior: bifurcation, asymptotic behavior, topological equivalence \citep{beer1995ctrnn, beer2006parameterspace}
+Dynamical systems are a popular language to study neural computation  \citep{beer1995ctrnn, beer2006parameterspace,sussillo2014neural, vyas2020ctd}.
+Neural computations such as working memory, short-term memory, and motor control have been extensively studied through dynamical systems.
+Discrete and continuous forms of working memory, for example, can be modeled as attractor dynamics that stabilize persistent representations \citep{zhang2022translation, hoeller2024bridging}.
+Short-term memory, involving transient yet structured activity, has been explored in dynamical models capturing task-dependent variability \citep{kurtkaya2025dynamical}.
+% Motor control, too, exhibits low-dimensional dynamics shaped by recurrent structure \citep{wang2022representation}.
+ While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
+
 
 %latents + ctd
 \citep{mante2013context}
-\citep{sussillo2014neural}
-\citep{vyas2020ctd}
 \citep{versteeg2023expressive, sedler2023expressive}
 \citep{dinc2025latentcomputing}
 latent state space modeling \citep{zoltowski2020general} 
@@ -191,21 +191,12 @@ CtD benchmark \citep{versteeg2025computation}
 
 RNNs for neural computation \citep{chaisangmongkon2017transience} and behavior \citep{sani2021nonlinearity} \citep{yang2019task, yang2019multiple, yang2020artificial}
 Black box \citep{sussillo2013blackbox}
-Reverse-engineering \citep{maheswaranathan2019reverse} \citep{golub2018fixedpointfinder} \citep{smith2021reverse} \citep{rivkind2017local}
+Engineering models for neural computation \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe} \citep{beiran2023rnns}
+%Engineering RNNs that embody  task dynamics: EMPJ
+ \citep{pollock2020engineering}.
+Reverse-engineering complex models \citep{maheswaranathan2019reverse} \citep{golub2018fixedpointfinder} \citep{smith2021reverse} \citep{rivkind2017local}
 Diversity of solutions \citep{maheswaranathan2019universality}\citep{jarne2023initialization} \citep{turner2021charting} \citep{nayebi2021heterogeneity} \citep{zhong2023mechanistic}
-%
-engineering neural computation \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe} \citep{beiran2023rnns}
-Engineering RNNs that embody latent task dynamics (EMPJ) \citep{pollock2020engineering}
 
-%\subsubsection{Theoretical neuroscience}
-%\citep{thompson2021explanation}
-%\citep{levenstein2023theory}
-
-\subsubsection{Examples of neural computation}\label{sec:neurcompex}
-Neural computations such as working memory, short-term memory, and motor control have been extensively studied through dynamical systems. Discrete and continuous forms of working memory, for example, can be modeled as attractor dynamics that stabilize persistent representations \citep{zhang2022translation, hoeller2024bridging}.
- Short-term memory, involving transient yet structured activity, has been explored in dynamical models capturing task-dependent variability \citep{kurtkaya2025dynamical}.
- Motor control, too, exhibits low-dimensional dynamics shaped by recurrent structure \citep{wang2022representation}.
- While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
 
 
 
@@ -331,7 +322,8 @@ decomposition through population-based modeling\citep{glaser2020recurrent}
 \paragraph{The issue}
 Main shortcoming: difficulty with dealing with complicated attractors.
 When is decomposition of attractor into motifs possible?
-
+We focus on understandable attractors for now. 
+These are covered by our method to build higher-dimensional composite models from lower-dimensional dynamical motifs.
 
 \subsubsection{Our proposal to decompose, reduce, compare and reconstruct}
 \paragraph{Reduction of dynamics to extract computation}
@@ -368,7 +360,9 @@ where \( \mathcal{U} \) is a suitable class of input signals (e.g., all inputs w
 
 %INTERPRET
 \subsection{Interpretability}
-\ascomment{Should this come before Reduction?}
+Longstanding approaches involve linear models, decision trees and rule extraction.
+%extraction of information from the input and the output of a learned model is also called post hoc interpretability or reverse engineering
+
 %phos
 What is interpretability? \citep{erasmus2021interpretability}
 \citep{madsen2024interpretability}
@@ -383,17 +377,17 @@ extrinsic and intrinsic dimensionality\citep{jazayeri2021interpreting}
  Building Blocks of Interpretability \citep{olah2018interpretability}
 \citep{beisbart2022interpretability}
 simple isn't easy \citep{raz2024ml}
-Manipulating and measuring model interpretability\citep{poursabzi2021manipulating}: \ascomment{A way to compare?}
+Manipulating and measuring model interpretability\citep{poursabzi2021manipulating} %: \ascomment{A way to compare?}
 \citep{he2024multilevel}
 
-\paragraph{ML}
+%\paragraph{ML}
 \citep{montavon2018methods}: \emph{An interpretation is the mapping of an abstract concept (e.g., a predicted class) into a domain that the human can make sense of.}
-
+%
 \citep{ehrhardt2017learning, guidotti2018survey}: Interpretations can be obtained by way of understandable proxy models, which approximate the predictions of a more complex approach
 
-Longstanding approaches involve linear models, decision trees and rule extraction.
 
-extraction of information from the input and the output of a learned model is also called post hoc interpretability or reverse engineering
+
+
 
 \subsubsection{Works mentioning interpretability}
 \citep{whiteway2019interpretable}
@@ -406,10 +400,9 @@ black box to mixture of interpretable models \citep{ghosh2023blackbox}
 \citep{nonnenmacher2017extracting}
 \citep{zhang2025netformer}: recovering dynamical connectivity in neuronal population dynamics
 \citep{klindt2023identifying,klindt2025superposition}
-%\paragraph{Motor primitives} \subsubsection{In neuroscience}
-In motor cortex, neural trajectories during reaching movements often evolve along a low-dimensional cyclic structure, making it possible to interpret them as dynamical primitives for movement \citep{ijspeert2013dynamical}.
-%
-\citep{marton2021efficient}
+%\paragraph{Motor primitives}%no motor for now
+%\citep{marton2021efficient}
+%In motor cortex, neural trajectories during reaching movements often evolve along a low-dimensional cyclic structure, making it possible to interpret them as dynamical primitives for movement \citep{ijspeert2013dynamical}.
 
 
 \subsubsection{Interpretability in RNNs}
@@ -439,14 +432,12 @@ Understanding and controlling the geometry of memory organization in RNNs \citep
 \citep{deregt2017understanding}
 \citep{potochnik2017idealization}
 \citep{guest2023logical}
-%
 Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding}
 prediction vs understanding \citep{chirimuuta2021prediction}
-%
 Understanding information propagation using dynamical systems tools \citep{vogt2022lyapunov}
 
-\paragraph{Explanations: understanding scientific phenomena}
-\citep{parascandolo2021learning}
+%\paragraph{Explanations: understanding scientific phenomena}
+%\citep{parascandolo2021learning} robustness of explanation/description
 
 \paragraph{Contextuality and understanding}
 What are we interpreting \emph{for}?
@@ -494,6 +485,7 @@ potochnik2020idealization,
 potochnik2017idealization}
 \citep{stinson2020idealized}
 \citep{chirimuuta2024brain} 
+\citep{levenstein2023theory}
 %Solomonoff's theory of inductive inference (formalizes Occam's razor)
 
 
@@ -558,7 +550,7 @@ Convergence during training of RNNs: for tasks that rely on analog memory, the s
 
 
 \subsubsection{Recognizable geometric-topological features}
-%repetition with sec:neurcompex
+%repetition with sec:ctd
  Fixed points and limit cycles are fundamental to neural computations.
 Fixed points correspond to steady-state solutions where the system’s state does not change, while limit cycles describe periodic orbits that repeat over time.
  In neural models, fixed points are often used to model persistent activity patterns, while limit cycles can be observed in oscillatory behaviors that may correspond to specific memory or decision-making processes.
@@ -583,13 +575,13 @@ approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
 
 
 \subsubsection{Motifs: The building blocks}
-We use dynamical motifs are the fundamental building blocks of dynamical systems, capturing distinct and interpretable behaviors such as attractors, which simplify complex dynamics into stable basins in phase space.
- These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
-  By maintaining topological distinctness, motifs offer a framework for understanding complex systems in a way that aligns with human intuition, especially in fields like neuroscience and decision-making.
+We use dynamical motifs as the fundamental building blocks of dynamical systems, capturing effective and interpretable behaviors such as approximate continuous attractors.
+%simplification of BoA which simplify complex dynamics into stable basins in phase space 
+These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
 
 
 %\subsubsection{The base case} % \subsubsection{Constructing}
-
+% topological distinctness of the motifs
 
 \paragraph{Enumerating attractors dimension-wise}
 In dynamical systems, attractors can be systematically classified according to their topological dimension, with the simplest topological spaces serving as the fundamental building blocks at each level.
