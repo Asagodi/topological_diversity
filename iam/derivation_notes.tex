@@ -121,6 +121,10 @@ Abel S\'agodi$^{1}$
 \DeclareMathOperator*{\argmin}{\rm argmin}
 \DeclareMathOperator*{\var}{var}
 \DeclareMathOperator*{\cov}{cov}
+\newcommand{\divv}{\ensuremath{\mathbb{D}}}
+\newcommand{\KL}[2]{\divv_{\text{KL}}\!\left({#1}\middle\lvert\middle\rvert\,{#2}\right)}
+\newcommand{\IMPdivv}[3]{\divv_{\text{IMP}}\!\left({#1}\middle\lvert\middle\rvert\,{#2}\,;{#3}\right)}
+\newcommand{\dis}{\ensuremath{\mathcal{D}}}
 
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 \DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
@@ -398,6 +402,18 @@ $p(\phi(\vx_0,T_\text{max}))$, we can integrate the inequality over the marginal
 	    \norm{\tilde\homeo(\vx)}
 	\right]
 	+ O(\epsilon)
+\end{align}
+
+\subsection{Divergence}
+We are ready to define the divergence measure between the source and target systems under the probability distribution over states.
+\begin{align}\label{eq:divergence}
+    \IMPdivv{\vf}{\vg}{\mu}
+	&\coloneqq
+	\left(
+	\inf_\Delta
+	,
+	\inf_\homeo
+	\right)
 \end{align}
 
 \bibliographystyle{unsrtnat_IMP_v1}

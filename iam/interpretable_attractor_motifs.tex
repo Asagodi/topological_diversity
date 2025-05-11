@@ -94,20 +94,30 @@
 % keywords: interpretability, similarity metric, neural computation, working memory, computation through dynamics
 
 \begin{abstract}
-
-Understanding neural computation in dynamical neural systems often requires interpreting the behavior of large, black-box models.
-This poses challenges for both interpretability and cross-model comparison—particularly when comparing models from different sources, such as two animals.
-To address this, we propose a framework for interpreting neural computation for working memory through \emph{dynamical motifs}—canonical, human-understandable building blocks of dynamics.
-Within this framework, we introduce a model reduction method that approximates the essential computational mechanism in a system by identifying small perturbations that render two systems topologically conjugate.
-Our method fits the homeomorphism that establishes the topological conjugacy as a Neural ODE.
-We derive measures of dissimilarity based on our homeomorphism-conjugacy mapping method.
-Our method uses a curated library of low-dimensional canonical motifs (e.g., limit cycles and various continuous attractors) to explain the core dynamics.
-This allows us to define and quantify similarity between systems in terms of shared dynamical structure.
-The extracted motifs are robust to parametric variation, suggesting they reflect stable computational strategies rather than model idiosyncrasies.
-We demonstrate the approach on various toy examples, most importantly approximate continuous attractors.
-Furthermore, we extract an approximate ring attractors from a high-dimensional RNNs trained on a angular velocity integration task, and show how the found homeomorphism captures the complexity of the geometry of the embedding of the ring.
-Our results highlight the utility of this method for robust interpretation and cross-system comparison within the computation-through-dynamics framework.
-
+The study of neural computation aims to understand the function of the brain as an information processing machine.
+Neural systems are undoubtedly complex, necessitating principled and automated tools to abstract away details to organize and incrementally build intuition.
+Systems with the same effective behavior can be abstracted by their representative member---one composed of asymptotic dynamical structures, while others are treated as imperfect realizations of this ideal canonical computation.
+We propose a library of canonical computations and a new measure of dissimilarity to group systems based on their effective behavior.
+%The dissimilarity quantifies the topological gap and deformation of the underlying vector fields based on a set of observed trajectories.
+%We explicitly consider deformations that break the topological conjugacy as well as diffeomorphisms that preserve it.
+We explicitly consider deformations that break the topological conjugacy as well as diffeomorphisms that preserve it.
+The proposed dissimilarity can be estimated from observed trajectories.
+Numerical experiments demonstrate its ability to reconcile previously reported fragility of existing (dis)similarity measures for approximate continuous attractors and high-dimensional recurrent neural networks.
+Although our experiments focus on working memory systems, the theoretical approach nautrally extends to general mechanistic interpretation of recurrent dynamics in both biological and artificial neural systems.
+We argue that abstract canonical computation motifs, rather than detailed dynamical systems, offer a more useful vocabulary for describing neural computation.
+%
+% Understanding neural computation in dynamical neural systems often requires interpreting the behavior of large, black-box models.
+% This poses challenges for both interpretability and cross-model comparison—particularly when comparing models from different sources, such as two animals.
+% To address this, we propose a framework for interpreting neural computation for working memory through \emph{dynamical motifs}—canonical, human-understandable building blocks of dynamics.
+% Within this framework, we introduce a model reduction method that approximates the essential computational mechanism in a system by identifying small perturbations that render two systems topologically conjugate.
+% Our method fits the homeomorphism that establishes the topological conjugacy as a Neural ODE.
+% We derive measures of dissimilarity based on our homeomorphism-conjugacy mapping method.
+% Our method uses a curated library of low-dimensional canonical motifs (e.g., limit cycles and various continuous attractors) to explain the core dynamics.
+% This allows us to define and quantify similarity between systems in terms of shared dynamical structure.
+% The extracted motifs are robust to parametric variation, suggesting they reflect stable computational strategies rather than model idiosyncrasies.
+% We demonstrate the approach on various toy examples, most importantly approximate continuous attractors.
+% Furthermore, we extract an approximate ring attractors from a high-dimensional RNNs trained on a angular velocity integration task, and show how the found homeomorphism captures the complexity of the geometry of the embedding of the ring.
+% Our results highlight the utility of this method for robust interpretation and cross-system comparison within the computation-through-dynamics framework.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
