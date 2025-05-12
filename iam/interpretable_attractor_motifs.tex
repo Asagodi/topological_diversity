@@ -147,7 +147,7 @@ Latent variable models have proven essential for extracting interpretable state 
 Within the computation-through-dynamics (CtD) framework, recurrent neural networks (RNNs) have emerged as powerful models for capturing both task-related computations \citep{yang2019task, yang2019multiple, yang2020artificial, sani2021nonlinearity} and the dynamical structure of cortical responses \citep{chaisangmongkon2017transience, mante2013context}.
 These models support both top-down engineering approaches—where desired dynamics are imposed by construction \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe, pollock2020engineering, beiran2023rnns}—and bottom-up analysis of black-box systems trained for behavior \citep{sussillo2013blackbox, maheswaranathan2019reverse, golub2018fixedpointfinder, smith2021reverse, maheswaranathan2019universality, jarne2023initialization, nayebi2021heterogeneity, turner2021charting, turner2023simplicity, zhong2023mechanistic, huang2024measuring}.
 
-Asymptotic behavior—captured by structures like fixed points, limit cycles, and slow manifolds—is central to memory maintenance in neural computation, encoding stable representations over time. However, in both latent variable models and task-trained RNNs, these structures are often embedded in high-dimensional, black-box dynamics, making them difficult to interpret.
+Asymptotic behavior—captured by structures like fixed points, limit cycles, and slow manifolds—is central to memory maintenance in neural computation, encoding stable representations over time. However, in both latent variable models and task-trained RNNs, these structures are often embedded in high-dimensional, black-box dynamics, making them difficult to interpret \citep{whiteway2019interpretable,kar2022interpretability}.
 Identifying asymptotic structure is thus key to extracting interpretable, computationally meaningful mechanisms from complex neural models.
 Through abstraction and idealization, we can distill the essential features of neural activity, enabling meaningful understanding rather than merely presenting a detailed but opaque description. This process is especially important in models where high-dimensional dynamics obscure the underlying computational structure, making interpretability contingent on identifying simplified, canonical representations. 
 
@@ -218,9 +218,11 @@ Stochastic Shape Distance (SSD) \citep{duong2022representational}  %, a stochast
 \citep{barbosa2025quantifying}, 
 see also \citep{williams2024equivalence}. %comparing comparison methods
 
-A recently developed method, Dynamical Similarity Analysis (DSA), allows for the quantification of similarity between two systems based on their DMD-approximated linear representations \citep{ostrow2024beyond}.
-Assuming the linear system accurately captures the Koopman eigenspectrum, DSA estimates how far the systems are from being conjugate.
-However, this approach relies on spectral truncation, which can obscure important nonlinear features such as limit cycles and multistability—key aspects of many neural computations.
+Dynamical Similarity Analysis (DSA) is a recently proposed method for quantifying similarity between dynamical systems by comparing their linear approximations derived via Dynamic Mode Decomposition (DMD) \citep{ostrow2024beyond}.
+DSA constructs a high-dimensional embedding in which a nonlinear system is approximated by a linear vector field, capturing spatiotemporally coherent structure through so-called Koopman modes. 
+%To compare systems, DSA learns a linear coordinate transformation that maximizes the cosine similarity between the vector fields of their respective linear time-invariant approximations.
+When the linearization faithfully captures the underlying Koopman eigenspectrum, this provides an estimate of how close the systems are to being topologically conjugate. 
+However, the reliance on spectral truncation can obscure critical nonlinear features—such as limit cycles, bifurcations, or multistability—that are often essential to understanding neural dynamics and computation.
 %But we can capture some slow manifold behavior!
 
 %VF
@@ -233,10 +235,11 @@ Smooth Prototype Equivalence (SPE) fits a diffeomorphism from the given data to 
 Comparing noisy neural population dynamics with optimal transport: metric is as an extension of Procrustes shape distance which compares average trajectories and SSD which compares marginal statistics or noise correlations\citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.
 %Comments:
 
-
 %Koopman / linear  \citep{mezic2004comparison}
 
+
 %conclusion
+
 
 
 %%%
@@ -244,24 +247,23 @@ Comparing noisy neural population dynamics with optimal transport: metric is as 
 %realization
 Foundational approaches to comparing dynamical systems include notions of realization—the construction of one system that reproduces the input-output behavior of another \citep{grigoryeva2020dimension, gonon2023approximation}—and bisimilarity, which captures behavioral equivalence through relations that match system trajectories or observations \citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar,girard2011approximate}.
 
+%model identification of classes of cognitive models\citep{rmus2024artificial}
 
-\citep{durstewitz2023reconstructing}
+%reconstruction: 
+full dynamics\citep{durstewitz2023reconstructing} \citep{brenner2024almost}
 Learning interpretable continuous-time models of latent stochastic dynamical systems \citep{duncker2019learning}
 SSMLearn \citep{cenedese2022data}
-%
 Phase2vec \citep{ricci2022phase2vec} learn manifolds of dynamical systems, leading to dynamical embeddings which encode qualitative properties of the underlying systems
 DFORM \citep{chen2024dform}: DFORM orbital similarity a noisy measure of topological equivalence
 TWA \citep{moriel2024timewarpattend}
 Smooth Prototype Equivalences \citep{friedman2025characterizing}
-%
 MARBLE \citep{gosztolai2025marble}
-
 
 
 \subsubsection{Reduction}\label{sec:reduction} %simplification of dynamics
 A major goal in dynamical systems theory is to reduce complex nonlinear dynamics.
 %LDS red
-A popular method is to reduce the dynamics to linear systems that are assumed to be easily interpretable.
+A popular method is to reduce the dynamics to linear systems which in turn are assumed to be easily interpretable  \citep{Nassar2018b,brenner2024almost}. \ascomment{add other examples}
 One classical method involves searching for fixed points and identifying their properties via local linearization \citep{sussillo2013blackbox}.
 
 
@@ -282,6 +284,7 @@ SINDy: large library of candidate functions \citep{brunton2016discovering, brunt
  %
  %motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} \citep{yair2017normalforms} \citep{friedman2025characterizing}
  
+
 
 %\begin{itemize}
 %\item approximation based (model order reduction): \citep{schilders2008model}
@@ -307,6 +310,9 @@ SINDy: large library of candidate functions \citep{brunton2016discovering, brunt
 %%\item surrogate dynamical systems (any citations?)
 %\end{itemize}
 
+ \paragraph{The space of models for neural computation} %and reducing it
+Mapping families of dynamical systems to a manifold whose geometry encodes different qualitative behaviors \citep{transtrum2014model, ricci2022phase2vec, quinn2022information, Vermani2024b}.
+
 %%%decomposition is a form of reduction?
 \subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
 \paragraph{BoA and Conley decomposition} Basins of attraction + Conley’s Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
@@ -317,6 +323,7 @@ This corresponds to an approximation of the recurrent neural dynamics (brain sta
 Another approximations to neural dynamics is described, leading to a Platonic-like model of mind based on psychological spaces. \citep{duch1998platonic}
 %
 neural automata\citep{goles2013neural, uria2024invariants}
+Towards interpreting recurrent neural networks through probabilistic abstraction \citep{dong2020towards} % extract different models like deterministic finite automata (DFA)
 
 \paragraph{Other}
 dynamical motifs in task-trained RNNs \citep{driscoll2024flexible}
@@ -337,8 +344,7 @@ We focus on understandable attractors for now.
 These are covered by our method to build higher-dimensional composite models from lower-dimensional dynamical motifs.
 
 
-\subsubsection{The space of models for neural computation}
-Mapping families of dynamical systems to a manifold whose geometry encodes different qualitative behaviors \citep{transtrum2014model, ricci2022phase2vec, quinn2022information, Vermani2024b}.
+
 
 
 \subsubsection{Our proposal to decompose, reduce, compare and reconstruct}
@@ -346,67 +352,20 @@ Mapping families of dynamical systems to a manifold whose geometry encodes diffe
 In each basin of attraction we have one attractor.
 We can simplify it's dynamics by looking at its normal form.
 
-\paragraph{Reduction of dynamics to extract computation}
-Encoding-Decoding framework
-\citep{zhang2025neural} NEDS
-
-Formalize through input-output functional.
-The \emph{transfer functional} \( \mathcal{T}_f \) maps an input signal \( u(\cdot) \) to an output signal \( y(\cdot) \), possibly given an initial condition \( x_0 \):
-\[
-\mathcal{T}_f[u](t) = h(x(t)),
-\]
-where \( x(t) \) is the solution of the initial value problem:
-\[
-\dot{x}(t) = f(x(t), u(t)), \quad x(0) = x_0.
-\]
-
-What is the distance between $\mathcal{T}_f(f)$ and $\mathcal{T}_f(\Phi^{-1}(f+p))$?
-A natural notion of distance between the transfer functionals is
-\[
-\|\mathcal{T}_f - \mathcal{T}_{\Phi^{-1}(f+p)}\| 
-:= \sup_{u \in \mathcal{U}} \sup_{t \in [0, T]} 
-\left\| \mathcal{T}_f[u](t) - \mathcal{T}_{\Phi^{-1}(f+p)}[u](t) \right\|,
-\]
-where \( \mathcal{U} \) is a suitable class of input signals (e.g., all inputs with bounded \( L^\infty \)-norm or from a compact set in \( C([0,T], \mathbb{R}^m) \)).
-%adjust h to minimize output error of f+p?
-%find a new readout map $\tilde h$  so that the output error between $f$ and $f+p$ is minimized. %???
-
-%\paragraph{Reduction of dynamics}
-%Embed attractor of intrinsic dimension $N$ into $\reals^{n+1}$ to be able to map point in the basin of attraction onto representative points on the stable manifold of the attractor motif.
-%\ascomment{What is simple behavior in terms of the transfer function?}
 
 
 
 
 %INTERPRET
 \subsection{Interpretability}
-Longstanding approaches involve linear models, decision trees and rule extraction.
-%extraction of information from the input and the output of a learned model is also called post hoc interpretability or reverse engineering
+Interpretability remains a central yet elusive goal in both neuroscience and machine learning\citep{erasmus2021interpretability}.
+While traditional approaches often rely on inherently understandable models such as linear classifiers, decision trees, or rule-based systems, more recent work has emphasized post hoc techniques that attempt to explain black-box models through reverse engineering or surrogate approximations \citep{ehrhardt2017learning, guidotti2018survey}.
+However, interpretability is not a monolithic concept \citep{poursabzi2021manipulating,madsen2024interpretability}.
+Philosophical and practical analyses underscore its multidimensionality—ranging from transparency and simulatability to justification and user trust \citep{lipton2018mythos,olah2018interpretability, beisbart2022interpretability, raz2024ml, hochstein2022levels, he2024multilevel}.
 
-%phos
-What is interpretability? \citep{erasmus2021interpretability}
-\citep{madsen2024interpretability}
-levels \citep{hochstein2022levels}
-
-%neuro
-\citep{whiteway2019interpretable}
-\citep{kar2022interpretability}
-extrinsic and intrinsic dimensionality\citep{jazayeri2021interpreting}
-
- machine learning: important yet slippery\citep{lipton2018mythos}	
- Building Blocks of Interpretability \citep{olah2018interpretability}
-\citep{beisbart2022interpretability}
-simple isn't easy \citep{raz2024ml}
-Manipulating and measuring model interpretability\citep{poursabzi2021manipulating} %: \ascomment{A way to compare?}
-\citep{he2024multilevel}
-
-%\paragraph{ML}
-\citep{montavon2018methods}: \emph{An interpretation is the mapping of an abstract concept (e.g., a predicted class) into a domain that the human can make sense of.}
-%
-\citep{ehrhardt2017learning, guidotti2018survey}: Interpretations can be obtained by way of understandable proxy models, which approximate the predictions of a more complex approach
-
-
-
+%Building Blocks of Interpretability \citep{olah2018interpretability}
+%\citep{montavon2018methods}: \emph{An interpretation is the mapping of an abstract concept (e.g., a predicted class) into a domain that the human can make sense of.}
+%\citep{ehrhardt2017learning, guidotti2018survey}: Interpretations can be obtained by way of understandable proxy models, which approximate the predictions of a more complex approach
 
 
 \subsubsection{Works mentioning interpretability}
@@ -426,76 +385,62 @@ black box to mixture of interpretable models \citep{ghosh2023blackbox}
 
 
 \subsubsection{Interpretability in RNNs}
-%static
-SVCCA\citep{raghu2017svcca}
-dPCA\citep{kobak2016demixed} Principal Component Analysis as a supervised dimensionality reduction method that finds dimensions in population activity space related to experimentally-defined variables, aiding in the interpretation of complex and heterogeneous single-neuron responses
+Recurrent neural networks (RNNs) present unique challenges for interpretability due to their nonlinear dynamics and high-dimensional hidden states\citep{he2024multilevel}.
+%
+Several studies suggest that the behavior of RNNs—and, by extension, the neural systems they model—can often be captured in remarkably low-dimensional terms.
+For instance, RNNs have been shown to reproduce animal behavior in reward learning tasks using as few as 1–4 dynamical variables \citep{jian2023tinyrnn}, supporting the hypothesis that behaviorally relevant computations may reside on low-dimensional manifolds\citep{turner2023simplicity}.
+This aligns with evidence from low-rank RNN constructions \citep{beiran2021shaping, valente2022extracting, valente2022probing} and recent work on the geometry of memory organization in recurrent networks \citep{haputhanthri2025understanding}.
 
-%MinimalRNN\citep{chen2017minimalrnn} more about simplifying gates
-Tiny RNN\citep{jian2023tinyrnn}: analysis of the predictive performance of RNNs with varying sizes revealed that merely 1-4 dynamical variables were adequate for an optimal explanation of behavior in reward learning tasks, suggesting that the behavior of animals in these tasks is low-dimensional
-model identification of classes of cognitive models\citep{rmus2024artificial}
-Towards interpreting recurrent neural networks through probabilistic abstraction \citep{dong2020towards}
-Expressive architectures enhance interpretability of dynamics-based neural population models \citep{sedler2023expressive}
-Interpretable Latent Factors with Sparse Component Analysis \citep{zimnik2024identifying}
-Almost-Linear RNNs Yield Highly Interpretable Symbolic Codes in Dynamical Systems Reconstruction \citep{brenner2024almost}
-\citep{he2024multilevel}
-\citep{schaeffer2020reverseengineering} Representations and Dynamics Distillations (RADD)
-\citep{turner2023simplicity}
-FSM: \citep{oliva2019fsm}, \citep{cotteret2024fsm},  ENA \citep{ceni2020interpreting}
-low-rank RNNs \citep{beiran2021shaping, valente2022extracting, valente2022probing}
-mechanistic \citep{qian2024partial}
-\citep{Nassar2018b}
+%is this countering low-rank claims?Expressive architectures enhance interpretability of dynamics-based neural population models \citep{sedler2023expressive}
 
-Understanding and controlling the geometry of memory organization in RNNs \citep{haputhanthri2025understanding}
+Sparse Component Analysis (SCA) seeks interpretable factors that are sparse in time and evolve within orthogonal dimensions  \citep{zimnik2024identifying}.
+%
+Finite-state abstractions \citep{oliva2019fsm, cotteret2024fsm}, probabilistic interpretability frameworks \citep{dong2020towards}, and methods for symbolic distillation such as RADD \citep{schaeffer2020reverseengineering} all seek to translate continuous dynamics into intelligible, discrete operations.
+
+%dPCA\citep{kobak2016demixed} Principal Component Analysis as a supervised dimensionality reduction method that finds dimensions in population activity space related to experimentally-defined variables, aiding in the interpretation of complex and heterogeneous single-neuron responses
+%MinimalRNN\citep{chen2017minimalrnn} more about simplifying 
+
 
 
 \subsubsection{Understanding}\label{sec:understanding}
-\citep{deregt2017understanding}
-\citep{potochnik2017idealization}
-\citep{guest2023logical}
-Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding}
-prediction vs understanding \citep{chirimuuta2021prediction}
-Understanding information propagation using dynamical systems tools \citep{vogt2022lyapunov}
+Understanding, as a scientific aim, is not exhausted by accurate prediction or description \citep{chirimuuta2021prediction}.
+Philosophers of science have long emphasized that understanding depends on idealization and explanatory relevance, not just faithful representation.
+For example, \citet{deregt2017understanding} argues that understanding hinges on the intelligibility of theories for human agents, while \citet{potochnik2017idealization} defends the heuristic and epistemic value of idealization, especially in complex biological systems.
+\citet{guest2023logical} further explore how logical structure and representational clarity shape the conditions under which scientific models promote genuine understanding.
 
+Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding}
+
+%Understanding information propagation using dynamical systems tools \citep{vogt2022lyapunov}
 %\paragraph{Explanations: understanding scientific phenomena}
 %\citep{parascandolo2021learning} robustness of explanation/description
-
-\paragraph{Contextuality and understanding}
-What are we interpreting \emph{for}?
-Context: Behavior %Computational theory in Marr's levels?
-Interpretation in terms of contributions of the transfer functional. 
-
 
 %context: computation %Representation and algorithm in Marr's levels
 \paragraph{Understanding computation in terms of dynamics}
 Interpretation in terms of a ``compressed'' description of the dynamics.
-%
 task's computational demands (e.g., continuous parametrization of memory)
-
-
-\subsubsection{Simplicity}
-\citep{gao2015simplicity}
-\citep{dyer2023simplest}
-\citep{quinn2022information}%
-%
-Canonical realization = the simplest system (in some sense) that produces the same behavior
-
 
 \paragraph{Visualization}
 \citep{deregt2017understanding}
 \citep{karpathy2015visualizing}
+\citep{madsen2019visualizing}
 PHATE \citep{moon2017visualizing}
 MPHATE\citep{gigante2019visualizing}
 MMPHATE\citep{xie2024multiway} 
-\citep{madsen2019visualizing}
 
-\subsubsection{Minimal}
+\subsubsection{Simplicity}
+\citep{gao2015simplicity}
+\citep{dyer2023simplest}
+\citep{quinn2022information}
+%
+Canonical realization = the simplest system (in some sense) that produces the same behavior
+
+\paragraph{Minimal}
 \citep{beer1996toward}
 \citep{lafferriere2000minimal}
 \citep{chirimuuta2014minimal}
 \citep{batterman2014minimal}
 \citep{brancazio2023minimal}
 \citep{Jordan2019a}
-
 
 \subsubsection{Reduction/idealization/simplification/abstraction}
 \citep{marr1976computation, marr2010vision}
@@ -542,7 +487,6 @@ To address this, we propose a framework for comparing dynamical systems by fitti
 This approach allows for more interpretable comparisons, offering a meaningful way to evaluate how similar two systems are based on their underlying dynamics.
 
 
-
 \subsection{Dissimilarity measure}
 In the context of comparing dynamical systems, we define a dissimilarity measure between two vector fields \( f \) and \( g \), both of which belong to \( C^1 \). Specifically, we assume that there exists a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the trajectories induced by the perturbed vector field \( f + p \) and the vector field \( g \) can be made indistinguishable under \( \Phi \). Formally, this condition is given by:
 \begin{equation}\label{eq:}
@@ -555,7 +499,37 @@ d(f, g) = \inf \|p\|,  %symmetrify? d sym (f,g)=max(d(f,g),d(g,f))
 where the infimum is taken over all possible perturbations \( p \) that satisfy the above condition.
 Therefore, we can define the dissimilarity measure $d(f,g) = \inf \|p\|$ with the above constraint.
 
+\subsubsection{Reduction of dynamics to extract computation}
+%\paragraph{Contextuality and understanding}
+What are we interpreting \emph{for}?
+Context: Behavior %Computational theory in Marr's levels?
+%Interpretation in terms of contributions of the transfer functional. 
 
+%Encoding-Decoding framework NEDS
+Interpretation in terms of how difference relates to the input-output/transfer functional \citep{zhang2025neural}.
+The \emph{transfer functional} \( \mathcal{T}_f \) maps an input signal \( u(\cdot) \) to an output signal \( y(\cdot) \), possibly given an initial condition \( x_0 \):
+\[
+\mathcal{T}_f[u](t) = h(x(t)),
+\]
+where \( x(t) \) is the solution of the initial value problem:
+\[
+\dot{x}(t) = f(x(t), u(t)), \quad x(0) = x_0.
+\]
+
+What is the distance between $\mathcal{T}_f(f)$ and $\mathcal{T}_f(\Phi^{-1}(f+p))$?
+A natural notion of distance between the transfer functionals is
+\[
+\|\mathcal{T}_f - \mathcal{T}_{\Phi^{-1}(f+p)}\| 
+:= \sup_{u \in \mathcal{U}} \sup_{t \in [0, T]} 
+\left\| \mathcal{T}_f[u](t) - \mathcal{T}_{\Phi^{-1}(f+p)}[u](t) \right\|,
+\]
+where \( \mathcal{U} \) is a suitable class of input signals (e.g., all inputs with bounded \( L^\infty \)-norm or from a compact set in \( C([0,T], \mathbb{R}^m) \)).
+%adjust h to minimize output error of f+p?
+%find a new readout map $\tilde h$  so that the output error between $f$ and $f+p$ is minimized. %???
+
+%\paragraph{Reduction of dynamics}
+%Embed attractor of intrinsic dimension $N$ into $\reals^{n+1}$ to be able to map point in the basin of attraction onto representative points on the stable manifold of the attractor motif.
+%\ascomment{What is simple behavior in terms of the transfer function?}
 
 \subsection{Dynamical motif matching}
 
@@ -606,6 +580,10 @@ This pattern continues, with higher-dimensional attractors constructed from fund
 
 %\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
 
+%what about higher dims??
+extrinsic and intrinsic dimensionality\citep{jazayeri2021interpreting}
+%low-dim neural activity
+
 %\paragraph{Manifold decomposition}
 %Triangulation
 
@@ -631,30 +609,26 @@ Our goal is to determine both the correct (best fitting/most explanatory) attrac
 
 
 \subsubsection{Trajectory based loss function}
-Since we do not have direct access to the vector field but only to sampled trajectories, we approximate the system using a learned diffeomorphism \( \hat{\Phi}_\theta \), parameterized by a normalizing flow\citep{kobyzev2020normalizing,papamakarios2021normalizing}, an invertible ResNet\citep{he2016deep}, or a Neural ODE (NODE) \citep{chen2018neural}.
+Since we do not have direct access to the vector field but only to sampled trajectories, we approximate the system using a learned diffeomorphism \( \hat{\Phi}_\theta \), parameterized by a a Neural ODE (NODE) \citep{chen2018neural} (for other implementations, see Supp.Sec.~\ref{sec:architectures}).
+% normalizing flow\citep{kobyzev2020normalizing,papamakarios2021normalizing}, an invertible ResNet\citep{he2016deep}
  We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
 
 %time repraram%
- If the correct motif \( g_i \) is selected (in orbit equivalence sense), then there should exist an approximate reparametrization of time \( \tau(t) \) such that
-\[
-y(\tau(t)) \approx x(t),
-\]
-where \( y(t) \) is a trajectory obtained by integrating \( \dot{y} = g_i(y) \) from an initial condition \( y(0) \). 
+ If the correct motif \( g_i \) is selected (in orbit equivalence sense), then there should exist an approximate reparametrization of time \( \tau(t) \) such that \(y(\tau(t)) \approx x(t)\)
+with a trajectory \( y(t) \)  obtained by integrating \( \dot{y} = g_i(y) \) from an initial condition \( y(0) \). 
 %So there exists $\mu(x)$ positive such that 
 %We simplify this by assuming symmetry across space $\mu\in\reals_{>0}$.
 A loss function capturing this trajectory discrepancy is given by:
-\[
+\begin{equation}\label{eq:loss}
 \mathcal{L}(\theta, \mu, i) = \sum_{t} \Big\| (x_k(t)) - \Phi_\theta(\hat{x}_k(t)) \Big\|^2,
-\]
-where the trajectories \( \hat{x}_k(t) \) are computed via numerical integration of \(\dot x =  g_i(x) \) from an initial condition $\hat x_k(0) = \Phi_\theta^{-1}(x_k(0))$. %add scaling by mu?
+\end{equation}
+where the trajectories \(y_k(t) \) are computed via numerical integration of \(\dot y =  g_i(y) \) from an initial condition $\hat y_k(0) = \Phi_\theta^{-1}(x_k(0))$. %add scaling by mu?
 %The final optimization objective is:
 %\[
-%\min_{\theta, \mu,  i} \mathcal{L}(\theta, \mu, i). % + \lambda \mathcal{R}(\theta), %regularization? NODE\citep{finlay2020trainnode}
+%\min_{\theta, \mu,  i} \mathcal{L}(\theta, \mu, i). % + \lambda \mathcal{R}(\Phi_\theta), %regularization? NODE\citep{finlay2020trainnode}
 %\]
 %where \( \lambda \) is a regularization coefficient.
-This formulation allows for the joint identification of both the correct attractor motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
-
-
+This formulation allows for the joint identification of both the correct motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
 
 
 \subsubsection{Extensions to the canonical motifs}
@@ -759,16 +733,13 @@ Supp.Sec.~\ref{sec:target_systems}
 \subsection{Comparison to other methods}\label{sec:compare_method}
 
 
-\paragraph{DSA}
-DSA utilizes a high-dimensional embedding to identify a linear vector field representation of a nonlinear system, which captures spatiotemporally coherent features of its dynamics, referred to as Koopman modes and identified via Dynamic Mode Decomposition (DMD).
-DSA learns a linear coordinate transformation which maximizes the cosine similarity between the vector fields of two linear time-invariant systems\citep{ostrow2024beyond}.
-
+\paragraph{DSA}%https://github.com/mitchellostrow/DSA
 
 %\paragraph{Phase2Vec} %https://github.com/nomoriel/phase2vec
 
 %\paragraph{DFORM} %NO CODE????
 
-\paragraph{SPE}
+\paragraph{SPE} %https://github.com/nitzanlab/prototype-equivalences
 Smooth prototype equivalences (SPE) is a method that fits a diffeomorphism from the given data to normal forms \citep{friedman2025characterizing}.
 However, their method is dependent on knowledge of the vector field of the target system.
 Furthermore, they have only considered limit cycle versus fixed point dynamics for their library.
@@ -1598,10 +1569,8 @@ If $\rho>313$, then the unique stable limit cycle is an attractor in the Lorenz 
 
 
 \newpage
-\section{Architectures}
-
-
-\subsection{Neural Ordinary Differential Equations (Neural ODEs)}
+\section{Architectures}\label{sec:architectures}
+\subsection{Neural Ordinary Differential Equations (Neural ODEs)}\label{sec:node}
 \citep{chen2018neural,massaroli2020dissecting}
 A Neural Ordinary Differential Equation (Neural ODE) is a continuous-time model where the evolution of a system is governed by an ordinary differential equation (ODE) with a neural network defining the dynamics. Specifically, let \( x(t) \in \mathbb{R}^d \) be the state of the system at time \( t \). The evolution of \( x(t) \) is described by the differential equation:
 \begin{equation}
