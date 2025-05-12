@@ -1,6 +1,6 @@
 \documentclass{article}
 %\usepackage{arxiv}
-\usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2024
+\usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2025
 \usepackage[]{neurips_2025}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
@@ -11,6 +11,8 @@
 \usepackage{forloop}
 \usepackage[pdftex]{graphicx}  %remove demo option in your document
 \usepackage{sidecap}
+\usepackage{booktabs}
+\usepackage{multirow}
 \usepackage{enumerate}
 \usepackage[shortlabels]{enumitem} %easy customization of itemize/enumerate lists
 \PassOptionsToPackage{dvipsnames}{xcolor}
@@ -815,19 +817,17 @@ planning: complex dynamical motifs that correspond to current and future actions
 \section{Topology}\label{sec:topology}
 
 \subsection{Approximating homeomorphisms}\label{sec:homeomorphisms}
-
-
 Any homeomorphism on a $p$-dimensional Euclidean space can be approximated by a Neural ODE or an i-ResNet operating on a $2p$-dimensional Euclidean space \citep{zhang2020approximation}.
-
+%
 Capping a Neural ODE or an i-ResNet with a single linear layer is sufficient to turn the model into a universal approximator for non-invertible continuous functions \citep{zhang2020approximation}.
 
-\subsubsection{Implementations}
+%\subsubsection{Implementations}
 
 
 
 \subsection{Approximating diffeomorphisms}\label{sec:diffeomorphisms}
 %any homeomorphism on a $p$-dimensional Euclidean space can be approximated by a Neural ODE or an i-ResNet operating on a $2p$-dimensional Euclidean space \citep{zhang2020approximation}
-Any homeomorphism of $\mathbb {R} ^{n}$ can be approximated by a neural ODE operating on $\mathbb {R} ^{2n+1}$, proved by combining Whitney embedding theorem for manifolds and the universal approximation theorem for neural networks  \citep{zhang2020approximation}.
+Any homeomorphism of $\mathbb {R} ^{n}$ can be approximated by a Neural ODE operating on $\mathbb {R} ^{2n+1}$, proved by combining Whitney embedding theorem for manifolds and the universal approximation theorem for neural networks  \citep{zhang2020approximation}.
 
 %diffeomorphisms from gradient information of desired costs \citep{lai2021parallelised}
 
@@ -844,20 +844,17 @@ Neural ODEs model the continuous trajectory of the hidden state \( \mathbf{h}(t)
 where \( \mathbf{h}(t) \) is the hidden state at time \( t \), \( f \) is a neural network with parameters \( \theta \), and \( t \) represents time. Given an initial condition \( \mathbf{h}(t_0) = \mathbf{h}_0 \), the evolution of the hidden state over time is computed by solving the ODE using numerical solvers, allowing the model to capture complex, continuous transformations.
 
 %example of f
-\textbf{Fully Connected Neural Network (Feedforward Network)}:
-
+\textbf{Fully Connected Feedforward Neural Network}:
 \[
-f(\mathbf{h}(t), t, \theta) = W_2 \sigma(W_1 \mathbf{h}(t) + \mathbf{b}_1) + \mathbf{b}_2
+f(\mathbf{h}(t), t, \theta) = W_2 \sigma(W_1 \mathbf{h}(t) + \mathbf{b}_1) + \mathbf{b}_2,
 \]
-
-Here, \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( W_1, W_2 \) are weight matrices, and \( \mathbf{b}_1, \mathbf{b}_2 \) are bias vectors.
+with \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( W_1, W_2 \) are weight matrices, and \( \mathbf{b}_1, \mathbf{b}_2 \) are bias vectors.
  This form models the ODE dynamics using a simple two-layer feedforward network.
 
 Universal approximation properties of neural operator architectures \citep{lu2021learning, kissas2022learning, kovachki2021universal}.
 
 NODE\citep{finlay2020trainnode}
 \citep{torchdiffeq}
-
 
 \paragraph{Applications}
 %NODEs in neuroscience%
@@ -866,16 +863,12 @@ Neural ordinary differential equations (NODEs) are being increasingly adopted in
 
 
 \subsubsection{Invertible ResNets}
-the layers of a ResNet can be considered as Euler-discretization of the integration of a flow of a diffeomorphism\citep{rousseau2020residual}
-
-
-
-
+The layers of a ResNet can be considered as Euler-discretization of the integration of a flow of a diffeomorphism\citep{rousseau2020residual}
 
 
 % Normalizing flows\citep{kobyzev2020normalizing}
 
-Conjugate Mappings \citep{bramburger2021conjugate}
+%Conjugate Mappings \citep{bramburger2021conjugate}
 
 
 \subsubsection{Decomposing diffeomorphisms}\label{sec:diff_dec}
@@ -885,15 +878,16 @@ Since diffeomorphisms form a Lie group under composition, a diffeomorphism
 \[
 f = \exp(X),
 \]
-where \( X \) is a vector field (i.e., an element of the Lie algebra of the diffeomorphism group). Expanding \( X \) in a Fourier basis:
+where \( X \) is a vector field (i.e., an element of the Lie algebra of the diffeomorphism group).
+Expanding \( X \) in a Fourier basis:
 \[
 X(x) = \sum_k \hat{X}(k) e^{i k \cdot x}
 \]
 provides a Fourier-like decomposition of the infinitesimal generator.
 
-\paragraph{}
+%\paragraph{}
 A simple sufficient condition for a family of flows on a smooth compact manifold $M$ to generate the group $\Diff0_(M)$ of all diffeomorphisms of $M$ that are isotopic to the identity \citep{caponigro2010families}.
-
+%
 Stability of diffeomorphisms implies that $\Diff(M)\subset C^1(M,M)$  is an open subset.
 
 
@@ -1220,157 +1214,157 @@ Regions that remain coherent and relatively nondispersive over finite periods of
 %\section{Dynamical systems contributions}
 %Overview  
 
-\section{Generalizing motif metric to input-driven systems}
-We generalize the idea of autonomous attractors (Sec.~\ref{sec:aut_motif_metric}) for input-driven systems.
-
-Let the target system be
-\[
-\dot{x} = f(x) + g(u, x),
-\]
-where \( g(u, x) \in C^1 \) captures the input-driven dynamics.
-
-Let \( \{ g_i(x) \} \) be a fixed set of motif vector fields defining a canonical control-affine structure (see Supp.Sec.~\ref{sec:attaction}):
-\[
-g_{\text{affine}}(u, x) := \sum_i u_i g_i(x).
-\]
-
-We define the distance between the true input dynamics and the control-affine approximation as
-\[
-d(g(u, x), \{ g_i(x) \}) := \inf_{\{ g_i \}} \left\| g(u, x) - \sum_i u_i g_i(x) \right\|_{\mathcal{U}, \infty},
-\]
-where the norm \( \| \cdot \|_{\mathcal{U}, \infty} \) is taken over a compact domain \( \mathcal{U} \times \mathcal{X} \subset \mathbb{R}^m \times \mathbb{R}^n \), and the infimum may be constrained to a motif class.
-
-This distance quantifies the degree to which the system's input-driven dynamics can be expressed as a linear combination of the motif vector fields.
-
-\section{The action of the input on the attractor manifold}\label{sec:attaction}
-For stationary attractors (continuous attractors), the control-affine framework characterizes the simplest way to describe the action of the input (see Supp.Sec.~\ref{sec:statattaction}).
-For periodic attractors, the action needs to be defined in terms of the phase resetting curve (see Supp.Sec.~\ref{sec:perattaction}).
-
-
-\subsection{Action of the input on  stationary attractors}\label{sec:statattaction}
-\subsubsection{Control-affine}\label{sec:controlaffine}
-Let the system evolve according to the control-affine dynamics:
-\[
-\dot{x}(t) = f(x(t)) + \sum_{i=1}^m u_i(t) g_i(x(t)),
-\]
-where \( x(t) \in \mathbb{R}^n \) is the state, \( u(t) \in \mathbb{R}^m \) is the input, \( f : \mathbb{R}^n \to \mathbb{R}^n \) governs the autonomous dynamics, and \( g_i : \mathbb{R}^n \to \mathbb{R}^n \) are the input vector fields.
-
-Suppose the system admits a manifold \( \mathcal{M} \subset \mathbb{R}^n \) of fixed points under the autonomous dynamics:
-\[
-\mathcal{M} = \{ x \in \mathbb{R}^n \mid f(x) = 0 \}.
-\]
-We assume that each input vector field \( g_i \) is tangent to the manifold at every point:
-\[
-g_i(x) \in T_x \mathcal{M}, \quad \forall x \in \mathcal{M}, \quad i = 1, \dots, m.
-\]
-Define \( \mathfrak{g}_x = \operatorname{span} \{ g_1(x), \dots, g_m(x) \} \subset T_x \mathcal{M} \) to be the subspace of directions accessible by the inputs at state \( x \in \mathcal{M} \). Let \( \mathcal{L}_x \) denote the Lie algebra generated by \( \{g_1, \dots, g_m\} \) under the Lie bracket of vector fields, evaluated at \( x \):
-\[
-\mathcal{L}_x = \operatorname{span} \left\{ Y(x) \,\middle|\, Y \in \mathrm{Lie}(g_1, \dots, g_m) \right\}.
-\]
-Since the Lie brackets of tangent vector fields remain tangent, it follows that \( \mathcal{L}_x \subseteq T_x \mathcal{M} \) for all \( x \in \mathcal{M} \).
-Thus, the integral manifolds generated by the Lie algebra \( \mathrm{Lie}(g_1, \dots, g_m) \) are contained in \( \mathcal{M} \), and describe the directions along which the state can be moved by time-varying inputs:
-\[
-\mathcal{O}(x) = \left\{ \phi_{t_k}^{Y_k} \circ \cdots \circ \phi_{t_1}^{Y_1}(x) \,\middle|\, Y_j \in \mathrm{Lie}(g_1, \dots, g_m),\ t_j \in \mathbb{R} \right\} \subseteq \mathcal{M},
-\]
-where \( \phi_t^Y \) denotes the flow of the vector field \( Y \) at time \( t \). In this sense, the input acts as a generator of motion along the manifold \( \mathcal{M} \) via the action of the associated Lie algebra.
-
-
-\subsubsection{Non-Affine Case}\label{sec:controlaffine}
-Linearize!
-
-Assuming smoothness, we expand the input-driven dynamics \( F(x, u) \) in a Taylor series around \( u = 0 \):
-\[
-F(x, u) = f(x) + \sum_{i} u_i g_i(x) + \sum_{i,j} u_i u_j h_{ij}(x) + \cdots,
-\]
-where
-\begin{align}
-f(x) &= F(x, 0),\\
-g_i(x) &= \left. \frac{\partial F}{\partial u_i}(x, u) \right|_{u = 0},\\
-h_{ij}(x) &= \left. \frac{1}{2} \frac{\partial^2 F}{\partial u_i \partial u_j}(x, u) \right|_{u = 0}.
-\end{align}
-
-Here, \( \{g_i(x)\} \) represents the first-order (linear) influence of the inputs on the dynamics, corresponding to the control-affine approximation. The higher-order terms \( h_{ij}(x) \) and beyond capture nonlinear interactions between input components and their influence on state evolution.
-
-
-%v-equation and r-equation \citep{miller2012mathematical}
-\paragraph{Voltage rate} %easy!
-Consider the continuous-time RNN dynamics:
-\[
-\dot{x} = F(x, u) = -x + W\phi(x) + B u,
-\]
-where \( x \in \mathbb{R}^n \) is the state, \( u \in \mathbb{R}^m \) is the input, \( W \in \mathbb{R}^{n \times n} \) is the recurrent weight matrix, \( B \in \mathbb{R}^{n \times m} \) is the input weight matrix, and \( \phi : \mathbb{R}^n \to \mathbb{R}^n \) is a smooth nonlinearity applied elementwise.
-Then, $g_i(x) = B_i$, where \( B_i \) denotes the \( i \)-th column of \( B \).
-
-Since the \( g_i \) are constant vector fields, the control vector fields are automatically tangent to \( \mathcal{M} \) if and only if \( B_i \in T_x \mathcal{M} \) for all \( x \in \mathcal{M} \).
- That is, the inputs move the state along the manifold only if the input directions lie in the tangent bundle of \( \mathcal{M} \).
-
-
-The Lie algebra generated by the constant vector fields \( \{g_i\} \) is abelian:
-\[
-[g_i, g_j] = 0 \quad \text{for all } i, j,
-\]
-so the input-induced motion lies within a linear subspace of \( \mathbb{R}^n \), which intersects \( \mathcal{M} \) nontrivially if and only if the span of \( \{B_i\} \) is contained in \( T_x \mathcal{M} \) at every \( x \in \mathcal{M} \).
-
-
-\paragraph{Vanilla RNNs}
-We consider the system:
-\[
-\dot{x} = F(x, u) = -x + \phi(Wx + Bu),
-\]
-where \( \phi : \mathbb{R}^n \to \mathbb{R}^n \) is a smooth nonlinearity applied elementwise.
-Then,
-\[
-g_i(x, u) := \frac{\partial F}{\partial u_i}(x, u) = D\phi(Wx + Bu) \cdot B_i,
-\]
-where \( D\phi(Wx) \) is the Jacobian of \( \phi \) evaluated at \( Wx + Bu \).
-
-\paragraph{Important non-linearities: boundary of the attractor}
-When the attractor has a boundary, the usual Lie algebra formalism (which assumes smooth vector fields generating flows on manifolds without boundary) breaks down.
-
-At each point \( x \in \partial \mathcal{M} \), define a cone of admissible input directions:
-\[
-\mathcal{C}(x) = \left\{ v \in \mathbb{R}^n \,\middle|\, F(x, u) \in T_x \mathcal{M} \text{ and does not point outward} \right\}.
-\]
-This set captures the directions in which the system can legally move without leaving the attractor.
- You can think of it as a generalization of the tangent space, but adapted to systems with boundaries.
-
-
-\subsection{Action of the input on periodic attractors}\label{sec:perattaction}
-\subsubsection{Input-dependent isochrons}\label{sec:iprc}
-Isochrons can also be interpreted as the leaves of the stable manifold of a hyperbolic limit cycle \citep{ashwin2016mathematical}.
- They fully specify the dynamics in the absence of perturbations \citep{guckenheimer1975isochrons}. %lossless reduction!
-Explanation: Roughly speaking, a trajectory with the initial condition $x\in \mathcal{I}_\theta$ asymptotically approaches a (periodic) trajectory on the limit cycle characterized by an initial condition associated with the phase $\theta$.
- Since the two trajectories have the same asymptotic behavior, whether the initial condition is on the limit cycle or not, the phase h can also be assigned to the initial condition $x\not\in\Gamma$.
- 
- an isochron extends the notion of phase off the cycle (within its basin of attraction)
- Isochrons can also be interpreted as the leaves of the stable manifold of a hyperbolic limit cycle.
- 
- Computing the isochron foliation of the basin of attraction of a limit cycle is a major challenge since it requires knowledge of the limit cycle and therefore can only be computed in special cases or numerically.
-forward integration method using the Koopman operator and Fourier averages as introduced \citep{mauroy2012use}, see description in \citep{ashwin2016mathematical}
-
-
-\paragraph{Phase response curve (PRC)}
-the phase-reduction formalism is useful in quantifying how a system (on or close to a cycle) responds to weak forcing
-
-iPRC
-can be written, for a given ODE model, as the solution to an adjoint equation
-
-The iPRC at a point on cycle is equal to the gradient of the (isochronal) phase at that point.
-
-PRC
-phase response to a perturbation \citep{rinzel1998analysis}
-%see 5.5 in ashwin2016mathematical
-
-simplest example of an averaged phase dynamics: Adler equation \citep{adler1946study}
-
-\subsubsection{Phase–Amplitude Models}
-amplitude: notion of distance from the limit cycle \citep{hale2009ordinary} \citep{ermentrout1991multiple}
-
-
-from PAM to isochrons: limit of strong attraction\citep{ermentrout1990oscillator}
-
-
-\subsection{Action of constant inputs: shifting of attractor}
+%\section{Generalizing motif metric to input-driven systems}
+%We generalize the idea of autonomous attractors (Sec.~\ref{sec:aut_motif_metric}) for input-driven systems.
+%
+%Let the target system be
+%\[
+%\dot{x} = f(x) + g(u, x),
+%\]
+%where \( g(u, x) \in C^1 \) captures the input-driven dynamics.
+%
+%Let \( \{ g_i(x) \} \) be a fixed set of motif vector fields defining a canonical control-affine structure (see Supp.Sec.~\ref{sec:attaction}):
+%\[
+%g_{\text{affine}}(u, x) := \sum_i u_i g_i(x).
+%\]
+%
+%We define the distance between the true input dynamics and the control-affine approximation as
+%\[
+%d(g(u, x), \{ g_i(x) \}) := \inf_{\{ g_i \}} \left\| g(u, x) - \sum_i u_i g_i(x) \right\|_{\mathcal{U}, \infty},
+%\]
+%where the norm \( \| \cdot \|_{\mathcal{U}, \infty} \) is taken over a compact domain \( \mathcal{U} \times \mathcal{X} \subset \mathbb{R}^m \times \mathbb{R}^n \), and the infimum may be constrained to a motif class.
+%
+%This distance quantifies the degree to which the system's input-driven dynamics can be expressed as a linear combination of the motif vector fields.
+%
+%\section{The action of the input on the attractor manifold}\label{sec:attaction}
+%For stationary attractors (continuous attractors), the control-affine framework characterizes the simplest way to describe the action of the input (see Supp.Sec.~\ref{sec:statattaction}).
+%For periodic attractors, the action needs to be defined in terms of the phase resetting curve (see Supp.Sec.~\ref{sec:perattaction}).
+%
+%
+%\subsection{Action of the input on  stationary attractors}\label{sec:statattaction}
+%\subsubsection{Control-affine}\label{sec:controlaffine}
+%Let the system evolve according to the control-affine dynamics:
+%\[
+%\dot{x}(t) = f(x(t)) + \sum_{i=1}^m u_i(t) g_i(x(t)),
+%\]
+%where \( x(t) \in \mathbb{R}^n \) is the state, \( u(t) \in \mathbb{R}^m \) is the input, \( f : \mathbb{R}^n \to \mathbb{R}^n \) governs the autonomous dynamics, and \( g_i : \mathbb{R}^n \to \mathbb{R}^n \) are the input vector fields.
+%
+%Suppose the system admits a manifold \( \mathcal{M} \subset \mathbb{R}^n \) of fixed points under the autonomous dynamics:
+%\[
+%\mathcal{M} = \{ x \in \mathbb{R}^n \mid f(x) = 0 \}.
+%\]
+%We assume that each input vector field \( g_i \) is tangent to the manifold at every point:
+%\[
+%g_i(x) \in T_x \mathcal{M}, \quad \forall x \in \mathcal{M}, \quad i = 1, \dots, m.
+%\]
+%Define \( \mathfrak{g}_x = \operatorname{span} \{ g_1(x), \dots, g_m(x) \} \subset T_x \mathcal{M} \) to be the subspace of directions accessible by the inputs at state \( x \in \mathcal{M} \). Let \( \mathcal{L}_x \) denote the Lie algebra generated by \( \{g_1, \dots, g_m\} \) under the Lie bracket of vector fields, evaluated at \( x \):
+%\[
+%\mathcal{L}_x = \operatorname{span} \left\{ Y(x) \,\middle|\, Y \in \mathrm{Lie}(g_1, \dots, g_m) \right\}.
+%\]
+%Since the Lie brackets of tangent vector fields remain tangent, it follows that \( \mathcal{L}_x \subseteq T_x \mathcal{M} \) for all \( x \in \mathcal{M} \).
+%Thus, the integral manifolds generated by the Lie algebra \( \mathrm{Lie}(g_1, \dots, g_m) \) are contained in \( \mathcal{M} \), and describe the directions along which the state can be moved by time-varying inputs:
+%\[
+%\mathcal{O}(x) = \left\{ \phi_{t_k}^{Y_k} \circ \cdots \circ \phi_{t_1}^{Y_1}(x) \,\middle|\, Y_j \in \mathrm{Lie}(g_1, \dots, g_m),\ t_j \in \mathbb{R} \right\} \subseteq \mathcal{M},
+%\]
+%where \( \phi_t^Y \) denotes the flow of the vector field \( Y \) at time \( t \). In this sense, the input acts as a generator of motion along the manifold \( \mathcal{M} \) via the action of the associated Lie algebra.
+%
+%
+%\subsubsection{Non-Affine Case}\label{sec:controlaffine}
+%Linearize!
+%
+%Assuming smoothness, we expand the input-driven dynamics \( F(x, u) \) in a Taylor series around \( u = 0 \):
+%\[
+%F(x, u) = f(x) + \sum_{i} u_i g_i(x) + \sum_{i,j} u_i u_j h_{ij}(x) + \cdots,
+%\]
+%where
+%\begin{align}
+%f(x) &= F(x, 0),\\
+%g_i(x) &= \left. \frac{\partial F}{\partial u_i}(x, u) \right|_{u = 0},\\
+%h_{ij}(x) &= \left. \frac{1}{2} \frac{\partial^2 F}{\partial u_i \partial u_j}(x, u) \right|_{u = 0}.
+%\end{align}
+%
+%Here, \( \{g_i(x)\} \) represents the first-order (linear) influence of the inputs on the dynamics, corresponding to the control-affine approximation. The higher-order terms \( h_{ij}(x) \) and beyond capture nonlinear interactions between input components and their influence on state evolution.
+%
+%
+%%v-equation and r-equation \citep{miller2012mathematical}
+%\paragraph{Voltage rate} %easy!
+%Consider the continuous-time RNN dynamics:
+%\[
+%\dot{x} = F(x, u) = -x + W\phi(x) + B u,
+%\]
+%where \( x \in \mathbb{R}^n \) is the state, \( u \in \mathbb{R}^m \) is the input, \( W \in \mathbb{R}^{n \times n} \) is the recurrent weight matrix, \( B \in \mathbb{R}^{n \times m} \) is the input weight matrix, and \( \phi : \mathbb{R}^n \to \mathbb{R}^n \) is a smooth nonlinearity applied elementwise.
+%Then, $g_i(x) = B_i$, where \( B_i \) denotes the \( i \)-th column of \( B \).
+%
+%Since the \( g_i \) are constant vector fields, the control vector fields are automatically tangent to \( \mathcal{M} \) if and only if \( B_i \in T_x \mathcal{M} \) for all \( x \in \mathcal{M} \).
+% That is, the inputs move the state along the manifold only if the input directions lie in the tangent bundle of \( \mathcal{M} \).
+%
+%
+%The Lie algebra generated by the constant vector fields \( \{g_i\} \) is abelian:
+%\[
+%[g_i, g_j] = 0 \quad \text{for all } i, j,
+%\]
+%so the input-induced motion lies within a linear subspace of \( \mathbb{R}^n \), which intersects \( \mathcal{M} \) nontrivially if and only if the span of \( \{B_i\} \) is contained in \( T_x \mathcal{M} \) at every \( x \in \mathcal{M} \).
+%
+%
+%\paragraph{Vanilla RNNs}
+%We consider the system:
+%\[
+%\dot{x} = F(x, u) = -x + \phi(Wx + Bu),
+%\]
+%where \( \phi : \mathbb{R}^n \to \mathbb{R}^n \) is a smooth nonlinearity applied elementwise.
+%Then,
+%\[
+%g_i(x, u) := \frac{\partial F}{\partial u_i}(x, u) = D\phi(Wx + Bu) \cdot B_i,
+%\]
+%where \( D\phi(Wx) \) is the Jacobian of \( \phi \) evaluated at \( Wx + Bu \).
+%
+%\paragraph{Important non-linearities: boundary of the attractor}
+%When the attractor has a boundary, the usual Lie algebra formalism (which assumes smooth vector fields generating flows on manifolds without boundary) breaks down.
+%
+%At each point \( x \in \partial \mathcal{M} \), define a cone of admissible input directions:
+%\[
+%\mathcal{C}(x) = \left\{ v \in \mathbb{R}^n \,\middle|\, F(x, u) \in T_x \mathcal{M} \text{ and does not point outward} \right\}.
+%\]
+%This set captures the directions in which the system can legally move without leaving the attractor.
+% You can think of it as a generalization of the tangent space, but adapted to systems with boundaries.
+%
+%
+%\subsection{Action of the input on periodic attractors}\label{sec:perattaction}
+%\subsubsection{Input-dependent isochrons}\label{sec:iprc}
+%Isochrons can also be interpreted as the leaves of the stable manifold of a hyperbolic limit cycle \citep{ashwin2016mathematical}.
+% They fully specify the dynamics in the absence of perturbations \citep{guckenheimer1975isochrons}. %lossless reduction!
+%Explanation: Roughly speaking, a trajectory with the initial condition $x\in \mathcal{I}_\theta$ asymptotically approaches a (periodic) trajectory on the limit cycle characterized by an initial condition associated with the phase $\theta$.
+% Since the two trajectories have the same asymptotic behavior, whether the initial condition is on the limit cycle or not, the phase h can also be assigned to the initial condition $x\not\in\Gamma$.
+% 
+% an isochron extends the notion of phase off the cycle (within its basin of attraction)
+% Isochrons can also be interpreted as the leaves of the stable manifold of a hyperbolic limit cycle.
+% 
+% Computing the isochron foliation of the basin of attraction of a limit cycle is a major challenge since it requires knowledge of the limit cycle and therefore can only be computed in special cases or numerically.
+%forward integration method using the Koopman operator and Fourier averages as introduced \citep{mauroy2012use}, see description in \citep{ashwin2016mathematical}
+%
+%
+%\paragraph{Phase response curve (PRC)}
+%the phase-reduction formalism is useful in quantifying how a system (on or close to a cycle) responds to weak forcing
+%
+%iPRC
+%can be written, for a given ODE model, as the solution to an adjoint equation
+%
+%The iPRC at a point on cycle is equal to the gradient of the (isochronal) phase at that point.
+%
+%PRC
+%phase response to a perturbation \citep{rinzel1998analysis}
+%%see 5.5 in ashwin2016mathematical
+%
+%simplest example of an averaged phase dynamics: Adler equation \citep{adler1946study}
+%
+%\subsubsection{Phase–Amplitude Models}
+%amplitude: notion of distance from the limit cycle \citep{hale2009ordinary} \citep{ermentrout1991multiple}
+%
+%
+%from PAM to isochrons: limit of strong attraction\citep{ermentrout1990oscillator}
+%
+%
+%\subsection{Action of constant inputs: shifting of attractor}
 
 
 
@@ -1533,11 +1527,8 @@ where the first equation governs the radial attraction of \( \mathbf{x}_{\text{s
 
 
 \newpage
-\section{Experiments}
-\subsection{}
 
-
- \subsection{Target systems}\label{sec:target_systems}
+ \section{Target systems}\label{sec:target_systems}
  Time points: 100
  Trajectories: 15
 
@@ -1692,16 +1683,74 @@ This structure guarantees that the network is bijective, preserving the volume a
 
 \newpage
 \section{Training}
+Optimizer: Adam \citep{kingma2014adam}
 
-\subsection{Training parameters}
+%\subsection{Training parameters}
+%
+%\subsection{Cross-validation}
+%\subsubsection{Validation data}
+%\subsubsection{Regularization}
 
 
 
-\subsection{Cross-validation}
 
-\subsubsection{Validation data}
+\newpage
+\section{Experiments}
+\subsection{Homeomorphism-based perturbation experiment}
 
-\subsubsection{Regularization}
+\begin{table}[h]
+\centering
+\caption{Experimental parameters for the homeomorphism-based perturbation experiment.}
+\label{tab:perthomeo_params}
+\begin{tabular}{ll}
+\toprule
+\textbf{Category} & \textbf{Parameter (Value)} \\
+\midrule
+%\multirow{4}{*}{General} 
+%    & Random seed: \texttt{313} \\
+%   % & Save directory: \texttt{homeopert\_ring} \\
+%    %& Dynamical system motif: \texttt{ring} \\
+%\midrule
+\multirow{5}{*}{Target Homeomorphism} 
+    & Type: \texttt{node} (Neural ODE) \\
+    & Hidden layers: \texttt{[128]} \\
+    & Activation: \texttt{ReLU} \\
+    & Initialization: \texttt{small} \\
+    & Init mean/std: \texttt{0.02} / \texttt{0.5} \\
+\midrule
+\multirow{3}{*}{Learned Homeomorphism} 
+    & Type: \texttt{node} (Neural ODE) \\
+    & Hidden layers: \texttt{[128]} \\
+    & Activation: \texttt{ReLU} \\
+\midrule
+\multirow{5}{*}{Dynamical System \& Simulation} %add AnalyticalDS?
+    & Dimension: \texttt{2}, Time step: \texttt{0.2} \\
+    & Time span: \texttt{[0.0, 2.0]} \\
+    & Noise standard deviation: \texttt{0.0} \\
+    %& Ring vector field :\\
+    %& Initial condition mode: \texttt{random} \\
+    & Number of trajectories: \texttt{50} \\
+    %& Margin: \texttt{0.5} \\
+    %& Random seed: \texttt{42} \\
+    & Train/test split ratio: \texttt{0.8 / 0.2} \\
+\midrule
+\multirow{3}{*}{Training} 
+    & Learning rate: \texttt{0.01} \\
+    & Epochs: \texttt{1000} \\
+    & Batch size: \texttt{32} \\
+    %& Early stopping patience: \texttt{1000} \\
+    %& Inverse formulation: \texttt{True} \\
+    %& Annealing: dynamic: \texttt{False} \\
+    % & Std schedule: \texttt{0.0} $\rightarrow$ \texttt{0.0} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Vector field-based perturbation experiment}
+
+
+
+
 
 \newpage
 \section{Analysis}
@@ -1715,6 +1764,16 @@ This structure guarantees that the network is bijective, preserving the volume a
 \[
 d_H(A, B) = \max\left\{ \sup_{a \in A} \inf_{b \in B} \|a - b\|, \sup_{b \in B} \inf_{a \in A} \|b - a\| \right\}
 \]
+
+
+
+
+
+
+
+
+
+
 
 
 \newpage
