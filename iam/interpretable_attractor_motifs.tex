@@ -202,7 +202,7 @@ Decomposition: Sec.~\ref{sec:decomposition}
 
 
 %%%
-\subsubsection{Methods to compare/classify dynamics}\label{sec:comparison}
+\subsubsection{Methods to compare dynamics}\label{sec:comparison}
 A foundational concept for the comparison of dynamics is \emph{topological conjugacy}, which formalizes the notion of two systems being dynamically equivalent under a homeomorphism that maps trajectories of one system to the other while preserving the temporal ordering (see Sec.~\ref{def:top_conj}).
 Another key approach focuses on asymptotic behavior, particularly through the study of $\omega$-limit sets, which describe the long-term evolution of trajectories.
 These sets help characterize the stability and attractor structure of a system and are often used to classify systems based on the geometry and topology of their invariant sets.
@@ -210,30 +210,34 @@ Together, these methods provide a basis for principled comparisons of dynamical 
 
 
 %geometry
-these all compare the geometry of states in the latent space of a neural network:
-Representational Similarity Analysis (RSA)\citep{kriegeskorte2008representational}
-SVCCA\citep{raghu2017svcca}
-Procrustes shape distance \citep{williams2021generalized}
+Methods  that compare the geometry of states in the latent space of a neural network:
+Representational Similarity Analysis (RSA)\citep{kriegeskorte2008representational},
+Canonical Components Analysis (CCA)\citep{raghu2017svcca}, 
+Procrustes Shape Distance \citep{williams2021generalized}, 
 Stochastic Shape Distance (SSD) \citep{duong2022representational}  %, a stochastic extension to Procrustes shape distance 
-\citep{williams2024equivalence} %comparing comparison methods
-\citep{barbosa2025quantifying} %not dynamics
+\citep{barbosa2025quantifying}, 
+see also \citep{williams2024equivalence}. %comparing comparison methods
 
 A recently developed method, Dynamical Similarity Analysis (DSA), allows for the quantification of similarity between two systems based on their DMD-approximated linear representations \citep{ostrow2024beyond}.
 Assuming the linear system accurately captures the Koopman eigenspectrum, DSA estimates how far the systems are from being conjugate.
 However, this approach relies on spectral truncation, which can obscure important nonlinear features such as limit cycles and multistability—key aspects of many neural computations.
 %But we can capture some slow manifold behavior!
 
-Comparing noisy neural population dynamics with optimal transport: \citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.
+%VF
+%LET’S DO THE TIME-WARP-ATTEND: LEARNING TOPOLOGICAL INVARIANTS OF DYNAMICAL SYSTEMS
+Topologically invariant feature learning using warped vector field data as augmentations\citep{moriel2024timewarpattend}.
+Comparing dynamics across learned models by learning an orbit-matching coordinate transformation between two systems through invertible residual networks\citep{chen2024dform}.
+%- orbital similarity loss (Eq.~5)
+Smooth Prototype Equivalence (SPE) fits a diffeomorphism from the given data to normal forms\citep{friedman2025characterizing}.
+
+Comparing noisy neural population dynamics with optimal transport: metric is as an extension of Procrustes shape distance which compares average trajectories and SSD which compares marginal statistics or noise correlations\citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.
+%Comments:
+
+
 %Koopman / linear  \citep{mezic2004comparison}
 
-%VF
-TWA\citep{moriel2024timewarpattend}
-Diffeomorphic vector field alignment for comparing dynamics across learned models\citep{chen2024dform}
-%- orbital similarity loss (Eq.~5)
-Smooth Prototype Equivalence \citep{friedman2025characterizing}
-
-
 %conclusion
+
 
 %%%
 \subsubsection{Reconstructing dynamics}\label{sec:reconstruction}
@@ -245,7 +249,7 @@ Foundational approaches to comparing dynamical systems include notions of realiz
 Learning interpretable continuous-time models of latent stochastic dynamical systems \citep{duncker2019learning}
 SSMLearn \citep{cenedese2022data}
 %
-Phase2vec \citep{ricci2022phase2vec}
+Phase2vec \citep{ricci2022phase2vec} %: learn manifolds of dynamical systems, leading to dynamical embeddings which encode qualitative properties of the underlying systems
 DFORM \citep{chen2024dform}: DFORM orbital similarity a noisy measure of topological equivalence
 TWA \citep{moriel2024timewarpattend}
 Smooth Prototype Equivalences \citep{friedman2025characterizing}
@@ -261,7 +265,8 @@ A popular method is to reduce the dynamics to linear systems that are assumed to
 One classical method involves searching for fixed points and identifying their properties via local linearization \citep{sussillo2013blackbox}.
 
 
-Topology based methods such as Delay Embedding and Takens' Theorem  only work if there is a single attractor.
+%Topology based methods such as Delay Embedding and Takens' Theorem  only work if there is a single attractor.
+%this is kind of touched on in DSA comment
 %although multi-stable extensions	
 
 %Koopman  Spectral properties of dynamical systems \citep{mezic2005spectral}
@@ -275,7 +280,7 @@ SINDy: large library of candidate functions \citep{brunton2016discovering, brunt
  the result is meaningful for identifying causal relations between variables, but it does not provide easy interpretable dynamics.
  
  %
- motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} \citep{yair2017normalforms} \citep{friedman2025characterizing}
+ %motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} \citep{yair2017normalforms} \citep{friedman2025characterizing}
  
 
 %\begin{itemize}
@@ -304,7 +309,7 @@ SINDy: large library of candidate functions \citep{brunton2016discovering, brunt
 
 %%%decomposition is a form of reduction?
 \subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
-Basins of attraction + Conley’s Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
+\paragraph{BoA and Conley decomposition} Basins of attraction + Conley’s Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
 
 \paragraph{FSM} FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
 Behaviorism is based on an engineering approach, treating the mind as a control system for the organism.
@@ -314,24 +319,28 @@ Another approximations to neural dynamics is described, leading to a Platonic-li
 neural automata\citep{goles2013neural, uria2024invariants}
 
 \paragraph{Other}
-For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron–Frobenius operator describes transitions.
-%
-On the lifting and reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
-%
 dynamical motifs in task-trained RNNs \citep{driscoll2024flexible}
-%
 compositional tasks \citep{tafazoli2024building}
 %
 decomposition through population-based modeling\citep{glaser2020recurrent} 
-%
 \citep{mudrik2024decomposed}
 \citep{yuste2024ensembles}
+%
+%more for chaotic dynamics
+For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron–Frobenius operator describes transitions.
+On the lifting and reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
 
 \paragraph{The issue}
 Main shortcoming: difficulty with dealing with complicated attractors.
 When is decomposition of attractor into motifs possible?
 We focus on understandable attractors for now. 
 These are covered by our method to build higher-dimensional composite models from lower-dimensional dynamical motifs.
+
+
+\subsubsection{The space of models for neural computation}
+mapping families of dynamical systems to a manifold whose geometry encodes different qualitative behaviors \citep{tanstrum2021, quin2021, Vermani2024b}
+
+Phase2vec \citep{ricci2022phase2vec}: learn manifolds of dynamical systems, leading to dynamical embeddings which encode qualitative properties of the underlying systems
 
 \subsubsection{Our proposal to decompose, reduce, compare and reconstruct}
 %BoA
@@ -527,11 +536,11 @@ II. decomposition
 
 %%%%%%%%%%%%
 \section{Dynamical motif matching}\label{sec:dmm}
-We aim to develop a method for comparing dynamical systems for several purposes, such as identifying the underlying computations being performed or determining whether two brains are processing information in a similar manner. In nature, it is unlikely that two dynamical systems will be exactly identical.
- While topological conjugacy provides a precise comparison, it is often too strict for practical use.
- On the other hand, directly comparing the differences in vector fields is not always interpretable, as it does not provide immediate insights into the similarities or the specific behaviors of the systems.
-  To address this, we propose a framework for comparing dynamical systems by fitting them to motif dynamical systems using a generative model.
-   This approach allows for more interpretable comparisons, offering a meaningful way to evaluate how similar two systems are based on their underlying dynamics.
+We propose a method for comparing dynamical systems for several purposes, such as identifying the underlying computations being performed or determining whether two brains are processing information in a similar manner. In nature, it is unlikely that two dynamical systems will be exactly identical.
+While topological conjugacy provides a precise comparison, it is often too strict for practical use.
+On the other hand, directly comparing the differences in vector fields is not always interpretable, as it does not provide immediate insights into the similarities or the specific behaviors of the systems.
+To address this, we propose a framework for comparing dynamical systems by fitting them to motif dynamical systems using a generative model.
+This approach allows for more interpretable comparisons, offering a meaningful way to evaluate how similar two systems are based on their underlying dynamics.
 
 
 
@@ -549,18 +558,7 @@ Therefore, we can define the dissimilarity measure $d(f,g) = \inf \|p\|$ with th
 
 
 
-
-\subsection{An interpretable motif-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
-Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs. Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
-
-The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
- This procedure enables us to project the target system onto the motif library, yielding a vector that represents the distances to each motif in the library.
-%Projection of $f$ onto library: we get a vector representing the distances to the motifs in the library.
-
-%intuition
-Convergence during training of RNNs: for tasks that rely on analog memory, the system's trajectory should exhibit a low dissimilarity to a dynamical motif that is a continuous attractor diffeomorphic to the memory manifold.
- This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
-
+\subsection{Dynamical motif matching}
 
 \subsubsection{Recognizable geometric-topological features}
 %repetition with sec:ctd
@@ -609,11 +607,22 @@ This pattern continues, with higher-dimensional attractors constructed from fund
 
 %\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
 
-%
 %\paragraph{Manifold decomposition}
 %Triangulation
 
-\subsection{Dynamical motif matching}
+
+\subsubsection{An interpretable motif-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
+Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs. Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
+
+The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
+ This procedure enables us to project the target system onto the motif library, yielding a vector that represents the distances to each motif in the library.
+%Projection of $f$ onto library: we get a vector representing the distances to the motifs in the library.
+
+%intuition
+Convergence during training of RNNs: for tasks that rely on analog memory, the system's trajectory should exhibit a low dissimilarity to a dynamical motif that is a continuous attractor diffeomorphic to the memory manifold.
+ This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
+
+
 \subsubsection{Single global attractor}
 We consider a target dynamical system $\dot{x} = f(x)$ which has a single global attractor.
  We assume that this system is topologically equivalent to one of a family of attractor motifs defined by dynamical systems $\dot{y} = g_i(y)$ where each $g_i$ represents a different canonical attractor in its normal form.
@@ -647,7 +656,10 @@ where the trajectories \( \hat{x}_k(t) \) are computed via numerical integration
 This formulation allows for the joint identification of both the correct attractor motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
 
 
-\paragraph{Noisy motif trajectories}
+
+
+\subsubsection{Extensions to the canonical motifs}
+\paragraph{Noisy motifs}
 We consider noisy versions of motif trajectories governed by stochastic differential equations (SDEs) of the form
 \begin{equation}
 \dot x = g_i(x) + \sigma \, dW_t,
@@ -656,8 +668,8 @@ where \( g_i(x) \) denotes the deterministic dynamics of the \( i \)-th motif, \
 To stabilize the trajectory alignment or improve optimization in the presence of noise, we incorporate simulated annealing by gradually decreasing \( \sigma \) over time.
 
 
-\subsubsection{Parameterized motifs}
-We consider parameterized versions of motifs that involve rescaling the vector field both on- and off-manifold.
+\paragraph{Parameterized motifs}
+We consider parameterized versions of motifs that involve adding to on- or rescaling the vector field both on- and off-manifold.
 As an example, consider the stable limit cycle, which can be described by two scalar parameters: \( v \) and \( \alpha < 0 \).
 The dynamics are given by:
 \begin{equation}
@@ -666,6 +678,14 @@ The dynamics are given by:
 \end{equation}
 where \( r \) represents the radial coordinate and \( \theta \) the angular coordinate. Here, \( v \) controls the angular velocity, and \( \alpha \) determines the dynamics of the radial direction, where the system exhibits stable behavior at \( r = 1 \). This formulation allows for exploration of the effects of rescaling on the stability and behavior of the system, both in the radial and angular components of the phase space.
 
+
+%justifications:
+Biases on slow ring manifold for memory maintenance of circular values \citep{panichello2019error}.
+
+%limitation: complexity of NN for VF
+%but with noise we can not see too much detail 
+
+%issue: overlap between motif spaces!
 
 
 \subsubsection{The complexity of the homeomorphism}
