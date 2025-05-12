@@ -143,21 +143,24 @@ Short-term memory, involving transient yet structured activity, has been explore
 Asymptotic behavior such as fixed points, limit cycles, and slow invariant manifolds are central to understanding how neural systems maintain memory over time.
 Fixed-point attractors have long been used to characterize stable memory states in RNNs \citep{sussillo2013blackbox, katz2017fibers, golub2018fixedpointfinder}, while recent work highlights the role of limit cycles \citep{townley2000existence, pals2024inferring} and slow invariant manifolds in sustaining analog memory representations\citep{Sagodi2024a}.
 
+%3 angles: neural activity, latent variable models, RNNs: all too obscure!!
 Latent variable models have proven essential for extracting interpretable state space representations from high-dimensional neural activity \citep{zoltowski2020general, Dowling2024b, pei2neural}, enabling rigorous comparisons across systems \citep{libedinsky2023comparing} and supporting benchmarking efforts such as the Neural Latents and Computation-through-Dynamics (CtD) benchmarks \citep{pei2neural, versteeg2025computation}.
 Within the computation-through-dynamics (CtD) framework, recurrent neural networks (RNNs) have emerged as powerful models for capturing both task-related computations \citep{yang2019task, yang2019multiple, yang2020artificial, sani2021nonlinearity} and the dynamical structure of cortical responses \citep{chaisangmongkon2017transience, mante2013context}.
 These models support both top-down engineering approaches—where desired dynamics are imposed by construction \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe, pollock2020engineering, beiran2023rnns}—and bottom-up analysis of black-box systems trained for behavior \citep{sussillo2013blackbox, maheswaranathan2019reverse, golub2018fixedpointfinder, smith2021reverse, maheswaranathan2019universality, jarne2023initialization, nayebi2021heterogeneity, turner2021charting, turner2023simplicity, zhong2023mechanistic, huang2024measuring}.
 
-Asymptotic behavior—captured by structures like fixed points, limit cycles, and slow manifolds—is central to memory maintenance in neural computation, encoding stable representations over time. However, in both latent variable models and task-trained RNNs, these structures are often embedded in high-dimensional, black-box dynamics, making them difficult to interpret \citep{whiteway2019interpretable,kar2022interpretability}.
+Asymptotic behavior—captured by structures like fixed points, limit cycles, and slow manifolds—is central to memory maintenance in neural computation, encoding stable representations over time. However, in both latent variable models and task-trained RNNs, these structures are often embedded in high-dimensional, black-box dynamics, making them difficult to interpret \citep{whiteway2019interpretable,kar2022interpretability}. %obscurity
 Identifying asymptotic structure is thus key to extracting interpretable, computationally meaningful mechanisms from complex neural models.
+%lets bring some light!
 Through abstraction and idealization, we can distill the essential features of neural activity, enabling meaningful understanding rather than merely presenting a detailed but opaque description. This process is especially important in models where high-dimensional dynamics obscure the underlying computational structure, making interpretability contingent on identifying simplified, canonical representations. 
 
  
- % 
 Here, we develop a data-driven method called Canonical Motif-based Dynamical Analysis (CMDA). 
 In brief, CMDA returns a dissimilarity metric describing how a system compares to a dynamical motif both at the level of the topology of the dynamics and how much the dynamics needs to be transformed.
 Our results demonstrate that CMDA identifies both dynamic structure and the complexity needed to deform it based on an interpretable motif.
 This framework applies to core neural computations such as classification, working memory, and persistent representations (e.g., head direction cells).
 It accommodates both infinite-horizon systems and finite-horizon systems like echo state networks, highlighting that time-limited trajectories may obscure deeper structural distinctions only visible in the full vector field.
+
+
 
 %another perspective 
 %Behavior, in many cases, is surprisingly simple. Even in seemingly complex tasks, animals and humans exhibit structured, stereotyped actions that can often be described using a small number of latent variables. From motor control to decision-making, behavioral trajectories unfold in a manner that is both predictable and constrained, hinting at a fundamental simplicity underlying observed actions.
@@ -174,6 +177,10 @@ It accommodates both infinite-horizon systems and finite-horizon systems like ec
 
 
 \subsection{Our contribution}\label{sec:contribution}
+%abstraction:
+%1. transients: time. remains: asymptotic behavior
+%2. decomposition into motif and vf perturbation and scaling
+%3. simple motifs
 \begin{itemize}
 %\item we propose a formalism for interpretability for the purpose of identifying neural computations in models of neural dynamics;
 %\item we propose a way to measure the loss of details in the process of abstraction/reduction to achieve more interpretable models;
@@ -197,7 +204,7 @@ and define the scope of our contribution across three axes: the class of computa
 %ds_landscape_carving?
 Comparison: Sec.~\ref{sec:comparison}
 Reconstruction: Sec.~\ref{sec:reconstruction}
-Reduction\ref{sec:reduction}
+Reduction: Sec.~\ref{sec:reduction}
 Decomposition: Sec.~\ref{sec:decomposition}
 
 
@@ -229,7 +236,7 @@ However, the reliance on spectral truncation can obscure critical nonlinear feat
 %LET’S DO THE TIME-WARP-ATTEND: LEARNING TOPOLOGICAL INVARIANTS OF DYNAMICAL SYSTEMS
 Topologically invariant feature learning using warped vector field data as augmentations\citep{moriel2024timewarpattend}.
 Comparing dynamics across learned models by learning an orbit-matching coordinate transformation between two systems through invertible residual networks\citep{chen2024dform}.
-%- orbital similarity loss (Eq.~5)
+%- orbital similarity loss (Eq.~5)  DFORM orbital similarity a noisy measure of topological equivalence
 Smooth Prototype Equivalence (SPE) fits a diffeomorphism from the given data to normal forms\citep{friedman2025characterizing}.
 
 Comparing noisy neural population dynamics with optimal transport: metric is as an extension of Procrustes shape distance which compares average trajectories and SSD which compares marginal statistics or noise correlations\citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.
@@ -245,20 +252,21 @@ Comparing noisy neural population dynamics with optimal transport: metric is as 
 %%%
 \subsubsection{Reconstructing dynamics}\label{sec:reconstruction}
 %realization
-Foundational approaches to comparing dynamical systems include notions of realization—the construction of one system that reproduces the input-output behavior of another \citep{grigoryeva2020dimension, gonon2023approximation}—and bisimilarity, which captures behavioral equivalence through relations that match system trajectories or observations \citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar,girard2011approximate}.
-
+A central concept in comparing dynamical systems is that of \emph{realization} -- constructing a system that replicates the input-output behavior of another system\citep{grigoryeva2020dimension, gonon2023approximation}.
+Closely related is the notion of \emph{bisimilarity}, which formalizes behavioral equivalence through relations that match trajectories or observable outputs across systems \citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar, girard2011approximate}.
 %model identification of classes of cognitive models\citep{rmus2024artificial}
 
 %reconstruction: 
-full dynamics\citep{durstewitz2023reconstructing} \citep{brenner2024almost}
-Learning interpretable continuous-time models of latent stochastic dynamical systems \citep{duncker2019learning}
-SSMLearn \citep{cenedese2022data}
-Phase2vec \citep{ricci2022phase2vec} learn manifolds of dynamical systems, leading to dynamical embeddings which encode qualitative properties of the underlying systems
-DFORM \citep{chen2024dform}: DFORM orbital similarity a noisy measure of topological equivalence
-TWA \citep{moriel2024timewarpattend}
-Smooth Prototype Equivalences \citep{friedman2025characterizing}
-MARBLE \citep{gosztolai2025marble}
+Recent advances have sought to recover and interpret the full dynamics of complex systems from data, rather than relying solely on reduced or task-driven summaries \citep{durstewitz2023reconstructing, brenner2024almost}.
+Several approaches focus on learning continuous-time models of latent stochastic dynamical systems, enabling structured representations of uncertainty and variability in neural activity \citep{duncker2019learning}.
+For example, SSMLearn \citep{cenedese2022data} combines symbolic regression with state-space modeling to extract interpretable dynamical descriptions.
+Other methods, such as Phase2vec \citep{ricci2022phase2vec}, learn embeddings that reflect the qualitative structure of dynamical systems—e.g., fixed points, limit cycles, or phase relationships—by organizing systems in a geometry shaped by their behavior.
+Finally, MARBLE \citep{gosztolai2025marble}
+%covered: DFORM \citep{chen2024dform} TWA \citep{moriel2024timewarpattend} SPE \citep{friedman2025characterizing}
 
+%dictionary of LDS
+The decomposed Linear Dynamical System (dLDS) model represents neural activity at each time point as a sparse, time-varying linear combination of linear dynamics chosen from a dictionary of LDSs \citep{mudrik2024decomposed}.
+ In this approach, the dictionary elements, each capturing a canonical movement along the neural manifold, are combined to model the overall dynamics in the low-dimensional data geometry.
 
 \subsubsection{Reduction}\label{sec:reduction} %simplification of dynamics
 A major goal in dynamical systems theory is to reduce complex nonlinear dynamics.
@@ -278,12 +286,13 @@ These methods approximate the Koopman operator, which linearizes a nonlinear sys
 However, for any practical implementation they rely on a finite approximation of this infinite-dimensional object.
 
 %brunton: 
-SINDy: large library of candidate functions \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
- the result is meaningful for identifying causal relations between variables, but it does not provide easy interpretable dynamics.
+%SINDy: large library of candidate functions \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
+ %the result is meaningful for identifying causal relations between variables, but it does not provide easy interpretable dynamics.
  
- %
- %motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} \citep{yair2017normalforms} \citep{friedman2025characterizing}
- 
+%motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} \citep{yair2017normalforms} \citep{friedman2025characterizing}
+
+%effective dynamics
+Interpretable learning effective dynamics (iLED) \citep{menier2025interpretable} based on Mori–Zwanzig and Koopman operator (KO) theory.
 
 
 %\begin{itemize}
@@ -320,40 +329,37 @@ Mapping families of dynamical systems to a manifold whose geometry encodes diffe
 \paragraph{FSM} FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
 Behaviorism is based on an engineering approach, treating the mind as a control system for the organism.
 This corresponds to an approximation of the recurrent neural dynamics (brain states) by finite state automata (behavioral states).
-Another approximations to neural dynamics is described, leading to a Platonic-like model of mind based on psychological spaces. \citep{duch1998platonic}
+Another approximations to neural dynamics is described, leading to a Platonic-like model of mind based on psychological spaces \citep{duch1998platonic}.
 %
-neural automata\citep{goles2013neural, uria2024invariants}
-Towards interpreting recurrent neural networks through probabilistic abstraction \citep{dong2020towards} % extract different models like deterministic finite automata (DFA)
+%Towards interpreting recurrent neural networks through probabilistic abstraction \citep{dong2020towards} % extract different models like deterministic finite automata (DFA)
+%neural automata\citep{goles2013neural, uria2024invariants}
 
-\paragraph{Other}
+\paragraph{Dynamical motifs in RNNs}
 dynamical motifs in task-trained RNNs \citep{driscoll2024flexible}
 compositional tasks \citep{tafazoli2024building}
-%
-decomposition through population-based modeling\citep{glaser2020recurrent} 
-\citep{mudrik2024decomposed}
-\citep{yuste2024ensembles}
+
+%Other
+%more spatial/network decomposition
+%decomposition through population-based modeling\citep{glaser2020recurrent}
+%\citep{yuste2024ensembles} 
 %
 %more for chaotic dynamics
-For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron–Frobenius operator describes transitions.
-On the lifting and reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
-
-\paragraph{The issue}
-Main shortcoming: difficulty with dealing with complicated attractors.
-When is decomposition of attractor into motifs possible?
-We focus on understandable attractors for now. 
-These are covered by our method to build higher-dimensional composite models from lower-dimensional dynamical motifs.
-
-
+%For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron–Frobenius operator describes transitions.
+%Reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
 
 
 
 \subsubsection{Our proposal to decompose, reduce, compare and reconstruct}
 %BoA
 In each basin of attraction we have one attractor.
-We can simplify it's dynamics by looking at its normal form.
+We simplify it's dynamics by looking at its normal form.
 
 
-
+\paragraph{Limitation}
+Main shortcoming: difficulty with dealing with complicated attractors.
+When is decomposition of attractor into motifs possible?
+We focus on understandable attractors for now. 
+These are covered by our method to build higher-dimensional composite models from lower-dimensional dynamical motifs.
 
 
 %INTERPRET
@@ -367,18 +373,13 @@ Philosophical and practical analyses underscore its multidimensionality—rangin
 %\citep{montavon2018methods}: \emph{An interpretation is the mapping of an abstract concept (e.g., a predicted class) into a domain that the human can make sense of.}
 %\citep{ehrhardt2017learning, guidotti2018survey}: Interpretations can be obtained by way of understandable proxy models, which approximate the predictions of a more complex approach
 
+%\subsubsection{Works mentioning interpretability}
+%\citep{whiteway2019interpretable}\citep{kar2022interpretability}\citep{brenner2024almost}
+%black box to mixture of interpretable models \citep{ghosh2023blackbox}
+%Making hippocampal manifolds physiologically interpretable \citep{esparza2023interpretable}
+%\citep{klindt2023identifying,klindt2025superposition} %Interpretability Index (II)
+% Netformer \citep{zhang2025netformer}: recovering dynamical connectivity in neuronal population dynamics
 
-\subsubsection{Works mentioning interpretability}
-\citep{whiteway2019interpretable}
-\citep{kar2022interpretability}
- Making hippocampal manifolds physiologically interpretable \citep{esparza2023interpretable}
-black box to mixture of interpretable models \citep{ghosh2023blackbox}
-\citep{schneider2023learnable}
-\citep{brenner2024almost}
-\citep{menier2025interpretable}
-\citep{nonnenmacher2017extracting}
-\citep{zhang2025netformer}: recovering dynamical connectivity in neuronal population dynamics
-\citep{klindt2023identifying,klindt2025superposition}
 %\paragraph{Motor primitives}%no motor for now
 %\citep{marton2021efficient}
 %In motor cortex, neural trajectories during reaching movements often evolve along a low-dimensional cyclic structure, making it possible to interpret them as dynamical primitives for movement \citep{ijspeert2013dynamical}.
@@ -405,7 +406,7 @@ Finite-state abstractions \citep{oliva2019fsm, cotteret2024fsm}, probabilistic i
 \subsubsection{Understanding}\label{sec:understanding}
 Understanding, as a scientific aim, is not exhausted by accurate prediction or description \citep{chirimuuta2021prediction}.
 Philosophers of science have long emphasized that understanding depends on idealization and explanatory relevance, not just faithful representation.
-For example, \citet{deregt2017understanding} argues that understanding hinges on the intelligibility of theories for human agents, while \citet{potochnik2017idealization} defends the heuristic and epistemic value of idealization, especially in complex biological systems.
+For example, \citet{deregt2017understanding} argues that understanding hinges on the intelligibility of theories for human agents, while  \citet{potochnik2017idealization,potochnik2020idealization,potochnik2021levels} defends the heuristic and epistemic value of idealization, especially in complex biological systems.
 \citet{guest2023logical} further explore how logical structure and representational clarity shape the conditions under which scientific models promote genuine understanding.
 
 Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding}
@@ -414,10 +415,6 @@ Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} 
 %\paragraph{Explanations: understanding scientific phenomena}
 %\citep{parascandolo2021learning} robustness of explanation/description
 
-%context: computation %Representation and algorithm in Marr's levels
-\paragraph{Understanding computation in terms of dynamics}
-Interpretation in terms of a ``compressed'' description of the dynamics.
-task's computational demands (e.g., continuous parametrization of memory)
 
 \paragraph{Visualization}
 \citep{deregt2017understanding}
@@ -426,13 +423,13 @@ task's computational demands (e.g., continuous parametrization of memory)
 PHATE \citep{moon2017visualizing}
 MPHATE\citep{gigante2019visualizing}
 MMPHATE\citep{xie2024multiway} 
+CEBRA \citep{schneider2023learnable}
 
-\subsubsection{Simplicity}
+\paragraph{Simplicity}
 \citep{gao2015simplicity}
 \citep{dyer2023simplest}
 \citep{quinn2022information}
-%
-Canonical realization = the simplest system (in some sense) that produces the same behavior
+
 
 \paragraph{Minimal}
 \citep{beer1996toward}
@@ -442,16 +439,16 @@ Canonical realization = the simplest system (in some sense) that produces the sa
 \citep{brancazio2023minimal}
 \citep{Jordan2019a}
 
-\subsubsection{Reduction/idealization/simplification/abstraction}
+%
+Canonical realization = the simplest system (in some sense) that produces the same behavior
+
+\subsubsection{Reduction/idealization/simplification/abstraction in neuroscience}
 \citep{marr1976computation, marr2010vision}
 \citep{chirimuuta2018mmm} %chirimuuta2022artifacts, chirimuuta2024analogies
 \citep{kriegeskorte2019peeling}
-\citep{potochnik2021levels,
-potochnik2020idealization,
-potochnik2017idealization}
 \citep{stinson2020idealized}
-\citep{chirimuuta2024brain} 
 \citep{levenstein2023theory}
+\citep{chirimuuta2024brain} 
 %Solomonoff's theory of inductive inference (formalizes Occam's razor)
 
 
@@ -474,8 +471,6 @@ II. decomposition
 
 %\subsection{A timescale angle to reduction}
 %\citep{cavanagh2020diversity}
-
-
 
 
 %%%%%%%%%%%%
@@ -507,11 +502,11 @@ Context: Behavior %Computational theory in Marr's levels?
 
 %Encoding-Decoding framework NEDS
 Interpretation in terms of how difference relates to the input-output/transfer functional \citep{zhang2025neural}.
-The \emph{transfer functional} \( \mathcal{T}_f \) maps an input signal \( u(\cdot) \) to an output signal \( y(\cdot) \), possibly given an initial condition \( x_0 \):
+The \emph{transfer functional} \( \mathcal{T}_f \) maps an input \( u(\cdot) \) to an output \( o(\cdot) \): % possibly given an initial condition \( x_0 \):
 \[
 \mathcal{T}_f[u](t) = h(x(t)),
 \]
-where \( x(t) \) is the solution of the initial value problem:
+where \(h\) is the output mapping and \( x(t) \) is the solution of the initial value problem:
 \[
 \dot{x}(t) = f(x(t), u(t)), \quad x(0) = x_0.
 \]
@@ -526,6 +521,12 @@ A natural notion of distance between the transfer functionals is
 where \( \mathcal{U} \) is a suitable class of input signals (e.g., all inputs with bounded \( L^\infty \)-norm or from a compact set in \( C([0,T], \mathbb{R}^m) \)).
 %adjust h to minimize output error of f+p?
 %find a new readout map $\tilde h$  so that the output error between $f$ and $f+p$ is minimized. %???
+
+
+%context: computation %Representation and algorithm in Marr's levels
+%\paragraph{Understanding computation in terms of dynamics}
+Interpretation in terms of a ``compressed'' description of the dynamics.
+task's computational demands (e.g., continuous parametrization of memory)
 
 %\paragraph{Reduction of dynamics}
 %Embed attractor of intrinsic dimension $N$ into $\reals^{n+1}$ to be able to map point in the basin of attraction onto representative points on the stable manifold of the attractor motif.
@@ -551,9 +552,10 @@ approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\linewidth]{motifpspace_dssimilarity}
-    \caption{
+    \caption{Enlightening the space of theories with our dynamical motif torch.
     \textbf{(A)} Localizing a model in parameter space through dynamical motifs.
-     \textbf{(B)} }
+    \textbf{(B)} Abstracting out imperfections from an approximate ring attractor.
+     }
     \label{fig:motifpspace_dssimilarity}
 \end{figure}
 
@@ -592,8 +594,7 @@ extrinsic and intrinsic dimensionality\citep{jazayeri2021interpreting}
 Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs. Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
 
 The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
- This procedure enables us to project the target system onto the motif library, yielding a vector that represents the distances to each motif in the library.
-%Projection of $f$ onto library: we get a vector representing the distances to the motifs in the library.
+This allows us to projects the target system onto the motif library, producing a vector of distances to each motif.
 
 %intuition
 Convergence during training of RNNs: for tasks that rely on analog memory, the system's trajectory should exhibit a low dissimilarity to a dynamical motif that is a continuous attractor diffeomorphic to the memory manifold.
@@ -614,7 +615,7 @@ Since we do not have direct access to the vector field but only to sampled traje
  We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
 
 %time repraram%
- If the correct motif \( g_i \) is selected (in orbit equivalence sense), then there should exist an approximate reparametrization of time \( \tau(t) \) such that \(y(\tau(t)) \approx x(t)\)
+For the correct motif \( g_i \)  (satisfying orbit equivalence), there exists a reparametrization of time \( \tau(t) \) such that \(y(\tau(t)) \approx x(t)\)
 with a trajectory \( y(t) \)  obtained by integrating \( \dot{y} = g_i(y) \) from an initial condition \( y(0) \). 
 %So there exists $\mu(x)$ positive such that 
 %We simplify this by assuming symmetry across space $\mu\in\reals_{>0}$.
@@ -630,6 +631,9 @@ where the trajectories \(y_k(t) \) are computed via numerical integration of \(\
 %where \( \lambda \) is a regularization coefficient.
 This formulation allows for the joint identification of both the correct motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
 
+
+%intuition
+Embedding ring attractors \citep{chaudhuri2019attractor}\citep{Sagodi2024a}
 
 \subsubsection{Extensions to the canonical motifs}
 \paragraph{Noisy motifs}
@@ -686,7 +690,47 @@ The Jacobian norm relates to the Wasserstein distance by capturing local distort
 
 
 
-\subsection{Finding the deformation to a ring attractor}
+
+
+\subsection{Reducing the dimensionality} % to a minimal dimensional motif
+\subsubsection{Homeomorphism from minimal dimensional motif}
+Let \( f \in C^1 \) define the vector field of a target dynamical system on \( \mathbb{R}^n \), and let \( g_i \in C^1(\mathbb{R}^m, \mathbb{R}^m) \) be a dynamical motif of minimal dimension \( m \leq n \) that captures the essential dynamics of \( f \). Then there exists a perturbation \( p \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) and a homeomorphism \( \Phi: \mathbb{R}^m \to \mathbb{R}^n \) such that the flow \( \psi_{f+p} \) of the perturbed system is topologically conjugate to the embedded flow \( \Phi \circ \psi_{g_i} \). %, i.e.,
+%\begin{equation}\label{eq:hom_from_motif}
+%\|\psi_{f+p} - \Phi \circ \psi_{g_i} \|_\infty = 0.
+%\end{equation}
+
+
+\subsubsection{Surjective mapping to minimal dimensional motif}
+Let \( f \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) define the vector field of a target dynamical system, and let \( g_i \in C^1(\mathbb{R}^m, \mathbb{R}^m) \) be a dynamical motif of minimal dimension \( m \leq n \) that captures the essential dynamics of \( f \). Then there exists a perturbation \( p \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) and a surjective continuous map \( \Phi: \mathbb{R}^n \to \mathbb{R}^m \) such that the flow \( \psi_{g_i} \) of the motif is semi-conjugate to the flow \( \psi_{f+p} \) of the perturbed system via \( \Phi \). %, i.e.,
+%\begin{equation}\label{eq:perfect_motif_fit}
+%\| \psi_{g_i} - \Phi \circ \psi_{f+p} \|_\infty = 0.
+%\end{equation}
+
+
+Problem: trivial solution $\Phi(x) = 0$ for $x\in\mathcal{D}$.\\
+Solution (?): injectivity per orbit (still allow for non-injectivity across orbits)
+
+
+
+
+%%%%%%%%%%%%%%%%%
+\section{Results}
+An imperfect ring attractor: Sec.~\ref{sec:imp_ring}
+
+A noisy target: Sec.~\ref{sec:noisy}
+
+Compared methods: Sec.~\ref{sec:compare_method}
+
+Demonstration: Sec.~\ref{sec:target_demonstrations}
+
+\subsection{Finding the deformation to a ring attractor}\label{sec:imp_ring}
+%justification of this  experiment
+
+%description
+
+%interpretation of results
+Fig.~\ref{fig:ring_pert_fig}
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=.9\linewidth]{ring_pert_fig}
@@ -698,42 +742,12 @@ The Jacobian norm relates to the Wasserstein distance by capturing local distort
     \label{fig:ring_pert_fig}
 \end{figure}
 
-
-
-
-
-\subsection{Reducing the dimensionality} % to a minimal dimensional motif
-\subsubsection{Homeomorphism from minimal dimensional motif}
-Let \( f \in C^1 \) define the vector field of a target dynamical system on \( \mathbb{R}^n \), and let \( g_i \in C^1(\mathbb{R}^m, \mathbb{R}^m) \) be a dynamical motif of minimal dimension \( m \leq n \) that captures the essential dynamics of \( f \). Then there exists a perturbation \( p \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) and a homeomorphism \( \Phi: \mathbb{R}^m \to \mathbb{R}^n \) such that the flow \( \psi_{f+p} \) of the perturbed system is topologically conjugate to the embedded flow \( \Phi \circ \psi_{g_i} \), i.e.,
-\begin{equation}\label{eq:hom_from_motif}
-\|\psi_{f+p} - \Phi \circ \psi_{g_i} \|_\infty = 0.
-\end{equation}
-
-
-\subsubsection{Surjective mapping to minimal dimensional motif}
-Let \( f \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) define the vector field of a target dynamical system, and let \( g_i \in C^1(\mathbb{R}^m, \mathbb{R}^m) \) be a dynamical motif of minimal dimension \( m \leq n \) that captures the essential dynamics of \( f \). Then there exists a perturbation \( p \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) and a surjective continuous map \( \Phi: \mathbb{R}^n \to \mathbb{R}^m \) such that the flow \( \psi_{g_i} \) of the motif is semi-conjugate to the flow \( \psi_{f+p} \) of the perturbed system via \( \Phi \), i.e.,
-\begin{equation}\label{eq:perfect_motif_fit}
-\| \psi_{g_i} - \Phi \circ \psi_{f+p} \|_\infty = 0.
-\end{equation}
-
-
-Problem: trivial solution $\Phi(x) = 0$ for $x\in\mathcal{D}$.\\
-Solution (?): injectivity per orbit (still allow for non-injectivity across orbits)
-
-
-
-%%%%%%%%%%%%%%%%%
-\section{Results}
-
-
-\subsection{Testing the method on many target systems}\label{sec:testing}
-Supp.Sec.~\ref{sec:target_systems}
-
+\subsection{A noisy target}\label{sec:noisy}
 
 \subsection{Comparison to other methods}\label{sec:compare_method}
 
-
 \paragraph{DSA}%https://github.com/mitchellostrow/DSA
+metric: DSA score
 
 %\paragraph{Phase2Vec} %https://github.com/nomoriel/phase2vec
 
@@ -743,6 +757,7 @@ Supp.Sec.~\ref{sec:target_systems}
 Smooth prototype equivalences (SPE) is a method that fits a diffeomorphism from the given data to normal forms \citep{friedman2025characterizing}.
 However, their method is dependent on knowledge of the vector field of the target system.
 Furthermore, they have only considered limit cycle versus fixed point dynamics for their library.
+metric: cycle-error
 
 %\paragraph{SSMLearn} %https://github.com/haller-group/SSMLearnPy/tree/main
 
@@ -758,12 +773,21 @@ Furthermore, they have only considered limit cycle versus fixed point dynamics f
     \label{fig:ds_vs_mbs}
 \end{figure}
 
+\subsection{Many target systems}\label{sec:target_demonstrations}
+Supp.Sec.~\ref{sec:target_systems}
+
+
 
 
 
 %%%%%%%%%%%%%%%%%
 \section{Discussion}
 
+\subsection{Limitations}
+Assumption: the invariant set of the target needs to be well-sampled.
+
+
+\subsection{}
 Limits to neuroscientific understanding \citep{chirimuuta2024brain}
 
 
