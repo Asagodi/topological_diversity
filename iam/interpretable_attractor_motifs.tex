@@ -151,15 +151,19 @@ These models support both top-down engineering approaches—where desired dynami
 Asymptotic behavior—captured by structures like fixed points, limit cycles, and slow manifolds—is central to memory maintenance in neural computation, encoding stable representations over time. However, in both latent variable models and task-trained RNNs, these structures are often embedded in high-dimensional, black-box dynamics, making them difficult to interpret \citep{whiteway2019interpretable,kar2022interpretability}. %obscurity
 Identifying asymptotic structure is thus key to extracting interpretable, computationally meaningful mechanisms from complex neural models.
 %lets bring some light!
-Through abstraction and idealization, we can distill the essential features of neural activity, enabling meaningful understanding rather than merely presenting a detailed but opaque description. This process is especially important in models where high-dimensional dynamics obscure the underlying computational structure, making interpretability contingent on identifying simplified, canonical representations. 
+Through abstraction and idealization, we can distill the essential features of neural activity, enabling understanding rather than merely presenting a detailed but opaque description.
+This process is especially important in models where high-dimensional dynamics obscure the underlying computational structure, making interpretability contingent on identifying simplified, canonical representations. 
 
+%The space of models for neural computation / the space of theories for neural computation
+In this view, the space of theories for neural computation corresponds to the space of possible dynamical systems the brain might instantiate—a vast landscape.
+Our method provides a means to chart regions of this space relevant for memory maintenance by identifying and parametrizing recurrent computations in a human-interpretable way.
+This enables us to isolate families of dynamical motifs that serve as building blocks for memory-related neural dynamics, opening the door to theory-guided interpretability in complex models.
  
 Here, we develop a data-driven method called Canonical Motif-based Dynamical Analysis (CMDA). 
 In brief, CMDA returns a dissimilarity metric describing how a system compares to a dynamical motif both at the level of the topology of the dynamics and how much the dynamics needs to be transformed.
 Our results demonstrate that CMDA identifies both dynamic structure and the complexity needed to deform it based on an interpretable motif.
 This framework applies to core neural computations such as classification, working memory, and persistent representations (e.g., head direction cells).
 It accommodates both infinite-horizon systems and finite-horizon systems like echo state networks, highlighting that time-limited trajectories may obscure deeper structural distinctions only visible in the full vector field.
-
 
 
 %another perspective 
@@ -319,7 +323,7 @@ Interpretable learning effective dynamics (iLED) \citep{menier2025interpretable}
 %%\item surrogate dynamical systems (any citations?)
 %\end{itemize}
 
- \paragraph{The space of models for neural computation} %and reducing it
+ \paragraph{Structuring the space of models for neural computation} %and reducing it
 Mapping families of dynamical systems to a manifold whose geometry encodes different qualitative behaviors \citep{transtrum2014model, ricci2022phase2vec, quinn2022information, Vermani2024b}.
 
 %%%decomposition is a form of reduction?
@@ -533,6 +537,7 @@ task's computational demands (e.g., continuous parametrization of memory)
 %\ascomment{What is simple behavior in terms of the transfer function?}
 
 \subsection{Dynamical motif matching}
+The space of theories
 
 \subsubsection{Recognizable geometric-topological features}
 %repetition with sec:ctd
