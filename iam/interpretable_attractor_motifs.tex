@@ -125,7 +125,19 @@ Through abstraction and idealization, we can distill the essential features of n
 %why no 20D attractors?
 Recent research has shown that, despite the inherent complexity of neuronal networks, their activity often resides on a low-dimensional manifold, representing only a small fraction of the system's full potential complexity \citep{duncker2021dynamics}.
 This empirical finding suggests that neural computation is governed by underlying constraints—potentially driven by task-relevant computations or external environmental factors—that allow for such a reduction in complexity.
- Such constraints not only make the idealization of neural systems feasible but also provide a path toward more interpretable models of neural activity.
+Such constraints not only make the idealization of neural systems feasible but also provide a path toward more interpretable models of neural activity.
+ 
+ 
+In neural activity and in Recurrent Neural Networks (RNNs) computations are described by the dynamical properties of the network typically captured by its invariant sets.
+ 
+ 
+ 
+ Here, we develop a data-driven method called Canonical Motif-based Dynamical Analysis (CMDA). 
+ In brief, CMDA returns a dissimilarity metric describing how a system compares to a dynamical motif both at the level of the topology of the dynamics and how much the dynamics needs to be transformed.
+ 
+ 
+ Our results demonstrate that CMDA identifies both dynamic structure and the complexity needed to deform it based on an interpretable motif.
+ 
 
 %another perspective 
 %Behavior, in many cases, is surprisingly simple. Even in seemingly complex tasks, animals and humans exhibit structured, stereotyped actions that can often be described using a small number of latent variables. From motor control to decision-making, behavioral trajectories unfold in a manner that is both predictable and constrained, hinting at a fundamental simplicity underlying observed actions.
@@ -133,8 +145,6 @@ This empirical finding suggests that neural computation is governed by underlyin
 %If neural dynamics are indeed tuned to drive behavior, we should expect a correspondence between the low-dimensional structure of neural activity and the inherent simplicity of behavior.
 % This suggests that much of the apparent complexity in neural recordings may stem from redundant or task-irrelevant variability rather than meaningful high-dimensional computation.
 %  In this work, we explore the hypothesis that neural representations of behavior are fundamentally simple, reflecting a constrained, low-dimensional organization that enables efficient motor control, decision-making, and cognitive processing.
- 
- 
  
  %big datas
 %\paragraph{Large datasets}
@@ -146,8 +156,8 @@ This empirical finding suggests that neural computation is governed by underlyin
 \subsection{Our contribution}\label{sec:contribution}
 \begin{itemize}
 %\item we propose a formalism for interpretability for the purpose of identifying neural computations in models of neural dynamics;
-\item we propose a way to measure the loss of details in the process of abstraction/reduction to achieve more interpretable models;
-\item We derive novel distance measures that quantify how well an idealized model, i.e. a dynamical motif, explains the original system’s computation and how complicated the correspondence is between them.
+%\item we propose a way to measure the loss of details in the process of abstraction/reduction to achieve more interpretable models;
+\item We derive novel dissimilarity measures for dynamics that quantify how well an idealized model, i.e. a dynamical motif, explains the original system’s computation and how complicated the correspondence is between them.
 \item our class of theories for neural computation consist of:
 	\begin{itemize}
 \item topological equivalence classes of computations as interpretable dynamical motifs
@@ -167,7 +177,7 @@ and define the scope of our contribution across three axes: the class of computa
 
 
 %%%%
-\subsection{Computation through dynamics}\label{sec:ctd}
+\subsection{Memory maintenance in neural networks}\label{sec:ctd}
 Discovering how the brain contributes to behavior is the central aim of systems neuroscience.
 We need a language that can describe how neural populations transform inputs into goal-directed behavior.
 Here we focus on the memory maintenance part of this transformation.
@@ -179,6 +189,8 @@ Short-term memory, involving transient yet structured activity, has been explore
 % Motor control, too, exhibits low-dimensional dynamics shaped by recurrent structure \citep{wang2022representation}.
  While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
 
+Asymptotic behavior such as fixed points, limit cycles, and slow invariant manifolds are central to understanding how neural systems maintain memory over time.
+Fixed-point attractors have long been used to characterize stable memory states in RNNs \citep{sussillo2013blackbox, katz2017fibers, golub2018fixedpointfinder}, while recent work highlights the role of limit cycles \citep{townley2000existence, pals2024inferring} and slow invariant manifolds \citep{Sagodi2024a} in sustaining continuous or structured memory representations.
 
 %latents + ctd
 \citep{mante2013context}
@@ -198,29 +210,13 @@ Reverse-engineering complex models \citep{maheswaranathan2019reverse} \citep{gol
 Diversity of solutions \citep{maheswaranathan2019universality}\citep{jarne2023initialization} \citep{turner2021charting} \citep{nayebi2021heterogeneity} \citep{zhong2023mechanistic}
 
 
-
-
 \subsection{Existing methods for characterizing, reducing and comparing dynamics}\label{sec:sota_methods}
 %ds_landscape_carving?
-
-Reconstruction: Sec.~\ref{sec:reconstruction}
 Comparison: Sec.~\ref{sec:comparison}
-Decomposition: Sec.~\ref{sec:decomposition}
+Reconstruction: Sec.~\ref{sec:reconstruction}
 Reduction\ref{sec:reduction}
+Decomposition: Sec.~\ref{sec:decomposition}
 
-
-%%%
-\subsubsection{Reconstructing dynamics}\label{sec:reconstruction}
-Learning interpretable continuous-time models of latent stochastic dynamical systems \citep{duncker2019learning}
-%
-SSMLearn \citep{cenedese2022data}
-%
-Phase2vec \citep{ricci2022phase2vec}
-DFORM \citep{chen2024dform}: DFORM orbital similarity a noisy measure of topological equivalence
-TWA \citep{moriel2024timewarpattend}
-Smooth Prototype Equivalences \citep{friedman2025characterizing}
-%
-MARBLE \citep{gosztolai2025marble}
 
 
 %%%
@@ -230,23 +226,16 @@ Another key approach focuses on asymptotic behavior, particularly through the st
 These sets help characterize the stability and attractor structure of a system and are often used to classify systems based on the geometry and topology of their invariant sets.
 Together, these methods provide a basis for principled comparisons of dynamical systems that go beyond superficial similarity of trajectories.
 
-DS comparison basics: 
-realization \citep{grigoryeva2020dimension} \citep{gonon2023approximation}
-Bisimilarity\citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar}
-approximate bisim\citep{girard2011approximate}
+%realization
+Foundational approaches to comparing dynamical systems include notions of realization—the construction of one system that reproduces the input-output behavior of another \citep{grigoryeva2020dimension, gonon2023approximation}—and bisimilarity, which captures behavioral equivalence through relations that match system trajectories or observations \citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar,girard2011approximate}.
+
 
 %Koopman / linear 
 Koopman \citep{mezic2004comparison}
 SVCCA\citep{raghu2017svcca}
 Dynamical Similarity Analysis (DSA) \citep{ostrow2024beyond} \citep{kamiya2024koopman}\\
 What we lose (because of the truncation): limit cycles, multistability
-But we can capture some slow manifold behavior!
-
-assess the limit sets
-- Fixed-point based \citep{sussillo2013blackbox,katz2017fibers,golub2018fixedpointfinder}
-- limit cycles 
-LCs in RNNs \citep{townley2000existence} \citep{pals2024inferring}
-- slow invariant manifolds\citep{Sagodi2024a}
+%But we can capture some slow manifold behavior!
 
 \citep{libedinsky2023comparing}
 \citep{lipshutz2024disentangling} 
@@ -263,36 +252,64 @@ For task-trained neural networks
 \citep{huang2024measuring}
 
 
+%%%
+\subsubsection{Reconstructing dynamics}\label{sec:reconstruction}
+Learning interpretable continuous-time models of latent stochastic dynamical systems \citep{duncker2019learning}
+SSMLearn \citep{cenedese2022data}
+%
+Phase2vec \citep{ricci2022phase2vec}
+DFORM \citep{chen2024dform}: DFORM orbital similarity a noisy measure of topological equivalence
+TWA \citep{moriel2024timewarpattend}
+Smooth Prototype Equivalences \citep{friedman2025characterizing}
+%
+MARBLE \citep{gosztolai2025marble}
+
+
 
 \subsubsection{Reduction}\label{sec:reduction} %simplification of dynamics
-In each basin of attraction we have one attractor.
-We can simplify it's dynamics by looking at its normal form.
+A major goal in dynamical systems theory is to reduce complex nonlinear dynamics.
+%LDS red
+A popular method is to reduce the dynamics to linear systems that are assumed to be easily interpretable.
+One classical method involves searching for fixed points and identifying their properties via local linearization \citep{sussillo2013blackbox}.
 
-\begin{itemize}
-\item approximation based (model order reduction): \citep{schilders2008model}
-\item topology based Delay Embedding and Takens' Theorem  and Morse Decomposition 
-\item low-dimensional reduced model \citep{zemlianova2024dynamical} \citep{nonnenmacher2017extracting}
-\item motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} \citep{yair2017normalforms} (also referred to as prototypes in literature)
-\item Koopman  Spectral properties of dynamical systems, model reduction and decompositions \citep{mezic2005spectral}, Dynamic Mode Decomposition\citep{rowley2009spectral}, EDMD \citep{mezic2005spectral}
-\item proper orthogonal decomposition, Galerkin projection, balanced truncation, dynamic mode decomposition, Koopman operator, kernel method \citep{rowley2017model}
-\item libraries \citep{brunton2014compressive}, SINDy  one starts with a large library of candidate functions (or dynamical motifs) that could potentially describe the dynamics of a system. The method then uses sparse regression techniques to select a few terms that best capture the observed time-series data \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
-\item  primitives: linear \citep{kaul2020linear} (more for behavioral \citep{ijspeert2013dynamical})
-\item fast-slow \citep{jones1995gspt} \citep{verhulst2006methods}  \citep{dsilva2016data} \citep{haller2017exact}
-\item averaging methods \citep{sanders2007averaging} (invariant tori\citep{novaes2024invariant}), Theorem 9.4 in \citep{hoppensteadt2012weakly}
-\item FSMs: \citep{giles1991extracting, casey1996dynamics, giles1999equivalence, oliva2019fsm, ceni2020excitable, cotteret2024fsm, aichernig2024learning} + weighted\citep{wei2024weighted} Boolean \citep{li2025dynamics}
-\item effective dynamics \citep{menier2025interpretable}
-\item Reduction of Limit-Cycle Oscillators to Phase–Amplitude and Phase Models \citep{ashwin2016mathematical} (def. limit-cycle oscillator: attracting and hyperbolic periodic orbit, reduction: reduce per orb. to a description that involves a phase that lives on a topological circle that can be thought of as an interval)
-%and T −  are close for  small
-%define a phase θ modulo T, 
-\item contractivity \citep{lohmiller1998contraction}\citep{bullo2023contraction} \citep{revay2020contracting} \citep{tsukamoto2021contraction} \citep{davydov2022rnn, davydov2024noneuclidean}
-\item \citep{li2021novel}
-\item nonlinear projections for reduced-order modeling of dynamical systems using constrained autoencoders\citep{otto2023learning}
-\item vector fields projected onto the manifold \citep{roy2021extracting, luo2023noncanonical}
-\item  spectral submanifold (SSM)\citep{cenedese2022data, axaas2023fast, bettini2024model, kaszas2024data}  \citep{pozzi2025topology}
-\item mean-field\citep{bick2020understanding}
-\item preferential subspace identification (PSID) \citep{sani2021modeling}
-%\item surrogate dynamical systems (any citations?)
-\end{itemize}
+
+Topology based methods such as Delay Embedding and Takens' Theorem  only work if there is a single attractor.
+%although multi-stable extensions	
+
+%Spectral, DMD, EDMD
+Koopman  Spectral properties of dynamical systems \citep{mezic2005spectral} Dynamic Mode Decomposition\citep{rowley2009spectral, schmid2010dynamic}, EDMD \citep{williams2015data}
+
+%brunton: 
+SINDy: large library of candidate functions \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
+ the result is meaningful for identifying causal relations between variables, but it does not provide easy interpretable dynamics.
+ 
+ %
+ motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} \citep{yair2017normalforms} \citep{friedman2025characterizing}
+ 
+
+%\begin{itemize}
+%\item approximation based (model order reduction): \citep{schilders2008model}
+%\item topology based Delay Embedding and Takens' Theorem  and Morse Decomposition 
+%\item mean-field\citep{bick2020understanding}
+%\item low-dimensional reduced model \citep{zemlianova2024dynamical} \citep{nonnenmacher2017extracting}
+%\item motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} \citep{yair2017normalforms} (also referred to as prototypes in literature)
+%\item Koopman  Spectral properties of dynamical systems \citep{mezic2005spectral} Dynamic Mode Decomposition\citep{rowley2009spectral, schmid2010dynamic}, EDMD \citep{williams2015data}
+%\item proper orthogonal decomposition, Galerkin projection, balanced truncation, dynamic mode decomposition, Koopman operator, kernel method \citep{rowley2017model}
+%\item libraries \citep{brunton2014compressive}, SINDy  one starts with a large library of candidate functions (or dynamical motifs) that could potentially describe the dynamics of a system. The method then uses sparse regression techniques to select a few terms that best capture the observed time-series data \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
+%\item  primitives: linear \citep{kaul2020linear} (more for behavioral \citep{ijspeert2013dynamical}) %more for motor control
+%\item fast-slow \citep{jones1995gspt} \citep{verhulst2006methods}  \citep{dsilva2016data} \citep{haller2017exact}
+%\item  spectral submanifold (SSM)\citep{cenedese2022data, axaas2023fast, bettini2024model, kaszas2024data}  \citep{pozzi2025topology}
+%\item averaging methods \citep{sanders2007averaging} (invariant tori\citep{novaes2024invariant}), Theorem 9.4 in \citep{hoppensteadt2012weakly}
+%\item FSMs: \citep{giles1991extracting, casey1996dynamics, giles1999equivalence, oliva2019fsm, ceni2020excitable, cotteret2024fsm, aichernig2024learning} + weighted\citep{wei2024weighted} Boolean \citep{li2025dynamics}
+%\item effective dynamics \citep{menier2025interpretable}
+%\item Reduction of Limit-Cycle Oscillators to Phase–Amplitude and Phase Models \citep{ashwin2016mathematical} (def. limit-cycle oscillator: attracting and hyperbolic periodic orbit, reduction: reduce per orb. to a description that involves a phase that lives on a topological circle that can be thought of as an interval)%%and T −  are close for  small%%define a phase θ modulo T, 
+%\item contractivity \citep{lohmiller1998contraction}\citep{bullo2023contraction} \citep{revay2020contracting} \citep{tsukamoto2021contraction} \citep{davydov2022rnn, davydov2024noneuclidean}
+%\item \citep{li2021novel}
+%\item nonlinear projections for reduced-order modeling of dynamical systems using constrained autoencoders\citep{otto2023learning}
+%\item vector fields projected onto the manifold \citep{roy2021extracting, luo2023noncanonical,gosztolai2025marble}
+%\item preferential subspace identification (PSID) \citep{sani2021modeling}
+%%\item surrogate dynamical systems (any citations?)
+%\end{itemize}
 
 %%%decomposition is a form of reduction?
 \subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
@@ -326,6 +343,10 @@ We focus on understandable attractors for now.
 These are covered by our method to build higher-dimensional composite models from lower-dimensional dynamical motifs.
 
 \subsubsection{Our proposal to decompose, reduce, compare and reconstruct}
+%BoA
+In each basin of attraction we have one attractor.
+We can simplify it's dynamics by looking at its normal form.
+
 \paragraph{Reduction of dynamics to extract computation}
 Encoding-Decoding framework
 \citep{zhang2025neural} NEDS
