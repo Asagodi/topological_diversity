@@ -178,11 +178,7 @@ It accommodates both infinite-horizon systems and finite-horizon systems like ec
 %\item we propose a formalism for interpretability for the purpose of identifying neural computations in models of neural dynamics;
 %\item we propose a way to measure the loss of details in the process of abstraction/reduction to achieve more interpretable models;
 \item We derive novel dissimilarity measures for dynamics that quantify how well an idealized model, i.e. a dynamical motif, explains the original system’s computation and how complicated the correspondence is between them.
-\item our class of theories for neural computation consist of:
-	\begin{itemize}
-\item topological equivalence classes of computations as interpretable dynamical motifs
-\item time parameterization at different levels of detail
-\end{itemize}
+\item our class of theories for neural computation consist of: 1) topological equivalence classes of computations as interpretable dynamical motifs and 2) time parameterization at different levels of detail
 \item for a matching dynamical motif, the result of our method is a simple generative model of the data, unlike pure comparison methods
 \end{itemize}
 
@@ -207,40 +203,45 @@ Decomposition: Sec.~\ref{sec:decomposition}
 
 %%%
 \subsubsection{Methods to compare/classify dynamics}\label{sec:comparison}
-One foundational concept is topological conjugacy, which formalizes the notion of two systems being dynamically equivalent under a homeomorphism that maps trajectories of one system to the other while preserving the temporal ordering (Def.~\ref{def:top_conj}).
+A foundational concept for the comparison of dynamics is \emph{topological conjugacy}, which formalizes the notion of two systems being dynamically equivalent under a homeomorphism that maps trajectories of one system to the other while preserving the temporal ordering (see Sec.~\ref{def:top_conj}).
 Another key approach focuses on asymptotic behavior, particularly through the study of $\omega$-limit sets, which describe the long-term evolution of trajectories.
 These sets help characterize the stability and attractor structure of a system and are often used to classify systems based on the geometry and topology of their invariant sets.
 Together, these methods provide a basis for principled comparisons of dynamical systems that go beyond superficial similarity of trajectories.
 
-%realization
-Foundational approaches to comparing dynamical systems include notions of realization—the construction of one system that reproduces the input-output behavior of another \citep{grigoryeva2020dimension, gonon2023approximation}—and bisimilarity, which captures behavioral equivalence through relations that match system trajectories or observations \citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar,girard2011approximate}.
 
 %geometry
 these all compare the geometry of states in the latent space of a neural network:
-\citep{kriegeskorte2008representational}
+Representational Similarity Analysis (RSA)\citep{kriegeskorte2008representational}
 SVCCA\citep{raghu2017svcca}
+Procrustes shape distance \citep{williams2021generalized}
+Stochastic Shape Distance (SSD) \citep{duong2022representational}  %, a stochastic extension to Procrustes shape distance 
+\citep{williams2024equivalence} %comparing comparison methods
 \citep{barbosa2025quantifying} %not dynamics
 
-
-A recently developed method,Dynamical Similarity Analysis (DSA) \citep{ostrow2024beyond}, % \citep{kamiya2024koopman}\\
-allows for 
-What we lose (because of the truncation): limit cycles, multistability
+A recently developed method, Dynamical Similarity Analysis (DSA), allows for the quantification of similarity between two systems based on their DMD-approximated linear representations \citep{ostrow2024beyond}.
+Assuming the linear system accurately captures the Koopman eigenspectrum, DSA estimates how far the systems are from being conjugate.
+However, this approach relies on spectral truncation, which can obscure important nonlinear features such as limit cycles and multistability—key aspects of many neural computations.
 %But we can capture some slow manifold behavior!
 
-
-Optimal transport: \citep{nejatbakhsh2024comparing} \citep{lipshutz2024disentangling} 
-
+Comparing noisy neural population dynamics with optimal transport: \citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.
 %Koopman / linear  \citep{mezic2004comparison}
 
 %VF
 TWA\citep{moriel2024timewarpattend}
 Diffeomorphic vector field alignment for comparing dynamics across learned models\citep{chen2024dform}
-- orbital similarity loss (Eq.~5)
+%- orbital similarity loss (Eq.~5)
+Smooth Prototype Equivalence \citep{friedman2025characterizing}
 
 
+%conclusion
 
 %%%
 \subsubsection{Reconstructing dynamics}\label{sec:reconstruction}
+%realization
+Foundational approaches to comparing dynamical systems include notions of realization—the construction of one system that reproduces the input-output behavior of another \citep{grigoryeva2020dimension, gonon2023approximation}—and bisimilarity, which captures behavioral equivalence through relations that match system trajectories or observations \citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar,girard2011approximate}.
+
+
+\citep{durstewitz2023reconstructing}
 Learning interpretable continuous-time models of latent stochastic dynamical systems \citep{duncker2019learning}
 SSMLearn \citep{cenedese2022data}
 %
