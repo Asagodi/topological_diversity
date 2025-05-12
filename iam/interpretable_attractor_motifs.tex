@@ -620,7 +620,7 @@ with a trajectory \( y(t) \)  obtained by integrating \( \dot{y} = g_i(y) \) fro
 %We simplify this by assuming symmetry across space $\mu\in\reals_{>0}$.
 A loss function capturing this trajectory discrepancy is given by:
 \begin{equation}\label{eq:loss}
-\mathcal{L}(\theta, \mu, i) = \sum_{t} \Big\| (x_k(t)) - \Phi_\theta(\hat{x}_k(t)) \Big\|^2,
+\mathcal{L}(\theta, \mu, i) = \sum_{t} \Big\| (x_k(t)) - \Phi_\theta(y_k(t)) \Big\|^2,
 \end{equation}
 where the trajectories \(y_k(t) \) are computed via numerical integration of \(\dot y =  g_i(y) \) from an initial condition $\hat y_k(0) = \Phi_\theta^{-1}(x_k(0))$. %add scaling by mu?
 %The final optimization objective is:
