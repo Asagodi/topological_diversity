@@ -885,7 +885,7 @@ with \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( W
 Universal approximation properties of neural operator architectures \citep{lu2021learning, kissas2022learning, kovachki2021universal}.
 
 NODE\citep{finlay2020trainnode}
-\citep{torchdiffeq}
+
 
 \paragraph{Applications}
 %NODEs in neuroscience%
@@ -893,8 +893,7 @@ Neural ordinary differential equations (NODEs) are being increasingly adopted in
 
 
 
-\subsubsection{Invertible ResNets}
-The layers of a ResNet can be considered as Euler-discretization of the integration of a flow of a diffeomorphism\citep{rousseau2020residual}
+
 
 
 % Normalizing flows\citep{kobyzev2020normalizing}
@@ -1715,32 +1714,37 @@ If $\rho>313$, then the unique stable limit cycle is an attractor in the Lorenz 
 \section{Architectures}\label{sec:architectures}
 \subsection{Neural Ordinary Differential Equations (Neural ODEs)}\label{sec:node}
 \citep{chen2018neural,massaroli2020dissecting}
-A Neural Ordinary Differential Equation (Neural ODE) is a continuous-time model where the evolution of a system is governed by an ordinary differential equation (ODE) with a neural network defining the dynamics. Specifically, let \( x(t) \in \mathbb{R}^d \) be the state of the system at time \( t \). The evolution of \( x(t) \) is described by the differential equation:
+A Neural Ordinary Differential Equation (Neural ODE) is a continuous-time model where the evolution of a system is governed by an ordinary differential equation (ODE) with a neural network defining the dynamics.
+Specifically, let \( x(t) \in \mathbb{R}^d \) be the state of the system at time \( t \). 
+The evolution of \( x(t) \) is described by the differential equation:
 \begin{equation}
-    \frac{d}{dt} x(t) = f_\Theta(x(t), t),
+    \frac{d}{dt} x(t) = f_\Theta(x(t)),
 \end{equation}
-where \( f_\Theta(x(t), t) \) is a neural network parameterized by \( \Theta \), and typically \( f_\Theta \) does not explicitly depend on time \( t \) (i.e., it is a time-invariant system).
- The solution to this equation can is using the Runge-Kutta numerical integration method, with initial condition \( x(0) = x_0 \).
+where \( f_\Theta(x(t), t) \) is a neural network parameterized by \( \Theta \), a Multi-Layer Perceptor (MLP).
+The solution to this equation is solved with \texttt{torchdiffeq}'s \texttt{odeint}, with initial condition \( x(0) = x_0 \), for $t\in[0,1]$\citep{torchdiffeq}.
 
-\paragraph{Other proposals}
-Neural manifold ordinary differential equations \citep{lou2020neural}.
 
-\subsection{Invertible ResNet}
-The basic unit of an Invertible ResNet is the \textit{Invertible ResNet Block}, which operates by splitting the input \( x \in \mathbb{R}^d \) into two parts, \( x_1 \) and \( x_2 \), and applying a transformation only to \( x_1 \). The output is:
-\[
- \begin{bmatrix} x_1 + f(x_1) \\ x_2 \end{bmatrix},
-\]
-where \( f(x_1) = W_2 \cdot \text{ELU}(W_1 \cdot x_1 + b_1) + b_2 \) is a fully connected transformation. %other activation functions?
-The block is initialized with identity mapping to ensure invertibility, where \( W_2 = 0 \) and \( W_1 \) is initialized using Kaiming uniform.
 
-The Invertible ResNet consists of stacking multiple Invertible ResNet Blocks. For input \( x \), the forward pass is:
-\[
-y = \text{InvertibleResNet}(x) = \text{Block}_L(\dots \text{Block}_1(x)),
-\]
-and the inverse is computed by reversing the block order:
-\[
-x = \text{InvertibleResNet}^{-1}(y) = \text{Block}_1^{-1}(\dots \text{Block}_L^{-1}(y)).
-\]
+%\paragraph{Other proposals}
+%Neural manifold ordinary differential equations \citep{lou2020neural}.
+
+%\subsection{Invertible ResNet}
+%The layers of a ResNet can be considered as Euler-discretization of the integration of a flow of a diffeomorphism\citep{rousseau2020residual}
+%The basic unit of an Invertible ResNet is the \textit{Invertible ResNet Block}, which operates by splitting the input \( x \in \mathbb{R}^d \) into two parts, \( x_1 \) and \( x_2 \), and applying a transformation only to \( x_1 \). The output is:
+%\[
+% \begin{bmatrix} x_1 + f(x_1) \\ x_2 \end{bmatrix},
+%\]
+%where \( f(x_1) = W_2 \cdot \text{ELU}(W_1 \cdot x_1 + b_1) + b_2 \) is a fully connected transformation. %other activation functions?
+%The block is initialized with identity mapping to ensure invertibility, where \( W_2 = 0 \) and \( W_1 \) is initialized using Kaiming uniform.
+%
+%The Invertible ResNet consists of stacking multiple Invertible ResNet Blocks. For input \( x \), the forward pass is:
+%\[
+%y = \text{InvertibleResNet}(x) = \text{Block}_L(\dots \text{Block}_1(x)),
+%\]
+%and the inverse is computed by reversing the block order:
+%\[
+%x = \text{InvertibleResNet}^{-1}(y) = \text{Block}_1^{-1}(\dots \text{Block}_L^{-1}(y)).
+%\]
 %implemented through 
 %This structure guarantees that the network is bijective, preserving the volume and making it suitable for density estimation and transformations in generative models.
 
@@ -1835,31 +1839,31 @@ Optimizer: Adam \citep{kingma2014adam}
 %    %& Dynamical system motif: \texttt{ring} \\
 %\midrule
 \multirow{5}{*}{Target Homeomorphism} 
-    & Type: \texttt{node} (Neural ODE) \\
+    & Type: Neural ODE \\
     & Hidden layers: \texttt{[128]} \\
     & Activation: \texttt{ReLU} \\
-    & Initialization: \texttt{random} with weight sampled from $\mathcal{N})(0.02,0.5)$ \\
+    & Initialization: weights sampled from $\mathcal{N})(0.02,0.5)$ \\
 \midrule
 \multirow{3}{*}{Learned Homeomorphism} 
-    & Type: \texttt{node} (Neural ODE) \\
+    & Type: Neural ODE \\
     & Hidden layers: \texttt{[128]} \\
     & Activation: \texttt{ReLU} \\
 \midrule
 \multirow{5}{*}{Dynamical System \& Simulation} %add AnalyticalDS?
-    & Dimension: \texttt{2}, Time step: \texttt{0.2} \\
+    & Time step for integration: $dt=0.2$ \\
     & Time span: \texttt{[0.0, 2.0]} \\
-    & Noise standard deviation: \texttt{0.0} \\
+    %& Noise standard deviation: \texttt{0.0} \\
     %& Ring vector field :\\
     %& Initial condition mode: \texttt{random} \\
-    & Number of trajectories: \texttt{50} \\
+    & Number of trajectories: 50 \\
     %& Margin: \texttt{0.5} \\
     %& Random seed: \texttt{42} \\
-    & Train/test split ratio: \texttt{0.8 / 0.2} \\
+    & Train/test split ratio: 0.8-0.2 \\
 \midrule
 \multirow{3}{*}{Training} 
-    & Learning rate: \texttt{0.01} \\
-    & Epochs: \texttt{1000} \\
-    & Batch size: \texttt{32} \\
+    & Learning rate:  0.01 \\
+    & Epochs: 1000 \\
+    & Batch size: 32 \\
     %& Early stopping patience: \texttt{1000} \\
     %& Inverse formulation: \texttt{True} \\
     %& Annealing: dynamic: \texttt{False} \\
@@ -2117,8 +2121,8 @@ d_H(A, B) = \max\left\{ \sup_{a \in A} \inf_{b \in B} \|a - b\|, \sup_{b \in B} 
 
 \item {\bf Crowdsourcing and research with human subjects}
     \item[] Question: For crowdsourcing experiments and research with human subjects, does the paper include the full text of instructions given to participants and screenshots, if applicable, as well as details about compensation (if any)? 
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerNA{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: The paper does not involve crowdsourcing nor research with human subjects.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper does not involve crowdsourcing nor research with human subjects.
@@ -2128,8 +2132,8 @@ d_H(A, B) = \max\left\{ \sup_{a \in A} \inf_{b \in B} \|a - b\|, \sup_{b \in B} 
 
 \item {\bf Institutional review board (IRB) approvals or equivalent for research with human subjects}
     \item[] Question: Does the paper describe potential risks incurred by study participants, whether such risks were disclosed to the subjects, and whether Institutional Review Board (IRB) approvals (or an equivalent approval/review based on the requirements of your country or institution) were obtained?
-    \item[] Answer: \answerTODO{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
-    \item[] Justification: \justificationTODO{}
+    \item[] Answer: \answerNA{} % Replace by \answerYes{}, \answerNo{}, or \answerNA{}.
+    \item[] Justification: The paper does not involve crowdsourcing nor research with human subjects..
     \item[] Guidelines:
     \begin{itemize}
         \item The answer NA means that the paper does not involve crowdsourcing nor research with human subjects.
