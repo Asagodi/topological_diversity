@@ -499,6 +499,7 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
         """
         theta = torch.linspace(0, 2 * np.pi, num_points)
         x_circle = self.radius * torch.stack([torch.cos(theta), torch.sin(theta)], dim=1)
+        x_circle = torch.cat([x_circle, x_circle[0:1]], dim=0)
         # Add zeros for the remaining dimensions
         if self.dim > 2:
             x_circle = torch.cat([x_circle, torch.zeros(x_circle.shape[0], self.dim - 2)], dim=1)
@@ -586,6 +587,7 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
         """
         theta = torch.linspace(0, 2 * np.pi, num_points)
         x_circle = self.radius * torch.stack([torch.cos(theta), torch.sin(theta)], dim=1)
+        x_circle = torch.cat([x_circle, x_circle[0:1]], dim=0)
         # Add zeros for the remaining dimensions
         if self.dim > 2:
             x_circle = torch.cat([x_circle, torch.zeros(x_circle.shape[0], self.dim - 2)], dim=1)
@@ -990,7 +992,7 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
     Computes the trajectory of a limit cycle system defined by r_dot = r(r-1) and theta_dot = v.
     This class uses analytical solutions for r(t) and theta(t) based on the initial condition and velocity.
     """
-    def __init__(self, dim: int,  velocity_init: float = 1., alpha_init: float = -1.,  
+    def __init__(self, dim: int,  velocity_init: float = 1., alpha_init: float = -1., radius: float = 1.0,
                  time_span: Tuple[float, float] = (0.0, 5.0), dt: float = 0.05):
         """
         Initialize the class with the given velocity, time span, and time step.
@@ -1003,6 +1005,7 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
         super().__init__(dt, time_span)
         self.time_span = time_span
         self.dt = dt
+        self.radius = radius
         if not velocity_init is None:         
             self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
         else:
@@ -1068,6 +1071,7 @@ class AnalyticalLimitCycle(AnalyticDynamicalSystem):
         """
         theta = torch.linspace(0, 2 * np.pi, num_points)
         x_circle = self.radius * torch.stack([torch.cos(theta), torch.sin(theta)], dim=1)
+        x_circle = torch.cat([x_circle, x_circle[0:1]], dim=0)
         # Add zeros for the remaining dimensions
         if self.dim > 2:
             x_circle = torch.cat([x_circle, torch.zeros(x_circle.shape[0], self.dim - 2)], dim=1)
@@ -1079,7 +1083,7 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
     Computes the trajectory of a limit cycle system defined by r_dot = r(r-1) and theta_dot = v.
     This class uses analytical solutions for r(t) and theta(t) based on the initial condition and velocity.
     """
-    def __init__(self,  dim: int, alpha_init: float = -1.,
+    def __init__(self,  dim: int, alpha_init: float = -1., radius: float = 1.0,
                  time_span: Tuple[float, float] = (0.0, 5.0), dt: float = 0.05):
         """
         Initialize the class with the given velocity, time span, and time step.
@@ -1091,6 +1095,7 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
         super().__init__(dt, time_span)
         self.time_span = time_span
         self.dt = dt
+        self.radius = radius
         if not alpha_init is None:
             self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
         else:
@@ -1152,6 +1157,7 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
         """
         theta = torch.linspace(0, 2 * np.pi, num_points)
         x_circle = self.radius * torch.stack([torch.cos(theta), torch.sin(theta)], dim=1)
+        x_circle = torch.cat([x_circle, x_circle[0:1]], dim=0)
         # Add zeros for the remaining dimensions
         if self.dim > 2:
             x_circle = torch.cat([x_circle, torch.zeros(x_circle.shape[0], self.dim - 2)], dim=1)
@@ -1535,6 +1541,76 @@ class FitzHughNagumo(DynamicalSystem):
 
         return dxdt
 
+class LienardSigmoid(DynamicalSystem):
+    def __init__(self, a: float = 1.5, b: float = -.5, dim: int = 2, dt: float = 0.05, 
+                 time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.) -> None:
+        super().__init__(dim=dim, dt=dt, time_span=time_span)
+        self.a = a
+        self.b = b
+        self.noise_std = noise_std
+        self.dt = dt
+        self.time_span = time_span
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)
+
+        dxdt = torch.zeros_like(x)
+
+        dxdt[:, 0] = x[:, 1]
+        sigmoid_term = 1.0 / (1.0 + torch.exp(-self.a * x[:, 0])) - 0.5
+        dxdt[:, 1] = -sigmoid_term - (self.b + x[:, 0] ** 2) * x[:, 1]
+
+        return dxdt
+
+class BZReaction(DynamicalSystem):
+    def __init__(self, a: float = 1.0, b: float = 1.0, dim: int = 2, dt: float = 0.05,
+                 time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.) -> None:
+        super().__init__(dim=dim, dt=dt, time_span=time_span)
+        self.a = a
+        self.b = b
+        self.noise_std = noise_std
+        self.dt = dt
+        self.time_span = time_span
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)
+
+        x1 = x[:, 0]
+        x2 = x[:, 1]
+        denom = 1 + x1 ** 2
+
+        dxdt = torch.zeros_like(x)
+        dxdt[:, 0] = self.a - x1 - (4 * x1 * x2) / denom
+        dxdt[:, 1] = self.b * x1 * (1 - x2 / denom)
+
+        return dxdt
+
+class Selkov(DynamicalSystem):
+    def __init__(self, a: float = 0.01, b: float = .02, dim: int = 2, dt: float = 0.05,
+                 time_span: Tuple[float, float] = (0, 5), noise_std: float = 0.) -> None:
+        super().__init__(dim=dim, dt=dt, time_span=time_span)
+        self.a = a
+        self.b = b
+        self.noise_std = noise_std
+        self.dt = dt
+        self.time_span = time_span
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 1:
+            x = x.unsqueeze(0)
+
+        x1 = x[:, 0]
+        x2 = x[:, 1]
+
+        factor = x1**2 * x2
+        dxdt = torch.zeros_like(x)
+        dxdt[:, 0] = x1         + self.a * x2 + factor
+        dxdt[:, 1] = self.b     - self.a * x2 - factor
+
+        return dxdt
+
 
 #3D systems
 class LorenzSystem(DynamicalSystem):
@@ -1614,6 +1690,7 @@ class MayLeonardSystem(DynamicalSystem):
 #4D systems
 class HodgkinHuxleySystem(DynamicalSystem):
     def __init__(self, 
+                 dim: int = 4,
                  I_ext: float = 10.0, 
                  dt: float = 0.01, 
                  time_span: Tuple[float, float] = (0, 50),
