@@ -501,6 +501,7 @@ where the infimum is taken over all possible perturbations \( p \) that satisfy 
 Therefore, we can define the dissimilarity measure $d(f,g) = \inf \|p\|$ with the above constraint.
 
 \subsubsection{Reduction of dynamics to extract computation}
+\ascomment{Replace this section with the dissimilarity derivation}
 %\paragraph{Contextuality and understanding}
 What are we interpreting \emph{for}?
 Context: Behavior %Computational theory in Marr's levels?
@@ -604,15 +605,16 @@ The dissimilarity between \( f \) and each motif \( g_i \) is defined as the min
 This allows us to projects the target system onto the motif library, producing a vector of distances to each motif.
 
 %intuition
-Convergence during training of RNNs: for tasks that rely on analog memory, the system's trajectory should exhibit a low dissimilarity to a dynamical motif that is a continuous attractor diffeomorphic to the memory manifold.
- This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
+Convergence during training of RNNs: 
+For tasks that rely on analog memory, the system's trajectory should exhibit low dissimilarity to a  continuous attractor dynamical motif that is diffeomorphic to the memory manifold.
+This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
 
 
 \subsubsection{Single global attractor}
 We consider a target dynamical system $\dot{x} = f(x)$ which has a single global attractor.
  We assume that this system is topologically equivalent to one of a family of attractor motifs defined by dynamical systems $\dot{y} = g_i(y)$ where each $g_i$ represents a different canonical attractor in its normal form.
-  This means that there exists a homeomorphism $\Phi$ mapping solutions of $g_i$ to solutions of $f$.
-  Assuming smoothness, we model $\Phi$ as a diffeomorphism.
+This means that there exists a homeomorphism $\Phi$ mapping solutions of $g_i$ to solutions of $f$.
+Assuming smoothness, we model $\Phi$ as a diffeomorphism.
 Our goal is to determine both the correct (best fitting/most explanatory) attractor motif $g_i$ and the diffeomorphism $\Phi$ given only observed trajectories $\{x_j(t_k)\}$ sampled from $f$.
 
 
@@ -1399,14 +1401,28 @@ There is already so much abstraction!
 
 
 \newpage
-\section{The library of motifs}
+\section{Motif library}
 \subsection{Fixed point}
 \[
 \begin{aligned}
-\dot{x} &= -x, \\
-\dot{y} &= -y
+\dot{x} &= \alpha x, \\
 \end{aligned}
 \]
+
+%PFTop
+\subsection{Fixed-point toplogy}
+We implementing any fixed-point topology dynamics in the following way.
+We consider the motif to be a directed graph. % (almost a Morse graph, but we allow for cyclicity).
+The nodes are the fixed points and the (lack of) outcoming vertices determines their stability.
+
+We embed the graph into $\reals^e$ with $e=2$ or $e=3$ based on planarity, through force-directed minimization.
+If graph is planar we embed the graph in $\reals^2$.
+If graph is not planar we embed the graph in  $\reals^3$.
+The remaining dimensions follow the dynamics $\dot x = - x$. % (or \dot x_i = - \alpha_i x_i)
+
+We define the dynamics in $\reals^e$ as follows.
+Move linearly to closest point on graph.
+In the neighbourhood of the graph we add a dynamics term that specifies speed on connecting orbits: a Gaussian bump of the connecting vector field around it.
 
 
 %%LC eqs
@@ -1492,6 +1508,7 @@ The dynamics are given by
 where \( \psi(\theta) \) is a learnable \( 2\pi \)-periodic function defining angular velocity perturbations on the ring, and the Gaussian bump localizes the effect to a narrow band around the unit circle.
 
 
+%SPHERE
 \subsection{Sphere attractor}
 The system's dynamics are described by the following ordinary differential equations (ODEs) for the sphere attractor:
 \begin{equation}
@@ -1501,33 +1518,35 @@ The system's dynamics are described by the following ordinary differential equat
 
 The dynamics for the sphere part of the system are given by:
 \[
-\dot{\mathbf{x}}_{\text{sphere}}(t) = \alpha \cdot \left( \| \mathbf{x}_{\text{sphere}}(t) \| - \text{radius} \right) \cdot \frac{\mathbf{x}_{\text{sphere}}(t)}{\|\mathbf{x}_{\text{sphere}}(t)\|}
+\dot{\mathbf{x}}_{\text{sphere}}(t) = \alpha \cdot \left( \| \mathbf{x}_{\text{sphere}}(t) \| - \text{R} \right) \cdot \frac{\mathbf{x}_{\text{sphere}}(t)}{\|\mathbf{x}_{\text{sphere}}(t)\|}
 \]
-
-where:
-- \( \alpha \) is a constant controlling the strength of radial attraction (negative for attraction, positive for repulsion),
-- \( \| \mathbf{x}_{\text{sphere}}(t) \| \) is the norm (or radial distance) of \( \mathbf{x}_{\text{sphere}}(t) \),
-- \( \frac{\mathbf{x}_{\text{sphere}}(t)}{\|\mathbf{x}_{\text{sphere}}(t)\|} \) is the unit vector in the direction of \( \mathbf{x}_{\text{sphere}}(t) \).
+where \( \alpha \) is the constant controlling the strength of radial attraction. 
+% \( \| \mathbf{x}_{\text{sphere}}(t) \| \) is the norm (or radial distance) of \( \mathbf{x}_{\text{sphere}}(t) \),
+%and  \( \frac{\mathbf{x}_{\text{sphere}}(t)}{\|\mathbf{x}_{\text{sphere}}(t)\|} \) is the unit vector in the direction of \( \mathbf{x}_{\text{sphere}}(t) \).
 
 The residual dynamics, representing the evolution in the residual dimensions, are given by:
-
 \[
 \dot{\mathbf{x}}_{\text{residual}}(t) = \beta \cdot \mathbf{x}_{\text{residual}}(t)
 \]
-
 where \( \beta \) is a constant that governs the attraction strength in the residual dimensions.
 
 Thus, the full system of ODEs is:
 \[
 \begin{aligned}
-\dot{\mathbf{x}}_{\text{sphere}}(t) &= \alpha \cdot \left( \| \mathbf{x}_{\text{sphere}}(t) \| - \text{radius} \right) \cdot \frac{\mathbf{x}_{\text{sphere}}(t)}{\|\mathbf{x}_{\text{sphere}}(t)\|} \\
+\dot{\mathbf{x}}_{\text{sphere}}(t) &= \alpha \cdot \left( \| \mathbf{x}_{\text{sphere}}(t) \| - \text{R} \right) \cdot \frac{\mathbf{x}_{\text{sphere}}(t)}{\|\mathbf{x}_{\text{sphere}}(t)\|} \\
 \dot{\mathbf{x}}_{\text{residual}}(t) &= \beta \cdot \mathbf{x}_{\text{residual}}(t)
 \end{aligned}
 \]
 where the first equation governs the radial attraction of \( \mathbf{x}_{\text{sphere}}(t) \) toward the sphere's surface, and the second equation describes the attraction of \( \mathbf{x}_{\text{residual}}(t) \) toward the origin.
 
 
+\subsection{Bounded continuous attractor}
 
+
+
+For $d_{bca}=1$ and $n=2$ we get a systems that is topologically conjugate to the Bounded Line Attractor from \citep{Sagodi2024a}.
+
+\subsection{Composite systems}
 
 
 
@@ -1540,11 +1559,8 @@ where the first equation governs the radial attraction of \( \mathbf{x}_{\text{s
 
 \subsection{Limit cycles}
 \subsubsection{Random diffeomorphism of a limit cycle}
-
 [Trajectories figure]
-
 [Loss figure] (?)
-
 
 
 \subsubsection{Van der Pol}
@@ -1558,8 +1574,6 @@ The Van der Pol equation is given by
 
 In Fig.~\ref{fig:all_motifs_vdp} we used $\mu=0.3$.
 
-
-
 \paragraph{Noisy}
 \begin{figure}[htbp]
     \centering
@@ -1571,7 +1585,6 @@ In Fig.~\ref{fig:all_motifs_vdp} we used $\mu=0.3$.
 \subsubsection{Lorenz stable limit cycle}
 \citep{lorenz1963deterministic}
 If $\rho>313$, then the unique stable limit cycle is an attractor in the Lorenz system\citep{gaiko2014global}.
-
 
 \subsubsection{Sel'kov}
 \citep{selkov1968self}
