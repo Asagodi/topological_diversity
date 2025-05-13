@@ -448,26 +448,23 @@ Canonical realization = the simplest system (in some sense) that produces the sa
 \citep{chirimuuta2024brain} 
 %Solomonoff's theory of inductive inference (formalizes Occam's razor)
 
+%\subsection{A timescale angle to reduction}
+%\citep{cavanagh2020diversity}
 
 %%%%%%%%%%
 \subsubsection{Our levels of interperetability}
-Proposal: guiding principles for a hierarchy of interpretability
+%Proposal: guiding principles for a hierarchy of interpretability
+%1. Message: poset of interpretable models
+%2. Message: Actions we can perform to reduce complexity
+%I. introducing hierarchy 
+%\citep{Vermani2024b}
+%\citep{geadah2024parsing, geadah2025modeling}
+%II. decomposition
+%3. Message: leaving out details for understanding (abstraction), trade-off between interpretability and accuracy
+%4. Finite time, linear dynamical systems (are they really interpretable?) 
+We propose a framework for interpretability grounded in a hierarchy of models, where interpretable systems form a poset shaped by structured simplifications such as hierarchical abstraction and dynamical decomposition \citep{Vermani2024b, geadah2024parsing, geadah2025modeling}.
+This view emphasizes abstraction over detail, acknowledging the trade-off between accuracy and interpretability—even for seemingly simple systems like linear dynamics over finite time.
 
-1. Message: poset of interpretable models
-
-2. Message: Actions we can perform to reduce complexity
-I. introducing hierarchy 
-\citep{Vermani2024b}
-\citep{geadah2024parsing, geadah2025modeling}
-II. decomposition
-
-3. Message: leaving out details for understanding (abstraction), trade-off between interpretability and accuracy
-
-4. Finite time, linear dynamical systems (are they really interpretable?) 
-
-
-%\subsection{A timescale angle to reduction}
-%\citep{cavanagh2020diversity}
 
 \subsection{Our proposal to decompose, reduce, compare and reconstruct in light of interpretability}
 %BoA
@@ -614,7 +611,7 @@ The dissimilarity between \( f \) and each motif \( g_i \) is defined as the min
 This allows us to projects the target system onto the motif library, producing a vector of distances to each motif.
 
 %intuition/implication for TTRNN Plationic convergence
-Convergence during training of RNNs: 
+% Convergence during training of RNNs: 
 For tasks that rely on analog memory, the system's trajectory should exhibit low dissimilarity to a  continuous attractor dynamical motif that is diffeomorphic to the memory manifold\citep{beer2018laformation,ribeiro2020beyond}.
 This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
 
@@ -1503,7 +1500,7 @@ for canonical ring attractor $\alpha=-1$.
 
 
 \subsubsection{Analytical}
-See Supp.Sec.~\ref{sec:analytical_lc}.
+See Supp.Sec.~\ref{sec:analytical_lc} with $v=0$.
 
 
 \subsubsection{Bump-modulated perturbation on the ring}
@@ -1601,16 +1598,36 @@ The invariant manifold \( \mathcal{M} \) can be described as:
 \]
 
 
-
-
-
 \subsubsection{Bounded Line Attractor}
 For $d_{bca}=1$ and $n=2$ we get a systems that is topologically conjugate to the Bounded Line Attractor from \citep{Sagodi2024a}.
 
+
+
 \subsection{Composite systems}
+We can construct composite systems by combining two or more dynamical motifs from the list above.
+Each subsystem comes with an ODE
+\begin{equation}
+\dot x_i = f(x_i),
+\end{equation}
+with $x_i\in \reals^{D_i}$.
+The composite systems dynamics is then defined as a concatenation of the $N$ subsystems dynamics
+\begin{equation}
+\dot x = [f(x_0), \dots f(x_N)],
+\end{equation}
+with $x\in \reals^{D}$ where $D=\sum_i^N D_i$.
+
+
+\subsubsection{Examples of composite systems}
+
+
+\subsection{Additive vector field to continuous attractor systems}
+\subsubsection{Periodic}
+
+\subsubsection{Non-periodic}
 
 
 
+%%%%%%
 \newpage
  \section{Target systems}\label{sec:target_systems}
  Time points: 100
