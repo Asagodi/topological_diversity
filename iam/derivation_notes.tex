@@ -144,8 +144,12 @@ Abel S\'agodi$^{1}$
 \newcommand{\identity}{\ensuremath{\mathbb{I}}}
 \newcommand{\ones}{\ensuremath{\mathbf{1}}}
 \newcommand{\indicator}[1]{\mathbf{1}_{#1}} % indicator function
-\newcommand{\stateSpace}{\reals^n}
 \newcommand{\DF}{\nabla_{\vx}\vf} %\newcommand{\DF}{\mathcal{D}\vf}
+
+\newcommand{\stateSpace}{\reals^n}
+\newcommand{\posReals}{\reals^{+}}
+\newcommand{\inputSpace}{\mathbb{X}}
+\newcommand{\dcomplexity}{\ensuremath{d_\text{cxty}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
@@ -164,11 +168,11 @@ Abel S\'agodi$^{1}$
 \section{Background}
 Let us consider two autonomous dynamical systems defined on the same space:
 \begin{align}
-    \begin{cases}
+    \begin{dcases}
     \dot{\vx} &= \vf(\vx)
     \\
     \dot{\vx} &= \vg(\vx)
-    \end{cases}
+    \end{dcases}
 \end{align}
 
 If the two systems are topologically equivalent, there exists a homeomorphism $\homeo$ that maps orbits of one system to the other.
@@ -416,6 +420,18 @@ $p(\phi(\vx_0,T_\text{max}))$, we can integrate the inequality over the marginal
 	\right]
 	+ O(\epsilon)
 \end{align}
+
+\subsection{TBD}
+Let $\dcomplexity: (\inputSpace \to \inputSpace) \to \posReals$ be a measure of complexity of the homeo/diffeomorphism such that the simplest map, the identity, gives $\dcomplexity(\vh(\vx) = \vx) = 0$.
+For example, we can have,
+\begin{align}
+    \dcomplexity(\vh) &=
+    \int \left(
+	c_a \norm{\nabla\vh(\vx) - \identity} + c_b \norm{\vh(\vx) - \vx} 
+	\right)
+    \dm{\vx}
+\end{align}
+for some $c_a, c_b > 0$.
 
 \subsection{Divergence}
 We are ready to define the divergence measure between the source and target systems under the probability distribution over states.
