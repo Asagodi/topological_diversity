@@ -1606,7 +1606,7 @@ class Selkov(DynamicalSystem):
 
         factor = x1**2 * x2
         dxdt = torch.zeros_like(x)
-        dxdt[:, 0] = x1         + self.a * x2 + factor
+        dxdt[:, 0] = - x1       + self.a * x2 + factor
         dxdt[:, 1] = self.b     - self.a * x2 - factor
 
         return dxdt
