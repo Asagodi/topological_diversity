@@ -566,6 +566,8 @@ This ensures that the system's behavior remains close to a well-defined dynamica
 
 
 \subsubsection{Single global attractor}
+\ascomment{How does this assumption fit into the story?}
+\ascomment{Mention well-sampled invariant manifold assumption}
 We consider a target dynamical system $\dot{x} = f(x)$ which has a single global attractor.
  We assume that this system is topologically equivalent to one of a family of attractor motifs defined by dynamical systems $\dot{y} = g_i(y)$ where each $g_i$ represents a different canonical attractor in its normal form.
 This means that there exists a homeomorphism $\Phi$ mapping solutions of $g_i$ to solutions of $f$.
@@ -573,7 +575,7 @@ Assuming smoothness, we model $\Phi$ as a diffeomorphism.
 Our goal is to determine both the correct (best fitting/most explanatory) attractor motif $g_i$ and the diffeomorphism $\Phi$ given only observed trajectories $\{x_j(t_k)\}$ sampled from $f$.
 
 
-\subsubsection{Trajectory based loss function}
+\subsubsection{Trajectory based loss function}\label{sec:loss} %earlier? is it dependent on the motif?
 Since we do not have direct access to the vector field but only to sampled trajectories, we approximate the system using a learned diffeomorphism \( \hat{\Phi}_\theta \), parameterized by a a Neural ODE (NODE) \citep{chen2018neural} (for other implementations, see Supp.Sec.~\ref{sec:architectures}).
 % normalizing flow\citep{kobyzev2020normalizing,papamakarios2021normalizing}, an invertible ResNet\citep{he2016deep}
  We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
@@ -596,20 +598,17 @@ where the trajectories \(y_k(t) \) are computed via numerical integration of \(\
 This formulation allows for the joint identification of both the correct motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
 
 
-%intuition
-Embedding ring attractors \citep{chaudhuri2019attractor}\citep{Sagodi2024a}
-
-
 
 \subsubsection{The complexity of the homeomorphism}
 To assess how much a learned homeomorphism $\Phi$ deforms space, we distinguish between a set of canonical transformation types, such as translations, permutations, rotations, uniform and non-uniform scalings (of space), and rescaling of the vector field (which affects global speed).
  While these operations are useful for interpreting specific deformation modes, they are not directly included in our complexity measure.
-Instead, we capture the full, potentially nonlinear deformation induced by $\Phi$ by evaluating how much it deviates locally from the identity map. This is quantified using the Jacobian:
+Instead, we capture the full, potentially nonlinear deformation induced by $\Phi$ by evaluating how much it deviates locally from the identity map.
+ This is quantified by measuring how much the Jacobian of the homeomorphism deviates from the identity's:
 \begin{equation}
 \left\|\frac{\partial \Phi}{\partial x} - \mathbb{I}\right\|
 \end{equation}
 which captures how much the local linear behavior of $\Phi$ differs from that of the identity transformation.
-The norm of this deviation is computed either using the Frobenius norm or the spectral norm.
+The norm of this deviation is computed either using the Frobenius norm or the spectral norm. \ascomment{Frobenius or spectral?}
 Finally, the \( L^p \) norm of the batch of Jacobians is computed, providing a scalar value that quantifies the overall local deformation across the space. A norm close to zero indicates that the transformation is nearly identity, while higher values suggest more significant deformations.
 
 %measure-preserving (Hamiltonian) transformation
@@ -663,15 +662,19 @@ In dynamical systems, attractors can be systematically classified according to t
 \item Plane attractor ($[0,1]^2$), Cylinder attractor ($[0,1]\times S_0^1$), Cylinder-LC attractor ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
 %\item ...
 \end{enumerate}
-This pattern continues, with higher-dimensional attractors constructed from fundamental topological spaces such as $S^n$ or their Cartesian and toroidal products.
+We construct  higher-dimensional attractors from fundamental topological spaces such as $S^n$ by taking their Cartesian products, see Supp.Sec.~\ref{sec:composite}.
 
 %\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
 
-%what about higher dims??
 extrinsic and intrinsic dimensionality\citep{jazayeri2021interpreting}
+%
+Embedding ring attractors \citep{chaudhuri2019attractor}\citep{Sagodi2024a}
 %neural activity == embedded taks manifold
 Trial averaged neural data is an embedding of the task manifold into firing rate space \citep{gao2015simplicity}
 %low-dim neural activity
+
+
+%what about higher dims?
 
 %\paragraph{Manifold decomposition}
 %Triangulation
@@ -939,24 +942,24 @@ J_{\Phi}(x) = \left[ \frac{\partial \Phi_i}{\partial x_j}(x) \right]_{i,j}.
 \]
 
 
-
-\newpage
-\section{Geometry}
-Geometric Learning on Manifolds\citep{mostowsky2024geometrickernels}
-
-
-\paragraph{Standard Matérn Kernel (Based on Geodesic Distance)}
-Replace the Euclidean distance  $\| x - x' \|$  in the Matérn kernel with the distance to the manifold  $ d_{\text{manifold}}(x, x')$. 
-This distance is now the measure of how far two points are from each other, but considering the geometry of the manifold.
-\begin{equation}
-k(x, x') = \frac{1}{\Gamma(\nu)} \left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x, x')}{\ell} \right)^\nu K_\nu\left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x, x')}{\ell} \right).
-\end{equation}
-
-
-\subsection{Implementations}
-\citep{miolane2020geomstats}
-%https://github.com/geomstats/geomstats?tab=readme-ov-file
-
+%
+%\newpage
+%\section{Geometry}
+%Geometric Learning on Manifolds\citep{mostowsky2024geometrickernels}
+%
+%
+%\paragraph{Standard Matérn Kernel (Based on Geodesic Distance)}
+%Replace the Euclidean distance  $\| x - x' \|$  in the Matérn kernel with the distance to the manifold  $ d_{\text{manifold}}(x, x')$. 
+%This distance is now the measure of how far two points are from each other, but considering the geometry of the manifold.
+%\begin{equation}
+%k(x, x') = \frac{1}{\Gamma(\nu)} \left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x, x')}{\ell} \right)^\nu K_\nu\left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x, x')}{\ell} \right).
+%\end{equation}
+%
+%
+%\subsection{Implementations}
+%\citep{miolane2020geomstats}
+%%https://github.com/geomstats/geomstats?tab=readme-ov-file
+%
 
 
 
@@ -1416,7 +1419,9 @@ There is already so much abstraction!
 
 \newpage
 \section{Motif library}
-\subsection{Fixed point}
+We introduce the motifs in our library.
+
+\subsection{Fixed point}\label{sec:fp}
 \[
 \begin{aligned}
 \dot{x} &= \alpha x, \\
@@ -1424,7 +1429,7 @@ There is already so much abstraction!
 \]
 
 %PFTop
-\subsection{Fixed-point toplogy}
+\subsection{Fixed-point toplogy}\label{sec:fpt}
 We implementing any fixed-point topology dynamics in the following way.
 We consider the motif to be a directed graph. % (almost a Morse graph, but we allow for cyclicity).
 The nodes are the fixed points and the (lack of) outcoming vertices determines their stability.
@@ -1435,12 +1440,12 @@ If graph is not planar we embed the graph in  $\reals^3$.
 The remaining dimensions follow the dynamics $\dot x = - x$. % (or \dot x_i = - \alpha_i x_i)
 
 We define the dynamics in $\reals^e$ as follows.
-Move linearly to closest point on graph.
+Move linearly to the closest point on graph.
 In the neighborhood of the graph we add a dynamics term that specifies speed on connecting orbits: a Gaussian bump of the connecting vector field around it.
 
 
 %%LC eqs
-\subsection{Limit cycle}
+\subsection{Limit cycle}\label{sec:lc}
 The limit cycle system is defined in polar coordinates as follows:
 \begin{align}%\label{eq:lc}
 \dot{r} &= \alpha r(r - 1), \label{eq:lc_radial} \\
@@ -1488,7 +1493,7 @@ x(t) = x_0 e^{\alpha t}.
 
 
 %%RA eqs
-\subsection{Ring attractor}
+\subsection{Ring attractor}\label{sec:ra}
 The ring attractor system is defined in polar coordinates as follows:
 \[
 \begin{aligned}
@@ -1523,7 +1528,7 @@ where \( \psi(\theta) \) is a learnable \( 2\pi \)-periodic function defining an
 
 
 %SPHERE
-\subsection{Sphere attractor}
+\subsection{Sphere attractor}\label{sec:sa}
 The system's dynamics are described by the following ordinary differential equations (ODEs) for the sphere attractor:
 \begin{equation}
  \mathbf{x}(t) = \left[ \mathbf{x}_{\text{sphere}}(t), \mathbf{x}_{\text{residual}}(t) \right],
@@ -1554,7 +1559,7 @@ Thus, the full system of ODEs is:
 where the first equation governs the radial attraction of \( \mathbf{x}_{\text{sphere}}(t) \) toward the sphere's surface, and the second equation describes the attraction of \( \mathbf{x}_{\text{residual}}(t) \) toward the origin.
 
 
-\subsection{Bounded continuous attractor}
+\subsection{Bounded continuous attractor}\label{sec:bca}
 Consider a continuous dynamical system described by the following equations. Let \( \mathbf{x}(t) \in \mathbb{R}^D \) represent the state of the system at time \( t \), where \( D \) is the dimensionality of the system.
 The system exhibits the following dynamics.
 
@@ -1613,7 +1618,7 @@ For $d_{bca}=1$ and $n=2$ we get a systems that is topologically conjugate to th
 
 
 
-\subsection{Composite systems}
+\subsection{Composite systems}\label{sec:composite}
 We can construct composite systems by combining two or more dynamical motifs from the list above.
 Each subsystem comes with an ODE
 \begin{equation}
