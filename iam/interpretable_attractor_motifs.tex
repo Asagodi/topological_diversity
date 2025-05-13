@@ -464,17 +464,16 @@ This view emphasizes abstraction over detail, acknowledging the trade-off betwee
 
 
 \subsection{Our proposal to decompose, reduce, compare and reconstruct in light of interpretability}
-%1. Decomposing space into BoAs
-In each basin of attraction we have one attractor.
-We simplify it's dynamics by looking at its normal form.
-
-%2. Abstracting out transients
-
-%3. A finite set of molds/motifs (abstracting out the space of asymptotic behavior)
-
-%4. Correspondence/Mapping between target and motif: homeomorphism/diffeomorphism
-
+We first decompose the state space into basins of attraction, each associated with a distinct attractor.
+%
+Within each basin, we abstract the attractor's dynamics by simplifying it to a canonical form (e.g., via normal form analysis), effectively ignoring transient dynamics that do not contribute to long-term behavior.
+%
+We define a finite library of dynamical motifs—canonical molds representing qualitatively distinct asymptotic behaviors—thereby abstracting the space of possible long-term dynamics.
+%
+Finally, we establish a correspondence between the target system and the motif library via a topological or smooth transformation (e.g., homeomorphism or diffeomorphism), enabling interpretable comparisons and model reduction.
+%
 % Inject back some detailts: additive vector field on CAs
+Additionally, we allow for injecting back some details by defining an additive vector field on the motifs.
 
 
 \paragraph{Limitation}
