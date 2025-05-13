@@ -1422,7 +1422,7 @@ The remaining dimensions follow the dynamics $\dot x = - x$. % (or \dot x_i = - 
 
 We define the dynamics in $\reals^e$ as follows.
 Move linearly to closest point on graph.
-In the neighbourhood of the graph we add a dynamics term that specifies speed on connecting orbits: a Gaussian bump of the connecting vector field around it.
+In the neighborhood of the graph we add a dynamics term that specifies speed on connecting orbits: a Gaussian bump of the connecting vector field around it.
 
 
 %%LC eqs
@@ -1541,9 +1541,63 @@ where the first equation governs the radial attraction of \( \mathbf{x}_{\text{s
 
 
 \subsection{Bounded continuous attractor}
+Consider a continuous dynamical system described by the following equations. Let \( \mathbf{x}(t) \in \mathbb{R}^D \) represent the state of the system at time \( t \), where \( D \) is the dimensionality of the system.
+The system exhibits the following dynamics.
+
+\subsubsection*{1. Inside the Bounded Region}
+When the state \( \mathbf{x} \) is within the hypercube \( [-B, B]^D \), the flow is zero:
+\[
+\frac{d \mathbf{x}}{dt} = 0, \quad \text{for } \mathbf{x} \in [-B, B]^D
+\]
+
+\subsubsection*{2. Outside the Bounded Region}
+When the state \( \mathbf{x} \) is outside the hypercube \( [-B, B]^D \), the flow is directed towards the nearest boundary, with a scaling factor \( \alpha \) controlling the flow magnitude:
+\[
+\frac{d \mathbf{x}}{dt} = -\alpha (\mathbf{x} - \text{proj}(\mathbf{x})), \quad \text{for } \mathbf{x} \notin [-B, B]^D,
+\]
+where \( \text{proj}(\mathbf{x}) \) denotes the projection of \( \mathbf{x} \) onto the hypercube \( [-B, B]^D \). The projection \( \text{proj}(\mathbf{x}) \) can be written component-wise as:
+\[
+\text{proj}(\mathbf{x}_i) = \text{clip}(\mathbf{x}_i, -B, B) \quad \text{for each } i = 1, 2, \dots, D.
+\]
+
+Thus, for each dimension \( \mathbf{x}_i \), if \( \mathbf{x}_i \) exceeds the bounds, it is projected back onto the nearest boundary.
+
+\subsubsection*{Residual Dynamics}
+If the system has a subspace with dimension \( D - d_{\text{bca}} \), residual dynamics are added for the remaining dimensions \( \mathbf{x}_{d_{\text{bca}}+1}, \dots, \mathbf{x}_D \). These dimensions evolve according to the dynamics:
+\[
+\frac{d \mathbf{x}_{\text{residual}}}{dt} = \alpha \mathbf{x}_{\text{residual}}
+\]
+
+where \( \mathbf{x}_{\text{residual}} \) represents the residual part of the state vector.
+
+Combining the above, the system's ODE can be written as:
+\[
+\frac{d \mathbf{x}}{dt} =
+\begin{cases}
+0, & \text{if } |\mathbf{x}_i| \leq B, \, \forall i \in \{1, 2, \dots, D\} \\
+-\alpha (\mathbf{x} - \text{proj}(\mathbf{x})), & \text{if } |\mathbf{x}_i| > B \, \text{for any } i \\
+\end{cases}
+\]
+
+Additionally, for the residual dynamics when \( D > d_{\text{bca}} \), the evolution is governed by:
+\[
+\frac{d \mathbf{x}_{\text{residual}}}{dt} = \alpha \mathbf{x}_{\text{residual}}, \quad \text{for the dimensions } d_{\text{bca}}+1, \dots, D
+\]
+where \( \alpha \) is a learnable parameter that scales the flow near the boundary, and \( \text{proj}(\mathbf{x}) \) is the projection of \( \mathbf{x} \) back to the hypercube \( [-B, B]^D \).
+
+
+The invariant manifold of the system corresponds to the region inside the bounded region, which is the hypercube \( [-1, 1]^D \) when \( B = 1 \).
+The trajectory is confined to this region as long as the state remains within the bounds.
+The invariant manifold \( \mathcal{M} \) can be described as:
+\[
+\mathcal{M} = \{ \mathbf{x} \in \mathbb{R}^D \mid |\mathbf{x}_i| \leq 1, \, \forall i \in \{1, 2, \dots, D\} \}.
+\]
 
 
 
+
+
+\subsubsection{Bounded Line Attractor}
 For $d_{bca}=1$ and $n=2$ we get a systems that is topologically conjugate to the Bounded Line Attractor from \citep{Sagodi2024a}.
 
 \subsection{Composite systems}
