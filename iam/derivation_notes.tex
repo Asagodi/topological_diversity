@@ -367,7 +367,25 @@ for appropriate vector and corresponding matrix norms.
 We recognize two kinds of complexities of the diffeomorphism: (1) scale complexity which is a function of the Jacobian of diffeomorphism $\nabla\vh(\vx)$, and (2) translation complexity.
 
 Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of two complexity measures of the diffeomorphism can be traded off with the additive perturbation.
-Thus, the smallest additive perturbation for given the complexity of the diffeomorphism can be described in the following total additive formulation:
+
+Let $\dcomplexity: (\inputSpace \to \inputSpace) \to \posReals$ be a measure of complexity of the homeo/diffeomorphism such that the simplest map, the identity, gives $\dcomplexity(\vh(\vx) = \vx) = 0$.
+For example, we can have,
+\begin{align}
+    \dcomplexity(\vh) &=
+    \int \left(
+	c_a \norm{\nabla\vh(\vx) - \identity} + c_b \norm{\vh(\vx) - \vx} 
+	\right)
+    \dm{\vx}
+\end{align}
+for some $c_a, c_b > 0$.
+
+\begin{align}
+    \vDelta_2(\vx ; c) = \inf_{\dcomplexity{\vh} = c}
+	\nabla\homeo(\invhomeo(\vy)) \vf(\invhomeo(\vy))
+	- \vf(\vx) - \vDelta_1(\vx)
+\end{align}
+
+Thus, the smallest additive perturbation for a given the complexity of the diffeomorphism can be described in the following total additive formulation:
 \begin{align}\label{eq:decomp:triple}
     \vg(\vx) &= 
 	\vf(\vx)
@@ -422,16 +440,6 @@ $p(\phi(\vx_0,T_\text{max}))$, we can integrate the inequality over the marginal
 \end{align}
 
 \subsection{TBD}
-Let $\dcomplexity: (\inputSpace \to \inputSpace) \to \posReals$ be a measure of complexity of the homeo/diffeomorphism such that the simplest map, the identity, gives $\dcomplexity(\vh(\vx) = \vx) = 0$.
-For example, we can have,
-\begin{align}
-    \dcomplexity(\vh) &=
-    \int \left(
-	c_a \norm{\nabla\vh(\vx) - \identity} + c_b \norm{\vh(\vx) - \vx} 
-	\right)
-    \dm{\vx}
-\end{align}
-for some $c_a, c_b > 0$.
 
 \subsection{Divergence}
 We are ready to define the divergence measure between the source and target systems under the probability distribution over states.
