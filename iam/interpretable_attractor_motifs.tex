@@ -667,7 +667,7 @@ In dynamical systems, attractors can be systematically classified according to t
 \item Plane attractor ($[0,1]^2$), Cylinder attractor ($[0,1]\times S_0^1$), Cylinder-LC attractor ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
 %\item ...
 \end{enumerate}
-We construct  higher-dimensional attractors from fundamental topological spaces such as $S^n$ by taking their Cartesian products, see Supp.Sec.~\ref{sec:composite}.
+We construct  higher-dimensional attractors from lower dimensional motifs by taking their Cartesian products, see Supp.Sec.~\ref{sec:composite}.
 
 %\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
 
@@ -784,8 +784,8 @@ For the vector field-type deformation, our methods, accurately identifies the lo
     (\textbf{A}) We consider two types of perturbations to a ring attractor that are controlled by a scalar perturbation size. 
     (\textbf{B}) The first type considers a perturbation that leaves the continuum of fixed points intact: it merely deforms the ring attractor and the transient orbits but the perturbed system is still topologically conjugate to the original. 
     (\textbf{C}) The second type is a perturbation to the vector field. 
-    (\textbf{D})
-    (\textbf{E})
+    (\textbf{D}) 
+    (\textbf{E}) 
     }
     \label{fig:ring_pert_fig}
 \end{figure}
@@ -1036,7 +1036,7 @@ g(x) = \mu(x) f(x).
 Orbitally equivalent systems differ only in their time parametrization.
 
 
-\subsection{}
+\paragraph{With scaling}
 Two dynamical systems on the same state space:
 \[
 \dot{x} = f(x) \quad \text{and} \quad \dot{x} = g(x).
@@ -1101,7 +1101,6 @@ Saddle ring
 
 \subsubsection{Beyond isolated fixed points}
 How do we define a normal form when the system has a continuous attractor, such as a manifold of stable fixed points or limit cycles?
-
 \paragraph{Limit cycles}%exists
 Let 
 \[
@@ -1163,58 +1162,57 @@ such that the vector field becomes:
 \end{aligned}
 \]
 where \( \Lambda(\theta) \) is positive definite, ensuring contraction toward the attractor \(\manifold\).
-
+%
 Equivariant bifurcation theory provides normal forms that are invariant under group action
 
 
-\paragraph{Translation to center around origin}
+%\paragraph{Translation to center around origin}
 
 
-
-
-\subsection{Pushforward of the vector field: flow under a diffeomorphism}
-See e.g., Eq.1.2 in \citep{agrachev2013control}.
-
-Given a diffeomorphism \( \Phi: M \to M \), we consider the vector field \( V \in \text{Vec}(M) \), governing the dynamical system:
-\[
-\dot{q} = V(q).
-\]
-
-The diffeomorphism \( \Phi \) induces a pushforward of the vector field \( V \), given by:
-\[
-(\Phi_* V)(p) = D\Phi(\Phi^{-1}(p)) V(\Phi^{-1}(p)),
-\]
-where \( D\Phi \) is the differential (Jacobian) of \( \Phi \).  
-
-\paragraph{Transformed Dynamical System}
-In the new coordinates \( x = \Phi(q) \), differentiating with respect to time gives:
-\[
-\dot{x} = \frac{d}{dt} \Phi(q) = D\Phi(q) \dot{q}.
-\]
-
-Substituting \( \dot{q} = V(q) \), we obtain:
-\[
-\dot{x} = D\Phi(q) V(q).
-\]
-
-Rewriting in terms of \( x \), where \( q = \Phi^{-1}(x) \), the transformed vector field in the new coordinates is:
-\[
-\dot{x} = (D\Phi \circ \Phi^{-1}) V(\Phi^{-1}(x)).
-\]
-
-Thus, the transformed vector field is:
-\[
-V' = \Phi_* V = (D\Phi \circ \Phi^{-1}) \cdot (V \circ \Phi^{-1}).
-\]
-This describes how a diffeomorphism \( \Phi \) acts on the vector field governing the dynamics.
-
-
-
-
-\subsubsection{Normal forms for input-driven dynamics}
-Normal form representation of control systems  \citep{gilbert1963controllability}
-Brunovsky normal form is a canonical form for controllable linear systems.
-
+%
+%\subsection{Pushforward of the vector field: flow under a diffeomorphism}
+%See e.g., Eq.1.2 in \citep{agrachev2013control}.
+%
+%Given a diffeomorphism \( \Phi: M \to M \), we consider the vector field \( V \in \text{Vec}(M) \), governing the dynamical system:
+%\[
+%\dot{q} = V(q).
+%\]
+%
+%The diffeomorphism \( \Phi \) induces a pushforward of the vector field \( V \), given by:
+%\[
+%(\Phi_* V)(p) = D\Phi(\Phi^{-1}(p)) V(\Phi^{-1}(p)),
+%\]
+%where \( D\Phi \) is the differential (Jacobian) of \( \Phi \).  
+%
+%\paragraph{Transformed Dynamical System}
+%In the new coordinates \( x = \Phi(q) \), differentiating with respect to time gives:
+%\[
+%\dot{x} = \frac{d}{dt} \Phi(q) = D\Phi(q) \dot{q}.
+%\]
+%
+%Substituting \( \dot{q} = V(q) \), we obtain:
+%\[
+%\dot{x} = D\Phi(q) V(q).
+%\]
+%
+%Rewriting in terms of \( x \), where \( q = \Phi^{-1}(x) \), the transformed vector field in the new coordinates is:
+%\[
+%\dot{x} = (D\Phi \circ \Phi^{-1}) V(\Phi^{-1}(x)).
+%\]
+%
+%Thus, the transformed vector field is:
+%\[
+%V' = \Phi_* V = (D\Phi \circ \Phi^{-1}) \cdot (V \circ \Phi^{-1}).
+%\]
+%This describes how a diffeomorphism \( \Phi \) acts on the vector field governing the dynamics.
+%
+%
+%
+%
+%\subsubsection{Normal forms for input-driven dynamics}
+%Normal form representation of control systems  \citep{gilbert1963controllability}
+%Brunovsky normal form is a canonical form for controllable linear systems.
+%
 
 
 \subsection{Coherence in behavior}
