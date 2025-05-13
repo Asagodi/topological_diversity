@@ -148,7 +148,7 @@ Fixed-point attractors have long been used to characterize stable memory states 
 %3 angles: neural activity, latent variable models, RNNs: all too obscure!!
 Latent variable models have proven essential for extracting interpretable state space representations from high-dimensional neural activity \citep{zoltowski2020general, Dowling2024b, pei2neural}, enabling rigorous comparisons across systems \citep{libedinsky2023comparing} and supporting benchmarking efforts such as the Neural Latents and Computation-through-Dynamics (CtD) benchmarks \citep{pei2neural, versteeg2025computation}.
 Within the computation-through-dynamics (CtD) framework, recurrent neural networks (RNNs) have emerged as powerful models for capturing both task-related computations \citep{yang2019task, yang2019multiple, yang2020artificial, sani2021nonlinearity} and the dynamical structure of cortical responses \citep{chaisangmongkon2017transience, mante2013context}.
-These models support both top-down engineering approaches—where desired dynamics are imposed by construction \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe, pollock2020engineering, beiran2023rnns}—and bottom-up analysis of black-box systems trained for behavior \citep{sussillo2013blackbox, maheswaranathan2019reverse, golub2018fixedpointfinder, smith2021reverse, maheswaranathan2019universality, jarne2023initialization, nayebi2021heterogeneity, turner2021charting, turner2023simplicity, zhong2023mechanistic, huang2024measuring}.
+These models support both top-down engineering approaches—where desired dynamics are imposed by construction \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe, pollock2020engineering,darshan2022learning, beiran2023rnns}—and bottom-up analysis of black-box systems trained for behavior \citep{sussillo2013blackbox, maheswaranathan2019reverse, golub2018fixedpointfinder, smith2021reverse, maheswaranathan2019universality, jarne2023initialization, nayebi2021heterogeneity, turner2021charting, turner2023simplicity, zhong2023mechanistic, huang2024measuring}.
 
 Asymptotic behavior—captured by structures like fixed points, limit cycles, and slow manifolds—is central to memory maintenance in neural computation, encoding stable representations over time. However, in both latent variable models and task-trained RNNs, these structures are often embedded in high-dimensional, black-box dynamics, making them difficult to interpret \citep{whiteway2019interpretable,kar2022interpretability}. %obscurity
 Identifying asymptotic structure is thus key to extracting interpretable, computationally meaningful mechanisms from complex neural models.
@@ -285,6 +285,7 @@ One classical method involves searching for fixed points and identifying their p
 
 
 %Topology based methods such as Delay Embedding and Takens' Theorem  only work if there is a single attractor.
+%Takens’ Embedding Theorem (Takens, 1981) expanded equivalence to high-dimensional systems, demonstrating that delay embeddings preserve topological conjugacy. These classical results provided important tools and conceptual frameworks for studying equivalence, but typically lacked a way to construct explicit conjugacies and often required explicit knowledge of governing equations, limiting their real-world usage.
 %this is kind of touched on in DSA comment
 %although multi-stable extensions	
 
@@ -408,9 +409,12 @@ Philosophers of science have long emphasized that understanding depends on ideal
 For example, \citet{deregt2017understanding} argues that understanding hinges on the intelligibility of theories for human agents, while  \citet{potochnik2017idealization,potochnik2020idealization,potochnik2021levels} defends the heuristic and epistemic value of idealization, especially in complex biological systems.
 %\citet{guest2023logical} further explore how logical structure and representational clarity shape the conditions under which scientific models promote understanding.
 
-Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding}
+Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding} \citep{gao2015simplicity}
+Minimal models and canonical neural computations: The distinctness of computational explanation in neuroscience \citep{chirimuuta2014minimal} 
 
-%Understanding information propagation using dynamical systems tools \citep{vogt2022lyapunov}
+Canonical realization = the simplest system (in some sense) that produces the same behavior
+
+%Understanding information propagation \citep{quinn2022information} using dynamical systems tools \citep{vogt2022lyapunov} 
 %\paragraph{Explanations: understanding scientific phenomena}
 %\citep{parascandolo2021learning} robustness of explanation/description
 
@@ -424,17 +428,13 @@ MPHATE\citep{gigante2019visualizing}
 MMPHATE\citep{xie2024multiway} 
 CEBRA \citep{schneider2023learnable}
 
-\paragraph{Simplicity}
-\citep{gao2015simplicity}
-\citep{dyer2023simplest}
-\citep{quinn2022information}
-
-\paragraph{Minimal}
-\citep{chirimuuta2014minimal}
-\citep{batterman2014minimal}
+%\paragraph{Simplicity}\citep{dyer2023simplest}
+%\paragraph{Minimal}
+%\citep{chirimuuta2014minimal} Minimal models and canonical neural computations: The distinctness of computational explanation in neuroscience
+%\citep{batterman2014minimal}
 %cognitive Beer \citep{beer1996toward} \citep{beer2015information} + \citep{brancazio2023minimal}
 
-Canonical realization = the simplest system (in some sense) that produces the same behavior
+
 
 \subsubsection{Reduction/idealization/simplification/abstraction in neuroscience}
 \citep{marr1976computation, marr2010vision}
@@ -552,63 +552,8 @@ task's computational demands (e.g., continuous parametrization of memory)
 %Embed attractor of intrinsic dimension $N$ into $\reals^{n+1}$ to be able to map point in the basin of attraction onto representative points on the stable manifold of the attractor motif.
 %\ascomment{What is simple behavior in terms of the transfer function?}
 
-\subsubsection{Recognizable geometric-topological features}
-%repetition with sec:ctd
- Fixed points and limit cycles are fundamental to neural computations.
-Fixed points correspond to steady-state solutions where the system’s state does not change, while limit cycles describe periodic orbits that repeat over time.
- In neural models, fixed points are often used to model persistent activity patterns, while limit cycles can be observed in oscillatory behaviors that may correspond to specific memory or decision-making processes.
-  Continuous attractors, on the other hand, are critical for understanding memory in dynamical systems.
-These attractors provide a set of states toward which the system evolves over time, capturing the essence of systems that store and retrieve information.
- In neuroscience, they are essential in models of continuous-position coding, where the system must maintain a range of values for memory retrieval.
 
-invariant manifolds
-manifolds neuro/RNN\citep{langdon2023unifying, can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor, ghazizadeh2021slowmanifold, duncker2021dynamics, pezon2024linking}
-neuro \citep{fortunato2024nonlinear}
-manifold alginment \citep{kuoch2024probing}
-approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\linewidth]{motifpspace_dssimilarity}
-    \caption{Enlightening the space of theories with our dynamical motif torch.
-    \textbf{(A)} Localizing a model in parameter space through dynamical motifs.
-    \textbf{(B)} Abstracting out imperfections from an approximate ring attractor.
-     }
-    \label{fig:motifpspace_dssimilarity}
-\end{figure}
-
-
-\subsubsection{Motifs: The building blocks}
-We use dynamical motifs as the fundamental building blocks of dynamical systems, capturing effective and interpretable behaviors such as approximate continuous attractors.
-%simplification of BoA which simplify complex dynamics into stable basins in phase space 
-These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
-
-
-%\subsubsection{The base case} % \subsubsection{Constructing}
-% topological distinctness of the motifs
-
-\paragraph{Enumerating attractors dimension-wise}
-In dynamical systems, attractors can be systematically classified according to their topological dimension, with the simplest topological spaces serving as the fundamental building blocks at each level.
- This perspective provides a principled way to enumerate attractors that can arise in ordinary differential equations (ODEs).
-\begin{enumerate}[start=0,label={\bfseries Dim \arabic*:}]
-\item  Stable fixed point
-\item  Bounded line attractor ($[0,1]\subset\reals$), ring attractor ($S_0^1$), stable limit cycle ($S_1^1$)
-\item Plane attractor ($[0,1]^2$), Cylinder attractor ($[0,1]\times S_0^1$), Cylinder-LC attractor ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
-%\item ...
-\end{enumerate}
-This pattern continues, with higher-dimensional attractors constructed from fundamental topological spaces such as $S^n$ or their Cartesian and toroidal products.
-
-%\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
-
-%what about higher dims??
-extrinsic and intrinsic dimensionality\citep{jazayeri2021interpreting}
-%low-dim neural activity
-
-%\paragraph{Manifold decomposition}
-%Triangulation
-
-
-\subsubsection{An interpretable motif-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
+\subsection{An interpretable, motif-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
 Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs. Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
 
 The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
@@ -654,7 +599,86 @@ This formulation allows for the joint identification of both the correct motif \
 %intuition
 Embedding ring attractors \citep{chaudhuri2019attractor}\citep{Sagodi2024a}
 
-\subsubsection{Extensions to the canonical motifs}
+
+
+\subsubsection{The complexity of the homeomorphism}
+To assess how much a learned homeomorphism $\Phi$ deforms space, we distinguish between a set of canonical transformation types, such as translations, permutations, rotations, uniform and non-uniform scalings (of space), and rescaling of the vector field (which affects global speed).
+ While these operations are useful for interpreting specific deformation modes, they are not directly included in our complexity measure.
+Instead, we capture the full, potentially nonlinear deformation induced by $\Phi$ by evaluating how much it deviates locally from the identity map. This is quantified using the Jacobian:
+\begin{equation}
+\left\|\frac{\partial \Phi}{\partial x} - \mathbb{I}\right\|
+\end{equation}
+which captures how much the local linear behavior of $\Phi$ differs from that of the identity transformation.
+The norm of this deviation is computed either using the Frobenius norm or the spectral norm.
+Finally, the \( L^p \) norm of the batch of Jacobians is computed, providing a scalar value that quantifies the overall local deformation across the space. A norm close to zero indicates that the transformation is nearly identity, while higher values suggest more significant deformations.
+
+%measure-preserving (Hamiltonian) transformation
+
+\paragraph{Wasserstein distance between the distribution over trajectories}
+\citep{bion2019wasserstein}
+The Wasserstein distance evaluates how these local distortions aggregate over the distribution of trajectories.
+The Jacobian norm relates to the Wasserstein distance by capturing local distortions that contribute to the global changes in the distribution, which are reflected in the Wasserstein distance between the trajectories' distributions.
+
+
+%\subsection{Motifs: Recognizable geometric-topological features}
+\subsubsection{Motifs: The building blocks of neural computation}
+%repetition with sec:ctd
+ Fixed points and limit cycles are fundamental to neural computations.
+Fixed points correspond to steady-state solutions where the system’s state does not change, while limit cycles describe periodic orbits that repeat over time.
+In neural models, fixed points are often used to model persistent activity patterns, while limit cycles can be observed in oscillatory behaviors that may correspond to specific memory or decision-making processes\citep{machens2005flexible}.
+Continuous attractors, on the other hand, are critical for understanding memory in dynamical systems \citep{machens2008ca,darshan2022learning}.
+These attractors provide a set of states toward which the system evolves over time, capturing the essence of systems that store and retrieve information.
+ In neuroscience, they are essential in models of continuous-position coding, where the system must maintain a range of values for memory retrieval.
+
+invariant manifolds
+manifolds neuro/RNN\citep{langdon2023unifying, can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor, ghazizadeh2021slowmanifold, duncker2021dynamics, pezon2024linking}
+neuro \citep{fortunato2024nonlinear}
+manifold alginment \citep{kuoch2024probing}
+approximate continuous attractors as slow invariant manifolds\citep{Sagodi2024a}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{motifpspace_dssimilarity}
+    \caption{Enlightening the space of theories with our dynamical motif torch.
+    \textbf{(A)} Localizing a model in parameter space through dynamical motifs.
+    \textbf{(B)} Abstracting out imperfections from an approximate ring attractor.
+     }
+    \label{fig:motifpspace_dssimilarity}
+\end{figure}
+
+
+We use dynamical motifs as the fundamental building blocks of dynamical systems, capturing effective and interpretable behaviors such as approximate continuous attractors.
+%simplification of BoA which simplify complex dynamics into stable basins in phase space 
+These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
+
+%\subsubsection{The base case} % \subsubsection{Constructing}
+% topological distinctness of the motifs
+
+\paragraph{Enumerating attractors dimension-wise}
+In dynamical systems, attractors can be systematically classified according to their topological dimension, with the simplest topological spaces serving as the fundamental building blocks at each level.
+ This perspective provides a principled way to enumerate attractors that can arise in ordinary differential equations (ODEs).
+\begin{enumerate}[start=0,label={\bfseries Dim \arabic*:}]
+\item  Stable fixed point
+\item  Bounded line attractor ($[0,1]\subset\reals$), ring attractor ($S_0^1$), stable limit cycle ($S_1^1$)
+\item Plane attractor ($[0,1]^2$), Cylinder attractor ($[0,1]\times S_0^1$), Cylinder-LC attractor ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
+%\item ...
+\end{enumerate}
+This pattern continues, with higher-dimensional attractors constructed from fundamental topological spaces such as $S^n$ or their Cartesian and toroidal products.
+
+%\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
+
+%what about higher dims??
+extrinsic and intrinsic dimensionality\citep{jazayeri2021interpreting}
+%neural activity == embedded taks manifold
+Trial averaged neural data is an embedding of the task manifold into firing rate space \citep{gao2015simplicity}
+%low-dim neural activity
+
+%\paragraph{Manifold decomposition}
+%Triangulation
+
+
+%move to earlier?
+\subsubsection{Extensions to the canonical motifs}\label{sec:extensions}
 \paragraph{Noisy motifs}
 We consider noisy versions of motif trajectories governed by stochastic differential equations (SDEs) of the form
 \begin{equation}
@@ -683,24 +707,16 @@ Biases on slow ring manifold for memory maintenance of circular values \citep{pa
 
 %issue: overlap between motif spaces!
 
+\subsubsection{Surjective mapping to minimal dimensional motif}
+Let \( f \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) define the vector field of a target dynamical system, and let \( g_i \in C^1(\mathbb{R}^m, \mathbb{R}^m) \) be a dynamical motif of minimal dimension \( m \leq n \) that captures the essential dynamics of \( f \). Then there exists a perturbation \( p \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) and a surjective continuous map \( \Phi: \mathbb{R}^n \to \mathbb{R}^m \) such that the flow \( \psi_{g_i} \) of the motif is semi-conjugate to the flow \( \psi_{f+p} \) of the perturbed system via \( \Phi \). %, i.e.,
+%\begin{equation}\label{eq:perfect_motif_fit}
+%\| \psi_{g_i} - \Phi \circ \psi_{f+p} \|_\infty = 0.
+%\end{equation}
 
-\subsubsection{The complexity of the homeomorphism}
-To assess how much a learned homeomorphism $\Phi$ deforms space, we distinguish between a set of canonical transformation types, such as translations, permutations, rotations, uniform and non-uniform scalings (of space), and rescaling of the vector field (which affects global speed).
- While these operations are useful for interpreting specific deformation modes, they are not directly included in our complexity measure.
-Instead, we capture the full, potentially nonlinear deformation induced by $\Phi$ by evaluating how much it deviates locally from the identity map. This is quantified using the Jacobian:
-\begin{equation}
-\left\|\frac{\partial \Phi}{\partial x} - \mathbb{I}\right\|
-\end{equation}
-which captures how much the local linear behavior of $\Phi$ differs from that of the identity transformation.
-The norm of this deviation is computed either using the Frobenius norm or the spectral norm.
-Finally, the \( L^p \) norm of the batch of Jacobians is computed, providing a scalar value that quantifies the overall local deformation across the space. A norm close to zero indicates that the transformation is nearly identity, while higher values suggest more significant deformations.
+\paragraph{Issue}
+Problem: trivial solution $\Phi(x) = 0$ for $x\in\mathcal{D}$.\\
+Solution (?): injectivity per orbit (still allow for non-injectivity across orbits)
 
-%measure-preserving (Hamiltonian) transformation
-
-\paragraph{Wasserstein distance between the distribution over trajectories}
-\citep{bion2019wasserstein}
-The Wasserstein distance evaluates how these local distortions aggregate over the distribution of trajectories.
-The Jacobian norm relates to the Wasserstein distance by capturing local distortions that contribute to the global changes in the distribution, which are reflected in the Wasserstein distance between the trajectories' distributions.
 
 
 %\subsection{Demonstration}
@@ -711,23 +727,14 @@ The Jacobian norm relates to the Wasserstein distance by capturing local distort
 
 
 
-\subsection{Reducing the dimensionality} % to a minimal dimensional motif
-\subsubsection{Homeomorphism from minimal dimensional motif}
-Let \( f \in C^1 \) define the vector field of a target dynamical system on \( \mathbb{R}^n \), and let \( g_i \in C^1(\mathbb{R}^m, \mathbb{R}^m) \) be a dynamical motif of minimal dimension \( m \leq n \) that captures the essential dynamics of \( f \). Then there exists a perturbation \( p \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) and a homeomorphism \( \Phi: \mathbb{R}^m \to \mathbb{R}^n \) such that the flow \( \psi_{f+p} \) of the perturbed system is topologically conjugate to the embedded flow \( \Phi \circ \psi_{g_i} \). %, i.e.,
-%\begin{equation}\label{eq:hom_from_motif}
-%\|\psi_{f+p} - \Phi \circ \psi_{g_i} \|_\infty = 0.
-%\end{equation}
+%\subsection{Reducing the dimensionality} % to a minimal dimensional motif
+%\subsubsection{Homeomorphism from minimal dimensional motif}
+%Let \( f \in C^1 \) define the vector field of a target dynamical system on \( \mathbb{R}^n \), and let \( g_i \in C^1(\mathbb{R}^m, \mathbb{R}^m) \) be a dynamical motif of minimal dimension \( m \leq n \) that captures the essential dynamics of \( f \). Then there exists a perturbation \( p \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) and a homeomorphism \( \Phi: \mathbb{R}^m \to \mathbb{R}^n \) such that the flow \( \psi_{f+p} \) of the perturbed system is topologically conjugate to the embedded flow \( \Phi \circ \psi_{g_i} \). %, i.e.,
+%%\begin{equation}\label{eq:hom_from_motif}
+%%\|\psi_{f+p} - \Phi \circ \psi_{g_i} \|_\infty = 0.
+%%\end{equation}
 
 
-\subsubsection{Surjective mapping to minimal dimensional motif}
-Let \( f \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) define the vector field of a target dynamical system, and let \( g_i \in C^1(\mathbb{R}^m, \mathbb{R}^m) \) be a dynamical motif of minimal dimension \( m \leq n \) that captures the essential dynamics of \( f \). Then there exists a perturbation \( p \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) and a surjective continuous map \( \Phi: \mathbb{R}^n \to \mathbb{R}^m \) such that the flow \( \psi_{g_i} \) of the motif is semi-conjugate to the flow \( \psi_{f+p} \) of the perturbed system via \( \Phi \). %, i.e.,
-%\begin{equation}\label{eq:perfect_motif_fit}
-%\| \psi_{g_i} - \Phi \circ \psi_{f+p} \|_\infty = 0.
-%\end{equation}
-
-
-Problem: trivial solution $\Phi(x) = 0$ for $x\in\mathcal{D}$.\\
-Solution (?): injectivity per orbit (still allow for non-injectivity across orbits)
 
 
 
@@ -743,7 +750,9 @@ Demonstration: Sec.~\ref{sec:target_demonstrations}
 \subsection{Finding the deformation to a ring attractor}\label{sec:imp_ring}
 %justification of this  experiment
 
+
 %description
+
 
 %interpretation of results
 Fig.~\ref{fig:ring_pert_fig}
