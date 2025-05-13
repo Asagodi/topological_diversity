@@ -164,9 +164,11 @@ Abel S\'agodi$^{1}$
 \section{Background}
 Let us consider two autonomous dynamical systems defined on the same space:
 \begin{align}
+    \begin{cases}
     \dot{\vx} &= \vf(\vx)
     \\
     \dot{\vx} &= \vg(\vx)
+    \end{cases}
 \end{align}
 
 If the two systems are topologically equivalent, there exists a homeomorphism $\homeo$ that maps orbits of one system to the other.
@@ -226,8 +228,8 @@ Note that additive perturbation can change the stability structure such that top
 \subsection{Homeomorphic/Diffeomorphic Perturbation}
 The second kind of distortion is a deformation with a diffeomorphism $\homeo$.
 The perturbed system is given by \eqref{eq:distortion:homeo}.
-As it preserves the topological structure of the system, it behaves qualitatively the same.
-However, depending on the ``complexity'' of $\homeo$, it may distort more or less which can be quantified locally by how much it stretches and shrinks in various directions.
+As it preserves the topological structure of the system, it behaves \emph{qualitatively} the same, and they share the corresponding asymptotic dynamcal structures such as fixed points, limit cycles, and invariant manifolds.
+However, depending on the ``complexity'' of $\homeo$, it may distort the space (and speed) more or less which can be quantified locally by how much it stretches and shrinks in various directions.
 \begin{align}
     \dot{\vx} &= \vf(\vx)
     \\
@@ -235,7 +237,8 @@ However, depending on the ``complexity'' of $\homeo$, it may distort more or les
 	= \nabla\homeo(\invhomeo(\vy)) \vf(\invhomeo(\vy))
     % = \nabla\homeo(\vx) \vf(\vx)
 \end{align}
-If we take the difference of vector field to relate to equivalent additive perturbation, we get
+If the homeomorphism is close to identity, it makes sense to relate it to the induced additive perturbation.
+If we take the difference of vector field, we get
 \begin{align}
     \vDelta_h(\vx) &\coloneqq \vf(\vx) - \vg(\vx) =
 	\vf(\vx) -
@@ -246,9 +249,10 @@ If we take the difference of vector field to relate to equivalent additive pertu
 We treat systems equivalent if an invertible affine transformation maps one system to another.
 
 \section{Dissimilarity}
-Give a source and target system pair and distribution over trajectories, we would like to measure their dissimilarity.
-First, we consider a point-wise measure of dissimilarity measures required additive and diffeomorphic perturbation to apply to the source system to obtain the target system.
+Given a source and target system pair and distribution over trajectories, we would like to measure their dissimilarity.
+First, we consider a point-wise measure of dissimilarity that measures the required additive perturbations and diffeomorphic deformations to apply to the source system to obtain the target system.
 
+\subsection{Imperfection}
 Mapping the asymptotic structure of the two systems to align is a preferable distortion, however, since diffeomorphism is limited to smoothly equivalent systems, we need the additive perturbation to take into account the slack.
 Therefore, we first consider the minimum additive perturbation to achieve topological conjugacy.
 \begin{align}
@@ -262,11 +266,13 @@ Therefore, we first consider the minimum additive perturbation to achieve topolo
     \label{eq:d1:tc}
 \end{align}
 
+We identify this gap $\vDelta_1$ as the \emph{imperfection}.
+
+\subsection{First-order bound and the Pareto frontier}
 Let $\homeo^\ast$ be a diffeomorphism that can be used for achieving the smooth conjugacy in \eqref{eq:d1:tc}.
 Now, we want to consider the complexity of $\homeo$ and trade-off with additive perturbation.
 For this, we will do a first-order perturbation analysis.
 
-\subsection{First-order bound and the Pareto frontier}
 To link the complexity of diffeomorphism to the magnitude of additive perturbation, we seek to find the equivalence up to first order of the vector field corresponding to the diffeomorphism.
 That is, we seek to find $\vDelta(\vx)$ that maintains the topological conjugacy,
 \begin{align}
