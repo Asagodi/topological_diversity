@@ -218,7 +218,7 @@ Decomposition: Sec.~\ref{sec:decomposition}
 \subsubsection{Methods to compare dynamics}\label{sec:comparison}
 A foundational concept for the comparison of dynamics is \emph{topological conjugacy}, which formalizes the notion of two systems being dynamically equivalent under a homeomorphism that maps trajectories of one system to the other while preserving the temporal ordering (see Sec.~\ref{def:top_conj}).
 Another key approach focuses on asymptotic behavior, particularly through the study of $\omega$-limit sets, which describe the long-term evolution of trajectories.
-These sets help characterize the stability and attractor structure of a system and are often used to classify systems based on the geometry and topology of their invariant sets.
+These sets help characterize the stability and attractor structure of a system and are often used to classify systems based on the geometry and topology of their invariant sets\citep{Jordan2019a}.
 Together, these methods provide a basis for principled comparisons of dynamical systems that go beyond superficial similarity of trajectories.
 
 
@@ -239,14 +239,17 @@ However, the reliance on spectral truncation can obscure critical nonlinear feat
 %But we can capture some slow manifold behavior!
 
 %VF
-%LET’S DO THE TIME-WARP-ATTEND: LEARNING TOPOLOGICAL INVARIANTS OF DYNAMICAL SYSTEMS
 Topologically invariant feature learning using warped vector field data as augmentations\citep{moriel2024timewarpattend}.
 Comparing dynamics across learned models by learning an orbit-matching coordinate transformation between two systems through invertible residual networks\citep{chen2024dform}.
 %- orbital similarity loss (Eq.~5)  DFORM orbital similarity a noisy measure of topological equivalence
-Smooth Prototype Equivalence (SPE) fits a diffeomorphism from the given data to normal forms\citep{friedman2025characterizing}.
+Smooth prototype equivalences (SPE) is a method that fits a diffeomorphism from the given data to normal forms \citep{friedman2025characterizing}.
+However, their method is dependent on knowledge of the vector field of the target system.
+Furthermore, they have only considered limit cycle versus fixed point dynamics for their library.
 
 Comparing noisy neural population dynamics with optimal transport: metric is as an extension of Procrustes shape distance which compares average trajectories and SSD which compares marginal statistics or noise correlations\citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.
 %Comments:
+
+%Conley-Morse decomposition: ... \citep{arai2009database} \citep{kalies2017computational} \citep{chen2007vector}: periodic orbit extraction
 
 %Koopman / linear  \citep{mezic2004comparison}
 
@@ -426,17 +429,11 @@ CEBRA \citep{schneider2023learnable}
 \citep{dyer2023simplest}
 \citep{quinn2022information}
 
-
 \paragraph{Minimal}
-\citep{lafferriere2000minimal}
 \citep{chirimuuta2014minimal}
 \citep{batterman2014minimal}
-\citep{brancazio2023minimal}
-\citep{Jordan2019a}
+%cognitive Beer \citep{beer1996toward} \citep{beer2015information} + \citep{brancazio2023minimal}
 
-%cognitive Beer \citep{beer1996toward} \citep{beer2015information}
-
-%
 Canonical realization = the simplest system (in some sense) that produces the same behavior
 
 \subsubsection{Reduction/idealization/simplification/abstraction in neuroscience}
@@ -467,9 +464,17 @@ This view emphasizes abstraction over detail, acknowledging the trade-off betwee
 
 
 \subsection{Our proposal to decompose, reduce, compare and reconstruct in light of interpretability}
-%BoA
+%1. Decomposing space into BoAs
 In each basin of attraction we have one attractor.
 We simplify it's dynamics by looking at its normal form.
+
+%2. Abstracting out transients
+
+%3. A finite set of molds/motifs (abstracting out the space of asymptotic behavior)
+
+%4. Correspondence/Mapping between target and motif: homeomorphism/diffeomorphism
+
+% Inject back some detailts: additive vector field on CAs
 
 
 \paragraph{Limitation}
@@ -517,7 +522,7 @@ Context: Behavior %Computational theory in Marr's levels?
 %Interpretation in terms of contributions of the transfer functional. 
 
 %Encoding-Decoding framework NEDS
-Interpretation in terms of how difference relates to the input-output/transfer functional \citep{zhang2025neural}.
+Interpretation in terms of how difference relates to the input-output/transfer functional \citep{zhang2025neural,dinc2025latentcomputing}.
 The \emph{transfer functional} \( \mathcal{T}_f \) maps an input \( u(\cdot) \) to an output \( o(\cdot) \): % possibly given an initial condition \( x_0 \):
 \[
 \mathcal{T}_f[u](t) = h(x(t)),
@@ -767,9 +772,6 @@ metric: DSA score
 %\paragraph{DFORM} %NO CODE????
 
 \paragraph{SPE} %https://github.com/nitzanlab/prototype-equivalences
-Smooth prototype equivalences (SPE) is a method that fits a diffeomorphism from the given data to normal forms \citep{friedman2025characterizing}.
-However, their method is dependent on knowledge of the vector field of the target system.
-Furthermore, they have only considered limit cycle versus fixed point dynamics for their library.
 metric: cycle-error
 
 %\paragraph{SSMLearn} %https://github.com/haller-group/SSMLearnPy/tree/main
@@ -1579,7 +1581,7 @@ Combining the above, the system's ODE can be written as:
 \frac{d \mathbf{x}}{dt} =
 \begin{cases}
 0, & \text{if } |\mathbf{x}_i| \leq B, \, \forall i \in \{1, 2, \dots, D\} \\
--\alpha (\mathbf{x} - \text{proj}(\mathbf{x})), & \text{if } |\mathbf{x}_i| > B \, \text{for any } i \\
+-\alpha (\mathbf{x} - \text{proj}(\mathbf{x})), & \text{if } |\mathbf{x}_i| > B \, \text{for any } i. \\
 \end{cases}
 \]
 
