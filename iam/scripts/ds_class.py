@@ -384,39 +384,69 @@ class LearnableNDLinearSystem(LearnableDynamicalSystem):
         """
         return torch.zeros(self.dim)
 
-
-#BLA (better to use BCA with bca_dim=1)
-class LearnableNDBoundedLineAttractor(LearnableDynamicalSystem):
+#bistable system
+class LearnableNDBistableSystem(LearnableDynamicalSystem):
     """
-    A learnable bounded line attractor: dx/dt = alpha * (-x + ReLU(Wx + b)).
-    alpha is a learnable scalar controlling global speed.
+    A bistable system with two stable fixed points.
+    The dynamics are defined by a cubic polynomial.
     """
 
-    def __init__(
-        self,
-        W: torch.Tensor,
-        b: torch.Tensor,
-        dt: float = 0.05,
-        time_span: Tuple[float, float] = (0, 5),
-        alpha_init: float = 1.0,
-    ):
-        """
-        :param W: Weight matrix (fixed, not learnable).
-        :param b: Bias vector (fixed, not learnable).
-        :param alpha_init: Initial value for the learnable scaling factor alpha.
-        """
+    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), alpha_init: float = -1.0):
         super().__init__()
-        self.W = W
-        self.b = b
-        self.relu = nn.ReLU()
+        self.dim = dim
         self.dt = dt
         self.time_span = time_span
-        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        if alpha_init is None:
+            alpha_init = -1.0
+        else:
+            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        linear_part = torch.matmul(x, self.W.T) + self.b
-        dx_dt = -x + self.relu(linear_part)
-        return self.alpha * dx_dt
+        dx0_dt = self.alpha * (x[0] ** 3 - x[0])
+        derivatives = [dx0_dt]
+
+        if self.dim > 1:
+            residual = x[1:]
+            d_residual_dt = self.alpha * residual
+            derivatives.append(d_residual_dt)
+
+        return torch.stack(derivatives)
+
+    def invariant_manifold(self, num_points=100) -> torch.Tensor:
+        """
+        Gives the invariant manifold for the bistable system.
+        For a bistable system, the invariant manifold is the set of stable fixed points.
+        """
+        if self.dim == 1:
+            return torch.tensor([-1.0, 1.0], dtype=torch.float32).unsqueeze(0)
+        else:
+            inv_man = torch.zeros((2,self.dim))
+            inv_man[0, 0] = -1.0
+            inv_man[1, 0] = 1.0
+            return inv_man
+
+#multistable system
+class Learnable1DMultistableSystem(LearnableDynamicalSystem):
+    def __init__(self, roots: List[float], alpha_init: float = -1.0):
+        super().__init__()
+        self.register_buffer('roots', torch.tensor(roots, dtype=torch.float32))
+        if alpha_init is None:
+            alpha_init = -1.0
+        else:
+            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        self.dim = 1
+        self.dt = 0.05
+        self.time_span = (0, 5)
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        # x is 1D tensor with shape [1]
+        prod = torch.ones_like(x)
+        for r in self.roots:
+            prod = prod * (x - r)
+        return self.alpha * prod
+
+    def invariant_manifold(self, num_points=100) -> torch.Tensor:
+        return self.roots[self.alpha < 0].unsqueeze(1)  # stable fixed points if alpha < 0
 
 #LC 
 class LearnableNDLimitCycle(LearnableDynamicalSystem):
