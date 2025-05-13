@@ -367,23 +367,30 @@ Thus, the smallest additive perturbation for given the complexity of the diffeom
 \begin{align}\label{eq:decomp:triple}
     \vg(\vx) &= 
 	\vf(\vx)
+	&\qquad\text{source system}
 	\\
 	&\quad+\vDelta_1(\vx)
-	&\qquad\text{min. required for topological conjugacy}
+	%&\qquad\text{min. required for topological conjugacy}
+	&\qquad\text{imperfection}
 	\\
 	&\quad+\vDelta_2(\vx, \homeo)
 	&\qquad\text{covered by diffeomorphism}
 	\\
 	&\quad+\vDelta_3(\vx, \homeo)
-	&\qquad\text{remaining gap}
+	&\qquad\text{remaining additive gap}
 \end{align}
 
-Figure~\ref{fig:pareto} shows what this means.
+Figure~\ref{fig:pareto} illustrates the interaction between the two distortion measures---we want the simplest diffeomorphism and the smallest additive perturbation, forming a Pareto frontier for the optimal deformation.
+Point \textbf{a} represents the case explaining the full distortion solely using additive perturbation.
+Point \textbf{c} represents only using the additive perturbation to explain the imperfection that cannot be captured by any diffeomorphism.
+Point \textbf{b} represents a trade-off where the best diffeomorphism for the given complexity constraint creating additional gap for the additive perturbation.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics{pareto}
-\caption{The two measures of distortion to map the source system to the target system forms a Pareto frontier boundary. See.~\eqref{eq:decomp:triple} for the symbols.}
+\caption{The two measures of distortion to map the source system to the target system forms a Pareto frontier boundary.
+See.~\eqref{eq:decomp:triple} for the detailed explanaiton of the symbols.
+}
 \label{fig:pareto}
 \end{figure}
 
