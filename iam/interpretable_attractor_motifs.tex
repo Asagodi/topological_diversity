@@ -325,27 +325,28 @@ Interpretable learning effective dynamics (iLED) \citep{menier2025interpretable}
 %%\item surrogate dynamical systems (any citations?)
 %\end{itemize}
 
+%structuring/shaping/reducing/restricting
  \paragraph{Structuring the space of models for neural computation} %and reducing it
 Mapping families of dynamical systems to a manifold whose geometry encodes different qualitative behaviors \citep{transtrum2014model, ricci2022phase2vec, quinn2022information, Vermani2024b}.
 
 %%%decomposition is a form of reduction?
 \subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
+%decomposing space
 \paragraph{BoA and Conley decomposition} Basins of attraction + Conley’s Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
-
 \paragraph{FSM} FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
-Behaviorism is based on an engineering approach, treating the mind as a control system for the organism.
-This corresponds to an approximation of the recurrent neural dynamics (brain states) by finite state automata (behavioral states).
-Another approximations to neural dynamics is described, leading to a Platonic-like model of mind based on psychological spaces \citep{duch1998platonic}.
-%
 %Towards interpreting recurrent neural networks through probabilistic abstraction \citep{dong2020towards} % extract different models like deterministic finite automata (DFA)
-%neural automata\citep{goles2013neural, uria2024invariants}
+%Behaviorism is based on an engineering approach, treating the mind as a control system for the organism.
+%This corresponds to an approximation of the recurrent neural dynamics (brain states) by finite state automata (behavioral states).
+%Another approximations to neural dynamics is described, leading to a Platonic-like model of mind based on psychological spaces \citep{duch1998platonic}.
 
+%decomposing based on computations
 \paragraph{Dynamical motifs in RNNs}
-dynamical motifs in task-trained RNNs \citep{driscoll2024flexible}
-compositional tasks \citep{tafazoli2024building}
+Recent work has highlighted that task-trained RNNs often implement behavior through combinations of low-dimensional dynamical motifs—recurrent patterns such as fixed points, oscillatory modes, and transient trajectories that correspond to computational subroutines \citep{driscoll2024flexible}.
+These motifs serve as functional building blocks, supporting modular and flexible representations of task demands. 
+In compositional tasks, where behavior can be decomposed into simpler subtasks or reused operations, RNNs learn to combine and recombine such motifs to generalize across task conditions \citep{tafazoli2024building}.
 
 %Other
-%more spatial/network decomposition
+%decomposing spatially/ network decomposition
 %decomposition through population-based modeling\citep{glaser2020recurrent}
 %\citep{yuste2024ensembles} 
 %
@@ -355,17 +356,6 @@ compositional tasks \citep{tafazoli2024building}
 
 
 
-\subsubsection{Our proposal to decompose, reduce, compare and reconstruct}
-%BoA
-In each basin of attraction we have one attractor.
-We simplify it's dynamics by looking at its normal form.
-
-
-\paragraph{Limitation}
-Main shortcoming: difficulty with dealing with complicated attractors.
-When is decomposition of attractor into motifs possible?
-We focus on understandable attractors for now. 
-These are covered by our method to build higher-dimensional composite models from lower-dimensional dynamical motifs.
 
 
 %INTERPRET
@@ -413,7 +403,7 @@ Finite-state abstractions \citep{oliva2019fsm, cotteret2024fsm}, probabilistic i
 Understanding, as a scientific aim, is not exhausted by accurate prediction or description \citep{chirimuuta2021prediction}.
 Philosophers of science have long emphasized that understanding depends on idealization and explanatory relevance, not just faithful representation.
 For example, \citet{deregt2017understanding} argues that understanding hinges on the intelligibility of theories for human agents, while  \citet{potochnik2017idealization,potochnik2020idealization,potochnik2021levels} defends the heuristic and epistemic value of idealization, especially in complex biological systems.
-\citet{guest2023logical} further explore how logical structure and representational clarity shape the conditions under which scientific models promote genuine understanding.
+%\citet{guest2023logical} further explore how logical structure and representational clarity shape the conditions under which scientific models promote understanding.
 
 Understanding brains \citep{marder2015understanding} \citep{lindsay2023testing} \citep{barman2024towards} \citep{dowling2018understanding}
 
@@ -438,12 +428,13 @@ CEBRA \citep{schneider2023learnable}
 
 
 \paragraph{Minimal}
-\citep{beer1996toward}
 \citep{lafferriere2000minimal}
 \citep{chirimuuta2014minimal}
 \citep{batterman2014minimal}
 \citep{brancazio2023minimal}
 \citep{Jordan2019a}
+
+%cognitive Beer \citep{beer1996toward} \citep{beer2015information}
 
 %
 Canonical realization = the simplest system (in some sense) that produces the same behavior
@@ -477,6 +468,18 @@ II. decomposition
 
 %\subsection{A timescale angle to reduction}
 %\citep{cavanagh2020diversity}
+
+\subsection{Our proposal to decompose, reduce, compare and reconstruct in light of interpretability}
+%BoA
+In each basin of attraction we have one attractor.
+We simplify it's dynamics by looking at its normal form.
+
+
+\paragraph{Limitation}
+Main shortcoming: difficulty with dealing with complicated attractors.
+When is decomposition of attractor into motifs possible?
+We focus on understandable attractors for now. 
+These are covered by our method to build higher-dimensional composite models from lower-dimensional dynamical motifs.
 
 
 %%%%%%%%%%%%
@@ -610,9 +613,9 @@ Building upon the dissimilarity measure defined earlier, we extend it to compare
 The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
 This allows us to projects the target system onto the motif library, producing a vector of distances to each motif.
 
-%intuition
+%intuition/implication for TTRNN Plationic convergence
 Convergence during training of RNNs: 
-For tasks that rely on analog memory, the system's trajectory should exhibit low dissimilarity to a  continuous attractor dynamical motif that is diffeomorphic to the memory manifold.
+For tasks that rely on analog memory, the system's trajectory should exhibit low dissimilarity to a  continuous attractor dynamical motif that is diffeomorphic to the memory manifold\citep{beer2018laformation,ribeiro2020beyond}.
 This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
 
 
