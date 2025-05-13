@@ -757,10 +757,12 @@ Demonstration: Sec.~\ref{sec:target_demonstrations}
 
 \subsection{Finding the deformation to a ring attractor}\label{sec:imp_ring}
 %justification of this  experiment
-How do deformed attractors look through our motif-based analysis?
+% How do deformed attractors look through our motif-based analysis?
+%This experiment should shed light on the claim: We propose a library of canonical computations and a new measure of dissimilarity that allows us to group systems based on their effective behavior by explicitly considering both deformations that break the topological conjugacy as well as diffeomorphisms that preserve it.
+
 
 %description
-See for details Supp.Sec.~\ref{sec:homeopert_exp_details}.
+See for details Supp.Sec.~\ref{sec:homeopert_exp_description} and \ref{sec:vfpert_exp_description}.
 
 %interpretation of results
 The method recovers the deformed ring attractor for both types of deformation, see Fig.~\ref{fig:ring_pert_fig}.
@@ -854,37 +856,37 @@ Capping a Neural ODE or an i-ResNet with a single linear layer is sufficient to 
 
 %\subsubsection{Implementations}
 
-
-
 \subsection{Approximating diffeomorphisms}\label{sec:diffeomorphisms}
 %any homeomorphism on a $p$-dimensional Euclidean space can be approximated by a Neural ODE or an i-ResNet operating on a $2p$-dimensional Euclidean space \citep{zhang2020approximation}
 Any homeomorphism of $\mathbb {R} ^{n}$ can be approximated by a Neural ODE operating on $\mathbb {R} ^{2n+1}$, proved by combining Whitney embedding theorem for manifolds and the universal approximation theorem for neural networks  \citep{zhang2020approximation}.
 
 %diffeomorphisms from gradient information of desired costs \citep{lai2021parallelised}
 
-\subsubsection{Flow-based}
+\subsection{Flow-based approximation}
 \paragraph{Neural ODEs}
 Neural ODEs \citep{chen2018neural} represent the latest instance of continuous deep learning model for time series, first developed in the context of continuous recurrent networks \citep{cohen1983absolute}.
 %
 Neural ODEs model the continuous trajectory of the hidden state \( \mathbf{h}(t) \) as the solution to an ordinary differential equation parameterized by a neural network. Mathematically, the dynamics are defined by:
-
 \[
 \frac{d \mathbf{h}(t)}{dt} = f(\mathbf{h}(t), t, \theta)
 \]
-
-where \( \mathbf{h}(t) \) is the hidden state at time \( t \), \( f \) is a neural network with parameters \( \theta \), and \( t \) represents time. Given an initial condition \( \mathbf{h}(t_0) = \mathbf{h}_0 \), the evolution of the hidden state over time is computed by solving the ODE using numerical solvers, allowing the model to capture complex, continuous transformations.
+where \( \mathbf{h}(t) \) is the hidden state at time \( t \), \( f \) is a neural network with parameters \( \theta \), and \( t \) represents time.
+Given an initial condition \( \mathbf{h}(t_0) = \mathbf{h}_0 \), the evolution of the hidden state over time is computed by solving the ODE using a numerical solver, allowing the model to capture complex, continuous transformations.
 
 %example of f
-\textbf{Fully Connected Feedforward Neural Network}:
+\subsubsection{Feedforward Neural Network}\label{sec:fnn}
+We fill be using a Multi-layer Perceptron as our parametrized vector field. 
+A single block is described by
 \[
 f(\mathbf{h}(t), t, \theta) = W_2 \sigma(W_1 \mathbf{h}(t) + \mathbf{b}_1) + \mathbf{b}_2,
 \]
 with \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( W_1, W_2 \) are weight matrices, and \( \mathbf{b}_1, \mathbf{b}_2 \) are bias vectors.
- This form models the ODE dynamics using a simple two-layer feedforward network.
+This form models the ODE dynamics using a simple two-layer feedforward network.
 
-Universal approximation properties of neural operator architectures \citep{lu2021learning, kissas2022learning, kovachki2021universal}.
+%\subsubsection{UAP as DS}
+%Universal approximation properties of neural operator architectures \citep{lu2021learning, kissas2022learning, kovachki2021universal}.
 
-NODE\citep{finlay2020trainnode}
+
 
 
 \paragraph{Applications}
@@ -1506,12 +1508,12 @@ x(t) = x_0 e^{\alpha t}.
 %%RA eqs
 \subsection{Ring attractor}\label{sec:ra}
 The ring attractor system is defined in polar coordinates as follows:
-\[
+\begin{equation}\label{eq:ra}
 \begin{aligned}
 \dot{r} &= \alpha r(r - 1), \\
 \dot{\theta} &= 0.
 \end{aligned}
-\]
+\end{equation}
 
 Transforming to Cartesian coordinates using \( x = r \cos\theta \) and \( y = r \sin\theta \), the dynamics become:
 \[
@@ -1656,10 +1658,8 @@ with $x\in \reals^{D}$ where $D=\sum_i^N D_i$.
 %%%%%%
 \newpage
  \section{Target systems}\label{sec:target_systems}
- Time points: 100
- Trajectories: 15
-
-\subsection{Ring attractors}
+% Time points: ...
+% Trajectories: 50
 
 \subsection{Limit cycles}
 \subsubsection{Random diffeomorphism of a limit cycle}
@@ -1699,14 +1699,34 @@ If $\rho>313$, then the unique stable limit cycle is an attractor in the Lorenz 
 \subsection{Approximate continuous attractors}
 \subsubsection{Line attractor}
 
-\subsubsection{Ring attractor}
-\paragraph{Homeomorphism based perturbation}
+%\subsubsection{Ring attractor}
+\subsubsection{Homeomorphism based perturbation}\label{sec:homeopert_exp_description}
+We sample trajectories from a ring attractor $\{x(t)\}_i^0$ by integrating the ring attractor, Eq.~\ref{eq:ra}.
+The initial points are sampled randomly in the annulus .5 away from the ring attractor (which is the circle with radius 1).
+%
+We define a random homeomorphism $\Phi_1$ by randomly setting the weights of a Neural ODE.
+%
+We interpolate between the identity and $\Phi_1$ by rescaling the vector field with a scalar $s \in \{0, 0.1, \dots, 1\}$ and get homeomorphisms $\Phi_s$.
+%
+We map the trajectories with $\Phi_s$ for each $s\in \{0, 0.1, \dots, 1\}$, and get target trajectories $\{x(t)\}_i^s = \Phi_s(\{x(t)\}_i^0)$.
+%
+See for further details  Supp.Sec.~\ref{sec:homeopert_exp_details}.
 
 
-\paragraph{Vector field based perturbation}
- A smooth perturbation is sampled from a zero-mean Gaussian process with RBF kernel $k(x, x') = \sigma^2 \exp(-\|x - x'\|^2 / 2\ell^2)$, where $\ell$ is drawn uniformly from $[0.1, 1.0]$.
- The perturbation is normalized to have fixed norm.
-%LC: a rotational term $(-y, x)$ can be added to the perturbation before normalization to inject limit-cycle-like structure.
+
+\subsubsection{Vector field based perturbation}\label{sec:vfpert_exp_description}
+ A smooth perturbation is sampled from a zero-mean Gaussian process with Radial Basis Function (RBF) kernel $k(x, x') = \sigma^2 \exp(-\|x - x'\|^2 / 2\ell^2)$, where $\ell$ is drawn uniformly from $[0.1, 1]$.
+ %     kernel = ConstantKernel(1.0, (1e-4, 1e1)) * RBF(length_scale, (1e-4, 1e1)) 
+ %    #generate random vector field
+%    perturb_u = np.random.multivariate_normal(np.zeros(xy.shape[0]), K).reshape(X.shape)
+%    perturb_v = np.random.multivariate_normal(np.zeros(xy.shape[0]), K).reshape(X.shape)
+ %LC: a rotational term $(-y, x)$ can be added to the perturbation before normalization to inject limit cycle structure.
+The perturbation is normalized to have fixed norm $s \in \{0, 0.01, \dots, 0.15\}$.
+%
+The resulting perturbed vector field is then numerically integrated resulting in target trajectories $\{x(t)\}_i^s$.
+%
+See for further details  Supp.Sec.~\ref{sec:vfpert_exp_details}.
+
 
 
 
@@ -1722,7 +1742,10 @@ The evolution of \( x(t) \) is described by the differential equation:
 \end{equation}
 where \( f_\Theta(x(t), t) \) is a neural network parameterized by \( \Theta \), a Multi-Layer Perceptor (MLP).
 The solution to this equation is solved with \texttt{torchdiffeq}'s \texttt{odeint}, with initial condition \( x(0) = x_0 \), for $t\in[0,1]$\citep{torchdiffeq}.
+The inverse is acquired by integrating in reverse time i.e. $t\in[1,0]$.
 
+%MLP
+We are using 2 layer MLPs as our parametrized vector field with a ReLU activation function, see further Supp.Sec.~\ref{sec:fnn}.
 
 
 %\paragraph{Other proposals}
@@ -1808,7 +1831,7 @@ The solution to this equation is solved with \texttt{torchdiffeq}'s \texttt{odei
 
 
 
-\newpage
+
 \section{Training}
 Optimizer: Adam \citep{kingma2014adam}
 
@@ -1824,6 +1847,7 @@ Optimizer: Adam \citep{kingma2014adam}
 \newpage
 \section{Experiments}
 \subsection{Homeomorphism-based perturbation experiment}\label{sec:homeopert_exp_details}
+See also Supp.Sec.~\ref{sec:homeopert_exp_description}.
 
 \begin{table}[h]
 \centering
@@ -1851,7 +1875,7 @@ Optimizer: Adam \citep{kingma2014adam}
 \midrule
 \multirow{5}{*}{Dynamical System \& Simulation} %add AnalyticalDS?
     & Time step for integration: $dt=0.2$ \\
-    & Time span: \texttt{[0.0, 2.0]} \\
+    & Time span: \texttt{[0, 2]} \\
     %& Noise standard deviation: \texttt{0.0} \\
     %& Ring vector field :\\
     %& Initial condition mode: \texttt{random} \\
@@ -1872,14 +1896,18 @@ Optimizer: Adam \citep{kingma2014adam}
 \end{tabular}
 \end{table}
 
-\subsection{Vector field-based perturbation experiment}
 
+
+
+\subsection{Vector field-based perturbation experiment}\label{sec:vfpert_exp_details}
+See also Supp.Sec.~\ref{sec:vfpert_exp_description}.
 
 
 
 
 \newpage
 \section{Analysis}
+
 \subsection{Comparing and evaluating}
 
 \subsubsection{Jacobian}
