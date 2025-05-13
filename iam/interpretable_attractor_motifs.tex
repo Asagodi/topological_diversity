@@ -532,7 +532,7 @@ where \( \mathcal{U} \) is a suitable class of input signals (e.g., all inputs w
 
 %context: computation %Representation and algorithm in Marr's levels
 %\paragraph{Understanding computation in terms of dynamics}
-Interpretation in terms of a ``compressed'' description of the dynamics.
+Interpretation in terms of an \emph{effective} description of the dynamics.
 task's computational demands (e.g., continuous parametrization of memory)
 
 %\paragraph{Reduction of dynamics}
@@ -540,7 +540,12 @@ task's computational demands (e.g., continuous parametrization of memory)
 %\ascomment{What is simple behavior in terms of the transfer function?}
 
 \subsection{Dynamical motif matching}
-The space of theories
+The space of theories for neural computation is vast \citep{koulakov2002robust}.
+A typical approach to tame this complexity is to create a finite number of categories of distinct types of computations or implementations and classify neural activity behavior according to this set (e.g. fixed-point topology \citep{sussillo2013blackbox}).
+These categories are typically defined in a way that assumes an unrealistic degree of simplicity.
+What is often overlooked in this process is the abstraction/idealization steps that is necessary to fit real-world (including RNNs) behavior into these molds.
+%the acceptance of molds.
+After having defined a set of molds, i.e. dynamical motifs, given a target systems behavior, we want to know into which mold its dynamics fits and how much we have to push/deform to make it fit.
 
 \subsubsection{Recognizable geometric-topological features}
 %repetition with sec:ctd
@@ -725,12 +730,10 @@ Solution (?): injectivity per orbit (still allow for non-injectivity across orbi
 %%%%%%%%%%%%%%%%%
 \section{Results}
 An imperfect ring attractor: Sec.~\ref{sec:imp_ring}
-
 A noisy target: Sec.~\ref{sec:noisy}
-
 Compared methods: Sec.~\ref{sec:compare_method}
-
 Demonstration: Sec.~\ref{sec:target_demonstrations}
+
 
 \subsection{Finding the deformation to a ring attractor}\label{sec:imp_ring}
 %justification of this  experiment
@@ -1690,8 +1693,8 @@ and the inverse is computed by reversing the block order:
 \[
 x = \text{InvertibleResNet}^{-1}(y) = \text{Block}_1^{-1}(\dots \text{Block}_L^{-1}(y)).
 \]
-
-This structure guarantees that the network is bijective, preserving the volume and making it suitable for density estimation and transformations in generative models.
+%implemented through 
+%This structure guarantees that the network is bijective, preserving the volume and making it suitable for density estimation and transformations in generative models.
 
 %\subsection{Normalizing flow}
 
@@ -1787,8 +1790,7 @@ Optimizer: Adam \citep{kingma2014adam}
     & Type: \texttt{node} (Neural ODE) \\
     & Hidden layers: \texttt{[128]} \\
     & Activation: \texttt{ReLU} \\
-    & Initialization: \texttt{small} \\
-    & Init mean/std: \texttt{0.02} / \texttt{0.5} \\
+    & Initialization: \texttt{random} with weight sampled from $\mathcal{N})(0.02,0.5)$ \\
 \midrule
 \multirow{3}{*}{Learned Homeomorphism} 
     & Type: \texttt{node} (Neural ODE) \\
