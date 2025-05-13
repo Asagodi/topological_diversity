@@ -755,14 +755,21 @@ Compared methods: Sec.~\ref{sec:compare_method}
 Demonstration: Sec.~\ref{sec:target_demonstrations}
 
 
-\subsection{Finding the deformation to a ring attractor}\label{sec:imp_ring}
+
 %justification of this  experiment
 % How do deformed attractors look through our motif-based analysis?
 %This experiment should shed light on the claim: We propose a library of canonical computations and a new measure of dissimilarity that allows us to group systems based on their effective behavior by explicitly considering both deformations that break the topological conjugacy as well as diffeomorphisms that preserve it.
 
-
+\subsection{Quantifying the deformation to a ring attractor}\label{sec:imp_ring}
+To evaluate the effectiveness of our motif-based framework, we investigate how deformed ring attractors deviate from a canonical ring attractor. 
+The dissimilarity measure can account for two types of variation: 
+(i) topological deformations that preserve the qualitative structure via diffeomorphisms, and 
+(ii) perturbations that break topological conjugacy, altering the underlying computation.
+%
 %description
-See for details Supp.Sec.~\ref{sec:homeopert_exp_description} and \ref{sec:vfpert_exp_description}.
+We apply two different deformations to the ring attractor:
+(i) warped by diffeomorphic deformations (see Supp.Sec.~\ref{sec:homeopert_exp_description}) and 
+(ii) adding a small random perturbation to the ring attractor vector field to induce dynamics that increasingly break topological equivalence (see Supp.Sec.~\ref{sec:vfpert_exp_description}).
 
 %interpretation of results
 The method recovers the deformed ring attractor for both types of deformation, see Fig.~\ref{fig:ring_pert_fig}.
@@ -1699,6 +1706,10 @@ If $\rho>313$, then the unique stable limit cycle is an attractor in the Lorenz 
 \subsection{Approximate continuous attractors}
 \subsubsection{Line attractor}
 
+
+
+
+
 %\subsubsection{Ring attractor}
 \subsubsection{Homeomorphism based perturbation}\label{sec:homeopert_exp_description}
 We sample trajectories from a ring attractor $\{x(t)\}_i^0$ by integrating the ring attractor, Eq.~\ref{eq:ra}.
@@ -1740,7 +1751,7 @@ The evolution of \( x(t) \) is described by the differential equation:
 \begin{equation}
     \frac{d}{dt} x(t) = f_\Theta(x(t)),
 \end{equation}
-where \( f_\Theta(x(t), t) \) is a neural network parameterized by \( \Theta \), a Multi-Layer Perceptor (MLP).
+where \( f_\Theta(x(t), t) \) is a Multi-Layer Perceptor (MLP) parameterized by \( \Theta \).
 The solution to this equation is solved with \texttt{torchdiffeq}'s \texttt{odeint}, with initial condition \( x(0) = x_0 \), for $t\in[0,1]$\citep{torchdiffeq}.
 The inverse is acquired by integrating in reverse time i.e. $t\in[1,0]$.
 
