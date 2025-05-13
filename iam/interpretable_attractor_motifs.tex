@@ -481,6 +481,15 @@ II. decomposition
 
 %%%%%%%%%%%%
 \section{Dynamical motif matching}\label{sec:dmm}
+%the philosophy
+The space of theories for neural computation is vast \citep{koulakov2002robust}.
+A typical approach to tame this complexity is to create a finite number of categories of distinct types of computations or implementations and classify neural activity behavior according to this set (e.g. fixed-point topology \citep{sussillo2013blackbox}).
+These categories are typically defined in a way that assumes an unrealistic degree of simplicity.
+What is often overlooked in this process is the abstraction/idealization steps that is necessary to fit real-world (including RNNs) behavior into these molds.
+%the acceptance of molds.
+After having defined a set of molds, i.e. dynamical motifs, given a target systems behavior, we want to know into which mold its dynamics fits and how much we have to push/deform to make it fit.
+
+%one way to implement the philosophy
 We propose a method for comparing dynamical systems for several purposes, such as identifying the underlying computations being performed or determining whether two brains are processing information in a similar manner. In nature, it is unlikely that two dynamical systems will be exactly identical.
 While topological conjugacy provides a precise comparison, it is often too strict for practical use.
 On the other hand, directly comparing the differences in vector fields is not always interpretable, as it does not provide immediate insights into the similarities or the specific behaviors of the systems.
@@ -538,14 +547,6 @@ task's computational demands (e.g., continuous parametrization of memory)
 %\paragraph{Reduction of dynamics}
 %Embed attractor of intrinsic dimension $N$ into $\reals^{n+1}$ to be able to map point in the basin of attraction onto representative points on the stable manifold of the attractor motif.
 %\ascomment{What is simple behavior in terms of the transfer function?}
-
-\subsection{Dynamical motif matching}
-The space of theories for neural computation is vast \citep{koulakov2002robust}.
-A typical approach to tame this complexity is to create a finite number of categories of distinct types of computations or implementations and classify neural activity behavior according to this set (e.g. fixed-point topology \citep{sussillo2013blackbox}).
-These categories are typically defined in a way that assumes an unrealistic degree of simplicity.
-What is often overlooked in this process is the abstraction/idealization steps that is necessary to fit real-world (including RNNs) behavior into these molds.
-%the acceptance of molds.
-After having defined a set of molds, i.e. dynamical motifs, given a target systems behavior, we want to know into which mold its dynamics fits and how much we have to push/deform to make it fit.
 
 \subsubsection{Recognizable geometric-topological features}
 %repetition with sec:ctd
