@@ -7,6 +7,9 @@ import matplotlib.colors as mcolors
 from matplotlib.ticker import MaxNLocator
 from matplotlib.lines import Line2D
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from scipy.spatial import Delaunay
 import seaborn as sns
 from typing import List, Optional
 import pandas as pd
@@ -347,13 +350,16 @@ def plot_trajectories_allmotifs(
 
 
 
-
 def plot_trajectories_3d(
     trajectories_list,
     colors: Optional[List[str]] = None,
     labels: Optional[List[str]] = None,
     elev: float = 20,
     azim: float = 30,
+    plot_start: bool = True, start_color: str = 'blue', start_size: int = 50,
+    plot_end: bool = True, end_color: str = 'red', end_size: int = 50,
+    save_name: Optional[str] = None,
+    save_dir: Optional[str] = None,
 ) -> None:
     """
     Visualizes multiple sets of 3D trajectories in a 3D plot.
@@ -388,15 +394,26 @@ def plot_trajectories_3d(
                 color=color,
                 alpha=0.8,
             )
-            ax.scatter(
-                initial_conditions[i, 0],
-                initial_conditions[i, 1],
-                initial_conditions[i, 2],
-                color='black',
-                marker='o',
-                s=50,
-                alpha=0.8,
-            )
+            if plot_start:
+                ax.scatter(
+                    initial_conditions[i, 0],
+                    initial_conditions[i, 1],
+                    initial_conditions[i, 2],
+                    color=start_color,
+                    marker='o',
+                    s=start_size,
+                    alpha=0.8,
+                )
+            if plot_end:
+                ax.scatter(
+                    trajectories[i, -1, 0],
+                    trajectories[i, -1, 1],
+                    trajectories[i, -1, 2],
+                    color=end_color,
+                    marker='o',
+                    s=end_size,
+                    alpha=0.8,
+                )
 
         # One legend entry per trajectory set
         legend_elements.append(Line2D([0], [0], color=color, lw=2, label=label))
@@ -417,8 +434,75 @@ def plot_trajectories_3d(
 
     ax.legend(handles=legend_elements)
     plt.tight_layout()
+    if save_name:
+        save_path = f"{save_dir}/{save_name}" if save_dir else save_name
+        plt.savefig(save_path, dpi=300, bbox_inches='tight', transparent=True)
     plt.show()
 
+def plot_trajectories_with_surface(
+    trajectories ,  # (B, T, 3)
+    surface_points = None,  # (P, 3)
+    surface_color: str = 'lightgray',
+    surface_alpha: float = 0.5,
+    traj_color: str = 'blue',
+    label: Optional[str] = None,
+    elev: float = 20,
+    azim: float = 30,
+    plot_start: bool = True, start_color: str = 'blue', start_size: int = 50,
+    plot_end: bool = True, end_color: str = 'red', end_size: int = 50,
+    save_name: Optional[str] = None,
+    save_dir: Optional[str] = None,
+) -> None:
+    """
+    Plots a batch of 3D trajectories and optionally a surface defined by 3D points.
+
+    :param trajectories: Tensor of shape (B, T, 3)
+    :param surface_points: Optional tensor of shape (P, 3) for surface triangulation.
+    """
+    assert trajectories.ndim == 3 and trajectories.shape[2] == 3, "Trajectories must be of shape (B, T, 3)"
+
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+
+    B, T, _ = trajectories.shape
+    traj_np = trajectories.detach().cpu().numpy()
+
+    for i in range(B):
+        ax.plot(traj_np[i, :, 0], traj_np[i, :, 1], traj_np[i, :, 2], color=traj_color, alpha=0.8)
+
+        if plot_start:
+            ax.scatter(*traj_np[i, 0], color=start_color, s=start_size, alpha=0.8)
+
+        if plot_end:
+            ax.scatter(*traj_np[i, -1], color=end_color, s=end_size, alpha=0.8)
+
+    if label:
+        legend_elements = [Line2D([0], [0], color=traj_color, lw=2, label=label)]
+        ax.legend(handles=legend_elements)
+
+    if surface_points is not None:
+        assert surface_points.shape[1] == 3, "Surface points must be (P, 3)"
+        points_np = surface_points.detach().cpu().numpy()
+        tri = Delaunay(points_np[:, :2])  # Triangulate in XY, use Z for height
+        verts = [points_np[simplex] for simplex in tri.simplices]
+        poly = Poly3DCollection(verts, color=surface_color, alpha=surface_alpha)
+        ax.add_collection3d(poly)
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.view_init(elev=elev, azim=azim)
+
+    for axis in [ax.xaxis, ax.yaxis, ax.zaxis]:
+        locs = axis.get_data_interval()
+        ticks = [clean_tick(locs[0]), clean_tick(locs[1])]
+        axis.set_ticks(ticks)
+
+    plt.tight_layout()
+    if save_name:
+        save_path = f"{save_dir}/{save_name}" if save_dir else save_name
+        plt.savefig(save_path, dpi=300, bbox_inches='tight', transparent=True)
+    plt.show()
 
 def plot_transformed_vector_field(transformed_points, transformed_vector_field):
     """
@@ -446,7 +530,28 @@ def plot_transformed_vector_field(transformed_points, transformed_vector_field):
     ax.grid()
     plt.show()
 
+def plot_deformed_cylinder_surface(ax, surface_points, color='lightblue', alpha=0.5):
+    xyz = surface_points
+    x, y, z = xyz[:, 0], xyz[:, 1], xyz[:, 2]
 
+    # Step 1: Estimate angular coordinate θ
+    theta = np.arctan2(y, x)  # still valid even for deformed cylinders
+
+    # Step 2: Build 2D parameterization (θ, z)
+    param_2d = np.stack([theta, z], axis=1)
+
+    # Step 3: Triangulate in parameter space
+    tri = Delaunay(param_2d)
+
+    # Step 4: Map triangles back to 3D space
+    verts = [xyz[simplex] for simplex in tri.simplices]
+    poly = Poly3DCollection(verts, facecolor=color, alpha=alpha)
+    ax.add_collection3d(poly)
+
+    ax.set_box_aspect([1, 1, 1])  # aspect ratio is 1:1:1
+    ax.set_xlim([-1.5, 1.5])
+    ax.set_ylim([-1.5, 1.5])
+    ax.set_zlim([-1.5, 1.5])
 
 
 
@@ -457,25 +562,70 @@ def radial_scale(r: np.ndarray, r_threshold: float = 1.1) -> np.ndarray:
     scale[mask] = r_threshold / (r[mask] + 1e-8)  # Avoid division by zero
     scale[~mask] = 1.0
     return scale
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import griddata
+from scipy.ndimage import gaussian_filter
+from matplotlib.colors import Normalize
+from matplotlib.patches import FancyArrow
 
-def plot_vector_field_fixedquivernorm_speedcontour(X, Y, U, V, trajectories_pertring, title=None,
-                                                   scale=1.0, color='teal', cmap='plasma', traj_color='k',
-                                                   alpha=0.5, min_val_plot=1.25, vmin_log=-6, vmax_log=4,
-                                                   smoothing_sigma=1.0, upsample_factor=8):
-    """Plot a vector field with scaling and fixed log speed contour range."""
+
+def plot_vector_field_fixedquivernorm_speedcontour(
+    X, Y, U, V, trajectories_pertring,
+    title=None,
+    background_color='white',
+    scale=1.0,
+    color='teal',
+    cmap='plasma',
+    traj_color='k',
+    figsize=(6, 6),
+    alpha=0.5,
+    min_val_plot=1.25,
+    vmin_log=-6,
+    vmax_log=4,
+    level_step=1,
+    smoothing_sigma=1.0,
+    upsample_factor=8,
+    draw_arrows=True,
+    save_name=None
+):
+    """
+    Plot a vector field with scaled arrows and log-speed contours at fixed increments.
+
+    Parameters:
+        X, Y          : 2D meshgrid arrays for coordinates
+        U, V          : 2D arrays for vector components at (X, Y)
+        trajectories_pertring : array of shape (N_traj, T, 2) for plotting trajectories
+        title         : plot title
+        background_color : 'white' or 'black'
+        scale         : global scaling factor for arrow sizes (currently unused)
+        color         : not used (reserved for future vector coloring)
+        cmap          : colormap for log-speed contours
+        traj_color    : color for trajectory lines
+        figsize       : figure size tuple
+        alpha         : transparency for trajectory lines
+        min_val_plot  : plot limits (xlim and ylim)
+        vmin_log, vmax_log : bounds for log-speed color levels
+        level_step    : interval between contour levels (e.g., 1 for integer steps)
+        smoothing_sigma : standard deviation for optional Gaussian smoothing
+        upsample_factor : factor to interpolate data grid for smoother contour plot
+    """
+    # Compute speed and log-speed
     speed = np.sqrt(U**2 + V**2)
-    log_speed = np.log(speed + 1e-8)
+    log_speed = speed
+    log_speed = np.log10(speed + 1e-8)
 
+    # Scale vector magnitude radially
     R = np.sqrt(X**2 + Y**2)
     scale_factor = radial_scale(R)
-    U_scaled = U * scale_factor
-    V_scaled = V * scale_factor
+    # U_scaled = U * scale_factor
+    # V_scaled = V * scale_factor
 
-    # Normalize vectors for uniform arrow length
+    # Normalize vectors for uniform arrow lengths
     U_unit = U / (speed + 1e-8)
     V_unit = V / (speed + 1e-8)
 
-    # Interpolation to a finer grid
+    # Interpolate log speed to finer grid
     x_fine = np.linspace(X.min(), X.max(), X.shape[1] * upsample_factor)
     y_fine = np.linspace(Y.min(), Y.max(), Y.shape[0] * upsample_factor)
     X_fine, Y_fine = np.meshgrid(x_fine, y_fine)
@@ -487,47 +637,92 @@ def plot_vector_field_fixedquivernorm_speedcontour(X, Y, U, V, trajectories_pert
         method='cubic',
         fill_value=np.nan
     )
-
-    # Optional Gaussian smoothing
     log_speed_fine = gaussian_filter(log_speed_fine, sigma=smoothing_sigma)
-
-    # Clip the log speed to a fixed range
     log_speed_fine = np.clip(log_speed_fine, vmin_log, vmax_log)
 
-    # Plot setup
-    plt.rcParams['axes.facecolor'] = 'black'
-    plt.rcParams['figure.facecolor'] = 'black'
-    fig, ax = plt.subplots(figsize=(4, 4))
+    # Define discrete contour levels
+    levels = np.arange(vmin_log, vmax_log + level_step, level_step)
+
+    # Set up figure and axis
+    font_color = 'white' if background_color == 'black' else 'black'
+    plt.rcParams['axes.facecolor'] = background_color
+    plt.rcParams['figure.facecolor'] = background_color
+    fig, ax = plt.subplots(figsize=figsize)
     ax.set_aspect('equal')
-    ax.set_facecolor('black')
-    ax.set_title(title, color='white')
+    ax.set_facecolor(background_color)
+    if title:
+        ax.set_title(title, color=font_color)
 
-    # Contour plot with fixed color limits
-    contour = ax.contourf(X_fine, Y_fine, log_speed_fine, levels=100, cmap=cmap, alpha=0.8, vmin=vmin_log, vmax=vmax_log)
+    # Filled contour plot of log-speed
+    contour = ax.contourf(
+        X_fine, Y_fine, log_speed_fine,
+        levels=levels,
+        cmap=cmap,
+        alpha=0.8
+    )
 
-    # Colorbar
+    # Colorbar formatting
     cbar = plt.colorbar(contour, ax=ax, shrink=0.75)
-    cbar.set_label('log speed', color='white')
-    cbar.ax.yaxis.set_tick_params(color='white')
-    plt.setp(plt.getp(cbar.ax.axes, 'yticklabels'), color='white')
+    cbar.set_label('log speed', color=font_color)
+    cbar.ax.yaxis.set_tick_params(color=font_color)
+    plt.setp(cbar.ax.get_yticklabels(), color=font_color)
 
-    # Quiver
-    ax.quiver(X, Y, U_unit, V_unit, color='white', scale=30)
+    # Quiver plot of normalized vectors
+    ax.quiver(X, Y, U_unit, V_unit, color=font_color, scale=30)
 
-    # Trajectories
-    for i in range(trajectories_pertring.shape[0]):
-        ax.plot(trajectories_pertring[i, :, 0], trajectories_pertring[i, :, 1], color=traj_color, alpha=0.5)
-
+    # Plot trajectories
+    for traj in trajectories_pertring:
+        ax.plot(traj[:, 0], traj[:, 1], color=traj_color, alpha=alpha)
+        if draw_arrows:
+                    # Add arrow in the middle
+            mid_idx = int(len(traj) * 0.1)
+            #print(mid_idx)
+            if mid_idx + 1 < len(traj):
+                x_start, y_start = traj[mid_idx]
+                x_end, y_end = traj[mid_idx + 1]
+                dx = x_end - x_start
+                dy = y_end - y_start
+            #     ax.quiver(
+            #     x_start, y_start, dx, dy,
+            #     angles='xy',
+            #     scale_units='xy',
+            #     scale=1,
+            #     color=traj_color,
+            #     width=0.025,
+            #     headwidth=3,
+            #     headlength=4,
+            #     headaxislength=3.5,
+            #     alpha=alpha
+            # )
+                ax.annotate(
+                    '',
+                    xy=(x_end, y_end),
+                    xytext=(x_start, y_start),
+                    arrowprops=dict(arrowstyle='-|>', color=traj_color, lw=1.5),
+                )
+        #         arrow = FancyArrow(
+        #     x_start, y_start, dx, dy,
+        #     #arrowstyle='-|>',  # triangle-style
+        #     width=0.01,
+        #     length_includes_head=True,
+        #     head_width=0.1,
+        #     head_length=0.1,
+        #     color=traj_color,
+        #     alpha=alpha
+        # )
+        #ax.add_patch(arrow)
+    # Axis limits and formatting
     ax.set_xlim(-min_val_plot, min_val_plot)
     ax.set_ylim(-min_val_plot, min_val_plot)
     ax.set_xticks([])
     ax.set_yticks([])
 
+    if save_name:
+        plt.savefig(save_name, bbox_inches='tight', dpi=300)
     plt.show()
 
-
 def plot_vector_field_coloredquivernorm(X, Y, U, V, trajectories_pertring, title=None, normalize_quivers=False,
-                                        cmap='plasma', traj_color='orange', alpha=0.5, save_name=None,
+                                        cmap='plasma', traj_color='orange', alpha=0.5, save_name=None, figsize=(6, 6),
                                         min_val_plot=1.25, vmin_log=None, vmax_log=None, background_color='white'):
     """Plot vector field with fixed-length quivers colored by log speed."""
     speed = np.sqrt(U**2 + V**2)
@@ -555,7 +750,7 @@ def plot_vector_field_coloredquivernorm(X, Y, U, V, trajectories_pertring, title
     # Plot setup
     plt.rcParams['axes.facecolor'] = background_color
     plt.rcParams['figure.facecolor'] = background_color
-    fig, ax = plt.subplots(figsize=(4, 4))
+    fig, ax = plt.subplots(figsize=figsize)
     ax.set_aspect('equal')
     ax.set_facecolor(background_color)
     ax.set_title(title, color=font_color)
@@ -636,6 +831,7 @@ def plot_jacobian_norms(df: pd.DataFrame, save_dir: str, save_name: str = "jacob
 def plot_losses_and_jacobian_norms(
     df: pd.DataFrame,
     save_dir: str,
+    plot_error_scale: str = "linear",
     save_name: str = "losses_and_jacobian_norms.pdf",
     value_name: str = "value",
     figsize: tuple = (5, 5)
@@ -660,15 +856,15 @@ def plot_losses_and_jacobian_norms(
         ax2.plot(value, jacobian_norm, 'o', color=JACOBIAN_NORM_COLOR, alpha=POINT_ALPHA,
                  label=r'Complexity ($\|\partial\Phi/\partial x - \mathbb{I}\|$)' if i == 0 else "")
 
-    ax1.set_yscale('log')
-    ax1.set_ylabel('Distance (log MSE)', color=TRAIN_LOSS_COLOR)
+    ax1.set_yscale(plot_error_scale)
+    ax1.set_ylabel('Distance (MSE)', color=TRAIN_LOSS_COLOR)
     ax1.tick_params(axis='y', labelcolor=TRAIN_LOSS_COLOR)
 
     ax2.set_ylabel('Complexity (Jacobian norm)', color=JACOBIAN_NORM_COLOR)
     ax2.tick_params(axis='y', labelcolor=JACOBIAN_NORM_COLOR)
 
     ax1.legend(loc='upper left')
-    ax2.legend(loc='lower right')
+    ax2.legend(loc='right')
 
     plt.savefig(f"{save_dir}/{save_name}", dpi=300, bbox_inches='tight')
     plt.show()
