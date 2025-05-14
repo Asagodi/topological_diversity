@@ -145,26 +145,6 @@ class LinearSystem(DynamicalSystem):
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         return torch.matmul(x, self.A.T)  # Ensure correct matrix multiplication
 
-class BoundedLineAttractor(DynamicalSystem):
-    """
-    A nonlinear dynamical system of the form dx/dt = -x + ReLU(Wx + b).
-    """
-
-    def __init__(self, W: torch.Tensor, b: torch.Tensor, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
-        """
-        :param W: Weight matrix.
-        :param b: Bias vector.
-        """
-        super().__init__()
-        self.W = W
-        self.b = b
-        self.relu = nn.ReLU()
-        self.time_span = time_span
-        self.dt = dt
-
-    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        linear_part = torch.matmul(x, self.W.T) + self.b
-        return -x + self.relu(linear_part)
 
 class NonlinearSystem(DynamicalSystem):
     """
@@ -391,7 +371,7 @@ class LearnableNDBistableSystem(LearnableDynamicalSystem):
     The dynamics are defined by a cubic polynomial.
     """
 
-    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), alpha_init: float = -1.0):
+    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), alpha_init: float = -3.0):
         super().__init__()
         self.dim = dim
         self.dt = dt
@@ -402,15 +382,18 @@ class LearnableNDBistableSystem(LearnableDynamicalSystem):
             self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        dx0_dt = self.alpha * (x[0] ** 3 - x[0])
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Convert shape [dim] → [1, dim]
+
+        dx0_dt = self.alpha * (x[:, 0] ** 3 - x[:, 0])
         derivatives = [dx0_dt]
 
         if self.dim > 1:
-            residual = x[1:]
-            d_residual_dt = self.alpha * residual
-            derivatives.append(d_residual_dt)
+            for i in range(1, self.dim):
+                derivatives.append(torch.zeros_like(x[:, i]))
 
-        return torch.stack(derivatives)
+        dx_dt = torch.stack(derivatives, dim=-1)
+        return dx_dt.squeeze(0) if dx_dt.shape[0] == 1 else dx_dt
 
     def invariant_manifold(self, num_points=100) -> torch.Tensor:
         """
@@ -418,7 +401,7 @@ class LearnableNDBistableSystem(LearnableDynamicalSystem):
         For a bistable system, the invariant manifold is the set of stable fixed points.
         """
         if self.dim == 1:
-            return torch.tensor([-1.0, 1.0], dtype=torch.float32).unsqueeze(0)
+            return torch.tensor([-1.0, 1.0], dtype=torch.float32).unsqueeze(1)
         else:
             inv_man = torch.zeros((2,self.dim))
             inv_man[0, 0] = -1.0
@@ -959,62 +942,7 @@ class AnalyticalLinearSystem(AnalyticDynamicalSystem):
         """
         return torch.zeros(self.dim)
 
-#TODO: make diagonal (option)
-class AnalyticalBoundedLineAttractor(AnalyticDynamicalSystem):
-    """
-    Piecewise-analytic integration of dx/dt = -x + ReLU(Wx + b),
-    detecting activation regime switches and analytically integrating within each regime.
-    """
 
-    def __init__(self, W: torch.Tensor, b: torch.Tensor,
-                 dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
-        super().__init__(dt, time_span)
-        self.W = nn.Parameter(W)
-        self.b = nn.Parameter(b)
-        self.relu = nn.ReLU()
-
-    def compute_trajectory(self, initial_position: torch.Tensor,
-                           time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
-        if time_span is None:
-            time_span = self.time_span
-
-        t_start, t_end = time_span
-        t_values = torch.arange(t_start, t_end, self.dt).to(initial_position.device)  # (T,)
-        T = len(t_values)
-        batch_size, dim = initial_position.shape
-
-        trajectory = torch.zeros(batch_size, T, dim, device=initial_position.device)
-        x_t = initial_position.clone()
-
-        for t_idx in range(T):
-            # Store current state
-            trajectory[:, t_idx] = x_t
-
-            # Detect activation pattern
-            z = torch.matmul(x_t, self.W.T) + self.b  # (batch_size, dim)
-            mask = (z > 0).float()  # (batch_size, dim)
-
-            # Prepare next state for each batch independently
-            next_x = torch.zeros_like(x_t)
-
-            for i in range(batch_size):
-                m = mask[i]  # (dim,)
-                W_eff = self.W * m.unsqueeze(1)  # Keep active units
-                b_eff = self.b * m
-
-                A = W_eff - torch.eye(dim, device=x_t.device)
-                try:
-                    A_exp = torch.matrix_exp(A * self.dt)
-                    A_inv = torch.linalg.pinv(A)
-                    B_term = (A_exp - torch.eye(dim, device=x_t.device)) @ (A_inv @ b_eff)
-                    next_x[i] = (A_exp @ x_t[i]) + B_term
-                except RuntimeError:
-                    # Fallback to Euler step in rare singular matrix cases
-                    next_x[i] = x_t[i] + self.dt * (-x_t[i] + self.relu(torch.matmul(x_t[i], self.W.T) + self.b))
-
-            x_t = next_x
-
-        return trajectory
 
 
 class AnalyticalLimitCycle(AnalyticDynamicalSystem):
@@ -1433,24 +1361,21 @@ class AnalyticalBoundedContinuousAttractor(AnalyticDynamicalSystem):
 
 #### Dynamical system motif construction function
 def build_ds_motif(
-    ds_motif: Literal["lds", "bla", "ring", "lc", ],
+    ds_motif: Literal["lds", "bla", "ring", "lc", "bistable", "bibla", "sphere", "cylinder", "torus_attractor", "torus_lc"],
     dim: int,
     time_span: tuple[float, float],
     dt: Optional[float] = None,
     analytic: bool = False,
     canonical: bool = True,
     vf_on_ring_enabled: bool = False,
-    alpha_init: Optional[float] = -1.,
-    velocity_init: Optional[float] = -1.,
+    alpha_init: Optional[float] = None,
+    velocity_init: Optional[float] = None,
+    sphere_dim: Optional[int] = None
 ) -> object:
     """
     Constructs a dynamical system motif based on the motif type and analytic/numerical type.
     Args:
-        ds_motif: One of "ring", "lc", "lds", "bla".
-            1. "ring": Ring attractor system.
-            2. "lc": Limit cycle system.
-            3. "lds": Linear dynamical system.
-            4. "bla": Bounded line attractor system. 
+        ds_motif: One of "ring", "lc", "lds", "bla", "bistable", "bibla", "sphere", "cylinder", "torus_attractor", "torus_lc".
         dim: Dimensionality of the system.
         time_span: Time interval for simulation.
         dt: Time step (required for learnable systems).
@@ -1458,6 +1383,7 @@ def build_ds_motif(
         canonical: No time parametrization if True.
         vf_on_ring_enabled: Additional option for learnable ring attractor.
         alpha_init, velocity_init: Initial values for learnable parameters.
+        sphere_dim: Dimensionality of sphere for "sphere" motif.
     Returns:
         Instantiated dynamical system object.
     """
@@ -1475,9 +1401,33 @@ def build_ds_motif(
             False: LearnableNDLinearSystem,
         },
         'bla': {
-            True: AnalyticalBoundedLineAttractor,
-            False: LearnableNDBoundedLineAttractor,
+            True: AnalyticalBoundedContinuousAttractor,  # Updated here
+            False: LearnableBoundedContinuousAttractor,  # Keep for learnable version
         },
+        'bistable': {
+            True: None,  # Add analytical system if applicable
+            False: LearnableNDBistableSystem,
+        },
+        'bibla': {
+            True: None,  # Add analytical system if applicable
+            False: LearnableNDBistableSystem,
+        },
+        'sphere': {
+            True: AnalyticalSphereAttractor,
+            False: LearnableSphereAttractor,
+        },
+        'cylinder': {
+            True: None,  # Define cylinder system class if applicable
+            False: None,  # Define cylinder learnable system class if applicable
+        },
+        'torus_attractor': {
+            True: None,  # Define analytical torus attractor class if applicable
+            False: LearnableCompositeSystem,  # Combine ring attractors
+        },
+        'torus_lc': {
+            True: None,  # Define analytical torus limit cycle if applicable
+            False: LearnableCompositeSystem,  # Combine limit cycle and ring attractor
+        }
     }
 
     if ds_motif not in ds_class_map:
@@ -1485,29 +1435,102 @@ def build_ds_motif(
     if analytic not in ds_class_map[ds_motif]:
         raise ValueError(f"No class defined for ds_motif='{ds_motif}' with analytic={analytic}")
 
-    #DSClass = ds_class_map[ds_motif][analytic]
-    # # Instantiate with appropriate parameters
-    # if analytic:
-    #     if canonical:
-    #         ds = DSClass(dim=dim, dt=dt, time_span=time_span)
-    #     else:
-    #         ds = DSClass(dim=dim, dt=dt, time_span=time_span, alpha_init=alpha_init, velocity_init=velocity_init)
-    # else:
-    #     if canonical:
-    #         ds = DSClass(dim=dim, dt=dt, time_span=time_span)
-    #     else:
-    #         ds = DSClass(dim=dim, dt=dt, time_span=time_span, vf_on_ring_enabled=vf_on_ring_enabled, alpha_init=alpha_init, velocity_init=velocity_init)
+    # Handle specific system cases
+    if ds_motif == "torus_attractor" and not analytic:
+        # Define torus attractor as composite of two ring attractors
+        ra1 = LearnableNDRingAttractor(
+            dim=2,
+            dt=0.05,
+            time_span=(0, 5),
+            velocity_init=1.0,
+            alpha_init=-1.0
+        )
+        ra2 = LearnableNDRingAttractor(
+            dim=2,
+            dt=0.05,
+            time_span=(0, 5),
+            alpha_init=-1,
+            sigma_init=0.05,
+            vf_on_ring_enabled=False,
+            vf_on_ring_num_terms=3
+        )
+        composite_system = LearnableCompositeSystem(
+            systems=[ra1, ra2],
+            dims=[2, 2],
+            dt=0.05,
+            time_span=(0, 5)
+        )
+        return composite_system
 
-    # return ds
+    if ds_motif == "torus_lc" and not analytic:
+        # Define torus limit cycle as composite of limit cycle and ring attractor
+        limit_cycle = LearnableNDLimitCycle(
+            dim=2,
+            dt=0.05,
+            time_span=(0, 5),
+            velocity_init=1.0,
+            alpha_init=-1.0
+        )
+        ring_attractor = LearnableNDRingAttractor(
+            dim=2,
+            dt=0.05,
+            time_span=(0, 5),
+            alpha_init=-1,
+            sigma_init=0.05,
+            vf_on_ring_enabled=False,
+            vf_on_ring_num_terms=3
+        )
+        composite_system = LearnableCompositeSystem(
+            systems=[limit_cycle, ring_attractor],
+            dims=[2, 2],
+            dt=0.05,
+            time_span=(0, 5)
+        )
+        return composite_system
 
+    if ds_motif == "cylinder" and not analytic:
+        # Define cylinder as composite of limit cycle and bounded continuous attractor
+        lc = LearnableNDLimitCycle(
+            dim=2,
+            dt=0.05,
+            time_span=(0, 5),
+            velocity_init=1.0,
+            alpha_init=-1.0
+        )
+        la = LearnableBoundedContinuousAttractor(
+            dim=1,
+            bca_dim=1,
+            dt=0.05,
+            time_span=(0, 5)
+        )
+        systems = [lc, la]
+        dims = [lc.dim, la.dim]
+        composite_system = LearnableCompositeSystem(
+            systems=systems,
+            dims=dims,
+            dt=0.05,
+            time_span=(0, 5)
+        )
+        return composite_system
+
+    # For 'bla' motif: set bca_dim=1 when analytic
+    if ds_motif == "bla" and analytic:
+        kwargs = {
+            'dim': dim,
+            'dt': dt,
+            'time_span': time_span,
+            'bca_dim': 1  # Adding this parameter for 'bla' motif
+        }
+    else:
+        kwargs = {
+            'dim': dim,
+            'dt': dt,
+            'time_span': time_span,
+        }
+
+    # Default case for other motifs
     DSClass = ds_class_map[ds_motif][analytic]
     init_params = inspect.signature(DSClass.__init__).parameters
-
-    kwargs = {
-        'dim': dim,
-        'dt': dt,
-        'time_span': time_span,
-    }
 
     # Add only if not canonical
     if not canonical:
@@ -1519,7 +1542,6 @@ def build_ds_motif(
             kwargs['vf_on_ring_enabled'] = vf_on_ring_enabled
 
     return DSClass(**kwargs)
-
 
 
 
