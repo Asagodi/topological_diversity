@@ -142,6 +142,24 @@ Short-term memory, involving transient yet structured activity, has been explore
 % Motor control, too, exhibits low-dimensional dynamics shaped by recurrent structure \citep{wang2022representation}.
  While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
 
+\subsection{Equivalence of Qualitative Behavior}
+Since the time of Poincar\'e, dynamical systems has heavily relied on the analysis of their \emph{qualitative behavior}--the eventual fate of the system, rather than the details of their trajectory.
+For example, will the system eventually settle down to the same point regardless of the initial condition?
+For such qualitative questions, often a simple and intuitive picture (technically known as \emph{phase portraits}) that captures can give a definite answer~\citep{Strogatz2000-tf}.
+All dynamical systems can be partitioned by their qualitative behavior~\citep{Arnold1994}, abstracting away the finite time transient behaviors and the details of the vector field.
+The key concept is the \emph{topological conjugacy} (Sec.~\ref{def:top_conj}) between two systems where trajectories can be mapped between each other through a homeomorphism. % by Poincare...
+There are two major advantages of such abstraction:
+(1) It is implementation agnostic. For example, an insect neural circuit with 8 neurons can be topologically conjugate to an artificial neural network model where all the biophysical details are wrong.
+(2) It promotes interpretability.
+It naturally emphasizes the use of attractor dynamics since they are asymptotically defined and preserved.
+For neural computation, this means only a finite collection of attractors that are simple to understand are left.
+Among those structures, two have a prominent status in the vernacular of neuroscience: fixed points and line attractors.
+Mathematically, (most) fixed points are locally conjugate to a linear system\citep{Harman} which are well understood thanks to the easy decomposition and superposition of solutions.
+Moreover, multiple isolated fixed points are analgous to discrete states of finite state machines or Markov chains.
+Line attractors on the other hand can store an analog-valued representation (for an indefinite time).
+Theoretical neuroscience and machine learning have extensively used these as building blocks to extend our intuition on neural computation.
+While mathematically elegant, however, therea re a few critical issues in this program.
+
 Asymptotic behavior such as fixed points, limit cycles, and slow invariant manifolds are central to understanding how neural systems maintain memory over time.
 Fixed-point attractors have long been used to characterize stable memory states in RNNs \citep{sussillo2013blackbox, katz2017fibers, golub2018fixedpointfinder}, while recent work highlights the role of limit cycles \citep{townley2000existence, pals2024inferring} and slow invariant manifolds in sustaining analog memory representations\citep{Sagodi2024a}.
 
