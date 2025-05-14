@@ -152,20 +152,6 @@
 \newcommand{\Hpert}{H^{\text{pert}}}
 \newcommand{\manifold}{\mathcal{M}}
 
-\newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
-\newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
-\newcounter{ct}
-\forLoop{1}{26}{ct}{
-    \edef\letter{\alph{ct}}
-    \expandafter\defvec\letter
-}
-
-% captial \vA
-\forLoop{1}{26}{ct}{
-    \edef\letter{\Alph{ct}}
-    \expandafter\defvec\letter
-}
-
 
 %\title{Interpretable attractor motifs for a new language for neural computation}
 %\title{Attractor motifs for an interpretable language for working memory-type neural computation}
