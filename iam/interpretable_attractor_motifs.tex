@@ -27,6 +27,7 @@
 \usetikzlibrary{positioning}
 \usepackage{tikz-cd}
 
+\usepackage{bm} % bold greek
 
 %for comments
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
@@ -44,8 +45,97 @@
 \theoremstyle{definition} \newtheorem{definition}{Definition}  \newtheorem{example}{Example}
 \theoremstyle{remark} \newtheorem{remark}{Remark}
 
+% cosmetics
+\usepackage{letltxmacro}
+\LetLtxMacro{\originaleqref}{\eqref}
+\renewcommand{\eqref}{Eq.~\originaleqref}
 
-\newcommand{\reals}{\mathbb{R}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% bold vectors for each alphabet vx
+\usepackage{forloop}
+\newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
+\newcounter{ct}
+\forLoop{1}{26}{ct}{
+    \edef\letter{\alph{ct}}
+    \expandafter\defvec\letter
+}
+
+% captial \vA
+\forLoop{1}{26}{ct}{
+    \edef\letter{\Alph{ct}}
+    \expandafter\defvec\letter
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Automatically make all greek letters bold by prepending 'v'
+\usepackage{expl3}
+
+\ExplSyntaxOn
+% Define a sequence of Greek letters
+\cs_new:Nn \define_bold_greek:
+ {
+  \seq_map_inline:Nn \g_greek_letters_seq
+   {
+    \cs_new:cpn { v##1 } { \bm { \csname ##1 \endcsname } }
+   }
+ }
+
+% Initialize the sequence of Greek letters
+\seq_new:N \g_greek_letters_seq
+\seq_set_split:Nnn \g_greek_letters_seq { , }
+ {
+  alpha,beta,gamma,delta,epsilon,zeta,eta,theta,iota,kappa,lambda,
+  mu,nu,xi,pi,rho,sigma,tau,upsilon,phi,chi,psi,omega,
+  Delta
+ }
+
+% Call the function to define bold Greek macros
+\define_bold_greek:
+\ExplSyntaxOff
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Math commands
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\vecOp}{\rm vec} % vec operator
+\DeclareMathOperator*{\tr}{tr} % trace
+\DeclareMathOperator*{\argmax}{\rm argmax}
+\DeclareMathOperator*{\argmin}{\rm argmin}
+\DeclareMathOperator*{\var}{var}
+\DeclareMathOperator*{\cov}{cov}
+\newcommand{\divv}{\ensuremath{\mathbb{D}}}
+\newcommand{\KL}[2]{\divv_{\text{KL}}\!\left({#1}\middle\lvert\middle\rvert\,{#2}\right)}
+\newcommand{\IMPdivv}[3]{\divv_{\text{IMP}}\!\left({#1}\middle\lvert\middle\rvert\,{#2}\,;{#3}\right)}
+\newcommand{\dis}{\ensuremath{\mathcal{D}}}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+\DeclareMathOperator*{\E}{\rm E} % expectation
+\newcommand{\inv}{^{-1}}
+\newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
+\newcommand{\RN}[2]{\frac{\dm{#1}}{\dm{#2}}} % (Radon-Nikodym) derivative
+\newcommand{\PD}[2]{\frac{\partial #1}{\partial #2}} % partial derivative
+
+\newcommand{\field}[1]{\ensuremath{\mathbb{#1}}}
+\newcommand{\reals}{\field{R}}
+\newcommand{\complex}{\field{C}}
+\newcommand{\integers}{\field{Z}}
+\newcommand{\naturalNumbers}{\field{N}}
+\newcommand{\trp}{{^\top}} % transpose
+\newcommand{\identity}{\ensuremath{\mathbb{I}}}
+\newcommand{\ones}{\ensuremath{\mathbf{1}}}
+\newcommand{\indicator}[1]{\mathbf{1}_{#1}} % indicator function
+\newcommand{\DF}{\nabla_{\vx}\vf} %\newcommand{\DF}{\mathcal{D}\vf}
+
+\newcommand{\stateSpace}{\reals^n}
+\newcommand{\posReals}{\reals^{+}}
+\newcommand{\inputSpace}{\mathbb{X}}
+\newcommand{\dcomplexity}{\ensuremath{d_\text{cxty}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\homeo}{\vh}
+\newcommand{\invhomeo}{\homeo\inv}
+
 \newcommand{\sep}{\operatorname{sep}}
 \newcommand{\cl}{\operatorname{cl}}
 \newcommand{\vol}{\operatorname{vol}}
@@ -60,7 +150,6 @@
 \newcommand{\TpM}{\T_p\!M}
 \newcommand{\Diff}{\operatorname{Diff}}
 \newcommand{\Hpert}{H^{\text{pert}}}
-\newcommand{\inv}{\operatorname{Inv}}
 \newcommand{\manifold}{\mathcal{M}}
 
 \newcommand{\defvec}[1]{\expandafter\newcommand\csname v#1\endcsname{{\mathbf{#1}}}}
@@ -158,7 +247,41 @@ Mathematically, (most) fixed points are locally conjugate to a linear system\cit
 Moreover, multiple isolated fixed points are analgous to discrete states of finite state machines or Markov chains.
 Line attractors on the other hand can store an analog-valued representation (for an indefinite time).
 Theoretical neuroscience and machine learning have extensively used these as building blocks to extend our intuition on neural computation.
-While mathematically elegant, however, therea re a few critical issues in this program.
+While mathematically elegant, however, there are a few critical issues in this program.
+
+\subsection{Structural Stability and Bifurcations}
+If there exists a smooth vector field $\vDelta(\vx)$ such that
+\begin{align}\label{eq:vfp:epsilon}
+\dot{\vx} &= \vf(\vx) + \epsilon\vDelta(\vx)
+\end{align}
+for some $\epsilon > 0$ does not break the topological conjugacy, then it is said to be structurally stable.
+In a parametric case, 
+the first-order expansion of a recurrent neural network with weight vector $W$ results in
+\begin{align}
+	\vf(\vx) = -\vx + W^\top\Phi(\vx)
+	&\qquad
+	\vDelta(\vx) = \nabla_W \vf\vert_\vx \Delta W + O(\Delta W^2)
+\end{align}
+where $\Phi(\cdot)$ is a point nonlinearity.
+Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of anxiety since Andronov and Pontryagin (1937) who thought to only work with structurally stable systems.
+Unfortunately, several of the key asymptotic attractor structures that are very useful in expressing interpretable neural computation are not robust to vector field perturbations, or \emph{structurally unstable}.
+A prominant example is the continuous attractors~\citep{Sagodi2024a}.
+
+\subsection{Effective Dynamics}
+Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation--their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
+If two systems are useful for implementing the same purpose (neural computation), then we will consider them ``the same''.
+What do we mean by ``effective behavior''?
+Both artificial and biological agents perform neural computation in a finite time.
+For example, typical visiomotor behavior or perceptual-decision making tasks done within a few hundred milliseconds.
+So if our goal is to understand the information processing capacity at the behaviorally relevant time scales, we should limit our analysis to the interval rather than the mathematically elegant infinite time scale~\citep{Park2023a}.
+
+We must also restrict our analysis to the relevant portion of the phase space.
+The dynamical systems implemented defines a vector field over the entire space but typically most of the space is not utilized during the normal operations.
+In fact, neural population data analysis suggests that the trajectories are restricted to a low-dimensional manifold in the context of a ``task'' or ``computation''.
+Therefore, the distinction between the systems should only be compared where they are used.
+
+Finally, we can soften the dichotomic nature of the topological conjugacy by introducing a complexity measure for the required homeomorphism.
+If more complicated distortions are needed, it is natural to consider them less similar.
 
 Asymptotic behavior such as fixed points, limit cycles, and slow invariant manifolds are central to understanding how neural systems maintain memory over time.
 Fixed-point attractors have long been used to characterize stable memory states in RNNs \citep{sussillo2013blackbox, katz2017fibers, golub2018fixedpointfinder}, while recent work highlights the role of limit cycles \citep{townley2000existence, pals2024inferring} and slow invariant manifolds in sustaining analog memory representations\citep{Sagodi2024a}.
