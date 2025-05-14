@@ -117,7 +117,8 @@ def get_all(U, V, random_seed, min_val_sim=3, n_grid=40, norm=0.05, n_pert_steps
     return U_pert, V_pert, perturb_u, perturb_v,  grid_u, grid_v, perturb_grid_u, perturb_grid_v, full_grid_u, full_grid_v, inv_mans
 
 
-def get_random_vector_field_from_ringattractor(min_val_sim = 2, n_grid = 40, norm = 0.05, random_seed = 49, add_limit_cycle=False):
+def get_random_vector_field_from_ringattractor(min_val_sim = 2, n_grid = 40, norm = 0.05,
+                                             random_seed = 49, add_limit_cycle=False, normalize_type='grid'):
     # Define the grid points
     Y, X = np.mgrid[-min_val_sim:min_val_sim:complex(0, n_grid), -min_val_sim:min_val_sim:complex(0, n_grid)]
 
@@ -138,17 +139,22 @@ def get_random_vector_field_from_ringattractor(min_val_sim = 2, n_grid = 40, nor
     #generate random vector field
     perturb_u = np.random.multivariate_normal(np.zeros(xy.shape[0]), K).reshape(X.shape)
     perturb_v = np.random.multivariate_normal(np.zeros(xy.shape[0]), K).reshape(X.shape)
+    
     #scale + set norm
-
     if not add_limit_cycle:
-        magnitude =  np.sqrt(perturb_u**2 + perturb_v**2)
+        if normalize_type == 'grid':
+            magnitude =  np.sqrt(perturb_u**2 + perturb_v**2) 
+        elif normalize_type == 'max':    # maximum over the grid
+            magnitude = np.max(np.sqrt(perturb_u**2 + perturb_v**2))
         perturb_u, perturb_v = norm*perturb_u/magnitude, norm*perturb_v/magnitude
         
     else: # add limit cycle
         perturb_u -= Y
         perturb_v += X
-
-        magnitude =  np.sqrt(perturb_u**2 + perturb_v**2)
+        if normalize_type == 'grid':
+            magnitude =  np.sqrt(perturb_u**2 + perturb_v**2)
+        elif normalize_type == 'max':    # maximum over the grid
+            magnitude = np.max(np.sqrt(perturb_u**2 + perturb_v**2))
         perturb_u, perturb_v = norm*perturb_u/magnitude, norm*perturb_v/magnitude
 
     U_pert = U + perturb_u
@@ -258,32 +264,3 @@ def build_perturbed_ringattractor(perturbation_norm = 0.1, random_seed = 313, mi
 
 
 
-def hausdorff_error(x_inv_man, y_inv_man) -> float:
-    """
-    Computes the symmetric Hausdorff distance between two point clouds.
-
-    :param x_inv_man: points from the first invariant manifold, shape (B, dim)
-    :param y_inv_man: points from the second invariant manifold, shape (B, dim)
-    :return: Hausdorff distance (float)
-    """
-    # Convert to torch tensors if necessary
-    if isinstance(x_inv_man, np.ndarray):
-        x = torch.from_numpy(x_inv_man).float()
-    else:
-        x = x_inv_man.float()
-
-    if isinstance(y_inv_man, np.ndarray):
-        y = torch.from_numpy(y_inv_man).float()
-    else:
-        y = y_inv_man.float()
-
-    # Compute pairwise distances
-    x = x.unsqueeze(1)  # shape (B, 1, dim)
-    y = y.unsqueeze(0)  # shape (1, B, dim)
-    dists = torch.norm(x - y, dim=2)  # shape (B, B)
-
-    # Directed Hausdorff distances
-    x_to_y = dists.min(dim=1)[0].max()  # max over min distances from x to y
-    y_to_x = dists.min(dim=0)[0].max()  # max over min distances from y to x
-
-    return max(x_to_y.item(), y_to_x.item())

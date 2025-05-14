@@ -113,7 +113,7 @@ def compute_homeo_ds_loss(
     initial_conditions_target: torch.Tensor,
     loss_fn: Callable,
     noise_std: float = 0.0,
-    use_inverse_formulation: bool = False
+    use_inverse_formulation: bool = True
 ) -> torch.Tensor:
     """
     Compute the training loss for the homeomorphism-dynamical system network.
@@ -165,11 +165,12 @@ def train_homeo_ds_net_batched(
     lr: float,
     trajectories_target: torch.Tensor,
     batch_size: int = 0,  # 0 or None means full-batch
-    use_inverse_formulation: bool = False,
+    use_inverse_formulation: bool = True,
     num_epochs: int = 100,
     max_grad_norm: Optional[float] = None,
     annealing_params: Optional[dict] = None,
     early_stopping_patience: Optional[int] = None,
+    early_stop_loss_explosion_factor: Optional[float] = 1e3  # stop if loss increases 100x
 ):
     """
     Train the homeomorphism network with automatic full-batch or mini-batch support.
@@ -194,6 +195,7 @@ def train_homeo_ds_net_batched(
         early_stopping_patience = num_epochs 
     early_stopper = EarlyStopping(patience=early_stopping_patience)
     best_model_saver = BestModelSaver(homeo_net=homeo_ds_net.homeo_network, source_system=homeo_ds_net.dynamical_system)
+    best_loss = float('inf')
 
     losses, grad_norms = [], []
     start_time = time.time()
@@ -241,6 +243,10 @@ def train_homeo_ds_net_batched(
             epoch_losses.append(loss.item())
 
         mean_epoch_loss = np.mean(epoch_losses)
+        if mean_epoch_loss > early_stop_loss_explosion_factor * best_loss:
+            print(f"Loss exploded at epoch {epoch}. Previous best loss: {best_loss:.4e}, Current loss: {mean_epoch_loss:.4e}")
+            break
+        best_loss = min(best_loss, mean_epoch_loss)
         losses.append(mean_epoch_loss)
         best_model_saver.step(mean_epoch_loss)
 
@@ -265,7 +271,7 @@ def train_homeo_ds_net_batched(
 
 
 def train_all_hdsns(homeo_ds_nets, trajectories_target, initial_conditions_target,
-    lr: float, num_epochs=100, use_inverse_formulation=False, 
+    lr: float, num_epochs=100, use_inverse_formulation=True, 
     annealing_params=None, early_stopping_patience=None):
     """
     Train all Homeo-DS-Nets in the library using the same target trajectories.
@@ -289,12 +295,10 @@ def train_all_hdsns(homeo_ds_nets, trajectories_target, initial_conditions_targe
 #old 
 def train_homeomorphism(
     homeo_net: nn.Module,
-    lr: float,
-    trajectories_target: torch.Tensor,
     source_system: nn.Module,
-    use_transformed_system: bool,
-    initial_conditions_target: torch.Tensor,
-    #optimizer: Optional[torch.optim.Optimizer] = None,
+    trajectories_target: torch.Tensor,
+    lr: float,
+    use_transformed_system: bool=False,
     num_epochs: int = 100,
     lambda_reg:  Optional[float] = 0.,  # Default: no regularization
     max_grad_norm: Optional[float] = None,  # Default: no clipping
@@ -310,12 +314,13 @@ def train_homeomorphism(
     start_time = time.time()  # Track total training time
 
     device = next(homeo_net.parameters()).device
-    trajectories_target = [traj.to(device) for traj in trajectories_target]  
-    initial_conditions_target = initial_conditions_target.to(device)  
+    trajectories_target = trajectories_target.to(device)  
+    initial_conditions_target = trajectories_target[:, 0, :].detach().clone()  # Get initial conditions from the first trajectory
+    #initial_conditions_target = initial_conditions_target.to(device)  
     source_system = source_system.to(device)
 
     params_to_optimize = list(homeo_net.parameters())
-    if isinstance(source_system, (LearnableDynamicalSystem, AnalyticalLimitCycle)):
+    if isinstance(source_system, (LearnableDynamicalSystem, AnalyticDynamicalSystem)):
         params_to_optimize += list(source_system.parameters())
     optimizer=optim.Adam(params_to_optimize, lr=lr)
     early_stopper = EarlyStopping(patience=early_stopping_patience)
