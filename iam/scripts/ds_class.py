@@ -943,6 +943,55 @@ class AnalyticalLinearSystem(AnalyticDynamicalSystem):
         return torch.zeros(self.dim)
 
 
+import torch
+from torch import nn
+from typing import Tuple, Optional
+
+class AnalyticalBistableSystem(AnalyticDynamicalSystem):
+    """
+    Computes the trajectory of the symmetric bistable system \dot{x} = α(x - x^3)
+    using the analytical solution derived from separation of variables.
+    """
+    def __init__(self, alpha: float = 1.0, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
+        """
+        :param alpha: The strength of the vector field.
+        :param dt: Time step for the trajectory discretization.
+        :param time_span: Tuple (t_start, t_end) for trajectory range.
+        """
+        super().__init__(dt=dt, time_span=time_span)
+        self.alpha = alpha
+
+    def compute_trajectory(
+        self, initial_position: torch.Tensor, time_span: Optional[Tuple[float, float]] = None
+    ) -> torch.Tensor:
+        """
+        Computes the trajectory analytically using the formula:
+        x(t) = sign(x₀) * sqrt( (x₀² * e^{-2αt}) / ((1 - x₀²) + x₀² * e^{-2αt}) )
+
+        :param initial_position: Tensor of shape (batch_size, 1) with x₀ in (-1, 1) \ {0}
+        :param time_span: Optional override for the time span.
+        :return: Tensor of shape (batch_size, T, 1)
+        """
+        if time_span is None:
+            time_span = self.time_span
+
+        t_start, t_end = time_span
+        t_values = torch.arange(t_start, t_end, self.dt, device=initial_position.device)  # shape: (T,)
+        batch_size = initial_position.shape[0]
+        T = len(t_values)
+
+        x0 = initial_position.squeeze(-1)  # shape: (batch_size,)
+
+        x0_sq = x0**2
+        denom_const = 1 - x0_sq  # shape: (batch_size,)
+        exp_term = torch.exp(-2 * self.alpha * t_values)  # shape: (T,)
+
+        # Compute full trajectory
+        x_squared = (x0_sq[:, None] * exp_term[None, :]) / (denom_const[:, None] + x0_sq[:, None] * exp_term[None, :])
+        trajectory = x0.sign()[:, None] * torch.sqrt(x_squared)  # shape: (batch_size, T)
+
+        return trajectory.unsqueeze(-1)  # shape: (batch_size, T, 1)
+
 
 
 class AnalyticalLimitCycle(AnalyticDynamicalSystem):
