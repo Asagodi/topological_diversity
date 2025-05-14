@@ -612,6 +612,7 @@ def jacobian_norm_over_batch(
     norm_type: Literal["fro", "spectral"] = "spectral",
     normalize: bool = True,
     subtract_identity: bool = True,
+    inverse : bool = False,
 ) -> torch.Tensor:
     """
     Computes empirical L^p norm of Jacobian norms of phi over a batch of points.
@@ -628,12 +629,15 @@ def jacobian_norm_over_batch(
         Scalar tensor: empirical L^p norm of the chosen Jacobian expression across x in batch
     """
     B, D = x.shape
-    print("Computing Jacobian norms...")
+    print(f"Computing Jacobian norms ({norm_type})...")
     start = time.time()
 
     def compute_norm(xi: torch.Tensor) -> torch.Tensor:
         xi = xi.detach().unsqueeze(0).requires_grad_(True)  # shape (1, D)
-        y = phi(xi).squeeze(0)  # shape (D_out,)
+        if inverse:
+            xi = phi.inverse(xi)
+        else:
+            y = phi(xi).squeeze(0)  # shape (D_out,)
         assert y.ndim == 1, "phi(x) must return a 1D output (R^m)"
         grads = [torch.autograd.grad(y[i], xi, retain_graph=True, create_graph=False)[0].squeeze(0) for i in range(y.shape[0])]
         J = torch.stack(grads)  # shape (m, n)
