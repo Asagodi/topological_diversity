@@ -1393,7 +1393,7 @@ class AnalyticalBoundedContinuousAttractor(AnalyticDynamicalSystem):
 
         for i in range(num_steps):
             trajectory[:, i] = x
-            dx = self.forward(x)
+            dx = self.forward(0, x)
             x = x + self.dt * dx
 
         return trajectory
@@ -1605,8 +1605,30 @@ def build_ds_motif(
 
 
 #Target systems for testing
+# 1D attractor 
+#1D attractors in 2D 
+class BoundedLineAttractor(DynamicalSystem):
+    """
+    A nonlinear dynamical system of the form dx/dt = -x + ReLU(Wx + b).
+    """
 
-#2D systems
+    def __init__(self, dim: int, W: torch.Tensor, b: torch.Tensor, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
+        """
+        :param W: Weight matrix.
+        :param b: Bias vector.
+        """
+        super().__init__()
+        self.dim = dim
+        self.W = W
+        self.b = b
+        self.relu = nn.ReLU()
+        self.time_span = time_span
+        self.dt = dt
+
+    def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
+        linear_part = torch.matmul(x, self.W.T) + self.b
+        return -x + self.relu(linear_part)
+
 # Van der Pol oscillator as an example target system
 class VanDerPol(DynamicalSystem):
     def __init__(self, mu: float = 1.0, dim: int = 2, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), noise_std: float=0.) -> None:
