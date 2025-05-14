@@ -20,6 +20,12 @@ import matplotlib.colors as mcolors
 from matplotlib.ticker import MaxNLocator
 import seaborn as sns
 
+
+#available motifs
+motifs_2d = ['lds', 'lc', 'ring', 'bla', 'bistable']
+motifs_3d = ['sphere', 'torus_attractor', 'torus_lc', 'cylinder']
+
+
 set_seed(313)
 from pathlib import Path
 #exp_dir = Path('../experiments')
