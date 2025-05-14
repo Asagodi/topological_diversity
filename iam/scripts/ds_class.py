@@ -1572,7 +1572,7 @@ def build_ds_motif(
         return composite_system
 
     # For 'bla' motif: set bca_dim=1 when analytic
-    if ds_motif == "bla" and analytic:
+    if ds_motif == "bla":
         kwargs = {
             'dim': dim,
             'dt': dt,
