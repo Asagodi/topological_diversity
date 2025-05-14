@@ -22,7 +22,7 @@ import seaborn as sns
 
 
 #available motifs
-motifs_2d = ['lds', 'lc', 'ring', 'bla', 'bistable']
+motifs_2d = ['lds', 'lc', 'ring', 'bla', 'bistable', 'bibla']
 motifs_3d = ['sphere', 'torus_attractor', 'torus_lc', 'cylinder']
 
 
