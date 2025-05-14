@@ -371,7 +371,7 @@ class LearnableNDBistableSystem(LearnableDynamicalSystem):
     The dynamics are defined by a cubic polynomial.
     """
 
-    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), alpha_init: float = -3.0):
+    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), alpha_init: float = -1.0):
         super().__init__()
         self.dim = dim
         self.dt = dt
