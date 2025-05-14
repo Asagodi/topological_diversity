@@ -266,6 +266,8 @@ where $\Phi(\cdot)$ is a point nonlinearity.
 Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of anxiety since Andronov and Pontryagin (1937) who thought to only work with structurally stable systems.
 Unfortunately, several of the key asymptotic attractor structures that are very useful in expressing interpretable neural computation are not robust to vector field perturbations, or \emph{structurally unstable}.
 A prominant example is the continuous attractors~\citep{Sagodi2024a}.
+Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, we cannot avoid the issue of structurally unstable neural computations~\citep{Park2023a}.
+%Even structurally stable dynamics are known to go through bifurcations--breaking of topological conjugacy--during learning and necessarily so if the final dynamical system is not conjugate to the initial system~\citep{Doya1993-tz}.
 
 \subsection{Effective Dynamics}
 Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation--their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
@@ -280,7 +282,7 @@ The dynamical systems implemented defines a vector field over the entire space b
 In fact, neural population data analysis suggests that the trajectories are restricted to a low-dimensional manifold in the context of a ``task'' or ``computation''.
 Therefore, the distinction between the systems should only be compared where they are used.
 
-Finally, we can soften the dichotomic nature of the topological conjugacy by introducing a complexity measure for the required homeomorphism.
+Finally, we can relax the dichotomic nature of the topological conjugacy by introducing a complexity measure for the required homeomorphism.
 If more complicated distortions are needed, it is natural to consider them less similar.
 
 Asymptotic behavior such as fixed points, limit cycles, and slow invariant manifolds are central to understanding how neural systems maintain memory over time.
