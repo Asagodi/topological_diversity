@@ -837,7 +837,8 @@ class LearnableCompositeSystem(LearnableDynamicalSystem):
         for system, dim in zip(self.systems, self.dims):
             x_part = x[:, start:start + dim]
             dx_part = system(t, x_part)
-            dx_parts.append(dx_part)
+            #dx_parts.append(dx_part)
+            dx_parts.append(dx_part if dx_part.ndim > 1 else dx_part.unsqueeze(1))
             start += dim
 
         return torch.cat(dx_parts, dim=1)
@@ -1428,7 +1429,6 @@ def build_ds_motif(
     vf_on_ring_enabled: bool = False,
     alpha_init: Optional[float] = None,
     velocity_init: Optional[float] = None,
-    sphere_dim: Optional[int] = None
 ) -> object:
     """
     Constructs a dynamical system motif based on the motif type and analytic/numerical type.
@@ -1445,6 +1445,7 @@ def build_ds_motif(
     Returns:
         Instantiated dynamical system object.
     """
+    # print("Loading", ds_motif)
     ds_class_map = {
         'ring': {
             True: AnalyticalRingAttractor,
@@ -1463,12 +1464,12 @@ def build_ds_motif(
             False: LearnableBoundedContinuousAttractor,  # Keep for learnable version
         },
         'bistable': {
-            True: None,  # Add analytical system if applicable
+            True: AnalyticalBistableSystem,  # Add analytical system if applicable
             False: LearnableNDBistableSystem,
         },
         'bibla': {
             True: None,  # Add analytical system if applicable
-            False: LearnableNDBistableSystem,
+            False: None,
         },
         'sphere': {
             True: AnalyticalSphereAttractor,
@@ -1494,6 +1495,25 @@ def build_ds_motif(
         raise ValueError(f"No class defined for ds_motif='{ds_motif}' with analytic={analytic}")
 
     # Handle specific system cases
+    if ds_motif == "sphere":
+        # Define sphere attractor with specified sphere_dim
+        sphere_dim = 2
+        sphere_attractor = AnalyticalSphereAttractor(
+            dim=dim,
+            sphere_dim=sphere_dim,
+            radius=1.0,
+            alpha_init=alpha_init,
+            time_span=time_span,
+            dt=dt
+        )
+        return sphere_attractor
+    if ds_motif == "bibla":
+        bi_sys = LearnableNDBistableSystem(dim=1, dt=dt, time_span=time_span) 
+        la = LearnableBoundedContinuousAttractor(dim=1,bca_dim=1,dt=dt,time_span=time_span)
+        systems = [bi_sys, la]
+        dims = [bi_sys.dim, la.dim]
+        composite_system = LearnableCompositeSystem(systems=systems,dims=dims,dt=dt,time_span=time_span)
+        return composite_system
     if ds_motif == "torus_attractor" and not analytic:
         # Define torus attractor as composite of two ring attractors
         ra1 = LearnableNDRingAttractor(
@@ -1588,6 +1608,7 @@ def build_ds_motif(
 
     # Default case for other motifs
     DSClass = ds_class_map[ds_motif][analytic]
+
     init_params = inspect.signature(DSClass.__init__).parameters
 
     # Add only if not canonical
