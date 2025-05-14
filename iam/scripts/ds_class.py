@@ -943,56 +943,65 @@ class AnalyticalLinearSystem(AnalyticDynamicalSystem):
         return torch.zeros(self.dim)
 
 
-import torch
-from torch import nn
-from typing import Tuple, Optional
-
 class AnalyticalBistableSystem(AnalyticDynamicalSystem):
     """
     Computes the trajectory of the symmetric bistable system \dot{x} = α(x - x^3)
-    using the analytical solution derived from separation of variables.
+    using the analytical solution applied elementwise for all dimensions.
     """
-    def __init__(self, alpha: float = 1.0, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
-        """
-        :param alpha: The strength of the vector field.
-        :param dt: Time step for the trajectory discretization.
-        :param time_span: Tuple (t_start, t_end) for trajectory range.
-        """
+    def __init__(self, dim: int, alpha_init: float = -1.0, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
         super().__init__(dt=dt, time_span=time_span)
-        self.alpha = alpha
+        self.dim = dim
+        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
 
     def compute_trajectory(
         self, initial_position: torch.Tensor, time_span: Optional[Tuple[float, float]] = None
     ) -> torch.Tensor:
         """
-        Computes the trajectory analytically using the formula:
+        Computes the analytical trajectory:
         x(t) = sign(x₀) * sqrt( (x₀² * e^{-2αt}) / ((1 - x₀²) + x₀² * e^{-2αt}) )
-
-        :param initial_position: Tensor of shape (batch_size, 1) with x₀ in (-1, 1) \ {0}
-        :param time_span: Optional override for the time span.
-        :return: Tensor of shape (batch_size, T, 1)
+        applied elementwise across all dimensions.
+        :param initial_position: Tensor of shape (batch_size, dim)
+        :param time_span: Optional time range (t0, t1)
+        :return: Tensor of shape (batch_size, T, dim)
         """
         if time_span is None:
             time_span = self.time_span
 
+        device = initial_position.device
         t_start, t_end = time_span
-        t_values = torch.arange(t_start, t_end, self.dt, device=initial_position.device)  # shape: (T,)
-        batch_size = initial_position.shape[0]
+        t_values = torch.arange(t_start, t_end, self.dt, device=device)  # (T,)
         T = len(t_values)
 
-        x0 = initial_position.squeeze(-1)  # shape: (batch_size,)
+        alpha = self.alpha
+        x0 = initial_position  # (B, D)
+        B, D = x0.shape
 
-        x0_sq = x0**2
-        denom_const = 1 - x0_sq  # shape: (batch_size,)
-        exp_term = torch.exp(-2 * self.alpha * t_values)  # shape: (T,)
+        x0_sq = x0**2  # (B, D)
+        denom_const = 1 - x0_sq  # (B, D)
+        exp_term = torch.exp(-2 * alpha * t_values).view(1, 1, T)  # (1, 1, T)
 
-        # Compute full trajectory
-        x_squared = (x0_sq[:, None] * exp_term[None, :]) / (denom_const[:, None] + x0_sq[:, None] * exp_term[None, :])
-        trajectory = x0.sign()[:, None] * torch.sqrt(x_squared)  # shape: (batch_size, T)
+        x0_sq_exp = x0_sq.unsqueeze(-1)  # (B, D, 1)
+        denom_const_exp = denom_const.unsqueeze(-1)  # (B, D, 1)
 
-        return trajectory.unsqueeze(-1)  # shape: (batch_size, T, 1)
+        ratio = (x0_sq_exp * exp_term) / (denom_const_exp + x0_sq_exp * exp_term)  # (B, D, T)
 
+        trajectory = x0.sign().unsqueeze(-1) * torch.sqrt(ratio)  # (B, D, T)
+        trajectory = trajectory.permute(0, 2, 1)  # (B, T, D)
 
+        return trajectory
+
+    def invariant_manifold(self, num_points=100) -> torch.Tensor:
+        """
+        Gives the invariant manifold for the bistable system.
+        For a bistable system, the invariant manifold is the set of stable fixed points.
+        """
+        if self.dim == 1:
+            return torch.tensor([-1.0, 1.0], dtype=torch.float32).unsqueeze(1)
+        else:
+            inv_man = torch.zeros((2,self.dim))
+            inv_man[0, 0] = -1.0
+            inv_man[1, 0] = 1.0
+            return inv_man
 
 class AnalyticalLimitCycle(AnalyticDynamicalSystem):
     """
