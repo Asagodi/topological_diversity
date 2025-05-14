@@ -8,7 +8,7 @@ import inspect
 import warnings
 import itertools
 
-from utils import set_seed
+from .utils import set_seed
 
 class TrainablePeriodicFunction(nn.Module):
     """Implements a periodic function."""
