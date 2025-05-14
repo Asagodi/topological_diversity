@@ -8,7 +8,7 @@ import inspect
 import warnings
 import itertools
 
-from scripts.utils import set_seed
+from utils import set_seed
 
 class TrainablePeriodicFunction(nn.Module):
     """Implements a periodic function."""
@@ -465,11 +465,11 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
             self.theta_modulator = TrainablePeriodicFunction(num_terms=theta_modulation_num_terms)
         # Learnable parameters
         if velocity_init is None:
-            velocity_init = 1.0
+            self.velocity = 1.0
         elif not use_theta_modulation: #only if not using theta modulation
             self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
         if alpha_init is None:
-            alpha_init = -1.0
+            self.alpha = -1.0
         else:
             self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
         
@@ -549,7 +549,7 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
 
         # Learnable parameters
         if alpha_init is None:
-            alpha_init = -1.0
+            self.alpha = -1.0
         else:
             self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
         if vf_on_ring_enabled:
