@@ -660,6 +660,14 @@ These motifs are topologically distinct, meaning each represents a unique dynami
 
 \paragraph{Enumerating attractors dimension-wise}
 In dynamical systems, attractors can be systematically classified according to their topological dimension, with the simplest topological spaces serving as the fundamental building blocks.
+\ascomment{Extra justification:
+extrinsic and intrinsic dimensionality\citep{jazayeri2021interpreting}
+%
+Embedding ring attractors \citep{chaudhuri2019attractor}\citep{Sagodi2024a}
+%neural activity == embedded taks manifold
+Trial averaged neural data is an embedding of the task manifold into firing rate space \citep{gao2015simplicity}
+%low-dim neural activity
+}
  This perspective provides a principled way to enumerate attractors and through which we define our library (see Supp.Sec~\ref{sec:library}).
 \begin{enumerate}[start=0,label={\bfseries Dim \arabic*:}]
 \item  Stable fixed point
@@ -671,12 +679,7 @@ We construct  higher-dimensional attractors from lower dimensional motifs by tak
 
 %\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
 
-extrinsic and intrinsic dimensionality\citep{jazayeri2021interpreting}
-%
-Embedding ring attractors \citep{chaudhuri2019attractor}\citep{Sagodi2024a}
-%neural activity == embedded taks manifold
-Trial averaged neural data is an embedding of the task manifold into firing rate space \citep{gao2015simplicity}
-%low-dim neural activity
+
 
 
 %what about higher dims?
@@ -702,18 +705,19 @@ As an example, consider the stable limit cycle, which can be described by two sc
 The dynamics are given by:
 \begin{equation}
 \dot{r} = \alpha r (r - 1), %r_0?
-\quad \dot{\theta} = v
+\quad \dot{\theta} = v,
 \end{equation}
 where \( r \) represents the radial coordinate and \( \theta \) the angular coordinate. Here, \( v \) controls the angular velocity, and \( \alpha \) determines the dynamics of the radial direction, where the system exhibits stable behavior at \( r = 1 \). This formulation allows for exploration of the effects of rescaling on the stability and behavior of the system, both in the radial and angular components of the phase space.
 
 
-%justifications:
+%justifications: imperfect continuous attractors
 Biases on slow ring manifold for memory maintenance of circular values \citep{panichello2019error}.
 
+%\paragraph{Limitations}
 %limitation: complexity of NN for VF
 %but with noise we can not see too much detail 
-
 %issue: overlap between motif spaces!
+
 
 \subsubsection{Surjective mapping to minimal dimensional motif}
 Let \( f \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) define the vector field of a target dynamical system, and let \( g_i \in C^1(\mathbb{R}^m, \mathbb{R}^m) \) be a dynamical motif of minimal dimension \( m \leq n \) that captures the essential dynamics of \( f \). Then there exists a perturbation \( p \in C^1(\mathbb{R}^n, \mathbb{R}^n) \) and a surjective continuous map \( \Phi: \mathbb{R}^n \to \mathbb{R}^m \) such that the flow \( \psi_{g_i} \) of the motif is semi-conjugate to the flow \( \psi_{f+p} \) of the perturbed system via \( \Phi \). %, i.e.,
@@ -1408,11 +1412,10 @@ Regions that remain coherent and relatively nondispersive over finite periods of
 \newpage
 \section{Interpretability}
 Interpretability is ofter used, yet is typically not defined in computational neuroscience\citep{Zhao2016d, duncker2019learning}.
-
-
-mentions:
+%
+These works mention interpretability:
 \begin{itemize}
-\item ``linear dynamical systems (LDS) are very interpretable'' and  ``To increase the flexibility of the LDS, one strategy is to partition the underlying latent space into multiple regions, each equipped with an LDS. This combination of locally linear dynamics can represent a much richer class of dynamical systems while retaining interpretability.'' \citep{Nassar2018b}
+\item \citet{Nassar2018b}:``linear dynamical systems (LDS) are very interpretable'' and  ``To increase the flexibility of the LDS, one strategy is to partition the underlying latent space into multiple regions, each equipped with an LDS. This combination of locally linear dynamics can represent a much richer class of dynamical systems while retaining interpretability.'' 
 \item 
 \end{itemize}
 
@@ -1421,16 +1424,16 @@ Why are LDSs interpretable?
 - asymptotic behavior is given
 - time reparametrization = eigenspectrum of Jacobian.
 
+%
+%\subsection{Input-driven}
+%Why are input-driven systems difficult to characterize? The lesson from our hierarchy of interpretability.
+%The input acts on an infinite dimensional space in a nonlinear manner.
+%We cannot easily reduce this (without losing some of the details of the action).
 
-\subsection{Input-driven}
-Why are input-driven systems difficult to characterize? The lesson from our hierarchy of interpretability.
-The input acts on an infinite dimensional space in a nonlinear manner.
-We cannot easily reduce this (without losing some of the details of the action).
 
-
-\subsection{Latent variable models}
-For these systems the details don't make much sense any ways!
-There is already so much abstraction!
+%\subsection{Latent variable models}
+%For these systems the details don't make much sense any ways!
+%There is already so much abstraction!
 
 
 
@@ -1651,12 +1654,23 @@ with $x\in \reals^{D}$ where $D=\sum_i^N D_i$.
 
 
 \subsubsection{Examples of composite systems}
+\paragraph{Torus}
+%RA+RA
+%LC+RA
+%LC+LC
+
+\paragraph{Cylinder}
+%BLA+RA
+%BLA+LC
+
 
 
 \subsection{Additive vector field to continuous attractor systems}
 \subsubsection{Periodic}
 
+
 \subsubsection{Non-periodic}
+
 
 
 
@@ -1691,20 +1705,42 @@ In Fig.~\ref{fig:all_motifs_vdp} we used $\mu=0.3$.
     \label{fig:all_motifs_vdp}
 \end{figure}
 
-\subsubsection{Lorenz stable limit cycle}
-\citep{lorenz1963deterministic}
-If $\rho>313$, then the unique stable limit cycle is an attractor in the Lorenz system\citep{gaiko2014global}.
+
 
 \subsubsection{Sel'kov}
 \citep{selkov1968self}
+\begin{equation}
+\begin{aligned}
+\dot{x} &= - x + ay + x^2y, \\
+\dot{y} &= b - ay - x^2y.
+\end{aligned}
+\end{equation}
 
+\subsubsection{BZ reaction}
+\begin{equation}
+\begin{aligned}
+\dot{x} &= a - x - \frac{4xy}{1+x^2}, \\
+\dot{y} &= bx \frac{1-y}{1+x^2}.
+\end{aligned}
+\end{equation}
+
+\subsubsection{Lienard sigmoid}
+\begin{equation}
+\begin{aligned}
+\dot{x} &= , \\
+\dot{y} &= - (1+e^{-ax})^{-1} + \tfrac{1}{2} - bx^2y.
+\end{aligned}
+\end{equation}
+
+
+\subsubsection{Lorenz stable limit cycle} %3D
+If $\rho>313$, then the global attractor in the Lorenz system\citep{lorenz1963deterministic} is a stable limit cycle\citep{gaiko2014global}.
+Therefore, we choose $\rho=313, \sigma=10, \beta=\tfrac{8}{3}$.
 
 
 
 \subsection{Approximate continuous attractors}
-\subsubsection{Line attractor}
-
-
+%\subsubsection{Line attractor}
 
 
 
