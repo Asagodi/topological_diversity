@@ -1047,28 +1047,43 @@ We compare our method to the state-of-the-art methods DSA\citep{ostrow2024beyond
 % The features are embedded into lower-dimensional space through contrastive learning, and the embedded distributions from different systems can be compared using an optimal transport distance.
 
 %\subsubsection{Comparison to DSA and SPE}
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.75\linewidth]{dsa_vs_mbs}
-    \caption{DSA vs Motif Based Similarity.}
-    \label{fig:ds_vs_mbs}
-\end{figure}
+%\begin{figure}[htbp]
+%    \centering
+%    \includegraphics[width=0.75\linewidth]{dsa_vs_mbs}
+%    \caption{DSA vs Motif Based Similarity.}
+%    \label{fig:ds_vs_mbs}
+%\end{figure}
 
-\subsection{Many target systems}\label{sec:target_demonstrations}
+
+
+
+\subsection{Classifying target system effective behavior}\label{sec:target_demonstrations}
 % Can we find the Platonic ideal?
 For an unknown system, we can try to fit the mold of each of the canonical motifs.
 By comparing the different fits we can infer which of the motifs is most appropriate to well-capture the effective behavior.
 We test this by measuring the dissimilarity to our library of motifs to a list of target systems:
-1) Ring attractor (and its perturbed and noisy versions),
+1) Ring attractors (and its perturbed and noisy versions),
 2) RNNs trained on a velocity integration task,
 3) limit cycles (Van der Pol oscillator, Lienard sigmoid, Sel'kov)
 4) system with two bounded line attractors.
 See for the details of the target systems Supp.Sec.~\ref{sec:target_systems} and the experimental setup Supp.Sec.~\ref{sec:manytargets_exp_details}.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.99\linewidth]{motif2target}
+    \caption{  The different motifs classify behavior based the distance from the near topological conjugacally conjugate motif, capturing both the distance to the conjugacy and the complexity of the mapping from the motif.
+    (\textbf{A}) Dissimilarities 
+    (\textbf{B})  Complexities 
+    }
+    \label{fig:motif2target}
+\end{figure}
 
+Normalized dissimilarity clusters for target-motif pairs that are almost topological conjugacally conjugate.
+%
 %other way?If there is no canonical motif that is able to capture the effective behavior of a target, then all dissimilarities
-If a target has a large dissimilarity to all the canonical motifs in our library, that means that our library is not expressible enough to cover all computation with corresponding Platonic ideals
+Finally, if a target has a large dissimilarity to all the canonical motifs in our library, that means that our library is not expressible enough to cover all computation with corresponding Platonic ideals
 (although it could be that our paramtrization of the homeomorphism is not expressible enough).
+
 
 
 %%%%%%%%%%%%%%%%%
@@ -1241,10 +1256,10 @@ J_{\Phi}(x) = \left[ \frac{\partial \Phi_i}{\partial x_j}(x) \right]_{i,j}.
 \newpage
 \section{Dynamical systems background}
 
-\subsection{Comparing dynamics}
-Binary/Discrete: equivalence
-
-Continuous comparison: metric/distance/dissimilarity
+%\subsection{Comparing dynamics}
+%Binary/Discrete: equivalence
+%
+%Continuous comparison: metric/distance/dissimilarity
 
 
 
