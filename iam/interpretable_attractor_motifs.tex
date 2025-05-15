@@ -363,13 +363,39 @@ By Gr\"onwall inequality\cite{Howard2025}:
 	\phi^t_{\vf + \vDelta}(\vx)
     }
     &\leq
-	e^{Lt} \int_0^{T_\text{max}} e^{-Ls} \norm{\vDelta(s)} \,\mathrm{d}s
+	e^{Lt} \int_0^{t} e^{-Ls} \norm{\vDelta(s)} \,\mathrm{d}s
     \leq
 	\left(\sup_s \norm{\vDelta(s)}\right) \frac{1}{L} (e^{Lt} - 1)
 \end{align}
 for any norm $\norm{\cdot}$.
 Thus, for small additive perturbation, the trajectories are robust for a short time.
+\begin{align}\label{eq:d0bound}
+    \bar{d}_0(\vf, \vf + \vDelta)
+    &\leq
+    \left(\sup_s \norm{\vDelta(s)}\right) \frac{1}{L^2} e^{LT_{\text{max}}}
+\end{align}
 
+Now, let us consider the sharing the burden of distortion by using the best diffeomorphism using \eqref{eq:ed1}.
+%Mapping the asymptotic structure of the two systems to align is a preferable distortion, however, 
+Since diffeomorphism cannot change the topological conjugacy class, we need the perturbation to take into account the slack.
+Therefore, we first consider the minimum perturbation to achieve topological conjugacy.
+\begin{align}
+    \vDelta_1(\vx) &= \argmin \norm{\tilde \vDelta}
+    \label{eq:d1:min}
+    \\
+    & \text{s.t.} \quad
+    \vf(\vx) + \tilde \vDelta(\vx)
+    \overset{\text{t.c.}}{\sim}
+    \vg(\vx)
+    \label{eq:d1:tc}
+\end{align}
+We identify this gap $\vDelta_1$ as the \emph{imperfection}.
+By \eqref{eq:d0bound}, we have
+\begin{align}
+    \bar{d}_1(\vf, \vg; \homeo)
+	&\leq
+	\left(\sup_s \norm{\vDelta_1(s)}\right) \frac{1}{L^2} e^{LT_{\text{max}}}
+\end{align}
 
 %3 angles: neural activity, latent variable models, RNNs: all too obscure!!
 %Latent variable models have proven essential for extracting interpretable state space representations from high-dimensional neural activity \citep{zoltowski2020general, Dowling2024b, pei2neural}, enabling rigorous comparisons across systems \citep{libedinsky2023comparing} and supporting benchmarking efforts such as the Neural Latents and Computation-through-Dynamics (CtD) benchmarks \citep{pei2neural, versteeg2025computation}.
@@ -2480,3 +2506,4 @@ d_H(A, B) = \max\left\{ \sup_{a \in A} \inf_{b \in B} \|a - b\|, \sup_{b \in B} 
 
 \end{document}
 
+% vim: sts=4 ts=8
