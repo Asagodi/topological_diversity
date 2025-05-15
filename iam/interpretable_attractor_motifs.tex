@@ -159,7 +159,7 @@
 %\title{Imposing interpretability of neural computation by extracting effective behavior through dynamical motifs}
 %\title{Understanding working memory through canonical dynamical motifs}
 %\title{Canonical motif descriptions of memory maintenance neural computation}
-\title{Dynamical Archetype Analysis}
+\title{Dynamical Archetype Analysis:\\Autonomous Computation}
 %Dynamical Motif Extraction for Interpretable Neural Computation
 % Interpretable Neural Computation via Dynamical Motifs
 \author{\'Abel S\'agodi and Il Memming Park}
@@ -173,14 +173,14 @@
 % keywords: interpretability, dynamical dissimilarity, dynamical motifs, neural computation, working memory, computation through dynamics
 
 \begin{abstract}
-The study of neural computation aims to understand the function of neural systems as an information processing machine.
+The study of neural computation aims to understand the function of a neural system as an information processing machine.
 Neural systems are undoubtedly complex, necessitating principled and automated tools to abstract away details to organize and incrementally build intuition.
-We argue that systems with the same effective behavior should be abstracted by their representative member---one composed of asymptotic dynamical structures, while others are treated as imperfect realizations of this ideal canonical computation.
-We propose a library of canonical computations and a new measure of dissimilarity that allows us to group systems based on their effective behavior by explicitly considering both deformations that break the topological conjugacy as well as diffeomorphisms that preserve it.
+We argue that systems with the same simple effective behavior should be abstracted by their ideal representative---one composed of asymptotic dynamical structures, while others are treated as imperfect realizations of this dynamical archetype.
+We propose a library of archetypical computations and a new measure of dissimilarity that allows us to group systems based on their effective behavior by explicitly considering both deformations that break the topological conjugacy as well as diffeomorphisms that preserve it.
 The proposed dissimilarity can be estimated from observed trajectories.
 Numerical experiments demonstrate our methods ability to reconcile previously reported fragility of existing (dis)similarity measures for approximate continuous attractors and high-dimensional recurrent neural networks.
 Although our experiments focus on working memory systems, the theoretical approach naturally extends to general mechanistic interpretation of recurrent dynamics in both biological and artificial neural systems.
-We argue that abstract canonical computation motifs, rather than detailed dynamical systems, offer a more useful vocabulary for describing neural computation.
+We argue that the abstract dynamical archetypes, rather than detailed dynamical systems, offer a more useful vocabulary for describing neural computation.
 %
 % Understanding neural computation in dynamical neural systems often requires interpreting the behavior of large, black-box models.
 % This poses challenges for both interpretability and cross-model comparison—particularly when comparing models from different sources, such as two animals.
@@ -487,7 +487,7 @@ Point \textbf{b} represents a trade-off where the best diffeomorphism for the gi
 \centering
 \includegraphics{pareto}
 \caption{The two measures of distortion to map the source system to the target system forms a Pareto frontier boundary.
-See.~\eqref{eq:decomp:triple} for the detailed explanaiton of the symbols.
+See.~\eqref{eq:decomp:triple} for the detailed explanation of the symbols.
 }
 \label{fig:pareto}
 \end{figure}
@@ -516,6 +516,29 @@ where the trajectories \(y_k(t) \) are computed via numerical integration of \(\
 %where \( \lambda \) is a regularization coefficient.
 This formulation allows for the joint identification of both the correct motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
 
+%%%%%%%%%%%%
+%\section{Dynamical motif matching}
+\section{Dynamical Archetype Analysis}\label{sec:dmm}\label{sec:daa}
+Abstraction is the process of omitting details and finding the essence.
+But rather than finding the essence from 
+Archetypes are the ideals that are of the most extreme form.
+There are no more perfect ring attractor than the ring attractor with the standard ring size.
+%the philosophy
+
+The space of theories for neural computation is vast \citep{koulakov2002robust}.
+A typical approach to tame this complexity is to create a finite number of categories of distinct types of computations or implementations and classify neural activity behavior according to this set (e.g. fixed-point topology \citep{sussillo2013blackbox}).
+These categories are usually defined in a way that assumes an unrealistic degree of simplicity.
+What is often overlooked in this process is the abstraction/idealization steps that is necessary to fit real-world (including RNNs) behavior into these molds.
+%the acceptance of molds.
+After having defined a set of molds, i.e. dynamical motifs, given a target systems behavior, we want to know into which mold its dynamics fits and how much we have to push/deform to make it fit.
+
+%one way to implement the philosophy
+We propose a method for comparing dynamical systems for several purposes, such as identifying the underlying computations being performed or determining whether two brains are processing information in a similar manner.
+In nature, it is unlikely that two dynamical systems will be exactly identical.
+%While topological conjugacy provides a precise comparison, it is often too strict for practical use.
+On the other hand, directly comparing the differences in vector fields is not always interpretable, as it does not provide immediate insights into the similarities between the systems.
+To address this, we propose a framework for comparing dynamical systems by fitting them to canonical dynamical systems through a homeomorphism.
+This approach allows for more interpretable comparisons, offering a meaningful way to evaluate how similar two systems are based on their underlying dynamics.
 
 %3 angles: neural activity, latent variable models, RNNs: all too obscure!!
 %Latent variable models have proven essential for extracting interpretable state space representations from high-dimensional neural activity \citep{zoltowski2020general, Dowling2024b, pei2neural}, enabling rigorous comparisons across systems \citep{libedinsky2023comparing} and supporting benchmarking efforts such as the Neural Latents and Computation-through-Dynamics (CtD) benchmarks \citep{pei2neural, versteeg2025computation}.
@@ -852,23 +875,6 @@ Additionally, we allow for injecting back some details by defining an additive v
 
 
 
-%%%%%%%%%%%%
-\section{Dynamical motif matching}\label{sec:dmm}
-%the philosophy
-The space of theories for neural computation is vast \citep{koulakov2002robust}.
-A typical approach to tame this complexity is to create a finite number of categories of distinct types of computations or implementations and classify neural activity behavior according to this set (e.g. fixed-point topology \citep{sussillo2013blackbox}).
-These categories are typically defined in a way that assumes an unrealistic degree of simplicity.
-What is often overlooked in this process is the abstraction/idealization steps that is necessary to fit real-world (including RNNs) behavior into these molds.
-%the acceptance of molds.
-After having defined a set of molds, i.e. dynamical motifs, given a target systems behavior, we want to know into which mold its dynamics fits and how much we have to push/deform to make it fit.
-
-%one way to implement the philosophy
-We propose a method for comparing dynamical systems for several purposes, such as identifying the underlying computations being performed or determining whether two brains are processing information in a similar manner.
- In nature, it is unlikely that two dynamical systems will be exactly identical.
-While topological conjugacy provides a precise comparison, it is often too strict for practical use.
-On the other hand, directly comparing the differences in vector fields is not always interpretable, as it does not provide immediate insights into the similarities between the systems.
-To address this, we propose a framework for comparing dynamical systems by fitting them to canonical dynamical systems through a homeomorphism.
-This approach allows for more interpretable comparisons, offering a meaningful way to evaluate how similar two systems are based on their underlying dynamics.
 
 
 \subsection{Dissimilarity measure}
@@ -1217,13 +1223,21 @@ As Popper put it, ``Science may be described as the art of systematic over-simpl
 We propose to omit details between systems in the asymptotic time scale by characterizing the effective behavior of a neural system.
 Although we have only analyzed working memory, the approach can be extended to input-driven, or even embodied systems that interact with an environment.
 
+% though our method is computationally more demanding, yet brings better interpretability.
+
+
 \subsection{Limitations}
 Assumption: the invariant set of the target needs to be well-sampled.
 
 Main shortcoming: difficulty with dealing with complex attractors.
+
 When is decomposition of attractor into motifs possible?
+The archetypes are not quite compositional in the present form.
+
 We focus on understandable attractors for now. 
 These are covered by our method to build higher-dimensional composite models from lower-dimensional dynamical motifs.
+
+Input-driven computations would require an extension of the theory and method.
 
 \subsection{}
 Limits to neuroscientific understanding \citep{chirimuuta2024brain}
