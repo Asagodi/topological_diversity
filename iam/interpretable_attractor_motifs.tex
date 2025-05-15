@@ -646,27 +646,27 @@ d(f, g) = \inf \|p\|,  %symmetrify? d sym (f,g)=max(d(f,g),d(g,f))
 where the infimum is taken over all possible perturbations \( p \) that satisfy the above condition.
 Therefore, we can define the dissimilarity measure $d(f,g) = \inf \|p\|$ with the above constraint.
 
-\subsubsection{Reduction of dynamics to extract computation}
-\ascomment{Replace this section with the dissimilarity derivation}
-%\paragraph{Contextuality and understanding}
-What are we interpreting \emph{for}?
-Context: Behavior %Computational theory in Marr's levels?
-%Interpretation in terms of contributions of the transfer functional. 
-%context: computation %Representation and algorithm in Marr's levels
-%\paragraph{Understanding computation in terms of dynamics}
-Interpretation in terms of an \emph{effective} description of the dynamics.
-task's computational demands (e.g., continuous parametrization of memory)
-
-%Encoding-Decoding framework NEDS
-Interpretation in terms of how difference relates to the input-output/transfer functional \citep{zhang2025neural,dinc2025latentcomputing}.
-The \emph{transfer functional} \( \mathcal{T}_f \) maps an input \( u(\cdot) \) to an output \( o(\cdot) \): % possibly given an initial condition \( x_0 \):
-\[
-\mathcal{T}_f[u](t) = h(x(t)),
-\]
-where \(h\) is the output mapping and \( x(t) \) is the solution of the initial value problem:
-\[
-\dot{x}(t) = f(x(t), u(t)), \quad x(0) = x_0.
-\]
+%\subsubsection{Reduction of dynamics to extract computation}
+%\ascomment{Replace this section with the dissimilarity derivation}
+%%\paragraph{Contextuality and understanding}
+%What are we interpreting \emph{for}?
+%Context: Behavior %Computational theory in Marr's levels?
+%%Interpretation in terms of contributions of the transfer functional. 
+%%context: computation %Representation and algorithm in Marr's levels
+%%\paragraph{Understanding computation in terms of dynamics}
+%Interpretation in terms of an \emph{effective} description of the dynamics.
+%task's computational demands (e.g., continuous parametrization of memory)
+%
+%%Encoding-Decoding framework NEDS
+%Interpretation in terms of how difference relates to the input-output/transfer functional \citep{zhang2025neural,dinc2025latentcomputing}.
+%The \emph{transfer functional} \( \mathcal{T}_f \) maps an input \( u(\cdot) \) to an output \( o(\cdot) \): % possibly given an initial condition \( x_0 \):
+%\[
+%\mathcal{T}_f[u](t) = h(x(t)),
+%\]
+%where \(h\) is the output mapping and \( x(t) \) is the solution of the initial value problem:
+%\[
+%\dot{x}(t) = f(x(t), u(t)), \quad x(0) = x_0.
+%\]
 %
 %What is the distance between $\mathcal{T}_f(f)$ and $\mathcal{T}_f(\Phi^{-1}(f+p))$?
 %A natural notion of distance between the transfer functionals is
@@ -906,7 +906,7 @@ We apply two different deformations to the ring attractor:
 (ii) adding a small random perturbation to the ring attractor vector field to induce dynamics that increasingly break topological equivalence (see Supp.Sec.~\ref{sec:vfpert_exp_description}).
 
 %interpretation of results
-The method recovers the deformed ring attractor for both types of deformation, see Fig.~\ref{fig:ring_pert_fig}.
+The method approximates the deformed ring attractor for both types of deformation, see Fig.~\ref{fig:ring_pert_fig}.
 For the homeomorphism-type deformation, our method approximates the inverse of the homeomorphism, up to a maximal perturbation size after which the fit quality drops (Fig.~\ref{fig:ring_pert_fig}B).
 For the vector field-type deformation, our methods, accurately identifies the location of the invariant manifold (Fig.~\ref{fig:ring_pert_fig}C).
 
@@ -914,15 +914,16 @@ For the vector field-type deformation, our methods, accurately identifies the lo
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=.9\linewidth]{ring_pert_fig}
-    \caption{Finding deformed ring attractors. 
-    (\textbf{A}) We consider two types of perturbations to a ring attractor that are controlled by a scalar perturbation size. 
-    (\textbf{B}) The first type considers a perturbation that leaves the continuum of fixed points intact: it merely deforms the ring attractor and the transient orbits but the perturbed system is still topologically conjugate to the original. 
-    (\textbf{C}) The second type is a perturbation to the vector field. 
+    \caption{Approximating deformed ring attractors. % two types of perturbations to a ring attractor that are controlled by a scalar perturbation size. 
+    (\textbf{A})  The first type considers a perturbation that leaves the continuum of fixed points intact: it merely deforms the ring attractor and the transient orbits but the perturbed system is still topologically conjugate to the original. 
+    (\textbf{B})  
+    (\textbf{C}) The second type is an additive perturbation to the vector field, which destroys the ring attractor. We still find an aproximation of the ring invariant manifold for small perturbations.
     (\textbf{D}) 
-    (\textbf{E}) 
     }
     \label{fig:ring_pert_fig}
 \end{figure}
+
+
 
 
 %\subsection{A noisy target}\label{sec:noisy}
