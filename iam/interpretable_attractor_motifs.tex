@@ -260,17 +260,16 @@ If there exists a smooth vector field $\vDelta(\vx)$ such that
 \dot{\vx} &= \vf(\vx) + \epsilon\vDelta(\vx)
 \end{align}
 for some $\epsilon > 0$ does not break the topological conjugacy, then it is said to be \emph{structurally stable}.
-In a parametric case, 
-the first-order expansion of a recurrent neural network with weight vector $W$ results in
+In a parametric case, a recurrent neural network with weight vector $W$ perturbed by $\Delta W$ gives,
 \begin{align}
 	\vf(\vx) = -\vx + W^\top\Phi(\vx)
 	&\qquad
 	\vDelta(\vx) = \nabla_W \vf\vert_\vx \Delta W + O(\Delta W^2)
 \end{align}
-where $\Phi(\cdot)$ is a point nonlinearity.
-Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of anxiety since Andronov and Pontryagin (1937) who advised to only work with structurally stable systems.
+where $\Phi(\cdot)$ is a point nonlinearity and $\nabla_W$ denotes the Jacobian respect to $W$.
+Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of unease. % since Andronov and Pontryagin (1937) who advised to only work with structurally stable systems.
 Unfortunately, several of the key asymptotic attractor structures that are very useful in expressing interpretable neural computation are not robust to vector field perturbations, or \emph{structurally unstable}.
-A prominant example is the continuous attractors~\citep{Sagodi2024a}.
+A notorious example is the continuous attractor dynamics~\citep{Sagodi2024a}.
 Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, we cannot avoid the issue of structurally unstable neural computations~\citep{Park2023a}.
 %Even structurally stable dynamics are known to go through bifurcations--breaking of topological conjugacy--during learning and necessarily so if the final dynamical system is not conjugate to the initial system~\citep{Doya1993-tz}.
 
