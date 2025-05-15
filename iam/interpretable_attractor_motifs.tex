@@ -197,10 +197,10 @@ We argue that abstract canonical computation motifs, rather than detailed dynami
 \section{Introduction}\label{sec:intro}
 Scientific understanding often advances not by improving predictions, but by changing the tools we use to describe systems.
 Ordinary differential equations (ODEs) are a foundational modeling tool of choice for neural computation, used to describe both empirical signals and theoretical constructs.
-A further abstraction, now widely adopted, is to focus on their long-term or asymptotic behavior--discretizing the continuous state space into attractors, their basins, and their information content.
+A further abstraction, now widely adopted, is to focus on their long-term or asymptotic behavior--discretizing the continuous state space into attractors, their basins, and their connection to both the lower level implementation (e.g. circuits) and higher level information (e.g. input and context) being processed.
 These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible} offering simple and intuitive explanations for otherwise high-dimensional dynamics.
-Yet, this abstraction of the mechanism is often confused to be literal, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
-
+Yet, this abstraction of the mechanism is often confused to be the literal ODE implementation, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
+We propose that we need a better way to quantify similarity of ODEs in terms of their effective behavior in finite time, and to conceptually separate the ODEs and their interpretable discrete abstraction. % which resemble ODEs but 
 
 %Understanding the relationship between neural activity and behavior is a fundamental question in neuroscience.
 Understanding neural computation requires more than capturing the details of neural dynamics; it necessitates the development of conceptual models that simplify and abstract the complexity of these processes into forms that are humanly interpretable.
