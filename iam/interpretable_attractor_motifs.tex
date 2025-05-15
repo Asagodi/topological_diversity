@@ -284,7 +284,7 @@ Both artificial and biological agents perform neural computation in a finite tim
 For example, typical visiomotor behavior or perceptual-decision making tasks done within a few hundred milliseconds.
 So if our goal is to understand the information processing capacity at the behaviorally relevant time scales, we should limit our analysis to the interval rather than the mathematically elegant infinite time scale~\citep{Park2023a}.
 We denote the behavioral time scale as a reasonable duration of time $[0, T_\text{max}]$.
-
+%
 This motivates the following time integrated point-wise distance measure:
 For all $\vx \in \inputSpace$ and $t \in [0, T_\text{max}]$,
 \begin{align}
@@ -306,24 +306,31 @@ These two notions together motivates space integrated measures such as,
 % 	d_0(\vf(\vx), \vg(\vx))
 %     \\
     \bar{d}_{0}(\vf, \vg; \initDist)
-	&\coloneq \E_{\vx \in \initDist(\vx)}
-	d_0(\vf(\vx), \vg(\vx))
+	&\coloneq
+	    \E_{\vx \in \initDist(\vx)}
+		d_0(\vf(\vx), \vg(\vx))
 	\label{eq:ed0}
 \end{align}
+where $\E$ denotes expectation.
 
 If the axes of the space $\inputSpace$ are arbitrary, as in the case of state-space models with linear observation models, or theoretical models without a fixed implementation, we would want the measure to be invariant to isometric scaling, rotations, and/or affine transformations.
 
 In addition, more general continuous coordinate transformation shall be allowed.
 Let $\homeo: \inputSpace \to \inputSpace$ be a diffeomorphism from the $\vg$ system to $\vf$ system.
+We shall refer to $\vg$ as the ``source'' and $\vf$ as the ``target'' system.
 We define a dissimilarity
-\begin{align}\label{eq:d1}
-    d_1(\vf(\vx), \vg(\vx); \homeo)
-	&\coloneq \int
-	\norm{\phi_{\vf}^t(\vx) - \homeo(\phi_{\vg}^t(\vx))}
-	\dm{t}
+\begin{align}\label{eq:ed1}
+    \bar{d}_1(\vf(\vx), \vg(\vx); \homeo)
+	&\coloneq 
+	    \E_{\vx \in \initDist(\vx)}
+		\int
+		    \norm{\phi_{\vf}^t(\vx) - \homeo(\phi_{\vg}^t(\vx))}
+		\dm{t}
 \end{align}
 which is non-negative but non-symmetric in general.
-If more complicated deformations are needed to minimize \eqref{eq:d1}, it is natural to consider their effective behavior less similar.
+If more complicated deformations are needed to minimize \eqref{eq:ed1}, it is natural to consider their effective behavior less similar\footnote{
+We are relaxing the dichotomic nature of the topological conjugacy.
+}.
 
 Let $\dcomplexity: (\inputSpace \to \inputSpace) \to \posReals$ be a measure of complexity of the diffeomorphism such that the simplest map, the identity, gives $\dcomplexity(\homeo(\vx) = \vx) = 0$.
 For example, we can define,
@@ -336,13 +343,12 @@ For example, we can define,
 \end{align}
 for some $c_a, c_b > 0$.
 
+\subsection{Trade-off between perturbation and deformation}
 We have arrived at a vector-valued dissimilarity between systems:
 (1) a small distance in the trajectories after a continuous coordinate transform,
 and (2) a small complexity continuous coordinate transform.
+However, for a source-target pair, the two values are not uniquely determined.
 
-\subsection{Trade-off between perturbation and deformation}
-
-Note that the diffeomorphism preserves topological conjugacy, however, we can relax the dichotomic nature of the topological conjugacy by introducing a complexity measure.
 
 
 %3 angles: neural activity, latent variable models, RNNs: all too obscure!!
