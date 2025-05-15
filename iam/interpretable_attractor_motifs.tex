@@ -351,16 +351,18 @@ for some $c_a, c_b > 0$.
 
 \subsection{Trade-off between perturbation and deformation}
 We have arrived at a vector-valued dissimilarity between systems:
-(1) a small distance in the trajectories after a continuous coordinate transform,
-and (2) a small complexity continuous coordinate transform.
+two systems are similar if,
+(a) a small distance in the trajectories after a continuous coordinate transform~\eqref{eq:ed1},
+and (b) a small complexity continuous coordinate transform~\eqref{eq:dcomplexity}.
 However, for a source-target pair, the two values are not uniquely determined.
+Below, we analyze the trade-off as a function of complexity.
 
 First, we show that the trajectory distance measures are bounded by perturbation.
 Let $\vDelta(\cdot)$ be a perturbation to the vector field:
 \begin{align}
     \dot{\vx} &= \vf(\vx) + \vDelta(\vx)
 \end{align}
-For a finite time horizon $[0, T_\text{max}]$ and assuming a Lipschitz bound $L$ for $\vf(\cdot)$ in the relevant domain, a uniform bound on $\norm{\vDelta(\cdot)}$, we can bound the trajectory deviation from the unperturbed system.
+For a finite time horizon $[0, T_\text{max}]$, assuming a Lipschitz bound $L$ for $\vf(\cdot)$ in the relevant domain and a uniform bound on $\norm{\vDelta(\cdot)}$, we can bound the trajectory deviation from the unperturbed system.
 By Gr\"onwall inequality\cite{Howard2025}:
 \begin{align}\label{eq:gronwall}
     \norm{
@@ -383,7 +385,7 @@ Thus, for small additive perturbation, the trajectories are robust for a short t
 
 Now, let us consider the sharing the burden of distortion by using the best diffeomorphism using \eqref{eq:ed1}.
 %Mapping the asymptotic structure of the two systems to align is a preferable distortion, however, 
-Since diffeomorphism cannot change the topological conjugacy class, we need the perturbation to take into account the slack.
+Since diffeomorphism cannot change the topological conjugacy class, we need the perturbation to take into account the slack if they are not conjugate.
 Therefore, we first consider the minimum perturbation to achieve topological conjugacy.
 \begin{align}
     \vDelta_1(\vx) &= \argmin \norm{\tilde \vDelta}
@@ -403,17 +405,18 @@ By \eqref{eq:d0bound}, we have
 	\left(\sup_s \norm{\vDelta_1(s)}\right) \frac{1}{L^2} e^{LT_{\text{max}}}
 \end{align}
 where $\homeo^\ast$ achieves the desired topological conjugacy.
-Now, we want to consider the complexity of $\homeo$ and trade-off with additive perturbation.
-To link the complexity of diffeomorphism to the magnitude of additive perturbation, we seek to find the equivalence up to first order of the vector field corresponding to the diffeomorphism.
+Note that $\vf \tconju \vg$ implies $\norm{\vDelta_1} = 0$.
+Now, we want to consider the complexity of $\homeo$ and trade-off with (additive) perturbation.
+To link the complexity of diffeomorphism to the magnitude of perturbation, we seek to find the equivalence up to first order of the vector field corresponding to the diffeomorphism.
 Let
 $
 \vf(\vx)
     \tconju
 \vg(\vx)
 $.
-That is, we seek to find $\vDelta(\vx)$ that maintains the topological conjugacy,
+That is, we seek to find $\vDelta_2(\vx)$ that maintains the topological conjugacy,
 \begin{align}
-    \dot\vx = \vf(\vx) + \epsilon \vDelta(\vx)
+    \dot\vx = \vf(\vx) + \epsilon \vDelta_2(\vx)
     \tconju
     \vg(\vx)
     \label{eq:pareto:tc}
@@ -429,7 +432,7 @@ Note that from \eqref{eq:h:ansatz}, we have
 \end{align}
 Using first-order expansion of $\vf$, we have (see~\ref{sec:fojac} for derivation):
 \begin{align}
-    \epsilon \vDelta(\vx) &=
+    \epsilon \vDelta_2(\vx) &=
 	\epsilon (\nabla\tilde\homeo(\vx)) \vf(\vx)
 	-
 	\epsilon (\nabla\vf(\vx)) \tilde\homeo(\vx)
@@ -437,7 +440,7 @@ Using first-order expansion of $\vf$, we have (see~\ref{sec:fojac} for derivatio
 \end{align}
 Therefore the following bound holds point-wise:
 \begin{align}
-    \norm{\vDelta(\vx)}
+    \norm{\vDelta_2(\vx)}
     &\leq
 	\norm{\vf(\vx)}
 	\cdot
