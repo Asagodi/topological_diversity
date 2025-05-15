@@ -134,7 +134,7 @@
 \newcommand{\initDist}{\mu} % natural probability distribution over the points on the phase space
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\homeo}{\vh}
+\newcommand{\homeo}{\Phi} % I used to call it \vh, Abel used \Phi
 \newcommand{\invhomeo}{\homeo\inv}
 
 \newcommand{\sep}{\operatorname{sep}}
@@ -201,7 +201,7 @@ Ordinary differential equations (ODEs) are a foundational modeling tool of choic
 For example, state-space models can be used to train a black-box that captures the spatiotemporal structure of time series data as an ODE~\citep{nair2023approximate,pei2neural,Dowling2024b}.
 %Through abstraction and idealization, we can distill the essential features of neural trajectories, enabling meaningful understanding rather than merely presenting a detailed but opaque description.
 A further abstraction, now widely adopted, is to focus on their long-term or asymptotic behavior---discretizing the continuous state space into attractors, their basins, and their relation to the lower-level implementation (e.g. neurons) and higher-level information processing (e.g. input and context).
-These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible}, offering simple and intuitive explanations for otherwise high-dimensional dynamics~\citep{vyas2020ctd}.
+These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible}, offering simple and intuitive explanations for otherwise high-dimensional dynamics~\citep{vyas2020ctd,versteeg2025computation}.
 Yet, this abstraction of the mechanism is often based on confusing the effective and asymptotic behaviors of the ODE implementation, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
 %While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
 We need to conceptually separate the ODEs and their interpretable discrete abstraction, while making their connection precise through quantification of similarity in terms of their effective behavior at the finite time scales.
@@ -287,9 +287,9 @@ This motivates the following time integrated point-wise distance measure:
 For all $\vx \in \inputSpace$ and $t \in [0, T_\text{max}]$,
 \begin{align}
     d_0(\vf(\vx), \vg(\vx))
-	&\coloneq \int \norm{\phi^\vf_t(\vx) - \phi^\vg_t(\vx)} \dm{t}
+	&\coloneq \int \norm{\phi_\vf^t(\vx) - \phi_\vg^t(\vx)} \dm{t}
 \end{align}
-where $\phi^\vf_t(\vx)$ is the solution (trajectory) of $\dot\vx = \vf(\vx)$ with initial condition $\vx$ evolved over $t$.
+where $\phi_\vf^t(\vx)$ is the solution (trajectory) of $\dot\vx = \vf(\vx)$ with initial condition $\vx$ evolved over $t$.
 
 We must also restrict our analysis to the relevant portion of the phase space.
 The dynamical systems implemented defines a vector field over the entire space but typically most of the space is not utilized during the normal operations.
@@ -301,22 +301,31 @@ These two notions together motivates integrated measures such as,
 \begin{align}
     d_{0,\infty}(\vf, \vg; \initDist)
 	&\coloneq \sup_{\vx \in \initDist(\vx)}
-	d_0(\vf(\vx), \vg(\vx), t)
+	d_0(\vf(\vx), \vg(\vx))
     \\
     \bar{d}_{0}(\vf, \vg; \initDist)
 	&\coloneq \E_{\vx \in \initDist(\vx)}
-	d_0(\vf(\vx), \vg(\vx), t)
+	d_0(\vf(\vx), \vg(\vx))
 \end{align}
 
 If the axes of the space $\inputSpace$ are arbitrary, as in the case of state-space models with linear observation models, or theoretical models without a fixed implementation, we would want the measure to be invariant to isometric scaling, rotations, and/or affine transformations.
 
-Finally, we can relax the dichotomic nature of the topological conjugacy by introducing a complexity measure for the required homeomorphism.
-If more complicated distortions are needed, it is natural to consider them less similar.
-
+In addition, more general continuous coordinate transformation shall be allowed.
+Let $\homeo: \inputSpace \to \inputSpace$ be a diffeomorphism from the $\vg$ system to $\vf$ system.
+We define a dissimilarity
+\begin{align}
+    d_1(\vf(\vx), \vg(\vx); \homeo)
+	&\coloneq \int
+	\norm{\phi_{\vf}^t(\vx) - \homeo(\phi_{\vg}^t(\vx))}
+	\dm{t}
+\end{align}
+which is non-negative but non-symmetric in general.
+Note that the diffeomorphism preserves topological conjugacy, however, we can relax the dichotomic nature of the topological conjugacy by introducing a complexity measure.
+If more complicated distortions are needed, it is natural to consider their effective behavior less similar.
 
 
 %3 angles: neural activity, latent variable models, RNNs: all too obscure!!
-Latent variable models have proven essential for extracting interpretable state space representations from high-dimensional neural activity \citep{zoltowski2020general, Dowling2024b, pei2neural}, enabling rigorous comparisons across systems \citep{libedinsky2023comparing} and supporting benchmarking efforts such as the Neural Latents and Computation-through-Dynamics (CtD) benchmarks \citep{pei2neural, versteeg2025computation}.
+%Latent variable models have proven essential for extracting interpretable state space representations from high-dimensional neural activity \citep{zoltowski2020general, Dowling2024b, pei2neural}, enabling rigorous comparisons across systems \citep{libedinsky2023comparing} and supporting benchmarking efforts such as the Neural Latents and Computation-through-Dynamics (CtD) benchmarks \citep{pei2neural, versteeg2025computation}.
 Within the CtD framework, recurrent neural networks (RNNs) have emerged as powerful models for capturing both task-related computations \citep{yang2019task, yang2019multiple, yang2020artificial, sani2021nonlinearity} and the dynamical structure of cortical responses \citep{chaisangmongkon2017transience, mante2013context}.
 These models support both top-down engineering approaches—where desired dynamics are imposed by construction \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe, pollock2020engineering,darshan2022learning, beiran2023rnns}—and bottom-up analysis of black-box systems trained for behavior \citep{sussillo2013blackbox, maheswaranathan2019reverse, golub2018fixedpointfinder, smith2021reverse, maheswaranathan2019universality, jarne2023initialization, nayebi2021heterogeneity, turner2021charting, turner2023simplicity, zhong2023mechanistic, huang2024measuring}.
 
