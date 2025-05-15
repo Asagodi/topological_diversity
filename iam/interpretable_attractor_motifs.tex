@@ -197,32 +197,26 @@ We argue that abstract canonical computation motifs, rather than detailed dynami
 \section{Introduction}\label{sec:intro}
 Scientific understanding often advances not by improving predictions, but by changing the tools we use to describe systems.
 Ordinary differential equations (ODEs) are a foundational modeling tool of choice for neural computation, used to describe both empirical signals and theoretical constructs.
+Through abstraction and idealization, we can distill the essential features of neural trajectory, enabling meaningful understanding rather than merely presenting a detailed but opaque description.
 A further abstraction, now widely adopted, is to focus on their long-term or asymptotic behavior--discretizing the continuous state space into attractors, their basins, and their connection to both the lower level implementation (e.g. circuits) and higher level information (e.g. input and context) being processed.
-These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible} offering simple and intuitive explanations for otherwise high-dimensional dynamics.
+These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible} offering simple and intuitive explanations for otherwise high-dimensional dynamics~\citep{vyas2020ctd}.
 Yet, this abstraction of the mechanism is often confused to be the literal ODE implementation, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
-We propose that we need a better way to quantify similarity of ODEs in terms of their effective behavior in finite time, and to conceptually separate the ODEs and their interpretable discrete abstraction. % which resemble ODEs but 
+While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
+We need a better way to quantify similarity of ODEs in terms of their effective behavior in finite time, and to conceptually separate the ODEs and their interpretable discrete abstraction. % which resemble ODEs but 
 
 %Understanding the relationship between neural activity and behavior is a fundamental question in neuroscience.
-Understanding neural computation requires more than capturing the details of neural dynamics; it necessitates the development of conceptual models that simplify and abstract the complexity of these processes into forms that are humanly interpretable.
-Through abstraction and idealization, we can distill the essential features of neural activity, enabling meaningful understanding rather than merely presenting a detailed but opaque description.
+%Understanding neural computation requires more than capturing the details of neural dynamics; it necessitates the development of conceptual models that simplify and abstract the complexity of these processes into forms that are humanly interpretable.
 
 %why no 20D attractors?
 %Recent research has shown that, despite the inherent complexity of neuronal networks, their activity often resides on a low-dimensional manifold, representing only a small fraction of the system's full potential complexity \citep{duncker2021dynamics}.
 %This empirical finding suggests that neural computation is governed by underlying constraints—potentially driven by task-relevant computations or external environmental factors—that allow for such a reduction in complexity.
 %Such constraints not only make the idealization of neural systems feasible but also provide a path toward more interpretable models of neural activity.
- 
+
 %%%%
 %\subsection{Memory maintenance in neural networks}\label{sec:ctd} 
-Discovering how the brain contributes to behavior is the central aim of systems neuroscience.
-We need a language that can describe how neural populations transform inputs into goal-directed behavior.
-Here we focus on the memory maintenance part of this transformation.
-
-Dynamical systems provide a powerful and widely used framework for studying neural computation, offering insights into cognitive functions such as working memory, short-term memory, and motor control \citep{beer1995ctrnn, beer2006parameterspace, sussillo2014neural, vyas2020ctd}.
-In neural activity and in Recurrent Neural Networks (RNNs), computations are described by the dynamical properties of the network which are typically characterized by the dynamics asymptotic behavior or invariant sets.
-Discrete and continuous forms of working memory, for example, can be modeled as attractor dynamics that stabilize persistent representations \citep{zhang2022translation, hoeller2024bridging}.
-Short-term memory, involving transient yet structured activity, has been explored in dynamical models capturing task-dependent variability \citep{kurtkaya2025dynamical}.
-% Motor control, too, exhibits low-dimensional dynamics shaped by recurrent structure \citep{wang2022representation}.
- While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
+%Discovering how the brain contributes to behavior is the central aim of systems neuroscience.
+%We need a language that can describe how neural populations transform inputs into goal-directed behavior.
+%Here we focus on the memory maintenance part of this transformation.
 
 \subsection{Equivalence of Qualitative Behavior}
 Since the time of Poincar\'e, dynamical systems has heavily relied on the analysis of their \emph{qualitative behavior}--the eventual fate of the system, rather than the details of their trajectory.
@@ -230,6 +224,13 @@ For example, will the system eventually settle down to the same point regardless
 For such qualitative questions, often a simple and intuitive picture (technically known as \emph{phase portraits}) that captures can give a definite answer~\citep{Strogatz2000-tf}.
 All dynamical systems can be partitioned by their qualitative behavior~\citep{Arnold1994}, abstracting away the finite time transient behaviors and the details of the vector field.
 The key concept is the \emph{topological conjugacy} (Sec.~\ref{def:top_conj}) between two systems where trajectories can be mapped between each other through a homeomorphism. % by Poincare...
+
+Dynamical systems provide a powerful and widely used framework for studying neural computation, offering insights into cognitive functions such as working memory, short-term memory, and motor control \citep{beer1995ctrnn, beer2006parameterspace, sussillo2014neural, vyas2020ctd}.
+In neural activity and in Recurrent Neural Networks (RNNs), computations are described by the dynamical properties of the network which are typically characterized by the dynamics asymptotic behavior or invariant sets.
+Discrete and continuous forms of working memory, for example, can be modeled as attractor dynamics that stabilize persistent representations \citep{zhang2022translation, hoeller2024bridging}.
+Short-term memory, involving transient yet structured activity, has been explored in dynamical models capturing task-dependent variability \citep{kurtkaya2025dynamical}.
+% Motor control, too, exhibits low-dimensional dynamics shaped by recurrent structure \citep{wang2022representation}.
+
 There are two major advantages of such abstraction:
 (1) It is implementation agnostic. For example, an insect neural circuit with 8 neurons can be topologically conjugate to an artificial neural network model where all the biophysical details are wrong.
 (2) It promotes interpretability.
@@ -263,7 +264,7 @@ Given that the biological neural systems are constantly fluctuating and both bio
 %Even structurally stable dynamics are known to go through bifurcations--breaking of topological conjugacy--during learning and necessarily so if the final dynamical system is not conjugate to the initial system~\citep{Doya1993-tz}.
 
 \subsection{Effective Dynamics}
-Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation--their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
+Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
 If two systems are useful for implementing the same purpose (neural computation), then we will consider them ``the same''.
 What do we mean by ``effective behavior''?
 Both artificial and biological agents perform neural computation in a finite time.
