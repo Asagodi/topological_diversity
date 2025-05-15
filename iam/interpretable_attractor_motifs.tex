@@ -229,7 +229,7 @@ There are two major advantages of such abstraction:
 It naturally emphasizes the use of attractor dynamics since they are asymptotically defined and preserved.
 For neural computation, this means only a finite collection of attractors that are simple to understand are left.
 Among those structures, two have a prominent status in the vernacular of neuroscience: fixed points and line attractors.
-Mathematically, (most) fixed points are locally conjugate to a linear system\citep{Harman} which are well understood thanks to the easy decomposition and superposition of solutions.
+Mathematically, (most) fixed points are locally conjugate to a linear system\citep{hartman1960lemma} which are well understood thanks to the easy decomposition and superposition of solutions.
 Moreover, multiple isolated fixed points are analgous to discrete states of finite state machines or Markov chains.
 Line attractors on the other hand can store an analog-valued representation (for an indefinite time).
 Theoretical neuroscience and machine learning have extensively used these as building blocks to extend our intuition on neural computation.
@@ -249,7 +249,7 @@ the first-order expansion of a recurrent neural network with weight vector $W$ r
 	\vDelta(\vx) = \nabla_W \vf\vert_\vx \Delta W + O(\Delta W^2)
 \end{align}
 where $\Phi(\cdot)$ is a point nonlinearity.
-Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of anxiety since Andronov and Pontryagin (1937) who thought to only work with structurally stable systems.
+Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of anxiety since Andronov and Pontryagin (1937) who warned to only work with structurally stable systems.
 Unfortunately, several of the key asymptotic attractor structures that are very useful in expressing interpretable neural computation are not robust to vector field perturbations, or \emph{structurally unstable}.
 A prominant example is the continuous attractors~\citep{Sagodi2024a}.
 Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, we cannot avoid the issue of structurally unstable neural computations~\citep{Park2023a}.
@@ -635,7 +635,9 @@ This approach allows for more interpretable comparisons, offering a meaningful w
 
 
 \subsection{Dissimilarity measure}
-In the context of comparing dynamical systems, we define a dissimilarity measure between two vector fields \( f \) and \( g \), both of which belong to \( C^1 \). Specifically, we assume that there exists a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the trajectories induced by the perturbed vector field \( f + p \) and the vector field \( g \) can be made indistinguishable under \( \Phi \). Formally, this condition is given by:
+In the context of comparing dynamical systems, we define a dissimilarity measure between two vector fields \( f \) and \( g \), both of which belong to \( C^1 \).
+Specifically, we assume that there exists a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the trajectories induced by the perturbed vector field \( f + p \) and the vector field \( g \) can be made indistinguishable under \( \Phi \).
+Formally, this condition is given by:
 \begin{equation}\label{eq:dissimilarity}
 \|\psi_{f+p} - \Phi(\psi_{g})\|_\infty = 0.
 \end{equation}
@@ -925,7 +927,7 @@ For the vector field-type deformation, our methods, accurately identifies the lo
 \end{figure}
 
 
-\subsection{A noisy target}\label{sec:noisy}
+%\subsection{A noisy target}\label{sec:noisy}
 
 
 \subsection{Comparison to other methods}\label{sec:compare_method}
