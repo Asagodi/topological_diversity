@@ -201,7 +201,7 @@ For example, state-space models can be used to train a black-box that captures t
 %Through abstraction and idealization, we can distill the essential features of neural trajectories, enabling meaningful understanding rather than merely presenting a detailed but opaque description.
 A further abstraction, now widely adopted, is to focus on their long-term or asymptotic behavior---discretizing the continuous state space into attractors, their basins, and their relation to the lower-level implementation (e.g. neurons) and higher-level information processing (e.g. input and context).
 These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible}, offering simple and intuitive explanations for otherwise high-dimensional dynamics~\citep{vyas2020ctd}.
-Yet, this abstraction of the mechanism is often mistaken to impose identical asymptotic behavior of the ODE implementation, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
+Yet, this abstraction of the mechanism is often based on confusing the effective and asymptotic behaviors of the ODE implementation, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
 %While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
 We need to conceptually separate the ODEs and their interpretable discrete abstraction, while making their connection precise through quantification of similarity in terms of their effective behavior at the finite time scales.
 
@@ -245,11 +245,11 @@ There are two major advantages of this abstraction:
 (1) It is implementation agnostic. For example, an insect neural circuit with 8 neurons can be topologically conjugate to an artificial neural network model where the time scale and the biophysical details are wrong.
 (2) It promotes interpretability.
 It naturally emphasizes the use of attractor dynamics since they are asymptotically defined and preserved.
-For neural computation, this means only a finite collection of attractors remain to be analyzed.
+For neural computation, this means that only a finite collection of attractors remains to be analyzed.
 Among those structures, two have a prominent status in the vernacular of neuroscience: fixed points and line attractors.
 Mathematically, (most) fixed points are locally conjugate to a linear system\citep{hartman1960lemma} which are well understood thanks to the easy decomposition and superposition of solutions.
 Moreover, multiple isolated fixed points are analgous to discrete states of finite state machines or Markov chains.
-Line attractors on the other hand can store an analog-valued representation (for an indefinite time).
+Line attractors on the other hand can store an analog-valued representation (for indefinite time).
 Theoretical neuroscience and machine learning have extensively used these as building blocks to extend our intuition on neural computation.
 While mathematically elegant, however, there are a few critical issues with this program.
 
