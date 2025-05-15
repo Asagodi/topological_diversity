@@ -260,17 +260,16 @@ If there exists a smooth vector field $\vDelta(\vx)$ such that
 \dot{\vx} &= \vf(\vx) + \epsilon\vDelta(\vx)
 \end{align}
 for some $\epsilon > 0$ does not break the topological conjugacy, then it is said to be \emph{structurally stable}.
-In a parametric case, 
-the first-order expansion of a recurrent neural network with weight vector $W$ results in
+In a parametric case, a recurrent neural network with weight vector $W$ perturbed by $\Delta W$ gives,
 \begin{align}
 	\vf(\vx) = -\vx + W^\top\Phi(\vx)
 	&\qquad
 	\vDelta(\vx) = \nabla_W \vf\vert_\vx \Delta W + O(\Delta W^2)
 \end{align}
-where $\Phi(\cdot)$ is a point nonlinearity.
-Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of anxiety since Andronov and Pontryagin (1937) who advised to only work with structurally stable systems.
+where $\Phi(\cdot)$ is a point nonlinearity and $\nabla_W$ denotes the Jacobian respect to $W$.
+Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of unease. % since Andronov and Pontryagin (1937) who advised to only work with structurally stable systems.
 Unfortunately, several of the key asymptotic attractor structures that are very useful in expressing interpretable neural computation are not robust to vector field perturbations, or \emph{structurally unstable}.
-A prominant example is the continuous attractors~\citep{Sagodi2024a}.
+A notorious example is the continuous attractor dynamics~\citep{Sagodi2024a}.
 Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, we cannot avoid the issue of structurally unstable neural computations~\citep{Park2023a}.
 %Even structurally stable dynamics are known to go through bifurcations--breaking of topological conjugacy--during learning and necessarily so if the final dynamical system is not conjugate to the initial system~\citep{Doya1993-tz}.
 
@@ -281,11 +280,19 @@ What do we mean by ``effective behavior''?
 Both artificial and biological agents perform neural computation in a finite time.
 For example, typical visiomotor behavior or perceptual-decision making tasks done within a few hundred milliseconds.
 So if our goal is to understand the information processing capacity at the behaviorally relevant time scales, we should limit our analysis to the interval rather than the mathematically elegant infinite time scale~\citep{Park2023a}.
+We denote the behavioral time scale as a reasonable duration of time $[0, T_\text{max}]$.
 
 We must also restrict our analysis to the relevant portion of the phase space.
 The dynamical systems implemented defines a vector field over the entire space but typically most of the space is not utilized during the normal operations.
 In fact, neural population data analysis suggests that the trajectories are restricted to a low-dimensional manifold in the context of a ``task'' or ``computation''.
 Therefore, the distinction between the systems should only be compared where they are used.
+We denote this natural probability distribution over the points on the phase space as $p(\vx)$.
+
+These two notions suggests the following dissimilarity measure:
+For all $\vx \in p(\vx)$ and $t \in [0, T_\text{max}]$,
+\begin{align}
+    \norm{\phi^\vf_t(\vx) - \phi^\vg_t(\vx)} \leq \alpha
+\end{align}
 
 Finally, we can relax the dichotomic nature of the topological conjugacy by introducing a complexity measure for the required homeomorphism.
 If more complicated distortions are needed, it is natural to consider them less similar.
