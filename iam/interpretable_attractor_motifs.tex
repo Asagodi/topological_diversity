@@ -220,23 +220,32 @@ We need to conceptually separate the ODEs and their interpretable discrete abstr
 %Here we focus on the memory maintenance part of this transformation.
 
 \subsection{Equivalence of Qualitative Behavior}
-Since the time of Poincar\'e, dynamical systems has heavily relied on the analysis of their \emph{qualitative behavior}--the eventual fate of the system, rather than the details of their trajectory.
-For example, will the system eventually settle down to the same point regardless of the initial condition?
-For such qualitative questions, often a simple and intuitive picture (technically known as \emph{phase portraits}) that captures can give a definite answer~\citep{Strogatz2000-tf}.
-All dynamical systems can be partitioned by their qualitative behavior~\citep{Arnold1994}, abstracting away the finite time transient behaviors and the details of the vector field.
-The key concept is the \emph{topological conjugacy} (Sec.~\ref{def:top_conj}) between two systems where trajectories can be mapped between each other through a homeomorphism. % by Poincare...
-
-Dynamical systems provide a powerful and widely used framework for studying neural computation, offering insights into cognitive functions such as working memory, short-term memory, and motor control \citep{beer1995ctrnn, beer2006parameterspace, sussillo2014neural, vyas2020ctd}.
-In neural activity and in Recurrent Neural Networks (RNNs), computations are described by the dynamical properties of the network which are typically characterized by the dynamics asymptotic behavior or invariant sets.
+Dynamical systems is widely used for studying neural computation, offering insights into cognitive functions such as working memory, short-term memory, and motor control~\citep{beer1995ctrnn, beer2006parameterspace, sussillo2014neural, vyas2020ctd}.
+%In neural activity and in Recurrent Neural Networks (RNNs), computations are described by the dynamical properties of the network which are typically characterized by the dynamics asymptotic behavior or invariant sets.
 Discrete and continuous forms of working memory, for example, can be modeled as attractor dynamics that stabilize persistent representations \citep{zhang2022translation, hoeller2024bridging}.
 Short-term memory, involving transient yet structured activity, has been explored in dynamical models capturing task-dependent variability \citep{kurtkaya2025dynamical}.
 % Motor control, too, exhibits low-dimensional dynamics shaped by recurrent structure \citep{wang2022representation}.
 
-There are two major advantages of such abstraction:
-(1) It is implementation agnostic. For example, an insect neural circuit with 8 neurons can be topologically conjugate to an artificial neural network model where all the biophysical details are wrong.
+Since the time of Poincar\'e, dynamical systems has heavily relied on the analysis of their \emph{qualitative behavior}---the eventual fate of the system, rather than the details of their trajectory.
+For qualitative questions such as ``will the neural system eventually settle down to the same resting state regardless of the initial condition in the absence of external drive or will it oscillate forever?'', interestingly, often a simple and intuitive picture (technically a \emph{phase portrait}) can give a definite answer~\citep{Strogatz2000-tf}.
+All dynamical systems can be partitioned by their qualitative behavior~\citep{Arnold1994}, abstracting away the finite time transient behaviors and the details of the vector field.
+Let us consider two autonomous dynamical systems defined on the same space:
+\begin{align}
+    \begin{dcases}
+    \dot{\vx} = \vf(\vx)
+    \\
+    \dot{\vy} = \vg(\vy)
+    \end{dcases}
+\end{align}
+Poincar\'e introduced the notion of homeomorphism $\homeo: \inputSpace \to \inputSpace$, a continuous invertible map from trajectories (solutions) of one system to the other.
+If there exists such a homeomorphism, then the two systems are \emph{topologically conjugate} (Def.~\ref{def:top_conj}).
+Furthermore, if the map is differentiable, we have a diffeomorphism.
+
+There are two major advantages of such this abstraction:
+(1) It is implementation agnostic. For example, an insect neural circuit with 8 neurons can be topologically conjugate to an artificial neural network model where the time scale and the biophysical details are wrong.
 (2) It promotes interpretability.
 It naturally emphasizes the use of attractor dynamics since they are asymptotically defined and preserved.
-For neural computation, this means only a finite collection of attractors that are simple to understand are left.
+For neural computation, this means only a finite collection of attractors remain to be analyzed.
 Among those structures, two have a prominent status in the vernacular of neuroscience: fixed points and line attractors.
 Mathematically, (most) fixed points are locally conjugate to a linear system\citep{hartman1960lemma} which are well understood thanks to the easy decomposition and superposition of solutions.
 Moreover, multiple isolated fixed points are analgous to discrete states of finite state machines or Markov chains.
@@ -265,7 +274,7 @@ Given that the biological neural systems are constantly fluctuating and both bio
 %Even structurally stable dynamics are known to go through bifurcations--breaking of topological conjugacy--during learning and necessarily so if the final dynamical system is not conjugate to the initial system~\citep{Doya1993-tz}.
 
 \subsection{Effective Dynamics}
-Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation----their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
+Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
 If two systems are useful for implementing the same purpose (neural computation), then we will consider them ``the same''.
 What do we mean by ``effective behavior''?
 Both artificial and biological agents perform neural computation in a finite time.
