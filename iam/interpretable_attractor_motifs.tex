@@ -578,7 +578,7 @@ This aligns with evidence from low-rank RNN constructions \citep{beiran2021shapi
 
 Sparse Component Analysis (SCA) seeks interpretable factors that are sparse in time and evolve within orthogonal dimensions  \citep{zimnik2024identifying}.
 %
-Finite-state abstractions \citep{oliva2019fsm, cotteret2024fsm}, probabilistic interpretability frameworks \citep{dong2020towards}, and methods for symbolic distillation such as RADD \citep{schaeffer2020reverseengineering} all seek to translate continuous dynamics into intelligible, discrete operations.
+Finite-state abstractions \citep{oliva2019fsm, cotteret2024fsm}, their probabilistic versions \citep{dong2020towards}, and methods for symbolic distillation such as Representations and Dynamics Distillation (RADD) \citep{schaeffer2020reverseengineering} all seek to translate continuous dynamics into intelligible, discrete states and operations.
 
 %dPCA\citep{kobak2016demixed} Principal Component Analysis as a supervised dimensionality reduction method that finds dimensions in population activity space related to experimentally-defined variables, aiding in the interpretation of complex and heterogeneous single-neuron responses
 %MinimalRNN\citep{chen2017minimalrnn} more about simplifying 
@@ -656,11 +656,7 @@ Finally, we establish a correspondence between the target system and the motif l
 Additionally, we allow for injecting back some details by defining an additive vector field on the motifs.
 
 
-\paragraph{Limitation}
-Main shortcoming: difficulty with dealing with complex attractors.
-When is decomposition of attractor into motifs possible?
-We focus on understandable attractors for now. 
-These are covered by our method to build higher-dimensional composite models from lower-dimensional dynamical motifs.
+
 
 
 %%%%%%%%%%%%
@@ -841,8 +837,8 @@ Attractors can be further characterized by both their intrinsic and extrinsic di
 This perspective offers a principled framework for enumerating attractor types, which we use to define the components of our library (see Supp. Sec.~\ref{sec:library}).
 \begin{enumerate}[start=0,label={\bfseries Dim \arabic*:}]
 \item  Stable fixed point and fixed-point topology motifs
-\item  Bounded line attractor ($[-1,1]\subset\reals$), ring attractor ($S_{v=0}^1$ ring with zero flow), stable limit cycle ($S_1^1$)
-\item Plane attractor ($[-1,1]^2$), Cylinder attractor ($[-1,1]\times S_0^1$), Cylinder-LC attractor ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
+\item  Bounded line attractor ($[-1,1]$), ring attractor ($S_{v=0}^1$ ring with zero flow), stable limit cycle ($S_1^1$)
+\item Plane attractor ($[-1,1]^2$), Cylinder attractor ($[-1,1]\times S_0^1$), Cylinder-LC ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
 %\item ...
 \end{enumerate}
 We construct  higher-dimensional attractors from lower dimensional motifs by taking their Cartesian products, see Supp.Sec.~\ref{sec:composite}.
@@ -1023,11 +1019,15 @@ See for the details of the target systems Supp.Sec.~\ref{sec:target_systems} and
 \section{Discussion}
 As Popper put it, ``Science may be described as the art of systematic over-simplification -- the art of discerning what we may with advantage omit.''~\citep{Popper1988}.
 We propose to omit details between systems in the asymptotic time scale by characterizing the effective behavior of a neural system.
-Although we have only analyzed working memory, the approach can be extended to input-driven, or even embo++died systems that interact with an environment.
+Although we have only analyzed working memory, the approach can be extended to input-driven, or even embodied systems that interact with an environment.
 
 \subsection{Limitations}
 Assumption: the invariant set of the target needs to be well-sampled.
 
+Main shortcoming: difficulty with dealing with complex attractors.
+When is decomposition of attractor into motifs possible?
+We focus on understandable attractors for now. 
+These are covered by our method to build higher-dimensional composite models from lower-dimensional dynamical motifs.
 
 \subsection{}
 Limits to neuroscientific understanding \citep{chirimuuta2024brain}
