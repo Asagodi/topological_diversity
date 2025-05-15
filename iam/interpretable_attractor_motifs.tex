@@ -110,6 +110,7 @@
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 \DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
 
+\newcommand{\tconju}{\mathbin{\overset{\text{t.c.}}{\sim}}}
 \DeclareMathOperator*{\E}{\rm E} % expectation
 \newcommand{\inv}{^{-1}}
 \newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
@@ -242,7 +243,7 @@ Specifically, consider two autonomous dynamical systems defined on the same phas
     \end{dcases}
 \end{align}
 Poincar\'e introduced the notion of homeomorphism $\homeo: \inputSpace \to \inputSpace$, a continuous invertible map from the trajectories (solutions) of one system to the other.
-If there exists such a homeomorphism, then the two systems are \emph{topologically conjugate} (Def.~\ref{def:top_conj}).
+If there exists such a homeomorphism, then the two systems are \emph{topologically conjugate} (Def.~\ref{def:top_conj}) and we denote as $\vf(\cdot) \tconju \vg(\cdot)$.
 %Furthermore, if the map is differentiable, we have a diffeomorphism.
 
 There are two major advantages of this abstraction:
@@ -386,7 +387,7 @@ Therefore, we first consider the minimum perturbation to achieve topological con
     \\
     & \text{s.t.} \quad
     \vf(\vx) + \tilde \vDelta(\vx)
-    \overset{\text{t.c.}}{\sim}
+    \tconju
     \vg(\vx)
     \label{eq:d1:tc}
 \end{align}
@@ -403,13 +404,13 @@ To link the complexity of diffeomorphism to the magnitude of additive perturbati
 Let
 $
 \vf(\vx)
-\overset{\text{t.c.}}{\sim}
+    \tconju
 \vg(\vx)
 $.
 That is, we seek to find $\vDelta(\vx)$ that maintains the topological conjugacy,
 \begin{align}
     \dot\vx = \vf(\vx) + \epsilon \vDelta(\vx)
-    \overset{\text{t.c.}}{\sim}
+    \tconju
     \vg(\vx)
     \label{eq:pareto:tc}
 \end{align}
