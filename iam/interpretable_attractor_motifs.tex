@@ -836,13 +836,12 @@ In compositional tasks, where behavior can be decomposed into simpler subtasks o
 
 Attractors can be systematically classified by their topological dimension, with the simplest topological spaces serving as fundamental building blocks.
  In neural systems, trial-averaged activity often reflects low-dimensional structure, corresponding to an embedding of the task manifold into firing rate space \citep{gao2015simplicity}.
-These embedded manifolds can be interpreted as neural attractors that capture the dynamics underlying task execution. 
 Recent work has shown that task-relevant computations often emerge on such manifolds \citep{langdon2023unifying,can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor,ghazizadeh2021slowmanifold,duncker2021dynamics, pezon2024linking,fortunato2024nonlinear}.
 Attractors can be further characterized by both their intrinsic and extrinsic dimensionality \citep{jazayeri2021interpreting,chaudhuri2019attractor,Sagodi2024a}. 
 This perspective offers a principled framework for enumerating attractor types, which we use to define the components of our library (see Supp. Sec.~\ref{sec:library}).
 \begin{enumerate}[start=0,label={\bfseries Dim \arabic*:}]
 \item  Stable fixed point and fixed-point topology motifs
-\item  Bounded line attractor ($[0,1]\subset\reals$), ring attractor ($S_0^1$), stable limit cycle ($S_1^1$)
+\item  Bounded line attractor ($[0,1]\subset\reals$), ring attractor ($S_{v=0}^1$ ring with zero flow), stable limit cycle ($S_1^1$)
 \item Plane attractor ($[0,1]^2$), Cylinder attractor ($[0,1]\times S_0^1$), Cylinder-LC attractor ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
 %\item ...
 \end{enumerate}
