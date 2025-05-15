@@ -220,6 +220,7 @@ We need to conceptually separate the ODEs and their interpretable discrete abstr
 %We need a language that can describe how neural populations transform inputs into goal-directed behavior.
 %Here we focus on the memory maintenance part of this transformation.
 
+\section{Background}
 \subsection{Equivalence of Qualitative Behavior}
 Dynamical systems are widely used for studying neural computation, offering insights into cognitive functions such as working memory, short-term memory, and motor control~\citep{beer1995ctrnn, beer2006parameterspace, sussillo2014neural, vyas2020ctd}.
 %In neural activity and in Recurrent Neural Networks (RNNs), computations are described by the dynamical properties of the network which are typically characterized by the dynamics asymptotic behavior or invariant sets.
@@ -231,7 +232,7 @@ Since the time of Poincar\'e, dynamical systems has heavily relied on the analys
 For qualitative questions such as ``will the neural system eventually settle down to the same resting state regardless of the initial condition in the absence of external drive or will it oscillate forever?'', interestingly, often a simple and intuitive picture (technically a \emph{phase portrait}) can give a definite answer~\citep{Strogatz2000-tf}.
 
 The space of all dynamical systems can be partitioned the equivalence of their qualitative behavior~\citep{Arnold1994}, abstracting away the finite time transient behaviors and the details of the vector field.
-Specifically, consider two autonomous dynamical systems defined on the same space:
+Specifically, consider two autonomous dynamical systems defined on the same phase space $\inputSpace$:
 \begin{align}
     \begin{dcases}
     \dot{\vx} = \vf(\vx)
@@ -274,7 +275,8 @@ A notorious example is the continuous attractor dynamics~\citep{Sagodi2024a}.
 Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, we cannot avoid the issue of structurally unstable neural computations~\citep{Park2023a}.
 %Even structurally stable dynamics are known to go through bifurcations--breaking of topological conjugacy--during learning and necessarily so if the final dynamical system is not conjugate to the initial system~\citep{Doya1993-tz}.
 
-\subsection{Effective Dynamics}
+\section{Effective Dynamics}\label{sec:effective_ds}
+\subsection{Motivation and measure of Dissimilarity}
 Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
 If two systems are useful for implementing the same purpose (neural computation), then we will consider them ``the same''.
 What do we mean by ``effective behavior''?
@@ -313,15 +315,33 @@ If the axes of the space $\inputSpace$ are arbitrary, as in the case of state-sp
 In addition, more general continuous coordinate transformation shall be allowed.
 Let $\homeo: \inputSpace \to \inputSpace$ be a diffeomorphism from the $\vg$ system to $\vf$ system.
 We define a dissimilarity
-\begin{align}
+\begin{align}\label{eq:d1}
     d_1(\vf(\vx), \vg(\vx); \homeo)
 	&\coloneq \int
 	\norm{\phi_{\vf}^t(\vx) - \homeo(\phi_{\vg}^t(\vx))}
 	\dm{t}
 \end{align}
 which is non-negative but non-symmetric in general.
+If more complicated deformations are needed to minimize \eqref{eq:d1}, it is natural to consider their effective behavior less similar.
+
+Let $\dcomplexity: (\inputSpace \to \inputSpace) \to \posReals$ be a measure of complexity of the diffeomorphism such that the simplest map, the identity, gives $\dcomplexity(\homeo(\vx) = \vx) = 0$.
+For example, we can define,
+\begin{align}\label{eq:dcomplexity}
+    \dcomplexity(\homeo) &=
+    \int \left(
+	c_a \norm{\nabla\homeo(\vx) - \identity} + c_b \norm{\homeo(\vx) - \vx}
+	\right)
+    \dm{\vx}
+\end{align}
+for some $c_a, c_b > 0$.
+
+We have arrived at a vector-valued dissimilarity between systems:
+(1) a small distance in the trajectories after a continuous coordinate transform,
+and (2) a small complexity continuous coordinate transform.
+
+\subsection{Trade-off between perturbation and deformation}
+
 Note that the diffeomorphism preserves topological conjugacy, however, we can relax the dichotomic nature of the topological conjugacy by introducing a complexity measure.
-If more complicated distortions are needed, it is natural to consider their effective behavior less similar.
 
 
 %3 angles: neural activity, latent variable models, RNNs: all too obscure!!
