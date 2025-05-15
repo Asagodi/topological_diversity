@@ -195,6 +195,9 @@ We argue that abstract canonical computation motifs, rather than detailed dynami
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
+Scientific understanding often advances not by improving predictions, but by changing the vocabulary we use to describe systems.
+% Progress in science often comes not from better predictions, but from better descriptions.
+
 %Understanding the relationship between neural activity and behavior is a fundamental question in neuroscience.
 Understanding neural computation requires more than capturing the details of neural dynamics; it necessitates the development of conceptual models that simplify and abstract the complexity of these processes into forms that are humanly interpretable.
 Through abstraction and idealization, we can distill the essential features of neural activity, enabling meaningful understanding rather than merely presenting a detailed but opaque description.
@@ -886,7 +889,8 @@ Demonstration: Sec.~\ref{sec:target_demonstrations}
 % How do deformed attractors look through our motif-based analysis?
 %This experiment should shed light on the claim: We propose a library of canonical computations and a new measure of dissimilarity that allows us to group systems based on their effective behavior by explicitly considering both deformations that break the topological conjugacy as well as diffeomorphisms that preserve it.
 
-\subsection{Quantifying the deformation to a ring attractor}\label{sec:imp_ring}
+%\subsection{Quantifying the deformation to a ring attractor}\label{sec:imp_ring}
+\subsection{Two types of deformations to an ideal ring attractor}\label{sec:imp_ring}
 To evaluate the effectiveness of our motif-based framework, we investigate how deformed ring attractors deviate from a canonical ring attractor. 
 The dissimilarity measure can account for two types of variation: 
 (i) topological deformations that preserve the qualitative structure via diffeomorphisms, and 
@@ -980,6 +984,9 @@ Supp.Sec.~\ref{sec:target_systems}
 
 %%%%%%%%%%%%%%%%%
 \section{Discussion}
+As Popper put it, ``Science may be described as the art of systematic over-simplification -- the art of discerning what we may with advantage omit.''~\citep{Popper1988}.
+We have chosen to omit the differences between systems in the asymptotic time scale by proposing to characterize effective behavior of a neural system by their effective dynamics.
+Although we have only analyzed working memory, the approach can be extended to input-driven, or even emboddied systems that interact with an environment.
 
 \subsection{Limitations}
 Assumption: the invariant set of the target needs to be well-sampled.
