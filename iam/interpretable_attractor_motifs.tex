@@ -935,18 +935,21 @@ For the vector field-type deformation, our methods, accurately identifies the lo
 \end{figure}
 
 
-
-
 %\subsection{A noisy target}\label{sec:noisy}
 
 
 \paragraph{Higher dimensions}
-
+Low-dimensional attractors are embedded in high-dimensional neural activity space.
+Therefore, we investigate the attractors of task-trained RNNs through our canonical motif library.
+We fit motifs to different sizes of RNNs trained on an angular velocity integration task (from \citet{Sagodi2024a}). %zero-input 
+The ring attractor motif is able to approximate both the finite (sampled trajectories) and infinite (invariant manifold) time horizon behavior of the networks (Fig. \ref{fig:avi_rnn_recttanh}).
 %high dims
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\linewidth]{avi_rnn_recttanh}
-    \caption{.}
+    \caption{The ring attracotr motif fit to RNNs of different sizes trained on an angular velocity integration task.
+    The homeomorphism brings the canonical ring attractor near the invariant slow manifold (composed out of a finite number of fixed points) even though topological equivalency is lacking.
+    }
     \label{fig:avi_rnn_recttanh}
 \end{figure}
 
@@ -955,15 +958,12 @@ For the vector field-type deformation, our methods, accurately identifies the lo
 
 \subsection{Comparison to other methods}\label{sec:compare_method}
 
-\paragraph{DSA}%https://github.com/mitchellostrow/DSA
-metric: DSA score
-
-%\paragraph{Phase2Vec} %https://github.com/nomoriel/phase2vec
-
-%\paragraph{DFORM} %NO CODE????
-
-\paragraph{SPE} %https://github.com/nitzanlab/prototype-equivalences
-metric: cycle-error
+%\paragraph{DSA}%https://github.com/mitchellostrow/DSA
+%metric: DSA score
+%%\paragraph{Phase2Vec} %https://github.com/nomoriel/phase2vec
+%%\paragraph{DFORM} %NO CODE????
+%\paragraph{SPE} %https://github.com/nitzanlab/prototype-equivalences
+%metric: cycle-error
 
 %\paragraph{SSMLearn} %https://github.com/haller-group/SSMLearnPy/tree/main
 
