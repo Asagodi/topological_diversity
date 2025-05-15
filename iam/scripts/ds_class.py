@@ -426,7 +426,14 @@ class Learnable1DMultistableSystem(LearnableDynamicalSystem):
         prod = torch.ones_like(x)
         for r in self.roots:
             prod = prod * (x - r)
-        return self.alpha * prod
+        derivatives = [self.alpha * prod]
+
+        if self.dim > 1:
+            for i in range(1, self.dim):
+                derivatives.append(torch.zeros_like(x[:, i]))
+
+        dx_dt = torch.stack(derivatives, dim=-1)
+        return dx_dt.squeeze(0) if dx_dt.shape[0] == 1 else dx_dt
 
     def invariant_manifold(self, num_points=100) -> torch.Tensor:
         return self.roots[self.alpha < 0].unsqueeze(1)  # stable fixed points if alpha < 0
