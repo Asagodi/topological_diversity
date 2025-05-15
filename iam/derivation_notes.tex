@@ -279,6 +279,12 @@ Now, we want to consider the complexity of $\homeo$ and trade-off with additive 
 For this, we will do a first-order perturbation analysis.
 
 To link the complexity of diffeomorphism to the magnitude of additive perturbation, we seek to find the equivalence up to first order of the vector field corresponding to the diffeomorphism.
+Let
+$
+\vf(\vx)
+\overset{\text{t.c.}}{\sim}
+\vg(\vx)
+$.
 That is, we seek to find $\vDelta(\vx)$ that maintains the topological conjugacy,
 \begin{align}
     \dot\vx = \vf(\vx) + \epsilon \vDelta(\vx)
@@ -365,7 +371,7 @@ We can use this to derive the following bound that holds for all $\vx$:
     \label{eq:h:bound}
 \end{align}
 for appropriate vector and corresponding matrix norms.
-We recognize two kinds of complexities of the diffeomorphism: (1) scale complexity which is a function of the Jacobian of diffeomorphism $\nabla\vh(\vx)$, and (2) translation complexity.
+We recognize two kinds of complexities of the diffeomorphism: (1) scale complexity which is a function of the Jacobian of diffeomorphism $\nabla\homeo(\vx)$, and (2) translation complexity.
 
 Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of two complexity measures of the diffeomorphism can be traded off with the additive perturbation.
 
