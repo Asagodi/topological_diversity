@@ -233,17 +233,21 @@ Short-term memory, involving transient yet structured activity, has been explore
 Since the time of Poincar\'e, dynamical systems has heavily relied on the analysis of their \emph{qualitative behavior}---the eventual fate of the system, rather than the details of their trajectory.
 For qualitative questions such as ``will the neural system eventually settle down to the same resting state regardless of the initial condition in the absence of external drive or will it oscillate forever?'', interestingly, often a simple and intuitive picture (technically a \emph{phase portrait}) can give a definite answer~\citep{Strogatz2000-tf}.
 
-The space of all dynamical systems can be partitioned the equivalence of their qualitative behavior~\citep{Arnold1994}, abstracting away the finite time transient behaviors and the details of the vector field.
+The space of all dynamical systems can be partitioned by the equivalence of their qualitative behavior~\citep{Arnold1994}, abstracting away the finite time transient behaviors and the details of the vector field.
 Specifically, consider two autonomous dynamical systems defined on the same phase space $\inputSpace$:
 \begin{align}
-    \begin{dcases}
-    \dot{\vx} = \vf(\vx)
-    \\
+    \dot{\vx} = \vf(\vx),
+    &\qquad
     \dot{\vy} = \vg(\vy)
-    \end{dcases}
+%    \begin{dcases}
+%	\dot{\vx} = \vf(\vx)
+%	\\
+%	\dot{\vy} = \vg(\vy)
+%    \end{dcases}
 \end{align}
-Poincar\'e introduced the notion of homeomorphism $\homeo: \inputSpace \to \inputSpace$, a continuous invertible map from the trajectories (solutions) of one system to the other.
-If there exists such a homeomorphism, then the two systems are \emph{topologically conjugate} (Def.~\ref{def:top_conj}) and we denote as $\vf(\cdot) \tconju \vg(\cdot)$.
+%Poincar\'e introduced the notion of homeomorphism 
+If there exists a homeomorphism $\homeo: \inputSpace \to \inputSpace$, a continuous invertible map from the trajectories (solutions) of one system to the other, then the two systems are \emph{topologically conjugate} (Def.~\ref{def:top_conj}) and we denote as $\vf(\cdot) \tconju \vg(\cdot)$.
+Topological conjugacy defines an equivalence relation.
 %Furthermore, if the map is differentiable, we have a diffeomorphism.
 
 There are two major advantages of this abstraction:
@@ -255,24 +259,24 @@ Among those structures, two have a prominent status in the vernacular of neurosc
 Mathematically, (hyperbolic) fixed points are locally conjugate to a linear system\citep{hartman1960lemma} which are well understood thanks to the easy decomposition and superposition of solutions.
 Moreover, multiple isolated fixed points can serve as a substrate for discrete computations frameworks such as finite state machines or Markov chains.
 Line attractors on the other hand can store an analog-valued representation (for indefinite time).
-Theoretical neuroscience and machine learning have extensively used these as building blocks to help us expand our intuition on neural computation.
+Theoretical neuroscience and machine learning have extensively used these as building blocks to help us expand our intuition on neural computation\citep{dayan2005theoretical}.
 While mathematically elegant, however, there are a few critical issues with this program.
 
 \subsection{Structural Stability and Bifurcations}
-If there exists a smooth vector field $\vDelta(\vx)$ such that
+If for any smooth vector field $\vDelta(\vx)$, there exists an $\epsilon > 0$, such that
 \begin{align}\label{eq:vfp:epsilon}
 \dot{\vx} &= \vf(\vx) + \epsilon\vDelta(\vx)
 \end{align}
-for some $\epsilon > 0$ does not break the topological conjugacy, then it is said to be \emph{structurally stable}.
-In a parametric case, a recurrent neural network with weight vector $W$ perturbed by $\Delta W$ gives,
-\begin{align}
-	\vf(\vx) = -\vx + W^\top\Phi(\vx)
-	&\qquad
-	\vDelta(\vx) = \nabla_W \vf\vert_\vx \Delta W + O(\Delta W^2)
-\end{align}
-where $\Phi(\cdot)$ is a point nonlinearity and $\nabla_W$ denotes the Jacobian respect to $W$.
+does not break the topological conjugacy, then the unperturbed system is said to be \emph{structurally stable}.
+% In a parametric case, a recurrent neural network with weight vector $W$ perturbed by $\Delta W$ gives,
+% \begin{align}
+% 	\vf(\vx) = -\vx + W^\top\Phi(\vx),
+% 	&\qquad
+% 	\vDelta(\vx) = \nabla_W \vf\vert_\vx \Delta W + O(\Delta W^2) =
+% \end{align}
+% where $\Phi(\cdot)$ is a point nonlinearity and $\nabla_W$ denotes the Jacobian respect to $W$.
 Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of unease. % since Andronov and Pontryagin 1937) who advised to only work with structurally stable systems.
-Unfortunately, several of the key asymptotic attractor structures that are very useful in expressing interpretable neural computation are not robust to vector field perturbations, or \emph{structurally unstable}.
+Unfortunately, several of the key asymptotic attractor structures that are very useful in expressing interpretable neural computation are not robust to vector field or synaptic weight perturbations, thus structurally unstable.
 A notorious example is the continuous attractor dynamics~\citep{Sagodi2024a}.
 Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, we cannot avoid the issue of structurally unstable neural computations~\citep{Park2023a}.
 %Even structurally stable dynamics are known to go through bifurcations--breaking of topological conjugacy--during learning and necessarily so if the final dynamical system is not conjugate to the initial system~\citep{Doya1993-tz}.
