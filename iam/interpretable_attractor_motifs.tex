@@ -199,8 +199,8 @@ Scientific understanding often advances not by improving predictions, but by cha
 Ordinary differential equations (ODEs) are a foundational modeling tool of choice for neural computation, used to describe both empirical signals and theoretical constructs.
 For example, state-space models can be used to train a black-box that captures the spatiotemporal structure of time series data as an ODE~\citep{nair2023approximate,pei2neural,Dowling2024b}.
 %Through abstraction and idealization, we can distill the essential features of neural trajectories, enabling meaningful understanding rather than merely presenting a detailed but opaque description.
-A further abstraction, now widely adopted, is to focus on their long-term or asymptotic behavior---discretizing the continuous state space into attractors, their basins, and their relation to the lower-level implementation (e.g. neurons) and higher-level information (e.g. input and context) being processed.
-These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible} offering simple and intuitive explanations for otherwise high-dimensional dynamics~\citep{vyas2020ctd}.
+A further abstraction, now widely adopted, is to focus on their long-term or asymptotic behavior---discretizing the continuous state space into attractors, their basins, and their relation to the lower-level implementation (e.g. neurons) and higher-level information processing (e.g. input and context).
+These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible}, offering simple and intuitive explanations for otherwise high-dimensional dynamics~\citep{vyas2020ctd}.
 Yet, this abstraction of the mechanism is often mistaken to impose identical asymptotic behavior of the ODE implementation, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
 %While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
 We need to conceptually separate the ODEs and their interpretable discrete abstraction, while making their connection precise through quantification of similarity in terms of their effective behavior at the finite time scales.
@@ -220,7 +220,7 @@ We need to conceptually separate the ODEs and their interpretable discrete abstr
 %Here we focus on the memory maintenance part of this transformation.
 
 \subsection{Equivalence of Qualitative Behavior}
-Dynamical systems is widely used for studying neural computation, offering insights into cognitive functions such as working memory, short-term memory, and motor control~\citep{beer1995ctrnn, beer2006parameterspace, sussillo2014neural, vyas2020ctd}.
+Dynamical systems are widely used for studying neural computation, offering insights into cognitive functions such as working memory, short-term memory, and motor control~\citep{beer1995ctrnn, beer2006parameterspace, sussillo2014neural, vyas2020ctd}.
 %In neural activity and in Recurrent Neural Networks (RNNs), computations are described by the dynamical properties of the network which are typically characterized by the dynamics asymptotic behavior or invariant sets.
 Discrete and continuous forms of working memory, for example, can be modeled as attractor dynamics that stabilize persistent representations \citep{zhang2022translation, hoeller2024bridging}.
 Short-term memory, involving transient yet structured activity, has been explored in dynamical models capturing task-dependent variability \citep{kurtkaya2025dynamical}.
@@ -237,11 +237,11 @@ Let us consider two autonomous dynamical systems defined on the same space:
     \dot{\vy} = \vg(\vy)
     \end{dcases}
 \end{align}
-Poincar\'e introduced the notion of homeomorphism $\homeo: \inputSpace \to \inputSpace$, a continuous invertible map from trajectories (solutions) of one system to the other.
+Poincar\'e introduced the notion of homeomorphism $\homeo: \inputSpace \to \inputSpace$, a continuous invertible map from the trajectories (solutions) of one system to the other.
 If there exists such a homeomorphism, then the two systems are \emph{topologically conjugate} (Def.~\ref{def:top_conj}).
 Furthermore, if the map is differentiable, we have a diffeomorphism.
 
-There are two major advantages of such this abstraction:
+There are two major advantages of this abstraction:
 (1) It is implementation agnostic. For example, an insect neural circuit with 8 neurons can be topologically conjugate to an artificial neural network model where the time scale and the biophysical details are wrong.
 (2) It promotes interpretability.
 It naturally emphasizes the use of attractor dynamics since they are asymptotically defined and preserved.
@@ -251,14 +251,14 @@ Mathematically, (most) fixed points are locally conjugate to a linear system\cit
 Moreover, multiple isolated fixed points are analgous to discrete states of finite state machines or Markov chains.
 Line attractors on the other hand can store an analog-valued representation (for an indefinite time).
 Theoretical neuroscience and machine learning have extensively used these as building blocks to extend our intuition on neural computation.
-While mathematically elegant, however, there are a few critical issues in this program.
+While mathematically elegant, however, there are a few critical issues with this program.
 
 \subsection{Structural Stability and Bifurcations}
 If there exists a smooth vector field $\vDelta(\vx)$ such that
 \begin{align}\label{eq:vfp:epsilon}
 \dot{\vx} &= \vf(\vx) + \epsilon\vDelta(\vx)
 \end{align}
-for some $\epsilon > 0$ does not break the topological conjugacy, then it is said to be structurally stable.
+for some $\epsilon > 0$ does not break the topological conjugacy, then it is said to be \emph{structurally stable}.
 In a parametric case, 
 the first-order expansion of a recurrent neural network with weight vector $W$ results in
 \begin{align}
@@ -267,7 +267,7 @@ the first-order expansion of a recurrent neural network with weight vector $W$ r
 	\vDelta(\vx) = \nabla_W \vf\vert_\vx \Delta W + O(\Delta W^2)
 \end{align}
 where $\Phi(\cdot)$ is a point nonlinearity.
-Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of anxiety since Andronov and Pontryagin (1937) who warned to only work with structurally stable systems.
+Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of anxiety since Andronov and Pontryagin (1937) who advised to only work with structurally stable systems.
 Unfortunately, several of the key asymptotic attractor structures that are very useful in expressing interpretable neural computation are not robust to vector field perturbations, or \emph{structurally unstable}.
 A prominant example is the continuous attractors~\citep{Sagodi2024a}.
 Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, we cannot avoid the issue of structurally unstable neural computations~\citep{Park2023a}.
@@ -1000,8 +1000,8 @@ Supp.Sec.~\ref{sec:target_systems}
 %%%%%%%%%%%%%%%%%
 \section{Discussion}
 As Popper put it, ``Science may be described as the art of systematic over-simplification -- the art of discerning what we may with advantage omit.''~\citep{Popper1988}.
-We have chosen to omit the differences between systems in the asymptotic time scale by proposing to characterize effective behavior of a neural system by their effective dynamics.
-Although we have only analyzed working memory, the approach can be extended to input-driven, or even emboddied systems that interact with an environment.
+We propose to omit details between systems in the asymptotic time scale by characterizing the effective behavior of a neural system.
+Although we have only analyzed working memory, the approach can be extended to input-driven, or even embo++died systems that interact with an environment.
 
 \subsection{Limitations}
 Assumption: the invariant set of the target needs to be well-sampled.
