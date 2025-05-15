@@ -453,14 +453,14 @@ Note that this form matches \eqref{eq:dcomplexity}.
 
 Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of two complexity measures of the diffeomorphism can be traded off with the additive perturbation.
 
-Therefore, we can define the smallest perturbation needed to compensate for the suboptimal diffeomorphism with a given complexity:
+Therefore, we define the smallest perturbation needed to compensate for the suboptimal diffeomorphism with a given complexity:
 \begin{align}
     \vDelta_2(\vx ; c) = \inf_{\dcomplexity{\vh} = c}
 	\nabla\homeo(\invhomeo(\vy)) \vf(\invhomeo(\vy))
 	- \vf(\vx) - \vDelta_1(\vx)
 \end{align}
 
-Thus, the smallest additive perturbation for a given the complexity of the diffeomorphism can be described in the following total additive formulation:
+Thus, the smallest additive perturbation for a given the complexity of the diffeomorphism can be described in the following decomposition of the total perturbation as additive in vector field:
 \begin{align}\label{eq:decomp:triple}
     \vg(\vx) &= 
 	\vf(\vx)
@@ -470,10 +470,10 @@ Thus, the smallest additive perturbation for a given the complexity of the diffe
 	%&\qquad\text{min. required for topological conjugacy}
 	&\qquad\text{imperfection}
 	\\
-	&\quad+\vDelta_2(\vx, \homeo)
+	&\quad+\vDelta_2(\vx, c)
 	&\qquad\text{covered by sub-optimal diffeomorphism}
 	\\
-	&\quad+\vDelta_3(\vx, \homeo)
+	&\quad+\vDelta_3(\vx, c)
 	&\qquad\text{remaining additive gap}
 \end{align}
 
@@ -490,6 +490,30 @@ See.~\eqref{eq:decomp:triple} for the detailed explanaiton of the symbols.
 }
 \label{fig:pareto}
 \end{figure}
+
+\subsection{Empirical estimator: a trajectory based loss function}\label{sec:loss}
+In the scenario where we are analyzing neural trajectories from a target system without access to the vector field nor its estimate, we need to estimate the dissimilarity vector based solely on a collection of trajectories.
+
+We approximate the system using a learned diffeomorphism \( \hat{\homeo}_\theta \), parameterized by a Neural ODE (NODE) \citep{chen2018neural} (for other implementations, see Supp.Sec.~\ref{sec:architectures}).
+% normalizing flow\citep{kobyzev2020normalizing,papamakarios2021normalizing}, an invertible ResNet\citep{he2016deep}
+We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
+
+%time repraram%
+For the correct motif \( g_i \)  (satisfying orbit equivalence), there exists a reparametrization of time \( \tau(t) \) such that \(y(\tau(t)) \approx x(t)\)
+with a trajectory \( y(t) \)  obtained by integrating \( \dot{y} = g_i(y) \) from an initial condition \( y(0) \). 
+%So there exists $\mu(x)$ positive such that 
+%We simplify this by assuming symmetry across space $\mu\in\reals_{>0}$.
+A loss function capturing this trajectory discrepancy is given by:
+\begin{equation}\label{eq:loss}
+\mathcal{L}(\theta, \mu, i) = \sum_{t} \Big\| (x_k(t)) - \Phi_\theta(y_k(t)) \Big\|^2,
+\end{equation}
+where the trajectories \(y_k(t) \) are computed via numerical integration of \(\dot y =  g_i(y) \) from an initial condition $\hat y_k(0) = \Phi_\theta^{-1}(x_k(0))$. %add scaling by mu?
+%The final optimization objective is:
+%\[
+%\min_{\theta, \mu,  i} \mathcal{L}(\theta, \mu, i). % + \lambda \mathcal{R}(\Phi_\theta), %regularization? NODE\citep{finlay2020trainnode}
+%\]
+%where \( \lambda \) is a regularization coefficient.
+This formulation allows for the joint identification of both the correct motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
 
 
 %3 angles: neural activity, latent variable models, RNNs: all too obscure!!
@@ -923,28 +947,6 @@ This means that there exists a homeomorphism $\Phi$ mapping solutions of $g_i$ t
 Assuming smoothness, we model $\Phi$ as a diffeomorphism.
 Our goal is to determine both the correct (best fitting/most explanatory) attractor motif $g_i$ and the diffeomorphism $\Phi$ given only observed trajectories $\{x_j(t_k)\}$ sampled from $f$.
 
-
-\subsubsection{Trajectory based loss function}\label{sec:loss} %earlier? is it dependent on the motif?
-Since we do not have direct access to the vector field but only to sampled trajectories, we approximate the system using a learned diffeomorphism \( \hat{\Phi}_\theta \), parameterized by a Neural ODE (NODE) \citep{chen2018neural} (for other implementations, see Supp.Sec.~\ref{sec:architectures}).
-% normalizing flow\citep{kobyzev2020normalizing,papamakarios2021normalizing}, an invertible ResNet\citep{he2016deep}
- We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
-
-%time repraram%
-For the correct motif \( g_i \)  (satisfying orbit equivalence), there exists a reparametrization of time \( \tau(t) \) such that \(y(\tau(t)) \approx x(t)\)
-with a trajectory \( y(t) \)  obtained by integrating \( \dot{y} = g_i(y) \) from an initial condition \( y(0) \). 
-%So there exists $\mu(x)$ positive such that 
-%We simplify this by assuming symmetry across space $\mu\in\reals_{>0}$.
-A loss function capturing this trajectory discrepancy is given by:
-\begin{equation}\label{eq:loss}
-\mathcal{L}(\theta, \mu, i) = \sum_{t} \Big\| (x_k(t)) - \Phi_\theta(y_k(t)) \Big\|^2,
-\end{equation}
-where the trajectories \(y_k(t) \) are computed via numerical integration of \(\dot y =  g_i(y) \) from an initial condition $\hat y_k(0) = \Phi_\theta^{-1}(x_k(0))$. %add scaling by mu?
-%The final optimization objective is:
-%\[
-%\min_{\theta, \mu,  i} \mathcal{L}(\theta, \mu, i). % + \lambda \mathcal{R}(\Phi_\theta), %regularization? NODE\citep{finlay2020trainnode}
-%\]
-%where \( \lambda \) is a regularization coefficient.
-This formulation allows for the joint identification of both the correct motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
 
 
 
