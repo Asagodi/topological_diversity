@@ -131,6 +131,7 @@
 \newcommand{\posReals}{\reals^{+}}
 \newcommand{\inputSpace}{\mathbb{X}}
 \newcommand{\dcomplexity}{\ensuremath{d_\text{cxty}}}
+\newcommand{\initDist}{\mu} % natural probability distribution over the points on the phase space
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\homeo}{\vh}
@@ -267,7 +268,7 @@ In a parametric case, a recurrent neural network with weight vector $W$ perturbe
 	\vDelta(\vx) = \nabla_W \vf\vert_\vx \Delta W + O(\Delta W^2)
 \end{align}
 where $\Phi(\cdot)$ is a point nonlinearity and $\nabla_W$ denotes the Jacobian respect to $W$.
-Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of unease. % since Andronov and Pontryagin (1937) who advised to only work with structurally stable systems.
+Since the physical or numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of unease. % since Andronov and Pontryagin 1937) who advised to only work with structurally stable systems.
 Unfortunately, several of the key asymptotic attractor structures that are very useful in expressing interpretable neural computation are not robust to vector field perturbations, or \emph{structurally unstable}.
 A notorious example is the continuous attractor dynamics~\citep{Sagodi2024a}.
 Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, we cannot avoid the issue of structurally unstable neural computations~\citep{Park2023a}.
@@ -282,17 +283,32 @@ For example, typical visiomotor behavior or perceptual-decision making tasks don
 So if our goal is to understand the information processing capacity at the behaviorally relevant time scales, we should limit our analysis to the interval rather than the mathematically elegant infinite time scale~\citep{Park2023a}.
 We denote the behavioral time scale as a reasonable duration of time $[0, T_\text{max}]$.
 
+This motivates the following time integrated point-wise distance measure:
+For all $\vx \in \inputSpace$ and $t \in [0, T_\text{max}]$,
+\begin{align}
+    d_0(\vf(\vx), \vg(\vx))
+	&\coloneq \int \norm{\phi^\vf_t(\vx) - \phi^\vg_t(\vx)} \dm{t}
+\end{align}
+where $\phi^\vf_t(\vx)$ is the solution (trajectory) of $\dot\vx = \vf(\vx)$ with initial condition $\vx$ evolved over $t$.
+
 We must also restrict our analysis to the relevant portion of the phase space.
 The dynamical systems implemented defines a vector field over the entire space but typically most of the space is not utilized during the normal operations.
 In fact, neural population data analysis suggests that the trajectories are restricted to a low-dimensional manifold in the context of a ``task'' or ``computation''.
 Therefore, the distinction between the systems should only be compared where they are used.
-We denote this natural probability distribution over the points on the phase space as $p(\vx)$.
+We denote this natural probability distribution over the points on the phase space as $\initDist(\vx)$.
 
-These two notions suggests the following dissimilarity measure:
-For all $\vx \in p(\vx)$ and $t \in [0, T_\text{max}]$,
+These two notions together motivates integrated measures such as,
 \begin{align}
-    \norm{\phi^\vf_t(\vx) - \phi^\vg_t(\vx)} \leq \alpha
+    d_{0,\infty}(\vf, \vg; \initDist)
+	&\coloneq \sup_{\vx \in \initDist(\vx)}
+	d_0(\vf(\vx), \vg(\vx), t)
+    \\
+    \bar{d}_{0}(\vf, \vg; \initDist)
+	&\coloneq \E_{\vx \in \initDist(\vx)}
+	d_0(\vf(\vx), \vg(\vx), t)
 \end{align}
+
+If the axes of the space $\inputSpace$ are arbitrary, as in the case of state-space models with linear observation models, or theoretical models without a fixed implementation, we would want the measure to be invariant to isometric scaling, rotations, and/or affine transformations.
 
 Finally, we can relax the dichotomic nature of the topological conjugacy by introducing a complexity measure for the required homeomorphism.
 If more complicated distortions are needed, it is natural to consider them less similar.
@@ -345,7 +361,7 @@ It accommodates both infinite-horizon systems and finite-horizon systems like ec
 %\item we propose a formalism for interpretability for the purpose of identifying neural computations in models of neural dynamics;
 %\item we propose a way to measure the loss of details in the process of abstraction/reduction to achieve more interpretable models;
 \item We derive novel dissimilarity measures for dynamics that quantify how well an idealized model, i.e. a dynamical motif, explains the original system’s computation and how complex the correspondence is between them.
-\item our class of theories for neural computation consist of: 1) topological equivalence classes of computations as interpretable dynamical motifs and 2) time parameterization at different levels of detail
+\item our class of theories for neural computation consist of: 1 topological equivalence classes of computations as interpretable dynamical motifs and 2) time parameterization at different levels of detail
 \item for a matching dynamical motif, the result of our method is a simple generative model of the data, unlike pure comparison methods
 \end{itemize}
 
