@@ -110,6 +110,7 @@
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 \DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
 
+\newcommand{\tconju}{\mathbin{\overset{\text{t.c.}}{\sim}}}
 \DeclareMathOperator*{\E}{\rm E} % expectation
 \newcommand{\inv}{^{-1}}
 \newcommand{\dm}[1]{\ensuremath{\mathrm{d}{#1}}} % dx dy dz dmu
@@ -242,7 +243,7 @@ Specifically, consider two autonomous dynamical systems defined on the same phas
     \end{dcases}
 \end{align}
 Poincar\'e introduced the notion of homeomorphism $\homeo: \inputSpace \to \inputSpace$, a continuous invertible map from the trajectories (solutions) of one system to the other.
-If there exists such a homeomorphism, then the two systems are \emph{topologically conjugate} (Def.~\ref{def:top_conj}).
+If there exists such a homeomorphism, then the two systems are \emph{topologically conjugate} (Def.~\ref{def:top_conj}) and we denote as $\vf(\cdot) \tconju \vg(\cdot)$.
 %Furthermore, if the map is differentiable, we have a diffeomorphism.
 
 There are two major advantages of this abstraction:
@@ -386,7 +387,7 @@ Therefore, we first consider the minimum perturbation to achieve topological con
     \\
     & \text{s.t.} \quad
     \vf(\vx) + \tilde \vDelta(\vx)
-    \overset{\text{t.c.}}{\sim}
+    \tconju
     \vg(\vx)
     \label{eq:d1:tc}
 \end{align}
@@ -403,13 +404,13 @@ To link the complexity of diffeomorphism to the magnitude of additive perturbati
 Let
 $
 \vf(\vx)
-\overset{\text{t.c.}}{\sim}
+    \tconju
 \vg(\vx)
 $.
 That is, we seek to find $\vDelta(\vx)$ that maintains the topological conjugacy,
 \begin{align}
     \dot\vx = \vf(\vx) + \epsilon \vDelta(\vx)
-    \overset{\text{t.c.}}{\sim}
+    \tconju
     \vg(\vx)
     \label{eq:pareto:tc}
 \end{align}
@@ -492,6 +493,18 @@ See.~\eqref{eq:decomp:triple} for the detailed explanation of the symbols.
 \label{fig:pareto}
 \end{figure}
 
+% \subsubsection{The complexity of the homeomorphism}
+% To assess how much a learned homeomorphism $\Phi$ deforms space, we distinguish between a set of canonical transformation types, such as translations, permutations, rotations, uniform and non-uniform scalings (of space), and rescaling of the vector field (which affects global speed).
+%  While these operations are useful for interpreting specific deformation modes, they are not directly included in our complexity measure.
+% Instead, we capture the full, potentially nonlinear deformation induced by $\Phi$ by evaluating how much it deviates locally from the identity map.
+%  This is quantified by measuring how much the Jacobian of the homeomorphism deviates from the identity's:
+% \begin{equation}\label{sec:jacobian_minid}
+% \left\|\frac{\partial \Phi - \operatorname{id}}{\partial x}\right\|_{2,F} = \left\|\frac{\partial \Phi}{\partial x} - \mathbb{I}\right\|_{2,F},
+% \end{equation}
+% which captures how much the local linear behavior of $\Phi$ differs from that of the identity transformation.
+% The norm of this deviation is computed either using the Frobenius norm or the spectral norm. %\ascomment{Frobenius or spectral?}
+% Finally, the \( L^p \) norm of the batch of Jacobians is computed, providing a scalar value that quantifies the overall local deformation across the space. A norm close to zero indicates that the transformation is nearly identity, while higher values suggest more significant deformations.
+
 \subsection{Empirical estimator: a trajectory based loss function}\label{sec:loss}
 In the scenario where we are analyzing neural trajectories from a target system without access to the vector field nor its estimate, we need to estimate the dissimilarity vector based solely on a collection of trajectories.
 
@@ -515,6 +528,21 @@ where the trajectories \(y_k(t) \) are computed via numerical integration of \(\
 %\]
 %where \( \lambda \) is a regularization coefficient.
 This formulation allows for the joint identification of both the correct motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
+
+% \subsection{Dissimilarity measure}
+% In the context of comparing dynamical systems, we define a dissimilarity measure between two vector fields \( f \) and \( g \), both of which belong to \( C^1 \).
+% Specifically, we assume that there exists a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the trajectories induced by the perturbed vector field \( f + p \) and the vector field \( g \) can be made indistinguishable under \( \Phi \).
+% Formally, this condition is given by:
+% \begin{equation}\label{eq:dissimilarity}
+% \|\psi_{f+p} - \Phi(\psi_{g})\|_\infty = 0.
+% \end{equation}
+% Here, \( \psi_{f} \) and \( \psi_{g} \) represent the flow maps of the vector fields \( f \) and \( g \), respectively.
+% Based on this relationship, we define the dissimilarity measure between \( f \) and \( g \) as the minimal perturbation \( p \) required to align their flows under the homeomorphism \( \Phi \), i.e., 
+% \begin{equation}
+% d(f, g) = \inf \|p\|,  %symmetrify? d sym (f,g)=max(d(f,g),d(g,f))
+% \end{equation}
+% where the infimum is taken over all possible perturbations \( p \) that satisfy the above condition.
+% Therefore, we can define the dissimilarity measure $d(f,g) = \inf \|p\|$ with the above constraint.
 
 %%%%%%%%%%%%
 %\section{Dynamical motif matching}
@@ -631,8 +659,35 @@ This perspective offers a principled framework for enumerating attractor types, 
 \end{enumerate}
 We construct  higher-dimensional attractors from lower dimensional motifs by taking their Cartesian products, see Supp.Sec.~\ref{sec:composite}.
 
+\paragraph{Parameterized motifs}
+We consider parameterized versions of motifs that involve adding to on- or rescaling the vector field both on- and off-manifold.
+As an example, consider the stable limit cycle, which can be described by two scalar parameters: \( v \) and \( \alpha < 0 \).
+The dynamics are given by:
+\begin{equation}
+\dot{r} = \alpha r (r - 1), %r_0?
+\quad \dot{\theta} = v,
+\end{equation}
+where \( r \) represents the radial coordinate and \( \theta \) the angular coordinate. Here, \( v \) controls the angular velocity, and \( \alpha \) determines the dynamics of the radial direction, where the system exhibits stable behavior at \( r = 1 \). This formulation allows for exploration of the effects of rescaling on the stability and behavior of the system, both in the radial and angular components of the phase space.
 
-\section{Background and related work}\label{sec:background}
+
+%justifications: imperfect continuous attractors
+Biases on slow ring manifold for memory maintenance of circular values \citep{panichello2019error}.
+
+\subsection{An interpretable, motif-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
+Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs. Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
+
+The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
+This allows us to projects the target system onto the motif library, producing a vector of distances to each motif.
+
+%intuition/implication for TTRNN Plationic convergence
+% Convergence during training of RNNs: 
+For tasks that rely on analog memory, the system's trajectory should exhibit low dissimilarity to a  continuous attractor dynamical motif that is diffeomorphic to the memory manifold\citep{beer2018laformation,ribeiro2020beyond}.
+This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Related work}\label{sec:background}
 Our goal is to develop a framework that makes neural dynamics interpretable by grounding them in a structured theory of computation.
 In this section, we outline how dynamical systems theory provides a formal language for describing neural computations \citep{jaeger2021theory, jaeger2023timescales, elgazzar2024universal}, review existing approaches for characterizing and comparing dynamics % such as DYNAMO \citep{cotler2023analyzing} and \citep{pagan2022dm},
 and define the scope of our contribution across three axes: the class of computations under study, the state of the art in model reduction and system identification, and the interpretability of the resulting abstractions.
@@ -907,21 +962,6 @@ Finite-state abstractions \citep{oliva2019fsm, cotteret2024fsm}, their probabili
 % % Inject back some detailts: additive vector field on CAs
 % Additionally, we allow for injecting back some details by defining an additive vector field on the motifs.
 
-\subsection{Dissimilarity measure}
-In the context of comparing dynamical systems, we define a dissimilarity measure between two vector fields \( f \) and \( g \), both of which belong to \( C^1 \).
-Specifically, we assume that there exists a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the trajectories induced by the perturbed vector field \( f + p \) and the vector field \( g \) can be made indistinguishable under \( \Phi \).
-Formally, this condition is given by:
-\begin{equation}\label{eq:dissimilarity}
-\|\psi_{f+p} - \Phi(\psi_{g})\|_\infty = 0.
-\end{equation}
-Here, \( \psi_{f} \) and \( \psi_{g} \) represent the flow maps of the vector fields \( f \) and \( g \), respectively.
-Based on this relationship, we define the dissimilarity measure between \( f \) and \( g \) as the minimal perturbation \( p \) required to align their flows under the homeomorphism \( \Phi \), i.e., 
-\begin{equation}
-d(f, g) = \inf \|p\|,  %symmetrify? d sym (f,g)=max(d(f,g),d(g,f))
-\end{equation}
-where the infimum is taken over all possible perturbations \( p \) that satisfy the above condition.
-Therefore, we can define the dissimilarity measure $d(f,g) = \inf \|p\|$ with the above constraint.
-
 %\subsubsection{Reduction of dynamics to extract computation}
 %\ascomment{Replace this section with the dissimilarity derivation}
 %%\paragraph{Contextuality and understanding}
@@ -963,41 +1003,17 @@ Therefore, we can define the dissimilarity measure $d(f,g) = \inf \|p\|$ with th
 %\ascomment{What is simple behavior in terms of the transfer function?}
 
 
-\subsection{An interpretable, motif-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
-Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs. Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
+% \subsubsection{Single global attractor}
+% \ascomment{How does this assumption fit into the story?}
+% \ascomment{Mention well-sampled invariant manifold assumption}
+% We consider a target dynamical system $\dot{x} = f(x)$ which has a single global attractor.
+%  We assume that this system is topologically equivalent to one of a family of attractor motifs defined by dynamical systems $\dot{y} = g_i(y)$ where each $g_i$ represents a different canonical attractor in its normal form.
+% This means that there exists a homeomorphism $\Phi$ mapping solutions of $g_i$ to solutions of $f$.
+% Assuming smoothness, we model $\Phi$ as a diffeomorphism.
+% Our goal is to determine both the correct (best fitting/most explanatory) attractor motif $g_i$ and the diffeomorphism $\Phi$ given only observed trajectories $\{x_j(t_k)\}$ sampled from $f$.
+% 
+% 
 
-The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
-This allows us to projects the target system onto the motif library, producing a vector of distances to each motif.
-
-%intuition/implication for TTRNN Plationic convergence
-% Convergence during training of RNNs: 
-For tasks that rely on analog memory, the system's trajectory should exhibit low dissimilarity to a  continuous attractor dynamical motif that is diffeomorphic to the memory manifold\citep{beer2018laformation,ribeiro2020beyond}.
-This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
-
-
-\subsubsection{Single global attractor}
-\ascomment{How does this assumption fit into the story?}
-\ascomment{Mention well-sampled invariant manifold assumption}
-We consider a target dynamical system $\dot{x} = f(x)$ which has a single global attractor.
- We assume that this system is topologically equivalent to one of a family of attractor motifs defined by dynamical systems $\dot{y} = g_i(y)$ where each $g_i$ represents a different canonical attractor in its normal form.
-This means that there exists a homeomorphism $\Phi$ mapping solutions of $g_i$ to solutions of $f$.
-Assuming smoothness, we model $\Phi$ as a diffeomorphism.
-Our goal is to determine both the correct (best fitting/most explanatory) attractor motif $g_i$ and the diffeomorphism $\Phi$ given only observed trajectories $\{x_j(t_k)\}$ sampled from $f$.
-
-
-
-
-\subsubsection{The complexity of the homeomorphism}
-To assess how much a learned homeomorphism $\Phi$ deforms space, we distinguish between a set of canonical transformation types, such as translations, permutations, rotations, uniform and non-uniform scalings (of space), and rescaling of the vector field (which affects global speed).
- While these operations are useful for interpreting specific deformation modes, they are not directly included in our complexity measure.
-Instead, we capture the full, potentially nonlinear deformation induced by $\Phi$ by evaluating how much it deviates locally from the identity map.
- This is quantified by measuring how much the Jacobian of the homeomorphism deviates from the identity's:
-\begin{equation}\label{sec:jacobian_minid}
-\left\|\frac{\partial \Phi - \operatorname{id}}{\partial x}\right\|_{2,F} = \left\|\frac{\partial \Phi}{\partial x} - \mathbb{I}\right\|_{2,F},
-\end{equation}
-which captures how much the local linear behavior of $\Phi$ differs from that of the identity transformation.
-The norm of this deviation is computed either using the Frobenius norm or the spectral norm. %\ascomment{Frobenius or spectral?}
-Finally, the \( L^p \) norm of the batch of Jacobians is computed, providing a scalar value that quantifies the overall local deformation across the space. A norm close to zero indicates that the transformation is nearly identity, while higher values suggest more significant deformations.
 
 %measure-preserving (Hamiltonian) transformation
 
@@ -1020,30 +1036,16 @@ Finally, the \( L^p \) norm of the batch of Jacobians is computed, providing a s
 
 
 %move to earlier?
-\subsubsection{Extensions to the canonical motifs}\label{sec:extensions}
-\paragraph{Noisy motifs}
-We consider noisy versions of motif trajectories governed by stochastic differential equations (SDEs) of the form
-\begin{equation}
-\dot x = g_i(x) + \sigma \, dW_t,
-\end{equation}
-where \( g_i(x) \) denotes the deterministic dynamics of the \( i \)-th motif, \( \sigma \) controls the noise amplitude, and \( W_t \) is a standard Wiener process.
-To stabilize the trajectory alignment or improve optimization in the presence of noise, we incorporate simulated annealing by gradually decreasing \( \sigma \) over time.
-
-
-\paragraph{Parameterized motifs}
-We consider parameterized versions of motifs that involve adding to on- or rescaling the vector field both on- and off-manifold.
-As an example, consider the stable limit cycle, which can be described by two scalar parameters: \( v \) and \( \alpha < 0 \).
-The dynamics are given by:
-\begin{equation}
-\dot{r} = \alpha r (r - 1), %r_0?
-\quad \dot{\theta} = v,
-\end{equation}
-where \( r \) represents the radial coordinate and \( \theta \) the angular coordinate. Here, \( v \) controls the angular velocity, and \( \alpha \) determines the dynamics of the radial direction, where the system exhibits stable behavior at \( r = 1 \). This formulation allows for exploration of the effects of rescaling on the stability and behavior of the system, both in the radial and angular components of the phase space.
-
-
-%justifications: imperfect continuous attractors
-Biases on slow ring manifold for memory maintenance of circular values \citep{panichello2019error}.
-
+% \subsubsection{Extensions to the canonical motifs}\label{sec:extensions}
+% \paragraph{Noisy motifs}
+% We consider noisy versions of motif trajectories governed by stochastic differential equations (SDEs) of the form
+% \begin{equation}
+% \dot x = g_i(x) + \sigma \, dW_t,
+% \end{equation}
+% where \( g_i(x) \) denotes the deterministic dynamics of the \( i \)-th motif, \( \sigma \) controls the noise amplitude, and \( W_t \) is a standard Wiener process.
+% To stabilize the trajectory alignment or improve optimization in the presence of noise, we incorporate simulated annealing by gradually decreasing \( \sigma \) over time.
+% 
+% 
 %\paragraph{Limitations}
 %limitation: complexity of NN for VF
 %but with noise we can not see too much detail 
