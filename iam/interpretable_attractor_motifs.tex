@@ -173,14 +173,14 @@
 % keywords: interpretability, dynamical dissimilarity, dynamical motifs, neural computation, working memory, computation through dynamics
 
 \begin{abstract}
-The study of neural computation aims to understand the function of neural systems as an information processing machine.
+The study of neural computation aims to understand the function of a neural system as an information processing machine.
 Neural systems are undoubtedly complex, necessitating principled and automated tools to abstract away details to organize and incrementally build intuition.
-We argue that systems with the same effective behavior should be abstracted by their representative member---one composed of asymptotic dynamical structures, while others are treated as imperfect realizations of this ideal canonical computation.
-We propose a library of canonical computations and a new measure of dissimilarity that allows us to group systems based on their effective behavior by explicitly considering both deformations that break the topological conjugacy as well as diffeomorphisms that preserve it.
+We argue that systems with the same simple effective behavior should be abstracted by their ideal representative---one composed of asymptotic dynamical structures, while others are treated as imperfect realizations of this dynamical archetype.
+We propose a library of archetypical computations and a new measure of dissimilarity that allows us to group systems based on their effective behavior by explicitly considering both deformations that break the topological conjugacy as well as diffeomorphisms that preserve it.
 The proposed dissimilarity can be estimated from observed trajectories.
 Numerical experiments demonstrate our methods ability to reconcile previously reported fragility of existing (dis)similarity measures for approximate continuous attractors and high-dimensional recurrent neural networks.
 Although our experiments focus on working memory systems, the theoretical approach naturally extends to general mechanistic interpretation of recurrent dynamics in both biological and artificial neural systems.
-We argue that abstract canonical computation motifs, rather than detailed dynamical systems, offer a more useful vocabulary for describing neural computation.
+We argue that the abstract dynamical archetypes, rather than detailed dynamical systems, offer a more useful vocabulary for describing neural computation.
 %
 % Understanding neural computation in dynamical neural systems often requires interpreting the behavior of large, black-box models.
 % This poses challenges for both interpretability and cross-model comparison—particularly when comparing models from different sources, such as two animals.
@@ -1215,6 +1215,8 @@ Finally, if a target has a large dissimilarity to all the canonical motifs in ou
 As Popper put it, ``Science may be described as the art of systematic over-simplification -- the art of discerning what we may with advantage omit.''~\citep{Popper1988}.
 We propose to omit details between systems in the asymptotic time scale by characterizing the effective behavior of a neural system.
 Although we have only analyzed working memory, the approach can be extended to input-driven, or even embodied systems that interact with an environment.
+
+% though our method is computationally more demanding, yet brings better interpretability.
 
 \subsection{Limitations}
 Assumption: the invariant set of the target needs to be well-sampled.
