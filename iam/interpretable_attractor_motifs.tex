@@ -519,32 +519,34 @@ This formulation allows for the joint identification of both the correct motif \
 %%%%%%%%%%%%
 %\section{Dynamical motif matching}
 \section{Dynamical Archetype Analysis}\label{sec:dmm}\label{sec:daa}
-Abstraction is the process of omitting details and finding the essence.
-But rather than finding the essence from 
-Archetypes are the ideals that are of the most extreme form.
-There are no more perfect ring attractor than the ring attractor with the standard ring size.
-%the philosophy
+Unlike typical clustering, where prototypes represent central or average examples, archetypes capture extreme, idealized forms that define the outer boundaries of a category. For example, the Platonic solids serve as idealized geometric forms—perfectly symmetrical, regular polyhedra that have long been regarded as the purest spatial shapes. While no physical object ever achieves this perfection, many natural and artificial forms resemble or approximate one of these canonical types. In this sense, Platonic solids function as archetypes: extreme, abstract ideals that help us categorize and interpret the messy, imperfect forms observed in the real world.  In the same way, dynamical archetypes are discrete, canonical systems to which real neural dynamics can be categorized into.
 
-The space of theories for neural computation is vast \citep{koulakov2002robust}.
-A typical approach to tame this complexity is to create a finite number of categories of distinct types of computations or implementations and classify neural activity behavior according to this set (e.g. fixed-point topology \citep{sussillo2013blackbox}).
-These categories are usually defined in a way that assumes an unrealistic degree of simplicity.
-What is often overlooked in this process is the abstraction/idealization steps that is necessary to fit real-world (including RNNs) behavior into these molds.
-%the acceptance of molds.
-After having defined a set of molds, i.e. dynamical motifs, given a target systems behavior, we want to know into which mold its dynamics fits and how much we have to push/deform to make it fit.
+In neural computation, archetypes include theoretical constructs such as a ``standardized'' fixed points, limit cycles, ring attractors, and continuous attractors. These idealized systems encapsulate essential computational roles in their purest and often analytically tractable forms. For instance, an ideal ring attractor exhibits perfect rotational symmetry, free from distortion or drift. While biological and artificial neural circuits inevitably deviate from such perfection\footnote{They are non-repeating over time even for the same individual due to the ever changing brain\citep{chirimuuta2024brain}.}, treating them as deformations of these archetypes offers a powerful interpretive framework.
 
-%one way to implement the philosophy
-We propose a method for comparing dynamical systems for several purposes, such as identifying the underlying computations being performed or determining whether two brains are processing information in a similar manner.
-In nature, it is unlikely that two dynamical systems will be exactly identical.
-%While topological conjugacy provides a precise comparison, it is often too strict for practical use.
-On the other hand, directly comparing the differences in vector fields is not always interpretable, as it does not provide immediate insights into the similarities between the systems.
-To address this, we propose a framework for comparing dynamical systems by fitting them to canonical dynamical systems through a homeomorphism.
-This approach allows for more interpretable comparisons, offering a meaningful way to evaluate how similar two systems are based on their underlying dynamics.
+Constructing a dictionary of dynamical archetypes involves selecting a discrete set of theoretically grounded dynamical structures that cover a space of simple computations. Rather than inferring archetypes directly from data, we define them a priori based on theoretical insights into neural computation. Once established, this dictionary provides a reference vocabulary for analyzing observed dynamics by measuring their dissimilarity or deformation relative to these archetypes.
+
+
+$\{\vg_i\}_i$
+
+%The space of theories for neural computation is vast \citep{koulakov2002robust}.
+%A typical approach to tame this complexity is to create a finite number of categories of distinct types of computations or implementations and classify neural activity behavior according to this set (e.g. fixed-point topology \citep{sussillo2013blackbox}).
+%These categories are usually defined in a way that assumes an unrealistic degree of simplicity.
+%What is often overlooked in this process is the abstraction/idealization steps that is necessary to fit real-world (including RNNs) behavior into these molds.
+%%the acceptance of molds.
+%After having defined a set of molds, i.e. dynamical motifs, given a target systems behavior, we want to know into which mold its dynamics fits and how much we have to push/deform to make it fit.
+%
+%%one way to implement the philosophy
+%We propose a method for comparing dynamical systems for several purposes, such as identifying the underlying computations being performed or determining whether two brains are processing information in a similar manner.
+%In nature, it is unlikely that two dynamical systems will be exactly identical.
+%%While topological conjugacy provides a precise comparison, it is often too strict for practical use.
+%On the other hand, directly comparing the differences in vector fields is not always interpretable, as it does not provide immediate insights into the similarities between the systems.
+%To address this, we propose a framework for comparing dynamical systems by fitting them to canonical dynamical systems through a homeomorphism.
+%This approach allows for more interpretable comparisons, offering a meaningful way to evaluate how similar two systems are based on their underlying dynamics.
 
 %3 angles: neural activity, latent variable models, RNNs: all too obscure!!
 %Latent variable models have proven essential for extracting interpretable state space representations from high-dimensional neural activity \citep{zoltowski2020general, Dowling2024b, pei2neural}, enabling rigorous comparisons across systems \citep{libedinsky2023comparing} and supporting benchmarking efforts such as the Neural Latents and Computation-through-Dynamics (CtD) benchmarks \citep{pei2neural, versteeg2025computation}.
 Within the CtD framework, recurrent neural networks (RNNs) have emerged as powerful models for capturing both task-related computations \citep{yang2019task, yang2019multiple, yang2020artificial, sani2021nonlinearity} and the dynamical structure of cortical responses \citep{chaisangmongkon2017transience, mante2013context}.
 These models support both top-down engineering approaches—where desired dynamics are imposed by construction \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe, pollock2020engineering,darshan2022learning, beiran2023rnns}—and bottom-up analysis of black-box systems trained for behavior \citep{sussillo2013blackbox, maheswaranathan2019reverse, golub2018fixedpointfinder, smith2021reverse, maheswaranathan2019universality, jarne2023initialization, nayebi2021heterogeneity, turner2021charting, turner2023simplicity, zhong2023mechanistic, huang2024measuring}.
-
 
 Asymptotic behavior—captured by structures like fixed points, limit cycles, and slow manifolds—is central to memory maintenance in neural computation, encoding stable representations over time.
 Fixed-point attractors have long been used to characterize stable memory states in RNNs \citep{sussillo2013blackbox, katz2017fibers, golub2018fixedpointfinder}, while recent work highlights the role of limit cycles \citep{townley2000existence, pals2024inferring} and slow invariant manifolds in sustaining analog memory representations\citep{Sagodi2024a}.
@@ -552,15 +554,12 @@ Fixed-point attractors have long been used to characterize stable memory states 
 %Asymptotic behavior is not 
 
 %The space of models for neural computation / the space of theories for neural computation
-The space of theories for neural computation corresponds to the space of possible dynamical systems the brain might instantiate—a vast landscape.
-Our method provides a means to chart regions of this space relevant for memory maintenance by identifying and parametrizing recurrent computations in a human-interpretable way.
-This enables us to isolate families of dynamical motifs that serve as building blocks for memory-related neural dynamics.
  
-Here, we develop a data-driven method called Canonical Motif-based Dynamical Analysis (CMDA). 
-In brief, CMDA returns a dissimilarity metric describing how a system compares to a dynamical motif both at the level of the topology of the dynamics and how much the dynamics needs to be transformed.
-Our results demonstrate that CMDA identifies both dynamic structure and the complexity of the mapping from a canonical motif.
-This framework applies to core neural computations such as classification, working memory, and persistent representations (e.g., head direction cells).
-It accommodates both infinite-horizon systems and finite-horizon systems like echo state networks, highlighting that time-limited trajectories may obscure deeper structural distinctions only visible in the full vector field.
+% Here, we develop a data-driven method called Canonical Motif-based Dynamical Analysis (CMDA). 
+% In brief, CMDA returns a dissimilarity metric describing how a system compares to a dynamical motif both at the level of the topology of the dynamics and how much the dynamics needs to be transformed.
+% Our results demonstrate that CMDA identifies both dynamic structure and the complexity of the mapping from a canonical motif.
+% This framework applies to core neural computations such as classification, working memory, and persistent representations (e.g., head direction cells).
+% It accommodates both infinite-horizon systems and finite-horizon systems like echo state networks, highlighting that time-limited trajectories may obscure deeper structural distinctions only visible in the full vector field.
 
 
 %another perspective 
@@ -577,21 +576,61 @@ It accommodates both infinite-horizon systems and finite-horizon systems like ec
 %Multiple animals \citep{depasquale2021accumulation}
 
 
-\subsection{Our contribution}\label{sec:contribution}
-%abstraction:
-%1. transients: time. remains: asymptotic behavior
-%2. decomposition into motif and vf perturbation and scaling
-%3. simple motifs
-\begin{itemize}
-%\item we propose a formalism for interpretability for the purpose of identifying neural computations in models of neural dynamics;
-%\item we propose a way to measure the loss of details in the process of abstraction/reduction to achieve more interpretable models;
-\item We derive novel dissimilarity measures for dynamics that quantify how well an idealized model, i.e. a dynamical motif, explains the original system’s computation and how complex the correspondence is between them.
-\item our class of theories for neural computation consist of: 1 topological equivalence classes of computations as interpretable dynamical motifs and 2) time parameterization at different levels of detail
-\item for a matching dynamical motif, the result of our method is a simple generative model of the data, unlike pure comparison methods
-\end{itemize}
+% \subsection{Our contribution}\label{sec:contribution}
+% %abstraction:
+% %1. transients: time. remains: asymptotic behavior
+% %2. decomposition into motif and vf perturbation and scaling
+% %3. simple motifs
+% \begin{itemize}
+% %\item we propose a formalism for interpretability for the purpose of identifying neural computations in models of neural dynamics;
+% %\item we propose a way to measure the loss of details in the process of abstraction/reduction to achieve more interpretable models;
+% \item We derive novel dissimilarity measures for dynamics that quantify how well an idealized model, i.e. a dynamical motif, explains the original system’s computation and how complex the correspondence is between them.
+% \item our class of theories for neural computation consist of: 1 topological equivalence classes of computations as interpretable dynamical motifs and 2) time parameterization at different levels of detail
+% \item for a matching dynamical motif, the result of our method is a simple generative model of the data, unlike pure comparison methods
+% \end{itemize}
 
 
 %Message: finite time series cannot distinguish between some theories (which are the same on a finite time horizon but different on an infinite time horizon), but vector fields can
+
+%\subsection{Motifs: Recognizable geometric-topological features}
+\subsection{Dynamical Archetypes}
+%repetition with sec:ctd
+Fixed points and limit cycles are fundamental to neural computations.
+Fixed points correspond to steady-state solutions where the system’s state does not change, while limit cycles describe periodic orbits that repeat over time.
+In neural models, fixed points are often used to model persistent activity patterns, while limit cycles can be observed in oscillatory behaviors that may correspond to specific memory or decision-making processes\citep{machens2005flexible}.
+Continuous attractors, on the other hand, are critical for understanding memory in dynamical systems \citep{machens2008ca,darshan2022learning}.
+These attractors provide a set of states toward which the system evolves over time, capturing the essence of systems that store and retrieve information.
+ In neuroscience, they are essential in models of continuous-position coding, where the system must maintain a range of values for memory retrieval.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{motifpspace_dssimilarity}
+    \caption{Charting the space of theories with dynamical motifs.
+    \textbf{(A)} Localizing a model in parameter space through dynamical motifs.
+    \textbf{(B)} Abstracting out imperfections from an approximate ring attractor.
+     }
+    \label{fig:motifpspace_dssimilarity}
+\end{figure}
+% We use dynamical motifs as the fundamental building blocks of dynamical systems, capturing effective and interpretable behaviors such as approximate continuous attractors.
+% These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
+
+Recent work has highlighted that task-trained RNNs often implement behavior through combinations of low-dimensional dynamical motifs—recurrent patterns such as fixed points, oscillatory modes, and transient trajectories that correspond to computational subroutines \citep{driscoll2024flexible}.
+These motifs serve as functional building blocks, supporting modular and flexible representations of task demands. 
+In compositional tasks, where behavior can be decomposed into simpler subtasks or reused operations, RNNs learn to combine and recombine such motifs to generalize across task conditions \citep{tafazoli2024building}.
+
+Attractors can be systematically classified by their topological dimension, with the simplest topological spaces serving as fundamental building blocks.
+ In neural systems, trial-averaged activity often reflects low-dimensional structure, corresponding to an embedding of the task manifold into firing rate space \citep{gao2015simplicity}.
+Recent work has shown that task-relevant computations often emerge on such manifolds \citep{langdon2023unifying,can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor,ghazizadeh2021slowmanifold,duncker2021dynamics, pezon2024linking,fortunato2024nonlinear}.
+Attractors can be further characterized by both their intrinsic and extrinsic dimensionality \citep{jazayeri2021interpreting,chaudhuri2019attractor,Sagodi2024a}. 
+This perspective offers a principled framework for enumerating attractor types, which we use to define the components of our library (see Supp. Sec.~\ref{sec:library}).
+\begin{enumerate}[start=0,label={\bfseries Dim \arabic*:}]
+\item  Stable fixed point and fixed-point topology motifs
+\item  Bounded line attractor ($[-1,1]$), ring attractor ($S_{v=0}^1$ ring with zero flow), stable limit cycle ($S_1^1$)
+\item Plane attractor ($[-1,1]^2$), Cylinder attractor ($[-1,1]\times S_0^1$), Cylinder-LC ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
+%\item ...
+\end{enumerate}
+We construct  higher-dimensional attractors from lower dimensional motifs by taking their Cartesian products, see Supp.Sec.~\ref{sec:composite}.
+
 
 \section{Background and related work}\label{sec:background}
 Our goal is to develop a framework that makes neural dynamics interpretable by grounding them in a structured theory of computation.
@@ -734,7 +773,7 @@ The decomposed Linear Dynamical System (dLDS) model represents neural activity a
 Mapping families of dynamical systems to a manifold whose geometry encodes different qualitative behaviors \citep{transtrum2014model, ricci2022phase2vec, quinn2022information, Vermani2024b}.
 
 %%%decomposition is a form of reduction?
-\subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
+%\subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
 %decomposing space
 %\paragraph{BoA and Conley decomposition} Basins of attraction + Conley’s Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
 %\paragraph{FSM} FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
@@ -755,8 +794,6 @@ Mapping families of dynamical systems to a manifold whose geometry encodes diffe
 %more for chaotic dynamics
 %For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron–Frobenius operator describes transitions.
 %Reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
-
-
 
 
 
@@ -858,24 +895,17 @@ Finite-state abstractions \citep{oliva2019fsm, cotteret2024fsm}, their probabili
 %We propose a framework for interpretability grounded in a hierarchy of models, where interpretable systems form a poset shaped by structured simplifications such as hierarchical abstraction and dynamical decomposition \citep{Vermani2024b, geadah2024parsing, geadah2025modeling}.
 %This view emphasizes abstraction over detail, acknowledging the trade-off between accuracy and interpretability—even for seemingly simple systems like linear dynamics over finite time.
 
-
-\subsection{Our proposal to decompose, reduce, compare and reconstruct in light of interpretability}
-We first decompose the state space into basins of attraction, each associated with a distinct attractor.
-%
-Within each basin, we abstract the attractor's dynamics by simplifying it to a canonical form (e.g., via normal form analysis), effectively ignoring transient dynamics that do not contribute to long-term behavior.
-%
-We define a finite library of dynamical motifs—canonical molds representing qualitatively distinct asymptotic behaviors—thereby abstracting the space of possible long-term dynamics.
-%
-Finally, we establish a correspondence between the target system and the motif library via a topological or smooth transformation (i.e., a diffeomorphism), enabling interpretable comparisons and model reduction.
-%
-% Inject back some detailts: additive vector field on CAs
-Additionally, we allow for injecting back some details by defining an additive vector field on the motifs.
-
-
-
-
-
-
+% \subsection{Our proposal to decompose, reduce, compare and reconstruct in light of interpretability}
+% We first decompose the state space into basins of attraction, each associated with a distinct attractor.
+% %
+% Within each basin, we abstract the attractor's dynamics by simplifying it to a canonical form (e.g., via normal form analysis), effectively ignoring transient dynamics that do not contribute to long-term behavior.
+% %
+% We define a finite dictionary of dynamical motifs—canonical molds representing qualitatively distinct asymptotic behaviors—thereby abstracting the space of possible long-term dynamics.
+% %
+% Finally, we establish a correspondence between the target system and the motif library via a topological or smooth transformation (i.e., a diffeomorphism), enabling interpretable comparisons and model reduction.
+% %
+% % Inject back some detailts: additive vector field on CAs
+% Additionally, we allow for injecting back some details by defining an additive vector field on the motifs.
 
 \subsection{Dissimilarity measure}
 In the context of comparing dynamical systems, we define a dissimilarity measure between two vector fields \( f \) and \( g \), both of which belong to \( C^1 \).
@@ -976,49 +1006,6 @@ Finally, the \( L^p \) norm of the batch of Jacobians is computed, providing a s
 %The Wasserstein distance evaluates how these local distortions aggregate over the distribution of trajectories.
 %The Jacobian norm relates to the Wasserstein distance by capturing local distortions that contribute to the global changes in the distribution, which are reflected in the Wasserstein distance between the trajectories' distributions.
 
-
-%\subsection{Motifs: Recognizable geometric-topological features}
-\subsubsection{Motifs: The building blocks of neural computation}
-%repetition with sec:ctd
- Fixed points and limit cycles are fundamental to neural computations.
-Fixed points correspond to steady-state solutions where the system’s state does not change, while limit cycles describe periodic orbits that repeat over time.
-In neural models, fixed points are often used to model persistent activity patterns, while limit cycles can be observed in oscillatory behaviors that may correspond to specific memory or decision-making processes\citep{machens2005flexible}.
-Continuous attractors, on the other hand, are critical for understanding memory in dynamical systems \citep{machens2008ca,darshan2022learning}.
-These attractors provide a set of states toward which the system evolves over time, capturing the essence of systems that store and retrieve information.
- In neuroscience, they are essential in models of continuous-position coding, where the system must maintain a range of values for memory retrieval.
-
-
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\linewidth]{motifpspace_dssimilarity}
-    \caption{Charting the space of theories with dynamical motifs.
-    \textbf{(A)} Localizing a model in parameter space through dynamical motifs.
-    \textbf{(B)} Abstracting out imperfections from an approximate ring attractor.
-     }
-    \label{fig:motifpspace_dssimilarity}
-\end{figure}
-
-
-We use dynamical motifs as the fundamental building blocks of dynamical systems, capturing effective and interpretable behaviors such as approximate continuous attractors.
-These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
-
-Recent work has highlighted that task-trained RNNs often implement behavior through combinations of low-dimensional dynamical motifs—recurrent patterns such as fixed points, oscillatory modes, and transient trajectories that correspond to computational subroutines \citep{driscoll2024flexible}.
-These motifs serve as functional building blocks, supporting modular and flexible representations of task demands. 
-In compositional tasks, where behavior can be decomposed into simpler subtasks or reused operations, RNNs learn to combine and recombine such motifs to generalize across task conditions \citep{tafazoli2024building}.
-
-Attractors can be systematically classified by their topological dimension, with the simplest topological spaces serving as fundamental building blocks.
- In neural systems, trial-averaged activity often reflects low-dimensional structure, corresponding to an embedding of the task manifold into firing rate space \citep{gao2015simplicity}.
-Recent work has shown that task-relevant computations often emerge on such manifolds \citep{langdon2023unifying,can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor,ghazizadeh2021slowmanifold,duncker2021dynamics, pezon2024linking,fortunato2024nonlinear}.
-Attractors can be further characterized by both their intrinsic and extrinsic dimensionality \citep{jazayeri2021interpreting,chaudhuri2019attractor,Sagodi2024a}. 
-This perspective offers a principled framework for enumerating attractor types, which we use to define the components of our library (see Supp. Sec.~\ref{sec:library}).
-\begin{enumerate}[start=0,label={\bfseries Dim \arabic*:}]
-\item  Stable fixed point and fixed-point topology motifs
-\item  Bounded line attractor ($[-1,1]$), ring attractor ($S_{v=0}^1$ ring with zero flow), stable limit cycle ($S_1^1$)
-\item Plane attractor ($[-1,1]^2$), Cylinder attractor ($[-1,1]\times S_0^1$), Cylinder-LC ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
-%\item ...
-\end{enumerate}
-We construct  higher-dimensional attractors from lower dimensional motifs by taking their Cartesian products, see Supp.Sec.~\ref{sec:composite}.
 
 
 %\ascomment{do we need to account for the possible existence of an attractor of the form $[0,1]^2\setminus D_{1/2}$? It won't affect the loss! So not for now!}
@@ -1221,6 +1208,11 @@ Finally, if a target has a large dissimilarity to all the canonical motifs in ou
 As Popper put it, ``Science may be described as the art of systematic over-simplification -- the art of discerning what we may with advantage omit.''~\citep{Popper1988}.
 We propose to omit details between systems in the asymptotic time scale by characterizing the effective behavior of a neural system.
 Although we have only analyzed working memory, the approach can be extended to input-driven, or even embodied systems that interact with an environment.
+
+The space of theories for neural computation corresponds to the space of possible dynamical systems the brain might instantiate—a vast landscape.
+Our method provides a means to chart regions of this space relevant for memory maintenance by identifying and parametrizing recurrent computations in a human-interpretable way.
+This enables us to isolate families of dynamical motifs that serve as building blocks for memory-related neural dynamics.
+It accommodates both infinite-horizon systems and finite-horizon systems like echo state networks, highlighting that time-limited trajectories may obscure deeper structural distinctions only visible in the full vector field.
 
 % though our method is computationally more demanding, yet brings better interpretability.
 
