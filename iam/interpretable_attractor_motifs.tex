@@ -228,8 +228,9 @@ Short-term memory, involving transient yet structured activity, has been explore
 
 Since the time of Poincar\'e, dynamical systems has heavily relied on the analysis of their \emph{qualitative behavior}---the eventual fate of the system, rather than the details of their trajectory.
 For qualitative questions such as ``will the neural system eventually settle down to the same resting state regardless of the initial condition in the absence of external drive or will it oscillate forever?'', interestingly, often a simple and intuitive picture (technically a \emph{phase portrait}) can give a definite answer~\citep{Strogatz2000-tf}.
-All dynamical systems can be partitioned by their qualitative behavior~\citep{Arnold1994}, abstracting away the finite time transient behaviors and the details of the vector field.
-Let us consider two autonomous dynamical systems defined on the same space:
+
+The space of all dynamical systems can be partitioned the equivalence of their qualitative behavior~\citep{Arnold1994}, abstracting away the finite time transient behaviors and the details of the vector field.
+Specifically, consider two autonomous dynamical systems defined on the same space:
 \begin{align}
     \begin{dcases}
     \dot{\vx} = \vf(\vx)
@@ -239,7 +240,7 @@ Let us consider two autonomous dynamical systems defined on the same space:
 \end{align}
 Poincar\'e introduced the notion of homeomorphism $\homeo: \inputSpace \to \inputSpace$, a continuous invertible map from the trajectories (solutions) of one system to the other.
 If there exists such a homeomorphism, then the two systems are \emph{topologically conjugate} (Def.~\ref{def:top_conj}).
-Furthermore, if the map is differentiable, we have a diffeomorphism.
+%Furthermore, if the map is differentiable, we have a diffeomorphism.
 
 There are two major advantages of this abstraction:
 (1) It is implementation agnostic. For example, an insect neural circuit with 8 neurons can be topologically conjugate to an artificial neural network model where the time scale and the biophysical details are wrong.
@@ -247,10 +248,10 @@ There are two major advantages of this abstraction:
 It naturally emphasizes the use of attractor dynamics since they are asymptotically defined and preserved.
 For neural computation, this means that only a finite collection of attractors remains to be analyzed.
 Among those structures, two have a prominent status in the vernacular of neuroscience: fixed points and line attractors.
-Mathematically, (most) fixed points are locally conjugate to a linear system\citep{hartman1960lemma} which are well understood thanks to the easy decomposition and superposition of solutions.
-Moreover, multiple isolated fixed points are analgous to discrete states of finite state machines or Markov chains.
+Mathematically, (hyperbolic) fixed points are locally conjugate to a linear system\citep{hartman1960lemma} which are well understood thanks to the easy decomposition and superposition of solutions.
+Moreover, multiple isolated fixed points can serve as a substrate for discrete computations frameworks such as finite state machines or Markov chains.
 Line attractors on the other hand can store an analog-valued representation (for indefinite time).
-Theoretical neuroscience and machine learning have extensively used these as building blocks to extend our intuition on neural computation.
+Theoretical neuroscience and machine learning have extensively used these as building blocks to help us expand our intuition on neural computation.
 While mathematically elegant, however, there are a few critical issues with this program.
 
 \subsection{Structural Stability and Bifurcations}
