@@ -650,7 +650,7 @@ Within each basin, we abstract the attractor's dynamics by simplifying it to a c
 %
 We define a finite library of dynamical motifs—canonical molds representing qualitatively distinct asymptotic behaviors—thereby abstracting the space of possible long-term dynamics.
 %
-Finally, we establish a correspondence between the target system and the motif library via a topological or smooth transformation (e.g., homeomorphism or diffeomorphism), enabling interpretable comparisons and model reduction.
+Finally, we establish a correspondence between the target system and the motif library via a topological or smooth transformation (i.e., a diffeomorphism), enabling interpretable comparisons and model reduction.
 %
 % Inject back some detailts: additive vector field on CAs
 Additionally, we allow for injecting back some details by defining an additive vector field on the motifs.
@@ -761,7 +761,7 @@ Our goal is to determine both the correct (best fitting/most explanatory) attrac
 
 
 \subsubsection{Trajectory based loss function}\label{sec:loss} %earlier? is it dependent on the motif?
-Since we do not have direct access to the vector field but only to sampled trajectories, we approximate the system using a learned diffeomorphism \( \hat{\Phi}_\theta \), parameterized by a a Neural ODE (NODE) \citep{chen2018neural} (for other implementations, see Supp.Sec.~\ref{sec:architectures}).
+Since we do not have direct access to the vector field but only to sampled trajectories, we approximate the system using a learned diffeomorphism \( \hat{\Phi}_\theta \), parameterized by a Neural ODE (NODE) \citep{chen2018neural} (for other implementations, see Supp.Sec.~\ref{sec:architectures}).
 % normalizing flow\citep{kobyzev2020normalizing,papamakarios2021normalizing}, an invertible ResNet\citep{he2016deep}
  We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
 
@@ -841,8 +841,8 @@ Attractors can be further characterized by both their intrinsic and extrinsic di
 This perspective offers a principled framework for enumerating attractor types, which we use to define the components of our library (see Supp. Sec.~\ref{sec:library}).
 \begin{enumerate}[start=0,label={\bfseries Dim \arabic*:}]
 \item  Stable fixed point and fixed-point topology motifs
-\item  Bounded line attractor ($[0,1]\subset\reals$), ring attractor ($S_{v=0}^1$ ring with zero flow), stable limit cycle ($S_1^1$)
-\item Plane attractor ($[0,1]^2$), Cylinder attractor ($[0,1]\times S_0^1$), Cylinder-LC attractor ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
+\item  Bounded line attractor ($[-1,1]\subset\reals$), ring attractor ($S_{v=0}^1$ ring with zero flow), stable limit cycle ($S_1^1$)
+\item Plane attractor ($[-1,1]^2$), Cylinder attractor ($[-1,1]\times S_0^1$), Cylinder-LC attractor ($[0,1]\times S_1^1$), Torus attractor ($(S_0^1)^2$), Torus-LC attractor ($S_0^1\times S_1^1$), QPTA ($(S_1^1)^2$), Sphere attractor $S^2$
 %\item ...
 \end{enumerate}
 We construct  higher-dimensional attractors from lower dimensional motifs by taking their Cartesian products, see Supp.Sec.~\ref{sec:composite}.
