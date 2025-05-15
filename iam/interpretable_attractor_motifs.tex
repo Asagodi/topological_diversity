@@ -1002,7 +1002,7 @@ The ring attractor motif is able to approximate both the finite (sampled traject
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\linewidth]{avi_rnn_recttanh}
-    \caption{The ring attracotr motif fit to RNNs of different sizes trained on an angular velocity integration task.
+    \caption{The ring attractor motif fit to RNNs of different sizes trained on an angular velocity integration task.
     The homeomorphism brings the canonical ring attractor near the invariant slow manifold (composed out of a finite number of fixed points) even though topological equivalency is lacking.
     }
     \label{fig:avi_rnn_recttanh}
@@ -1035,11 +1035,20 @@ We compare our method to the state-of-the-art methods DSA\citep{ostrow2024beyond
 \end{figure}
 
 \subsection{Many target systems}\label{sec:target_demonstrations}
-
+% Can we find the Platonic ideal?
+For an unknown system, we can try to fit the mold of each of the canonical motifs.
+By comparing the different fits we can infer which of the motifs is most appropriate to well-capture the effective behavior.
+We test this by measuring the dissimilarity to our library of motifs to a list of target systems:
+1) Ring attractor (and its perturbed and noisy versions),
+2) RNNs trained on a velocity integration task,
+3) limit cycles (Van der Pol oscillator, Lienard sigmoid, Sel'kov)
+4) system with two bounded line attractors.
 See for the details of the target systems Supp.Sec.~\ref{sec:target_systems} and the experimental setup Supp.Sec.~\ref{sec:manytargets_exp_details}.
 
 
-
+%other way?If there is no canonical motif that is able to capture the effective behavior of a target, then all dissimilarities
+If a target has a large dissimilarity to all the canonical motifs in our library, that means that our library is not expressible enough to cover all computation with corresponding Platonic ideals
+(although it could be that our paramtrization of the homeomorphism is not expressible enough).
 
 
 %%%%%%%%%%%%%%%%%
