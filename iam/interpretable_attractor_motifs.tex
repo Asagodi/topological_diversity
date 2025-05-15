@@ -349,6 +349,26 @@ We have arrived at a vector-valued dissimilarity between systems:
 and (2) a small complexity continuous coordinate transform.
 However, for a source-target pair, the two values are not uniquely determined.
 
+First, we show that the trajectory distance measures are bounded by perturbation.
+Let $\vDelta(\cdot)$ be a perturbation to the vector field:
+\begin{align}
+    \dot{\vx} &= \vf(\vx) + \vDelta(\vx)
+\end{align}
+For a finite time horizon $[0, T_\text{max}]$ and assuming a Lipschitz bound $L$ for $\vf(\cdot)$ in the relevant domain, a uniform bound on $\norm{\vDelta(\cdot)}$, we can bound the trajectory deviation from the unperturbed system.
+By Gr\"onwall inequality\cite{Howard2025}:
+\begin{align}\label{eq:gronwall}
+    \norm{
+	\phi^t_\vf(\vx)
+	-
+	\phi^t_{\vf + \vDelta}(\vx)
+    }
+    &\leq
+	e^{Lt} \int_0^{T_\text{max}} e^{-Ls} \norm{\vDelta(s)} \,\mathrm{d}s
+    \leq
+	\left(\sup_s \norm{\vDelta(s)}\right) \frac{1}{L} (e^{Lt} - 1)
+\end{align}
+for any norm $\norm{\cdot}$.
+Thus, for small additive perturbation, the trajectories are robust for a short time.
 
 
 %3 angles: neural activity, latent variable models, RNNs: all too obscure!!
