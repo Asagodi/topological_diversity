@@ -188,7 +188,7 @@ We argue that abstract canonical computation motifs, rather than detailed dynami
 % We derive measures of dissimilarity based on our homeomorphism-conjugacy mapping method.
 % Our method uses a curated library of low-dimensional canonical motifs (e.g., limit cycles and various continuous attractors) to explain the core dynamics.
 % This allows us to define and quantify similarity between systems in terms of shared dynamical structure.
-% The extracted motifs are robust to parametric variation, suggesting they reflect stable computational strategies rather than model idiosyncrasies.
+~% The extracted motifs are robust to parametric variation, suggesting they reflect stable computational strategies rather than model idiosyncrasies.
 % We demonstrate the approach on various toy examples, most importantly approximate continuous attractors.
 % Furthermore, we extract an approximate ring attractors from a high-dimensional RNNs trained on a angular velocity integration task, and show how the found homeomorphism captures the complexity of the geometry of the embedding of the ring.
 % Our results highlight the utility of this method for robust interpretation and cross-system comparison within the computation-through-dynamics framework.
@@ -197,12 +197,13 @@ We argue that abstract canonical computation motifs, rather than detailed dynami
 \section{Introduction}\label{sec:intro}
 Scientific understanding often advances not by improving predictions, but by changing the tools we use to describe systems.
 Ordinary differential equations (ODEs) are a foundational modeling tool of choice for neural computation, used to describe both empirical signals and theoretical constructs.
-Through abstraction and idealization, we can distill the essential features of neural trajectory, enabling meaningful understanding rather than merely presenting a detailed but opaque description.
-A further abstraction, now widely adopted, is to focus on their long-term or asymptotic behavior--discretizing the continuous state space into attractors, their basins, and their connection to both the lower level implementation (e.g. circuits) and higher level information (e.g. input and context) being processed.
+For example, state-space models can be used to train a black-box that captures the spatiotemporal structure of time series data as an ODE~\citep{nair2023approximate,pei2neural,Dowling2024b}.
+%Through abstraction and idealization, we can distill the essential features of neural trajectories, enabling meaningful understanding rather than merely presenting a detailed but opaque description.
+A further abstraction, now widely adopted, is to focus on their long-term or asymptotic behavior---discretizing the continuous state space into attractors, their basins, and their relation to the lower-level implementation (e.g. neurons) and higher-level information (e.g. input and context) being processed.
 These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible} offering simple and intuitive explanations for otherwise high-dimensional dynamics~\citep{vyas2020ctd}.
-Yet, this abstraction of the mechanism is mistaken to impose identical asymptotic behavior of the ODE implementation, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
+Yet, this abstraction of the mechanism is often mistaken to impose identical asymptotic behavior of the ODE implementation, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
 %While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
-We need to conceptually separate the ODEs and their interpretable discrete abstraction, while making the connection precise through a measure of similarity in terms of their effective behavior at the finite time scales.
+We need to conceptually separate the ODEs and their interpretable discrete abstraction, while making their connection precise through quantification of similarity in terms of their effective behavior at the finite time scales.
 
 %Understanding the relationship between neural activity and behavior is a fundamental question in neuroscience.
 %Understanding neural computation requires more than capturing the details of neural dynamics; it necessitates the development of conceptual models that simplify and abstract the complexity of these processes into forms that are humanly interpretable.
@@ -264,7 +265,7 @@ Given that the biological neural systems are constantly fluctuating and both bio
 %Even structurally stable dynamics are known to go through bifurcations--breaking of topological conjugacy--during learning and necessarily so if the final dynamical system is not conjugate to the initial system~\citep{Doya1993-tz}.
 
 \subsection{Effective Dynamics}
-Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
+Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation----their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
 If two systems are useful for implementing the same purpose (neural computation), then we will consider them ``the same''.
 What do we mean by ``effective behavior''?
 Both artificial and biological agents perform neural computation in a finite time.
