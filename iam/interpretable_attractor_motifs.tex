@@ -572,8 +572,7 @@ In neural computation, archetypes include theoretical constructs such as ``stand
 
 Constructing a library of dynamical archetypes involves selecting a discrete set of theoretically grounded dynamical structures that cover a space of simple computations. Rather than inferring archetypes directly from data, we define them a priori based on theoretical insights into neural computation. Once established, this library provides a reference vocabulary for analyzing observed dynamics by measuring their dissimilarity or deformation relative to these archetypes.
 
-
-$\{\vg_i\}_i$
+%$\{\vg_i\}_i$
 
 %The space of theories for neural computation is vast \citep{koulakov2002robust}.
 %A typical approach to tame this complexity is to create a finite number of categories of distinct types of computations or implementations and classify neural activity behavior according to this set (e.g. fixed-point topology \citep{sussillo2013blackbox}).
@@ -1111,7 +1110,8 @@ We apply two different deformations to the ring attractor:
 %interpretation of results
 Our method approximates the deformed ring attractor for both types of deformation, see Fig.~\ref{fig:ring_pert_fig}.
 For the homeomorphism-type deformation, our method approximates the inverse of the homeomorphism, up to a maximal perturbation size after which the fit quality drops (Fig.~\ref{fig:ring_pert_fig}B).
-For the vector field-type deformation, our methods, accurately identifies the location of the invariant manifold (Fig.~\ref{fig:ring_pert_fig}C).
+For the vector field-type deformation, even without an exact topological conjugacy, the ring attractor archetype can be accurately mapped onto the approximate ring attractor (Fig.~\ref{fig:ring_pert_fig}C).
+For deformation the location of the invariant manifold is accurately approximated (Fig.~\ref{fig:ring_pert_fig}B and C), while for SPE the source-mapped invariant manifold is very far away for the target's.
 
 
 \begin{figure}[htbp]
