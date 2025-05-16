@@ -1148,20 +1148,18 @@ See for the details of the target systems Supp.Sec.~\ref{sec:target_systems} and
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=.99\linewidth]{archetype2target}
-    \caption{Archetypes are evaluated based on their similarity to each target system and the complexity of the deformation required to match it.
+    \caption{Archetypes are compared to each target system in terms of similarity and the simplicity of the deformation needed to match them.
      Square sizes encode two normalized quantities: similarity (yellow) and deformation simplicity (blue).
    %  (\textbf{A}) Archetype-normalized similarity: for each target, it identifies the archetype that best approximates it (large yellow square) with minimal deformation (large blue square).
-     Target-normalized similarity shows which archetype best suits a target. 
-    Archetype-target pairs that are near topologically conjugate will 
+ Target-normalized similarity quantifies which archetype best approximates each target with the least required deformation.
     }
     \label{fig:archetype2target}
 \end{figure}
 
-Archetype-normalized similarity pairs target-motif to archetypes that are almost topological conjugate and for which a small deformation is possible (Fig.~\ref{fig:archetype2target}). 
-The ring attractor-related targets all have high similarity to the \emhp{ring attractor} archetype, while the oscillators have the highest similarity to the \emph{limit cycle} archetype.
+Target-normalized similarity pairs target-motif to archetypes that are almost topological conjugate and for which a small deformation is possible (Fig.~\ref{fig:archetype2target}). 
+The ring attractor-related targets all have high similarity to the \emph{ring attractor} archetype, while the oscillators have the highest similarity to the \emph{limit cycle} archetype.
 The system with two bounded line attractors has the highest similarity to the bistable system; even though they are not topologically conjugate the bistability is shared.
 %other way?If there is no canonical motif that is able to capture the effective behavior of a target, then all dissimilarities
-Target-normalized similarity show which targets an archetype can represent.
 Finally, if a target has a large dissimilarity to all the canonical motifs in our library, that means that our library is not expressible enough to cover all computation with corresponding Platonic archetype.
 Alternatively, it is also possible that our parametrization of the homeomorphism is not expressible enough.
 
