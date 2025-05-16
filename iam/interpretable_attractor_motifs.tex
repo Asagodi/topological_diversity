@@ -1147,7 +1147,7 @@ See for the details of the target systems Supp.Sec.~\ref{sec:target_systems} and
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=.99\linewidth]{archetype2target}
+    \includegraphics[width=.8\linewidth]{archetype2target}
     \caption{Archetypes are compared to each target system in terms of similarity and the simplicity of the deformation needed to match them.
      Square sizes encode two normalized quantities: similarity (yellow) and deformation simplicity (blue).
    %  (\textbf{A}) Archetype-normalized similarity: for each target, it identifies the archetype that best approximates it (large yellow square) with minimal deformation (large blue square).
@@ -1170,9 +1170,10 @@ Alternatively, it is also possible that our parametrization of the homeomorphism
     \centering
     \includegraphics[width=0.99\linewidth]{dsa_spe}
     \caption{We compare our method to the state-of-the-art methods DSA\citep{ostrow2024beyond} and SPE\citep{friedman2025characterizing}.
-        (\textbf{A}) DSA does not detect the approximate ring attractor to ring attractor archetype, nor the oscillator to limit cycle archetype correspondence.
-\textbf{(B)} Applying SPE to a homeomorphically deformed ring attractor (Fig.~\ref{fig:ring_pert_fig}A) results in inaccurate dynamics and a distorted invariant manifold.  
-\textbf{(C)} SPE similarly fails on a ring attractor with an additive vector field deformation (Fig.~\ref{fig:ring_pert_fig}C), producing incorrect dynamics and a degenerate manifold structure.
+      (\textbf{A}) The similarity score derived from the DSA score (1-normalized DSA score, the larges square in each row has similarity 1) for the different archetypes compared with themselves, both for the ODE and SDE versions.
+        (\textbf{B}) DSA does not detect the approximate ring attractor to ring attractor archetype, nor the oscillator to limit cycle archetype correspondence.
+\textbf{(C)} Applying SPE to a homeomorphically deformed ring attractor (Fig.~\ref{fig:ring_pert_fig}A) results in inaccurate dynamics and a distorted invariant manifold.  
+\textbf{(D)} SPE similarly fails on a ring attractor with an additive vector field deformation (Fig.~\ref{fig:ring_pert_fig}C), producing incorrect dynamics and a degenerate manifold structure.
     }
     \label{fig:dsa_spe}
 \end{figure}
