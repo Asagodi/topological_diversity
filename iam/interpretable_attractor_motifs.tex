@@ -400,16 +400,16 @@ which is non-negative but non-symmetric in general.
 If a more complicated deformation is needed to minimize \eqref{eq:ed1}, it is natural to consider its effective behavior less similar\footnote{
 We are relaxing the dichotomic nature of the topological conjugacy.
 }.
-Let $\dcomplexity: (\inputSpace \to \inputSpace) \to \posReals$ be a measure of complexity of the diffeomorphism such that the simplest map, the identity, gives $\dcomplexity(\homeo(\vx) = \vx) = 0$.
-For example, we can define,
+We define  $\dcomplexity: (\inputSpace \to \inputSpace) \to \posReals$ to be a measure of complexity of the diffeomorphism such that the simplest map, the identity, gives $\dcomplexity(\homeo(\vx) = \vx) = 0$, by the integral
+%For example, we can define,
 \begin{align}\label{eq:dcomplexity}
     \dcomplexity(\homeo) &=
     \int \left(
-	c_a \norm{\nabla\homeo(\vx) - \identity} + c_b \norm{\homeo(\vx) - \vx}
+	 \norm{\nabla\homeo(\vx) - \identity}. % + c_b \norm{\homeo(\vx) - \vx}
 	\right)
-    \dm{\vx},
+    \dm{\vx}.
 \end{align}
-for some $c_a, c_b > 0$.
+%for some $c_a, c_b > 0$.
 
 %\subsection{Trade-off between perturbation and deformation}
 We have arrived at a vector-valued dissimilarity between systems:
@@ -722,7 +722,7 @@ The lowest-dimensional attractors in our framework are \emph{fixed points}, whic
 One-dimensional attractors in our library include the \emph{bounded line attractor} for integration tasks, the \emph{ring attractor} for circular variables, and the \emph{limit cycle} for periodic behaviors.
 %At dimension 2, we find attractors like the plane and cylinder, representing combinations of continuous variables (e.g., two independent integrators, or a position and a phase).
  %More structured 2D attractors include the torus, formed by coupling two ring-like dimensions, and the sphere, a closed surface that supports more global integration or constrained exploration.
-These archetypes serve as building blocks for constructing higher-dimensional attractors via Cartesian products, reflecting how complex dynamics may arise from simple, interpretable components (see Supp. Sec.~\ref{sec:composite}).
+These archetypes serve as building blocks for constructing higher-dimensional attractors via Cartesian products, allowing for complex dynamics to arise from simple, interpretable components (see Supp. Sec.~\ref{sec:composite}).
 
 %We consider parameterized versions of motifs that involve adding to on- or rescaling the vector field both on- and off-manifold.
 Although attractors are categorized by their topological structure, the dynamics on those attractors can vary continuously within each category. For example, for the stable limit cycle, its dynamics are fully specified after choosing a scalar velocity $v\in \reals$ such that the dynamics are given by:
@@ -1115,7 +1115,7 @@ We learn to map the trajectories of the ring attractor archetype using a  diffeo
 %interpretation of results
 Our method approximates the deformed ring attractor for both types of deformation, see Fig.~\ref{fig:ring_pert_fig}.
 For the diffeomorphism-type deformation, our method approximates the inverse of the diffeomorphism, up to a maximal perturbation size after which the fit quality drops (Fig.~\ref{fig:ring_pert_fig}B).
-For the vector field-type deformation, even without an exact topological conjugacy, the ring attractor archetype can be accurately mapped onto the approximate ring attractor (Fig.~\ref{fig:ring_pert_fig}C), while the dissimilarity grows because of $\vDelta_1$ in Eq.~\ref{eq:decomp:triple}.
+For the vector field-type deformation, even without an exact topological conjugacy, the ring attractor archetype can be accurately mapped onto the approximate ring attractor (Fig.~\ref{fig:ring_pert_fig}C), while the dissimilarity grows because of $\vDelta_1$ in Eq.~\ref{eq:decomp:triple} and the complexity (Eq.~\ref{eq:dcomplexity}) grows with the deformation of the slow invariant manifold that persists after the ring attractor breaks apart.
 For both deformation types, the location of the invariant manifold is accurately approximated (Fig.~\ref{fig:ring_pert_fig}B and C), while for SPE the source-mapped invariant manifold is very far away from the target's.
 
 
