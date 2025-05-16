@@ -405,7 +405,7 @@ We define  $\dcomplexity: (\inputSpace \to \inputSpace) \to \posReals$ to be a m
 \begin{align}\label{eq:dcomplexity}
     \dcomplexity(\homeo) &=
     \int \left(
-	 \norm{\nabla\homeo(\vx) - \identity}. % + c_b \norm{\homeo(\vx) - \vx}
+	 \norm{\nabla\homeo(\vx) - \identity} % + c_b \norm{\homeo(\vx) - \vx}
 	\right)
     \dm{\vx}.
 \end{align}
@@ -438,7 +438,7 @@ By Gr\"onwall inequality\cite{Howard2025}:
 	\left(\sup_\vs \norm{\vDelta(\vs)}\right) \frac{1}{L} (e^{Lt} - 1),
 \end{align}
 for any norm $\norm{\cdot}$.
-Thus, for small perturbation, the trajectories are robust for a short time.
+Thus, for small perturbation, the trajectories are robust for a short time:
 \begin{align}\label{eq:d0bound}
     \bar{d}_0(\vf, \vf + \vDelta)
     &\leq
