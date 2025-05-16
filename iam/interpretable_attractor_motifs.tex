@@ -369,7 +369,7 @@ In fact, neural population data analysis suggests that the trajectories are rest
 Therefore, the distinction between the systems should only be compared at the locations where they are used.
 We denote this natural probability distribution over the points on the phase space as $\initDist(\vx)$.
 %
-These two notions together motivates space integrated measures such as,
+These two notions together motivates the space integrated measure (with $\E$ denoting expectation):
 \begin{align}
 %     d_{0,\infty}(\vf, \vg; \initDist)
 % 	&\coloneq \sup_{\vx \in \initDist(\vx)}
@@ -378,10 +378,9 @@ These two notions together motivates space integrated measures such as,
     \bar{d}_{0}(\vf, \vg; \initDist)
 	&\coloneq
 	    \E_{\vx \in \initDist(\vx)}
-		d_0(\vf(\vx), \vg(\vx)),
+		d_0(\vf(\vx), \vg(\vx)).
 	\label{eq:ed0}
 \end{align}
-where $\E$ denotes expectation.
 
 If the axes of the space $\inputSpace$ are arbitrary, as in the case of state-space models with linear observation models, or theoretical models without a fixed implementation, we would want the measure to be invariant to isometric scaling, rotations, and/or affine transformations.
 
