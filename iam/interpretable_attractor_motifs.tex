@@ -587,7 +587,7 @@ Given the best diffeomorphism with the complexity constraint $c$, the trajectory
 
 \subsection{Empirical estimator: a trajectory based loss function}\label{sec:loss}
 In the scenario where we are analyzing neural trajectories from a target system without access to the vector field nor its estimate, we need to estimate the dissimilarity vector based solely on a collection of trajectories.
-
+%
 We approximate the system using a learned diffeomorphism \( \hat{\homeo}_\theta \), parameterized by a Neural ODE (NODE) \citep{chen2018neural} (for other implementations, see Supp.Sec.~\ref{sec:architectures}).
 % normalizing flow\citep{kobyzev2020normalizing,papamakarios2021normalizing}, an invertible ResNet\citep{he2016deep}
 We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
