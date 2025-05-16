@@ -339,8 +339,7 @@ A central concept in comparing dynamical systems is that of \emph{realization} -
 A \emph{canonical} realization is the simplest system that produces the same effective behavior as a target system.
 %Closely related is the notion of \emph{bisimilarity}, which formalizes behavioral equivalence through relations that match trajectories or observable outputs across systems \citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar, girard2011approximate}.
 %model identification of classes of cognitive models\citep{rmus2024artificial}
-
-
+%
 %reconstruction: 
 Recent advances have sought to recover and interpret the full dynamics of complex systems from data, rather than relying solely on reduced or task-driven summaries \citep{durstewitz2023reconstructing, brenner2024almost}.
 Several approaches focus on learning continuous-time models of latent stochastic dynamical systems, enabling structured representations of uncertainty and variability in neural activity \citep{duncker2019learning}.
@@ -507,7 +506,7 @@ Using first-order expansion of $\vf$, we have (see~\ref{sec:fojac} for derivatio
 	\epsilon (\nabla\tilde\homeo(\vx)) \vf(\vx)
 	-
 	\epsilon (\nabla\vf(\vx)) \tilde\homeo(\vx)
-	+ O(\epsilon^2)
+	+ O(\epsilon^2).
 \end{align}
 Therefore the following bound holds point-wise:
 \begin{align}
@@ -524,7 +523,7 @@ Therefore the following bound holds point-wise:
 	\underbrace{
 	\norm{\tilde\homeo(\vx)}
 	}_{\substack{\text{translation c.}}}
-	+ O(\epsilon)
+	+ O(\epsilon).
     \label{eq:h:bound}
 \end{align}
 for appropriate vector and corresponding matrix norms.
@@ -537,7 +536,7 @@ Therefore, we define the smallest perturbation needed to compensate for the subo
 \begin{align}
     \vDelta_2(\vx ; c) = \inf_{\dcomplexity{\vh} = c}
 	\nabla\homeo(\invhomeo(\vy)) \vf(\invhomeo(\vy))
-	- \vf(\vx) - \vDelta_1(\vx)
+	- \vf(\vx) - \vDelta_1(\vx).
 \end{align}
 
 Thus, the smallest perturbation for a given the complexity of the diffeomorphism can be described in the following decomposition of the total perturbation as additive in vector field:
