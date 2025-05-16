@@ -1140,9 +1140,9 @@ For an unknown system, we can try to fit the mold of each of the canonical motif
 By comparing the different fits we can infer which of the motifs is most appropriate to well-capture the effective behavior.
 We test this by measuring the dissimilarity to our library of motifs to a list of target systems:
 1) Ring attractors (and its homeomorphism and additive vector field deformed and noisy versions),
-2) RNNs trained on a velocity integration task (with a slow ring invariant manifold),
+2) an RNN trained on a velocity integration task (with a slow ring invariant manifold),
 3) limit cycles (Van der Pol oscillator, Lienard sigmoid oscillator and Sel'kov oscillator)
-4) system with two bounded line attractors (to which no archetype aligns well).
+4) system with two bounded line attractors (2 BLAs, to which no archetype aligns well).
 See for the details of the target systems Supp.Sec.~\ref{sec:target_systems} and the experimental setup Supp.Sec.~\ref{sec:manytargets_exp_details}.
 
 \begin{figure}[htbp]
@@ -1158,7 +1158,8 @@ See for the details of the target systems Supp.Sec.~\ref{sec:target_systems} and
 \end{figure}
 
 Archetype-normalized similarity pairs target-motif to archetypes that are almost topological conjugate and for which a small deformation is possible (Fig.~\ref{fig:archetype2target}). 
-For example, 
+The ring attractor-related targets all have high similarity to the \emhp{ring attractor} archetype, while the oscillators have the highest similarity to the \emph{limit cycle} archetype.
+The system with two bounded line attractors has the highest similarity to the bistable system; even though they are not topologically conjugate the bistability is shared.
 %other way?If there is no canonical motif that is able to capture the effective behavior of a target, then all dissimilarities
 Target-normalized similarity show which targets an archetype can represent.
 Finally, if a target has a large dissimilarity to all the canonical motifs in our library, that means that our library is not expressible enough to cover all computation with corresponding Platonic archetype.
