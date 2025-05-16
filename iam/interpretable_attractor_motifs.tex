@@ -373,14 +373,14 @@ By Gr\"onwall inequality\cite{Howard2025}:
     &\leq
 	e^{Lt} \int_0^{t} e^{-Ls} \norm{\vDelta(s)} \,\mathrm{d}s
     \leq
-	\left(\sup_s \norm{\vDelta(s)}\right) \frac{1}{L} (e^{Lt} - 1)
+	\left(\sup_\vs \norm{\vDelta(\vs)}\right) \frac{1}{L} (e^{Lt} - 1)
 \end{align}
 for any norm $\norm{\cdot}$.
-Thus, for small additive perturbation, the trajectories are robust for a short time.
+Thus, for small perturbation, the trajectories are robust for a short time.
 \begin{align}\label{eq:d0bound}
     \bar{d}_0(\vf, \vf + \vDelta)
     &\leq
-    \left(\sup_s \norm{\vDelta(s)}\right) \frac{1}{L^2} e^{LT_{\text{max}}}
+    \left(\sup_\vs \norm{\vDelta(\vs)}\right) \frac{1}{L^2} e^{LT_{\text{max}}}
 \end{align}
 
 Now, let us consider the sharing the burden of distortion by using the best diffeomorphism using \eqref{eq:ed1}.
@@ -402,7 +402,7 @@ By \eqref{eq:d0bound}, we have
 \begin{align}
     \bar{d}_1(\vf, \vg; \homeo^\ast)
 	&\leq
-	\left(\sup_s \norm{\vDelta_1(s)}\right) \frac{1}{L^2} e^{LT_{\text{max}}}
+	\left(\sup_\vs \norm{\vDelta_1(\vs)}\right) \frac{1}{L^2} e^{LT_{\text{max}}}
 \end{align}
 where $\homeo^\ast$ achieves the desired topological conjugacy.
 Note that $\vf \tconju \vg$ implies $\norm{\vDelta_1} = 0$.
@@ -460,7 +460,7 @@ for appropriate vector and corresponding matrix norms.
 We recognize two kinds of complexities of the diffeomorphism: (1) scale complexity which is a function of the Jacobian of diffeomorphism $\nabla\homeo(\vx)$, and (2) translation complexity.
 Note that this form matches \eqref{eq:dcomplexity}.
 
-Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of two complexity measures of the diffeomorphism can be traded off with the additive perturbation.
+Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of two complexity measures of the diffeomorphism can be traded off with the perturbation.
 
 Therefore, we define the smallest perturbation needed to compensate for the suboptimal diffeomorphism with a given complexity:
 \begin{align}
@@ -469,7 +469,7 @@ Therefore, we define the smallest perturbation needed to compensate for the subo
 	- \vf(\vx) - \vDelta_1(\vx)
 \end{align}
 
-Thus, the smallest additive perturbation for a given the complexity of the diffeomorphism can be described in the following decomposition of the total perturbation as additive in vector field:
+Thus, the smallest perturbation for a given the complexity of the diffeomorphism can be described in the following decomposition of the total perturbation as additive in vector field:
 \begin{align}\label{eq:decomp:triple}
     \vg(\vx) &= 
 	\vf(\vx)
@@ -486,10 +486,22 @@ Thus, the smallest additive perturbation for a given the complexity of the diffe
 	&\qquad\text{remaining additive gap}
 \end{align}
 
-Figure~\ref{fig:pareto} illustrates the interaction between the two distortion measures---we want the simplest diffeomorphism and the smallest additive perturbation, forming a Pareto frontier for the optimal deformation.
-Point \textbf{a} represents the case explaining the full distortion solely using additive perturbation.
-Point \textbf{c} represents only using the additive perturbation to explain the imperfection that cannot be captured by any diffeomorphism.
-Point \textbf{b} represents a trade-off where the best diffeomorphism for the given complexity constraint creating additional gap for the additive perturbation.
+Figure~\ref{fig:pareto} illustrates the interaction between the two distortion measures---we want the simplest diffeomorphism and the smallest perturbation, forming a Pareto frontier for the optimal deformation.
+Point \textbf{a} represents the case explaining the full distortion solely using perturbation.
+Point \textbf{c} represents only using the perturbation to explain the imperfection that cannot be captured by any diffeomorphism.
+Point \textbf{b} represents a trade-off where the best diffeomorphism for the given complexity constraint creating additional gap for the perturbation.
+
+Given the best diffeomorphism with the complexity constraint $c$, the trajectory loss $\bar{d}_1$ lower bounds the size of perturbation needed.
+\begin{align}
+    \bar{d}_1(\vf, \vg; c)
+	&\leq
+	    \left(\sup_\vs \norm{\vDelta_1(\vs) + \vDelta_3(\vs, c)}\right)
+	    \frac{e^{LT_{\text{max}}}}{L^2}
+    \\
+	&\leq
+	    \left(\sup_\vs\norm{\vDelta_1(\vs)} + \sup_\vs\norm{\vDelta_3(\vs, c)}\right)
+	    \frac{e^{LT_{\text{max}}}}{L^2}
+\end{align}
 
 \begin{figure}[htbp]
 \centering
@@ -1129,7 +1141,7 @@ For the vector field-type deformation, our methods, accurately identifies the lo
     \caption{Approximating deformed ring attractors. % two types of perturbations to a ring attractor that are controlled by a scalar perturbation size. 
     (\textbf{A})  The first type considers a perturbation that leaves the continuum of fixed points intact: it merely deforms the ring attractor and the transient orbits but the perturbed system is still topologically conjugate to the original. 
     (\textbf{B}) The complexity of the mapping from the canonical motif to the target is proportional to the complexity of the homeomorphism to deform the ring attractor (with an offset from the rescaling of the target trajectories).
-    (\textbf{C}) The second type is an additive perturbation to the vector field, which destroys the ring attractor, but the dissimilarity is small, hence the slow invariant manifold can be approximated by a ring attractor.
+    (\textbf{C}) The second type is an perturbation to the vector field, which destroys the ring attractor, but the dissimilarity is small, hence the slow invariant manifold can be approximated by a ring attractor.
     (\textbf{D}) Even though the topology of the ring attractor is immediately broken, the dissimilarity is slowly growing as the fixed points along the invariant slow manifold become stronger and the perturbed ring starts to resemble a multi-fixed point system.
     }
     \label{fig:ring_pert_fig}
