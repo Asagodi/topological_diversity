@@ -237,11 +237,11 @@ See.~\eqref{eq:decomp:triple} for the detailed explanation of the symbols.
 \subsection{Equivalence of Qualitative Behavior}
 Dynamical systems are widely used for studying neural computation, offering insights into cognitive functions such as working memory, short-term memory, and motor control~\citep{beer1995ctrnn, beer2006parameterspace, sussillo2014neural, vyas2020ctd}.
 %In neural activity and in Recurrent Neural Networks (RNNs), computations are described by the dynamical properties of the network which are typically characterized by the dynamics asymptotic behavior or invariant sets.
-Discrete and continuous forms of working memory, for example, can be modeled as attractor dynamics that stabilize persistent representations \citep{zhang2022translation, hoeller2024bridging}.
+Discrete and continuous forms of working memory, for example, can be modeled as attractor dynamics that maintain persistent neural activity \citep{zhang2022translation, hoeller2024bridging}.
 Short-term memory, involving transient yet structured activity, has been explored in dynamical models capturing task-dependent variability \citep{kurtkaya2025dynamical}.
 % Motor control, too, exhibits low-dimensional dynamics shaped by recurrent structure \citep{wang2022representation}.
 
-Since the time of Poincar\'e, dynamical systems has heavily relied on the analysis of their \emph{qualitative behavior}---the eventual fate of the system, rather than the details of their trajectory.
+Since the time of Poincar\'e, dynamical system theory has heavily relied on the analysis of their \emph{qualitative behavior}---the eventual fate of the system, rather than the details of their trajectory.
 For qualitative questions such as ``will the neural system eventually settle down to the same resting state regardless of the initial condition in the absence of external drive or will it oscillate forever?'', interestingly, often a simple and intuitive picture (technically a \emph{phase portrait}) can give a definite answer~\citep{Strogatz2000-tf}.
 
 The space of all dynamical systems can be partitioned by the equivalence of their qualitative behavior~\citep{Arnold1994}, abstracting away the finite time transient behaviors and the details of the vector field.
@@ -369,7 +369,7 @@ The dynamical systems implemented defines a vector field over the entire space b
 In fact, neural population data analysis suggests that the trajectories are restricted to a low-dimensional manifold in the context of a ``task'' or ``computation''.
 Therefore, the distinction between the systems should only be compared where they are used.
 We denote this natural probability distribution over the points on the phase space as $\initDist(\vx)$.
-
+%
 These two notions together motivates space integrated measures such as,
 \begin{align}
 %     d_{0,\infty}(\vf, \vg; \initDist)
