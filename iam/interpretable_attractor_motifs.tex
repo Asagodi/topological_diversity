@@ -681,38 +681,35 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 
 %justifications: imperfect continuous attractorsBiases on slow ring manifold for memory maintenance of circular values \citep{panichello2019error}.
 
-\subsection{An interpretable, motif-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
-Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs. Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
-
-The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
+\subsection{An interpretable, archetype-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
+Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs.
+%Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
+%The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
 This allows us to projects the target system onto the motif library, producing a vector of distances to each motif.
 
 %intuition/implication for TTRNN Plationic convergence
 % Convergence during training of RNNs: 
-For tasks that rely on analog memory, the system's trajectory should exhibit low dissimilarity to a  continuous attractor dynamical motif that is diffeomorphic to the memory manifold\citep{beer2018laformation,ribeiro2020beyond}.
-This ensures that the system's behavior remains close to a well-defined dynamical motif, facilitating stable memory retrieval and task performance.
+%comment on approaching an archetype during learning
+%For tasks that rely on analog memory, the system's trajectory should exhibit low dissimilarity to a  continuous attractor dynamical archetype that is diffeomorphic to the memory manifold\citep{beer2018laformation,ribeiro2020beyond}.
+%This ensures that the system's behavior remains close to a well-defined dynamical archetype, facilitating stable memory retrieval and task performance.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Related work}\label{sec:background}
-Our goal is to develop a framework that makes neural dynamics interpretable by grounding them in a structured theory of computation.
-In this section, we outline how dynamical systems theory provides a formal language for describing neural computations \citep{jaeger2021theory, jaeger2023timescales, elgazzar2024universal}, review existing approaches for characterizing and comparing dynamics % such as DYNAMO \citep{cotler2023analyzing} and \citep{pagan2022dm},
-and define the scope of our contribution across three axes: the class of computations under study, the state of the art in model reduction and system identification, and the interpretability of the resulting abstractions.
-
+%Our goal is to develop a framework that makes neural dynamics interpretable by grounding them in a structured theory of computation.
+%In this section, we outline how dynamical systems theory provides a formal language for describing neural computations \citep{jaeger2021theory, jaeger2023timescales, elgazzar2024universal}, review existing approaches for characterizing and comparing dynamics % such as DYNAMO \citep{cotler2023analyzing} and \citep{pagan2022dm},
+%and define the scope of our contribution across three axes: the class of computations under study, the state of the art in model reduction and system identification, and the interpretability of the resulting abstractions.
 
 
 
 \subsection{Existing methods for characterizing, reducing and comparing dynamics}\label{sec:sota_methods}
-%ds_landscape_carving?
-Comparison: Sec.~\ref{sec:comparison}
-Reconstruction: Sec.~\ref{sec:reconstruction}
-%Reduction: Sec.~\ref{sec:reduction}
-Decomposition: Sec.~\ref{sec:decomposition}
+%%ds_landscape_carving?
+%Comparison: Sec.~\ref{sec:comparison}
+%Reconstruction: Sec.~\ref{sec:reconstruction}
+%%Reduction: Sec.~\ref{sec:reduction}
 
-%important for our philosophy: 
 
-%%%
 \subsubsection{Methods to compare dynamics}\label{sec:comparison}
 A foundational concept for the comparison of dynamics is \emph{topological conjugacy}, which formalizes the notion of two systems being dynamically equivalent under a homeomorphism that maps trajectories of one system to the other while preserving the temporal ordering (see Sec.~\ref{def:top_conj}).
 Another key approach focuses on asymptotic behavior, particularly through the study of $\omega$-limit sets, which describe the long-term evolution of trajectories.
@@ -832,8 +829,8 @@ The decomposed Linear Dynamical System (dLDS) model represents neural activity a
 %\end{itemize}
 
 %structuring/shaping/reducing/restricting
- \paragraph{Structuring the space of models for neural computation} %and reducing it
-Mapping families of dynamical systems to a manifold whose geometry encodes different qualitative behaviors \citep{transtrum2014model, ricci2022phase2vec, quinn2022information, Vermani2024b}.
+% \paragraph{Structuring the space of models for neural computation} %and reducing it
+%Mapping families of dynamical systems to a manifold whose geometry encodes different qualitative behaviors \citep{transtrum2014model, ricci2022phase2vec, quinn2022information, Vermani2024b}.
 
 %%%decomposition is a form of reduction?
 %\subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
@@ -861,10 +858,10 @@ Mapping families of dynamical systems to a manifold whose geometry encodes diffe
 
 
 %INTERPRET
-\subsection{Interpretability}
-Interpretability remains a central yet elusive goal in both neuroscience and machine learning\citep{erasmus2021interpretability}.
-While traditional approaches often rely on inherently understandable models such as linear classifiers, decision trees, or rule-based systems, more recent work has emphasized post hoc techniques that attempt to explain black-box models through reverse engineering or surrogate approximations \citep{ehrhardt2017learning, guidotti2018survey}.
-However, interpretability is not a monolithic concept \citep{poursabzi2021manipulating,madsen2024interpretability}.
+%\subsection{Interpretability}
+%Interpretability remains a central yet elusive goal in both neuroscience and machine learning\citep{erasmus2021interpretability}.
+%While traditional approaches often rely on inherently understandable models such as linear classifiers, decision trees, or rule-based systems, more recent work has emphasized post hoc techniques that attempt to explain black-box models through reverse engineering or surrogate approximations \citep{ehrhardt2017learning, guidotti2018survey}.
+%However, interpretability is not a monolithic concept \citep{poursabzi2021manipulating,madsen2024interpretability}.
 %Philosophical and practical analyses underscore its multidimensionality—ranging from transparency and simulatability \citep{lipton2018mythos,olah2018interpretability, beisbart2022interpretability, raz2024ml, hochstein2022levels, he2024multilevel}.
 
 %Building Blocks of Interpretability \citep{olah2018interpretability}
