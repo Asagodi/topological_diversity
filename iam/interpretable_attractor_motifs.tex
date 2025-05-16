@@ -726,8 +726,8 @@ Attractors can be further characterized by both their intrinsic and extrinsic di
 
 To make these ideas concrete, we organize attractors in a hierarchy based on their topological dimension.
 This classification provides a natural vocabulary for describing the dynamics we observe in neural systems (see Supp.Sec.~\ref{sec:library}). 
-At dimension 0, we include \emph{fixed-point attractors}, which correspond to isolated stable states — common in decision-making or memory models where the system settles into one of several discrete outcomes.
-At dimension 1, we define the archetypes \emph{bounded line attractor}, which capture continuous integration over a range (e.g., position estimation and evidence integration), \emph{ring attractor}, a structure proposed for representing variables like head direction or phase and the \emph{limit cycle}, a dynamic trajectory that loops periodically, reflecting rhythmic or stereotyped behaviors.
+The lowest-dimensional attractors in our framework are \emph{fixed points}, which correspond to isolated stable states — typical of decision-making or memory models that settle into discrete outcomes.
+One-dimensional attractors in our library include the \emph{bounded line attractor} for integration tasks, the \emph{ring attractor} for circular variables, and the \emph{limit cycle} for periodic behaviors.
 %At dimension 2, we find attractors like the plane and cylinder, representing combinations of continuous variables (e.g., two independent integrators, or a position and a phase).
  %More structured 2D attractors include the torus, formed by coupling two ring-like dimensions, and the sphere, a closed surface that supports more global integration or constrained exploration.
 These motifs serve as building blocks for constructing higher-dimensional attractors via Cartesian products, reflecting how complex dynamics may arise from simple, interpretable components (see Supp. Sec.~\ref{sec:composite}).
