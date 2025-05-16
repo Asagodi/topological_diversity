@@ -259,7 +259,7 @@ Among those structures, two have a prominent status in the vernacular of neurosc
 Mathematically, (hyperbolic) fixed points are locally conjugate to a linear system\citep{hartman1960lemma} which are well understood thanks to the easy decomposition and superposition of solutions.
 Moreover, multiple isolated fixed points can serve as a substrate for discrete computations frameworks such as finite state machines or Markov chains.
 Line attractors on the other hand can store an analog-valued representation (for indefinite time).
-Theoretical neuroscience and machine learning have extensively used these as building blocks to help us expand our intuition on neural computation\citep{dayan2005theoretical,vyas2020ctd}.
+Theoretical neuroscience  has extensively used these as building blocks to help us expand our understanding of neural computation\citep{dayan2005theoretical,vyas2020ctd}.
 While mathematically elegant, however, there are a few critical issues with this program.
 
 \subsection{Structural Stability and Bifurcations}
@@ -295,7 +295,7 @@ This motivates the following time integrated point-wise distance measure:
 For all $\vx \in \inputSpace$ and $t \in [0, T_\text{max}]$,
 \begin{align}
     d_0(\vf(\vx), \vg(\vx))
-	&\coloneq \int \norm{\phi_\vf^t(\vx) - \phi_\vg^t(\vx)} \dm{t}
+	&\coloneq \int \norm{\phi_\vf^t(\vx) - \phi_\vg^t(\vx)} \dm{t},
 \end{align}
 where $\phi_\vf^t(\vx)$ is the solution (trajectory) of $\dot\vx = \vf(\vx)$ with initial condition $\vx$ evolved over $t$.
 
@@ -314,7 +314,7 @@ These two notions together motivates space integrated measures such as,
     \bar{d}_{0}(\vf, \vg; \initDist)
 	&\coloneq
 	    \E_{\vx \in \initDist(\vx)}
-		d_0(\vf(\vx), \vg(\vx))
+		d_0(\vf(\vx), \vg(\vx)),
 	\label{eq:ed0}
 \end{align}
 where $\E$ denotes expectation.
@@ -331,7 +331,7 @@ We define a dissimilarity
 	    \E_{\vx \in \initDist(\vx)}
 		\int
 		    \norm{\phi_{\vf}^t(\vx) - \homeo(\phi_{\vg}^t(\vx))}
-		\dm{t}
+		\dm{t},
 \end{align}
 which is non-negative but non-symmetric in general.
 If more complicated deformations are needed to minimize \eqref{eq:ed1}, it is natural to consider their effective behavior less similar\footnote{
@@ -345,7 +345,7 @@ For example, we can define,
     \int \left(
 	c_a \norm{\nabla\homeo(\vx) - \identity} + c_b \norm{\homeo(\vx) - \vx}
 	\right)
-    \dm{\vx}
+    \dm{\vx},
 \end{align}
 for some $c_a, c_b > 0$.
 
@@ -373,14 +373,14 @@ By Gr\"onwall inequality\cite{Howard2025}:
     &\leq
 	e^{Lt} \int_0^{t} e^{-Ls} \norm{\vDelta(s)} \,\mathrm{d}s
     \leq
-	\left(\sup_\vs \norm{\vDelta(\vs)}\right) \frac{1}{L} (e^{Lt} - 1)
+	\left(\sup_\vs \norm{\vDelta(\vs)}\right) \frac{1}{L} (e^{Lt} - 1),
 \end{align}
 for any norm $\norm{\cdot}$.
 Thus, for small perturbation, the trajectories are robust for a short time.
 \begin{align}\label{eq:d0bound}
     \bar{d}_0(\vf, \vf + \vDelta)
     &\leq
-    \left(\sup_\vs \norm{\vDelta(\vs)}\right) \frac{1}{L^2} e^{LT_{\text{max}}}
+    \left(\sup_\vs \norm{\vDelta(\vs)}\right) \frac{1}{L^2} e^{LT_{\text{max}}}.
 \end{align}
 
 Now, let us consider the sharing the burden of distortion by using the best diffeomorphism using \eqref{eq:ed1}.
