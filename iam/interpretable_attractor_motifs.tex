@@ -247,7 +247,7 @@ Specifically, consider two autonomous dynamical systems defined on the same phas
 \begin{align}
     \dot{\vx} = \vf(\vx),
     &\qquad
-    \dot{\vy} = \vg(\vy)
+    \dot{\vy} = \vg(\vy).
 %    \begin{dcases}
 %	\dot{\vx} = \vf(\vx)
 %	\\
@@ -369,7 +369,7 @@ Below, we analyze the trade-off as a function of complexity.
 First, we show that the trajectory distance measures are bounded by perturbation.
 Let $\vDelta(\cdot)$ be a perturbation to the vector field:
 \begin{align}
-    \dot{\vx} &= \vf(\vx) + \vDelta(\vx)
+    \dot{\vx} &= \vf(\vx) + \vDelta(\vx).
 \end{align}
 For a finite time horizon $[0, T_\text{max}]$, assuming a Lipschitz bound $L$ for $\vf(\cdot)$ in the relevant domain and a uniform bound on $\norm{\vDelta(\cdot)}$, we can bound the trajectory deviation from the unperturbed system.
 By Gr\"onwall inequality\cite{Howard2025}:
@@ -433,11 +433,11 @@ That is, we seek to find $\vDelta_2(\vx)$ that maintains the topological conjuga
 where $\epsilon > 0$.
 We assume an Ansatz for the diffeomorphism, under the assumption that it is close to identity:
 \begin{align}\label{eq:h:ansatz}
-    \vy &= \homeo(\vx) = \vx + \epsilon \tilde\homeo(\vx) + O(\epsilon^2)
+    \vy &= \homeo(\vx) = \vx + \epsilon \tilde\homeo(\vx) + O(\epsilon^2).
 \end{align}
 Note that from \eqref{eq:h:ansatz}, we have
 \begin{align}
-    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2)
+    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2).
 \end{align}
 Using first-order expansion of $\vf$, we have (see~\ref{sec:fojac} for derivation):
 \begin{align}
@@ -642,15 +642,15 @@ $\{\vg_i\}_i$
 %\subsection{Motifs: Recognizable geometric-topological features}
 \subsection{Dynamical Archetypes}
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\linewidth]{motifpspace_dssimilarity}
-    \caption{Charting the space of theories with dynamical motifs.
-    \textbf{(A)} Localizing a model in parameter space through dynamical motifs.
-    \textbf{(B)} Abstracting out imperfections from an approximate ring attractor.
-     }
-    \label{fig:motifpspace_dssimilarity}
-\end{figure}
+%\begin{figure}[htbp]
+%    \centering
+%    \includegraphics[width=\linewidth]{motifpspace_dssimilarity}
+%    \caption{Charting the space of theories with dynamical motifs.
+%    \textbf{(A)} Localizing a model in parameter space through dynamical motifs.
+%    \textbf{(B)} Abstracting out imperfections from an approximate ring attractor.
+%     }
+%    \label{fig:motifpspace_dssimilarity}
+%\end{figure}
 % We use dynamical motifs as the fundamental building blocks of dynamical systems, capturing effective and interpretable behaviors such as approximate continuous attractors.
 % These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
 
