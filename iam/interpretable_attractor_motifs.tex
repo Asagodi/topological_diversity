@@ -1150,7 +1150,7 @@ For an unknown system, we can try to fit the mold of each of the canonical motif
 By comparing the different fits we can infer which of the motifs is most appropriate to well-capture the effective behavior.
 We test this by measuring the dissimilarity to our library of motifs to a list of target systems:
 1) Ring attractors (and its homeomorphism and additive vector field deformed and noisy versions),
-2) an RNN trained on a velocity integration task (with a slow ring invariant manifold),
+2) an RNN trained on a velocity integration task (with a slow ring invariant manifold, see Fig.~\ref{fig:avi_rnn_recttanh}A),
 3) limit cycles (Van der Pol oscillator, Lienard sigmoid oscillator and Sel'kov oscillator)
 4) system with two bounded line attractors (2 BLAs, to which no archetype aligns well).
 See for the details of the target systems Supp.Sec.~\ref{sec:target_systems} and the experimental setup Supp.Sec.~\ref{sec:manytargets_exp_details}.
@@ -2377,8 +2377,10 @@ d_H(A, B) = \max\left\{ \sup_{a \in A} \inf_{b \in B} \|a - b\|, \sup_{b \in B} 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\linewidth]{avi_rnn_recttanh}
-    \caption{The ring attractor motif fit to RNNs of different sizes trained on an angular velocity integration task.
+    \caption{The ring attractor motif fit to RNNs of different sizes ($N=64,128,256$ hidden units) trained on an angular velocity integration task from \citet{Sagodi2024a}.
     The homeomorphism brings the canonical ring attractor near the invariant slow manifold (composed out of a finite number of fixed points) even though topological equivalency is lacking.
+    Trajectories colored by memory content (angular memory).
+    The MSE similarity is reported in the upper right corner for each network.
     }
     \label{fig:avi_rnn_recttanh}
 \end{figure}
