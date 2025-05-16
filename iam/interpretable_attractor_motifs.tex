@@ -381,7 +381,7 @@ These two notions together motivates the space integrated measure (with $\E$ den
 		d_0(\vf(\vx), \vg(\vx)).
 	\label{eq:ed0}
 \end{align}
-
+%
 If the axes of the space $\inputSpace$ are arbitrary, as in the case of state-space models with linear observation models, or theoretical models without a fixed implementation, we would want the measure to be invariant to isometric scaling, rotations, and/or affine transformations.
 
 In addition, more general continuous coordinate transformation shall be allowed.
@@ -404,13 +404,14 @@ We define  $\dcomplexity: (\inputSpace \to \inputSpace) \to \posReals$ to be a m
 %For example, we can define,
 \begin{align}\label{eq:dcomplexity}
     \dcomplexity(\homeo) &=
-    \int \left(
+    \int
+    %\left(
 	 \norm{\nabla\homeo(\vx) - \identity} % + c_b \norm{\homeo(\vx) - \vx}
-	\right)
+%	\right)
     \dm{\vx}.
 \end{align}
 %for some $c_a, c_b > 0$.
-
+%
 %\subsection{Trade-off between perturbation and deformation}
 We have arrived at a vector-valued dissimilarity between systems:
 two systems are similar if,
@@ -520,7 +521,7 @@ Therefore the following bound holds point-wise:
 \end{align}
 for appropriate vector and corresponding matrix norms.
 We recognize two kinds of complexities of the diffeomorphism: (1) scale complexity which is a function of the Jacobian of diffeomorphism $\nabla\homeo(\vx)$, and (2) translation complexity.
-Note that this form matches \eqref{eq:dcomplexity}.
+Note that this form matches \eqref{eq:dcomplexity} if translation is considered invariant.
 
 Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of the two complexity measures of the diffeomorphism can be traded-off with the perturbation.
 Therefore, we define the smallest perturbation needed to compensate for the suboptimal diffeomorphism with a given complexity:
