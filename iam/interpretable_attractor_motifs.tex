@@ -222,6 +222,15 @@ We need to conceptually separate the ODEs and their interpretable discrete abstr
 %We need a language that can describe how neural populations transform inputs into goal-directed behavior.
 %Here we focus on the memory maintenance part of this transformation.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{topological_conjugacy_pareto}
+\caption{The two measures of distortion to map the source system to the target system forms a Pareto frontier boundary.
+See.~\eqref{eq:decomp:triple} for the detailed explanation of the symbols.
+}
+\label{fig:pareto}
+\end{figure}
+
 \section{Background}
 \subsection{Equivalence of Qualitative Behavior}
 Dynamical systems are widely used for studying neural computation, offering insights into cognitive functions such as working memory, short-term memory, and motor control~\citep{beer1995ctrnn, beer2006parameterspace, sussillo2014neural, vyas2020ctd}.
@@ -502,15 +511,6 @@ Given the best diffeomorphism with the complexity constraint $c$, the trajectory
 	    \left(\sup_\vs\norm{\vDelta_1(\vs)} + \sup_\vs\norm{\vDelta_3(\vs, c)}\right)
 	    \frac{e^{LT_{\text{max}}}}{L^2}
 \end{align}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics{pareto}
-\caption{The two measures of distortion to map the source system to the target system forms a Pareto frontier boundary.
-See.~\eqref{eq:decomp:triple} for the detailed explanation of the symbols.
-}
-\label{fig:pareto}
-\end{figure}
 
 % \subsubsection{The complexity of the homeomorphism}
 % To assess how much a learned homeomorphism $\Phi$ deforms space, we distinguish between a set of canonical transformation types, such as translations, permutations, rotations, uniform and non-uniform scalings (of space), and rescaling of the vector field (which affects global speed).
