@@ -1092,10 +1092,10 @@ Finite-state abstractions \citep{oliva2019fsm, cotteret2024fsm}, their probabili
 
 %%%%%%%%%%%%%%%%%
 \section{Results}
-An imperfect ring attractor: Sec.~\ref{sec:imp_ring}
-% A noisy target: Sec.~\ref{sec:noisy}
-Compared methods: Sec.~\ref{sec:compare_method}
-Demonstration: Sec.~\ref{sec:target_demonstrations}
+%An imperfect ring attractor: Sec.~\ref{sec:imp_ring}
+%% A noisy target: Sec.~\ref{sec:noisy}
+%Compared methods: Sec.~\ref{sec:compare_method}
+%Demonstration: Sec.~\ref{sec:target_demonstrations}
 
 
 
@@ -1153,19 +1153,20 @@ The ring attractor motif is able to approximate both the finite (sampled traject
 For an unknown system, we can try to fit the mold of each of the canonical motifs.
 By comparing the different fits we can infer which of the motifs is most appropriate to well-capture the effective behavior.
 We test this by measuring the dissimilarity to our library of motifs to a list of target systems:
-1) Ring attractors (and its perturbed and noisy versions),
-2) RNNs trained on a velocity integration task,
-3) limit cycles (Van der Pol oscillator, Lienard sigmoid, Sel'kov)
-4) system with two bounded line attractors.
+1) Ring attractors (and its homeomorphism and additive vector field deformed and noisy versions),
+2) RNNs trained on a velocity integration task (with a slow ring invariant manifold),
+3) limit cycles (Van der Pol oscillator, Lienard sigmoid oscillator and Sel'kov oscillator)
+4) system with two bounded line attractors (to which no archetype aligns well).
 See for the details of the target systems Supp.Sec.~\ref{sec:target_systems} and the experimental setup Supp.Sec.~\ref{sec:manytargets_exp_details}.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=.99\linewidth]{archetype2target}
     \caption{Archetypes are evaluated based on their similarity to each target system and the complexity of the deformation required to match it.
-     Square size encodes two normalized quantities: similarity (yellow) and deformation simplicity (blue).
-     (\textbf{A}) Archetype-normalized similarity: for each target, it identifies the archetype that best approximates it (large yellow square) with minimal deformation (large blue square).
-    (\textbf{B}) Target-normalized similarity: for each archetype, it shows the targets it effectively approximates, reflecting its explanatory range.
+     Square sizes encode two normalized quantities: similarity (yellow) and deformation simplicity (blue).
+   %  (\textbf{A}) Archetype-normalized similarity: for each target, it identifies the archetype that best approximates it (large yellow square) with minimal deformation (large blue square).
+     Target-normalized similarity shows which archetype best suits a target. 
+    Archetype-target pairs that are near topologically conjugate will 
     }
     \label{fig:archetype2target}
 \end{figure}
@@ -1184,9 +1185,9 @@ Alternatively, it is also possible that our parametrization of the homeomorphism
     \centering
     \includegraphics[width=0.99\linewidth]{dsa_spe}
     \caption{We compare our method to the state-of-the-art methods DSA\citep{ostrow2024beyond} and SPE\citep{friedman2025characterizing}.
-        (\textbf{A})
-        (\textbf{B})
-         (\textbf{C})
+        (\textbf{A}) 
+\textbf{(B)} Applying SPE to a homeomorphically deformed ring attractor (Fig.~\ref{fig:ring_pert_fig}A) results in inaccurate dynamics and a distorted invariant manifold.  
+\textbf{(C)} SPE similarly fails on a ring attractor with an additive vector field deformation (Fig.~\ref{fig:ring_pert_fig}C), producing incorrect dynamics and a degenerate manifold structure.
     }
     \label{fig:dsa_spe}
 \end{figure}
