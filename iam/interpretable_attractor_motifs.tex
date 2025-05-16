@@ -1145,40 +1145,6 @@ The ring attractor motif is able to approximate both the finite (sampled traject
 
 
 
-%\subsection{Comparison to other methods}\label{sec:compare_method}
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.99\linewidth]{dsa_spe}
-    \caption{We compare our method to the state-of-the-art methods DSA\citep{ostrow2024beyond} and SPE\citep{friedman2025characterizing}.
-        (\textbf{A})
-        (\textbf{B})
-         (\textbf{C})
-    }
-    \label{fig:dsa_spe}
-\end{figure}
-
-%\paragraph{DSA}%https://github.com/mitchellostrow/DSA
-%metric: DSA score
-%%\paragraph{Phase2Vec} %https://github.com/nomoriel/phase2vec
-%%\paragraph{DFORM} %NO CODE????
-%\paragraph{SPE} %https://github.com/nitzanlab/prototype-equivalences
-%metric: cycle-error
-
-%\paragraph{SSMLearn} %https://github.com/haller-group/SSMLearnPy/tree/main
-
-% \paragraph{MARBLE}
-%MARBLE \citep{gosztolai2025marble} proposes a similarity measure based on local vector field features (vectors and higher-order derivatives) sampled from across the phase space.
-% The features are embedded into lower-dimensional space through contrastive learning, and the embedded distributions from different systems can be compared using an optimal transport distance.
-
-%\subsubsection{Comparison to DSA and SPE}
-%\begin{figure}[htbp]
-%    \centering
-%    \includegraphics[width=0.75\linewidth]{dsa_vs_mbs}
-%    \caption{DSA vs Motif Based Similarity.}
-%    \label{fig:ds_vs_mbs}
-%\end{figure}
-
 
 
 
@@ -1210,6 +1176,44 @@ For example,
 Target-normalized similarity show which targets an archetype can represent.
 Finally, if a target has a large dissimilarity to all the canonical motifs in our library, that means that our library is not expressible enough to cover all computation with corresponding Platonic archetype.
 Alternatively, it is also possible that our parametrization of the homeomorphism is not expressible enough.
+
+
+%\subsection{Comparison to other methods}\label{sec:compare_method}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.99\linewidth]{dsa_spe}
+    \caption{We compare our method to the state-of-the-art methods DSA\citep{ostrow2024beyond} and SPE\citep{friedman2025characterizing}.
+        (\textbf{A})
+        (\textbf{B})
+         (\textbf{C})
+    }
+    \label{fig:dsa_spe}
+\end{figure}
+
+
+
+%\paragraph{DSA}%https://github.com/mitchellostrow/DSA
+%metric: DSA score
+%%\paragraph{Phase2Vec} %https://github.com/nomoriel/phase2vec
+%%\paragraph{DFORM} %NO CODE????
+%\paragraph{SPE} %https://github.com/nitzanlab/prototype-equivalences
+%metric: cycle-error
+
+%\paragraph{SSMLearn} %https://github.com/haller-group/SSMLearnPy/tree/main
+
+% \paragraph{MARBLE}
+%MARBLE \citep{gosztolai2025marble} proposes a similarity measure based on local vector field features (vectors and higher-order derivatives) sampled from across the phase space.
+% The features are embedded into lower-dimensional space through contrastive learning, and the embedded distributions from different systems can be compared using an optimal transport distance.
+
+%\subsubsection{Comparison to DSA and SPE}
+%\begin{figure}[htbp]
+%    \centering
+%    \includegraphics[width=0.75\linewidth]{dsa_vs_mbs}
+%    \caption{DSA vs Motif Based Similarity.}
+%    \label{fig:ds_vs_mbs}
+%\end{figure}
+
 
 
 
