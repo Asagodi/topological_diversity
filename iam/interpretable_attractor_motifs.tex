@@ -579,7 +579,7 @@ Since the $L$, $\norm{\vf}$, $\norm{\nabla\vf}$ are unknown in general, and the 
 \subsection{Empirical estimator: a trajectory based loss function}\label{sec:loss}
 Given a source system $\vg(\vx)$, in the scenario where we are analyzing neural trajectories from a target system without access to the underlying vector field $\vf(\cdot)$ nor its estimate, we need to estimate the dissimilarity vector and parameters based solely on a collection of trajectories.
 Suppose the trajectories are uniformly sampled at $\Delta t$ intervals, that is, we are given data of the form:
-$\mathcal{D} = \{ \vx_0, \vx_{\Delta t}$, \vx_{2\Delta t}$, \ldots, \vx_{n \Delta t}\}$.
+$\mathcal{D} = \{ \vx_0, \vx_{\Delta t}, \vx_{2\Delta t}, \ldots, \vx_{n \Delta t}\}$.
 Define a (mean squared error) loss function for the full trajectory is,
 \begin{align}\label{eq:loss}
     L(\theta, \beta, \mathcal{D}) &\coloneq \frac{1}{n} \sum_{i=1}^n
@@ -589,7 +589,7 @@ where $\theta$ represents the parameters for the diffeomorphism class $\homeo_\t
 and $\beta$ are the parameters for a continuous family of $\vg(\vx; \beta)$, for example, the frequency for a standard limit cycle family.
 Let $\theta^\ast, \beta^\ast$ be the minimizers of \eqref{eq:loss}.
 $L(\theta^\ast, \beta^\ast, \mathcal{D}_{\text{train}})$ is 
-an estimator for $\bar{d}_1(\vf, \vg; c = \dcomplexity(\homeo_{\theta^\ast}))$ using the squared 2-norm.
+an estimator for \eqref{eq:ed1}, and thus $\bar{d}_1(\vf, \vg; c = \dcomplexity(\homeo_{\theta^\ast}))$ using the squared 2-norm.
 
 % normalizing flow\citep{kobyzev2020normalizing,papamakarios2021normalizing}, an invertible ResNet\citep{he2016deep}
 %We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
