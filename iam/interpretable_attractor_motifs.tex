@@ -663,19 +663,18 @@ Attractors can be systematically classified by their topological dimension, with
 Recent work has shown that task-relevant computations often emerge on such manifolds \citep{langdon2023unifying,can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor,ghazizadeh2021slowmanifold,duncker2021dynamics, pezon2024linking,fortunato2024nonlinear}.
 Attractors can be further characterized by both their intrinsic and extrinsic dimensionality \citep{jazayeri2021interpreting,chaudhuri2019attractor,Sagodi2024a}. 
 
-To make these ideas concrete, we organize attractors in a hierarchy based on their topological dimension. This classification provides a natural vocabulary for describing the dynamics we observe in neural systems, and serves as the foundation for our attractor library (see Supp.Sec.~\ref{sec:library}).
-At dimension 0, we include fixed-point attractors, which correspond to isolated stable states — common in decision-making or memory models where the system settles into one of several discrete outcomes.
+To make these ideas concrete, we organize attractors in a hierarchy based on their topological dimension.
+This classification provides a natural vocabulary for describing the dynamics we observe in neural systems (see Supp.Sec.~\ref{sec:library}). 
+At dimension 0, we include \emph{fixed-point attractors}, which correspond to isolated stable states — common in decision-making or memory models where the system settles into one of several discrete outcomes.
 At dimension 1, we define the archetypes \emph{bounded line attractor}, which capture continuous integration over a range (e.g., position estimation and evidence integration), \emph{ring attractor}, a structure proposed for representing variables like head direction or phase and the \emph{limit cycle}, a dynamic trajectory that loops periodically, reflecting rhythmic or stereotyped behaviors.
 %At dimension 2, we find attractors like the plane and cylinder, representing combinations of continuous variables (e.g., two independent integrators, or a position and a phase).
  %More structured 2D attractors include the torus, formed by coupling two ring-like dimensions, and the sphere, a closed surface that supports more global integration or constrained exploration.
 These motifs serve as building blocks for constructing higher-dimensional attractors via Cartesian products, reflecting how complex dynamics may arise from simple, interpretable components (see Supp. Sec.~\ref{sec:composite}).
 
-\paragraph{Parameterized motifs}
-We consider parameterized versions of motifs that involve adding to on- or rescaling the vector field both on- and off-manifold.
-As an example, consider the stable limit cycle, which can be described by two scalar parameters: \( v \) and \( \alpha < 0 \).
-The dynamics are given by:
+%We consider parameterized versions of motifs that involve adding to on- or rescaling the vector field both on- and off-manifold.
+Although attractors are categorized by their topological structure, the dynamics on those attractors can vary continuously within each category. For example, for the stable limit cycle, its dynamics are fully specified only after choosing a scalar velocity $v\in \reals$ such that the dynamics are given by:
 \begin{equation}
-\dot{r} = \alpha r (r - 1), %r_0?
+\dot{r} =  -r (r - 1), %r_0?\alpha
 \quad \dot{\theta} = v,
 \end{equation}
 where \( r \) represents the radial coordinate and \( \theta \) the angular coordinate. Here, \( v \) controls the angular velocity, and \( \alpha \) determines the dynamics of the radial direction, where the system exhibits stable behavior at \( r = 1 \). This formulation allows for exploration of the effects of rescaling on the stability and behavior of the system, both in the radial and angular components of the phase space.
