@@ -523,7 +523,6 @@ We recognize two kinds of complexities of the diffeomorphism: (1) scale complexi
 Note that this form matches \eqref{eq:dcomplexity}.
 
 Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of the two complexity measures of the diffeomorphism can be traded-off with the perturbation.
-
 Therefore, we define the smallest perturbation needed to compensate for the suboptimal diffeomorphism with a given complexity:
 \begin{align}
     \vDelta_2(\vx ; c) = \inf_{\dcomplexity{\vh} = c}
@@ -559,8 +558,7 @@ Given the best diffeomorphism with the complexity constraint $c$, the trajectory
 	&\leq
 	    \left(\sup_\vs \norm{\vDelta_1(\vs) + \vDelta_3(\vs, c)}\right)
 	    \frac{e^{LT_{\text{max}}}}{L^2}
-    \\
-	&\leq
+	\leq
 	    \left(\sup_\vs\norm{\vDelta_1(\vs)} + \sup_\vs\norm{\vDelta_3(\vs, c)}\right)
 	    \frac{e^{LT_{\text{max}}}}{L^2}.
 \end{align}
