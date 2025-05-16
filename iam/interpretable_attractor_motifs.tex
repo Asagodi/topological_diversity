@@ -568,7 +568,7 @@ This formulation allows for the joint identification of both the correct motif \
 \section{Dynamical Archetype Analysis}\label{sec:dmm}\label{sec:daa}
 Unlike typical clustering, where prototypes represent central or average examples, archetypes capture extreme, idealized forms that define the outer boundaries of a category. For example, the Platonic solids serve as idealized geometric forms—perfectly symmetrical, regular polyhedra that have long been regarded as the purest spatial shapes. While no physical object ever achieves this perfection, many natural and artificial forms resemble or approximate one of these canonical types. In this sense, Platonic solids function as archetypes: extreme, abstract ideals that help us categorize and interpret the messy, imperfect forms observed in the real world.  In the same way, dynamical archetypes are discrete, canonical systems to which real neural dynamics can be categorized into.
 
-In neural computation, archetypes include theoretical constructs such as ``standardized'' fixed points, limit cycles, ring attractors, and continuous attractors. These idealized systems encapsulate essential computational roles in their purest and often most analytically tractable form. For instance, an ideal ring attractor exhibits perfect rotational symmetry, free from distortion or drift. While biological and artificial neural circuits inevitably deviate from such perfection\footnote{They are non-repeating over time even for the same individual due to the ever changing brain\citep{chirimuuta2024brain}.}, treating them as deformations of these archetypes offers a powerful interpretive framework.
+In neural computation, archetypes include theoretical constructs such as ``standardized'' fixed points, limit cycles, ring attractors, and continuous attractors\citep{sussillo2013blackbox, katz2017fibers, golub2018fixedpointfinder,townley2000existence, pals2024inferring}. These idealized systems encapsulate essential computational roles in their purest and often most analytically tractable forms. For instance, an ideal ring attractor exhibits perfect rotational symmetry, free from distortion or drift. While biological and artificial neural circuits inevitably deviate from such perfection\footnote{They are non-repeating over time even for the same individual due to the ever changing brain\citep{chirimuuta2024brain}.}\citep{panichello2019error}, treating them as deformations of these archetypes offers a powerful interpretive framework.
 
 Constructing a library of dynamical archetypes involves selecting a discrete set of theoretically grounded dynamical structures that cover a space of simple computations. Rather than inferring archetypes directly from data, we define them a priori based on theoretical insights into neural computation. Once established, this library provides a reference vocabulary for analyzing observed dynamics by measuring their dissimilarity or deformation relative to these archetypes.
 
@@ -592,12 +592,12 @@ $\{\vg_i\}_i$
 
 %3 angles: neural activity, latent variable models, RNNs: all too obscure!!
 %Latent variable models have proven essential for extracting interpretable state space representations from high-dimensional neural activity \citep{zoltowski2020general, Dowling2024b, pei2neural}, enabling rigorous comparisons across systems \citep{libedinsky2023comparing} and supporting benchmarking efforts such as the Neural Latents and Computation-through-Dynamics (CtD) benchmarks \citep{pei2neural, versteeg2025computation}.
-Within the CtD framework, recurrent neural networks (RNNs) have emerged as powerful models for capturing both task-related computations \citep{yang2019task, yang2019multiple, yang2020artificial, sani2021nonlinearity} and the dynamical structure of cortical responses \citep{chaisangmongkon2017transience, mante2013context}.
-These models support both top-down engineering approaches—where desired dynamics are imposed by construction \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe, pollock2020engineering,darshan2022learning, beiran2023rnns}—and bottom-up analysis of black-box systems trained for behavior \citep{sussillo2013blackbox, maheswaranathan2019reverse, golub2018fixedpointfinder, smith2021reverse, maheswaranathan2019universality, jarne2023initialization, nayebi2021heterogeneity, turner2021charting, turner2023simplicity, zhong2023mechanistic, huang2024measuring}.
-
-Asymptotic behavior—captured by structures like fixed points, limit cycles, and slow manifolds—is central to memory maintenance in neural computation, encoding stable representations over time.
-Fixed-point attractors have long been used to characterize stable memory states in RNNs \citep{sussillo2013blackbox, katz2017fibers, golub2018fixedpointfinder}, while recent work highlights the role of limit cycles \citep{townley2000existence, pals2024inferring} and slow invariant manifolds in sustaining analog memory representations\citep{Sagodi2024a}.
- However, in both latent variable models and task-trained RNNs, these structures are embedded in high-dimensional, black-box dynamics, making them difficult to interpret \citep{whiteway2019interpretable,kar2022interpretability}. %obscurity
+%Within the CtD framework, recurrent neural networks (RNNs) have emerged as powerful models for capturing both task-related computations \citep{yang2019task, yang2019multiple, yang2020artificial, sani2021nonlinearity} and the dynamical structure of cortical responses \citep{chaisangmongkon2017transience, mante2013context}.
+%These models support both top-down engineering approaches—where desired dynamics are imposed by construction \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe, pollock2020engineering,darshan2022learning, beiran2023rnns}—and bottom-up analysis of black-box systems trained for behavior \citep{sussillo2013blackbox, maheswaranathan2019reverse, golub2018fixedpointfinder, smith2021reverse, maheswaranathan2019universality, jarne2023initialization, nayebi2021heterogeneity, turner2021charting, turner2023simplicity, zhong2023mechanistic, huang2024measuring}.
+%
+%Asymptotic behavior—captured by structures like fixed points, limit cycles, and slow manifolds—is central to memory maintenance in neural computation, encoding stable representations over time.
+%Fixed-point attractors have long been used to characterize stable memory states in RNNs \citep{sussillo2013blackbox, katz2017fibers, golub2018fixedpointfinder}, while recent work highlights the role of limit cycles \citep{townley2000existence, pals2024inferring} and slow invariant manifolds in sustaining analog memory representations\citep{Sagodi2024a}.
+% However, in both latent variable models and task-trained RNNs, these structures are embedded in high-dimensional, black-box dynamics, making them difficult to interpret \citep{whiteway2019interpretable,kar2022interpretability}. %obscurity
 %Asymptotic behavior is not 
 
 %The space of models for neural computation / the space of theories for neural computation
@@ -641,13 +641,6 @@ Fixed-point attractors have long been used to characterize stable memory states 
 
 %\subsection{Motifs: Recognizable geometric-topological features}
 \subsection{Dynamical Archetypes}
-%repetition with sec:ctd
-Fixed points and limit cycles are fundamental to neural computations.
-Fixed points correspond to steady-state solutions where the system’s state does not change, while limit cycles describe periodic orbits that repeat over time.
-In neural models, fixed points are often used to model persistent activity patterns, while limit cycles can be observed in oscillatory behaviors that may correspond to specific memory or decision-making processes\citep{machens2005flexible}.
-Continuous attractors, on the other hand, are critical for understanding memory in dynamical systems \citep{machens2008ca,darshan2022learning}.
-These attractors provide a set of states toward which the system evolves over time, capturing the essence of systems that store and retrieve information.
- In neuroscience, they are essential in models of continuous-position coding, where the system must maintain a range of values for memory retrieval.
 
 \begin{figure}[htbp]
     \centering
@@ -688,9 +681,7 @@ The dynamics are given by:
 \end{equation}
 where \( r \) represents the radial coordinate and \( \theta \) the angular coordinate. Here, \( v \) controls the angular velocity, and \( \alpha \) determines the dynamics of the radial direction, where the system exhibits stable behavior at \( r = 1 \). This formulation allows for exploration of the effects of rescaling on the stability and behavior of the system, both in the radial and angular components of the phase space.
 
-
-%justifications: imperfect continuous attractors
-Biases on slow ring manifold for memory maintenance of circular values \citep{panichello2019error}.
+%justifications: imperfect continuous attractorsBiases on slow ring manifold for memory maintenance of circular values \citep{panichello2019error}.
 
 \subsection{An interpretable, motif-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
 Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs. Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
