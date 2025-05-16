@@ -577,28 +577,41 @@ Since the $L$, $\norm{\vf}$, $\norm{\nabla\vf}$ are unknown in general, and the 
 % Finally, the \( L^p \) norm of the batch of Jacobians is computed, providing a scalar value that quantifies the overall local deformation across the space. A norm close to zero indicates that the transformation is nearly identity, while higher values suggest more significant deformations.
 
 \subsection{Empirical estimator: a trajectory based loss function}\label{sec:loss}
-In the scenario where we are analyzing neural trajectories from a target system without access to the vector field nor its estimate, we need to estimate the dissimilarity vector based solely on a collection of trajectories.
-
+Given a source system $\vg(\vx)$, in the scenario where we are analyzing neural trajectories from a target system without access to the underlying vector field $\vf(\cdot)$ nor its estimate, we need to estimate the dissimilarity vector and parameters based solely on a collection of trajectories.
+Suppose the trajectories are uniformly sampled at $\Delta t$ intervals, that is, we are given data of the form:
+$\mathcal{D} = \{ \vx_0, \vx_{\Delta t}$, \vx_{2\Delta t}$, \ldots, \vx_{n \Delta t}\}$.
+Define a (mean squared error) loss function for the full trajectory is,
+\begin{align}\label{eq:loss}
+    L(\theta, \beta, \mathcal{D}) &\coloneq \frac{1}{n} \sum_{i=1}^n
+	\norm{\vx_{i\Delta t} - \homeo_\theta(\phi_\vg^{i\Delta t}(\vx_0; \beta))}^2
+\end{align}
+where $\theta$ represents the parameters for the diffeomorphism class $\homeo_\theta(\cdot)$ from $\vg$ space to $\vf$ space,
+and $\beta$ are the parameters for a continuous family of $\vg(\vx; \beta)$, for example, the frequency for a standard limit cycle family.
+Let $\theta^\ast, \beta^\ast$ be the minimizers of \eqref{eq:loss}.
+$L(\theta^\ast, \beta^\ast, \mathcal{D}_{\text{train}})$ is 
+an estimator for $\bar{d}_1(\vf, \vg; c = \dcomplexity(\homeo_{\theta^\ast}))$ using the squared 2-norm.
 
 % normalizing flow\citep{kobyzev2020normalizing,papamakarios2021normalizing}, an invertible ResNet\citep{he2016deep}
-We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
+%We seek to minimize the discrepancy between the transformed trajectory and the corresponding trajectory in one of the candidate motifs.
 
-%time repraram%
-For the correct motif \( g_i \)  (satisfying orbit equivalence), there exists a reparametrization of time \( \tau(t) \) such that \(y(\tau(t)) \approx x(t)\)
-with a trajectory \( y(t) \)  obtained by integrating \( \dot{y} = g_i(y) \) from an initial condition \( y(0) \). 
-%So there exists $\mu(x)$ positive such that 
-%We simplify this by assuming symmetry across space $\mu\in\reals_{>0}$.
-A loss function capturing this trajectory discrepancy is given by:
-\begin{equation}\label{eq:loss}
-\mathcal{L}(\theta, \mu, i) = \sum_{t} \Big\| (x_k(t)) - \Phi_\theta(y_k(t)) \Big\|^2,
-\end{equation}
-where the trajectories \(y_k(t) \) are computed via numerical integration of \(\dot y =  g_i(y) \) from an initial condition $\hat y_k(0) = \Phi_\theta^{-1}(x_k(0))$. %add scaling by mu?
-%The final optimization objective is:
-%\[
-%\min_{\theta, \mu,  i} \mathcal{L}(\theta, \mu, i). % + \lambda \mathcal{R}(\Phi_\theta), %regularization? NODE\citep{finlay2020trainnode}
-%\]
-%where \( \lambda \) is a regularization coefficient.
-This formulation allows for the joint identification of both the correct motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
+
+% %time repraram%
+% For a given source \( \vg \)  (satisfying orbit equivalence), there exists a reparametrization of time \( \tau(t) \) such that \(\vy(\tau(t)) \approx \vx(t)\)
+% with a trajectory \( \phi^t(\vy(0))_{\vg} \). %  obtained by integrating \( \dot{y} = g_i(y) \) from an initial condition \( y(0) \). 
+% %So there exists $\mu(x)$ positive such that 
+% %We simplify this by assuming symmetry across space $\mu\in\reals_{>0}$.
+% An empirical estimator for $\bar{d}_1(\vf, \vg; \homeo^\ast)$
+% :A loss function capturing this trajectory discrepancy is given by:
+% \begin{equation}\label{eq:loss}
+% \mathcal{L}(\theta, \mu) = \sum_{t} \Big\| (x_k(t)) - \homeo_\theta(\vy_k(t)) \Big\|^2,
+% \end{equation}
+% where the trajectories \(y_k(t) \) are computed via numerical integration of \(\dot y =  g_i(y) \) from an initial condition $\hat y_k(0) = \Phi_\theta^{-1}(x_k(0))$. %add scaling by mu?
+% %The final optimization objective is:
+% %\[
+% %\min_{\theta, \mu,  i} \mathcal{L}(\theta, \mu, i). % + \lambda \mathcal{R}(\Phi_\theta), %regularization? NODE\citep{finlay2020trainnode}
+% %\]
+% %where \( \lambda \) is a regularization coefficient.
+% This formulation allows for the joint identification of both the correct motif \( g_i \) and the transformation \( \Phi \) that maps the observed system into its canonical form.
 
 % \subsection{Dissimilarity measure}
 % In the context of comparing dynamical systems, we define a dissimilarity measure between two vector fields \( f \) and \( g \), both of which belong to \( C^1 \).
