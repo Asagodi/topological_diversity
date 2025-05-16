@@ -343,7 +343,7 @@ This restricts their applicability in data-driven settings where only trajectory
 %\subsection{Reconstructing dynamics}\label{sec:reconstruction}
 %realization
 A central concept in comparing dynamical systems is that of \emph{realization} -- constructing a system that replicates the input-output behavior of another system\citep{grigoryeva2020dimension, gonon2023approximation}.
-A \emph{canonical} realization is the simplest system that produces the same effective behavior as a target system.
+%A \emph{canonical} realization is the simplest system that produces the same effective behavior as a target system.
 %Closely related is the notion of \emph{bisimilarity}, which formalizes behavioral equivalence through relations that match trajectories or observable outputs across systems \citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar, girard2011approximate}.
 %model identification of classes of cognitive models\citep{rmus2024artificial}
 %
@@ -505,7 +505,7 @@ Note that from \eqref{eq:h:ansatz}, we have
 \begin{align}
     \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2).
 \end{align}
-Using first-order expansion of $\vf$, we have (see Supp.Sec.~\ref{sec:fojac} for the derivation):
+Using first-order expansion of $\vf$, we have (see Supp.~Sec.~\ref{sec:fojac} for the derivation):
 \begin{align}
     \epsilon \vDelta_2(\vx) &=
 	\epsilon (\nabla\tilde\homeo(\vx)) \vf(\vx)
@@ -540,7 +540,7 @@ Note that this form matches \eqref{eq:dcomplexity} if translation is considered 
     \includegraphics[width=\linewidth]{ring_pert_fig_v2}
     \caption{Approximating deformed ring attractors. % two types of perturbations to a ring attractor that are controlled by a scalar perturbation size. 
     (\textbf{A})  The first type considers a perturbation that leaves the continuum of fixed points intact: it merely deforms the ring attractor and the transient orbits but the perturbed system is still topologically conjugate to the original. 
-    (\textbf{B}) The complexity of the mapping from the canonical motif to the target is proportional to the complexity of the diffeomorphism to deform the ring attractor (with an offset from the rescaling of the target trajectories).
+    (\textbf{B}) The complexity of the mapping from the archetype to the target is proportional to the complexity of the diffeomorphism to deform the ring attractor (with an offset from the rescaling of the target trajectories).
     (\textbf{C}) The second type is a perturbation to the vector field, which destroys the ring attractor, but the dissimilarity is small, hence the slow invariant manifold can be approximated by a ring attractor.
     (\textbf{D}) Even though the topology of the ring attractor is immediately broken, the dissimilarity is slowly growing as the fixed points along the invariant slow manifold become stronger and the perturbed ring starts to resemble a multi-fixed point system.
     }
@@ -566,7 +566,7 @@ Thus, the smallest perturbation for a given the complexity of the diffeomorphism
 	&\qquad\text{imperfection}
 	\\
 	&\quad+\vDelta_2(\vx, c)
-	&\qquad\text{covered by sub-optimal diffeomorphism}	
+	&\qquad\text{covered by sub-optimal diffeomorphism}
 	\\
 	&\quad+\vDelta_3(\vx, c)
 	&\qquad\text{remaining additive gap}
@@ -753,7 +753,7 @@ Recent work has shown that task-relevant computations are often constrained to s
 %Attractors can be further characterized by both their intrinsic and extrinsic dimensionality \citep{jazayeri2021interpreting,chaudhuri2019attractor,Sagodi2024a}. 
 
 Based on these observations, we organize archetypes in a hierarchy based on the topological dimension of their invariant manifold and dynamics on it.
-This classification provides a natural vocabulary for describing the dynamics we observe in neural systems (see Supp.Sec.~\ref{sec:library}). 
+This classification provides a natural vocabulary for describing the dynamics we observe in neural systems (see Supp.~Sec.~\ref{sec:library}). 
 The lowest-dimensional attractors in our framework are \emph{fixed points}, which correspond to isolated stable states — typical of decision-making or memory models that settle into discrete outcomes.
 One-dimensional attractors in our library include the \emph{bounded line attractor} for integration tasks, the \emph{ring attractor} for circular variables, and the \emph{limit cycle} for periodic behaviors.
 %At dimension 2, we find attractors like the plane and cylinder, representing combinations of continuous variables (e.g., two independent integrators, or a position and a phase).
@@ -777,7 +777,7 @@ Although attractors are categorized by their topological structure, the dynamics
 \dot{r} =  -r (r - 1), %r_0?\alpha
 \quad \dot{\theta} = v,
 \end{equation}
-where \( r \) represents the radial coordinate and \( \theta \) the angular coordinate and the system exhibits stable behavior at \( r = 1 \). 
+where \( r \) represents the radial coordinate and \( \theta \) the angular coordinate and the system exhibits stable behavior at \( r = 1 \).
 
 %justifications: imperfect continuous attractorsBiases on slow ring manifold for memory maintenance of circular values \citep{panichello2019error}.
 %
@@ -1144,11 +1144,11 @@ The dissimilarity measure can account for two types of variation:
 %
 %description
 We apply two different deformations to the ring attractor:
-(i) warped by diffeomorphic deformations (see Supp.Sec.~\ref{sec:homeopert_exp_description}) and 
-(ii) adding a small random perturbation to the ring attractor vector field to induce dynamics that increasingly break topological equivalence (see Supp.Sec.~\ref{sec:vfpert_exp_description}).
+(i) warped by diffeomorphic deformations (see Supp.~Sec.~\ref{sec:homeopert_exp_description}) and 
+(ii) adding a small random perturbation to the ring attractor vector field to induce dynamics that increasingly break topological equivalence (see Supp.~Sec.~\ref{sec:vfpert_exp_description}).
 
 
-We learn to map the trajectories of the ring attractor archetype using a  diffeomorphism \( \hat{\homeo}_\theta \), parameterized by a Neural ODE (NODE) \citep{chen2018neural} (for details see Supp.Sec.~\ref{sec:architectures}).
+We learn to map the trajectories of the ring attractor archetype using a  diffeomorphism \( \hat{\homeo}_\theta \), parameterized by a Neural ODE (NODE) \citep{chen2018neural} (for details see Supp.~Sec.~\ref{sec:architectures}).
 %interpretation of results
 Our method approximates the deformed ring attractor for both types of deformation, see Fig.~\ref{fig:ring_pert_fig}.
 For the diffeomorphism-type deformation, our method approximates the inverse of the diffeomorphism, up to a maximal perturbation size after which the fit quality drops (Fig.~\ref{fig:ring_pert_fig}B).
@@ -1182,7 +1182,7 @@ We test this by measuring the dissimilarity to our library of motifs to a list o
 2) an RNN trained on a velocity integration task (with a slow ring invariant manifold, see Fig.~\ref{fig:avi_rnn_recttanh}A),
 3) limit cycles (Van der Pol oscillator, Lienard sigmoid oscillator and Sel'kov oscillator)
 4) system with two bounded line attractors (2 BLAs, to which no archetype aligns well).
-See for the details of the target systems Supp.Sec.~\ref{sec:target_systems} and the experimental setup Supp.Sec.~\ref{sec:manytargets_exp_details}.
+See for the details of the target systems Supp.~Sec.~\ref{sec:target_systems} and the experimental setup Supp.~Sec.~\ref{sec:manytargets_exp_details}.
 
 
 While we recover close similarity for systems compared with their noisy version, DSA fails to identify them as similar (Fig.~\ref{fig:dsa_spe}A).
