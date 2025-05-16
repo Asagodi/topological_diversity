@@ -326,6 +326,24 @@ This restricts their applicability in data-driven settings where only trajectory
 
 %conclusion
 
+\subsection{Reconstructing dynamics}\label{sec:reconstruction}
+%realization
+A central concept in comparing dynamical systems is that of \emph{realization} -- constructing a system that replicates the input-output behavior of another system\citep{grigoryeva2020dimension, gonon2023approximation}.
+A \emph{canonical} realization is the simplest system that produces the same effective behavior as a target system.
+%Closely related is the notion of \emph{bisimilarity}, which formalizes behavioral equivalence through relations that match trajectories or observable outputs across systems \citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar, girard2011approximate}.
+%model identification of classes of cognitive models\citep{rmus2024artificial}
+
+
+%reconstruction: 
+Recent advances have sought to recover and interpret the full dynamics of complex systems from data, rather than relying solely on reduced or task-driven summaries \citep{durstewitz2023reconstructing, brenner2024almost}.
+Several approaches focus on learning continuous-time models of latent stochastic dynamical systems, enabling structured representations of uncertainty and variability in neural activity \citep{duncker2019learning}.
+For example, SSMLearn \citep{cenedese2022data} combines symbolic regression with state-space modeling to extract interpretable dynamical descriptions.
+Other methods, such as Phase2vec \citep{ricci2022phase2vec}, learn embeddings that reflect the qualitative structure of dynamical systems—e.g., fixed points, limit cycles, or phase relationships—by organizing systems in a geometry shaped by their behavior.
+Finally, MARBLE defines a similarity measure based on local vector field features (vectors and higher-order derivatives) sampled from across the phase space.
+The features are embedded into lower-dimensional space through contrastive learning, and the embedded distributions from different systems can be compared using an optimal transport distance\citep{gosztolai2025marble}.
+%covered: DFORM \citep{chen2024dform} TWA \citep{moriel2024timewarpattend} SPE \citep{friedman2025characterizing}
+
+
 
 \section{Effective Dynamics}\label{sec:effective_ds}
 \subsection{Motivation and measure of Dissimilarity}
@@ -749,22 +767,6 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 
 
 %%%
-\subsubsection{Reconstructing dynamics}\label{sec:reconstruction}
-%realization
-A central concept in comparing dynamical systems is that of \emph{realization} -- constructing a system that replicates the input-output behavior of another system\citep{grigoryeva2020dimension, gonon2023approximation}.
-A \emph{canonical} realization is the simplest system that produces the same effective behavior as a target system.
-%Closely related is the notion of \emph{bisimilarity}, which formalizes behavioral equivalence through relations that match trajectories or observable outputs across systems \citep{vanderschaft2004bisimulation, vanderschaft2004equivalence, pola2004bisimulation, pola2006equivalence, tabuada2004bisimilar, girard2011approximate}.
-%model identification of classes of cognitive models\citep{rmus2024artificial}
-
-
-%reconstruction: 
-Recent advances have sought to recover and interpret the full dynamics of complex systems from data, rather than relying solely on reduced or task-driven summaries \citep{durstewitz2023reconstructing, brenner2024almost}.
-Several approaches focus on learning continuous-time models of latent stochastic dynamical systems, enabling structured representations of uncertainty and variability in neural activity \citep{duncker2019learning}.
-For example, SSMLearn \citep{cenedese2022data} combines symbolic regression with state-space modeling to extract interpretable dynamical descriptions.
-Other methods, such as Phase2vec \citep{ricci2022phase2vec}, learn embeddings that reflect the qualitative structure of dynamical systems—e.g., fixed points, limit cycles, or phase relationships—by organizing systems in a geometry shaped by their behavior.
-Finally, MARBLE defines a similarity measure based on local vector field features (vectors and higher-order derivatives) sampled from across the phase space.
-The features are embedded into lower-dimensional space through contrastive learning, and the embedded distributions from different systems can be compared using an optimal transport distance\citep{gosztolai2025marble}.
-%covered: DFORM \citep{chen2024dform} TWA \citep{moriel2024timewarpattend} SPE \citep{friedman2025characterizing}
 
 %%dictionary of LDS
 %The decomposed Linear Dynamical System (dLDS) model represents neural activity at each time point as a sparse, time-varying linear combination of linear dynamics chosen from a dictionary of LDSs \citep{mudrik2024decomposed}.
