@@ -680,12 +680,12 @@ Although attractors are categorized by their topological structure, the dynamics
 where \( r \) represents the radial coordinate and \( \theta \) the angular coordinate. Here, \( v \) controls the angular velocity, and \( \alpha \) determines the dynamics of the radial direction, where the system exhibits stable behavior at \( r = 1 \). This formulation allows for exploration of the effects of rescaling on the stability and behavior of the system, both in the radial and angular components of the phase space.
 
 %justifications: imperfect continuous attractorsBiases on slow ring manifold for memory maintenance of circular values \citep{panichello2019error}.
-
-\subsection{An interpretable, archetype-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
-Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs.
-%Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
-%The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
-This allows us to projects the target system onto the motif library, producing a vector of distances to each motif.
+%
+%\subsection{An interpretable, archetype-centered comparison for dynamical systems}\label{sec:aut_motif_metric}
+%Building upon the dissimilarity measure defined earlier, we extend it to compare a target dynamical system with a library of motifs.
+%%Let \( f \in C^1 \) represent the vector field of the target system, and let \( g_i \) be a motif from the library. We assume the existence of a perturbation \( p \in C^1 \) and a homeomorphism \( \Phi: \mathbb{R}^n \rightarrow \mathbb{R}^n \) such that the perturbed system \( f + p \) can be aligned with the flow of \( g_i \) under \( \Phi \). 
+%%The dissimilarity between \( f \) and each motif \( g_i \) is defined as the minimal perturbation \( p \) that satisfies this alignment, expressed as \( d(f, g_i) = \inf \|p\| \).
+%This allows us to projects the target system onto the motif library, producing a vector of distances to each motif.
 
 %intuition/implication for TTRNN Plationic convergence
 % Convergence during training of RNNs: 
@@ -718,15 +718,8 @@ Together, these methods provide a basis for principled comparisons of dynamical 
 
 
 %geometry
-Methods  that compare the geometry of states in the latent space of a neural network:
-Representational Similarity Analysis (RSA)\citep{kriegeskorte2008representational},
-Canonical Components Analysis (CCA)\citep{raghu2017svcca}, 
-Procrustes Shape Distance \citep{williams2021generalized}, 
-Stochastic Shape Distance (SSD) \citep{duong2022representational}  %, a stochastic extension to Procrustes shape distance 
-\citep{barbosa2025quantifying}, 
-see also \citep{williams2024equivalence}. %comparing comparison methods
-
-Dynamical Similarity Analysis (DSA) is a recently proposed method for quantifying similarity between dynamical systems by comparing their linear approximations derived via Dynamic Mode Decomposition (DMD) \citep{ostrow2024beyond}.
+A variety of methods compare the geometry of neural representations in latent spaces, including Representational Similarity Analysis (RSA) \citep{kriegeskorte2008representational}, Canonical Correlation Analysis (CCA) \citep{raghu2017svcca}, Procrustes Shape Distance \citep{williams2021generalized}, and Stochastic Shape Distance (SSD), a probabilistic extension of Procrustes analysis \citep{duong2022representational, barbosa2025quantifying}; see also \citep{williams2024equivalence} for a broader comparison of such techniques.
+A recently proposed method, Dynamical Similarity Analysis (DSA), quantifies similarity between dynamical systems by comparing their local linearizations obtained through Dynamic Mode Decomposition (DMD) \citep{ostrow2024beyond}, thereby extending representational comparison beyond static geometry to include dynamics.
 DSA constructs a high-dimensional embedding in which a nonlinear system is approximated by a linear vector field, capturing spatiotemporally coherent structure through so-called Koopman modes. 
 %To compare systems, DSA learns a linear coordinate transformation that maximizes the cosine similarity between the vector fields of their respective linear time-invariant approximations.
 %comments:
@@ -741,8 +734,8 @@ Smooth Prototype Equivalences (SPE) aims to recover a diffeomorphism from observ
 A key limitation of all these methods is their reliance on explicit vector field representations, rather than working directly with observed trajectories.
 This restricts their applicability in data-driven settings where only trajectory data is available and the vector field is unknown or intractable to estimate.
 
-\ascomment{Comparing noisy neural population dynamics with optimal transport: metric is an extension of Procrustes shape distance which compares average trajectories and SSD which compares marginal statistics or noise correlations\citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.}
-%Comments:
+%\ascomment{Comparing noisy neural population dynamics with optimal transport: metric is an extension of Procrustes shape distance which compares average trajectories and SSD which compares marginal statistics or noise correlations\citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.}
+%%Comments:
 
 
 %Conley-Morse decomposition: ... \citep{arai2009database} \citep{kalies2017computational} \citep{chen2007vector}: periodic orbit extraction
@@ -772,9 +765,9 @@ Finally, MARBLE defines a similarity measure based on local vector field feature
 The features are embedded into lower-dimensional space through contrastive learning, and the embedded distributions from different systems can be compared using an optimal transport distance\citep{gosztolai2025marble}.
 %covered: DFORM \citep{chen2024dform} TWA \citep{moriel2024timewarpattend} SPE \citep{friedman2025characterizing}
 
-%dictionary of LDS
-The decomposed Linear Dynamical System (dLDS) model represents neural activity at each time point as a sparse, time-varying linear combination of linear dynamics chosen from a dictionary of LDSs \citep{mudrik2024decomposed}.
- In this approach, the dictionary elements, each capturing a canonical movement along the neural manifold, are combined to model the overall dynamics in the low-dimensional data geometry.
+%%dictionary of LDS
+%The decomposed Linear Dynamical System (dLDS) model represents neural activity at each time point as a sparse, time-varying linear combination of linear dynamics chosen from a dictionary of LDSs \citep{mudrik2024decomposed}.
+% In this approach, the dictionary elements, each capturing a canonical movement along the neural manifold, are combined to model the overall dynamics in the low-dimensional data geometry.
 
 %\subsubsection{Reduction}\label{sec:reduction} %simplification of dynamics
 %A major goal in dynamical systems theory is to reduce complex nonlinear dynamics.
@@ -881,15 +874,15 @@ The decomposed Linear Dynamical System (dLDS) model represents neural activity a
 
 
 \subsubsection{Interpretability in RNNs}
-Recurrent neural networks (RNNs) present unique challenges for interpretability due to their nonlinear dynamics and high-dimensional hidden states\citep{he2024multilevel}.
+%RNNs present unique challenges for interpretability due to their nonlinear dynamics and high-dimensional hidden states\citep{he2024multilevel}.
 %
-Several studies suggest that the behavior of RNNs—and, by extension, the neural systems they model—can often be captured in remarkably low-dimensional terms.
-For instance, RNNs have been shown to reproduce animal behavior in reward learning tasks using as few as 1–4 dynamical variables \citep{jian2023tinyrnn}, supporting the hypothesis that behaviorally relevant computations may reside on low-dimensional manifolds\citep{turner2023simplicity}.
-This aligns with evidence from low-rank RNN constructions \citep{beiran2021shaping, valente2022extracting, valente2022probing} and recent work on the geometry of memory organization in recurrent networks \citep{haputhanthri2025understanding}.
+%Several studies suggest that the behavior of RNNs—and, by extension, the neural systems they model—can often be captured in remarkably low-dimensional terms.
+%For instance, RNNs have been shown to reproduce animal behavior in reward learning tasks using as few as 1–4 dynamical variables \citep{jian2023tinyrnn}, supporting the hypothesis that behaviorally relevant computations may reside on low-dimensional manifolds\citep{turner2023simplicity}.
+%This aligns with evidence from low-rank RNN constructions \citep{beiran2021shaping, valente2022extracting, valente2022probing} and recent work on the geometry of memory organization in recurrent networks \citep{haputhanthri2025understanding}.
 
 %is this countering low-rank claims?Expressive architectures enhance interpretability of dynamics-based neural population models \citep{sedler2023expressive}
 
-Sparse Component Analysis (SCA) seeks interpretable factors that are sparse in time and evolve within orthogonal dimensions  \citep{zimnik2024identifying}.
+%Sparse Component Analysis (SCA) seeks interpretable factors that are sparse in time and evolve within orthogonal dimensions  \citep{zimnik2024identifying}.
 %
 Finite-state abstractions \citep{oliva2019fsm, cotteret2024fsm}, their probabilistic versions \citep{dong2020towards}, and methods for symbolic distillation such as Representations and Dynamics Distillation (RADD) \citep{schaeffer2020reverseengineering} all seek to translate continuous dynamics into intelligible, discrete states and operations.
 
@@ -1137,15 +1130,8 @@ For the vector field-type deformation, our methods, accurately identifies the lo
 %\subsection{A noisy target}\label{sec:noisy}
 
 
-\paragraph{Higher dimensions}
-Low-dimensional attractors are embedded in high-dimensional neural activity space.
-Therefore, we investigate the attractors of task-trained RNNs through our canonical motif library.
-We fit motifs to different sizes of RNNs trained on an angular velocity integration task (from \citet{Sagodi2024a}). %zero-input 
-The ring attractor motif is able to approximate both the finite (sampled trajectories) and infinite (invariant manifold) time horizon behavior of the networks (Fig. \ref{fig:avi_rnn_recttanh}).
-
-
-
-
+%\paragraph{Higher dimensions}
+To study low-dimensional attractors embedded in high-dimensional neural dynamics, we fit our canonical motif library to RNNs trained on an angular velocity integration task \citep{Sagodi2024a}. The ring attractor motif captures both the transient trajectories and the invariant manifold across network sizes (Fig.~\ref{fig:avi_rnn_recttanh}).
 
 
 \subsection{Classifying target system effective behavior}\label{sec:target_demonstrations}
