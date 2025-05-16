@@ -290,6 +290,43 @@ A notorious example is the continuous attractor dynamics~\citep{Sagodi2024a}.
 Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, we cannot avoid the issue of structurally unstable neural computations~\citep{Park2023a}.
 %Even structurally stable dynamics are known to go through bifurcations--breaking of topological conjugacy--during learning and necessarily so if the final dynamical system is not conjugate to the initial system~\citep{Doya1993-tz}.
 
+%
+\subsection{Methods to compare dynamics}\label{sec:comparison}
+%A foundational concept for the comparison of dynamics is \emph{topological conjugacy}, which formalizes the notion of two systems being dynamically equivalent under a homeomorphism that maps trajectories of one system to the other while preserving the temporal ordering (see Sec.~\ref{def:top_conj}).
+%Another key approach focuses on asymptotic behavior, particularly through the study of $\omega$-limit sets, which describe the long-term evolution of trajectories.
+%These sets help characterize the stability and attractor structure of a system and are often used to classify systems based on the geometry and topology of their invariant sets\citep{Jordan2019a}.
+%Together, these methods provide a basis for principled comparisons of dynamical systems that go beyond superficial similarity of trajectories.
+
+
+%geometry
+A variety of methods compare the geometry of neural representations in latent spaces, including Representational Similarity Analysis (RSA) \citep{kriegeskorte2008representational}, Canonical Correlation Analysis (CCA) \citep{raghu2017svcca}, Procrustes Shape Distance \citep{williams2021generalized}, and Stochastic Shape Distance (SSD), a probabilistic extension of Procrustes analysis \citep{duong2022representational, barbosa2025quantifying}; see also \citep{williams2024equivalence} for a broader comparison of such techniques.
+A recently proposed method, Dynamical Similarity Analysis (DSA), quantifies similarity between dynamical systems by comparing their local linearizations obtained through Dynamic Mode Decomposition (DMD) \citep{ostrow2024beyond}, thereby extending representational comparison beyond static geometry to include dynamics.
+DSA constructs a high-dimensional embedding in which a nonlinear system is approximated by a linear vector field, capturing spatiotemporally coherent structure through so-called Koopman modes. 
+%To compare systems, DSA learns a linear coordinate transformation that maximizes the cosine similarity between the vector fields of their respective linear time-invariant approximations.
+%comments:
+When the linearization faithfully captures the underlying Koopman eigenspectrum, this provides an estimate of how close the systems are to being topologically conjugate. 
+However, the reliance on spectral truncation can obscure critical nonlinear features—such as limit cycles, bifurcations, or multistability—that are often essential to understanding neural dynamics and computation.
+%But we can capture some slow manifold behavior!
+
+%VF
+Recent work has introduced several approaches for comparing or extracting structure from dynamical systems.
+Time-Warp-Attend (TWA) was proposed to extract topologically invariant features by augmenting data with time-warped versions of the underlying vector field \citep{moriel2024timewarpattend}. DFORM uses invertible residual networks to learn orbit-matching coordinate transformations between systems, allowing comparisons across learned dynamical models \citep{chen2024dform}. % However, its orbital similarity loss (Eq.~5) serves only as a noisy proxy for topological equivalence.
+Smooth Prototype Equivalences (SPE) aims to recover a diffeomorphism from observed data to known normal forms \citep{friedman2025characterizing}, but it has only been demonstrated on a narrow class of dynamics—specifically, comparisons between limit cycles and fixed points.
+A key limitation of all these methods is their reliance on explicit vector field representations, rather than working directly with observed trajectories.
+This restricts their applicability in data-driven settings where only trajectory data is available and the vector field is unknown or intractable to estimate.
+
+%\ascomment{Comparing noisy neural population dynamics with optimal transport: metric is an extension of Procrustes shape distance which compares average trajectories and SSD which compares marginal statistics or noise correlations\citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.}
+%%Comments:
+
+
+%Conley-Morse decomposition: ... \citep{arai2009database} \citep{kalies2017computational} \citep{chen2007vector}: periodic orbit extraction
+
+%Koopman / linear  \citep{mezic2004comparison}
+
+
+%conclusion
+
+
 \section{Effective Dynamics}\label{sec:effective_ds}
 \subsection{Motivation and measure of Dissimilarity}
 Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
@@ -695,7 +732,7 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Related work}\label{sec:background}
+%\section{Related work}\label{sec:background}
 %Our goal is to develop a framework that makes neural dynamics interpretable by grounding them in a structured theory of computation.
 %In this section, we outline how dynamical systems theory provides a formal language for describing neural computations \citep{jaeger2021theory, jaeger2023timescales, elgazzar2024universal}, review existing approaches for characterizing and comparing dynamics % such as DYNAMO \citep{cotler2023analyzing} and \citep{pagan2022dm},
 %and define the scope of our contribution across three axes: the class of computations under study, the state of the art in model reduction and system identification, and the interpretability of the resulting abstractions.
@@ -708,41 +745,6 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 %Reconstruction: Sec.~\ref{sec:reconstruction}
 %%Reduction: Sec.~\ref{sec:reduction}
 
-
-\subsubsection{Methods to compare dynamics}\label{sec:comparison}
-A foundational concept for the comparison of dynamics is \emph{topological conjugacy}, which formalizes the notion of two systems being dynamically equivalent under a homeomorphism that maps trajectories of one system to the other while preserving the temporal ordering (see Sec.~\ref{def:top_conj}).
-Another key approach focuses on asymptotic behavior, particularly through the study of $\omega$-limit sets, which describe the long-term evolution of trajectories.
-These sets help characterize the stability and attractor structure of a system and are often used to classify systems based on the geometry and topology of their invariant sets\citep{Jordan2019a}.
-Together, these methods provide a basis for principled comparisons of dynamical systems that go beyond superficial similarity of trajectories.
-
-
-%geometry
-A variety of methods compare the geometry of neural representations in latent spaces, including Representational Similarity Analysis (RSA) \citep{kriegeskorte2008representational}, Canonical Correlation Analysis (CCA) \citep{raghu2017svcca}, Procrustes Shape Distance \citep{williams2021generalized}, and Stochastic Shape Distance (SSD), a probabilistic extension of Procrustes analysis \citep{duong2022representational, barbosa2025quantifying}; see also \citep{williams2024equivalence} for a broader comparison of such techniques.
-A recently proposed method, Dynamical Similarity Analysis (DSA), quantifies similarity between dynamical systems by comparing their local linearizations obtained through Dynamic Mode Decomposition (DMD) \citep{ostrow2024beyond}, thereby extending representational comparison beyond static geometry to include dynamics.
-DSA constructs a high-dimensional embedding in which a nonlinear system is approximated by a linear vector field, capturing spatiotemporally coherent structure through so-called Koopman modes. 
-%To compare systems, DSA learns a linear coordinate transformation that maximizes the cosine similarity between the vector fields of their respective linear time-invariant approximations.
-%comments:
-When the linearization faithfully captures the underlying Koopman eigenspectrum, this provides an estimate of how close the systems are to being topologically conjugate. 
-However, the reliance on spectral truncation can obscure critical nonlinear features—such as limit cycles, bifurcations, or multistability—that are often essential to understanding neural dynamics and computation.
-%But we can capture some slow manifold behavior!
-
-%VF
-Recent work has introduced several approaches for comparing or extracting structure from dynamical systems.
-Time-Warp-Attend (TWA) was proposed to extract topologically invariant features by augmenting data with time-warped versions of the underlying vector field \citep{moriel2024timewarpattend}. DFORM uses invertible residual networks to learn orbit-matching coordinate transformations between systems, allowing comparisons across learned dynamical models \citep{chen2024dform}. % However, its orbital similarity loss (Eq.~5) serves only as a noisy proxy for topological equivalence.
-Smooth Prototype Equivalences (SPE) aims to recover a diffeomorphism from observed data to known normal forms \citep{friedman2025characterizing}, but it has only been demonstrated on a narrow class of dynamics—specifically, comparisons between limit cycles and fixed points.
-A key limitation of all these methods is their reliance on explicit vector field representations, rather than working directly with observed trajectories.
-This restricts their applicability in data-driven settings where only trajectory data is available and the vector field is unknown or intractable to estimate.
-
-%\ascomment{Comparing noisy neural population dynamics with optimal transport: metric is an extension of Procrustes shape distance which compares average trajectories and SSD which compares marginal statistics or noise correlations\citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.}
-%%Comments:
-
-
-%Conley-Morse decomposition: ... \citep{arai2009database} \citep{kalies2017computational} \citep{chen2007vector}: periodic orbit extraction
-
-%Koopman / linear  \citep{mezic2004comparison}
-
-
-%conclusion
 
 
 
