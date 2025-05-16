@@ -154,6 +154,18 @@
 \newcommand{\Hpert}{H^{\text{pert}}}
 \newcommand{\manifold}{\mathcal{M}}
 
+% space saving
+\AtBeginDocument{\setlength\abovedisplayskip{4pt}}
+\AtBeginDocument{\setlength\belowdisplayskip{4pt}}
+\AtBeginDocument{\setlength{\intextsep}{9pt}} % Vertical space above & below [h] floats
+\AtBeginDocument{\setlength{\textfloatsep}{9pt}} % Vertical space below (above) [t] ([b]) floats
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
+\widowpenalty=10000
+\clubpenalty=10000
+\usepackage[compact]{titlesec}
+\titlespacing*{\section}{0pt}{2pt plus 2pt minus 2pt}{2pt plus 2pt minus 2pt}
+\titlespacing*{\subsection}{0pt}{2pt plus 2pt minus 2pt}{0pt}
 
 %\title{Interpretable attractor motifs for a new language for neural computation}
 %\title{Attractor motifs for an interpretable language for working memory-type neural computation}
