@@ -1227,9 +1227,14 @@ As Popper put it, ``Science may be described as the art of systematic over-simpl
 We propose to omit details between systems in the asymptotic time scale by characterizing the effective behavior of a neural system.
 Although we have only analyzed working memory, the approach can be extended to input-driven, or even embodied systems that interact with an environment.
 
-The space of theories for neural computation corresponds to the space of possible dynamical systems the brain might instantiate—a vast landscape.
-Our method provides a means to chart regions of this space relevant for memory maintenance by identifying and parametrizing recurrent computations in a human-interpretable way.
-This enables us to isolate families of dynamical motifs that serve as building blocks for memory-related neural dynamics.
+The space of theories for neural computation corresponds to the space of possible autonomous dynamical systems the brain might instantiate--a vast landscape.
+Our method provides a means to chart regions of this space relevant for working memory maintenance by identifying and parametrizing recurrent computations in a human-interpretable way.
+
+\textbf{Limitations:}
+Compared to state-of-the-art methods, our approach is computationally more demanding, due to the requirement for learning the nonlinear diffeomorphism, however, this comes with better performance as well as interpretability.
+Another limitation is that the archetypes are not compositional in the present form, making it difficult to systematically expand the space of neural computation.
+
+%This enables us to isolate families of dynamical motifs that serve as building blocks for memory-related neural dynamics.
 %It accommodates both infinite-horizon systems and finite-horizon systems like echo state networks, highlighting that time-limited trajectories may obscure deeper structural distinctions only visible in the full vector field.
 
 % though our method is computationally more demanding, yet brings better interpretability.
@@ -1239,7 +1244,6 @@ This enables us to isolate families of dynamical motifs that serve as building b
 %Assumption: the invariant set of the target needs to be well-sampled.
 %
 %%Main shortcoming: difficulty with dealing with complex attractors.
-%%main limitation: slow?
 %
 %% When is decomposition of attractor into motifs possible?
 %% The archetypes are not quite compositional in the present form.
