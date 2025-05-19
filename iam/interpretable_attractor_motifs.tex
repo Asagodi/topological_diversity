@@ -1618,21 +1618,39 @@ J_{\Phi}(x) = \left[ \frac{\partial \Phi_i}{\partial x_j}(x) \right]_{i,j}.
 \]
 
 \paragraph{Matrix norm of the Jacobian at a point \( x \).} Typically, we use either the operator norm (e.g., induced 2-norm) or the Frobenius norm:
-\[
+\begin{equation}
 \|J_{\Phi}(x)\| :=
-\begin{cases}
-\|J_{\Phi}(x)\|_2 & \text{(spectral/operator norm)} \\
-\|J_{\Phi}(x)\|_F = \left( \sum_{i,j} \left| \frac{\partial \Phi_i}{\partial x_j}(x) \right|^2 \right)^{1/2} & \text{(Frobenius norm)}.
-\end{cases}
-\]
+\left\{
+\begin{aligned}
+\|J_{\Phi}(x)\|_{\mathrm{op}} &= \|J_{\Phi}(x)\|_2 = \sigma_{\max}(J_{\Phi}(x)) && \text{(spectral/operator norm)} \\
+\|J_{\Phi}(x)\|_F &= \left( \sum_{i,j} \left| \frac{\partial \Phi_i}{\partial x_j}(x) \right|^2 \right)^{1/2} && \text{(Frobenius norm)}
+\end{aligned}
+\right.
+\end{equation}
 
-\paragraph{Norm of Jacobian at a point \( x \) minus the identity.}
-\(\|J_{\Phi}(x) - \mathbb{I}\| \)
 
-\paragraph{Operator \( L^p \) norm of the Jacobian over a domain \( \Omega \subseteq \mathbb{R}^n \), with respect to a measure \( \mu \):}
+\paragraph{Measuring Deformation Relative to the Identity Map.}
+To quantify how much a diffeomorphism \( \Phi: \mathbb{R}^n \to \mathbb{R}^n \) deviates from the identity map, we analyze how much its Jacobian matrix \( J_{\Phi}(x) \) deviates from the identity matrix.
+We capture the local deviation of the diffeomorphism from the identity map at point \( x \in \mathbb{R}^n \) by calculating:
 \[
-\|J_{\Phi}\|_{L^p(\mu)} = \left( \int_{\Omega} \|J_{\Phi}(x)\|^p \, d\mu(x) \right)^{1/p}.
+\|J_{\Phi}(x) - \mathbb{I}\|.
 \]
+When this norm is small, \( \Phi \) is locally close to the identity, meaning that it minimally stretches, rotates, or shears the space at that point.
+
+To quantity measures the average deviation of the diffeomorphism from the identity map over a domain \( \Omega \subseteq \mathbb{R}^n \), with respect to a measure \( \mu \), we calculate: 
+\[
+\|J_{\Phi} - \mathbb{I}\|_{L^p(\mu)} := \left( \int_{\Omega} \|J_{\Phi}(x) - \mathbb{I}\|^p \, d\mu(x) \right)^{1/p}.
+\]
+ It reflects how much, on average, the transformation expands, contracts, or twists space away from the identity. 
+
+Here, the domain \( \Omega \subseteq \mathbb{R}^n \) is taken to be the set of all trajectory points from a collection of dynamical systems. That is, \( \Omega \) consists of states 
+\[
+\{ \mathbf{x}_0^j, \mathbf{x}_{\Delta t}^J, \ldots, \mathbf{x}_{n \Delta t}^j \}
+\]
+for trajectories $j=1, \dots B$.
+The measure \( \mu \)  corresponds to a uniform weighting over these points.
+This norm captures the average deviation from the identity across the dynamic range of the system and is useful for regularizing global deformation induced by \( \Phi \).
+
 
 
 %
