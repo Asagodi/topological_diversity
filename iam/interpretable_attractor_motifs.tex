@@ -1583,31 +1583,31 @@ Neural ordinary differential equations (NODEs) are being increasingly adopted in
 %Conjugate Mappings \citep{bramburger2021conjugate}
 
 
-\subsubsection{Decomposing diffeomorphisms}\label{sec:diff_dec}
-\paragraph{Lie}
-Since diffeomorphisms form a Lie group under composition, a diffeomorphism 
-\( f \) can be written formally as:
-\[
-f = \exp(X),
-\]
-where \( X \) is a vector field (i.e., an element of the Lie algebra of the diffeomorphism group).
-Expanding \( X \) in a Fourier basis:
-\[
-X(x) = \sum_k \hat{X}(k) e^{i k \cdot x}
-\]
-provides a Fourier-like decomposition of the infinitesimal generator.
-
-%\paragraph{}
-A simple sufficient condition for a family of flows on a smooth compact manifold $M$ to generate the group $\Diff0_(M)$ of all diffeomorphisms of $M$ that are isotopic to the identity \citep{caponigro2010families}.
+%\subsubsection{Decomposing diffeomorphisms}\label{sec:diff_dec}
+%\paragraph{Lie}
+%Since diffeomorphisms form a Lie group under composition, a diffeomorphism 
+%\( f \) can be written formally as:
+%\[
+%f = \exp(X),
+%\]
+%where \( X \) is a vector field (i.e., an element of the Lie algebra of the diffeomorphism group).
+%Expanding \( X \) in a Fourier basis:
+%\[
+%X(x) = \sum_k \hat{X}(k) e^{i k \cdot x}
+%\]
+%provides a Fourier-like decomposition of the infinitesimal generator.
 %
-Stability of diffeomorphisms implies that $\Diff(M)\subset C^1(M,M)$  is an open subset.
-
-
-\subsubsection{Implementations}
-Freia\citep{freia} %https://github.com/vislearn/FrEIA
-Torchdiffeq: \citep{torchdiffeq}
-NF\citep{dinh2016density} % https://github.com/AxelNathanson/pytorch-normalizing-flows?tab=readme-ov-file
-\citep{stimper2023normflows} % https://github.com/VincentStimper/normalizing-flows
+%%\paragraph{}
+%A simple sufficient condition for a family of flows on a smooth compact manifold $M$ to generate the group $\Diff0_(M)$ of all diffeomorphisms of $M$ that are isotopic to the identity \citep{caponigro2010families}.
+%%
+%Stability of diffeomorphisms implies that $\Diff(M)\subset C^1(M,M)$  is an open subset.
+%
+%
+%\subsubsection{Implementations}
+%Freia\citep{freia} %https://github.com/vislearn/FrEIA
+%Torchdiffeq: \citep{torchdiffeq}
+%NF\citep{dinh2016density} % https://github.com/AxelNathanson/pytorch-normalizing-flows?tab=readme-ov-file
+%\citep{stimper2023normflows} % https://github.com/VincentStimper/normalizing-flows
 
 
 
