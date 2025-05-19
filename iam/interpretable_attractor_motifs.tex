@@ -2097,7 +2097,7 @@ Regions that remain coherent and relatively nondispersive over finite periods of
 
 \newpage
 \section{Interpretability}
-Interpretability is ofter used, yet is typically not defined in computational neuroscience\citep{Zhao2016d, duncker2019learning}.
+Interpretability is often used, yet is typically not defined in computational neuroscience\citep{Zhao2016d, duncker2019learning}.
 %
 These works mention interpretability:
 \begin{itemize}
@@ -2581,29 +2581,29 @@ See also Supp.Sec.~\ref{sec:homeopert_exp_description}.
 
 \begin{table}[h]
 \centering
-\caption{Experimental parameters for the homeomorphism-based perturbation experiment.}
+\caption{Experimental parameters for the deformed ring attractor experiment.}
 \label{tab:perthomeo_params}
-\begin{tabular}{ll}
+\begin{tabular}{p{5cm}p{6cm}}
 \toprule
-\textbf{Category} & \textbf{Parameter (Value)} \\
+\textbf{Category} & \textbf{Parameters} \\
 \midrule
 %\multirow{4}{*}{General} 
 %    & Random seed: \texttt{313} \\
 %   % & Save directory: \texttt{homeopert\_ring} \\
 %    %& Dynamical system motif: \texttt{ring} \\
 %\midrule
-\multirow{5}{*}{Target Homeomorphism} 
+\multirow{4}{*}{ } 
     & Type: Neural ODE \\
-    & Hidden layers: \texttt{[128]} \\
-    & Activation: \texttt{ReLU} \\
-    & Initialization: weights sampled from $\mathcal{N})(0.02,0.5)$ \\
+Target Deformation:    & Hidden layers: \texttt{[128]} \\
+Random diffeomorphism    & Activation: \texttt{ReLU} \\
+    & MLP weight initialization  $\sim\mathcal{N}(0.02,0.5)$ \\
 \midrule
 \multirow{3}{*}{Learned Homeomorphism} 
     & Type: Neural ODE \\
     & Hidden layers: \texttt{[128]} \\
     & Activation: \texttt{ReLU} \\
 \midrule
-\multirow{5}{*}{Dynamical System \& Simulation} %add AnalyticalDS?
+\multirow{5}{*}{Simulation for target trajectories} %add AnalyticalDS?
     & Time step for integration: $dt=0.2$ \\
     & Time span: \texttt{[0, 2]} \\
     %& Noise standard deviation: \texttt{0.0} \\
@@ -2632,6 +2632,34 @@ See also Supp.Sec.~\ref{sec:homeopert_exp_description}.
 \subsection{Vector field-based perturbation experiment}\label{sec:vfpert_exp_details}
 See also Supp.Sec.~\ref{sec:vfpert_exp_description}.
 
+\begin{table}[h]
+\centering
+\caption{Experimental parameters for the vector field perturbed ring attractor experiment.}
+\label{tab:vfpert_params}
+\begin{tabular}{p{5cm}p{6cm}}
+\toprule
+\textbf{Category} & \textbf{Parameters} \\
+\multirow{1}{*}{Perturbation} 
+    & $\|p\|$ range [0,0.15] (steps of 0.01) \\
+\midrule
+\multirow{3}{*}{Learned Homeomorphism} 
+    & Type: Neural ODE \\
+    & Hidden layers: \texttt{[128]} \\
+    & Activation: \texttt{ReLU} \\
+\midrule
+\multirow{5}{*}{Simulation for target trajectories} 
+    & Time step for integration: $dt=0.05$ \\
+    & Time span: \texttt{[0, 5]} \\
+    & Number of trajectories: 50 \\
+    & Train/test split ratio: 0.8-0.2 \\
+\midrule
+\multirow{3}{*}{Training} 
+    & Learning rate:  0.01 \\
+    & Epochs: 1000 \\
+    & Batch size: 32 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Many targets}\label{sec:manytargets_exp_details}
 
