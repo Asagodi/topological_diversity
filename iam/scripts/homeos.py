@@ -663,6 +663,79 @@ def jacobian_norm_over_batch(
     return norms.pow(p).mean().pow(1 / p)
 
 
+def spectral_norm_jacobian(
+    phi: Callable, 
+    x: torch.Tensor, 
+    n_iter: int = 10
+) -> torch.Tensor:
+    """
+    Approximate the operator norm ||Dφ(x)|| using power iteration.
+
+    Args:
+        phi: A function from R^N to R^M (batched).
+        x: Tensor of shape (B, T, N) — batch of trajectories.
+        n_iter: Number of power iterations.
+
+    Returns:
+        Estimated mean operator norm across (B * T) points.
+    """
+    B, T, N = x.shape
+    x_flat = x.view(-1, N).detach().requires_grad_(True)  # (B*T, N)
+
+    # Initialize random direction v
+    v = torch.randn_like(x_flat)
+    v = v / (v.norm(dim=1, keepdim=True) + 1e-6)
+
+    for _ in range(n_iter):
+        # Compute Jv
+        _, jv = torch.autograd.functional.jvp(phi, (x_flat,), (v,), create_graph=True)
+
+        # Normalize jv to get u
+        u = jv / (jv.norm(dim=1, keepdim=True) + 1e-6)
+
+        # Compute Jᵗu
+        jtv = torch.autograd.grad(
+            outputs=phi(x_flat),
+            inputs=x_flat,
+            grad_outputs=u,
+            create_graph=True,
+            retain_graph=True
+        )[0]
+
+        # Normalize jtv to get new v
+        v = jtv / (jtv.norm(dim=1, keepdim=True) + 1e-6)
+
+    # Final estimate of ||Jv||
+    _, jv = torch.autograd.functional.jvp(phi, (x_flat,), (v,), create_graph=True)
+    op_norm = jv.norm(dim=1)  
+
+    return op_norm.mean()
+
+
+def jacobian_frobenius_norm(phi: Callable, x: torch.Tensor) -> torch.Tensor:
+    """
+    Compute the average Frobenius norm of the Jacobian J_phi(x) over a batch of trajectory points.
+
+    Args:
+        phi: A function from R^N to R^M (batched).
+        x: Tensor of shape (B, T, N) — batch of trajectories.
+
+    Returns:
+        Scalar tensor: mean Frobenius norm of Jacobians across (B * T) points.
+    """
+    B, T, N = x.shape
+    x_flat = x.view(-1, N).detach().requires_grad_(True)
+    fro_sq = 0.0
+
+    for i in range(N):
+        v = torch.zeros_like(x_flat)
+        v[:, i] = 1.0
+        _, jvp_result = torch.autograd.functional.jvp(phi, (x_flat,), (v,), create_graph=True)
+        fro_sq += (jvp_result ** 2).sum(dim=1)  # ||column_i||^2
+
+    fro_norm = fro_sq.sqrt().mean()  # average Frobenius norm
+    return fro_norm
+
 
 
 
