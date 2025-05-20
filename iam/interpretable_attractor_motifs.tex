@@ -2551,7 +2551,7 @@ The Li\'enard sigmoid model is a nonlinear oscillator system incorporating a sig
 \subsection{Approximate ring attractors}
 %\subsubsection{Line attractor}
 
-\subsubsection{Ring attractor}
+%\subsubsection{Ring attractor}
 \begin{figure}[htbp]
     \centering
     \begin{subfigure}[b]{0.48\linewidth}
@@ -2729,6 +2729,7 @@ Optimizer: Adam \citep{kingma2014adam}
 %\subsubsection{Validation data}
 %\subsubsection{Regularization}
 
+\subsection{Data centering and normalization}
 
 
 
@@ -2834,19 +2835,68 @@ See also Supp.Sec.~\ref{sec:vfpert_exp_description}.
 
 
 \subsubsection{Invariant manifold}
+For the existing archetypes the attractive invariant manifold is defined by design.
 
 
-\paragraph{Hausdorff distance}
-\[
-d_H(A, B) = \max\left\{ \sup_{a \in A} \inf_{b \in B} \|a - b\|, \sup_{b \in B} \inf_{a \in A} \|b - a\| \right\}
-\]
-
+%\paragraph{Hausdorff distance}
+%\[
+%d_H(A, B) = \max\left\{ \sup_{a \in A} \inf_{b \in B} \|a - b\|, \sup_{b \in B} \inf_{a \in A} \|b - a\| \right\}
+%\]
+%
 
 
 
 
 \newpage
 \section{Results}
+\subsection{Ring attractor experiments}
+\subsubsection{Deformed ring attractor}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{deformed_both_trajectories_asy}
+    \caption{Our method applied to the intermediate interpolation values for the deformed ring attractor as shown in Fig.~\ref{fig:ring_pert_fig}A and described in 
+	Supp.Sec.~\ref{sec:homeopert_exp_description}.
+	Both the trajectories and the invariant manifolds are well-approximated. 
+	For a large deformation, the invariant manifold does not match the target any more (last subfigure).
+	The interpolation and the complexity are shown above each plot.
+     }
+    \label{fig:deformed_both_trajectories_asy}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{deformed_both_trajectories_asy_spe}
+    \caption{The Smooth Prototype Equivalences method applied to the deformed ring attractor as described in Supp.Sec.~\ref{sec:homeopert_exp_description}.
+     }
+    \label{fig:deformed_both_trajectories_asy_spe}
+\end{figure}
+
+
+
+
+\FloatBarrier
+\subsubsection{Perturbed ring attractor}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{perturbed_both_trajectories_asy}
+    \caption{Our method applied to the intermediate interpolation values for the perturbed ring attractor as shown in Fig.~\ref{fig:ring_pert_fig}C and described in 
+	Supp.Sec.~\ref{sec:vfpert_exp_description}.
+	Both the trajectories and the invariant manifolds are well-approximated.
+     }
+    \label{fig:perturbed_both_trajectories_asy}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{perturbed_both_trajectories_asy_spe}
+    \caption{The Smooth Prototype Equivalences method applied to the deformed ring attractor as described in Supp.Sec.~\ref{sec:vfpert_exp_description}.
+     }
+    \label{fig:perturbed_both_trajectories_asy_spe}
+\end{figure}
+
+
+
+\FloatBarrier
 \subsection{Task trained RNNs}
 To study low-dimensional attractors embedded in high-dimensional neural dynamics, we fit our canonical motif library to RNNs trained on an angular velocity integration task \citep{Sagodi2024a}. The ring attractor motif captures both the transient trajectories and the invariant manifold across network sizes (Fig.~\ref{fig:avi_rnn_recttanh}).
 
