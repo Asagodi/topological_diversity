@@ -11,6 +11,7 @@
 \usepackage{forloop}
 \usepackage[pdftex]{graphicx}  %remove demo option in your document
 \usepackage{sidecap}
+\usepackage{subcaption} % subfigures
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{enumerate}
@@ -2366,7 +2367,7 @@ with $x\in \reals^{D}$ where $D=\sum_i^N D_i$.
 We describe the target systems.
 
 We also consider a stochastic version of some target system with additive Gaussian noise:
-\begin{equation}
+\begin{equation}\label{eq:sde}
 d\mathbf{x}(t) = f(\mathbf{x}(t), t)\,dt + \sigma\,d\mathbf{W}(t),
 \end{equation}
 where $\mathbf{W}(t)$ denotes a standard Wiener process and $\sigma = 0.75$ is the diffusion coefficient.
@@ -2394,22 +2395,27 @@ Unless otherwise specified, we set $\mu=0.3$.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=.5\linewidth]{vdp_vf_trajs}
-    \caption{
-     }
-    \label{fig:vdp_vf_trajs}
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{vdp_vf_trajs}
+        \caption{Deterministic}
+        \label{fig:sub_clean}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{vdpnoisy_vf_trajs}
+        \caption{Noisy}
+        \label{fig:sub_noisy}
+    \end{subfigure}
+    \caption{Deterministic and noisy Van der Pol systems.}
+    \label{fig:combined_vdp}
 \end{figure}
 
-\paragraph{Noisy variant}  
-We set $\sigma = 0.75$ for the diffusion coefficient.
+\paragraph{Noisy Van der Pol}  
+We set $\sigma = 0.75$ for the diffusion coefficient (Eq.~\ref{eq:sde}).
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=.5\linewidth]{vdpnoisy_vf_trajs}
-    \caption{
-     }
-    \label{fig:vdpnoisy_vf_trajs}
-\end{figure}
+
 
 %MOVE TO RESULTS?
 %\begin{figure}[htbp]
