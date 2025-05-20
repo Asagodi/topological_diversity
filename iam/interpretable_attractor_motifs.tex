@@ -12,6 +12,7 @@
 \usepackage[pdftex]{graphicx}  %remove demo option in your document
 \usepackage{sidecap}
 \usepackage{subcaption} % subfigures
+\usepackage{placeins}      %forcing figure placement
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{enumerate}
@@ -2399,17 +2400,17 @@ Unless otherwise specified, we set $\mu=0.3$.
         \centering
         \includegraphics[width=\linewidth]{vdp_vf_trajs}
         \caption{Deterministic}
-        \label{fig:sub_clean}
+        \label{fig:vdp_vf_trajs}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.48\linewidth}
         \centering
         \includegraphics[width=\linewidth]{vdpnoisy_vf_trajs}
         \caption{Noisy}
-        \label{fig:sub_noisy}
+        \label{fig:vdpnoisy_vf_trajs}
     \end{subfigure}
     \caption{Deterministic and noisy Van der Pol systems.}
-    \label{fig:combined_vdp}
+    \label{fig:vdp}
 \end{figure}
 
 \paragraph{Noisy Van der Pol}  
@@ -2439,13 +2440,13 @@ The Selkov model, introduced in 1968 by E.E. Selkov, is a foundational mathemati
 \end{equation}
 %Used in \citep{friedman2025characterizing}.
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=.5\linewidth]{selkov_vf_trajs}
-    \caption{
-     }
-    \label{fig:selkov_vf_trajs}
-\end{figure}
+%\begin{figure}[htbp]
+%    \centering
+%    \includegraphics[width=.5\linewidth]{selkov_vf_trajs}
+%    \caption{
+%     }
+%    \label{fig:selkov_vf_trajs}
+%\end{figure}
 
 \subsubsection{Li\'enard sigmoid}
 The Li\'enard sigmoid model is a nonlinear oscillator system incorporating a sigmoid function in its restoring force
@@ -2457,13 +2458,33 @@ The Li\'enard sigmoid model is a nonlinear oscillator system incorporating a sig
 \end{equation}
 % Used in \citep{friedman2025characterizing}. % + TWA
 
+%\begin{figure}[htbp]
+%    \centering
+%    \includegraphics[width=.5\linewidth]{lienard_vf_trajs}
+%    \caption{
+%     }
+%    \label{fig:lienard_vf_trajs}
+%\end{figure}
+
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=.5\linewidth]{lienard_vf_trajs}
-    \caption{
-     }
-    \label{fig:lienard_vf_trajs}
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{selkov_vf_trajs}
+        \caption{Selkov system}
+        \label{fig:selkov_vf_trajs}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{lienard_vf_trajs}
+        \caption{Lienard system}
+        \label{fig:lienard_vf_trajs}
+    \end{subfigure}
+    \caption{Vector fields and trajectories of Sel'kov and Li\'enard systems.}
+    \label{fig:selkov_lienard_combined}
 \end{figure}
+
 
 %\subsubsection{BZ reaction}
 %\begin{equation}
@@ -2478,30 +2499,32 @@ The Li\'enard sigmoid model is a nonlinear oscillator system incorporating a sig
 %Therefore, we choose $\rho=313, \sigma=10, \beta=\tfrac{8}{3}$.
 
 
-
+\FloatBarrier
 \subsection{Approximate ring attractors}
 %\subsubsection{Line attractor}
 
-\subsubsection{Deterministic ring attractor}
+\subsubsection{Ring attractor}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=.5\linewidth]{ra_vf_trajs}
-    \caption{
-     }
-    \label{fig:ra_vf_trajs}
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{ra_vf_trajs}
+        \caption{Deterministic}
+        \label{fig:ra_vf_trajs}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{ranoisy_vf_trajs}
+        \caption{Noisy}
+        \label{fig:ranoisy_vf_trajs}
+    \end{subfigure}
+    \caption{Deterministic and noisy Van der Pol systems.}
+    \label{fig:ra}
 \end{figure}
 
-
-\subsubsection{Noisy ring attractor}
-We set $\sigma = 0.25$ for the diffusion coefficient.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=.5\linewidth]{ranoisy_vf_trajs}
-    \caption{
-     }
-    \label{fig:ranoisy_vf_trajs}
-\end{figure}
+\paragraph{Noisy ring attractor}
+We set $\sigma = 0.25$ for the diffusion coefficient (Eq.~\ref{eq:sde}).
 
 
 %\subsubsection{Ring attractor}
