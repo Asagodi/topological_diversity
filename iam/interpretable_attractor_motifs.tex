@@ -2149,6 +2149,15 @@ The \emph{Bistable} archetype used in the experiments is defined as
 \dot x = - (x^3 - x).
 \end{equation}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.5\linewidth]{bistable_system}
+    \caption{The \emph{Bistable} archtype system's vector field and used trajectories to train and evaluate.
+     }
+    \label{fig:bistable_system}
+\end{figure}
+
+
 %PFTop
 %\subsection{Fixed-point toplogy}\label{sec:fpt}
 %We implementing any fixed-point topology dynamics in the following way.
@@ -2354,16 +2363,16 @@ with $x\in \reals^{D}$ where $D=\sum_i^N D_i$.
 
 
 %\subsubsection{Examples of composite systems}
-\subsubsection{Two Bounded Line Attractors}
+%\subsubsection{Two Bounded Line Attractors}
 %BLA+ Bistable
-The composite system we use for the experiments is the \emph{Two Bounded Line Attractors} (2 BLAs) system, which is the composite of the \emph{Bistable} and \emph{Bounded Line Attractor} archtypes.
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=.5\linewidth]{twoblas_system}
-    \caption{The \emph{Two Bounded Line Attractors} system's vector field and used trajectories to train and evaluate.
-     }
-    \label{fig:twoblas_system}
-\end{figure}
+%The composite system we use for the experiments is the \emph{Two Bounded Line Attractors} (2 BLAs) system, which is the composite of the \emph{Bistable} and \emph{Bounded Line Attractor} archtypes.
+%\begin{figure}[htbp]
+%    \centering
+%    \includegraphics[width=.5\linewidth]{twoblas_system}
+%    \caption{The \emph{Two Bounded Line Attractors} system's vector field and used trajectories to train and evaluate.
+%     }
+%    \label{fig:twoblas_system}
+%\end{figure}
 
 
 %\paragraph{Torus}
@@ -2553,7 +2562,7 @@ We set $\sigma = 0.25$ for the diffusion coefficient (Eq.~\ref{eq:sde}).
 %\subsubsection{Ring attractor}
 \subsubsection{Homeomorphism based perturbation}\label{sec:homeopert_exp_description}
 We sample trajectories from a ring attractor $\{x(t)\}_i^0$ by integrating the ring attractor, Eq.~\ref{eq:ra}.
-The initial points are sampled randomly in the annulus .5 away from the ring attractor (which is the circle with radius 1).
+The initial points are sampled randomly in the annulus 0.5 away from the ring attractor (which is the circle with radius 1).
 %
 We define a random homeomorphism $\Phi_1$ by randomly setting the weights of a Neural ODE.
 %
@@ -2578,6 +2587,18 @@ The resulting perturbed vector field is then numerically integrated resulting in
 %
 See for further details  Supp.Sec.~\ref{sec:vfpert_exp_details}.
 
+
+
+\subsection{Two Bounded Line Attractors}
+%BLA+ Bistable
+The composite system we use for the experiments is the \emph{Two Bounded Line Attractors} (2 BLAs) system, which is the composite of the \emph{Bistable} and \emph{Bounded Line Attractor} archtypes.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.5\linewidth]{twoblas_vf_trajs}
+    \caption{The \emph{Two Bounded Line Attractors} system's vector field and used trajectories to train and evaluate.
+     }
+    \label{fig:twoblas_vf_trajs}
+\end{figure}
 
 
 
