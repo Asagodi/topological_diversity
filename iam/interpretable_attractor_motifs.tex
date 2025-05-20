@@ -36,7 +36,7 @@
 \newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
 \newcommand{\ascomment}[1]{\textcolor{ascolor}{(#1)}}
 
-\graphicspath{{figures/}{experiments/all_targets/figures/}}
+\graphicspath{{figures/}{figures/all_targets}}
 
 
 \newtheorem{theorem}{Theorem}
@@ -2363,8 +2363,13 @@ with $x\in \reals^{D}$ where $D=\sum_i^N D_i$.
 %%%%%%
 \newpage
  \section{Target systems}\label{sec:target_systems}
-% Time points: ...
-% Trajectories: 50
+We describe the target systems.
+
+We also consider a stochastic version of some target system with additive Gaussian noise:
+\begin{equation}
+d\mathbf{x}(t) = f(\mathbf{x}(t), t)\,dt + \sigma\,d\mathbf{W}(t),
+\end{equation}
+where $\mathbf{W}(t)$ denotes a standard Wiener process and $\sigma = 0.75$ is the diffusion coefficient.
 
 \subsection{Limit cycles}
 %\subsubsection{Random diffeomorphism of a limit cycle}
@@ -2396,15 +2401,11 @@ Unless otherwise specified, we set $\mu=0.3$.
 \end{figure}
 
 \paragraph{Noisy variant}  
-We also consider a stochastic version of the system with additive Gaussian noise:
-\[
-d\mathbf{x}(t) = f(\mathbf{x}(t), t)\,dt + \sigma\,d\mathbf{W}(t),
-\]
-where $\mathbf{W}(t)$ denotes a standard Wiener process and $\sigma = 0.75$ is the diffusion coefficient.
+We set $\sigma = 0.75$ for the diffusion coefficient.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=.5\linewidth]{vdp_vf_trajs}
+    \includegraphics[width=.5\linewidth]{vdpnoisy_vf_trajs}
     \caption{
      }
     \label{fig:vdpnoisy_vf_trajs}
@@ -2432,13 +2433,13 @@ The Selkov model, introduced in 1968 by E.E. Selkov, is a foundational mathemati
 \end{equation}
 %Used in \citep{friedman2025characterizing}.
 
-%\subsubsection{BZ reaction}
-%\begin{equation}
-%\begin{aligned}
-%\dot{x} &= a - x - \frac{4xy}{1+x^2}, \\
-%\dot{y} &= bx \frac{1-y}{1+x^2}.
-%\end{aligned}
-%\end{equation}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.5\linewidth]{selkov_vf_trajs}
+    \caption{
+     }
+    \label{fig:selkov_vf_trajs}
+\end{figure}
 
 \subsubsection{Li\'enard sigmoid}
 The Li\'enard sigmoid model is a nonlinear oscillator system incorporating a sigmoid function in its restoring force
@@ -2450,6 +2451,22 @@ The Li\'enard sigmoid model is a nonlinear oscillator system incorporating a sig
 \end{equation}
 % Used in \citep{friedman2025characterizing}. % + TWA
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.5\linewidth]{lienard_vf_trajs}
+    \caption{
+     }
+    \label{fig:lienard_vf_trajs}
+\end{figure}
+
+%\subsubsection{BZ reaction}
+%\begin{equation}
+%\begin{aligned}
+%\dot{x} &= a - x - \frac{4xy}{1+x^2}, \\
+%\dot{y} &= bx \frac{1-y}{1+x^2}.
+%\end{aligned}
+%\end{equation}
+
 %\subsubsection{Lorenz stable limit cycle} %3D
 %If $\rho>313$, then the global attractor in the Lorenz system\citep{lorenz1963deterministic} is a stable limit cycle\citep{gaiko2014global}.
 %Therefore, we choose $\rho=313, \sigma=10, \beta=\tfrac{8}{3}$.
@@ -2459,6 +2476,26 @@ The Li\'enard sigmoid model is a nonlinear oscillator system incorporating a sig
 \subsection{Approximate ring attractors}
 %\subsubsection{Line attractor}
 
+\subsubsection{Deterministic ring attractor}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.5\linewidth]{ra_vf_trajs}
+    \caption{
+     }
+    \label{fig:ra_vf_trajs}
+\end{figure}
+
+
+\subsubsection{Noisy ring attractor}
+We set $\sigma = 0.25$ for the diffusion coefficient.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.5\linewidth]{ranoisy_vf_trajs}
+    \caption{
+     }
+    \label{fig:ranoisy_vf_trajs}
+\end{figure}
 
 
 %\subsubsection{Ring attractor}
