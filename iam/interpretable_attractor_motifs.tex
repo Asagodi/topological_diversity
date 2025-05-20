@@ -2486,6 +2486,8 @@ The Selkov model, introduced in 1968 by E.E. Selkov, is a foundational mathemati
 \dot{y} &= b - ay - x^2y.
 \end{aligned}
 \end{equation}
+We set $a= 0.05$ and $b=0.5$. 
+
 %Used in \citep{friedman2025characterizing}.
 
 %\begin{figure}[htbp]
@@ -2504,6 +2506,7 @@ The Li\'enard sigmoid model is a nonlinear oscillator system incorporating a sig
 \dot{y} &= - (1+e^{-ax})^{-1} + \tfrac{1}{2} - bx^2y.
 \end{aligned}
 \end{equation}
+We set $a= 1.5$ and $b=-0.5$. 
 % Used in \citep{friedman2025characterizing}. % + TWA
 
 %\begin{figure}[htbp]
@@ -2732,6 +2735,11 @@ Optimizer: Adam \citep{kingma2014adam}
 \subsection{Data centering and normalization}
 
 
+\subsection{Training and validation split}
+The data was split into a training and test set with a ratio 0.8:0.2.
+
+
+
 
 \newpage
 \section{Experiments}
@@ -2823,6 +2831,22 @@ See also Supp.Sec.~\ref{sec:vfpert_exp_description}.
 \end{table}
 
 \subsection{Many targets}\label{sec:manytargets_exp_details}
+\begin{table}[h!]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{System} & \textbf{dt} & \textbf{Tmax} & \textbf{Number of Initial Points} & \textbf{Range} \\
+\midrule
+Ring attractor      	&    0.2         &       2        &             50                    &      $r\pm0.5$ (annulus)  \\
+Van der Pol          	&    0.1         &       5        &             50                    &       $(-2,2)\times (-2,2)$ \\
+Lienard sigmoid    	&    0.1         &      15       &             50                    &        $(-1.5,1.5)\times (-1.5,1.5)$\\
+Sel'kov                 	&    0.1         &       5        &             50                    &       $(0,3)\times (0,3)$ \\
+2BLAs                  	&    0.1         &       5        &             50                    &       $(0,3)\times (0,3)$ \\
+\bottomrule
+\end{tabular}
+\caption{Simulation parameters for each dynamical system.}
+\label{tab:system_params}
+\end{table}
 
 
 
