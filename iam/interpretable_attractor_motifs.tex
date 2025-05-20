@@ -38,7 +38,7 @@
 \newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
 \newcommand{\ascomment}[1]{\textcolor{ascolor}{(#1)}}
 
-\graphicspath{{figures/}{figures/all_targets}}
+\graphicspath{{figures/}{figures/all_targets}{figures/all_sources}}
 
 
 \newtheorem{theorem}{Theorem}
@@ -1173,8 +1173,6 @@ For both deformation types, the location of the invariant manifold is accurately
 \end{figure}
 
 
-%\subsection{A noisy target}\label{sec:noisy}
-
 \subsection{Classifying the effective behavior of target systems}\label{sec:target_demonstrations}
 We now consider a library consisting of the \emph{ring attractor}, the \emph{limit cycle}, the \emph{single stable fixed point}, the \emph{bistable system} (two stable fixed points), and the \emph{bounded line attractor} (BLA).
 % Can we find the Platonic ideal?
@@ -2127,8 +2125,8 @@ These works mention interpretability:
 
 
 \newpage
-\section{Motif library}\label{sec:library}
-We introduce the motifs in our library.
+\section{Archetype library}\label{sec:library}
+We introduce the archetypes in our library.
 
 \subsection{Fixed point}\label{sec:fp}
 \[
@@ -2137,20 +2135,34 @@ We introduce the motifs in our library.
 \end{aligned}
 \]
 
+\subsection{Multi-stable}\label{sec:multistable}
+The dynamics are governed by a polynomial vector field, where the time derivative $\dot{x}$ is proportional to the product
+\begin{equation}
+\dot{x} = \alpha \prod_{i=1}^{n} (x - r_i),
+\end{equation}
+ over all specified roots $r_i$, scaled by $\alpha\in \reals$.
+When $\alpha < 0$, the system exhibits multistability, with stable fixed points at the specified roots.
+
+\subsubsection{Bistable}
+The \emph{Bistable} archetype used in the experiments is defined as
+\begin{equation}
+\dot x = - (x^3 - x).
+\end{equation}
+
 %PFTop
-\subsection{Fixed-point toplogy}\label{sec:fpt}
-We implementing any fixed-point topology dynamics in the following way.
-We consider the motif to be a directed graph. % (almost a Morse graph, but we allow for cyclicity).
-The nodes are the fixed points and the (lack of) outcoming vertices determines their stability.
-
-We embed the graph into $\reals^e$ with $e=2$ or $e=3$ based on planarity, through force-directed minimization.
-If graph is planar we embed the graph in $\reals^2$.
-If graph is not planar we embed the graph in  $\reals^3$.
-The remaining dimensions follow the dynamics $\dot x = - x$. % (or \dot x_i = - \alpha_i x_i)
-
-We define the dynamics in $\reals^e$ as follows.
-Move linearly to the closest point on graph.
-In the neighborhood of the graph we add a dynamics term that specifies speed on connecting orbits: a Gaussian bump of the connecting vector field around it.
+%\subsection{Fixed-point toplogy}\label{sec:fpt}
+%We implementing any fixed-point topology dynamics in the following way.
+%We consider the motif to be a directed graph. % (almost a Morse graph, but we allow for cyclicity).
+%The nodes are the fixed points and the (lack of) outcoming vertices determines their stability.
+%
+%We embed the graph into $\reals^e$ with $e=2$ or $e=3$ based on planarity, through force-directed minimization.
+%If graph is planar we embed the graph in $\reals^2$.
+%If graph is not planar we embed the graph in  $\reals^3$.
+%The remaining dimensions follow the dynamics $\dot x = - x$. % (or \dot x_i = - \alpha_i x_i)
+%
+%We define the dynamics in $\reals^e$ as follows.
+%Move linearly to the closest point on graph.
+%In the neighborhood of the graph we add a dynamics term that specifies speed on connecting orbits: a Gaussian bump of the connecting vector field around it.
 
 
 %%LC eqs
@@ -2341,23 +2353,34 @@ The composite systems dynamics is then defined as a concatenation of the $N$ sub
 with $x\in \reals^{D}$ where $D=\sum_i^N D_i$.
 
 
-\subsubsection{Examples of composite systems}
-\paragraph{Torus}
-%RA+RA
-%LC+RA
-%LC+LC
-
-\paragraph{Cylinder}
-%BLA+RA
-%BLA+LC
-
-
-
-\subsection{Additive vector field to continuous attractor systems}
-\subsubsection{Periodic}
+%\subsubsection{Examples of composite systems}
+\subsubsection{Two Bounded Line Attractors}
+%BLA+ Bistable
+The composite system we use for the experiments is the \emph{Two Bounded Line Attractors} (2 BLAs) system, which is the composite of the \emph{Bistable} and \emph{Bounded Line Attractor} archtypes.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.5\linewidth]{twoblas_system}
+    \caption{The \emph{Two Bounded Line Attractors} system's vector field and used trajectories to train and evaluate.
+     }
+    \label{fig:twoblas_system}
+\end{figure}
 
 
-\subsubsection{Non-periodic}
+%\paragraph{Torus}
+%%RA+RA
+%%LC+RA
+%%LC+LC
+%
+%\paragraph{Cylinder}
+%%BLA+RA
+%%BLA+LC
+
+
+
+
+%\subsection{Additive vector field to continuous attractor systems}
+%\subsubsection{Periodic}
+%\subsubsection{Non-periodic}
 
 
 
