@@ -71,7 +71,7 @@ class DynamicalSystem(nn.Module):
         noise_std: Optional[float] = None,
         dt: Optional[float] = None,
         time_span: Optional[Tuple[float, float]] = None,
-        use_sde: bool = False,
+        use_sde: bool = True,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Computes the trajectory of the system starting from given initial conditions.
@@ -906,7 +906,7 @@ class LearnableCompositeSystem(LearnableDynamicalSystem):
         return full_manifold
 
 
-#Analytical classes
+# Analytical classes
 class AnalyticDynamicalSystem(nn.Module):
     """
     A superclass for dynamical systems with analytical solutions. This class provides a method
@@ -1165,10 +1165,10 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
         self.time_span = time_span
         self.dt = dt
         self.radius = radius
-        if not alpha_init is None:
-            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
-        else:
-            self.alpha = -1.
+        # if not alpha_init is None:
+        #     self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        # else:
+        #     self.alpha = -1.
         self.dim = dim
 
     def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float,float]] = None) -> torch.Tensor:
@@ -1232,7 +1232,7 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
             x_circle = torch.cat([x_circle, torch.zeros(x_circle.shape[0], self.dim - 2)], dim=1)
         return x_circle
 
-#analytical sphere attractor
+# analytical sphere attractor
 class AnalyticalSphereAttractor(AnalyticDynamicalSystem):
     """
     Computes the trajectory of an attractor system embedded in S^d inside R^D.
@@ -1376,7 +1376,7 @@ class AnalyticalSphereAttractor(AnalyticDynamicalSystem):
         return inv_man  # shape: (T*P, dim)
 
 
-#ABCA
+# ABCA
 class AnalyticalBoundedContinuousAttractor(AnalyticDynamicalSystem):
     def __init__(self, dim: int, bca_dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), bounds: float = 1.0, alpha: float = -1.0):
         """
