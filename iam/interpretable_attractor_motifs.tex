@@ -1187,7 +1187,7 @@ See for the details of the target systems Supp.~Sec.~\ref{sec:target_systems} an
 
 
 While we recover close similarity for systems compared with their noisy version, DSA fails to identify them as similar (Fig.~\ref{fig:dsa_spe}A).
-Normalized similarity pairs target-motif to archetypes that are almost topological conjugate and for which a small deformation is possible (Fig.~\ref{fig:archetype2target}). 
+Normalized similarity pairs targets to archetypes that are almost topological conjugate and for which a small deformation is possible (Fig.~\ref{fig:archetype2target}). 
 The ring attractor-related targets all have high similarity to the \emph{ring attractor} archetype, while the oscillators have the highest similarity to the \emph{limit cycle} archetype (Fig.~\ref{fig:archetype2target}), while this is not captured by DSA (Fig.~\ref{fig:dsa_spe}B). 
 The system with two bounded line attractors has the highest similarity to the bistable system; even though they are not topologically conjugate the bistability is shared.
 %other way?If there is no canonical motif that is able to capture the effective behavior of a target, then all dissimilarities
@@ -2506,7 +2506,7 @@ For $d_{bca}=1$ and $n=2$ we get a systems that is topologically conjugate to th
 
 
 \subsection{Composite systems}\label{sec:composite}
-We can construct composite systems by combining two or more dynamical motifs from the list above.
+We can construct composite systems by combining two or more dynamical archetypes from the list above.
 Each subsystem comes with an ODE
 \begin{equation}
 \dot x_i = f(x_i),
@@ -2555,19 +2555,13 @@ with $x\in \reals^{D}$ where $D=\sum_i^N D_i$.
 \newpage
  \section{Target systems}\label{sec:target_systems}
 We describe the target systems.
-
-We also consider a stochastic version of some target system with additive Gaussian noise:
+We also consider a stochastic version of the ring attractor and Van der Pol target systems with additive Gaussian noise:
 \begin{equation}\label{eq:sde}
 d\mathbf{x}(t) = f(\mathbf{x}(t), t)\,dt + \sigma\,d\mathbf{W}(t),
 \end{equation}
 where $\mathbf{W}(t)$ denotes a standard Wiener process and $\sigma = 0.75$ is the diffusion coefficient.
 
 \subsection{Limit cycles}
-%\subsubsection{Random diffeomorphism of a limit cycle}
-%[Trajectories figure]
-%[Loss figure] (?)
-
-
 \subsubsection{Van der Pol oscillator}
 The Van der Pol oscillator is a seminal nonlinear dynamical system that exhibits self-sustained oscillations through non-conservative damping\citep{vanderpol1926relaxation}.
 The standard formulation is:
@@ -2891,7 +2885,7 @@ The model was trained on $\tilde{\mathbf{X}}_{b,t}$.
 An 80\%–20\% split was used to divide the data into training and test sets, respectively.
 
 \subsection{Training time}
-Training a single network for 1000 epochs took around 8 minutes on an Intel Core i7 CPU and occupied 5 percent of an 8GB RAM.
+Training a single network with NODE with an MLP with a hidden layer of size 64 for 200 epochs and calculate Jacobians took around 3 minutes on an Intel Core i7 CPU and occupied 5 percent of an 8GB RAM.
 
 
 
@@ -2904,7 +2898,8 @@ and (iii) classification of effective dynamical behavior across a diverse set of
  For each experiment, we specify the simulation settings and model architectures.
  
  
- 
+ 5 different networks with the ring attractor archetype were trained for Fig.~\ref{fig:ring_pert_fig}B and D.
+ A single example network was used to show the trajectories of for Fig.~\ref{fig:ring_pert_fig}A and C.
 
 
 
@@ -2914,6 +2909,7 @@ See also Supp.Sec.~\ref{sec:homeopert_exp_description}.
 \begin{table}[h]
 \centering
 \caption{Experimental parameters for the deformed ring attractor experiment.}
+
 \label{tab:perthomeo_params}
 \begin{tabular}{p{5cm}p{6cm}}
 \toprule
@@ -2951,7 +2947,7 @@ Random diffeomorphism    & Activation: \texttt{ReLU} \\
  \midrule
 \multirow{3}{*}{Training} 
     & Learning rate:  0.01 \\
-    & Epochs: 1000 \\
+    & Epochs: 200 \\
     & Batch size: 32 \\
     %& Early stopping patience: \texttt{1000} \\
     %& Inverse formulation: \texttt{True} \\
@@ -3178,13 +3174,14 @@ The invariant manifold of the model was then transformed by the fitted diffeomor
 
 
 \clearpage  
-\subsection{Task trained RNNs}
-To study low-dimensional attractors embedded in high-dimensional neural dynamics, we fit our canonical motif library to RNNs trained on an angular velocity integration task \citep{Sagodi2024a}. The ring attractor motif captures both the transient trajectories and the invariant manifold across network sizes (Fig.~\ref{fig:avi_rnn_recttanh}).
+\subsection{Task trained RNNs: Internal compass model}
+To study low-dimensional attractors embedded in high-dimensional neural dynamics, we fit our canonical motif library to RNNs trained on an angular velocity integration task, designed to model the internal compass in animals \citep{Sagodi2024a}. 
+The ring attractor archetype captures both the transient trajectories and the invariant manifold across network sizes (Fig.~\ref{fig:avi_rnn_recttanh}).
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\linewidth]{avi_rnn_recttanh}
-    \caption{The ring attractor motif fit to RNNs of different sizes ($N=64,128,256$ hidden units) trained on an angular velocity integration task from \citet{Sagodi2024a}.
+    \caption{The ring attractor archetype fit to RNNs of different sizes ($N=64,128,256$ hidden units) trained on an angular velocity integration task from \citet{Sagodi2024a}.
     The diffeomorphism brings the canonical ring attractor near the invariant slow manifold (composed out of a finite number of fixed points) even though topological equivalency is lacking.
     Trajectories colored by memory content (angular memory).
     The MSE similarity is reported in the upper right corner for each network.
