@@ -3030,15 +3030,15 @@ The invariant manifold of the model was then transformed by the fitted diffeomor
 
 
 
-\clearpage  % or \newpage
+\clearpage  
 \subsection{Task trained RNNs}
 To study low-dimensional attractors embedded in high-dimensional neural dynamics, we fit our canonical motif library to RNNs trained on an angular velocity integration task \citep{Sagodi2024a}. The ring attractor motif captures both the transient trajectories and the invariant manifold across network sizes (Fig.~\ref{fig:avi_rnn_recttanh}).
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.75\linewidth]{avi_rnn_recttanh}
+    \includegraphics[width=0.95\linewidth]{avi_rnn_recttanh}
     \caption{The ring attractor motif fit to RNNs of different sizes ($N=64,128,256$ hidden units) trained on an angular velocity integration task from \citet{Sagodi2024a}.
-    The homeomorphism brings the canonical ring attractor near the invariant slow manifold (composed out of a finite number of fixed points) even though topological equivalency is lacking.
+    The diffeomorphism brings the canonical ring attractor near the invariant slow manifold (composed out of a finite number of fixed points) even though topological equivalency is lacking.
     Trajectories colored by memory content (angular memory).
     The MSE similarity is reported in the upper right corner for each network.
     }
@@ -3046,10 +3046,48 @@ To study low-dimensional attractors embedded in high-dimensional neural dynamics
 \end{figure}
 
 
+\clearpage  
+\subsection{Comparison between the target and the mapped source trajectories}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{ring_traj_invman}
+    \caption{The \emph{ring attractor} archetype fitted to the different target systems.
+    }
+    \label{fig:ring_traj_invman}
+\end{figure}
 
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{lc_traj_invman}
+    \caption{The \emph{limit cycle} archetype fitted to the different target systems.
+    }
+    \label{fig:lc_traj_invman}
+\end{figure}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{lds_traj_invman}
+    \caption{The \emph{single fixed point} archetype fitted to the different target systems.
+    }
+    \label{fig:lds_traj_invman}
+\end{figure}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{bistable_traj_invman}
+    \caption{The \emph{bistable} archetype fitted to the different target systems.
+    }
+    \label{fig:bistable_traj_invman}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\linewidth]{bla_traj_invman}
+    \caption{The \emph{Bounded Line Attractor} archetype fitted to the different target systems.
+    }
+    \label{fig:bla_traj_invman}
+\end{figure}
 
 \end{document}
 
