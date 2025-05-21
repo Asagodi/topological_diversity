@@ -134,7 +134,7 @@ def compute_homeo_ds_loss(
 
     if use_inverse_formulation:
         # Trajectory: Φ(f(Φ⁻¹(y0))) for all timesteps
-        transformed_trajectories = homeo_ds_net(initial_conditions_target, noise_std)
+        source_trajectories, transformed_trajectories = homeo_ds_net(initial_conditions_target, noise_std)
 
         # Loss: f(Φ(x_t)) vs Φ(x_{t+1})
         return loss_fn(transformed_trajectories[:, 1:, :], batch_target_detached[:, 1:, :])
@@ -145,20 +145,20 @@ def compute_homeo_ds_loss(
 
         # x_{t+1} = f(x_t)
         if isinstance(homeo_ds_net.dynamical_system, AnalyticDynamicalSystem):
-            x_t1 = homeo_ds_net.dynamical_system.compute_trajectory(hat_x_0)[:, 1:, :]
+            source_trajectories = homeo_ds_net.dynamical_system.compute_trajectory(hat_x_0)[:, 1:, :]
         else:
             _, x_traj, _ = generate_trajectories(
                 homeo_ds_net.dynamical_system,
                 predefined_initial_conditions=hat_x_0,
                 noise_std=noise_std
             )
-            x_t1 = x_traj[:, 1:, :]  # skip x0
+            source_trajectories = x_traj[:, 1:, :]  # skip x0
 
         # Φ(f(x_t))
-        phi_x_t1 = homeo_ds_net.homeo_network(x_t1)
+        phi_x_t1 = homeo_ds_net.homeo_network(source_trajectories)
 
         # Loss: Φ(f(Φ⁻¹(x_t))) vs x_{t+1}
-        return loss_fn(phi_x_t1, batch_target_detached[:, 1:, :])
+        return source_trajectories, loss_fn(phi_x_t1, batch_target_detached[:, 1:, :])
 
 def train_homeo_ds_net_batched(
     homeo_ds_net: nn.Module,  
@@ -170,11 +170,15 @@ def train_homeo_ds_net_batched(
     max_grad_norm: Optional[float] = None,
     annealing_params: Optional[dict] = None,
     early_stopping_patience: Optional[int] = None,
-    early_stop_loss_explosion_factor: Optional[float] = 1e3  # stop if loss increases 100x
+    early_stop_loss_explosion_factor: Optional[float] = 1e3,  # stop if loss increases 100x
+    jac_lambda_reg:  Optional[float] = 0.,  # Default: no regularization
 ):
     """
     Train the homeomorphism network with automatic full-batch or mini-batch support.
     """
+    if jac_lambda_reg is not None:
+        assert jac_lambda_reg >= 0, "jac_lambda_reg must be non-negative"
+
     loss_fn = nn.MSELoss(reduction='mean')
     device = next(homeo_ds_net.parameters()).device
     trajectories_target = trajectories_target.to(device)
@@ -220,7 +224,7 @@ def train_homeo_ds_net_batched(
                 noise_std = 0.0
 
             # Calculate loss using the compute_homeo_ds_loss function
-            loss = compute_homeo_ds_loss(
+            source_trajectories, loss = compute_homeo_ds_loss(
                 homeo_ds_net,
                 batch_target,
                 initial_conditions_target,
@@ -228,6 +232,10 @@ def train_homeo_ds_net_batched(
                 noise_std=noise_std,
                 use_inverse_formulation=use_inverse_formulation,
             )
+
+            if jac_lambda_reg is not None:
+                jacobian_reg = jacobian_spectral_norm(homeo_ds_net.homeo_network, source_trajectories)
+                loss += jac_lambda_reg * jacobian_reg 
 
             if torch.isnan(loss).any() or torch.isinf(loss).any():
                 break
@@ -300,7 +308,7 @@ def train_homeomorphism(
     lr: float,
     use_transformed_system: bool=False,
     num_epochs: int = 100,
-    lambda_reg:  Optional[float] = 0.,  # Default: no regularization
+    jac_lambda_reg:  Optional[float] = 0.,  # Default: no regularization
     max_grad_norm: Optional[float] = None,  # Default: no clipping
     annealing_params: Optional[dict] = None,  # Default: no annealing
     early_stopping_patience: Optional[int] = 50,
@@ -350,7 +358,7 @@ def train_homeomorphism(
             break
 
         # if hasattr(homeo_net, 'jacobian_regularization'):
-        #     loss += lambda_reg * homeo_net.jacobian_regularization()
+        #     loss += jac_lambda_reg * homeo_net.jacobian_regularization()
 
         loss.backward()
         total_norm = torch.norm(torch.stack([

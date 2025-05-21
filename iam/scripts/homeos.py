@@ -663,21 +663,27 @@ def jacobian_norm_over_batch(
     return norms.pow(p).mean().pow(1 / p)
 
 
-def spectral_norm_jacobian(
-    phi: Callable, 
-    x: torch.Tensor, 
-    n_iter: int = 10
+def jacobian_spectral_norm(
+    phi: Callable,
+    x: torch.Tensor,
+    p: float = 2.0,
+    n_iter: int = 10,
+    subtract_identity: bool = True,
+    normalize: bool = True,
 ) -> torch.Tensor:
     """
-    Approximate the operator norm ||Dφ(x)|| using power iteration.
+    Approximate the L^p norm of spectral norms of J_phi(x) using power iteration.
 
     Args:
         phi: A function from R^N to R^M (batched).
         x: Tensor of shape (B, T, N) — batch of trajectories.
+        p: Exponent for L^p norm across (B*T) samples.
         n_iter: Number of power iterations.
+        subtract_identity: If True, estimate ||J - I|| instead of ||J||.
+        normalize: If True, divide each norm by sqrt(N).
 
     Returns:
-        Estimated mean operator norm across (B * T) points.
+        Scalar tensor: empirical L^p norm of the estimated spectral norms.
     """
     B, T, N = x.shape
     x_flat = x.view(-1, N).detach().requires_grad_(True)  # (B*T, N)
@@ -690,10 +696,10 @@ def spectral_norm_jacobian(
         # Compute Jv
         _, jv = torch.autograd.functional.jvp(phi, (x_flat,), (v,), create_graph=True)
 
-        # Normalize jv to get u
+
         u = jv / (jv.norm(dim=1, keepdim=True) + 1e-6)
 
-        # Compute Jᵗu
+        # Compute J^T u
         jtv = torch.autograd.grad(
             outputs=phi(x_flat),
             inputs=x_flat,
@@ -702,26 +708,41 @@ def spectral_norm_jacobian(
             retain_graph=True
         )[0]
 
-        # Normalize jtv to get new v
         v = jtv / (jtv.norm(dim=1, keepdim=True) + 1e-6)
 
-    # Final estimate of ||Jv||
+    # Final spectral norm approximation: ||Jv||
     _, jv = torch.autograd.functional.jvp(phi, (x_flat,), (v,), create_graph=True)
-    op_norm = jv.norm(dim=1)  
+    if subtract_identity:
+        jv = jv - v
+    norms = jv.norm(dim=1)  # shape: (B*T,)
 
-    return op_norm.mean()
+    if normalize:
+        norms = norms / N**0.5
+
+    return norms.pow(p).mean().pow(1.0 / p)
 
 
-def jacobian_frobenius_norm(phi: Callable, x: torch.Tensor) -> torch.Tensor:
+
+
+def jacobian_frobenius_norm(
+    phi: Callable, 
+    x: torch.Tensor, 
+    p: float = 2.0, 
+    subtract_identity: bool = True,
+    normalize: bool = True
+) -> torch.Tensor:
     """
-    Compute the average Frobenius norm of the Jacobian J_phi(x) over a batch of trajectory points.
+    Compute L^p norm of Frobenius norms of Jacobians over a batch of trajectory points.
 
     Args:
         phi: A function from R^N to R^M (batched).
-        x: Tensor of shape (B, T, N) — batch of trajectories.
+        x: Tensor of shape (B, T, N).
+        p: Exponent in L^p norm.
+        subtract_identity: Whether to compute ||J - I|| instead of ||J||.
+        normalize: If True, divide each Frobenius norm by sqrt(N).
 
     Returns:
-        Scalar tensor: mean Frobenius norm of Jacobians across (B * T) points.
+        Scalar tensor: empirical L^p norm of the Frobenius norms.
     """
     B, T, N = x.shape
     x_flat = x.view(-1, N).detach().requires_grad_(True)
@@ -731,10 +752,16 @@ def jacobian_frobenius_norm(phi: Callable, x: torch.Tensor) -> torch.Tensor:
         v = torch.zeros_like(x_flat)
         v[:, i] = 1.0
         _, jvp_result = torch.autograd.functional.jvp(phi, (x_flat,), (v,), create_graph=True)
+        if subtract_identity:
+            jvp_result = jvp_result - v
         fro_sq += (jvp_result ** 2).sum(dim=1)  # ||column_i||^2
 
-    fro_norm = fro_sq.sqrt().mean()  # average Frobenius norm
-    return fro_norm
+    fro_norms = fro_sq.sqrt()  # shape: (B*T,)
+    if normalize:
+        fro_norms = fro_norms / N**0.5
+
+    return fro_norms.pow(p).mean().pow(1.0 / p)
+
 
 
 
@@ -888,7 +915,7 @@ class Homeo_DS_Net(nn.Module):
             traj = self.dynamical_system.compute_trajectory(x0)
         else:
             _, traj, _ = generate_trajectories(self.dynamical_system, predefined_initial_conditions=x0, noise_std=noise_std)
-        return self.homeo_network(traj) 
+        return traj, self.homeo_network(traj) 
 
     def trajectory(self, y0: torch.Tensor, noise_std: float=0) -> list[torch.Tensor]:
         return self.forward(y0, noise_std)
