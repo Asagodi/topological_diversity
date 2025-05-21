@@ -32,6 +32,15 @@ from pathlib import Path
 #data_dir = exp_dir / 'all_targets'
 #save_dir = data_dir / 'motif_fits'
 
+def split_data(trajectories_target, train_ratio = 0.8):
+    B = trajectories_target.shape[0]
+    n_train = int(train_ratio * B)
+    n_test = B - n_train
+    train_set, test_set = random_split(trajectories_target, [n_train, n_test])
+    trajectories_target_train = trajectories_target[train_set.indices]
+    trajectories_target_test = trajectories_target[test_set.indices]
+    return trajectories_target_train, trajectories_target_test
+
 def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic = False, canonical = True, maxT = 5,
                     alpha_init = None, velocity_init = None, vf_on_ring_enabled = False, #if analytic then not used
                     homeo_type = 'node', layer_sizes = 1*[64], 
@@ -66,11 +75,12 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic =
     trajectories_target = torch.tensor(trajectories_target, dtype=torch.float32).to(device)
     trajectories_target_full, trajectories_target, mean, std = normalize_scale_pair(trajectories_target, False)
 
-    n_train = int(train_ratio * B)
-    n_test = B - n_train
-    train_set, test_set = random_split(trajectories_target_full, [n_train, n_test])
-    trajectories_target_train = trajectories_target[train_set.indices]
-    trajectories_target_test = trajectories_target[test_set.indices]
+    # n_train = int(train_ratio * B)
+    # n_test = B - n_train
+    # train_set, test_set = random_split(trajectories_target_full, [n_train, n_test])
+    # trajectories_target_train = trajectories_target[train_set.indices]
+    # trajectories_target_test = trajectories_target[test_set.indices]
+    trajectories_target_train, trajectories_target_test = split_data(trajectories_target, train_ratio = train_ratio)
 
     #train homeo_ds_net
     homeo = build_homeomorphism(homeo_params)
