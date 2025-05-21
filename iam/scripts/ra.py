@@ -142,18 +142,18 @@ def get_random_vector_field_from_ringattractor(min_val_sim = 2, n_grid = 40, nor
     
     #scale + set norm
     if not add_limit_cycle:
-        if normalize_type == 'grid':
+        if normalize_type == 'grid':     # make constant norm
             magnitude =  np.sqrt(perturb_u**2 + perturb_v**2) 
-        elif normalize_type == 'max':    # maximum over the grid
+        elif normalize_type == 'max':    # scale by max 
             magnitude = np.max(np.sqrt(perturb_u**2 + perturb_v**2))
         perturb_u, perturb_v = norm*perturb_u/magnitude, norm*perturb_v/magnitude
         
     else: # add limit cycle
         perturb_u -= Y
         perturb_v += X
-        if normalize_type == 'grid':
+        if normalize_type == 'grid':     # make constant norm
             magnitude =  np.sqrt(perturb_u**2 + perturb_v**2)
-        elif normalize_type == 'max':    # maximum over the grid
+        elif normalize_type == 'max':    # scale by max 
             magnitude = np.max(np.sqrt(perturb_u**2 + perturb_v**2))
         perturb_u, perturb_v = norm*perturb_u/magnitude, norm*perturb_v/magnitude
 
