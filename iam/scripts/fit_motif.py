@@ -137,7 +137,7 @@ def compute_homeo_ds_loss(
         source_trajectories, transformed_trajectories = homeo_ds_net(initial_conditions_target, noise_std)
 
         # Loss: f(Φ(x_t)) vs Φ(x_{t+1})
-        return loss_fn(transformed_trajectories[:, 1:, :], batch_target_detached[:, 1:, :])
+        return source_trajectories, loss_fn(transformed_trajectories[:, 1:, :], batch_target_detached[:, 1:, :])
 
     else:
         # hat_x_0 = Φ(y_t)
@@ -178,6 +178,7 @@ def train_homeo_ds_net_batched(
     """
     if jac_lambda_reg is not None:
         assert jac_lambda_reg >= 0, "jac_lambda_reg must be non-negative"
+
 
     loss_fn = nn.MSELoss(reduction='mean')
     device = next(homeo_ds_net.parameters()).device
