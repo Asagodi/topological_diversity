@@ -2753,6 +2753,11 @@ An 80\%–20\% split was used to divide the data into training and test sets, re
 
 \newpage
 \section{Numerical experiments}
+This section details the setup and parameters of the numerical experiments conducted to evaluate our framework. We report on three main experimental scenarios: 
+(i) a deformation applied to the ring attractor via a diffeomorphism, 
+(ii) a vector field perturbation applied to the ring attractor, 
+and (iii) classification of effective dynamical behavior across a diverse set of target systems.
+ For each experiment, we specify the simulation settings and model architectures.
 
 
 \subsection{Homeomorphism-based perturbation experiment}\label{sec:homeopert_exp_details}
@@ -2892,16 +2897,38 @@ Initial points were sampled uniformly from the Range, except for the Ring attrac
 
 Here $n$ is the number of time points per trajectory (see Tab.~\ref{tab:system_params}, where $n= T_{\text{max}}/dt$). 
 
+
+
+
 \newpage
 \section{Analysis}
 
 \subsection{Comparing and evaluating}
 
-\subsubsection{Jacobian}
+\subsubsection{Similarity}
+The similarity scores shown in Fig.~\ref{fig:ring_pert_fig}B and D, as well as Fig.~\ref{fig:archetype2target}, were computed as follows.
+First, the dissimilarity between the predicted and target dynamics was quantified using the mean squared error (MSE) on the validation dataset (referred to as "distance test" in Fig.~\ref{fig:ring_pert_fig}). 
+For each archetype system, we normalized the dissimilarity scores across all targets by dividing them by the maximum dissimilarity observed for that archetype. 
+This normalization yields dissimilarity scores in the range $[0, 1]$. 
+The similarity score for each target was then computed as $1$ minus the normalized dissimilarity score, also resulting in a value between $0$ and $1$.
+
+ 
+The DSA similarity score was calculated through the same method by first normalizing target-wise and then subtracting the normalized score from $1$.
+
+
+
+\subsubsection{Simplicity}
+
+
 
 
 \subsubsection{Invariant manifold}
 For the existing archetypes the attractive invariant manifold is defined by design.
+For the ring attractor and the limit cycle the invariant manifold is the unit ring 
+\[
+\left\{ (x, y) \in \mathbb{R}^2 \;\middle|\; x^2 + y^2 = 1 \right\}.
+\]
+The invariant manifold of the model was then transformed by the fitted diffeomorphism to get the mapped source ring in Fig.~\ref{fig:ring_pert_fig}, Fig.~    \ref{fig:deformed_both_trajectories_asy}, Fig.\ref{fig:perturbed_both_trajectories_asy} and Fig.~\ref{fig:avi_rnn_recttanh}.
 
 
 %\paragraph{Hausdorff distance}
@@ -2924,7 +2951,7 @@ For the existing archetypes the attractive invariant manifold is defined by desi
 	Supp.Sec.~\ref{sec:homeopert_exp_description}.
 	Both the trajectories and the invariant manifolds are well-approximated. 
 	For a large deformation, the invariant manifold does not match the target any more (last subfigure).
-	The interpolation and the complexity are shown above each plot.
+	The interpolation parameter and the complexity of the deformation are shown above each plot.
      }
     \label{fig:deformed_both_trajectories_asy}
 \end{figure}
@@ -2948,6 +2975,7 @@ For the existing archetypes the attractive invariant manifold is defined by desi
     \caption{Our method applied to the intermediate interpolation values for the perturbed ring attractor as shown in Fig.~\ref{fig:ring_pert_fig}C and described in 
 	Supp.Sec.~\ref{sec:vfpert_exp_description}.
 	Both the trajectories and the invariant manifolds are well-approximated.
+	The norm of the perturbation is shown above each subplot.
      }
     \label{fig:perturbed_both_trajectories_asy}
 \end{figure}
@@ -2955,7 +2983,8 @@ For the existing archetypes the attractive invariant manifold is defined by desi
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\linewidth]{perturbed_both_trajectories_asy_spe}
-    \caption{The Smooth Prototype Equivalences method applied to the deformed ring attractor as described in Supp.Sec.~\ref{sec:vfpert_exp_description}.
+    \caption{The Smooth Prototype Equivalences (SPE\citep{friedman2025characterizing}) method applied to the deformed ring attractor as described in Supp.Sec.~\ref{sec:vfpert_exp_description}.
+    The norm of the perturbation is shown above each subplot.
      }
     \label{fig:perturbed_both_trajectories_asy_spe}
 \end{figure}
