@@ -2733,7 +2733,17 @@ Optimizer: Adam \citep{kingma2014adam}
 %\subsubsection{Regularization}
 
 \subsection{Data centering and normalization}
+Given a batch of trajectories \( \mathbf{X} \in \mathbb{R}^{B \times T \times d} \), where \( B \) is the number of trajectories, \( T \) is the number of time steps, and \( d \) is the dimensionality, the data was normalized as follows :
 
+\[
+\begin{aligned}
+\boldsymbol{\mu} &= \frac{1}{BT} \sum_{b=1}^B \sum_{t=1}^T \mathbf{X}_{b,t} \in \mathbb{R}^d, \\
+\boldsymbol{\sigma} &= \sqrt{ \frac{1}{BT} \sum_{b=1}^B \sum_{t=1}^T \left( \mathbf{X}_{b,t} - \boldsymbol{\mu} \right)^2 } \in \mathbb{R}^d, \\
+\tilde{\mathbf{X}}_{b,t} &= \frac{\mathbf{X}_{b,t} - \boldsymbol{\mu}}{\boldsymbol{\sigma}} \quad \text{for all } b = 1,\dots,B,\; t = 1,\dots,T.
+\end{aligned}
+\]
+
+The model was trained on $\tilde{\mathbf{X}}_{b,t}$.
 
 \subsection{Training and validation split}
 The data was split into a training and test set with a ratio 0.8:0.2.
@@ -2835,7 +2845,7 @@ See also Supp.Sec.~\ref{sec:vfpert_exp_description}.
 \centering
 \begin{tabular}{lcccc}
 \toprule
-\textbf{System} & \textbf{dt} & \textbf{Tmax} & \textbf{Number of Initial Points} & \textbf{Range} \\
+\textbf{System} & $dt$ &  $T_{\text{max}}$ & \textbf{Number of initial points} & \textbf{Range for initial points} \\
 \midrule
 Ring attractor      	&    0.2         &       2        &             50                    &      $r\pm0.5$ (annulus)  \\
 Van der Pol          	&    0.1         &       5        &             50                    &       $(-2,2)\times (-2,2)$ \\
@@ -2848,7 +2858,39 @@ Sel'kov                 	&    0.1         &       5        &             50     
 \label{tab:system_params}
 \end{table}
 
+Initial points were sampled uniformly from the Range, except for the Ring attractor where it was sampled uniformly from theannular region (ring-shaped region) between two concentric circles of radii $0.5$ and $1.5$, centered at the origin, i.e., 
+\[
+\left\{ (x, y) \in \mathbb{R}^2 \;\middle|\; 0.5^2 \leq x^2 + y^2 \leq 1.5^2 \right\}.
+\]
 
+
+\begin{table}[h]
+\centering
+\caption{Experimental parameters for training homeomorphism-based dynamical system fitting.}
+\label{tab:training_params}
+\begin{tabular}{p{5cm}p{6cm}}
+\toprule
+\textbf{Category} & \textbf{Parameters} \\
+\midrule
+\multirow{4}{*}{Learned Diffeomorphism} 
+    & Type: Neural ODE \\
+    & Hidden layer sizes: \texttt{[64]} \\
+    & Activation function: \texttt{ReLU} \\
+\midrule
+\multirow{5}{*}{Simulation for Target Trajectories} 
+    & Time step for integration: $dt = T_{\text{max}}/n$ \\
+    & Time span: \texttt{[0, 5]} \\
+    & Normalization: zero-mean unit-std \\
+\midrule
+\multirow{4}{*}{Training} 
+    & Learning rate: 0.01 \\
+    & Number of epochs: 200 \\
+    & Batch size: 32 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Here $n$ is the number of time points per trajectory (see Tab.~\ref{tab:system_params}, where $n= T_{\text{max}}/dt$). 
 
 \newpage
 \section{Analysis}
