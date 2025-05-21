@@ -2636,7 +2636,7 @@ The solution to this equation is solved with \texttt{torchdiffeq}'s \texttt{odei
 The inverse is acquired by integrating in reverse time i.e. $t\in[1,0]$.
 
 %MLP
-We are using 2 layer MLPs as our parametrized vector field with a ReLU activation function, see further Supp.Sec.~\ref{sec:fnn}.
+We are using signle hidden layer MLPs as our parametrized vector field with a ReLU activation function, see further Supp.Sec.~\ref{sec:fnn} and Supp.Sec.~\ref{sec:experiment_details}.
 
 
 %\paragraph{Other proposals}
@@ -2724,7 +2724,8 @@ We are using 2 layer MLPs as our parametrized vector field with a ReLU activatio
 
 
 \section{Training}
-Optimizer: Adam \citep{kingma2014adam}
+We used the Adam optimizer \citep{kingma2014adam} with its default parameters ($\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-8}$) for all training runs.
+
 
 %\subsection{Training parameters}
 %
@@ -2752,12 +2753,16 @@ An 80\%–20\% split was used to divide the data into training and test sets, re
 
 
 \newpage
-\section{Numerical experiments}
+\section{Numerical experiments}\label{sec:experiment_details}
 This section details the setup and parameters of the numerical experiments conducted to evaluate our framework. We report on three main experimental scenarios: 
 (i) a deformation applied to the ring attractor via a diffeomorphism, 
 (ii) a vector field perturbation applied to the ring attractor, 
 and (iii) classification of effective dynamical behavior across a diverse set of target systems.
  For each experiment, we specify the simulation settings and model architectures.
+ 
+ 
+ 
+
 
 
 \subsection{Homeomorphism-based perturbation experiment}\label{sec:homeopert_exp_details}
@@ -2782,14 +2787,9 @@ Target Deformation:    & Hidden layers: \texttt{[128]} \\
 Random diffeomorphism    & Activation: \texttt{ReLU} \\
     & MLP weight initialization  $\sim\mathcal{N}(0.02,0.5)$ \\
 \midrule
-\multirow{3}{*}{Learned Diffeomorphism} 
-    & Type: Neural ODE \\
-    & Hidden layers: \texttt{[128]} \\
-    & Activation: \texttt{ReLU} \\
-\midrule
 \multirow{5}{*}{Simulation for target trajectories} %add AnalyticalDS?
     & Time step for integration: $dt=0.2$ \\
-    & $T_{\text{max}}$ \\
+    & $T_{\text{max}} = 2$ \\
     %& Noise standard deviation: \texttt{0.0} \\
     %& Ring vector field :\\
     %& Initial condition mode: \texttt{random} \\
@@ -2798,6 +2798,14 @@ Random diffeomorphism    & Activation: \texttt{ReLU} \\
     %& Random seed: \texttt{42} \\
     & Train/test split ratio: 0.8-0.2 \\
 \midrule
+\multirow{3}{*}{Learned diffeomorphism} 
+    & Type: Neural ODE \\
+    & Hidden layers: \texttt{[128]} \\
+    & Activation: \texttt{ReLU} \\
+\midrule
+\multirow{1}{*}{Source}
+    & Time step for integration: $dt=0.2$ \\
+ \midrule
 \multirow{3}{*}{Training} 
     & Learning rate:  0.01 \\
     & Epochs: 1000 \\
@@ -2809,6 +2817,10 @@ Random diffeomorphism    & Activation: \texttt{ReLU} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+
+
+
 
 
 
@@ -2826,17 +2838,20 @@ See also Supp.Sec.~\ref{sec:vfpert_exp_description}.
 \multirow{1}{*}{Perturbation} 
     & $\|p\|$ range [0,0.15] (steps of 0.01) \\
 \midrule
-\multirow{3}{*}{Learned Diffeomorphism} 
+\multirow{5}{*}{Simulation for target trajectories} 
+    & Time step for integration: $dt=0.05$ \\
+    &  $T_{\text{max}} = 5$ \\
+    & Number of trajectories: 50 \\
+    & Train/test split ratio: 0.8-0.2 \\
+\midrule
+\multirow{3}{*}{Learned diffeomorphism} 
     & Type: Neural ODE \\
     & Hidden layers: \texttt{[128]} \\
     & Activation: \texttt{ReLU} \\
 \midrule
-\multirow{5}{*}{Simulation for target trajectories} 
+\multirow{1}{*}{Source}
     & Time step for integration: $dt=0.05$ \\
-    & Time span: \texttt{[0, 5]} \\
-    & Number of trajectories: 50 \\
-    & Train/test split ratio: 0.8-0.2 \\
-\midrule
+ \midrule
 \multirow{3}{*}{Training} 
     & Learning rate:  0.01 \\
     & Epochs: 1000 \\
@@ -2844,6 +2859,8 @@ See also Supp.Sec.~\ref{sec:vfpert_exp_description}.
 \bottomrule
 \end{tabular}
 \end{table}
+
+
 
 \subsection{Classifying the effective behavior of target systems}\label{sec:manytargets_exp_details}
 \begin{table}[h!]
@@ -2877,17 +2894,16 @@ Initial points were sampled uniformly from the Range, except for the Ring attrac
 \toprule
 \textbf{Category} & \textbf{Parameters} \\
 \midrule
-\multirow{4}{*}{Learned Diffeomorphism} 
+\multirow{3}{*}{Learned diffeomorphism} 
     & Type: Neural ODE \\
     & Hidden layer sizes: \texttt{[64]} \\
     & Activation function: \texttt{ReLU} \\
 \midrule
-\multirow{5}{*}{Simulation for Target Trajectories} 
+\multirow{2}{*}{Simulation for source trajectories} 
+    &  $T_{\text{max}} = 5$ \\
     & Time step for integration: $dt = T_{\text{max}}/n$ \\
-    & Time span: \texttt{[0, 5]} \\
-    & Normalization: zero-mean unit-std \\
 \midrule
-\multirow{4}{*}{Training} 
+\multirow{3}{*}{Training} 
     & Learning rate: 0.01 \\
     & Number of epochs: 200 \\
     & Batch size: 32 \\
@@ -2895,8 +2911,17 @@ Initial points were sampled uniformly from the Range, except for the Ring attrac
 \end{tabular}
 \end{table}
 
-Here $n$ is the number of time points per trajectory (see Tab.~\ref{tab:system_params}, where $n= T_{\text{max}}/dt$). 
+Here $n$ is the number of time points per trajectory (see Tab.~\ref{tab:system_params}, where $n= T_{\text{max}}^{\text{target}}/dt^{\text{target}}$). 
 
+\subsection{Compared methods}
+ \subsubsection{DSA}
+For DSA, we used $n_{\text{delays}}=3$, which is expected to suffice given that the attractors we consider are one-dimensional.
+According to Takens' theorem, a delay embedding with a sufficiently large number of delays (often 3 or more) is typically adequate for reconstructing the state space of low-dimensional systems, such as one-dimensional attractors.
+The rank of the DMD matrix used in the reduced-rank regression was set to 12 to capture the dominant dynamical modes while avoiding overfitting.
+
+ \subsubsection{SPE}
+ 
+ 
 
 
 
@@ -2991,7 +3016,7 @@ The invariant manifold of the model was then transformed by the fitted diffeomor
 
 
 
-\FloatBarrier
+\clearpage  % or \newpage
 \subsection{Task trained RNNs}
 To study low-dimensional attractors embedded in high-dimensional neural dynamics, we fit our canonical motif library to RNNs trained on an angular velocity integration task \citep{Sagodi2024a}. The ring attractor motif captures both the transient trajectories and the invariant manifold across network sizes (Fig.~\ref{fig:avi_rnn_recttanh}).
 
