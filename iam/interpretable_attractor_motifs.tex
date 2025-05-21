@@ -1728,24 +1728,23 @@ g(x) = \mu(x) f(x).
 Orbitally equivalent systems differ only in their time parametrization.
 
 
-\paragraph{With scaling}
-Two dynamical systems on the same state space:
-\[
-\dot{x} = f(x) \quad \text{and} \quad \dot{x} = g(x).
-\]
-
-Let 
-\begin{itemize}
-\item $p\in C^1$
-\item $\Phi$ a homeomorphism
-\item $\mu\colon \reals^n\rightarrow \reals$ positive function
-\end{itemize}
-such that 
-\begin{enumerate}
-\item $\psi_{\mu \cdot (f+p)}$ is topologically conjugate to $\psi_{g}$
-\item Take $\inf_p \|p\|$, $\inf_\mu \|\mu\|$, $\inf_\Phi \|\Phi\|$
-%\item $f(x) = \mu(x) D\Phi(x)^{-1}(x) \, g(h(x))$ % is topologically conjugate
-\end{enumerate}
+%\paragraph{With scaling}
+%Two dynamical systems on the same state space:
+%\[
+%\dot{x} = f(x) \quad \text{and} \quad \dot{x} = g(x).
+%\]
+%Let 
+%\begin{itemize}
+%\item $p\in C^1$
+%\item $\Phi$ a homeomorphism
+%\item $\mu\colon \reals^n\rightarrow \reals$ positive function
+%\end{itemize}
+%such that 
+%\begin{enumerate}
+%\item $\psi_{\mu \cdot (f+p)}$ is topologically conjugate to $\psi_{g}$
+%\item Take $\inf_p \|p\|$, $\inf_\mu \|\mu\|$, $\inf_\Phi \|\Phi\|$
+%%\item $f(x) = \mu(x) D\Phi(x)^{-1}(x) \, g(h(x))$ % is topologically conjugate
+%\end{enumerate}
 
 %\begin{definition}\label{def:top_conj}
 %Let \( f: X \to X \) and \( g: Y \to Y \) be two continuous dynamical systems, where \( X \) and \( Y \) are topological spaces.
@@ -1761,101 +1760,111 @@ such that
 %\end{tikzcd}
 %\end{definition}
 
-\paragraph{Topological conjugacy of time series}
-\citep{dlotko2024topconj}
+%\paragraph{Topological conjugacy of time series}
+%\citep{dlotko2024topconj}
 
 
 \paragraph{Topological conjugacy on and off the invariant manifold}
-Taking apart topological conjugacy (homeomorphism from motif):
-\begin{itemize}
-\item On asymptotic / $\omega$-limit set / invariant set
-\item On transients \citep{koch2024biological}
-\end{itemize}
+When the homeomorphism from a topological conjugacy is restricted to the invariant set—such as an attractor or an $\omega$-limit set—it captures asymptotic dynamics faithfully, ensuring that trajectories on the motif and the transformed system correspond one-to-one in their long-term behavior.
+ This equivalence is robust under transformations that preserve topological structure, making it ideal for characterizing dynamics intrinsic to the invariant manifold.
+ 
+ However, conjugacy on the invariant set does not guarantee equivalence in the transient dynamics that precede convergence. Outside the invariant set, trajectories may differ significantly even if the long-term behavior aligns. Such discrepancies in the off-manifold regions are crucial for biological systems, where transients often carry computational or functional relevance \citep{koch2024biological}. Understanding and controlling these off-manifold dynamics—while preserving topological conjugacy on the attractor—becomes essential when interpreting or constructing models that approximate natural motifs.
+ 
+% 
+%\begin{itemize}
+%\item On asymptotic / $\omega$-limit set / invariant set
+%\item On transients \citep{koch2024biological}
+%\end{itemize}
 
 
 \subsection{Defective equivalence: Mostly Conjugate Dynamical Systems}
-\citep{skufca2007relaxing, skufca2008mostlyconjugate, bollt2010comparing}
+The framework of Mostly Conjugate Dynamical Systems relaxes strict topological conjugacy by allowing equivalence to hold only on a large-measure subset of the phase space.
+Introduced by \citet{skufca2007relaxing, skufca2008mostlyconjugate}, this notion acknowledges that full conjugacy is often too rigid for practical applications, especially in complex or noisy systems. 
+Instead, MCDS seeks a homeomorphism that maps trajectories accurately on a dense, dynamically relevant subset—often the attractor—while tolerating deviations in less critical regions.
+%\citep{skufca2007relaxing, skufca2008mostlyconjugate, bollt2010comparing}
+This relaxation provides a more flexible lens for comparing systems with similar qualitative dynamics but differing off-attractor behavior. 
+\citet{bollt2010comparing} expanded on this idea by formalizing the statistical and geometric tools necessary to quantify “closeness” of systems beyond strict conjugacy. In the context of biological or engineered motifs, this perspective is particularly useful: one can maintain fidelity to essential system dynamics while accommodating the variability inherent in real-world implementations.
 
 
-
-\subsection{Normal forms}
-
-%\subsubsection{Normal forms for autonomous dynamics}%ISOLATED FPS
-%Examples
-%Saddle ring
-%\begin{equation}
+%
+%\subsection{Normal forms}
+%
+%%\subsubsection{Normal forms for autonomous dynamics}%ISOLATED FPS
+%%Examples
+%%Saddle ring
+%%\begin{equation}
+%%\begin{aligned}
+%%\dot{x} &= (\sqrt{x^2 + y^2} - 1) x, \\
+%%\dot{y} &= (\sqrt{x^2 + y^2} - 1) y.
+%%\end{aligned}
+%%\end{equation}
+%
+%
+%\subsubsection{Beyond isolated fixed points}
+%How do we define a normal form when the system has a continuous attractor, such as a manifold of stable fixed points or limit cycles?
+%\paragraph{Limit cycles}%exists
+%Let 
+%\[
+%\dot{x} = f(x), \quad x \in \mathbb{R}^n,
+%\]
+%with a \emph{hyperbolic limit cycle} \( \gamma(t) \) of period \( T \), meaning:
+%\[
+%\gamma(t + T) = \gamma(t), \quad \dot{\gamma}(t) = f(\gamma(t)).
+%\]
+%The linearized dynamics transverse to the cycle have no Floquet multipliers on the unit circle except the trivial one corresponding to time shift.
+%
+%Let \( x = \Phi(\theta, r) \), where: %Phi is a diffeom
+%\begin{itemize}
+%  \item \( \theta \in \mathbb{S}^1 \): phase variable (e.g., time along the cycle),
+%  \item \( r \in \mathbb{R}^{n-1} \): transverse coordinates.
+%\end{itemize}
+%In these coordinates, the system becomes:
+%\[
 %\begin{aligned}
-%\dot{x} &= (\sqrt{x^2 + y^2} - 1) x, \\
-%\dot{y} &= (\sqrt{x^2 + y^2} - 1) y.
+%\dot{\theta} &= 1 + a_1(r) + a_2(r) + \dots, \\
+%\dot{r} &= \Lambda(\theta) r + b_2(\theta, r) + b_3(\theta, r) + \dots,
 %\end{aligned}
-%\end{equation}
-
-
-\subsubsection{Beyond isolated fixed points}
-How do we define a normal form when the system has a continuous attractor, such as a manifold of stable fixed points or limit cycles?
-\paragraph{Limit cycles}%exists
-Let 
-\[
-\dot{x} = f(x), \quad x \in \mathbb{R}^n,
-\]
-with a \emph{hyperbolic limit cycle} \( \gamma(t) \) of period \( T \), meaning:
-\[
-\gamma(t + T) = \gamma(t), \quad \dot{\gamma}(t) = f(\gamma(t)).
-\]
-The linearized dynamics transverse to the cycle have no Floquet multipliers on the unit circle except the trivial one corresponding to time shift.
-
-Let \( x = \Phi(\theta, r) \), where: %Phi is a diffeom
-\begin{itemize}
-  \item \( \theta \in \mathbb{S}^1 \): phase variable (e.g., time along the cycle),
-  \item \( r \in \mathbb{R}^{n-1} \): transverse coordinates.
-\end{itemize}
-In these coordinates, the system becomes:
-\[
-\begin{aligned}
-\dot{\theta} &= 1 + a_1(r) + a_2(r) + \dots, \\
-\dot{r} &= \Lambda(\theta) r + b_2(\theta, r) + b_3(\theta, r) + \dots,
-\end{aligned}
-\]
-where \( \Lambda(\theta) \) is the linearized transverse dynamics (from Floquet theory),
-and  \( a_k(r) \in \mathbb{R} \), \( b_k(\theta, r) \in \mathbb{R}^{n-1} \) are \( \mathcal{O}(\|r\|^k) \).
-The system can be simplified via near-identity, time-periodic coordinate transformations (sometimes called Floquet–normal form reduction).
-
-%\textbf{Example: Van der Pol.} 
-%The Van der Pol oscillator is a system described by the equations:
-%\[
-%\dot{x}_1 = x_2, \quad \dot{x}_2 = \mu (1 - x_1^2) x_2 - x_1,
 %\]
-%where \( \mu \) is a nonlinearity parameter.
+%where \( \Lambda(\theta) \) is the linearized transverse dynamics (from Floquet theory),
+%and  \( a_k(r) \in \mathbb{R} \), \( b_k(\theta, r) \in \mathbb{R}^{n-1} \) are \( \mathcal{O}(\|r\|^k) \).
+%The system can be simplified via near-identity, time-periodic coordinate transformations (sometimes called Floquet–normal form reduction).
 %
-%To analyze the limit cycle behavior, we use polar coordinates \( x_1 = r \cos(\theta) \) and \( x_2 = r \sin(\theta) \), where:
-%\[
-%\dot{r} = -\mu r + \mathcal{O}(r^2), \quad \dot{\theta} = 1 + \mathcal{O}(r).
-%\]
-%Thus, the normal form near the limit cycle is:
-%\[
-%\dot{\theta} = 1, \quad \dot{r} = -\mu r + \mathcal{O}(r^2),
-%\]
-%which describes a stable limit cycle with phase \( \theta \) evolving uniformly and radial contraction controlled by \( \mu \).
-
-
-\paragraph{Continuous attractors}%our proposal
-Let $\manifold\subset\reals^n$  be a smooth normally hyperbolic invariant manifold (NHIM).
-A \emph{normal form} near a continuous attractor \(\manifold \subset \mathbb{R}^n \) is a change of coordinates 
-\( x = \Phi(\theta, r) \), with:
-\begin{itemize}
-  \item \( \theta \in \mathbb{R}^d \): coordinates on the attractor \( \manifold\),
-  \item \( r \in \mathbb{R}^{n-d} \): coordinates transverse to \(\manifold \),
-\end{itemize}
-such that the vector field becomes:
-\[
-\begin{aligned}
-\dot{\theta} &= 0, \\
-\dot{r} &= -\Lambda(\theta) r + \mathcal{O}(\|r\|^2),
-\end{aligned}
-\]
-where \( \Lambda(\theta) \) is positive definite, ensuring contraction toward the attractor \(\manifold\).
+%%\textbf{Example: Van der Pol.} 
+%%The Van der Pol oscillator is a system described by the equations:
+%%\[
+%%\dot{x}_1 = x_2, \quad \dot{x}_2 = \mu (1 - x_1^2) x_2 - x_1,
+%%\]
+%%where \( \mu \) is a nonlinearity parameter.
+%%
+%%To analyze the limit cycle behavior, we use polar coordinates \( x_1 = r \cos(\theta) \) and \( x_2 = r \sin(\theta) \), where:
+%%\[
+%%\dot{r} = -\mu r + \mathcal{O}(r^2), \quad \dot{\theta} = 1 + \mathcal{O}(r).
+%%\]
+%%Thus, the normal form near the limit cycle is:
+%%\[
+%%\dot{\theta} = 1, \quad \dot{r} = -\mu r + \mathcal{O}(r^2),
+%%\]
+%%which describes a stable limit cycle with phase \( \theta \) evolving uniformly and radial contraction controlled by \( \mu \).
 %
-Equivariant bifurcation theory provides normal forms that are invariant under group action
+%
+%\paragraph{Continuous attractors}%our proposal
+%Let $\manifold\subset\reals^n$  be a smooth normally hyperbolic invariant manifold (NHIM).
+%A \emph{normal form} near a continuous attractor \(\manifold \subset \mathbb{R}^n \) is a change of coordinates 
+%\( x = \Phi(\theta, r) \), with:
+%\begin{itemize}
+%  \item \( \theta \in \mathbb{R}^d \): coordinates on the attractor \( \manifold\),
+%  \item \( r \in \mathbb{R}^{n-d} \): coordinates transverse to \(\manifold \),
+%\end{itemize}
+%such that the vector field becomes:
+%\[
+%\begin{aligned}
+%\dot{\theta} &= 0, \\
+%\dot{r} &= -\Lambda(\theta) r + \mathcal{O}(\|r\|^2),
+%\end{aligned}
+%\]
+%where \( \Lambda(\theta) \) is positive definite, ensuring contraction toward the attractor \(\manifold\).
+%%
+%Equivariant bifurcation theory provides normal forms that are invariant under group action
 
 
 %\paragraph{Translation to center around origin}
@@ -1909,26 +1918,21 @@ Equivariant bifurcation theory provides normal forms that are invariant under gr
 
 
 
-\subsection{Coherence in behavior}
-\subsubsection{Perfect coherence: Invariant manifolds}%+forward invariance
-
-
-\subsubsection{Asymptotic behavior}\label{sec:asymptotic}
-Infinite time horizon perfect coherence
-
-
-\subsubsection{Imperfect coherence}%+forward invariance   /for stochastic / random systems
-\paragraph{Almost invariant manifolds}
- Almost-invariant regions are identified via eigenvectors of a transfer operator and are ranked by the corresponding eigenvalues in the order of the sets' invariance or ``leakiness'' \citep{froyland2009almost}.
-    
-    
-    
-\paragraph{Metastable behavior}\label{sec:metastable}
-   \citep{brinkman2022metastable}
-    
-    
-\paragraph{Coherent regions}
-Regions that remain coherent and relatively nondispersive over finite periods of time \citep{fackeldey2019metastable}.
+%\subsection{Coherence in behavior}
+%\subsubsection{Perfect coherence: Invariant manifolds}%+forward invariance
+%
+%\subsubsection{Asymptotic behavior}\label{sec:asymptotic}
+%Infinite time horizon perfect coherence
+%
+%\subsubsection{Imperfect coherence}%+forward invariance   /for stochastic / random systems
+%\paragraph{Almost invariant manifolds}
+% Almost-invariant regions are identified via eigenvectors of a transfer operator and are ranked by the corresponding eigenvalues in the order of the sets' invariance or ``leakiness'' \citep{froyland2009almost}.
+%    
+%\paragraph{Metastable behavior}\label{sec:metastable}
+%   \citep{brinkman2022metastable}
+%    
+%\paragraph{Coherent regions}
+%Regions that remain coherent and relatively nondispersive over finite periods of time \citep{fackeldey2019metastable}.
 
 
 
@@ -1939,8 +1943,145 @@ Regions that remain coherent and relatively nondispersive over finite periods of
 
 
 \newpage
-\section{Dynamical systems contributions}\label{sec:fojac}
-%Overview  
+\section{First-order bound and the Pareto frontier}\label{sec:fojac}
+Let $\homeo^\ast$ be a diffeomorphism that can be used for achieving the smooth conjugacy in \eqref{eq:d1:tc}.
+Now, we want to consider the complexity of $\homeo$ and trade-off with additive perturbation.
+For this, we will do a first-order perturbation analysis.
+
+To link the complexity of diffeomorphism to the magnitude of additive perturbation, we seek to find the equivalence up to first order of the vector field corresponding to the diffeomorphism.
+Let
+$
+\vf(\vx)
+\overset{\text{t.c.}}{\sim}
+\vg(\vx)
+$.
+That is, we seek to find $\vDelta(\vx)$ that maintains the topological conjugacy,
+\begin{align}
+    \dot\vx = \vf(\vx) + \epsilon \vDelta(\vx)
+    \overset{\text{t.c.}}{\sim}
+    \vg(\vx)
+    \label{eq:pareto:tc}
+\end{align}
+where $\epsilon > 0$.
+
+We assume an Ansatz for the diffeomorphism, under the assumption that it is close to identity:
+\begin{align}\label{eq:h:ansatz}
+    \vy &= \homeo(\vx) = \vx + \epsilon \tilde\homeo(\vx) + O(\epsilon^2)
+\end{align}
+Note that from \eqref{eq:h:ansatz}, we have
+\begin{align}
+    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2)
+\end{align}
+By taking the time derivative of \eqref{eq:h:ansatz}, we get
+\begin{align}
+    \dot{\vy} &= \dot{\vx} + \epsilon \nabla\tilde\homeo(\vx)\dot{\vx} + O(\epsilon^2)
+    \\
+    &=
+	\vf(\vx) + \epsilon \vDelta(\vx)
+	+ \epsilon \nabla\tilde\homeo(\vx)
+	\left(
+	    \vf(\vx) + \epsilon \vDelta(\vx)
+	\right)
+	+ O(\epsilon^2)
+    \\
+    &=
+	\vf(\vx) + \epsilon \vDelta(\vx)
+	+ \epsilon \nabla\tilde\homeo(\vx)
+	    \vf(\vx)
+	+ O(\epsilon^2)
+\end{align}
+At the same time, the Taylor expansion of the unperturbed system transformed with the diffeomorphism gives,
+\begin{align}
+    \dot\vy &= \vf(\vy)
+	= \vf(
+	    \vx + \epsilon \tilde\homeo(\vx) + O(\epsilon^2)
+	)
+	\\
+	&=
+	    \vf(\vx) + \epsilon (\nabla\vf(\vx)) \tilde\homeo(\vx)
+	    + O(\epsilon^2)
+\end{align}
+By comparing terms, we conclude the form of $\vDelta$ up to first order:
+\begin{align}
+    \epsilon \vDelta(\vx) &=
+	\epsilon (\nabla\tilde\homeo(\vx)) \vf(\vx)
+	-
+	\epsilon (\nabla\vf(\vx)) \tilde\homeo(\vx)
+	+ O(\epsilon^2)
+\end{align}
+
+We can use this to derive the following bound that holds for all $\vx$:
+\begin{align}
+    \norm{\vDelta(\vx)}
+    &\leq
+	\norm{(\nabla\tilde\homeo(\vx)) \vf(\vx)
+	+
+	(\nabla\vf(\vx)) \tilde\homeo(\vx)}
+	+ O(\epsilon)
+    \\
+    &\leq
+	\norm{(\nabla\tilde\homeo(\vx)) \vf(\vx)}
+	+
+	\norm{(\nabla\vf(\vx)) \tilde\homeo(\vx)}
+	+ O(\epsilon)
+    \\
+    &\leq
+	\norm{\vf(\vx)}
+	\cdot
+	\underbrace{
+	    \norm{\nabla\tilde\homeo(\vx)}
+	}_{\substack{\text{scale c.}}}
+	+
+	\norm{\nabla\vf(\vx)}
+	\cdot
+	\underbrace{
+	\norm{\tilde\homeo(\vx)}
+	}_{\substack{\text{translation c.}}}
+	+ O(\epsilon)
+    \label{eq:h:bound}
+\end{align}
+for appropriate vector and corresponding matrix norms.
+We recognize two kinds of complexities of the diffeomorphism: (1) scale complexity which is a function of the Jacobian of diffeomorphism $\nabla\homeo(\vx)$, and (2) translation complexity.
+
+Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of two complexity measures of the diffeomorphism can be traded off with the additive perturbation.
+
+
+
+\subsection{Integrated bound}
+The bound \eqref{eq:h:bound} holds point-wise.
+Given a distribution over trajectories (orbits of finite duration),
+$p(\phi(\vx_0,T_\text{max}))$, we can integrate the inequality over the marginal probability measure $p(\vx)$:
+\begin{align}\label{eq:h:bound:integrated}
+    \E_\vx \norm{\vDelta(\vx)}
+    &\leq
+	\E_\vx
+	\left[
+	    \norm{\vf(\vx)}
+	    \cdot
+	    \norm{\nabla\tilde\homeo(\vx)}
+	\right]
+	+
+	\E_\vx
+	\left[
+	    \norm{\nabla\vf(\vx)}
+	    \cdot
+	    \norm{\tilde\homeo(\vx)}
+	\right]
+	+ O(\epsilon)
+\end{align}
+
+%\subsection{Divergence}
+%We are ready to define the divergence measure between the source and target systems under the probability distribution over states.
+%\begin{align}\label{eq:divergence}
+%    \IMPdivv{\vf}{\vg}{\mu}
+%	&\coloneqq
+%	\left(
+%	\inf_\Delta
+%	,
+%	\inf_\homeo
+%	\right)
+%\end{align}
+
 
 %\section{Generalizing motif metric to input-driven systems}
 %We generalize the idea of autonomous attractors (Sec.~\ref{sec:aut_motif_metric}) for input-driven systems.
@@ -2610,7 +2751,7 @@ See for further details  Supp.Sec.~\ref{sec:vfpert_exp_details}.
 
 \subsection{Two Bounded Line Attractors}
 %BLA+ Bistable
-The composite system we use for the experiments is the \emph{Two Bounded Line Attractors} (2 BLAs) system, which is the composite of the \emph{Bistable} and \emph{Bounded Line Attractor} archetypes.
+The composite system (see Supp.Sec.\ref{sec:composite}) we use for the experiments is the \emph{Two Bounded Line Attractors} (2 BLAs) system, which is the composite of the \emph{Bistable} and \emph{Bounded Line Attractor} archetypes.
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=.5\linewidth]{twoblas_vf_trajs}
@@ -2944,7 +3085,7 @@ To facilitate a more faithful comparison and improve alignment with the target d
 
 \subsection{Comparing and evaluating}
 
-\subsubsection{Similarity score}
+\subsubsection{Similarity score}\label{sec:similarity_score}
 The similarity scores shown in Fig.~\ref{fig:ring_pert_fig}B and D, as well as Fig.~\ref{fig:archetype2target}, were computed as follows.
 First, the dissimilarity between the predicted and target dynamics was quantified using the mean squared error (MSE) on the validation dataset (referred to as "distance test" in Fig.~\ref{fig:ring_pert_fig}). 
 For each archetype system, we normalized the dissimilarity scores across all targets by dividing them by the maximum dissimilarity observed for that archetype. 
@@ -2956,16 +3097,18 @@ The DSA similarity score was calculated through the same method by first normali
 
 
 
-\subsubsection{Simplicity score}
+\subsubsection{Simplicity score}\label{sec:simplicity_score}
 We calculate the complexity of the diffeomorphisms under consideration by calculating the deformation as captured by the norm of the difference between the Jacobian of the diffeoimorphism and the identity as described in Supp.Sec.~\ref{sec:complexity} with the Frobenius norm (see Eq.~\ref{eq:jac_id}).
 The simplicity is the same inversion of the normalized complexity score as simplicity is that of the dissimilarity score.
 For each archetype system, we normalized the complexity scores across all targets by dividing them by the maximum complexity observed for that archetype. 
 This normalization yields complexity scores in the range $[0, 1]$. 
 The \emph{simplicity score} for each target was then computed as $1$ minus the normalized complexity score, also resulting in a value between $0$ and $1$.
 
-\subsubsection{Invariant manifold}
+
+
+\subsubsection{Invariant manifold}\label{sec:inv_man}
 For the existing archetypes the attractive invariant manifold is defined by design.
-For the ring attractor and the limit cycle the invariant manifold is the unit ring 
+For example, for the ring attractor and the limit cycle archetypes the invariant manifold is the unit ring 
 \[
 \left\{ (x, y) \in \mathbb{R}^2 \;\middle|\; x^2 + y^2 = 1 \right\}.
 \]
