@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from typing import Callable, Tuple, Optional, List, Literal, Union
 from torchdiffeq import odeint
+import torchsde
 from scipy.integrate import solve_ivp
 import inspect
 import warnings
@@ -70,6 +71,7 @@ class DynamicalSystem(nn.Module):
         noise_std: Optional[float] = None,
         dt: Optional[float] = None,
         time_span: Optional[Tuple[float, float]] = None,
+        use_sde: bool = False,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Computes the trajectory of the system starting from given initial conditions.
@@ -96,11 +98,23 @@ class DynamicalSystem(nn.Module):
 
         t_values = torch.arange(time_span[0], time_span[1], dt)
 
-        def system_with_noise(t, y):
-            dydt = self(t, y)
-            if noise_std > 0:
-                dydt += torch.randn_like(y) * noise_std
-            return dydt
+        if use_sde and noise_std > 0:
+            sde_system = StochasticWrapperSDE(self, noise_std)
+            for i in range(batch_size):
+                traj = torchsde.sdeint(
+                    sde_system,
+                    initial_conditions[i],
+                    t_values,
+                    method='euler',  # for additive noise, 'euler' is fine
+                    dt=dt
+                )
+                trajectories.append(traj)
+        else:
+            def system_with_noise(t, y):
+                dydt = self(t, y)
+                if noise_std > 0:
+                    dydt += torch.randn_like(y) * noise_std
+                return dydt
 
         trajectories = []
         for i in range(batch_size):
@@ -108,6 +122,25 @@ class DynamicalSystem(nn.Module):
             trajectories.append(trajectory)
 
         return torch.stack(trajectories)
+
+class StochasticWrapperSDE(nn.Module):
+    """
+    Wraps a Deterministic DynamicalSystem to be used with torchsde as an SDE with additive noise.
+    Implements dx = f(t, x) dt + sigma dW_t.
+    """
+    def __init__(self, system: DynamicalSystem, noise_std: float):
+        super().__init__()
+        self.system = system
+        self.noise_std = noise_std
+
+    def f(self, t: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        # Deterministic drift: f(t, x)
+        return self.system(t, y)
+
+    def g(self, t: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        # Additive noise: constant diffusion σ·I
+        # Output shape: (batch_size, state_dim, noise_dim)
+        return self.noise_std * torch.ones(y.shape + (1,), device=y.device)
 
 class RingAttractor(DynamicalSystem):
     """
@@ -371,13 +404,13 @@ class LearnableNDBistableSystem(LearnableDynamicalSystem):
     The dynamics are defined by a cubic polynomial.
     """
 
-    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), alpha_init: float = -1.0):
+    def __init__(self, dim: int, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5), alpha_init: float = None):
         super().__init__()
         self.dim = dim
         self.dt = dt
         self.time_span = time_span
         if alpha_init is None:
-            alpha_init = -1.0
+            self.alpha = -1.0
         else:
             self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
 
@@ -390,7 +423,7 @@ class LearnableNDBistableSystem(LearnableDynamicalSystem):
 
         if self.dim > 1:
             for i in range(1, self.dim):
-                derivatives.append(torch.zeros_like(x[:, i]))
+                derivatives.append(self.alpha * x[:, i])
 
         dx_dt = torch.stack(derivatives, dim=-1)
         return dx_dt.squeeze(0) if dx_dt.shape[0] == 1 else dx_dt
@@ -472,7 +505,7 @@ class LearnableNDLimitCycle(LearnableDynamicalSystem):
             self.theta_modulator = TrainablePeriodicFunction(num_terms=theta_modulation_num_terms)
         # Learnable parameters
         if velocity_init is None:
-            self.velocity = 1.0
+            self.velocity = -1.0
         elif not use_theta_modulation: #only if not using theta modulation
             self.velocity = nn.Parameter(torch.tensor(velocity_init, dtype=torch.float32))
         if alpha_init is None:
@@ -966,8 +999,10 @@ class AnalyticalBistableSystem(AnalyticDynamicalSystem):
     ) -> torch.Tensor:
         """
         Computes the analytical trajectory:
-        x(t) = sign(x₀) * sqrt( (x₀² * e^{-2αt}) / ((1 - x₀²) + x₀² * e^{-2αt}) )
-        applied elementwise across all dimensions.
+        - For the first dimension (bistable): 
+        x₁(t) = sign(x₀) * sqrt( (x₀² * e^{-2αt}) / ((1 - x₀²) + x₀² * e^{-2αt}) )
+        - For all other dimensions: 
+        x_j(t) = x_j₀ * exp(α t)  for j = 2, ..., d
         :param initial_position: Tensor of shape (batch_size, dim)
         :param time_span: Optional time range (t0, t1)
         :return: Tensor of shape (batch_size, T, dim)
@@ -984,19 +1019,29 @@ class AnalyticalBistableSystem(AnalyticDynamicalSystem):
         x0 = initial_position  # (B, D)
         B, D = x0.shape
 
-        x0_sq = x0**2  # (B, D)
-        denom_const = 1 - x0_sq  # (B, D)
-        exp_term = torch.exp(-2 * alpha * t_values).view(1, 1, T)  # (1, 1, T)
+        # First dimension: bistable dynamics
+        x0_1 = x0[:, 0]  # (B,)
+        x0_1_sq = x0_1**2
+        denom_const = 1 - x0_1_sq
+        exp_term = torch.exp(-2 * alpha * t_values).view(1, T)  # (1, T)
+        num = x0_1_sq.unsqueeze(1) * exp_term  # (B, T)
+        denom = denom_const.unsqueeze(1) + num  # (B, T)
+        x1_t = x0_1.sign().unsqueeze(1) * torch.sqrt(num / denom)  # (B, T)
 
-        x0_sq_exp = x0_sq.unsqueeze(-1)  # (B, D, 1)
-        denom_const_exp = denom_const.unsqueeze(-1)  # (B, D, 1)
+        # Other dimensions: exponential decay
+        if D > 1:
+            x_rest_0 = x0[:, 1:]  # (B, D-1)
+            decay = torch.exp(alpha * t_values).view(1, T, 1)  # (1, T, 1)
+            x_rest_t = x_rest_0.unsqueeze(1) * decay  # (B, T, D-1)
+        else:
+            x_rest_t = torch.empty(B, T, 0, device=device)  # no residual dims
 
-        ratio = (x0_sq_exp * exp_term) / (denom_const_exp + x0_sq_exp * exp_term)  # (B, D, T)
-
-        trajectory = x0.sign().unsqueeze(-1) * torch.sqrt(ratio)  # (B, D, T)
-        trajectory = trajectory.permute(0, 2, 1)  # (B, T, D)
+        # Combine first dimension and other dimensions
+        x1_t = x1_t.unsqueeze(-1)  # (B, T, 1)
+        trajectory = torch.cat([x1_t, x_rest_t], dim=2)  # (B, T, D)
 
         return trajectory
+
 
     def invariant_manifold(self, num_points=100) -> torch.Tensor:
         """
