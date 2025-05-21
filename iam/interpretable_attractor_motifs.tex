@@ -2745,14 +2745,14 @@ Given a batch of trajectories \( \mathbf{X} \in \mathbb{R}^{B \times T \times d}
 
 The model was trained on $\tilde{\mathbf{X}}_{b,t}$.
 
-\subsection{Training and validation split}
-The data was split into a training and test set with a ratio 0.8:0.2.
+\subsection{Training and Validation Split}
+An 80\%–20\% split was used to divide the data into training and test sets, respectively.
 
 
 
 
 \newpage
-\section{Experiments}
+\section{Numerical experiments}
 
 
 \subsection{Homeomorphism-based perturbation experiment}\label{sec:homeopert_exp_details}
@@ -2840,9 +2840,10 @@ See also Supp.Sec.~\ref{sec:vfpert_exp_description}.
 \end{tabular}
 \end{table}
 
-\subsection{Many targets}\label{sec:manytargets_exp_details}
+\subsection{Classifying the effective behavior of target systems}\label{sec:manytargets_exp_details}
 \begin{table}[h!]
 \centering
+\caption{Simulation parameters for each dynamical system.}
 \begin{tabular}{lcccc}
 \toprule
 \textbf{System} & $dt$ &  $T_{\text{max}}$ & \textbf{Number of initial points} & \textbf{Range for initial points} \\
@@ -2854,7 +2855,6 @@ Sel'kov                 	&    0.1         &       5        &             50     
 2BLAs                  	&    0.1         &       5        &             50                    &       $(0,3)\times (0,3)$ \\
 \bottomrule
 \end{tabular}
-\caption{Simulation parameters for each dynamical system.}
 \label{tab:system_params}
 \end{table}
 
