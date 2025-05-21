@@ -2914,14 +2914,28 @@ Initial points were sampled uniformly from the Range, except for the Ring attrac
 Here $n$ is the number of time points per trajectory (see Tab.~\ref{tab:system_params}, where $n= T_{\text{max}}^{\text{target}}/dt^{\text{target}}$). 
 
 \subsection{Compared methods}
+
  \subsubsection{DSA}
-For DSA, we used $n_{\text{delays}}=3$, which is expected to suffice given that the attractors we consider are one-dimensional.
+For DSA\citep{ostrow2024beyond}, we used $n_{\text{delays}}=3$, which is expected to suffice given that the attractors we consider are one-dimensional.
 According to Takens' theorem, a delay embedding with a sufficiently large number of delays (often 3 or more) is typically adequate for reconstructing the state space of low-dimensional systems, such as one-dimensional attractors.
 The rank of the DMD matrix used in the reduced-rank regression was set to 12 to capture the dominant dynamical modes while avoiding overfitting.
 
  \subsubsection{SPE}
+ For SPE\citep{friedman2025characterizing}, we used the following hyperparameters, matching those in the Van der Pol example provided at \url{https://github.com/nitzanlab/prototype-equivalences}:
+  2500 training iterations, a learning rate of \( 10^{-3} \), and weight decay of \( 10^{-3} \).
+ The center regularization coefficient was set to 0, and the determinant regularization coefficient to \( 10^{-3} \). 
+ The radius of the ring attractor was fixed at \( a = 1 \) and $\omega$ was set to $0$ (Eq.~\ref{eq:ra_spe}).
+ The model used 4 layers with \( K = 4 \) basis functions per layer.
  
- 
+Furthermore, we modified the ring attractor prototype to better match the attraction dynamics of the target system. 
+In the original SPE formulation, the limit cycle is defined by:
+\begin{equation}\label{eq:ra_spe}
+\dot{r} = r(a - r^2), \quad \dot{\theta} = \omega,
+\end{equation}
+which exhibits cubic attraction towards the ring of radius \( a \).
+In contrast, our ring attractor archetype (Eq.~\ref{eq:ra}) features linear radial attraction.
+To facilitate a more faithful comparison and improve alignment with the target dynamics, we modify Eq.~\ref{eq:ra_spe} to adopt the same linear form.
+
 
 
 
