@@ -1966,11 +1966,11 @@ where $\epsilon > 0$.
 
 We assume an Ansatz for the diffeomorphism, under the assumption that it is close to identity:
 \begin{align}\label{eq:h:ansatz}
-    \vy &= \homeo(\vx) = \vx + \epsilon \tilde\homeo(\vx) + O(\epsilon^2)
+    \vy &= \homeo(\vx) = \vx + \epsilon \tilde\homeo(\vx) + O(\epsilon^2).
 \end{align}
 Note that from \eqref{eq:h:ansatz}, we have
 \begin{align}
-    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2)
+    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2).
 \end{align}
 By taking the time derivative of \eqref{eq:h:ansatz}, we get
 \begin{align}
@@ -1988,7 +1988,7 @@ By taking the time derivative of \eqref{eq:h:ansatz}, we get
 	\vf(\vx) + \epsilon \vDelta(\vx)
 	+ \epsilon \nabla\tilde\homeo(\vx)
 	    \vf(\vx)
-	+ O(\epsilon^2)
+	+ O(\epsilon^2).
 \end{align}
 At the same time, the Taylor expansion of the unperturbed system transformed with the diffeomorphism gives,
 \begin{align}
@@ -1999,7 +1999,7 @@ At the same time, the Taylor expansion of the unperturbed system transformed wit
 	\\
 	&=
 	    \vf(\vx) + \epsilon (\nabla\vf(\vx)) \tilde\homeo(\vx)
-	    + O(\epsilon^2)
+	    + O(\epsilon^2).
 \end{align}
 By comparing terms, we conclude the form of $\vDelta$ up to first order:
 \begin{align}
@@ -2007,7 +2007,7 @@ By comparing terms, we conclude the form of $\vDelta$ up to first order:
 	\epsilon (\nabla\tilde\homeo(\vx)) \vf(\vx)
 	-
 	\epsilon (\nabla\vf(\vx)) \tilde\homeo(\vx)
-	+ O(\epsilon^2)
+	+ O(\epsilon^2).
 \end{align}
 
 We can use this to derive the following bound that holds for all $\vx$:
@@ -2037,7 +2037,7 @@ We can use this to derive the following bound that holds for all $\vx$:
 	\underbrace{
 	\norm{\tilde\homeo(\vx)}
 	}_{\substack{\text{translation c.}}}
-	+ O(\epsilon)
+	+ O(\epsilon),
     \label{eq:h:bound}
 \end{align}
 for appropriate vector and corresponding matrix norms.
@@ -2067,7 +2067,7 @@ $p(\phi(\vx_0,T_\text{max}))$, we can integrate the inequality over the marginal
 	    \cdot
 	    \norm{\tilde\homeo(\vx)}
 	\right]
-	+ O(\epsilon)
+	+ O(\epsilon).
 \end{align}
 
 %\subsection{Divergence}
@@ -2887,9 +2887,11 @@ Given a batch of trajectories \( \mathbf{X} \in \mathbb{R}^{B \times T \times d}
 
 The model was trained on $\tilde{\mathbf{X}}_{b,t}$.
 
-\subsection{Training and Validation Split}
+\subsection{Training and test split}
 An 80\%–20\% split was used to divide the data into training and test sets, respectively.
 
+\subsection{Training time}
+Training a single network for 1000 epochs took around 8 minutes on an Intel Core i7 CPU and occupied 5 percent of an 8GB RAM.
 
 
 
