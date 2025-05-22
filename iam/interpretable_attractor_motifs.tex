@@ -2755,6 +2755,17 @@ The composite system (see Supp.Sec.\ref{sec:composite}) we use for the experimen
 \end{figure}
 
 
+\subsection{Compass RNN}
+%task
+On each trial, the RNN receives a one-dimensional input sequence of angular velocities (positive for rightward, negative for leftward rotation), sampled from a zero-mean Gaussian Process with a radial basis function (RBF) kernel to ensure temporal smoothness. The task is to output a two-dimensional vector \( (\cos \theta(t), \sin \theta(t)) \), where \( \theta(t) \) is the time-integrated angular velocity:
+\[
+\theta(t) = \int_0^t \omega(s) \, ds \approx \sum_{i=0}^{t} \omega_i \cdot dt.
+\]
+Initial angles \( \theta(0) \) are random across trials. 
+This task serves as a proxy for the internal compass computation performed by head direction cells, and has been used to study the emergence of ring attractors and persistent activity in RNN dynamics.
+%
+The trained recurrent neural networks we investigated have hidden sizes of 64, 128, or 256 units with the rectified tanh (ReLU applied to tanh) activation function for their hidden units. 
+
 
 \newpage
 \section{Architectures}\label{sec:architectures}
@@ -2771,7 +2782,7 @@ The solution to this equation is solved with \texttt{torchdiffeq}'s \texttt{odei
 The inverse is acquired by integrating in reverse time i.e. $t\in[1,0]$.
 
 %MLP
-We are using signle hidden layer MLPs as our parametrized vector field with a ReLU activation function, see further Supp.Sec.~\ref{sec:fnn} and Supp.Sec.~\ref{sec:experiment_details}.
+We are using single hidden layer MLPs as our parameterized vector field with a ReLU activation function, see further Supp.Sec.~\ref{sec:fnn} and Supp.Sec.~\ref{sec:experiment_details}.
 
 
 %\paragraph{Other proposals}
@@ -3082,6 +3093,7 @@ To facilitate a more faithful comparison and improve alignment with the target d
 \section{Analysis}
 
 \subsection{Comparing and evaluating}
+The data generated
 
 \subsubsection{Similarity score}\label{sec:similarity_score}
 The similarity scores shown in Fig.~\ref{fig:ring_pert_fig}B and D, as well as Fig.~\ref{fig:archetype2target}, were computed as follows.
