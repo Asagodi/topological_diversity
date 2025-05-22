@@ -114,6 +114,7 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic =
 
 def perthomeo_exp(base_save_dir="homeopert_ring", ds_motif='ring', noise_std=0.0, layer_sizes=[64], num_epochs=200,
                  random_seed_target=313, random_seed_run=0):
+    exp_folder = 'experiments/'
     if noise_std > 0:
         save_dir = os.path.join(exp_folder, base_save_dir, f"noise_{noise_std}", ds_motif)
     else:
@@ -272,6 +273,7 @@ def perthomeo_exp(base_save_dir="homeopert_ring", ds_motif='ring', noise_std=0.0
 
 def run_pert_ra_experiment(base_save_dir="vf_pert_ring/simple", ds_motif='ring', 
                            layer_sizes=[64], num_epochs=200, random_seed_vf=313, random_seed_run=0):
+    exp_folder = 'experiments/'
     save_dir = os.path.join(exp_folder, base_save_dir, ds_motif)
     os.makedirs(save_dir, exist_ok=True)
     set_seed(random_seed_vf)
