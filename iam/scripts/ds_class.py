@@ -1165,10 +1165,10 @@ class AnalyticalRingAttractor(AnalyticDynamicalSystem):
         self.time_span = time_span
         self.dt = dt
         self.radius = radius
-        # if not alpha_init is None:
-        #     self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
-        # else:
-        #     self.alpha = -1.
+        if not alpha_init is None:
+            self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+        else:
+            self.alpha = -1.
         self.dim = dim
 
     def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float,float]] = None) -> torch.Tensor:
