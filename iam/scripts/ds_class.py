@@ -98,49 +98,53 @@ class DynamicalSystem(nn.Module):
 
         t_values = torch.arange(time_span[0], time_span[1], dt)
 
+        trajectories = []
         if use_sde and noise_std > 0:
             sde_system = StochasticWrapperSDE(self, noise_std)
             for i in range(batch_size):
                 traj = torchsde.sdeint(
                     sde_system,
-                    initial_conditions[i],
+                    initial_conditions[i].unsqueeze(0),
                     t_values,
-                    method='euler',  # for additive noise, 'euler' is fine
+                    method='euler',  
                     dt=dt
                 )
-                trajectories.append(traj)
-        else:
-            def system_with_noise(t, y):
-                dydt = self(t, y)
-                if noise_std > 0:
-                    dydt += torch.randn_like(y) * noise_std
-                return dydt
+                trajectories.append(traj.squeeze(1))
+        # else:
+        #     def system_with_noise(t, y):
+        #         dydt = self(t, y)
+        #         if noise_std > 0:
+        #             dydt += torch.randn_like(y) * noise_std
+        #         return dydt
 
-        trajectories = []
-        for i in range(batch_size):
-            trajectory = odeint(system_with_noise, initial_conditions[i], t_values, method='rk4')
-            trajectories.append(trajectory)
+        else:
+            for i in range(batch_size):
+                trajectory = odeint(system_with_noise, initial_conditions[i], t_values, method='rk4')
+                trajectories.append(trajectory)
 
         return torch.stack(trajectories)
 
 class StochasticWrapperSDE(nn.Module):
     """
-    Wraps a Deterministic DynamicalSystem to be used with torchsde as an SDE with additive noise.
-    Implements dx = f(t, x) dt + sigma dW_t.
+    Wraps a deterministic DynamicalSystem for use with torchsde, modeling:
+        dx = f(t, x) dt + σ dW_t
     """
+    noise_type = "additive"
+    sde_type = "ito"
+
     def __init__(self, system: DynamicalSystem, noise_std: float):
         super().__init__()
         self.system = system
         self.noise_std = noise_std
 
     def f(self, t: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-        # Deterministic drift: f(t, x)
         return self.system(t, y)
 
     def g(self, t: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-        # Additive noise: constant diffusion σ·I
-        # Output shape: (batch_size, state_dim, noise_dim)
-        return self.noise_std * torch.ones(y.shape + (1,), device=y.device)
+        # Support both single and batch mode
+        shape = y.shape if y.ndim == 2 else (1, y.shape[-1])
+        return self.noise_std * torch.ones((*shape, 1), device=y.device)
+
 
 class RingAttractor(DynamicalSystem):
     """
@@ -426,7 +430,8 @@ class LearnableNDBistableSystem(LearnableDynamicalSystem):
                 derivatives.append(self.alpha * x[:, i])
 
         dx_dt = torch.stack(derivatives, dim=-1)
-        return dx_dt.squeeze(0) if dx_dt.shape[0] == 1 else dx_dt
+        return dx_dt 
+        #return dx_dt.squeeze(0) if dx_dt.shape[0] == 1 else dx_dt
 
     def invariant_manifold(self, num_points=100) -> torch.Tensor:
         """
@@ -784,16 +789,24 @@ class LearnableBoundedContinuousAttractor(LearnableDynamicalSystem):
         Returns:
             torch.Tensor: flow vectors, shape (..., D)
         """
-        projected = torch.clamp(x, -self.bounds, self.bounds)
-        mask = (x < -self.bounds) | (x > self.bounds)
-        flow = torch.where(mask, - self.alpha * (projected - x), torch.zeros_like(x))
+        if x.ndim == 1:
+            x = x.unsqueeze(0)
+
+        # Clamp only the bounded dimensions
+        x_bca = x[:, :self.bca_dim]
+        projected = torch.clamp(x_bca, -self.bounds, self.bounds)
+        mask = (x_bca < -self.bounds) | (x_bca > self.bounds)
+        flow_bca = torch.where(mask, -self.alpha * (projected - x_bca), torch.zeros_like(x_bca))
 
         if self.dim > self.bca_dim:
             residual = x[:, self.bca_dim:]
             d_residual_dt = self.alpha * residual
-            flow.append(d_residual_dt)
+            flow = torch.cat([flow_bca, d_residual_dt], dim=-1)
+        else:
+            flow = flow_bca
 
         return flow
+
 
     def compute_trajectory(self, initial_position: torch.Tensor, time_span: Optional[Tuple[float, float]] = None) -> torch.Tensor:
         """
@@ -2083,66 +2096,74 @@ def generate_initial_conditions(
     return initial_conditions
 
 
+
 def generate_trajectories(
     system: DynamicalSystem,
-    noise_std: float=None,
-    sampling_method: str=None,
-    init_points_bounds: tuple=None,
-    num_points: int=None,
-    time_span: torch.Tensor=None,
-    dt: float=None,
-    kernel_fn=None,
-    predefined_initial_conditions=None
+    noise_std: Optional[float] = None,
+    sampling_method: Optional[str] = None,
+    init_points_bounds: Optional[Tuple[float, float]] = None,
+    num_points: Optional[int] = None,
+    time_span: Optional[torch.Tensor] = None,
+    dt: Optional[float] = None,
+    kernel_fn: Optional[Callable] = None,
+    predefined_initial_conditions: Optional[torch.Tensor] = None
 ):
     """
-    Generates trajectories using the given sampling method and kernel function, or uses predefined initial conditions.
+    Generates trajectories from a dynamical system, with optional additive SDE noise.
 
+    :param system: Dynamical system.
+    :param noise_std: Standard deviation of additive noise (if any).
     :param sampling_method: Method for sampling initial conditions ('random', 'grid', 'density').
-    :param bounds: Tuple (max_x, max_y) to define the bounds of sampling space.
-    :param time_span: Time span for integration as a tensor [t_start, t_end].
-    :param dt: Time step for integration.
+    :param init_points_bounds: Tuple defining the sampling space bounds.
     :param num_points: Number of initial points to sample.
-    :param kernel_fn: Kernel function used to determine the density of sampling (if 'density' sampling is used).
-    :param system: Dynamical system (LimitCycle or VanDerPol).
-    :param predefined_initial_conditions: Predefined list of initial conditions for trajectories.
-    :return: Time values, trajectories, and sampled initial conditions.
+    :param kernel_fn: Kernel function for density-based sampling.
+    :param time_span: Tensor [t_start, t_end].
+    :param dt: Time step size.
+    :param predefined_initial_conditions: Tensor of predefined initial conditions.
+    :return: Tuple (t_values, trajectories, initial_conditions).
     """
-    if not dt:
+    if dt is None:
         dt = system.dt
     if time_span is None or not torch.any(time_span):
         time_span = system.time_span
-    #t_eval = np.arange(time_span.cpu().numpy()[0], time_span.cpu().numpy()[1], dt)
-    t_values = torch.arange(time_span[0], time_span[1], dt)
+
+    t_values = torch.arange(time_span[0], time_span[1] + dt, dt)
 
     if predefined_initial_conditions is not None:
-        # Ensure predefined initial conditions are in tensor format
-        if isinstance(predefined_initial_conditions, torch.Tensor):
-            initial_conditions = predefined_initial_conditions.clone().float() #.detach().float()
-            initial_conditions.requires_grad_(True)
-        else:
-            initial_conditions = torch.tensor(predefined_initial_conditions, dtype=torch.float32)
+        initial_conditions = (
+            predefined_initial_conditions.clone().float()
+            if isinstance(predefined_initial_conditions, torch.Tensor)
+            else torch.tensor(predefined_initial_conditions, dtype=torch.float32)
+        )
     else:
-       initial_conditions = generate_initial_conditions(sampling_method=sampling_method, bounds=init_points_bounds, num_points=num_points, kernel_fn=kernel_fn) 
+        initial_conditions = generate_initial_conditions(
+            sampling_method=sampling_method,
+            bounds=init_points_bounds,
+            num_points=num_points,
+            kernel_fn=kernel_fn
+        )
 
-    #initial_conditions.requires_grad_(False)
-    # Integrate the system for each initial condition
     trajectories = []
-    def system_with_noise(t, y):
-            dydt = system(t, y)
-            noise = torch.randn_like(y) * system.noise_std
-            return dydt + noise
-        
-    for initial_condition in initial_conditions:
-        #trajectory = odeint(system, initial_condition, t_values, method='rk4')
-        trajectory = odeint(system_with_noise, initial_condition, t_values, method='rk4')
 
-        trajectories.append(trajectory)
+    if noise_std is not None and noise_std > 0:
+        sde_system = StochasticWrapperSDE(system=system, noise_std=noise_std)
 
-    # Convert trajectories to a tensor
-    trajectories = torch.stack(trajectories)
-    
-    return t_values, trajectories, initial_conditions
+        for x0 in initial_conditions:
+            traj = torchsde.sdeint(
+                sde_system,
+                x0.unsqueeze(0),  
+                t_values,
+                method='euler',
+                dt=dt
+            )
+            traj = traj.squeeze(1)
+            trajectories.append(traj)
+    else:
+        for x0 in initial_conditions:
+            traj = odeint(system, x0, t_values, method='rk4')
+            trajectories.append(traj)
 
+    return t_values, torch.stack(trajectories), initial_conditions
 
 
 

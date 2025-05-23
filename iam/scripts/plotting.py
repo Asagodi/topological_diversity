@@ -870,3 +870,151 @@ def plot_losses_and_jacobian_norms(
     plt.show()
 
     sns.set(style="white", palette="deep", font="sans-serif")  # Reset seaborn
+
+
+def hinton(matrix, ax=None, max_weight=None):
+    """Draws a Hinton diagram for visualizing a weight matrix."""
+    ax = ax if ax is not None else plt.gca()
+    ax.patch.set_facecolor('gray')
+    ax.set_aspect('equal', 'box')
+    ax.xaxis.set_major_locator(plt.NullLocator())
+    ax.yaxis.set_major_locator(plt.NullLocator())
+
+    if max_weight is None:
+        max_weight = 2 ** np.ceil(np.log2(np.abs(matrix).max()))
+
+    for (y, x), w in np.ndenumerate(matrix):
+        color = 'white' if w > 0 else 'black'
+        size = np.sqrt(np.abs(w) / max_weight)
+        rect = plt.Rectangle([x - size / 2, y - size / 2], size, size,
+                             facecolor=color, edgecolor=color)
+        ax.add_patch(rect)
+
+    ax.autoscale_view()
+    ax.invert_yaxis()
+
+def hinton_double(matrix1, matrix2, ax=None, max_weight=None,
+                  color1='cyan', color2='green', alpha=0.5,
+                  flipped=True):
+    """Draws two Hinton diagrams for visualizing two weight matrices."""
+    ax = ax if ax is not None else plt.gca()
+    #ax.patch.set_facecolor('gray')
+    ax.set_aspect('equal', 'box')
+    ax.xaxis.set_major_locator(plt.NullLocator())
+    ax.yaxis.set_major_locator(plt.NullLocator())
+
+    # if max_weight is None:
+    #     max_weight1 = 2 ** np.ceil(np.log2(np.abs(matrix1).max()))
+    #     max_weight2 = 2 ** np.ceil(np.log2(np.abs(matrix2).max()))
+    # else:
+    #     max_weight1 = max_weight
+    #     max_weight2 = max_weight
+
+    max_weight1 = 1
+    max_weight2 = 1
+    for (y, x), w in np.ndenumerate(matrix1):
+        #color = 'white' if w > 0 else 'black'
+        size = np.sqrt(np.abs(w) / max_weight1)
+        if flipped:
+            size = 1 - size
+        rect = plt.Rectangle([x - size / 2, y - size / 2], size, size,
+                             facecolor=color1, edgecolor='k', alpha=alpha)
+        ax.add_patch(rect)
+
+    for (y, x), w in np.ndenumerate(matrix2):
+        #color = 'white' if w > 0 else 'black'
+        size = np.sqrt(np.abs(w) / max_weight2)
+        if flipped:
+            size = 1 - size
+        rect = plt.Rectangle([x - size / 2, y - size / 2], size, size,
+                             facecolor=color2, edgecolor='k', alpha=alpha)
+        ax.add_patch(rect)
+
+    ax.autoscale_view()
+    ax.invert_yaxis()
+
+
+import matplotlib.ticker as ticker
+from typing import Optional
+
+def plot_pca_trajectories(
+    traj_pca: np.ndarray,
+    transformed_traj_pca: np.ndarray,
+    fit_ra_points_pca: np.ndarray,
+    save_path: Optional[str] = None,
+    title: str = "Trajectories colored by memory content",
+    net_id: Optional[str] = None,
+    xymm: float = 3.0
+) -> None:
+    """
+    Plot original and transformed PCA trajectories colored by angular memory content.
+
+    Args:
+        traj_pca: Array of shape (num_trials, time_steps, 2), original trajectories.
+        transformed_traj_pca: Array of same shape, transformed trajectories.
+        fit_ra_points_pca: Array of shape (N, 2), PCA-projected ring attractor points.
+        save_path: If provided, saves the plot as a PDF to this path.
+        title: Title of the plot.
+        net_id: Optional identifier to include in saved filename.
+        xymm: Axis limits for x and y.
+    """
+    num_trials = transformed_traj_pca.shape[0]
+    angles = np.linspace(-np.pi, np.pi, num_trials)
+
+    cmap_hsv = plt.get_cmap('hsv')
+    norm = mpl.colors.Normalize(vmin=-np.pi, vmax=np.pi)
+    colors = cmap_hsv(norm(angles))
+
+    fig, ax = plt.subplots()
+
+    for i in range(num_trials):
+        ax.plot(
+            traj_pca[i, :, 0],
+            traj_pca[i, :, 1],
+            color=colors[i],
+            alpha=0.5,
+            linewidth=1
+        )
+        ax.plot(
+            transformed_traj_pca[i, :, 0],
+            transformed_traj_pca[i, :, 1],
+            linestyle='--',
+            color=colors[i],
+            alpha=0.5,
+            linewidth=1
+        )
+
+    ax.plot(
+        fit_ra_points_pca[:, 0],
+        fit_ra_points_pca[:, 1],
+        '--',
+        color='k',
+        alpha=0.5
+    )
+
+    sm = plt.cm.ScalarMappable(cmap=cmap_hsv, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm, ax=ax, label='Angle (radians)')
+    cbar.set_ticks([-np.pi, 0, np.pi])
+    cbar.ax.yaxis.set_major_formatter(
+        ticker.FuncFormatter(lambda val, pos: {
+            -np.pi: r'$-\pi$',
+             0: r'$0$',
+             np.pi: r'$\pi$'
+        }.get(val, f'{val:.2f}'))
+    )
+
+    ax.set_title(title)
+    ax.set_xlabel("PC 1")
+    ax.set_ylabel("PC 2")
+    ax.set_xlim(-xymm, xymm)
+    ax.set_ylim(-xymm, xymm)
+    ax.set_xticks([-xymm, xymm], [-xymm, xymm])
+    ax.set_yticks([-xymm, xymm], [-xymm, xymm])
+    ax.set_aspect('equal')
+
+    if save_path:
+        filename = f"traj_pca_{net_id}.pdf" if net_id else "traj_pca.pdf"
+        plt.savefig(save_path + "/" + filename, bbox_inches='tight')
+
+    plt.show()
