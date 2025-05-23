@@ -599,8 +599,8 @@ class LearnableNDRingAttractor(LearnableDynamicalSystem):
             self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
         if vf_on_ring_enabled:
             self.vf_on_ring = TrainablePeriodicFunction(num_terms=vf_on_ring_num_terms)
+            self.sigma = nn.Parameter(torch.tensor(sigma_init, dtype=torch.float32))  # width of radial band around the ring
         self.vf_on_ring_enabled = vf_on_ring_enabled
-        self.sigma = nn.Parameter(torch.tensor(sigma_init, dtype=torch.float32))  # width of radial band around the ring
 
     def forward(self, t: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         if x.dim() == 1:

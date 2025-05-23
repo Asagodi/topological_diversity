@@ -61,3 +61,43 @@ def normalize_scale_pair(trajectories_target_full, training_pairs=False):
         trajectories_target = trajectories_target_full.clone()
     
     return trajectories_target_full, trajectories_target, mean, std
+
+
+
+import numpy as np
+
+def estimate_poincare_period_radians_np(
+    trajectories: np.ndarray,
+    eps: float = 1e-2,
+    min_skip: int = 5,
+) -> np.ndarray:
+    """
+    Estimate the recurrence period in radians using Poincaré recurrence (NumPy version).
+
+    Args:
+        trajectories: Array of shape (B, T, N).
+        eps: Distance threshold for recurrence.
+        min_skip: Minimum number of steps to skip after t0 to avoid trivial matches.
+
+    Returns:
+        periods_radians: Array of shape (B,) with estimated recurrence periods (in radians).
+    """
+    B, T, N = trajectories.shape
+    x0 = trajectories[:, 0, :]  # shape (B, N)
+    distances = np.linalg.norm(trajectories - x0[:, None, :], axis=2)  # shape (B, T)
+
+    # Ignore first few steps to avoid trivial matches
+    distances[:, :min_skip] = np.inf
+
+    periods_steps = np.full(B, T, dtype=int)  # default to T (no recurrence found)
+
+    for b in range(B):
+        match = np.where(distances[b] < eps)[0]
+        if len(match) > 0:
+            periods_steps[b] = match[0]
+
+    # Convert from steps to radians
+    periods = periods_steps.astype(np.float32)
+    periods_radians = (periods_steps.astype(np.float32) / (T - 1)) * (2 * np.pi)
+
+    return periods, periods_radians
