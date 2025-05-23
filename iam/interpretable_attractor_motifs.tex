@@ -2597,7 +2597,7 @@ Unless otherwise specified, we set $\mu=0.3$.
 \end{figure}
 
 \paragraph{Noisy Van der Pol}  
-We set $\sigma = 0.75$ for the diffusion coefficient (Eq.~\ref{eq:sde}).
+We set $\sigma = 0.25$ for the diffusion coefficient (Eq.~\ref{eq:sde}).
 
 
 
@@ -2710,7 +2710,7 @@ We set $a= 1.5$ and $b=-0.5$.
 \end{figure}
 
 \paragraph{Noisy ring attractor}
-We set $\sigma = 0.25$ for the diffusion coefficient (Eq.~\ref{eq:sde}).
+We set $\sigma = 0.1$ for the diffusion coefficient (Eq.~\ref{eq:sde}).
 
 
 %\subsubsection{Ring attractor}
@@ -2933,7 +2933,7 @@ See also Supp.Sec.~\ref{sec:homeopert_exp_description}.
 %\midrule
 \multirow{4}{*}{ } 
     & Type: Neural ODE \\
-Target Deformation:    & Hidden layers: \texttt{[128]} \\
+Target Deformation:    & Hidden layers: \texttt{[64]} \\
 Random diffeomorphism    & Activation: \texttt{ReLU} \\
     & MLP weight initialization  $\sim\mathcal{N}(0.02,0.5)$ \\
 \midrule
@@ -2996,7 +2996,7 @@ See also Supp.Sec.~\ref{sec:vfpert_exp_description}.
 \midrule
 \multirow{3}{*}{Learned diffeomorphism} 
     & Type: Neural ODE \\
-    & Hidden layers: \texttt{[128]} \\
+    & Hidden layers: \texttt{[64]} \\
     & Activation: \texttt{ReLU} \\
 \midrule
 \multirow{1}{*}{Source}
@@ -3092,8 +3092,10 @@ To facilitate a more faithful comparison and improve alignment with the target d
 \newpage
 \section{Analysis}
 
-\subsection{Comparing and evaluating}
-The data generated
+\subsection{Evaluating and comparing}
+The archetype trajectories data  for DSA was generated with the same initial values as the target trajectories for matching target-archetype pairs (e.g. ring attractor and noisy ring attractor).
+Noisy archetypes were generated with $\sigma=0.025$ in Eq.~\ref{eq:sde}.
+
 
 \subsubsection{Similarity score}\label{sec:similarity_score}
 The similarity scores shown in Fig.~\ref{fig:ring_pert_fig}B and D, as well as Fig.~\ref{fig:archetype2target}, were computed as follows.
@@ -3136,6 +3138,7 @@ The invariant manifold of the model was then transformed by the fitted diffeomor
 
 \newpage
 \section{Results}
+In this section we compare the archetype fits to the targets.
 \subsection{Ring attractor experiments}
 \subsubsection{Deformed ring attractor}
 \begin{figure}[htbp]
