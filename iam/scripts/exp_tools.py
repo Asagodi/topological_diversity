@@ -43,7 +43,7 @@ def split_data(trajectories_target, train_ratio = 0.8):
 
 def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic = False, canonical = True, maxT = 5,
                     alpha_init = None, velocity_init = None, vf_on_ring_enabled = False, #if analytic then not used
-                    homeo_type = 'node', layer_sizes = 1*[64], 
+                    homeo_type = 'node', layer_sizes = 1*[64], quick_jac = False,
                     train_ratio = 0.8, training_pairs = False, 
                     lr = 0.01, num_epochs = 200, jac_lambda_reg = 0., 
                     random_seed = 313):
@@ -54,6 +54,7 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic =
     set_seed(random_seed)
      
     trajectories_target = np.load(data_dir / f'{target_name}.npy')
+    trajectories_target = trajectories_target
     dim = trajectories_target.shape[2]
     tsteps = trajectories_target.shape[1]
     B = trajectories_target.shape[0]
@@ -93,8 +94,12 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic =
     traj_trans = torch.tensor(traj_trans_np, dtype=torch.float32)
 
     inv_man = homeo_ds_net.invariant_manifold(100).detach().numpy()
-    jac_norm_frobenius = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='fro').detach().numpy()
-    jac_norm_spectral = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='spectral').detach().numpy()
+    if quick_jac:
+        jac_norm_frobenius = jacobian_frobenius_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
+        jac_norm_spectral = jacobian_spectral_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
+    else:
+        jac_norm_frobenius = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='fro').detach().numpy()
+        jac_norm_spectral = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='spectral').detach().numpy()
 
     np.savez(
     f"{save_dir}/results_{target_name}.npz",

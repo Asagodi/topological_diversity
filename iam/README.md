@@ -18,10 +18,3 @@ These are the instructions for running the code for the paper **Dynamical Archet
 ## Supplementary Material
 
 - `source_motifs.ipynb`: Displays the behavior of the different archetypes in our archetype library (Supp. Sec. E).
-
-
-
-
-
-
-
