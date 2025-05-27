@@ -1,0 +1,99 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amssymb, amsmath, amsthm, amsfonts}
+\usepackage{thmtools, mathtools, mathrsfs, dsfont}
+
+\begin{document}
+
+We consider a dynamical system
+\[
+\dot{x} = f(x) = \tanh(Wx + b) - x
+\]
+that admits an attracting invariant manifold \( \mathcal{M} \subset \mathbb{R}^n \), homeomorphic to the circle \( S^1 \).
+
+
+Observation: 
+More robust networks tend to exhibit higher curvature in their learned invariant manifolds.
+
+\section{Hypotheses}
+
+\begin{enumerate}
+\item Increasing curvature is necessary to embed \emph{more fixed points} along invariant manifold,  it increases distance in parameter space to neighbouring fixed points being far apart.
+\item Increasing curvature increases robustness independently of the number of fixed points, i.e., it increases distance in parameter space to regimes where the network loses fixed points.
+\end{enumerate}
+
+\subsection{More fixed points}
+1. Fixed points contribute to robustness: structural stability + with many fixed points removal has less effect on behavior.
+When an invariant manifold (e.g., a ring attractor) hosts more fixed points densely, the removal or destabilization of any single fixed point has a diminished impact on the overall system behavior. The dynamical regime remains qualitatively similar because neighboring fixed points provide redundancy, preserving the system’s function even under perturbations.
+
+2. tanh networks cannot implement arbitrarily many fixed points: tanh is a monotonic function
+
+3. Number of fixed points is related to curvature.
+
+\subsubsection{Turning points depend on curvature}
+Let \(\mathcal{M} \subset \mathbb{R}^n\) be a smooth, attractive invariant manifold homeomorphic to the circle \(S^1\), parameterized by \(\gamma : S^1 \to \mathbb{R}^n\). The system dynamics satisfy \(\dot{x} = f(x)\).
+
+Since \(\mathcal{M}\) is invariant and attractive, the dynamics restricted to \(\mathcal{M}\) can be described by a scalar phase \(\theta \in S^1\), with \(x = \gamma(\theta)\). The time derivative is
+\[
+\dot{x} = \gamma'(\theta) \dot{\theta} = f(\gamma(\theta)).
+\]
+
+Projecting onto the tangent vector \(\gamma'(\theta)\) gives
+\[
+\langle f(\gamma(\theta)), \gamma'(\theta) \rangle = \|\gamma'(\theta)\|^2 \dot{\theta}.
+\]
+Define
+\[
+h(\theta) := \langle f(\gamma(\theta)), \gamma'(\theta) \rangle,
+\]
+so that the effective phase dynamics on \(\mathcal{M}\) satisfy
+\[
+\dot{\theta} = \frac{h(\theta)}{\|\gamma'(\theta)\|^2}.
+\]
+
+Fixed points on \(\mathcal{M}\) correspond to zeros of \(\dot{\theta}\), equivalently zeros of \(h(\theta)\). Thus,
+\[
+\theta^* : \quad h(\theta^*) = 0.
+\]
+The number of fixed points equals the number of zero crossings of \(h\).
+
+By classical oscillation theory for smooth functions on a compact domain,
+\[
+\#\{ \theta : h(\theta) = 0 \} \leq \#\{ \theta : h'(\theta) = 0 \} + 1,
+\]
+so the number of fixed points is bounded by the number of turning points of \(h\).
+
+Differentiating,
+\[
+h'(\theta) = \left\langle \frac{d}{d\theta} f(\gamma(\theta)), \gamma'(\theta) \right\rangle + \left\langle f(\gamma(\theta)), \gamma''(\theta) \right\rangle.
+\]
+
+The first term depends on the variation of the vector field \(f\) along \(\mathcal{M}\), involving the Jacobian \(Df(\gamma(\theta))\). The second term involves \(\gamma''(\theta)\), the geometric curvature of the manifold.
+
+Since \(\mathcal{M}\) is an attractor shaped by the flow \(f\), \(\gamma''(\theta)\) depends implicitly on \(f\). Hence, the curvature of the manifold and the variation of the flow along \(\mathcal{M}\) are coupled and jointly influence the number of fixed points.
+
+Therefore, embedding multiple fixed points on \(\mathcal{M}\) requires sufficient oscillation in \(h(\theta)\), which in turn requires enough turning points arising from both the geometric curvature of \(\mathcal{M}\) and the variation of \(f\) along it. This establishes a fundamental limit on the number of fixed points that can be robustly embedded, determined by curvature-related properties of both the manifold and the flow.
+
+
+%Use?
+The robustness margin: the minimal parameter change required to remove or merge fixed points (related to how flat the function \(h(\theta)\) is near its zeros).
+
+
+
+\subsection{Descreases flow speed}
+Robustness of the network to perturbations \(W \to W' = W + \Delta W\) is determined by how much the output \(y(t)\) changes in response to perturbations of the internal state trajectory \(x(t)\).
+
+Increasing the curvature of the invariant manifold and the flow can induce geometric bending or folding of trajectories in the high-dimensional state space. This means that even if the perturbed internal velocity \(\dot{x}' = f_{W'}(x)\) becomes large or complex, the projection onto the output space,
+\[
+y(t) = W_{\mathrm{out}} x(t),
+\]
+may vary slowly if the directions of high velocity in state space are nearly orthogonal to the output directions.
+
+In other words, curvature can align directions of fast internal dynamics with directions that have minimal effect on the output, effectively creating a “slow manifold” in output space. This geometric mechanism ensures that the output remains stable under parameter perturbations even when the internal dynamics are substantially altered.
+
+Therefore, increasing curvature increases the size of the parameter perturbation \(\|\Delta W\|\) necessary to cause qualitative changes in the output, such as the disappearance or destabilization of fixed points observable in output coordinates. This robustness enhancement occurs independently of the number of fixed points embedded on the manifold, relying instead on the geometric interaction between the manifold’s curvature and the output projection.
+
+Hence, curvature acts as a geometric buffer, increasing robustness by decoupling internal velocity changes from output variability.
+
+\end{document}
