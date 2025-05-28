@@ -1,42 +1,18 @@
 \documentclass{article}
-%\usepackage{arxiv}
-\usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2024
-%\usepackage[natbib,style=authoryear,refsection=chapter]{biblatex} %for splitting refs:main-appendix?
-\usepackage[preprint]{neurips_2025}
+\usepackage[abbrvbib]{jmlr2e} %preprint
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
-\usepackage{amssymb, amsmath, amsthm, amsfonts}
-\usepackage{thmtools, mathtools, mathrsfs, dsfont}
+\usepackage{amssymb, amsmath, amsfonts} % without amsthm
+\usepackage{mathtools, mathrsfs, dsfont} % without thmtools
 \usepackage{bbm}
-%\usepackage{bbold} %for mathbb{1}
 \usepackage{forloop}
-\usepackage[pdftex]{graphicx}  %remove demo option in your document
 \usepackage{sidecap}
 \usepackage{enumitem}
-\PassOptionsToPackage{dvipsnames}{xcolor}
 \usepackage{xcolor}
-\definecolor{ForestGreen}{rgb}{0.13, 0.55, 0.13}
-\definecolor{MidnightBlue}{rgb}{0.1, 0.1, 0.44}
-\definecolor{BurntOrange}{rgb}{0.8, 0.33, 0.0}
-\definecolor{Plum}{rgb}{0.56, 0.27, 0.52}
-\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,filecolor=TealBlue,urlcolor=Plum]{hyperref}
-\hypersetup{breaklinks=true}
-
-%for comments
-\newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
-\definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
 \definecolor{ascolor}{rgb}{1, 0.5, 0.}
-\newcommand{\mpcomment}[1]{\textcolor{mpcolor}{(#1)}}
 \newcommand{\ascomment}[1]{\textcolor{ascolor}{(#1)}}
 
 \graphicspath{{figures}}
-
-\newtheorem{theorem}{Theorem}
-\newtheorem{proposition}{Proposition}
-\newtheorem{lemma}{Lemma}
-\newtheorem{corollary}{Corollary}[theorem]
-\theoremstyle{definition} \newtheorem{definition}{Definition}
-\theoremstyle{remark} \newtheorem{remark}{Remark}
 
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\sep}{\operatorname{sep}}
@@ -69,15 +45,36 @@
     \expandafter\defvec\letter
 }
 
-%\title{Finally, an \emph{actual} universal approximation result for multi-stable dynamical systems}
-%\title{RNNs can approximate multistable dynamical systems on an infinite time horizon}
+\newcommand{\dataset}{{\cal D}}
+\newcommand{\fracpartial}[2]{\frac{\partial #1}{\partial  #2}}
+
+% Heading arguments are {volume}{year}{pages}{date submitted}{date published}{paper id}{author-full-names}
+
+\usepackage{lastpage}
+\jmlrheading{??}{202?}{1-\pageref{LastPage}}{??/25; Revised ??/2?}{??/2?}{21-0000}{\'Abel S\'agodi and Il Memming Park}
+
+\ShortHeadings{Sample JMLR Paper}{S\'agodi and Park}
+\firstpageno{1}
+
+\begin{document}
+
 \title{Universal approximation of multistable dynamical systems on an infinite time horizon by RNNs}
-\author{\'Abel S\'agodi and Il Memming Park}
+
+\author{\name \'Abel S\'agodi \email abel.sagodi@research.fchampalimaud.org\\
+       \addr
+       Champalimaud Research\\
+       Lisbon, 1400-038, Portugal
+       \AND
+       \name Il Memming Park\email memming.park@research.fchampalimaud.org \\
+       \addr 
+       Champalimaud Research\\
+       Lisbon, 1400-038, Portugal}
+
+\editor{????}
+
 \date{\today}
 
 
-
-\begin{document}
 \maketitle
 
 \section*{Abstract}
@@ -96,13 +93,13 @@ The versatility or flexibility of a given machine learning paradigm is usually e
 We say that a family of transformations is universal when its elements can approximate as accurately as one wants all the elements of a sufficiently rich class containing, for example, all continuous or even all measurable transformations.
 
 %Modeling/Reconstructing dynamics examples. mention?
-%gene regulation \citep{paczko2024neural}
+%gene regulation  \citep{paczko2024neural}
 
 Recurrent Neural Networks (RNNs) are believed to be universal approximators.
 For example, \citet{durstewitz2023reconstructing} claims that 
 %a library of basis functions or
  a neural network may be used to closely approximate the vector field or the trajectories of any given dynamical system.
-As another example, in \citep{dinc2025latentcomputing} it is claimed that RNNs are universal approximators of dynamical systems (but the proof they provide only covers universal approximation of vector fields, see also Sec.\ref{sec:uapvfs}). 
+As another example, in  \citep{dinc2025latentcomputing} it is claimed that RNNs are universal approximators of dynamical systems (but the proof they provide only covers universal approximation of vector fields, see also Sec.\ref{sec:uapvfs}). 
 %However, universal approximation results based on vector fields are limited in scope, as the behavior of the ODE they support might deviate from the target.
 Existing results about approximating dynamical systems either focus on finite time horizon approximation or on approximating stable dynamical systems on an infinite time horizon.
 This misses important behavior of the system (e.g. temporal generalization of the approximation, see Fig.~\ref{fig:lc_period_div}).
@@ -127,15 +124,17 @@ We redefine the previously known landscape of dynamical systems from the perspec
 
 %INCLUDE?????
 %\paragraph{Formulation: lack of theory on time generalization/forecasting}
-%ANNs can generalize. After learning the data presented to them (a sample), ANNs can often correctly infer the unseen part of a population even if the sample data contain noisy information. As forecasting is performed via prediction of future behavior (the unseen part) from examples of past behavior, it is an ideal application area for neural networks, at least in principle. \citep{zhang1998forecasting}
+%ANNs can generalize. After learning the data presented to them (a sample), ANNs can often correctly infer the unseen part of a population even if the sample data contain noisy information. As forecasting is performed via prediction of future behavior (the unseen part) from examples of past behavior, it is an ideal application area for neural networks, at least in principle.  \citep{zhang1998forecasting}
 
 
 \setlength\belowcaptionskip{-5ex}
 \begin{SCfigure}[10][bthp]
   \centering
-  \includegraphics[width=0.3\textwidth]{ds_land_rnns_fmp}
-  \caption{We show that RNNs are dense in the space of Lipschitz dynamical systems that have a finite set of normally hyperbolic attractors.
-  Previously, it was only established that RNNs are dense in systems that have at most one global connected attractor.
+  \includegraphics[width=0.5\textwidth]{ds_land_rnns_fmp}
+  \caption{We show that RNNs are dense in the space of Lipschitz dynamical systems that have a finite set of normally hyperbolic attractors and no chaotic behavior.
+  These systems fully cover all structurally stable systems, systems with normally hyperbolic continuous attractors.
+  While on a finite time horizon it can be shown that RNNs can approximate any dynamical system, the results on the infinite time horizon approximations have been limited so far.
+  Previously, it was only established that RNNs are dense in systems that have at most one global connected attractor and for fading memory systems, which cover only a fraction of the systems we consider.
   }\label{fig:ds_land_rnns_fmp}
 \end{SCfigure}
 
@@ -147,7 +146,7 @@ We redefine the previously known landscape of dynamical systems from the perspec
 Accurately approximating dynamical systems is essential for understanding and predicting complex behaviors across a range of applications, from robotics to climate modeling.
 %Recent advances in machine learning have enabled data-driven approaches to approximating these systems, providing new ways to model complex dynamics over extended periods.
 Here, we review key approaches in the literature and highlight emerging techniques that address these challenges, before we introduce our method that extends to multi-stable and complex systems over infinite time horizons.
-See also \citep{li2022approximation} and \citep{jiang2023brief}.
+See also  \citep{li2022approximation} and  \citep{jiang2023brief}.
 
 It is important to realize that a class of models (a hypothesis class) can have the universal approximation property (UAP) \emph{for a specific target class} given \emph{a specific metric to compare} (see also Sec.~\ref{sec:approximationtheory}).
 This property implies that the hypothesis class is dense in the target class, hence such results are also referred to as \emph{density results}.
@@ -156,10 +155,10 @@ Density results describe the completeness of a hypothesis class relative to a ta
 
 %SHOULD learning be discussed? move to Discussion?
 %\paragraph{Learning sequences}
-% A critical review of recurrent neural networks for sequence learning \citep{williams1989learning, pearlmutter1989learning, lipton2015rnn}.
-%Approximation of large-scale dynamical systems \citep{antoulas2005approximation}
+% A critical review of recurrent neural networks for sequence learning  \citep{williams1989learning, pearlmutter1989learning, lipton2015rnn}.
+%Approximation of large-scale dynamical systems  \citep{antoulas2005approximation}
  %\paragraph{System identification}
- %\citep{werbos1989neural, kuschewski1993application, wang2006fully}
+ % \citep{werbos1989neural, kuschewski1993application, wang2006fully}
  
  %\paragraph{Operators}%approximation of an operator
 
@@ -171,13 +170,13 @@ See Supp.Sec.~\ref{sec:uniapproxffn} for results on Feedforward Neural Netowkrs 
 
 %vector fields (which is just FNN setting)
 \subsubsection{Approximating vector fields}\label{sec:uapvfs}
- FNNs can approximate smooth functions effectively, making them suitable for approximating vector fields \citep{doya1993universality}.
+ FNNs can approximate smooth functions effectively, making them suitable for approximating vector fields  \citep{doya1993universality}.
 This is a direct consequence of the UAP of FNNs for mappings, see Supp.Sec.~\ref{sec:uniapproxffn}.
 %
 %\paragraph{Spiking neural network}
 %only approximates vector field 
 It is possible to approximate vector fields with other architectures.
-For example, in limit $N\rightarrow\infty$ spiking network (ODE with jumps) approximates a vector field (for a continuous ODE) \citep{podlaski2024approximating}. 
+For example, in limit $N\rightarrow\infty$ spiking network (ODE with jumps) approximates a vector field for an ODE \citep{podlaski2024approximating}. 
 
 
 \subsubsection{Diffeomorphisms}%move to \ref{sec:compacttime}?
@@ -185,7 +184,7 @@ The solutions to ODEs can generate smooth transformations on manifolds.
 The flow \( \phi_t \) of the vector field \( X \) defines a map from \( M \) to itself for each fixed time \( t \). Under appropriate conditions (such as \( X \) being complete), \( \phi_t \) is a diffeomorphism of \( M \) for each \( t \). In other words, \( \phi_t \) is smooth, bijective, and its inverse \( \phi_{-t} \) is also smooth.
 Thus, the solutions (flows) of ODEs associated with smooth vector fields give rise to a one-parameter family of diffeomorphisms.
 %
-NODEs and invertible neural networks are a sup-universal approximator for a fairly large class of diffeomorphisms, i.e., smooth invertible maps with smooth inverse \citep{huang2018neural, jaini2019sum, teshima2020uap, teshima2020coupling, ishikawa2023uap, massaroli2020dissecting}.
+NODEs and invertible neural networks are a sup-universal approximator for a fairly large class of diffeomorphisms, i.e., smooth invertible maps with smooth inverse  \citep{huang2018neural, jaini2019sum, teshima2020uap, teshima2020coupling, ishikawa2023uap, massaroli2020dissecting}.
 %rem
 For dynamical systems, however, this only guarantees a finite time approximation.
 We will now consider compact time interval approximation results in more detail.
@@ -196,7 +195,7 @@ We will now consider compact time interval approximation results in more detail.
 %An RNN with a sufficient number of hidden units and appropriate non-linear activation functions (such as tanh or sigmoid) can approximate any dynamic system or time-dependent function to arbitrary precision, provided the system operates on compact time intervals.
 The universal approximation theorem for RNNs, which extends the classical result for feedforward neural networks, guarantees that RNNs can approximate the mapping from a sequence of inputs to outputs for any continuous-time process, including those governed by differential equations.
 %
-This property has been formally proven for systems operating over finite time intervals \citep{li1992approximation}. %first result 
+This property has been formally proven for systems operating over finite time intervals  \citep{li1992approximation}. %first result 
 Specifically, \citet{funahashi1993approximation} showed that RNNs can approximate the time-dependent behaviors of dynamical systems, making them suitable for tasks like time-series prediction, control systems, and the modeling of sequential data.
 
 %rem
@@ -204,72 +203,72 @@ Since the results concern a compact time interval, to approximate dynamics it is
 %merge
 Existing results have established that recurrent nets are capable of generating simulated trajectories that approximate true system trajectories within arbitrary error tolerance over a finite time interval.
 Most of these results rely on Gr\"{o}nwall’s inequality (see Supp.Sec.\ref{sec:gronwall}) to control the difference between the trajectories of the original system and its approximation, which incurs an exponential degradation of approximation accuracy over time
-\citep{sontag1992neural, sontag1998learning, funahashi1993approximation, chow2000modeling, li2005approximation}.
+ \citep{sontag1992neural, sontag1998learning, funahashi1993approximation, chow2000modeling, li2005approximation}.
 This is in general not true for the unbounded time case, as the approximation error can be magnified by the dynamics.
 
 
 \subsubsection{Discrete sequence-to-sequence mapping}\label{sec:discrete}
 \paragraph{Discrete valued tokes: Turing completeness}
-%A finite size recurrent net model (with linear and Heaviside transfer functions) is Turing universal (Dynamical Recognizer) \citep{pollack1991induction}.
+%A finite size recurrent net model (with linear and Heaviside transfer functions) is Turing universal (Dynamical Recognizer)  \citep{pollack1991induction}.
 % Induction by phase transition. A small weight adjustment causes a "bifurcation" in the limit behavior of the network. 
 % phase transition corresponds to the onset of the network’s capacity for generalizing to arbitrary-length strings
-%A finite-sized recurrent neural network with sigmoidal activation functions can simulate a universal Turing machine \citep{siegelmann1992computational}.
-%Sigmoidal neural networks can be used to compute any recursive (Turing) function\citep{kilian1996universality}.
+%A finite-sized recurrent neural network with sigmoidal activation functions can simulate a universal Turing machine  \citep{siegelmann1992computational}.
+%Sigmoidal neural networks can be used to compute any recursive (Turing) function \citep{kilian1996universality}.
 
-A finite-sized RNN with either linear and Heaviside or sigmoidal activation functions is Turing universal \citep{pollack1991induction, siegelmann1992computational,kilian1996universality}.
-More generally, RNNs with an activation function that is for any point Lipschitz continuous in some neighborhood can be simulated by a family of nonuniform Boolean circuits\citep{siegelmann1994analog}.
-Furthermore, smooth ODES in $\reals^3$ can simulate arbitrary Turing machines \citep{branicky1995universal}. %DSs are computationally universal in the sense that they can mimic the operations of any computer algorithm
-RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound) \citep{indyk1995optimal}.
-Finally, any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuous time symmetric Hopfield nets \citep{sima2003continuous}.
+A finite-sized RNN with either linear and Heaviside or sigmoidal activation functions is Turing universal  \citep{pollack1991induction, siegelmann1992computational,kilian1996universality}.
+More generally, RNNs with an activation function that is for any point Lipschitz continuous in some neighborhood can be simulated by a family of nonuniform Boolean circuits \citep{siegelmann1994analog}.
+Furthermore, smooth ODES in $\reals^3$ can simulate arbitrary Turing machines  \citep{branicky1995universal}. %DSs are computationally universal in the sense that they can mimic the operations of any computer algorithm
+RNNs with polynomially bounded weights can simulate any finite automaton (15-neuron upper bound) and any Turing machine (25-neuron network bound)  \citep{indyk1995optimal}.
+Finally, any polynomially space-bounded Turing machine can be simulated by a family of polynomial-size continuous time symmetric Hopfield nets  \citep{sima2003continuous}.
 
 \ascomment{TODO: organize} 
-\citep{moore1990unpredictability,moore1998finite}
-\citep{cabessa2019turing}
-\citep{perez2019turing}
-\citep{chung2021turing}
-\citep{perez2021attention}
-\citep{giannou2023looped}
-\citep{stogin2024provably}
+ \citep{moore1990unpredictability,moore1998finite}
+ \citep{cabessa2019turing}
+ \citep{perez2019turing}
+ \citep{chung2021turing}
+ \citep{perez2021attention}
+ \citep{giannou2023looped}
+ \citep{stogin2024provably}
 %\paragraph{Probabilistic}
- \citep{nowak2023representational, nowak2024representational}
-+Bernstein-type \citep{veeravalli2023nonlinear}
+  \citep{nowak2023representational, nowak2024representational}
++Bernstein-type  \citep{veeravalli2023nonlinear}
 
 
 \paragraph{Continuous valued tokens}
-RNNs can approximate a state space trajectory (with time-varying inputs) uniformly  produced by either a discrete-time nonlinear system a closed discrete-time interval \citep{jin1995universal}.
-Any function can be approximated arbitrarily well in probability with a recurrent neural network\citep{hammer2000approximation}.  %%any function???
-% where ... can be computed by one neuron whose activation function $\sigma$ possesses a local linearity.\citep{hammer2000approximation}
-RNNs with continuous sigmoidal activation function have the UAP for finite number of time steps \citep{schafer2006recurrent, schafer2007uap}.
-Furthermore, locally recurrent networks with two hidden layers is able to approximate a state-space trajectory produced by any Lipschitz continuous function with arbitrary accuracy\citep{patan2008approximation}.
-More recently, it was shown that discrete-time RNNs are finite-time horizon universal approximators of discrete-time systems \citep{aguiar2023universal} and the universality of linear recurrences followed by nonlinear projections for finite time was established \citep{orvieto2023universality}.
-Finally, it was shown that RNNs are universal approximators of continuous past-dependent sequence-to-sequence functions\citep{song2023minimal}.% RNNs with  a non-degenerate activation function
+RNNs can approximate a state space trajectory (with time-varying inputs) uniformly  produced by either a discrete-time nonlinear system a closed discrete-time interval  \citep{jin1995universal}.
+Any function can be approximated arbitrarily well in probability with a recurrent neural network \citep{hammer2000approximation}.  %%any function???
+% where ... can be computed by one neuron whose activation function $\sigma$ possesses a local linearity. \citep{hammer2000approximation}
+RNNs with continuous sigmoidal activation function have the UAP for finite number of time steps  \citep{schafer2006recurrent, schafer2007uap}.
+Furthermore, locally recurrent networks with two hidden layers is able to approximate a state-space trajectory produced by any Lipschitz continuous function with arbitrary accuracy \citep{patan2008approximation}.
+More recently, it was shown that discrete-time RNNs are finite-time horizon universal approximators of discrete-time systems  \citep{aguiar2023universal} and the universality of linear recurrences followed by nonlinear projections for finite time was established  \citep{orvieto2023universality}.
+Finally, it was shown that RNNs are universal approximators of continuous past-dependent sequence-to-sequence functions  \citep{song2023minimal}.% RNNs with  a non-degenerate activation function
 
 
 %\paragraph{RBF neural networks}
-%\citep{tan1995efficient}
+% \citep{tan1995efficient}
 
 
 
 \subsubsection{Continuous time sequence-to-sequence mapping}
-The universal approximation properties of static neural networks \citep{funahashi1989approximate} made them a useful tool for modeling nonlinear systems. 
-The problem of nonlinear modeling using static neural networks has been extensively researched \citep{narendra1990identification,warwick1992neural} and many approaches have used multilayer perceptrons and radial basis functions \citep{chen1992neural,choi1996constructive,tan1995efficient}. 
-For an overview, see \citep{garces2012strategies}.
+The universal approximation properties of static neural networks  \citep{funahashi1989approximate} made them a useful tool for modeling nonlinear systems. 
+The problem of nonlinear modeling using static neural networks has been extensively researched  \citep{narendra1990identification,warwick1992neural} and many approaches have used multilayer perceptrons and radial basis functions  \citep{chen1992neural,choi1996constructive,tan1995efficient}. 
+For an overview, see  \citet{garces2012strategies}.
 
 
 \paragraph{Autonomous systems}
 The universal approximation capabilities of continuous-time recurrent networks for autonomous systems were first demonstrated by \citet{funahashi1993approximation}. 
-These results were expanded on in \citep{kimura1998learning} and were proven for different architectures in \citep{chow2000modeling}.
+These results were expanded on in  \citep{kimura1998learning} and were proven for different architectures in  \citet{chow2000modeling}.
 These networks can approximate the trajectories of autonomous dynamical systems, where the system dynamics are independent of any external input.
-
+Finally, feedforward and recurrent neural networks with randomly initialized, fixed weights can achieve universal approximation of continuous functions and dynamical systems over compact time intervals by learning only the bias parameters \citep{williams2024expressivity}.
 
 \paragraph{Non-autonomous systems}
-For non-autonomous systems, where the dynamics explicitly depend on external inputs, it has been shown that nonlinear dynamical systems can be approximated on compact time intervals (Lemma 5.3.2 in \citep{garces2012strategies}, similar to Lemma 5.3.1 in \citep{smale1974differential}).
+For non-autonomous systems, where the dynamics explicitly depend on external inputs, it has been shown that nonlinear dynamical systems can be approximated on compact time intervals (Lemma 5.3.2 in  \citep{garces2012strategies}, similar to Lemma 5.3.1 in  \citet{smale1974differential}).
 This result broadens the applicability of continuous-time RNNs to a wide variety of systems influenced by external signals.
-A fundamental result in this domain is that any given trajectory of a dynamical system can be approximately realized by a properly configured continuous-time recurrent network on a finite time interval \citep{nakamura2009approximation}.  %u : R → RNu be a C1 mapping, f : W → E be a C1 mapping, and suppose that x′ = f (u(t),x(t)) defines a non-autonomous dynamical system.
-Finite-time horizon approximation results for input-driven systems with NODEs have been developed more recently \citep{li2022deep, ko2023homotopy, zakwan2023universal}.
-Finally, neural flows have been proposed as an alternative to NODEs with comparable approximation capabilities\citep{bilos2021neural}.
+A fundamental result in this domain is that any given trajectory of a dynamical system can be approximately realized by a properly configured continuous-time recurrent network on a finite time interval  \citep{nakamura2009approximation}.  %u : R → RNu be a C1 mapping, f : W → E be a C1 mapping, and suppose that x′ = f (u(t),x(t)) defines a non-autonomous dynamical system.
+Finite-time horizon approximation results for input-driven systems with NODEs have been developed more recently  \citep{li2022deep, ko2023homotopy, zakwan2023universal}.
+Finally, neural flows have been proposed as an alternative to NODEs with comparable approximation capabilities \citep{bilos2021neural}.
 
-%Neural manifold ordinary differential equations \citep{lou2020neural}%no approximation result...
+%Neural manifold ordinary differential equations  \citep{lou2020neural}%no approximation result...
 	
 %time-variant	
 \paragraph{Time variant systems}
@@ -280,40 +279,40 @@ These developments illustrate the versatility of continuous-time recurrent netwo
 
 \paragraph{Encoder-Decoder}
 %\paragraph{Decoder}%part of system approximates
-For non-autonomous systems, where the dynamics explicitly depend on external inputs, it has been shown that the states of the output units of a continuous-time RNN, can approximate the solution of systems governed by differential equations of the form $\dot{x}(t) = f(x(t); u(t))$ where $u(t)$ is the input \citep{garces2012strategies}. %5.3.3: interesting result on the error dynamics and its bound!!!
-A subpopulation of an RNN's units can approximate a dynamical system with arbitrary precision for finite time\citep{kambhampati2000approximation}. %this is equivalent to setting the decoding mapping to be the identity
+For non-autonomous systems, where the dynamics explicitly depend on external inputs, it has been shown that the states of the output units of a continuous-time RNN, can approximate the solution of systems governed by differential equations of the form $\dot{x}(t) = f(x(t); u(t))$ where $u(t)$ is the input  \citep{garces2012strategies}. %5.3.3: interesting result on the error dynamics and its bound!!!
+A subpopulation of an RNN's units can approximate a dynamical system with arbitrary precision for finite time \citep{kambhampati2000approximation}. %this is equivalent to setting the decoding mapping to be the identity
  %The first $p$ output neural units of a dynamic $n$-dimensional neural model approximate at a desired proximity a $p$-dimensional dynamic system with $n > p$
-RNN encoder-decoders have UAP for linear, continuous and regular functionals\citep{li2021approximationencdec}.
+RNN encoder-decoders have UAP for linear, continuous and regular functionals \citep{li2021approximationencdec}.
 %‖H ˆt‖ decays exponentially as a function of t.
 %Regular: limn→∞ Ht(x(n)) = 0.
-Neural oscillators have the universal approximation property on compact time intervals (approximation of causal and continuous operators) \citep{lanthaler2023neuraloscillators}.
+Neural oscillators have the universal approximation property on compact time intervals (approximation of causal and continuous operators)  \citep{lanthaler2023neuraloscillators}.
 %
 %LTC
-Any finite trajectory of an $n$-dimensional continuous dynamical system can be approximated by the internal state of the hidden units and $n$ output units of an Liquid time-constant (LTC) network \citep{hasani2018liquid}.
+Any finite trajectory of an $n$-dimensional continuous dynamical system can be approximated by the internal state of the hidden units and $n$ output units of an Liquid time-constant (LTC) network  \citep{hasani2018liquid}.
 
 
 
 %\paragraph{FNNs for control}
 %%control 
-%\citep{psaltis1988multilayered} \citep{li1989control,chen1992adaptive}
+% \citep{psaltis1988multilayered}  \citep{li1989control,chen1992adaptive}
 
 %\paragraph{uncat}
-%trajectories \citep{toomarian1992learning}
+%trajectories  \citep{toomarian1992learning}
 
 
 
 %%FLOW APPROX
 \subsubsection{Approximation of flows}%paragraph?
-Flow-based approximations for finite time horizon have been established for architectures such as Recurrent High-Order Neural Networks \citep{kosmatopoulos1995structural}.
-Any continuous dynamical nonlinear systems can be approximately realized\footnote{The finite time trajectories of a given dynamical continuous system can be approximated by the first $n$ internal state out of the $n + N$ neural units in an RNN.} by RNN on finite time interval \citep{chow2000modeling}.
+Flow-based approximations for finite time horizon have been established for architectures such as Recurrent High-Order Neural Networks  \citep{kosmatopoulos1995structural}.
+Any continuous dynamical nonlinear systems can be approximately realized\footnote{The finite time trajectories of a given dynamical continuous system can be approximated by the first $n$ internal state out of the $n + N$ neural units in an RNN.} by RNN on finite time interval  \citep{chow2000modeling}.
 %fixed initial state!: initial state $x(0)\in X$
 %$\dot z = -\alpha z + W_1\sigma(W_2u+z)$
 %where $\sigma(\cdot)$ is a $C^1$-sigmoid nonlinear activation function, and $z \in \reals^L$ .
 %Euclidian norm
 %
-This has been extended to time-variant systems but with a fixed initial state \citep{li2005approximation}. %approx of time variant systems with fixed initial state
+This has been extended to time-variant systems but with a fixed initial state  \citep{li2005approximation}. %approx of time variant systems with fixed initial state
 %
-More recently, it was shown that RNNs are universal approximators of flow functions of dynamical systems  with control inputs on finite time intervals  \citep{aguiar2023universal}\footnote{This is direct simulation instead of indirect realization (for definitions, see Sec.~\ref{sec:simulation})}. %not realization, but direct simulation
+More recently, it was shown that RNNs are universal approximators of flow functions of dynamical systems  with control inputs on finite time intervals   \citep{aguiar2023universal}\footnote{This is direct simulation instead of indirect realization (for definitions, see Sec.~\ref{sec:simulation})}. %not realization, but direct simulation
 %periodic inputs
 
 
@@ -330,7 +329,7 @@ We will refer to this as P-type error (for Period).
 \setlength\belowcaptionskip{-5ex}
 \begin{SCfigure}[10][bthp]
   \centering
-  \includegraphics[width=0.3\textwidth]{lc_period_div}
+  \includegraphics[width=0.5\textwidth]{lc_period_div}
   \caption{Divergence of orbits at limit cycles after $T$.
   Even though an approximation (red) might have an orbit that stays $\varepsilon$ close to a target system with a stable limit cycle with period $T$ (blue), if the periods are not exactly matched, the two systems will diverge from each other.
   In this example, the approximation has period $\hat{T} = T+\varepsilon$ and will hence be above the approximation guarantee at time $t=2T$.
@@ -345,9 +344,9 @@ We will refer to this as \textbf{B-type error} (for \textbf{B}asin).
 
 %FPS%fading%FMS%FMP
 \subsubsection{Approximation of fading memory systems}\label{sec:fadingmemory}
-%On the general theory of fading memory \citep{coleman1968general}
-The concept of a system having the fading memory property (FMP, see Supp.Sec.~\ref{sec:fading_memory}) has been a cornerstone in the study of dynamical systems\citep{coleman1968general}, providing a framework where the system’s output depends on past inputs with gradually diminishing influence \citep{boyd1985fading}.
-That the output of a dynamical relationship should depend only on the recent past of its input and that the effect of the distant past should fade away is intuitively clear  \citep{sepulchre2021fading}.
+%On the general theory of fading memory  \citep{coleman1968general}
+The concept of a system having the fading memory property (FMP, see Supp.Sec.~\ref{sec:fading_memory}) has been a cornerstone in the study of dynamical systems \citep{coleman1968general}, providing a framework where the system’s output depends on past inputs with gradually diminishing influence  \citep{boyd1985fading}.
+That the output of a dynamical relationship should depend only on the recent past of its input and that the effect of the distant past should fade away is intuitively clear   \citep{sepulchre2021fading}.
 %-APPROXIMATION BY VOLTERRA SERIES: A simplified interpretation of the N -th Volterra Series expansion is the “N -th Taylor expansion in the sequence variable x”.
 %-APPROXIMATION BY FINITE-DIMENSIONAL DYNAMICAL SYSTEMS
 
@@ -358,7 +357,7 @@ Many real-world systems exhibit behaviors where the influence of past inputs doe
 A very simple example is a system with two stable fixed points.
 We now discuss existing universal approximation results that are confined to fading memory systems and critically assess their limitations.
 %
-Typically, the FMP is used to reduce the approximation problem to one over a finite, bounded index set, and then appeal to the density of fully connected neural network to obtain approximation \citep{gonon2021fading}. %more examples
+Typically, the FMP is used to reduce the approximation problem to one over a finite, bounded index set, and then appeal to the density of fully connected neural network to obtain approximation  \citep{gonon2021fading}. %more examples
 
 
 \paragraph{Linear RNNs}
@@ -368,35 +367,35 @@ Of course, regular linear functionals have fading memory: their dynamics converg
  
 
 \paragraph{Exponential decaying memory}
-State Space Models (SSMs) with layer-wise nonlinearity are universal approximators of systems with exponential decaying memory \citep{wang2024state}.
+State Space Models (SSMs) with layer-wise nonlinearity are universal approximators of systems with exponential decaying memory  \citep{wang2024state}.
 
 
 \paragraph{Uniform asymptotic incremental stability}
-Uniform asymptotic incremental stability was introduced in \citep{pavlov2006uniform}.
-UAP of RNNs for uniformly asymptotically incrementally stable systems on an infinite time horizon\citep{hanson2020universal, hanson2021learning}.
+Uniform asymptotic incremental stability was introduced in  \citep{pavlov2006uniform}.
+UAP of RNNs for uniformly asymptotically incrementally stable systems on an infinite time horizon \citep{hanson2020universal, hanson2021learning}.
 
 
 \paragraph{Reservoir computing}
 %\paragraph{ESN}
 \citet{jaeger2001echo} proposed Echo State Networks (ESNs), demonstrating their universal approximation capabilities specifically for fading memory systems.
-This result was extended to include approximation of systems with an input \citep{manjunath2013echo}.
-%ESNs are universal uniform approximators  for discrete-time fading memory filters with uniformly bounded inputs \citep{grigoryeva2018echo,grigoryeva2018universal}. 
-Reservoir computing (RC), the broader framework that includes ESNs, has also been applied to neuroscience \citep{auslender2024decoding}.
+This result was extended to include approximation of systems with an input  \citep{manjunath2013echo}.
+%ESNs are universal uniform approximators  for discrete-time fading memory filters with uniformly bounded inputs  \citep{grigoryeva2018echo,grigoryeva2018universal}. 
+Reservoir computing (RC), the broader framework that includes ESNs, has also been applied to neuroscience  \citep{auslender2024decoding}.
 
 %ADD? ceni2020echo
 
 If the domain of the functional $H$ is restricted to a space of uniformly bounded sequences with the fading memory property then various families of state-space transformations can be used to approximate it uniformly: 
- linear systems with polynomial or neural network readouts \citep{boyd1985fading,grigoryeva2018universal,gonon2019reservoir}, state-affine systems with linear readouts \citep{grigoryeva2018universal}, or echo state networks \citep{grigoryeva2018echo,gonon2019reservoir,gonon2021fading,gonon2023approximation}.
- More recently, Simple Cycle Reservoirs were shown to be universal for this set of systems \citep{li2023simple}.
+ linear systems with polynomial or neural network readouts  \citep{boyd1985fading,grigoryeva2018universal,gonon2019reservoir}, state-affine systems with linear readouts  \citep{grigoryeva2018universal}, or echo state networks  \citep{grigoryeva2018echo,gonon2019reservoir,gonon2021fading,gonon2023approximation}.
+ More recently, Simple Cycle Reservoirs were shown to be universal for this set of systems  \citep{li2023simple}.
 % In other words, any of these families exhibit universality properties in the fading memory category.
-Finally, a new method was developed to approximate FMP systems by using a kernel representation (instead of a state-space representation) of the model \citep{huo2024kernel}. %approximate all fading memory functionals
+Finally, a new method was developed to approximate FMP systems by using a kernel representation (instead of a state-space representation) of the model  \citep{huo2024kernel}. %approximate all fading memory functionals
 
-%Echo state networks are universal \citep{grigoryeva2018echo} [Grig 18a]
-%Universal discrete-time reservoir computers with stochastic inputs and linear readouts using non-homogeneous state-affine systems \citep{grigoryeva2018universal} [Grig 18b]
-%Risk bounds for reservoir computing \citep{gonon2020risk} [Gono 20a]
-%Reservoir computing universality with stochastic inputs \citep{gonon2019reservoir} [Gono 20b]
-%Fading memory echo state networks are universal \citep{gonon2021fading} [Gono 21]
-%Approximation error estimates for random neural networks and reservoir systems \citep{gonon2023approximation} [Gono 23a]
+%Echo state networks are universal  \citep{grigoryeva2018echo} [Grig 18a]
+%Universal discrete-time reservoir computers with stochastic inputs and linear readouts using non-homogeneous state-affine systems  \citep{grigoryeva2018universal} [Grig 18b]
+%Risk bounds for reservoir computing  \citep{gonon2020risk} [Gono 20a]
+%Reservoir computing universality with stochastic inputs  \citep{gonon2019reservoir} [Gono 20b]
+%Fading memory echo state networks are universal  \citep{gonon2021fading} [Gono 21]
+%Approximation error estimates for random neural networks and reservoir systems  \citep{gonon2023approximation} [Gono 23a]
 
 %Universal Transformer
  \citet{dehghani2018universal} introduced a recurrently-stacked universal transformer and \citet{yun2019transformers} showed that transformer models are universal approximators of continuous permutation equivariant sequence-to-sequence functions with compact support.
@@ -404,37 +403,38 @@ Finally, a new method was developed to approximate FMP systems by using a kernel
 
 % Deep Equilibrium Sequence Model (encapsulates universal transformer) and are themselves an instance of the so-called implicit-depth models such as neural ordinary differential equations
 Recently, \citet{bai2019deq} proposed the deep equilibrium model (DEQ) and which was shown to be able to approximate any sequence whose underlying dynamics is determined by a model that converge to a fixed point.
-This model was further extended to be able to capture systems with arbitrary invariant sets, but the UAP has not been established \citep{konishi2023stable}. %some remarks: p.397
+This model was further extended to be able to capture systems with arbitrary invariant sets, but the UAP has not been established  \citep{konishi2023stable}. %some remarks: p.397
 
 
 \subsubsection{FMP makes approximation results trivial} %put in prev section?
  The input forgetting property (also referred to in the literature as the unique steady-state property) is a modeling feature that appears profusely in applications and that can be obtained out of the so-called fading memory property.
-In fact, every fading-memory system could be uniformly approximated arbitrarily closely over the set of systems with 'linear dynamics'\citep{matthews1993approximating}. %Theorem 3+4
-Using the perceptron to uniformly approximate the external representation of a fading-memory system results in a finite-memory system model, called the perceptron filter \citep{matthews1993approximating}.
+In fact, every fading-memory system could be uniformly approximated arbitrarily closely over the set of systems with 'linear dynamics' \citep{matthews1993approximating}. %Theorem 3+4
+Using the perceptron to uniformly approximate the external representation of a fading-memory system results in a finite-memory system model, called the perceptron filter  \citep{matthews1993approximating}.
 %
-If  input/output sequence target has a realization\footnote{See Supp.Sec.~\ref{sec:realization}.} as a dynamical system, then the fading memory property is related to the unique steady-state property for dynamical systems \citep{chua1976qualitative}.
+If  input/output sequence target has a realization\footnote{See Supp.Sec.~\ref{sec:realization}.} as a dynamical system, then the fading memory property is related to the unique steady-state property for dynamical systems  \citep{chua1976qualitative}.
 Hence, the fading memory assumption implies that the state will be “asymptotically independent” of the initial condition.
 Therefore, FPM systems cannot have multi-stability which makes this framework exclude many real-world systems (see also Rem.~\ref{rem:fmp}).
-%Stability and memory-loss go hand-in-hand \citep{manjunath2020stability}
+%Stability and memory-loss go hand-in-hand  \citep{manjunath2020stability}
 
-\ascomment{TODO:}
-Why should we assume that the underlying dynamics in neural networks converge to a fixed point?
-Models of neural computation should cover a broader class of dynamics, e.g, oscillations \citep{townley2000existence, kag2020rnns, chang2019antisymmetricrnn,rapp1987periodic}. %could convey preferred capabilities in learning 
+%\ascomment{TODO:} remark about LCs (neuro specific)
+While fixed-point dynamics have been widely studied in models of neural computation, they represent only a narrow subset of possible behaviors.
+Neural systems in the brain often exhibit more complex dynamics such as oscillations, which are essential for functions like working memory, motor control, and attention.
+Consequently, models of neural computation should accommodate a broader class of dynamical regimes, including periodic and oscillatory solutions \citep{townley2000existence, kag2020rnns, chang2019antisymmetricrnn, rapp1987periodic}.
+These richer dynamics may endow networks with advantageous computational properties that are not captured by convergence to fixed points alone.
 
-\citep{williams2024expressivity}
 
 %\paragraph{Stability implies FNNs are enough}%crit
-%When Recurrent Models Don't Need to Be Recurrent \citep{miller2018stable}.
+%When Recurrent Models Don't Need to Be Recurrent  \citep{miller2018stable}.
 
 
 %%%%%%%%%%%%%%%%%%%
 \subsubsection{ESNs and topological equivalency}%+RNNs?
-ESNs can be trained to have  topologically conjugate dynamics to structurally stable dynamical systems \citep{hart2020embedding}.
+ESNs can be trained to have  topologically conjugate dynamics to structurally stable dynamical systems  \citep{hart2020embedding}.
 This does guarantee knowledge of the dynamics beyond a finite time horizon.
 However, this is trivial for approximation of structurally stable systems with NODEs.
 It is true by virtue of Theorem.~\ref{theorem:ss} that vector fields that are close to the vector field of a dynamical system will have dynamics that are topologically conjugate to it.
 Because it is well known that vector fields can be approximated to arbitrary precision with FNN, this result immediately follows for NODEs.
-Finally, we would like to mention the possibility to construct dynamics with Cohen-Grossberg networks for arbitrary sets of fixed point and limit cycles through realization of dynamics \citep{cohen1992construction}.
+Finally, we would like to mention the possibility to construct dynamics with Cohen-Grossberg networks for arbitrary sets of fixed point and limit cycles through realization of dynamics  \citep{cohen1992construction}.
 
 
 
@@ -490,7 +490,7 @@ For Sec.~\ref{sec:fp_theorem} we assume that the only $\omega$-limit sets of  $f
 For Sec.~\ref{sec:lc_theorem} we assume that $f$ has a finite set of hyperbolic stable periodic orbits.
 For Sec.~\ref{sec:ca_theorem} we assume that $f$ has only a finite set of normally hyperbolic continuous attractors.
 %
-These restrictions of the target class are Bernstein-type results (in the classification of approximation result types made in \citep{jiang2023brief}).
+These restrictions of the target class are Bernstein-type results (in the classification of approximation result types made in  \citep{jiang2023brief}).
 %analogy with realization of transfer functions in state space models
 
 \ascomment{Explanation why not larger target class. We need structurally stable systems so that we know that similar vector fields guarantee topologically equivalent dynamics. The only exception (to our knowledge) for which it is established that nearby vector fields have similar behavior (in epsilon-delta sense) is for normally hyperbolic continuous attractors.}
@@ -505,7 +505,7 @@ In essence, by setting up $g$ as a neural network, we are equipping the NODE wit
 
 
 \subsubsection{Metric}\label{sec:metric}
-First, of all, we compare trajectories through the uniform norm over time (given the same initial starting point \citep{girard2007approximation}):
+First, of all, we compare trajectories through the uniform norm over time (given the same initial starting point  \citep{girard2007approximation}):
 \begin{equation}
 \|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty \coloneqq \sup_t\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|.
 \end{equation}
@@ -514,7 +514,7 @@ We consider a compact $X$ on which we measure the difference between the target 
 \footnote{FNN approximation universality is also on compact intervals.
 The results can be extended to systems that diverge to infinite in a finite number of orbits (all orbits that diverge converge in uniform norm to one of these divergent orbits).}
 %
-Expectation of the error over all initial points (similar to the metric in \citep{hammer2000approximation} and \citep{hanson2021learning}):
+Expectation of the error over all initial points (similar to the metric in  \citep{hammer2000approximation} and  \citep{hanson2021learning}):
 \begin{equation}\label{eq:initerror}
 %\|\varphi-\hat \varphi\|_\varepsilon \coloneqq \frac{1}{\vol X}\mathbb{E}\left[ \int_{x_0\in X}   \mathds{1}[\|\varphi(t,x_0)-\hat \varphi(t,x_0)\|_\infty>\varepsilon]\right],
 \|\varphi-\hat \varphi\|_\varepsilon \coloneqq  \mathbb{P}\left(\|\varphi(\cdot,x_0)-\hat \varphi(\cdot,x_0)\|_\infty>\varepsilon\right).
@@ -527,7 +527,7 @@ For a multistable system it is not possible to find a universal approximation re
 For example, if we take the uniform norm of the uniform norm, it can be shown that there is always a system with a separatrix that can not be exactly matched which would lead to an error that is the distance between the two $\omega$-limit sets (see Def.~\ref{def:omega}).
 
 %\subsubsection{Guarantee in $N\rightarrow\infty$ or at finite $N$}
-%It could be that existing theorems could be interpreted that in the limit $N\rightarrow\infty$ the approximation holds. %e.g.\citep{podlaski2024approximating}
+%It could be that existing theorems could be interpreted that in the limit $N\rightarrow\infty$ the approximation holds. %e.g. \citep{podlaski2024approximating}
 %ie $\lim_{N\rightarrow\infty} error = 0$
 %Here we do it for finite $N$.
 %ie for each $\varepsilon>0$ $\exists N$ such that $error(N) < \varepsilon$
@@ -601,7 +601,7 @@ How we can bound these two types of errors will be discussed in the next two sub
 	% Similarly for the other stable fixed point for initial points in the blue region.
 	%This target system will have a set of points (in the green region) that if the flow is initialized there it has $A_i^f$ as the $\omega$-limit set (magenta line), however for the approximation the flow will approach $A_i^g$ (green line).
 	%The opposite mismatch is true for the dark green region.
-	%(such a model can be found in e.g. \citep{wong2007evidence})
+	%(such a model can be found in e.g.  \citep{wong2007evidence})
   }\label{fig:separatrices}
 \end{SCfigure}
 
@@ -612,7 +612,7 @@ For an initial value $x_0\in \overline{\boa}_i^{f,g} \coloneqq \boa(A_i^f) \cap 
 \[
 \|\varphi_{0,t}(x) - \tilde{\varphi}_{0,t}(x)\| \leq \int_0^t \|D\varphi_{s,t}(\tilde{\varphi}_{0,s}(x))\| \|f(s; \tilde{\varphi}_{0,s}(x)) - g(s; \tilde{\varphi}_{0,s}(x))\| \, ds,
 \]
-from Prop.~\ref{prop:313} from \citep{vanhandel2007filtering}, see Supp.Sec.~\ref{sec:313}.
+from Prop.~\ref{prop:313} from  \citep{vanhandel2007filtering}, see Supp.Sec.~\ref{sec:313}.
 %
 %See Rem.~\ref{rem:313}.
 %
@@ -688,7 +688,7 @@ Take $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each attractor
 
 \subsubsection{Proof of Theorem~\ref{thrm:approx} for systems with hyperbolic fixed points}\label{sec:proof_fp_approx}
 \begin{proof}%[Theorem \ref{thrm:approx}]
-Because of Conley's fundamental theorem of dynamical systems\citep{conley1978morse}, we know that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
+Because of Conley's fundamental theorem of dynamical systems \citep{conley1978morse}, we know that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
 This implies that the phase portrait consists of basins of attraction and separatrices, both gradient-like, as well as fixed points, which are chain-recurrent.
 %
 By Sec.\ref{sec:separatrix_approx} (Prop.~\ref{prop:min_sep_bound}) we can make the part of the state space which will have error bigger than $\varepsilon$ arbitrarily small. %for every delta
@@ -770,7 +770,7 @@ if the approximation vector field is close enough to the target vector field, th
 
 We can use the fact that the tubular neighborhood of diameter $\delta_T$ around the limit cycle is an (inflowing) normally hyperbolic invariant manifold.
 We will now construct the correction $\bar{g}$ so that the period of our approximation matches the targets.
-This implies that there exists a 3 layer FNN $g_{\operatorname{bump}}$ that approximates the vector field $f_{\operatorname{bump}}$ that is a bump function around the limit cycle (similar idea as Supp.Sec.~5 in \citep{Sagodi2024a}). %but this would be an actual possible implementation
+This implies that there exists a 3 layer FNN $g_{\operatorname{bump}}$ that approximates the vector field $f_{\operatorname{bump}}$ that is a bump function around the limit cycle (similar idea as Supp.Sec.~5 in  \citep{Sagodi2024a}). %but this would be an actual possible implementation
 Then we know that this NHIM will persist (from Fenichel's PMT, see Supp.Sec~\ref{sec:fenichel}).
 We also know that there is a maximal perturbation size ($\varepsilon_{LC}$) for which the limit cycle persists.
 So we have to guarantee that the limit cycle approximation is already close enough so that this perturbation does not destroy the limit cycle (Supp.Sec.~\ref{sec:periodcloseness}). %repetition
@@ -836,7 +836,7 @@ We can then choose a correction to the vector field in a tubular neighborhood ar
 %%%%%%%%%%%%%%%%
 \subsubsection{Multiple limit cycles}
 %%%QPTA
-Systems with multiple limit cycles are ubiquitous: e.g., quasi-periodic toroidal attractors (QPTA)\citep{Park2023a}.
+Systems with multiple limit cycles are ubiquitous: e.g., quasi-periodic toroidal attractors (QPTA) \citep{Park2023a}.
 %
 If $f$ has $N>1$ limit cycles, we can perform a similar procedure.
 We have to make sure that all the $\hat{\varepsilon}_i$ are small enough so that $\varepsilon_{T_i}$ is small enough:
@@ -861,10 +861,10 @@ For a proof , see Supp.Sec.~\ref{sec:mlc_extras}.
 %for the extension of continuous attractors we need to assume that all maximally invariant sets are normally hyperbolic
 
 
-If $f$ has a normally hyperbolic continuous attractor, we can tile the continuous attractor with a uniform grid of stable fixed points \citep{Sagodi2024a}.
+If $f$ has a normally hyperbolic continuous attractor, we can tile the continuous attractor with a uniform grid of stable fixed points  \citep{Sagodi2024a}.
 Each of the neighboring stable fixed points can be at most $\varepsilon$ apart. %needs to be smaller because of $\mathcal{O}(\varepsilon)$ dispacement of stable FP of approx?
 Because this is a structurally stable dynamical system,  we can approximate its vector field with $\varepsilon$ accuracy and we are guaranteed to have a topologically equivalent system to it with the fixed points being moved at most $\mathcal{O}(\varepsilon)$ by Theorem~\ref{thrm:approx}. 
-Finally, for $f$ with a continuum of attractors (nonzero flow in at least one dimension): e.g. torus of limit cycles, we can tile the continuous attractor with a uniform grid of stable limit cycles, see Section S5 in \citep{Sagodi2024a}.
+Finally, for $f$ with a continuum of attractors (nonzero flow in at least one dimension): e.g. torus of limit cycles, we can tile the continuous attractor with a uniform grid of stable limit cycles, see Section S5 in  \citep{Sagodi2024a}.
 
 
 %\subsection{Center manifolds}
@@ -923,7 +923,7 @@ Similarly, as for the autonomous case, $g$ needs to be smooth enough as a functi
 Furthermore, we assume that $g$ converges to a finite number of topological equivalence classes of asymptotically autonomous vector fields. %can we increase it to countable?
 If the function $g$ cannot have limit cycles  in the asymptotic vector field  if there is periodic forcing.
 
-\ascomment{Another case: $g$ is exponentially asymptotically periodic (EAP) \label{sec:eea_input_periodic}, where the asymptotic vector field only contains  fixed points.}
+\ascomment{Another case: $g$ is exponentially asymptotically periodic (EAP) \label{sec:eea_input_periodic}, where the asymptotic vector field only contains  fixed points and limit cycles.}
 
 
 \paragraph{Implication on the constraints of the input class $u(t)$}
@@ -934,12 +934,13 @@ $u\in \mathcal{U}$ with $u:\reals_+\rightarrow\reals^m$.
 We assume that $u(t)$ converges (exponentially) to a periodic function, i.e., %or g(\dot,u) needs to (?)
 %rate of convergence?
 \begin{equation}
-\mathcal{U} \coloneqq \left\{ u(t) \mid \exists p(t) \text{ periodic} \text{ or } c \in \mathbb{R}^n, \ \lim_{t \to \infty} \| u(t) - p(t) \| = 0 \text{ or } \lim_{t \to \infty} \| u(t) - c \| = 0 \right\},
+%\mathcal{U} \coloneqq \left\{ u(t) \mid \exists p(t) \text{ periodic} \text{ or } c \in \mathbb{R}^n, \ \lim_{t \to \infty} \| u(t) - p(t) \| = 0 \text{ or } \lim_{t \to \infty} \| u(t) - c \| = 0 \right\},
+\mathcal{U} \coloneqq \left\{ u(t) \mid \exists p(t) \text{ periodic such that } \ \lim_{t \to \infty} \| u(t) - p(t) \| = 0 \right\},
 \end{equation}
 such that only a measure-zero set of input sequences that lead to non-hyperbolic asymptotically autonomous vector fields.
 %include more general u class?
 
-%-or: forward attractors of non-autonomous dynamical systems \citep{ju2019approximate} \citep{crauel2015nonautonomous} \citep{cheban2002relationship} \citep{cui2018invariant} \citep{kloeden2016construction} \citep{koksch2002pullback} \citep{giesl2012numerical} \citep{cheban2002relationship}
+%-or: forward attractors of non-autonomous dynamical systems  \citep{ju2019approximate}  \citep{crauel2015nonautonomous}  \citep{cheban2002relationship}  \citep{cui2018invariant}  \citep{kloeden2016construction}  \citep{koksch2002pullback}  \citep{giesl2012numerical}  \citep{cheban2002relationship}
 
 
 \subsubsection{Hypothesis space: Approximating $g(x,u)$}\label{sec:input_hypothesis} %with input-driven MLP-NODEs
@@ -956,7 +957,7 @@ For the metric to compare input-driven systems with their approximations, see Se
 
 %%%%
 \subsection{Theorem}
-\begin{theorem}
+\begin{theorem}\label{thrm:input_driven}
 For an input-driven system as in Sec.~\ref{sec:input_target} % Eq.~\ref{eq:inputdriven} %+assymptions...
 with solutions  $\psi(t,x_0,u)$
 and $\varepsilon, \delta>0$, there exists an input-driven MLP style neural ODE %...
@@ -965,7 +966,7 @@ $d_\varepsilon(\psi,\hat\psi)<\delta$.
 \end{theorem}
 
 
-\subsubsection{Proof}
+\subsection{Proof of Theorem \ref{thrm:input_driven}}
 %prove: %use this for input-driven
 \paragraph{Finite-time horizon approximation + exponentially asymptotically autonomous = Infinite-time horizon approximation}
 What is the maximal error $h-\hat h$ we can allow for the $\varepsilon,\delta$ distance in flow fields to hold?
@@ -978,14 +979,14 @@ What is the maximal error $h-\hat h$ we can allow for the $\varepsilon,\delta$ d
 \begin{enumerate}
 \item from input-driven vf (quantify...)
 \item from approximation (quantify...)
-\item Small displacement in attractors of the autonomous vf (why?) in topologically equivalent regions in input space (what does this mean?)
+\item Small displacement in attractors of the autonomous vf (why?) in topologically equivalent regions in input space
 \end{enumerate}
 \item Error in trajectories
 \begin{enumerate}
-\item From sep mismatch (how does this look at $T$?)
+\item From sep mismatch (how does this look at $T$? and how does this evolve after?)
 \item From input-driven vf mismatch
 \item from aut and asy-aut vf mismatch
-\item Quantify above in PDE terms
+%\item Quantify above in PDE terms
 \end{enumerate}
 \end{enumerate}
 
@@ -1006,7 +1007,7 @@ Step 1+2+3 (apply autonomous UAP theory to vector field dynamics)
 We can approximate the changing vector field $g$ up to a finite $T$ by applying the existing finite time horizon approximation results.
 
 %after T
-We have that for a finite time we will make at most $\Psi(\eta,T)$ error (for a vector field that is $\eta$ close). $T$ depends on asymptotic exponent for the vector field $\alpha$ (Def.~\ref{def:eaa_input}). %$g$ is exponentially asymptotically autonomous
+We have that for a finite time we will make at most $\Psi(\eta,T)$ error (for a vector field that is $\eta$ close). $T$ depends on asymptotic exponent $\alpha$ at which the input-driven vector field  converges to its autonomous limit (see Def.~\ref{def:eaa_input}). %$g$ is exponentially asymptotically autonomous
 %We need to consider this until $T$ for which we are $\eta$ close to the asymptotic, autonomous vector field.
 Eq.~\ref{eq:nonautonomous} so that 
 \begin{equation}\label{eq:inputdriven_asymp}
@@ -1020,7 +1021,7 @@ g(x(t), u(t)) =  h_{\operatorname{aut}}(x(t)) + \eta h_{\operatorname{inp}}(x(t)
 with $\|h_{\operatorname{inp}}(\cdot, u(t))\| \leq 1$ and $0<\eta\ll1$.
 
 %At some $T$ the vector field is $\eta$ away from the asymptotic vector field.
-We consider Eq.~\ref{eq:init_path_density} with $T$ for which the convergence of the non-autonomous vector field is at most $\eta$ away from the asymptotic autonomous vector field $h_{\operatorname{aut}}(x)$. %which is a combination of f(x) and the asymptotic part of g(x)
+We consider Eq.~\ref{eq:inputdriven_asymp} with $T$ for which the convergence of the non-autonomous vector field is at most $\eta$ away from the asymptotic autonomous vector field $h_{\operatorname{aut}}(x)$. %which is a combination of f(x) and the asymptotic part of g(x)
 We can now consider the dynamics of Eq.~\ref{eq:nonautonomous} as an small perturbation from $g(x)$ ($\eta$ away).
 We can approximate that with $\kappa$ accuracy with our vector field.
 %So we are at most $\eta+\kappa$ away from the actual target dynamics at each time point after $T$.
@@ -1029,74 +1030,85 @@ The approximation asymptotic autonomous vector field converges at most  $\eta+\k
 %At some $T>0$ stop changing $\hat h.$ %related to the convergence of nonautonomous vf to autonomous vf
 %There is a $T$ for which for all $t>T$ we have that $\|h(t,x)-h_\infty(x)\|<\eta$ and therefore $\|g(t,x)-\hat g(T,x)\|<\eta+\kappa$.
 
-
-
-
-
-
-\paragraph{Step 4}
+3 cases:
+T for which hatg(T) is tc to hatg(infinity)
 \begin{enumerate}
-\item Characterize proportion of “bad” initial positions for each input sequence and measure the proportion in terms of the probability measure for $\mathcal{U}$ (Supp.Sec.~\ref{sec:inputdriven_metric})
+\item g and hatg are topologically conjugate at T: d(g,ghat) < max(dist up to finite time T, Hausdorff distance between omega limit sets)
+\item g has asymptotic behavior with CAs: g and hatg have invariant manifolds that are homeomorphic, i.e., the hatg omega limit sets are in the persistence regime of the g's omega limit sets
+\item g and hatg are not topologically conjugate at T
 \begin{enumerate}
-\item Input brings state to separatrix mismatch: 
-	Can be controlled by size of mismatch region (and hence autonomous part of the vf (or the asymptotically autonomous vf))
-\item  Input brings state to wrong side of separatrix:
- 	Can be controlled by mismatch in non-autonomous/input-driven factor of vf
+\item if there are a finite number of equivalence classes (topologically conjugate classes) in the asymptotic vector field, then the part of input space that has a nbhd around g (for every radius) that includes a non-tc. ghat is measure zero
+\item if there are countably many...let's skip this case for now
 \end{enumerate}
-\item Characterize proportion of “bad” input sequences through asymptotic behavior (e.g., non-hyperbolic dynamics)
 \end{enumerate}
 
 
-\paragraph{Integrating over all inputs}
-See Supp.Sec.~\ref{sec:inputdriven_metric}.
 
-%using the probability density to measure the proportion of initial points that have trajectories that will have bigger than epsilon error:
-We can set $p(x_0)$ to be the uniform distribution over the compact state space $\mathcal{X}$ we consider. 
-Then the probability density after $t$ time has passed is
-\begin{equation}\label{eq:init_path_density}
-p(x_1,t) = p(x_0)p(x_0,t).
-\end{equation}
+
+%\paragraph{Step 4}
+%\begin{enumerate}
+%\item Characterize proportion of “bad” initial positions for each input sequence and measure the proportion in terms of the probability measure for $\mathcal{U}$ (Supp.Sec.~\ref{sec:inputdriven_metric})
+%\begin{enumerate}
+%\item Input brings state to separatrix mismatch: 
+%	Can be controlled by size of mismatch region (and hence autonomous part of the vf (or the asymptotically autonomous vf))
+%\item  Input brings state to wrong side of separatrix:
+% 	Can be controlled by mismatch in non-autonomous/input-driven factor of vf
+%\end{enumerate}
+%\item Characterize proportion of “bad” input sequences through asymptotic behavior (e.g., non-hyperbolic dynamics)
+%\end{enumerate}
+%
+%
+%%%%%%attempt with density
+%\paragraph{Integrating over all inputs}
+%See Supp.Sec.~\ref{sec:inputdriven_metric}.
+%
+%%using the probability density to measure the proportion of initial points that have trajectories that will have bigger than epsilon error:
+%We can set $p(x_0)$ to be the uniform distribution over the compact state space $\mathcal{X}$ we consider. 
+%Then the probability density after $t$ time has passed is
+%\begin{equation}\label{eq:init_path_density}
+%p(x_1,t) = p(x_0)p(x_0,t).
+%\end{equation}
 %$p(x_{i+1},t+s) = p(x_i,t)p(x_{i+1},s)$
 
 
 
-Up to finite $T$: $d(p(x_1,t),\hat p(x_1,t))<\mu$. % distance?
-
-Asymptotically ($t\rightarrow\infty$): $d(p(x_1,\infty),\hat p(x_1,\infty))$ is given by initial separatrix mismatch + contribution from aut asym separatrix mismatch(es).
-
-\paragraph{Time evolution of probability density}
-To express how the density of states changes over time, or how the change is bounded by properties of the vector field, we need to analyze the evolution of the probability distribution of the system over time.
-
-For an ODE as in Eq.~\ref{eq:inputdriven_asymp}, the probability density evolves according to the Liouville's equation:
-\begin{equation}
-\frac{\partial p(x,t)}{\partial t} + \nabla \cdot \left( p(x,t) g(x,t) \right) = 0
-\end{equation}
-So the difference in state densities between the autonomous and input-driven systems becomes:
-\begin{equation}
-\Delta p(x,t) = p_{g}(x,t) - p_{\operatorname{aut}}(x,t) \approx \eta \cdot \int_0^t \nabla \cdot \left( p(x,t) h_{\operatorname{inp}}(x(t), u(t)) \right) \, dt.
-\end{equation}
-
-Approximation $\hat p(x,t)$:
-for approximation of $h_{\operatorname{aut}}$, i.e.,  $\hat h_{\operatorname{aut}} = h_{\operatorname{aut}} + \kappa h_{\operatorname{error}}$
-with $\|h_{\operatorname{error}}\|=1$ and $\kappa \ll 1$. %For $h_aut(x)$ there is a $\hat h_aut$ that is $\epsilon_h$-$\delta_h$ close.
-\begin{equation}
-\Delta p(x,t) = p_{\operatorname{aut}}(x,t) - p_{\hat{h}}(x,t) \approx \kappa \cdot \int_0^t \nabla \cdot \left( p_{\operatorname{aut}}(x,t) h_{\operatorname{error}}(x) \right) \, dt.
-\end{equation}
-
-
-\paragraph{Asymptotic probability density}
-$p_{h_{inpt}}(x,t) \rightarrow p_{h_{aut}}(x)$ for $t\rightarrow \infty$ %delta functions on attractors
-$p_{h_{aut}}(x) = \int \mu_i(x)\delta_i(x)dx$ where $\mu$ captures which proportion of the state space converged to attractor $i$.
-
-$h_{\operatorname{aut}}(x(t)) + \eta h_{\operatorname{inp}}(x(t), u(t))$
-
-\paragraph{Relating approximation distance to probability density distance}
-\begin{equation}
-d_\varepsilon(\varphi,\hat \varphi) < d_W(p_{h_{aut}}, p_{\hat h})
-\end{equation}
-for the Wasserstein metric $d_W$.
-\ascomment{Moving of unit over a distance of  less than $\epsilon$ does not contribute to $d_\varepsilon$ distance. }
-
+%Up to finite $T$: $d(p(x_1,t),\hat p(x_1,t))<\mu$. % distance?
+%
+%Asymptotically ($t\rightarrow\infty$): $d(p(x_1,\infty),\hat p(x_1,\infty))$ is given by initial separatrix mismatch + contribution from aut asym separatrix mismatch(es).
+%
+%\paragraph{Time evolution of probability density}
+%To express how the density of states changes over time, or how the change is bounded by properties of the vector field, we need to analyze the evolution of the probability distribution of the system over time.
+%
+%For an ODE as in Eq.~\ref{eq:inputdriven_asymp}, the probability density evolves according to the Liouville's equation:
+%\begin{equation}
+%\frac{\partial p(x,t)}{\partial t} + \nabla \cdot \left( p(x,t) g(x,t) \right) = 0
+%\end{equation}
+%So the difference in state densities between the autonomous and input-driven systems becomes:
+%\begin{equation}
+%\Delta p(x,t) = p_{g}(x,t) - p_{\operatorname{aut}}(x,t) \approx \eta \cdot \int_0^t \nabla \cdot \left( p(x,t) h_{\operatorname{inp}}(x(t), u(t)) \right) \, dt.
+%\end{equation}
+%
+%Approximation $\hat p(x,t)$:
+%for approximation of $h_{\operatorname{aut}}$, i.e.,  $\hat h_{\operatorname{aut}} = h_{\operatorname{aut}} + \kappa h_{\operatorname{error}}$
+%with $\|h_{\operatorname{error}}\|=1$ and $\kappa \ll 1$. %For $h_aut(x)$ there is a $\hat h_aut$ that is $\epsilon_h$-$\delta_h$ close.
+%\begin{equation}
+%\Delta p(x,t) = p_{\operatorname{aut}}(x,t) - p_{\hat{h}}(x,t) \approx \kappa \cdot \int_0^t \nabla \cdot \left( p_{\operatorname{aut}}(x,t) h_{\operatorname{error}}(x) \right) \, dt.
+%\end{equation}
+%
+%
+%\paragraph{Asymptotic probability density}
+%$p_{h_{inpt}}(x,t) \rightarrow p_{h_{aut}}(x)$ for $t\rightarrow \infty$ %delta functions on attractors
+%$p_{h_{aut}}(x) = \int \mu_i(x)\delta_i(x)dx$ where $\mu$ captures which proportion of the state space converged to attractor $i$.
+%
+%$h_{\operatorname{aut}}(x(t)) + \eta h_{\operatorname{inp}}(x(t), u(t))$
+%
+%\paragraph{Relating approximation distance to probability density distance}
+%\begin{equation}
+%d_\varepsilon(\varphi,\hat \varphi) < d_W(p_{h_{aut}}, p_{\hat h})
+%\end{equation}
+%for the Wasserstein metric $d_W$.
+%\ascomment{Moving of unit over a distance of  less than $\epsilon$ does not contribute to $d_\varepsilon$ distance. }
+%%%%%
 
 
 
@@ -1116,7 +1128,7 @@ for the Wasserstein metric $d_W$.
 %This allows us to formulate approximation in terms of attractors and separatrices (but now in input space)
 %
 %%Important concepts: %?
-%%Input-to-state stability \citep{sontag1995iss, sontag1996iss, sontag2008iss} introduce in Appendix?
+%%Input-to-state stability  \citep{sontag1995iss, sontag1996iss, sontag2008iss} introduce in Appendix?
 
 
 
@@ -1144,7 +1156,7 @@ Exponentially asymptotically autonomous dynamics could be seen as a form of meta
 \end{remark}
 
 \begin{remark}
-Exponentially asymptotically autonomous dynamics a form of input to state stability (ISS\citep{sontag1995iss, sontag1996iss, sontag2008iss}) but for the vector field dynamics.
+Exponentially asymptotically autonomous dynamics a form of input to state stability (ISS \citep{sontag1995iss, sontag1996iss, sontag2008iss}) but for the vector field dynamics.
 \end{remark}
 
 
@@ -1155,7 +1167,7 @@ Exponentially asymptotically autonomous dynamics a form of input to state stabil
 This is the first proof of the universal approximation property of neural ODEs for multistable dynamical systems on an infinite time horizon.
 
 
-basin stability\citep{menck2013basinstability}
+basin stability \citep{menck2013basinstability}
 
 \subsection{Limitations}
 \paragraph{Limit cycles}
@@ -1163,26 +1175,26 @@ Stable limit cycles are approximable but their approximation is not robust! (per
 
 
 \paragraph{Asymptotically autonomous assumption}
-It is often [and in neural network models of working memory (WM), typically] assumed that inputs are only non-zero for a brief initial period (the cue period of a WM trial) \citep{hopfield1982neural, stroud2023infromationloading, stroud2024computational, schimel2024preparation}.
+It is often [and in neural network models of working memory (WM), typically] assumed that inputs are only non-zero for a brief initial period (the cue period of a WM trial)  \citep{hopfield1982neural, stroud2023infromationloading, stroud2024computational, schimel2024preparation}.
 
 \paragraph{Chaotic dynamics}
-the constraints of computing with biological wet-ware may make chaotic dynamics unavoidable in complex nervous systems\citep{hirsch1995computing}
-\citep{hoppensteadt2013analysis}
+the constraints of computing with biological wet-ware may make chaotic dynamics unavoidable in complex nervous systems \citep{hirsch1995computing}
+ \citep{hoppensteadt2013analysis}
 
 %also pdes?
 \paragraph{Stochastic dynamics}
-\citep{gonon2019reservoir}
-\citep{hart2021echo}
-\citep{chen2022universal} 
-\citep{wei2022statistically}
-Recurrent Neural Networks and Universal Approximation of Bayesian Filters \citep{bishop2023recurrent}
-\citep{plate2024optimal}
+ \citep{gonon2019reservoir}
+ \citep{hart2021echo}
+ \citep{chen2022universal} 
+ \citep{wei2022statistically}
+Recurrent Neural Networks and Universal Approximation of Bayesian Filters  \citep{bishop2023recurrent}
+ \citep{plate2024optimal}
 %\paragraph{Flow Matching}
-\citep{mishne2024elucidating}
-\citep{lipman2024flow}
+ \citep{mishne2024elucidating}
+ \citep{lipman2024flow}
 
 \paragraph{PDEs}
-\citep{richter2022neural}
+ \citep{richter2022neural}
 
 
 %%%%
@@ -1193,7 +1205,7 @@ What we can do is approximate point-wise the vector field.
 Under some assumptions about the smoothness of the vector field, this can allow us to get an approximate system that is $\epsilon$-$\delta$ close (in behavior space).
 
 \paragraph{Performance after learning and noise}
-learning related generalization \citep{marion2023generalization}\citep{bleistein2023generalization}
+learning related generalization  \citep{marion2023generalization} \citep{bleistein2023generalization}
 
 \paragraph{The price of universality}
 This construction is immensely inefficient.
@@ -1209,25 +1221,25 @@ NODEs simulate RNNs (see definition for simulation in Sec.~\ref{sec:simulation})
 - Each NODE is state space equivalent to an RNN that is split into a part for which the equivalence holds and a hidden part (Boltzmann Machine-like)
 -Each RNN is state space equivalent to an RNN
 
-This equivalence does not hold for input-driven systems (?)  (according to \citep{dinc2025latentcomputing} they are?)
+This equivalence does not hold for input-driven systems (?)  (according to  \citep{dinc2025latentcomputing} they are?)
 
-% NNs as controllers \citep{sontag1992neural}
+% NNs as controllers  \citep{sontag1992neural}
 
 
 %%
 \subsection{Implications for understanding neural computation} 
-Reconstructing Computational Dynamics from Neural Measurements with Recurrent Neural Networks \citep{durstewitz2023reconstructing}.
+Reconstructing Computational Dynamics from Neural Measurements with Recurrent Neural Networks  \citep{durstewitz2023reconstructing}.
 
-Use of NODEs in neuroscience \citep{kim2021inferring}.
+Use of NODEs in neuroscience  \citep{kim2021inferring}.
 
-system identification in neuroscience \citep{han2023si} 
+system identification in neuroscience  \citep{han2023si} 
 
 Temporal generalization
 
-Seperatrices are robust hence decision-making is robust to D-type noise \citep{Park2023a}.
+Seperatrices are robust hence decision-making is robust to D-type noise  \citep{Park2023a}.
 
 %\paragraph{Robust neural computation}
-%Idea: Two dynamical phenomena are isolated into primitive architectural components which perform the operations of continuous nonlinear transformation and autoassociative recall \citep{pineda1988dynamics}.
+%Idea: Two dynamical phenomena are isolated into primitive architectural components which perform the operations of continuous nonlinear transformation and autoassociative recall  \citep{pineda1988dynamics}.
 
 %TODO: choose most relevant topic
 %\paragraph{Models that generalize over time}
@@ -1245,7 +1257,7 @@ Seperatrices are robust hence decision-making is robust to D-type noise \citep{P
 
 
 \newpage
-\bibliographystyle{unsrtnat_IMP_v1}
+%\bibliographystyle{plainnat}
 \bibliography{../all_ref.bib,../catniplab.bib}
 
 
@@ -1254,8 +1266,8 @@ Seperatrices are robust hence decision-making is robust to D-type noise \citep{P
 \appendix 
 
 \section{Universal Approximation with Feedforward Neural Networks (FNNs)}\label{sec:uniapproxffn}
-The foundation of our approach lies in leveraging the \textit{universal approximation property} of feedforward neural networks (FNNs) \citep{poggio1990networks}, a powerful result that makes neural networks exceptional for a broad array of tasks. This property allows FNNs to approximate complex functions with remarkable flexibility, providing the theoretical basis for their widespread success in machine learning.
-For an overview see \citep{blum1991approximation,scarselli1998universal,augustine2024survey}.
+The foundation of our approach lies in leveraging the \textit{universal approximation property} of feedforward neural networks (FNNs)  \citep{poggio1990networks}, a powerful result that makes neural networks exceptional for a broad array of tasks. This property allows FNNs to approximate complex functions with remarkable flexibility, providing the theoretical basis for their widespread success in machine learning.
+For an overview see  \citep{blum1991approximation,scarselli1998universal,augustine2024survey}.
 
 
 \subsection{The Universal Approximation Theorem}
@@ -1270,35 +1282,35 @@ where \(K \subset \mathbb{R}^n\) is compact. This guarantees that given sufficie
 The importance of the compact domain assumption is that it constrains the input space to a finite region, ensuring the approximation remains well-behaved.	
 This is where the theorem’s beauty shines: while we often don’t know the explicit form of the target function, neural networks learn it purely from data, making them excellent for tasks like regression, classification, and pattern recognition.
 
-The universal approximation property of FNNs was first proven by \citep{cybenko1989approximation} for sigmoidal activation functions. This was followed by significant generalizations by \citep{hornik1989multilayer}, \citep{funahashi1989approximate} and \citep{hechtnielsen1992backpropagation}, which extended the result to broader classes of activation functions, including the popular ReLU.
+The universal approximation property of FNNs was first proven by  \citep{cybenko1989approximation} for sigmoidal activation functions. This was followed by significant generalizations by  \citep{hornik1989multilayer},  \citep{funahashi1989approximate} and  \citep{hechtnielsen1992backpropagation}, which extended the result to broader classes of activation functions, including the popular ReLU.
 These results serve as the cornerstone of modern neural network theory, supporting the use of deep architectures across diverse machine learning applications.
 
-For example, sums of polynomial functions are known to have the UAP \citep{llavona1986approximation}.
+For example, sums of polynomial functions are known to have the UAP  \citep{llavona1986approximation}.
 
 
 \subsection{Activation functions} %Sigmoidal 
 \paragraph{Sigmoid} %general form?
-\begin{theorem}[Universal Approximation Theorem for Feedforward Neural Networks\citep{hornik1989multilayer,schafer2007uap}]
+\begin{theorem}[Universal Approximation Theorem for Feedforward Neural Networks \citep{hornik1989multilayer,schafer2007uap}]
 For any sigmoid activation function \( f \), any dimension \( I \), and any probability measure \( \mu \) on \( (\mathbb{R}^I, \mathcal{B}^I) \), \( \Sigma_I(f) \) is uniformly dense on a compact domain in \( C^I \) and \( \rho_{\mu} \)-dense in \( M^I \).
 \end{theorem}
 
-%\begin{corollary}%[in \citep{schafer2007uap}]
+%\begin{corollary}%[in  \citep{schafer2007uap}]
 %Theorem 1 holds for the approximation of functions in \( C^{I,N} \) and \( M^{I,N} \) by the extended function class \( \Sigma^{I,N} \). Thereby, the metric \( \rho_{\mu} \) is replaced by \( \rho_{\mu}^N := \sum_{k=1}^{N} \rho_{\mu}(f_k, g_k) \).
 %\end{corollary}
 
 
 At the heart of the theorem lies the activation function.
-Any non-linear, continuous, and non-constant function enables the network to approximate continuous functions universally\citep{csaji2001approximation}.
+Any non-linear, continuous, and non-constant function enables the network to approximate continuous functions universally \citep{csaji2001approximation}.
 A classic example is the \textit{sigmoidal function}, defined by the property:
 \[
 \lim_{x \to -\infty} \sigma(x) = 0 \quad \text{and} \quad \lim_{x \to +\infty} \sigma(x) = 1.
 \]
 Many popular activation functions, such as the logistic sigmoid and tanh, fall into this category.
-Despite ReLU's unbounded nature, it still supports the universal approximation property \citep{yarotsky2017error}.
+Despite ReLU's unbounded nature, it still supports the universal approximation property  \citep{yarotsky2017error}.
 These functions introduce the necessary non-linearity, enabling the network to break free from the constraints of purely linear transformations.
 %non-sigmoidal activations like the \textit{Rectified Linear Unit (ReLU)} 
 
-The universal approximation property is equivalent to having a nonpolynomial activation function \citep{pinkus1999approximation}.
+The universal approximation property is equivalent to having a nonpolynomial activation function  \citep{pinkus1999approximation}.
 
 
 \subsection{The Multi-layer Perceptron (MLP)}
@@ -1311,10 +1323,10 @@ h^{(1)} = \sigma(W^{(1)} x + b^{(1)})
 f_{\text{MLP}}(x) = W^{(2)} h^{(1)} + b^{(2)}
 \]
 Here, \(h^{(1)}\) represents the hidden layer, while \(W^{(1)}, W^{(2)}\) and \(b^{(1)}, b^{(2)}\) are the weights and biases learned during training. The activation function \(\sigma(\cdot)\) introduces the necessary non-linearity.
-Three-layered multi-output Feedforward Networks are universal approximators for vector-valued functions \citep{irie1988capabilities}.
-In these networks there is a single hidden layer feedforward network that approximates any measurable function to any desired degree of accuracy on some compact set \citep{hornik1989multilayer}.
+Three-layered multi-output Feedforward Networks are universal approximators for vector-valued functions  \citep{irie1988capabilities}.
+In these networks there is a single hidden layer feedforward network that approximates any measurable function to any desired degree of accuracy on some compact set  \citep{hornik1989multilayer}.
 
-It is not the specific choice of the activation function but rather the multilayer feed-forward architecture itself that gives neural networks the potential of being universal approximators\citep{hornik1991approximation}.
+It is not the specific choice of the activation function but rather the multilayer feed-forward architecture itself that gives neural networks the potential of being universal approximators \citep{hornik1991approximation}.
 
 %In a more general case, for a deeper MLP with \(L\) layers, we have:
 %\[
@@ -1339,13 +1351,13 @@ It is not the specific choice of the activation function but rather the multilay
 
 
 \subsection{Efficiency}
-The blessing of compositionality mitigates the curse of dimensionality \citep{mhaskar2019function}.
+The blessing of compositionality mitigates the curse of dimensionality  \citep{mhaskar2019function}.
 
 
 \subsection{Other results on UAP for mappings}
 
  
-NODEs are $L^p$-universal approximators \citep{li2022deep,li2022deeparxiv}.
+NODEs are $L^p$-universal approximators  \citep{li2022deep,li2022deeparxiv}.
 However, the universal approximation property with respect to the $L^p$-norm can be insufficient as it does not guarantee an approximation for the entire input domain:
  $L^p$ approximation may still hold even if the approximator largely differs from the target function on a small region of the input space.
 
@@ -1353,52 +1365,53 @@ However, the universal approximation property with respect to the $L^p$-norm can
 
 Universal approximation of 
 \begin{itemize}
-\item Homeomorphisms \citep{zhang2020approximation}, with normalizing flows \citep{papamakarios2021normalizing}
-\item Invariant functions\citep{li2022deep}
-\item Monotone analytic functions homotopic to the identity\citep{tabuada2020universal}, \citep{tabuada2022universal}
+\item Homeomorphisms  \citep{zhang2020approximation}, with normalizing flows  \citep{papamakarios2021normalizing}
+\item Invariant functions \citep{li2022deep}
+\item Monotone analytic functions homotopic to the identity \citep{tabuada2020universal},  \citep{tabuada2022universal}
 \end{itemize}
 
 
 \ascomment{TODO: organize}
-RBF\citep{park1991universal}
-a\citep{marchi2021training}
-\citep{lowe1988multivariable}
-\citep{mhaskar1997neural}
-\citep{leshno1993multilayer}
-UA with Deep narrow \citep{kidger2020universal}
-with WTA networks \citep{maass2000wta}
-Function+Derivatives \citep{hornik1990universal}
-function and derivative \citep{li1996simultaneous}
-ReLU\citep{huang2020relu}
-ResNet\citep{lin2018resnet}
+RBF \citep{park1991universal}
+a \citep{marchi2021training}
+ \citep{lowe1988multivariable}
+ \citep{mhaskar1997neural}
+ \citep{leshno1993multilayer}
+UA with Deep narrow  \citep{kidger2020universal}
+with WTA networks  \citep{maass2000wta}
+Function+Derivatives  \citep{hornik1990universal}
+function and derivative  \citep{li1996simultaneous}
+ReLU \citep{huang2020relu}
+ResNet \citep{lin2018resnet}
 
 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\section{UAP for RNNs overview}
-
-\begin{table}[h]
-\begin{tabular}{|l|l|l|l|l|l|}
-%\hline
-\cline{2-6}
-    \multicolumn{1}{c|}{}							%leave out size?
- 						&  Time interval & FMP	& Finite size 		&  Input     	&     Time   \\\cline{2-6}\hline
-\citet{cybenko1989approximation} 	& Finite	& No 	& Yes 			&  Yes		&	Continuous\\\hline  %vf
-\citet{funahashi1989approximate} 	& Finite	& No		& Yes			&  Yes		&	Continuous\\\hline  %vf
-\citet{hornik1989multilayer} 		& Finite	& No 	& Yes			& Yes		&	Continuous\\\hline  %vf
-\citet{funahashi1993approximation} 	& Finite	& No		& Yes			&  Yes		&	Continuous\\\hline
-\citet{jin1995approximation}		& Finite	& No		& Yes			& Yes		&	Continuous	\\\hline
-\citet{hammer2000approximation}	& Finite     & No 	& Yes			& Yes		& 	Discrete	\\\hline
-\citet{jin1995universal}			& Finite	& No		& Yes			& Yes		&	Discrete	\\\hline
-\citet{bai2019deq} 				& Infinite	& Yes	& No		 	& Yes 			&	Discrete		\\\hline
-\citet{schafer2007uap} 			& Infinite 	& Yes	& No			& Yes 			&	Discrete\\\hline
-\citet{wang2024state}			& Infinite   & Yes 	& No 		& Yes			& 	Continuous\\\hline % FMP type: (exp. decay) 
-\dots&\dots &\dots&\dots&\dots&\dots\\
-\end{tabular}
-\end{table}
+%bigtable
+%\newpage
+%\section{UAP for RNNs overview}
+%
+%\begin{table}[h]
+%\begin{tabular}{|l|l|l|l|l|l|}
+%%\hline
+%\cline{2-6}
+%    \multicolumn{1}{c|}{}							%leave out size?
+% 						&  Time interval & FMP	& Finite size 		&  Input     	&     Time   \\\cline{2-6}\hline
+%\citet{cybenko1989approximation} 	& Finite	& No 	& Yes 			&  Yes		&	Continuous\\\hline  %vf
+%\citet{funahashi1989approximate} 	& Finite	& No		& Yes			&  Yes		&	Continuous\\\hline  %vf
+%\citet{hornik1989multilayer} 		& Finite	& No 	& Yes			& Yes		&	Continuous\\\hline  %vf
+%\citet{funahashi1993approximation} 	& Finite	& No		& Yes			&  Yes		&	Continuous\\\hline
+%\citet{jin1995approximation}		& Finite	& No		& Yes			& Yes		&	Continuous	\\\hline
+%\citet{hammer2000approximation}	& Finite     & No 	& Yes			& Yes		& 	Discrete	\\\hline
+%\citet{jin1995universal}			& Finite	& No		& Yes			& Yes		&	Discrete	\\\hline
+%\citet{bai2019deq} 				& Infinite	& Yes	& No		 	& Yes 			&	Discrete		\\\hline
+%\citet{schafer2007uap} 			& Infinite 	& Yes	& No			& Yes 			&	Discrete\\\hline
+%\citet{wang2024state}			& Infinite   & Yes 	& No 		& Yes			& 	Continuous\\\hline % FMP type: (exp. decay) 
+%\dots&\dots &\dots&\dots&\dots&\dots\\
+%\end{tabular}
+%\end{table}
 
 
 
@@ -1406,7 +1419,7 @@ ResNet\citep{lin2018resnet}
 \newpage
 \section{Neural ODEs (NODEs)}
 %\subsection{}
-Neural ODEs \citep{chen2018neural} represent the latest instance of continuous deep learning model for time series, first developed in the context of continuous recurrent networks \citep{cohen1983absolute}.
+Neural ODEs  \citep{chen2018neural} represent the latest instance of continuous deep learning model for time series, first developed in the context of continuous recurrent networks  \citep{cohen1983absolute}.
 %
 Neural ODEs model the continuous trajectory of the hidden state \( \mathbf{h}(t) \) as the solution to an ordinary differential equation parameterized by a neural network. Mathematically, the dynamics are defined by:
 
@@ -1426,26 +1439,26 @@ f(\mathbf{h}(t), t, \theta) = W_2 \sigma(W_1 \mathbf{h}(t) + \mathbf{b}_1) + \ma
 Here, \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( W_1, W_2 \) are weight matrices, and \( \mathbf{b}_1, \mathbf{b}_2 \) are bias vectors.
  This form models the ODE dynamics using a simple two-layer feedforward network.
 
-Universal approximation properties of neural operator architectures \citep{lu2021learning, kissas2022learning, kovachki2021universal}.
+Universal approximation properties of neural operator architectures  \citep{lu2021learning, kissas2022learning, kovachki2021universal}.
 
 
 \paragraph{Applications}
 %NODEs in neuroscience%
-Neural ordinary differential equations (NODEs) are being increasingly adopted in computational and systems neuroscience, showing improved performance compared to current approaches \citep{kim2021inferring,geenjaar2023learning,sedler2023expressive,elgazzar2024universal,rubanova2019latent,coelho2024enhancing}.
+Neural ordinary differential equations (NODEs) are being increasingly adopted in computational and systems neuroscience, showing improved performance compared to current approaches  \citep{kim2021inferring,geenjaar2023learning,sedler2023expressive,elgazzar2024universal,rubanova2019latent,coelho2024enhancing}.
 
 
 %\paragraph{Latent}
-%Latent ODE-RNN  \citep{rubanova2019latent}
-%Latent ODE-LSTM \citep{coelho2024enhancing}
+%Latent ODE-RNN   \citep{rubanova2019latent}
+%Latent ODE-LSTM  \citep{coelho2024enhancing}
 
 \paragraph{Time variant}
 As continuous limits of ResNets, it is natural to take the coefficients of NODEs to be time-dependent.
 
-semiautonomous NODEs (SA-NODEs) \citep{li2024universal}
+semiautonomous NODEs (SA-NODEs)  \citep{li2024universal}
 
 
 \paragraph{Analysis}
-\citep{massaroli2020nodes}
+ \citep{massaroli2020nodes}
 
 
 %
@@ -1527,7 +1540,7 @@ The notion of fading memory is strictly an input/output property, that is, it re
 \begin{remark}\label{rem:fmp}%this is just a repeat
 The FMP quantitatively captures the idea that perturbations to the initial condition have asymptotically negligible influence on the long-term behavior of the system trajectory.
 This implies that imperfect system models may still be able of generating outputs that uniformly approximate the outputs of the original system over infinite time intervals.
-In contrast, for systems not satisfying this stability condition, a sharp bound on the approximation error degrades exponentially with time \citep{hirsch1974nonautonomous, sontag2013mathematical}.
+In contrast, for systems not satisfying this stability condition, a sharp bound on the approximation error degrades exponentially with time  \citep{hirsch1974nonautonomous, sontag2013mathematical}.
 \end{remark}
 
 
@@ -1559,9 +1572,9 @@ where \( F : \mathbb{R}^L \times \mathbb{R}^d \rightarrow \mathbb{R}^L \) and \(
 
 %%%%
 \subsection{Simulation}\label{sec:simulation}
-\citep{sontag1992neural}
+ \citep{sontag1992neural}
 
-\begin{definition}[Sec.2.3 in \citep{sontag1992neural}]\label{def:simulation}
+\begin{definition}[Sec.2.3 in  \citep{sontag1992neural}]\label{def:simulation}
 Consider two systems $\Sigma$ and $\tilde\Sigma$ described by the following dynamics 
 \begin{equation}
     \Sigma: \begin{cases}
@@ -1582,7 +1595,7 @@ $\Sigma$ \emph{simulates} $\tilde{\Sigma}$ on sets $K$ and $U$ up to accuracy $\
 
 
 %%%
-\subsection{Semiflows\citep{sell2013dynamics}}\label{sec:semiflow}
+\subsection{Semiflows \citep{sell2013dynamics}}\label{sec:semiflow}
 Let \( M \) be a subset of a complete metric space \( W \), and let \( \mathbb{R} = (-\infty, \infty) \) 
 and \( \mathbb{R}_+ = [0, \infty) \). A mapping \( \alpha = \alpha(w,t) \), where 
 \( \alpha: M \times [0,\infty) \to M \), is said to be a \textit{semiflow} on \( M \), provided the following hold:
@@ -1601,7 +1614,7 @@ and \( \mathbb{R}_+ = [0, \infty) \). A mapping \( \alpha = \alpha(w,t) \), wher
 \end{enumerate}
 
 
- Existence of Global Attractors for compact semiflows: Theorem 23.11 in \citep{sell2013dynamics}
+ Existence of Global Attractors for compact semiflows: Theorem 23.11 in  \citep{sell2013dynamics}
  
 
 
@@ -1635,10 +1648,10 @@ Let \( D \) be an open subset of \( \mathbb{R}^n \) and \( F : D \to \mathbb{R}^
 Let \( x(t) \) be a solution on a maximal open interval \( J = (a, \beta) \subset \mathbb{R} \) with \( \beta < \infty \). 
 Then for any given compact subset \( K \subset D \), there is some \( t \in (a, \beta) \) with \( x(t) \notin K \). 
 \end{lemma}	
-For proof see \citep{hirsch1974nonautonomous}[chap. 8, §5]).
+For proof see  \citep{hirsch1974nonautonomous}[chap. 8, §5]).
 
 
-\begin{lemma}[Lemma 4 in \citep{funahashi1993approximation}]
+\begin{lemma}[Lemma 4 in  \citep{funahashi1993approximation}]
 Let \( F: \mathbb{R}^n \to \mathbb{R}^n \) be a bounded \( C^t \)-mapping. Then, the differential equation
 \[
 \dot{x} = -\frac{1}{r} x + F(x), \quad r > 0
@@ -1694,9 +1707,9 @@ Y & \xrightarrow{g} & Y
 
 %%%%
 \subsection{The Fundamental Theorem of Dynamical Systems}\label{sec:fundamental}
-See, for example\citep{conley1978morse, norton1995fundamental}, it is also referred to as Conley's Decomposition Theorem \citep{mischaikow1999cit}.
+See, for example \citep{conley1978morse, norton1995fundamental}, it is also referred to as Conley's Decomposition Theorem  \citep{mischaikow1999cit}.
 
-\begin{theorem}[\citep{conley1978morse}]
+\begin{theorem}[ \citep{conley1978morse}]
  Any flow on a compact metric space decomposes into a chain recurrent part and a gradient-like part.
 \end{theorem}
 
@@ -1719,7 +1732,7 @@ The important property of the isolating neighborhood that we will need is that i
 \varphi_\lambda\colon \reals\times X\rightarrow X, \ \ \ \lambda\in[-1,1].
 \end{equation}
 
-\begin{proposition}[Proposition 1.1 in \citep{mischaikow1999cit}]
+\begin{proposition}[Proposition 1.1 in  \citep{mischaikow1999cit}]
 Let $N$ be an isolating neighborhood for the flow $\varphi_0$. Then, for sufficiently small $\delta>0$, $N$ is an isolating neighborhood for all $\varphi_\lambda, |\lambda|<\delta$.
 \end{proposition}
 
@@ -1731,7 +1744,7 @@ Two isolated invariant sets $S_{\lambda_0}$ and $S_{\lambda_1}$ are \emph{relate
 \end{definition}
 
 %Continuation Property
-\begin{theorem}[Continuation Proprty, Theorem 3.10 in \citep{mischaikow1999cit}]
+\begin{theorem}[Continuation Proprty, Theorem 3.10 in  \citep{mischaikow1999cit}]
 Let $S_{\lambda_0}$ and $S_{\lambda_1}$ be isolated invaraint sets that are related by continuation. 
 Then they have the same Conley Index, i.e.,
 \[
@@ -1742,7 +1755,7 @@ Then they have the same Conley Index, i.e.,
 
 %%%%
 \subsection{Structural stability}\label{sec:ss}
-\citep{peixoto1959ss, mane1987ss, hu1994ss, hayashi1997invariant, robbin1971ss, robinson1974ss, palis1970ss}
+ \citep{peixoto1959ss, mane1987ss, hu1994ss, hayashi1997invariant, robbin1971ss, robinson1974ss, palis1970ss}
 
 Structural stability is a fundamental concept in the study of dynamical systems. A structurally stable system is one for which small perturbations in the system's parameters do not lead to drastic qualitative changes in the system's behavior.
 % In other words, if a system is structurally stable, its behavior remains robust under perturbations.
@@ -1779,7 +1792,7 @@ Two flows are topologically equivalent if there is a homeomorphism $h\colon M\ri
 \end{definition}
 
 \begin{remark}
-For every manifold, structurally stable flows form non-empty open subsets of $\mcX^r(M)$ \citep{palis1970ss}.
+For every manifold, structurally stable flows form non-empty open subsets of $\mcX^r(M)$  \citep{palis1970ss}.
 \end{remark}
 
 \subsubsection{Hyperbolicity}
@@ -1864,17 +1877,17 @@ For higher than 2 dimensional systems saddle-to-saddle connections can be struct
 
 %%%%small intro for PMT? move there as subsub?
 \subsubsection{Invariant manifolds}\label{sec:invman}
-\citep{roberts1989invariant,
+ \citep{roberts1989invariant,
 kalitin2021attractors}
 
-\citep{hirsch1970invariant}
-\citep{wiggins1994nhim}
-\citep{jones1995gspt}
-\citep{kuehn2015multipletimescale}
+ \citep{hirsch1970invariant}
+ \citep{wiggins1994nhim}
+ \citep{jones1995gspt}
+ \citep{kuehn2015multipletimescale}
 
 
 \subsubsection{Normally hyperbolic invariant manifolds are persistent}
-\begin{theorem}[\citep{fenichel1971persistence}; see also \citep{kuehn2015multipletimescale}]
+\begin{theorem}[ \citep{fenichel1971persistence}; see also  \citep{kuehn2015multipletimescale}]
 %\textbf{Theorem 2.2.2} ().%
  Consider
 \begin{equation}\label{eq:fenichelode}
@@ -1926,7 +1939,7 @@ A system \( \dot{x} = f(x) \) is \textit{nonexpansive} with respect to a norm \(
 \end{definition}
 
 
-\textbf{Corollary 2. in \citep{duvall2024remark}} Suppose we have a \( C^1 \) system \( \dot{x} = f(x) \) with a compact forward-invariant state space \( X \). Then, for any real number \( t \geq 0 \), the time evolution operator \( \phi_t \) is an isometry on the set  
+\textbf{Corollary 2. in  \citep{duvall2024remark}} Suppose we have a \( C^1 \) system \( \dot{x} = f(x) \) with a compact forward-invariant state space \( X \). Then, for any real number \( t \geq 0 \), the time evolution operator \( \phi_t \) is an isometry on the set  
 \[
 A = \bigcap_{t \geq 0} \phi_t(X)
 \]  
@@ -1937,14 +1950,14 @@ A = \bigcap_{t \geq 0} \phi_t(X)
 The semiflow $\sigma(u, t) = S(t)u$ on $W$ is said to be compact, if for every bounded set $B$ in $W$ there is a $r = r(B)$, $0 \leq r < \infty$, such that for every $t> r$, the set $S(t)B$ lies in a compact subset of $W$, i.e., $\cl_WS(t)B$ is compact. 
 
 %\subsubsection{$\kappa$-contracting}%for noncompact dynamics
-%\citep{sell2013dynamics}
+% \citep{sell2013dynamics}
 
 %%%%move to attractors as subsub?
 \subsection{Basins of attraction}\label{sec:boa}
-\citep{milnor1985attractor}
-\citep{hirsch1995computing}
+ \citep{milnor1985attractor}
+ \citep{hirsch1995computing}
 
-Also called the Region of attraction, e.g., in \citep{garces2012strategies} (Definition 2.2.5).
+Also called the Region of attraction, e.g., in  \citep{garces2012strategies} (Definition 2.2.5).
 \begin{definition}[Basin of attraction]
 %for equilibrium poin
 Suppose that $x=0$ is an attractive equilibrium point of a system $\dot x = f(x)$.
@@ -1976,7 +1989,7 @@ Each connected component of $\ \bigcup_i\cl \boa(A_i) \cap \boa(A_i) $ is a conn
 %%%%
 \subsection{Separatrices}\label{sec:sep}
 The boundaries between basins of attraction are exactly the stable manifolds of dimension $n-1$ (e.g.originating from a saddle point with $n-1$ stable directions 
-or from a closed orbit with $n-2$ stable directions) \citep{gruemm1975stable}.
+or from a closed orbit with $n-2$ stable directions)  \citep{gruemm1975stable}.
 These separatrices are invariant, so without  perturbation the system cannot cross them.
 When the system under some perturbations (S-type) crosses the separatrices, it moves into another basin and its long-range behavior changes drastically.
 
@@ -2000,7 +2013,7 @@ Define the separatrix between the basins of attraction of attractors $A_i$ and $
 %\subsection{Non-autonomous dynamical systems}
 
 \subsection{Asymptotically autonomous dynamics}\label{sec:asyauto}
-introduced in \citep{markus1956asyauto}
+introduced in  \citep{markus1956asyauto}
 
 The vector ordinary differential equation  
 \begin{equation}\label{eq:nonautonomous}
@@ -2012,7 +2025,7 @@ is commonly said to be asymptotically autonomous if \( g(t, y) \) becomes small 
 \end{equation}
 for large \( t \). If the solutions of Eq.~\ref{eq:autonomous} are uniquely determined by initial conditions,   then it is well-known \cite{} that all positive limit sets \( \omega(x_0) \) of Eq.~\ref{eq:autonomous} are invariant with respect to Eq.~\ref{eq:autonomous}.
 
-More on aads: \citep{wieczorek2021compactification}
+More on aads:  \citep{wieczorek2021compactification}
 
 \subsubsection{Exponentially asymptotically autonomous (EAA)}
 \begin{definition}\label{def:eaa}
@@ -2063,8 +2076,8 @@ Additionally, we assume that \( g(x, u(t)) \) is at least Lipschitz or \( C^1 \)
 
 
 \subsubsection{BoA}
-Exponentially asymptotically autonomous \citep{giesl2011numerical}
-non-expo \citep{giesl2012numerical}
+Exponentially asymptotically autonomous  \citep{giesl2011numerical}
+non-expo  \citep{giesl2012numerical}
 
 Non-autonomous approximation can be done by also calculating in the probability of making an error on a given input.
 So the approximation probability guarantee will need to be formulated in terms of the probability of making an error bigger than a threshold calculated over the function of input sequences and initial points.
@@ -2074,9 +2087,9 @@ So the approximation probability guarantee will need to be formulated in terms o
 
 \subsection{Contractive dynamics}\label{sec:contractive}
 
-Overview \citep{aminzare2014contraction, tsukamoto2021contraction}
+Overview  \citep{aminzare2014contraction, tsukamoto2021contraction}
 
-The concept of a \textit{generalized Jacobian} was introduced for analyzing contracting systems \citep{lohmiller1998contraction}.
+The concept of a \textit{generalized Jacobian} was introduced for analyzing contracting systems  \citep{lohmiller1998contraction}.
 Consider a nonsingular change of differential coordinates \( \delta z = \Theta(x) \delta x \), then the dynamics in the new coordinates are given by
 \[
 \delta\dot{ z} = F(x) \delta z
@@ -2100,7 +2113,7 @@ is a valid contraction metric.
 Given the system equations \(\dot{x} = f(x, t)\), a region of the state space is called a \textit{contraction region} if the Jacobian \(\frac{\partial f}{\partial x}\) is uniformly negative definite in that region.
 \end{definition}
 
-\begin{theorem}[Theorem 1 in \citep{lohmiller1998contraction}]\label{thrm:contractive_ball}
+\begin{theorem}[Theorem 1 in  \citep{lohmiller1998contraction}]\label{thrm:contractive_ball}
 Given the system equations  $\dot x = f(x, t)$, any trajectory, which starts in a ball of constant radius centered about a given trajectory and contained at all times in a contraction region, remains in that ball and converges exponentially to this trajectory.
 \end{theorem}
 
@@ -2115,7 +2128,7 @@ Given the system equations \(\dot{x} = f(x, t)\), a region of the state space is
 (with constant \( \beta_M > 0 \)) in that region.
 \end{definition}
 
-\begin{theorem}[Theorem 2 in \citep{lohmiller1998contraction}]\label{thrm:contractive}
+\begin{theorem}[Theorem 2 in  \citep{lohmiller1998contraction}]\label{thrm:contractive}
 Given the system equations $\dot x = f(x,t)$, any trajectory, which starts in a ball of constant radius with respect to the metric $M(x,t)$, centered at a given trajectory and contained at all times in a contraction region with respect to $M(x,t)$,  remains in that ball and converges exponentially to this trajectory.
 \end{theorem}
 
@@ -2167,7 +2180,7 @@ where:
 
 
 \paragraph{Limit cycles and contractivity}%
-\citep{manchester2014transverse} and refs therein: e.g. 16-20
+ \citep{manchester2014transverse} and refs therein: e.g. 16-20
 
 
 \subsubsection{Robustness of contractive dynamics}\label{sec:contractive_robustness}
@@ -2188,7 +2201,7 @@ Given a Riemannian metric \( M: \mathbb{R}^n \to \text{Sym}_{+}^{n \times n} \),
 where \( \Gamma(x,y) \) denotes the set of smooth curves \( \gamma: [0,1] \to \mathbb{R}^n \) with boundary conditions \( \gamma(0) = x \) and \( \gamma(1) = y \).
 
 
-\begin{proposition}[A.2 in \citep{zhang2022adversarially}]
+\begin{proposition}[A.2 in  \citep{zhang2022adversarially}]
 Consider two nonlinear systems:
 \[
 \dot{x}_p = f(x_p, t) + d(x_p, t)
@@ -2208,7 +2221,7 @@ where \( M(x,t) = \Theta(x,t)^\top \Theta(x,t) \).
 
 
 \subsubsection{Contractivity and ISS}
-Contraction implies E-ISS \citep{zhang2022adversarially}
+Contraction implies E-ISS  \citep{zhang2022adversarially}
 
 \begin{definition}[Exponential Incrementally Input-to-State Stability (E-$\delta$ISS)]
 Let \( \beta, \rho, \gamma > 0 \) be positive constants.
@@ -2279,7 +2292,7 @@ The problem of approximation concerns how well functions in \( \mathcal{H} \) ca
 This is typically formulated in terms of a bound on the (maximal) error between the approximation and the target mapping.
 
 \subsection{In basin bound}\label{sec:313}
-\begin{proposition}[Proposition 3.1.3. in \citep{vanhandel2007filtering}]\label{prop:313}
+\begin{proposition}[Proposition 3.1.3. in  \citep{vanhandel2007filtering}]\label{prop:313}
 Define 
 \[
 \frac{d x(t)}{d t} = f(t; x_t), \quad x(t) \in \mathbb{R}^n.
@@ -2327,7 +2340,7 @@ The boundary of a basin of attraction is composed of points that do not belong t
 This implies that if a trajectory starts on the boundary, it will remain on the boundary for all future times. Therefore, the boundary is invariant under the flow of the system.
 
 
-\textbf{Corollary. p.194 in \citep{perko2013differential}} \( \alpha(r) \) and \( \omega(r) \) are invariant with respect to the flow \( \phi_t \) of \(\dot x = f(X)\). %(1) \dot x = f(X) f \in C1(E) where E is an open subset of Rn.
+\textbf{Corollary. p.194 in  \citep{perko2013differential}} \( \alpha(r) \) and \( \omega(r) \) are invariant with respect to the flow \( \phi_t \) of \(\dot x = f(X)\). %(1) \dot x = f(X) f \in C1(E) where E is an open subset of Rn.
 
 \textbf{Compactness}
 \textit{Bounded} Because we consider bounded dynamics.
@@ -2359,7 +2372,7 @@ Implied by structural stability.
 \subsubsection{Nontrivial examples}
 
 \paragraph{The basin of attraction for a stable limit cycle}%irrelevant?
-Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension $n-1$, with a scalar circle coordinate \citep{wilson1967structure}.
+Regions of attraction to periodic orbits have an interesting structure: they must be a continuous deformation of a torus: the Cartesian product of an open unit disc of dimension $n-1$, with a scalar circle coordinate  \citep{wilson1967structure}.
 But they can be have complex structures, see for example Fig.~\ref{fig:unstab_lc_3fps}.
 
 \setlength\belowcaptionskip{-5ex}
@@ -2399,14 +2412,14 @@ Then, as $t\rightarrow\infty$, the isolating neighborhood expands to fill the ba
 %4:
 Finally, because isolating neighborhoods of target and approximation have same (trivial) Conley index  for each $t$ (if vector fields are close to each other, see Sec.\ref{sec:cit}),
  %5
-the separatrix must be in remaining part of the state space and, therefore it is persistent (i.e., it is $\mathcal{O}(\varepsilon)$ close), and hence normally hyperbolic \citep{mane1978persistent}).
+the separatrix must be in remaining part of the state space and, therefore it is persistent (i.e., it is $\mathcal{O}(\varepsilon)$ close), and hence normally hyperbolic  \citep{mane1978persistent}).
 
 \ascomment{Mention alternative proofs?}
 %alternative proof with
 %% 1 the above isolating nbhd being a normally hyperbolic invariant manifold (flow is tanget to boundary by construction)
 %% 2 contractivity see \ref{sec:contractive_robustness}
 
-This seems related: Theorem 3.1 in \citep{butler1986persistence}.
+This seems related: Theorem 3.1 in  \citep{butler1986persistence}.
 
 
 \subsubsection{Isolating neighbourhood for the basin}\label{sec:isonbhd}
@@ -2416,10 +2429,10 @@ In the case of limit cycles, the isolating neighborhood takes on a distinctive t
 
 
 %\subsubsection{Alternative: stable and unstable manifolds as persistent}
-%stable and unstable manifolds of a normally hyperbolic manifold persist under perturbation Theorem 2.3.6 in \citep{kuehn2015multipletimescale}.
+%stable and unstable manifolds of a normally hyperbolic manifold persist under perturbation Theorem 2.3.6 in  \citep{kuehn2015multipletimescale}.
 %
 %Laminations: The collection of global stable/unstable manifolds. The same for the local stable/unstable manifolds or the local unstable manifolds for the geodesic flow on a compact manifolds with nonzero Lyapunov exponents almost everywhere. 
-%Persistence of laminations \citep{berger2010persistence}
+%Persistence of laminations  \citep{berger2010persistence}
 
 
 %simplifying:%we can consider $\cl\boa(A_i) to be an invariant manifold with boundary
@@ -2556,10 +2569,10 @@ If \(M(\gamma_0) = 0\), the system is at a critical point where a bifurcation ma
 \ascomment{TODO: prove that the fixed point happens at an epsilon that is small enough for the persistence of the other parts}
 Follows from taking initial $\varepsilon_T$ to be small enough.
 
-%\ascomment{TODO: trajectories next to LC have same period Chapter 8.1 in \citep{ermentrout2010mathematical}}
+%\ascomment{TODO: trajectories next to LC have same period Chapter 8.1 in  \citep{ermentrout2010mathematical}}
 
 \subsubsection{Isochrons}%move to DS section?
-This section if based on Section 8.1 in \citep{ermentrout2010mathematical}.
+This section if based on Section 8.1 in  \citep{ermentrout2010mathematical}.
 Consider the differential equation in $\reals^n$
 \begin{equation}\label{eq:isochron_ode}
 \dot x = f(x)
@@ -2574,7 +2587,7 @@ Then we define $\Theta(y) = \Theta(z)$ (as $t\rightarrow\infty$, the solutions a
 The set of points which have the same asymptotic phase is called the \emph{isochron} of the limit cycle.
 We denote the isochron of a point $z\in \Gamma$ as $N(z) $.
 %The map $y\rightarrow y'$ is a Poincar\'e map for the limit cycle which takes exatly $T$ to return.
-The existence of isochrons was proven in \citep{guckenheimer1975isochrons}.
+The existence of isochrons was proven in  \citep{guckenheimer1975isochrons}.
 
 %\textbf{Knobs}
 %\begin{itemize}
@@ -2619,7 +2632,7 @@ So the we can define the perturbation to be of the form:
 \]
 
 
-\subsubsection{Multiple}\label{sec:mlc_extras}
+\subsubsection{Dynamical systems with multiple exponentially stable limit cycles}\label{sec:mlc_extras}
 \begin{equation}\label{eq:nlc_constraints}
 \int_{\tilde{\gamma}}\|\tilde{f}_i(x)\| dx = \frac{1}{T_i} \ \  \text{for} \ i=1,\dots, N. 	% for the integrated vector field along the limit cycle $\int_{LC}f(x)$.
 \end{equation}
@@ -2637,8 +2650,8 @@ Therefore, we can take $\hat f$ to be  $\Psi_{\min}(\eta + \sum_{i=1}^Na_{\varep
 
 \paragraph{Using compact support activation functions}
 \ascomment{Which ones are really compact?}
- ELU/CELU/GeLU/TaLU networks\citep{clevert2015elu,barron2017celu,elfwing2018sigmoid,hasan2023talu} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles.
-See also \citep{duch1999survey,dubey2022activation,jagtap2023activation,ramachandran2017activation,hayou2019activation} for a survey of neural activation functions.
+ ELU/CELU/GeLU/TaLU networks \citep{clevert2015elu,barron2017celu,elfwing2018sigmoid,hasan2023talu} which can be made to be zero outside of the tubular neighborhood as a method to make things work for multiple stable limit cycles.
+See also  \citep{duch1999survey,dubey2022activation,jagtap2023activation,ramachandran2017activation,hayou2019activation} for a survey of neural activation functions.
 
 With a compact support activation function we can create a bump function that is truly zero outside of (an approximation of) the tubular neighborhood.
 %instead of approximating zero.
@@ -2646,13 +2659,13 @@ With a compact support activation function we can create a bump function that is
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Approximating a chaotic orbit}\label{sec:chaos} 
-\citep{pathak2017using}
+ \citep{pathak2017using}
 \paragraph{Why consider chaos} 
 Forecasting
-\citep{jaeger2004harnessing}
-\citep{fan2020long}
-\citep{vlachas2020backpropagation}
-\citep{grigoryeva2024forecasting}
+ \citep{jaeger2004harnessing}
+ \citep{fan2020long}
+ \citep{vlachas2020backpropagation}
+ \citep{grigoryeva2024forecasting}
 
 %TODO:  name for type IV error: C-type (chaos)
 \paragraph{The issue with our method} 
@@ -2662,13 +2675,13 @@ Every small discrepancy in the vector field will lead to orbits starting at same
 
 \paragraph{How to proceed?}
 Prior work:
-- \citep{dellnitz1999approximation}
-- Attractor reconstruction, reconstructing the full Lyapunov spectrum of a dynamical system using reservoir computing \citep{hart2024attractor}.
-- teacher forcing \citep{hess2023teacherforcing}.
+-  \citep{dellnitz1999approximation}
+- Attractor reconstruction, reconstructing the full Lyapunov spectrum of a dynamical system using reservoir computing  \citep{hart2024attractor}.
+- teacher forcing  \citep{hess2023teacherforcing}.
 
 Different metric: Chaotic orbits
 - mention: we can guarantee finite time approximation (prove: we can never do infinite time approximation)
-- approximation of maximal attractor in Hausdorff sense possible \citep{hess2023teacherforcing}
+- approximation of maximal attractor in Hausdorff sense possible  \citep{hess2023teacherforcing}
 
 What we can do is minimize the Hausdorff distance between the chaotic invariant manifolds and match the Lyapunov exponents of the target system
 The first because of structural stability.
@@ -2730,7 +2743,7 @@ Path integral representation of the distribution of $x(t,u)$ when integrating ov
 \end{equation}
 where $\mathcal{P}[u]$ is a probability measure over the function space of $u(t)$.
 
-Any stochastic and even deterministic system can be expressed in terms of a path integral for which asymptotic methods can be systematically applied \citep{chow2015path}.
+Any stochastic and even deterministic system can be expressed in terms of a path integral for which asymptotic methods can be systematically applied  \citep{chow2015path}.
 
 
 Consideration of $p(x,t)$ after some time passed %calculating path integral from initial distribution p(x,t)
