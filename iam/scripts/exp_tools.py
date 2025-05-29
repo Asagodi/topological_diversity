@@ -42,7 +42,6 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic =
                     train_ratio = 0.8, training_pairs = False, load_hdsnet_path = None,
                     lr = 0.01, num_epochs = 200, jac_lambda_reg = 0., 
                     random_seed = 313):
-
     
     save_dir = os.path.join(save_dir, ds_motif)
     os.makedirs(save_dir, exist_ok=True)
@@ -81,6 +80,17 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic =
         homeo_ds_net = load_homeo_ds_net(load_hdsnet_path, homeo, source_system)
     homeo_ds_net = Homeo_DS_Net(homeo, source_system)
     homeo_ds_net.to(device)
+    #get untrained invariant manifold and jacobian norms
+    inv_man_before = homeo_ds_net.invariant_manifold(100).detach().numpy()
+    traj_src_np, traj_trans_np, _ = test_single_homeo_ds_net(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target)
+    traj_trans = torch.tensor(traj_trans_np, dtype=torch.float32)
+    if quick_jac:
+        jac_norm_frobenius_before = jacobian_frobenius_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
+        jac_norm_spectral_before = jacobian_spectral_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
+    else:
+        jac_norm_frobenius_before = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='fro').detach().numpy()
+        jac_norm_spectral_before = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='spectral').detach().numpy()
+
     #train homeo_ds_net
     homeo_ds_net, losses, grad_norms = train_homeo_ds_net_batched(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target_train, **training_params)
     homeo_ds_net.eval()
@@ -103,11 +113,14 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic =
     f"{save_dir}/results_{target_name}.npz",
     jac_fro=jac_norm_frobenius,
     jac_spec=jac_norm_spectral,
+    jac_norm_frobenius_before=jac_norm_frobenius_before,
+    jac_norm_spectral_before=jac_norm_spectral_before,
     training_loss=training_loss,
     test_loss=test_loss,
     losses=np.array(losses),  
     grad_norms=np.array(grad_norms),
-    inv_man=inv_man
+    inv_man=inv_man,
+    inv_man_before=inv_man_before
 )
 
     save_homeo_ds_net(homeo_ds_net, f"{save_dir}/homeo_{target_name}.pth")
