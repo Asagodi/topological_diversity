@@ -70,7 +70,7 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic =
         pickle.dump(all_parameters, f)
 
     trajectories_target = torch.tensor(trajectories_target, dtype=torch.float32).to(device)
-    if rescale_trajs
+    if rescale_trajs:
         trajectories_target_full, trajectories_target, mean, std = normalize_scale_pair(trajectories_target, training_pairs)
     trajectories_target_train, trajectories_target_test = split_data(trajectories_target, train_ratio = train_ratio)
 
