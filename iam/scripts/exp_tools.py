@@ -19,18 +19,13 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import MaxNLocator
 import seaborn as sns
-
+from pathlib import Path
 
 #available motifs
-motifs_2d = ['lds', 'lc', 'ring', 'bla', 'bistable', 'bibla']
+motifs_2d = ['lds', 'lc', 'ring', 'bla', 'bistable']
 motifs_3d = ['sphere', 'torus_attractor', 'torus_lc', 'cylinder']
 
-
 set_seed(313)
-from pathlib import Path
-#exp_dir = Path('../experiments')
-#data_dir = exp_dir / 'all_targets'
-#save_dir = data_dir / 'motif_fits'
 
 def split_data(trajectories_target, train_ratio = 0.8):
     B = trajectories_target.shape[0]
@@ -43,8 +38,8 @@ def split_data(trajectories_target, train_ratio = 0.8):
 
 def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic = False, canonical = True, maxT = 5,
                     alpha_init = None, velocity_init = None, vf_on_ring_enabled = False, #if analytic then not used
-                    homeo_type = 'node', layer_sizes = 1*[64], quick_jac = False,
-                    train_ratio = 0.8, training_pairs = False, 
+                    homeo_type = 'node', layer_sizes = 1*[64], quick_jac = False, rescale_trajs = True,
+                    train_ratio = 0.8, training_pairs = False, load_hdsnet_path = None,
                     lr = 0.01, num_epochs = 200, jac_lambda_reg = 0., 
                     random_seed = 313):
 
@@ -75,12 +70,15 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic =
         pickle.dump(all_parameters, f)
 
     trajectories_target = torch.tensor(trajectories_target, dtype=torch.float32).to(device)
-    trajectories_target_full, trajectories_target, mean, std = normalize_scale_pair(trajectories_target, training_pairs)
+    if rescale_trajs
+        trajectories_target_full, trajectories_target, mean, std = normalize_scale_pair(trajectories_target, training_pairs)
     trajectories_target_train, trajectories_target_test = split_data(trajectories_target, train_ratio = train_ratio)
 
     #build homeo_ds_net
     homeo = build_homeomorphism(homeo_params)
     source_system_ra = build_ds_motif(**ds_params)
+    if load_hdsnet_path is not None:
+        homeo_ds_net = load_homeo_ds_net(load_hdsnet_path)
     homeo_ds_net = Homeo_DS_Net(homeo, source_system_ra)
     homeo_ds_net.to(device)
     #train homeo_ds_net
