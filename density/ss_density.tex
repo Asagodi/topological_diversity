@@ -53,7 +53,7 @@
 \usepackage{lastpage}
 \jmlrheading{??}{202?}{1-\pageref{LastPage}}{??/25; Revised ??/2?}{??/2?}{21-0000}{\'Abel S\'agodi and Il Memming Park}
 
-\ShortHeadings{Sample JMLR Paper}{S\'agodi and Park}
+\ShortHeadings{UAP for infinite horizon}{S\'agodi and Park}
 \firstpageno{1}
 
 \begin{document}
@@ -468,7 +468,7 @@ First, we define the target class (the dynamical systems we approximate), the hy
 \item Systems with a finite number of hyperbolic limit cycles (Sec.~\ref{sec:lc_theorem}).
 \item Systems with a finite set of continuous attractors, including chaotic orbits (Sec.~\ref{sec:ca_theorem}, \ref{sec:chaos}).
 \end{enumerate}
-Finally, we extend these results to non-autonomous dynamical systems (Sec.~\ref{sec:nonautonomous}). Throughout, we consider approximation in a metric measuring the expectation of the uniform norm difference between flows, ensuring that the probability of large deviations is arbitrarily small. Each result applies to compact, globally attractive spaces.
+Finally, we extend these results to non-autonomous dynamical systems (Sec.~\ref{sec:inputdriven}). Throughout, we consider approximation in a metric measuring the expectation of the uniform norm difference between flows, ensuring that the probability of large deviations is arbitrarily small. Each result applies to compact, globally attractive spaces.
 
 
 \subsection{Setup}
@@ -691,9 +691,9 @@ Take $\delta_i< \frac{\delta}{N_{\operatorname{attractors}}}$ for each attractor
 Because of Conley's fundamental theorem of dynamical systems \citep{conley1978morse}, we know that every flow of a dynamical system with compact phase portrait admits a decomposition into a chain-recurrent part and a gradient-like flow part.
 This implies that the phase portrait consists of basins of attraction and separatrices, both gradient-like, as well as fixed points, which are chain-recurrent.
 %
-By Sec.\ref{sec:separatrix_approx} (Prop.~\ref{prop:min_sep_bound}) we can make the part of the state space which will have error bigger than $\varepsilon$ arbitrarily small. %for every delta
+By Sec.~\ref{sec:separatrix_approx} (Prop.~\ref{prop:min_sep_bound}) we can make the part of the state space which will have error bigger than $\varepsilon$ arbitrarily small. %for every delta
 %for every epsilon
-By Sec.\ref{sec:inboa_approx}, we know that in the remaining state space we can make the trajectory-wise error smaller than $\varepsilon$.
+By Sec.~\ref{sec:inboa_approx}, we know that in the remaining state space we can make the trajectory-wise error smaller than $\varepsilon$.
 \end{proof}
 
 %\paragraph{Bookkeeping}
@@ -771,7 +771,7 @@ if the approximation vector field is close enough to the target vector field, th
 We can use the fact that the tubular neighborhood of diameter $\delta_T$ around the limit cycle is an (inflowing) normally hyperbolic invariant manifold.
 We will now construct the correction $\bar{g}$ so that the period of our approximation matches the targets.
 This implies that there exists a 3 layer FNN $g_{\operatorname{bump}}$ that approximates the vector field $f_{\operatorname{bump}}$ that is a bump function around the limit cycle (similar idea as Supp.Sec.~5 in  \citep{Sagodi2024a}). %but this would be an actual possible implementation
-Then we know that this NHIM will persist (from Fenichel's PMT, see Supp.Sec~\ref{sec:fenichel}).
+Then we know that this NHIM will persist (from Fenichel's PMT, see Supp.Sec.~\ref{sec:fenichel}).
 We also know that there is a maximal perturbation size ($\varepsilon_{LC}$) for which the limit cycle persists.
 So we have to guarantee that the limit cycle approximation is already close enough so that this perturbation does not destroy the limit cycle (Supp.Sec.~\ref{sec:periodcloseness}). %repetition
 We can now rescale the perturbation through a scalar $a_{\varepsilon_T}^*$ (depends on initial $\varepsilon_T$) so that the period of approximation limit cycle matches the target's (Eq.~\ref{eq:lc_correction}). 
@@ -876,7 +876,7 @@ Finally, for $f$ with a continuum of attractors (nonzero flow in at least one di
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Input-driven dynamics}\label{sec:inputdriven}
-We will consider input-driven systems.  %general non-autonomous systems (Sec.~\ref{sec:generalnonautonomous}) 
+%We will consider input-driven systems.  %general non-autonomous systems (Sec.~\ref{sec:generalnonautonomous}) 
 
 \subsection{Target and hypothesis class for input-driven systems}\label{sec:inputdriven}
 In many dynamical systems, external inputs influence the system's evolution over time. Such systems can be described by differential equations of the form
@@ -923,15 +923,12 @@ Similarly, as for the autonomous case, $g$ needs to be smooth enough as a functi
 Furthermore, we assume that $g$ converges to a finite number of topological equivalence classes of asymptotically autonomous vector fields. %can we increase it to countable?
 If the function $g$ cannot have limit cycles  in the asymptotic vector field  if there is periodic forcing.
 
-\ascomment{Another case: $g$ is exponentially asymptotically periodic (EAP) \label{sec:eea_input_periodic}, where the asymptotic vector field only contains  fixed points and limit cycles.}
+%\ascomment{Another case: $g$ is exponentially asymptotically periodic (EAP) \label{sec:eea_input_periodic}, where the asymptotic vector field only contains  fixed points and limit cycles.}
 
 
 \paragraph{Implication on the constraints of the input class $u(t)$}
-This would guarantee exponential asymptotic autonomy for minimal assumptions about $g$. %SPECIFY
-
-We will now characterize the input space 
-$u\in \mathcal{U}$ with $u:\reals_+\rightarrow\reals^m$.
-We assume that $u(t)$ converges (exponentially) to a periodic function, i.e., %or g(\dot,u) needs to (?)
+We  characterize the input space as
+$u\in \mathcal{U}$ with $u:\reals_+\rightarrow\reals^m$ with $u(t)$ converging (exponentially) to a periodic function, i.e., %or g(\dot,u) needs to (?)
 %rate of convergence?
 \begin{equation}
 %\mathcal{U} \coloneqq \left\{ u(t) \mid \exists p(t) \text{ periodic} \text{ or } c \in \mathbb{R}^n, \ \lim_{t \to \infty} \| u(t) - p(t) \| = 0 \text{ or } \lim_{t \to \infty} \| u(t) - c \| = 0 \right\},
@@ -939,6 +936,7 @@ We assume that $u(t)$ converges (exponentially) to a periodic function, i.e., %o
 \end{equation}
 such that only a measure-zero set of input sequences that lead to non-hyperbolic asymptotically autonomous vector fields.
 %include more general u class?
+This guarantees exponential asymptotic autonomy for $g$. % and this assumption is minimal %SPECIFY
 
 %-or: forward attractors of non-autonomous dynamical systems  \citep{ju2019approximate}  \citep{crauel2015nonautonomous}  \citep{cheban2002relationship}  \citep{cui2018invariant}  \citep{kloeden2016construction}  \citep{koksch2002pullback}  \citep{giesl2012numerical}  \citep{cheban2002relationship}
 
@@ -950,7 +948,7 @@ For the input-driven part of the vector field we have an MLP:
 
 
 \subsubsection{Metric}\label{sec:input_metric} 
-For the metric to compare input-driven systems with their approximations, see Sec.\ref{sec:inputdriven_metric}.
+For the metric to compare input-driven systems with their approximations, see Supp.Sec.~\ref{sec:inputdriven_metric}.
 
 
 
@@ -1166,9 +1164,6 @@ Exponentially asymptotically autonomous dynamics a form of input to state stabil
 %\paragraph{Recap}	
 This is the first proof of the universal approximation property of neural ODEs for multistable dynamical systems on an infinite time horizon.
 
-
-basin stability \citep{menck2013basinstability}
-
 \subsection{Limitations}
 \paragraph{Limit cycles}
 Stable limit cycles are approximable but their approximation is not robust! (period will change under almost all perturbations, only a measure zero set of perturbations preserves the period).
@@ -1220,23 +1215,18 @@ Relation to mean squared error and total integrated error, see Supp.Sec.~\ref{se
 NODEs simulate RNNs (see definition for simulation in Sec.~\ref{sec:simulation})
 - Each NODE is state space equivalent to an RNN that is split into a part for which the equivalence holds and a hidden part (Boltzmann Machine-like)
 -Each RNN is state space equivalent to an RNN
-
-This equivalence does not hold for input-driven systems (?)  (according to  \citep{dinc2025latentcomputing} they are?)
-
-% NNs as controllers  \citep{sontag1992neural}
+% TODO ????? This equivalence does not hold for input-driven systems (?)  (according to  \citep{dinc2025latentcomputing} they are?) 
 
 
-%%
+%%neuro specific:
 \subsection{Implications for understanding neural computation} 
-Reconstructing Computational Dynamics from Neural Measurements with Recurrent Neural Networks  \citep{durstewitz2023reconstructing}.
+Recent work has demonstrated the potential of recurrent neural networks to reconstruct the latent computational dynamics underlying neural activity directly from time series data \citep{durstewitz2023reconstructing}. This approach allows for the recovery of dynamical motifs such as attractors, oscillations, and bifurcations, providing a powerful framework for inferring the computational mechanisms implemented by neural circuits.
 
-Use of NODEs in neuroscience  \citep{kim2021inferring}.
+These methodologies fall under the broader umbrella of system identification in neuroscience, which aims to recover the functional form of neural dynamics from data \citep{han2023si}. Advances in this area contribute to a deeper understanding of how neural circuits process information and generate behavior over time.
+%link better to paper:
+Temporal generalization—i.e., the ability of a model to extrapolate dynamics beyond the training window—is a key property of successful system identification. This capability reflects the model’s ability to capture the underlying structure of the neural system rather than merely fitting transient patterns.
 
-system identification in neuroscience  \citep{han2023si} 
-
-Temporal generalization
-
-Seperatrices are robust hence decision-making is robust to D-type noise  \citep{Park2023a}.
+%TODO?? Seperatrices are robust hence decision-making is robust to D-type noise  \citep{Park2023a}. %leave out?+ basin stability \citep{menck2013basinstability}
 
 %\paragraph{Robust neural computation}
 %Idea: Two dynamical phenomena are isolated into primitive architectural components which perform the operations of continuous nonlinear transformation and autoassociative recall  \citep{pineda1988dynamics}.
@@ -1272,7 +1262,7 @@ For an overview see  \citep{blum1991approximation,scarselli1998universal,augusti
 
 \subsection{The Universal Approximation Theorem}
 The universal approximation theorem states that a \textit{feedforward neural network} with at least one hidden layer, using a non-linear activation function (such as the sigmoid or ReLU), and equipped with enough neurons, can approximate \textit{any continuous function} defined on a compact subset of \(\mathbb{R}^n\) to arbitrary precision.
-
+%
 Formally, for any continuous function \(f(x)\) and any \(\varepsilon > 0\), there exists an FNN such that:
 \begin{equation}
 | f(x) - f_{\text{MLP}}(x) | < \varepsilon \quad \forall x \in K,
@@ -1284,8 +1274,7 @@ This is where the theorem’s beauty shines: while we often don’t know the exp
 
 The universal approximation property of FNNs was first proven by  \citep{cybenko1989approximation} for sigmoidal activation functions. This was followed by significant generalizations by  \citep{hornik1989multilayer},  \citep{funahashi1989approximate} and  \citep{hechtnielsen1992backpropagation}, which extended the result to broader classes of activation functions, including the popular ReLU.
 These results serve as the cornerstone of modern neural network theory, supporting the use of deep architectures across diverse machine learning applications.
-
-For example, sums of polynomial functions are known to have the UAP  \citep{llavona1986approximation}.
+Finally, sums of polynomial functions are known to have the UAP \citep{llavona1986approximation}.
 
 
 \subsection{Activation functions} %Sigmoidal 
@@ -1422,29 +1411,28 @@ ResNet \citep{lin2018resnet}
 Neural ODEs  \citep{chen2018neural} represent the latest instance of continuous deep learning model for time series, first developed in the context of continuous recurrent networks  \citep{cohen1983absolute}.
 %
 Neural ODEs model the continuous trajectory of the hidden state \( \mathbf{h}(t) \) as the solution to an ordinary differential equation parameterized by a neural network. Mathematically, the dynamics are defined by:
-
-\[
-\frac{d \mathbf{h}(t)}{dt} = f(\mathbf{h}(t), t, \theta)
-\]
-
-where \( \mathbf{h}(t) \) is the hidden state at time \( t \), \( f \) is a neural network with parameters \( \theta \), and \( t \) represents time. Given an initial condition \( \mathbf{h}(t_0) = \mathbf{h}_0 \), the evolution of the hidden state over time is computed by solving the ODE using numerical solvers, allowing the model to capture complex, continuous transformations.
+\begin{equation}\label{eq:node_general}
+\frac{d \mathbf{h}(t)}{dt} = f(\mathbf{h}(t), t; \theta),
+\end{equation}
+where \( \mathbf{h}(t) \) is the hidden state at time \( t \), \( f \) is a neural network with parameters \( \theta \), and \( t \) represents time.
+Given an initial condition \( \mathbf{h}(t_0) = \mathbf{h}_0 \), the evolution of the hidden state over time is computed by solving the ODE using numerical solvers, allowing the model to capture complex, continuous transformations \citep{massaroli2020nodes}.
 
 %example of f
 \textbf{Fully Connected Neural Network (Feedforward Network)}:
-
 \[
 f(\mathbf{h}(t), t, \theta) = W_2 \sigma(W_1 \mathbf{h}(t) + \mathbf{b}_1) + \mathbf{b}_2
 \]
 
-Here, \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( W_1, W_2 \) are weight matrices, and \( \mathbf{b}_1, \mathbf{b}_2 \) are bias vectors.
- This form models the ODE dynamics using a simple two-layer feedforward network.
+Here, \( \sigma \) is an activation function (e.g., ReLU, tanh, or sigmoid), \( W_1, W_2 \) are weight matrices, and \( \mathbf{b}_1, \mathbf{b}_2 \) are bias vectors (the weights and biases together form \(\theta\) in Eq.~\ref{eq:node_general}).
+This form models the ODE dynamics using a simple two-layer feedforward network.
 
+\paragraph{UAP for NODEs}
 Universal approximation properties of neural operator architectures  \citep{lu2021learning, kissas2022learning, kovachki2021universal}.
 
 
-\paragraph{Applications}
+\paragraph{Applications in neuroscience}
 %NODEs in neuroscience%
-Neural ordinary differential equations (NODEs) are being increasingly adopted in computational and systems neuroscience, showing improved performance compared to current approaches  \citep{kim2021inferring,geenjaar2023learning,sedler2023expressive,elgazzar2024universal,rubanova2019latent,coelho2024enhancing}.
+NODEs are being increasingly adopted in computational and systems neuroscience, showing improved performance compared to current approaches  \citep{kim2021inferring,geenjaar2023learning,sedler2023expressive,elgazzar2024universal,rubanova2019latent,coelho2024enhancing}.
 
 
 %\paragraph{Latent}
@@ -1458,7 +1446,7 @@ semiautonomous NODEs (SA-NODEs)  \citep{li2024universal}
 
 
 \paragraph{Analysis}
- \citep{massaroli2020nodes}
+ \citep{}
 
 
 %
