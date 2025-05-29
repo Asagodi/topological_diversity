@@ -76,10 +76,10 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic =
 
     #build homeo_ds_net
     homeo = build_homeomorphism(homeo_params)
-    source_system_ra = build_ds_motif(**ds_params)
+    source_system = build_ds_motif(**ds_params)
     if load_hdsnet_path is not None:
-        homeo_ds_net = load_homeo_ds_net(load_hdsnet_path)
-    homeo_ds_net = Homeo_DS_Net(homeo, source_system_ra)
+        homeo_ds_net = load_homeo_ds_net(load_hdsnet_path, homeo, source_system)
+    homeo_ds_net = Homeo_DS_Net(homeo, source_system)
     homeo_ds_net.to(device)
     #train homeo_ds_net
     homeo_ds_net, losses, grad_norms = train_homeo_ds_net_batched(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target_train, **training_params)
@@ -230,8 +230,8 @@ def perthomeo_exp(base_save_dir="homeopert_ring", ds_motif='ring', noise_std=0.0
         target_ra_points = (target_ra_points - mean.detach().numpy()) / std.detach().numpy()
 
         homeo = build_homeomorphism(homeo_params)
-        source_system_ra = build_ds_motif(**ds_params)
-        homeo_ds_net = Homeo_DS_Net(homeo, source_system_ra)
+        source_system = build_ds_motif(**ds_params)
+        homeo_ds_net = Homeo_DS_Net(homeo, source_system)
         jac_norm_frobenius_pre = jacobian_norm_over_batch(homeo_ds_net.homeo_network, trajectories_target.reshape(-1,dim), norm_type='fro').detach().numpy()
         jac_norm_spectral_pre = jacobian_norm_over_batch(homeo_ds_net.homeo_network, trajectories_target.reshape(-1,dim), norm_type='spectral').detach().numpy()
         homeo_ds_net, losses, grad_norms = train_homeo_ds_net_batched(
@@ -347,8 +347,8 @@ def run_pert_ra_experiment(base_save_dir="vf_pert_ring/simple", ds_motif='ring',
 
         #train homeo_ds_net
         homeo = build_homeomorphism(homeo_params)
-        source_system_ra = build_ds_motif(**ds_params)
-        homeo_ds_net = Homeo_DS_Net(homeo, source_system_ra)
+        source_system = build_ds_motif(**ds_params)
+        homeo_ds_net = Homeo_DS_Net(homeo, source_system)
         homeo_ds_net, losses, grad_norms = train_homeo_ds_net_batched(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target_train, **training_params)
         homeo_ds_net.eval()
         
