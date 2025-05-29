@@ -81,6 +81,7 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic =
     homeo_ds_net = Homeo_DS_Net(homeo, source_system)
     homeo_ds_net.to(device)
     #get untrained invariant manifold and jacobian norms
+    save_homeo_ds_net(homeo_ds_net, f"{save_dir}/homeo_{target_name}_untrained.pth")
     inv_man_before = homeo_ds_net.invariant_manifold(100).detach().numpy()
     traj_src_np, traj_trans_np, _ = test_single_homeo_ds_net(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target)
     traj_trans = torch.tensor(traj_trans_np, dtype=torch.float32)
