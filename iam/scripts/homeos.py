@@ -1020,12 +1020,13 @@ def save_diffeo_ds_net_compact(model: nn.Module, file_path: str, meta: dict) -> 
     print(f"Model and metadata saved to {file_path}")
 
 def load_diffeo_ds_net_compact(file_path: str) -> Homeo_DS_Net:
+    print(f"Loading model and metadata from {file_path}...")
     checkpoint = torch.load(file_path)
 
     homeo_params = checkpoint['meta']['homeo_params']
     ds_params = checkpoint['meta']['ds_params']
 
-    diffeo_network = build_diffeomorphism(homeo_params)
+    diffeo_network = build_homeomorphism(homeo_params)
     dynamical_system = build_ds_motif(**ds_params)
 
     model = Diffeo_DS_Net(diffeo_network, dynamical_system)
