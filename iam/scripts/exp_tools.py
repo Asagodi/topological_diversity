@@ -129,7 +129,7 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
     homeo = build_homeomorphism(homeo_params)
     source_system = build_ds_motif(**ds_params)
     if load_hdsnet_path is not None:
-        homeo_ds_net = load_homeo_ds_net(load_hdsnet_path, homeo, source_system)
+        homeo_ds_net = load_diffeo_ds_net_compact(load_hdsnet_path)
     homeo_ds_net = Homeo_DS_Net(homeo, source_system).to(device)
 
     # Before training diagnostics
