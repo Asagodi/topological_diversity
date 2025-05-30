@@ -277,6 +277,119 @@ def train_homeo_ds_net_batched(
     best_model_saver.restore()
     return homeo_ds_net, losses, grad_norms
 
+def train_diffeo_ds_net_batched_two_phase(
+    diffeo_ds_net: nn.Module,
+    lr: float,
+    trajectories_target: torch.Tensor,
+    batch_size: int = 0,
+    use_inverse_formulation: bool = True,
+    num_epochs_affine: int = 50,
+    num_epochs_diffeo: int = 100,
+    max_grad_norm: Optional[float] = None,
+    jac_lambda_reg: Optional[float] = 0.,
+    annealing_params: Optional[dict] = None,
+    early_stopping_patience: Optional[int] = None,
+    early_stop_loss_explosion_factor: Optional[float] = 1e3,
+):
+    def get_params(split: str):
+        affine_params, diffeo_params = [], []
+        for name, param in diffeo_ds_net.diffeo_network.named_parameters():
+            if 'affine' in name:
+                affine_params.append(param)
+            else:
+                diffeo_params.append(param)
+        return affine_params if split == "affine" else diffeo_params
+
+    def train_phase(phase_name: str, num_epochs: int, params: list):
+        optimizer = optim.Adam(params, lr=lr)
+        if early_stopping_patience is None:
+            patience = num_epochs
+        else:
+            patience = early_stopping_patience
+        early_stopper = EarlyStopping(patience=patience)
+        best_model_saver = BestModelSaver(
+            homeo_net=diffeo_ds_net.diffeo_network,  # class name kept for compatibility
+            source_system=diffeo_ds_net.dynamical_system
+        )
+        best_loss = float("inf")
+        losses, grad_norms = [], []
+
+        if batch_size <= 0 or batch_size >= trajectories_target.shape[0]:
+            dataloader = [(trajectories_target,)]
+        else:
+            dataset = TensorDataset(trajectories_target)
+            dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+        print(f"\n=== Training {phase_name} parameters ===")
+        for epoch in range(num_epochs):
+            epoch_losses = []
+            for batch in dataloader:
+                optimizer.zero_grad()
+                batch_target = batch[0]
+                x0 = batch_target[:, 0, :].detach().clone()
+
+                noise_std = 0.0
+                if annealing_params is not None:
+                    noise_std = get_annealed_noise_std(
+                        epoch, num_epochs,
+                        **annealing_params,
+                        current_loss=losses[-1] if losses else 0.0,
+                        running_loss=update_leaky_running_avg,
+                    ) if annealing_params.get("dynamic", False) else get_annealed_noise_std(epoch, num_epochs, **annealing_params)
+
+                source_traj, loss = compute_homeo_ds_loss(
+                    diffeo_ds_net, batch_target, x0,
+                    loss_fn=nn.MSELoss(),
+                    noise_std=noise_std,
+                    use_inverse_formulation=use_inverse_formulation
+                )
+
+                if jac_lambda_reg:
+                    jacobian_reg = jacobian_spectral_norm(diffeo_ds_net.diffeo_network, source_traj)
+                    loss += jac_lambda_reg * jacobian_reg
+
+                if torch.isnan(loss).any() or torch.isinf(loss).any():
+                    print("NaN or Inf detected. Aborting.")
+                    return diffeo_ds_net, losses, grad_norms
+
+                loss.backward()
+                total_norm = torch.norm(torch.stack([
+                    p.grad.norm(2) for p in params if p.grad is not None
+                ]), 2)
+                grad_norms.append(total_norm.item())
+                if max_grad_norm:
+                    torch.nn.utils.clip_grad_norm_(params, max_grad_norm)
+
+                optimizer.step()
+                epoch_losses.append(loss.item())
+
+            mean_loss = np.mean(epoch_losses)
+            losses.append(mean_loss)
+            best_model_saver.step(mean_loss)
+            best_loss = min(best_loss, mean_loss)
+
+            if mean_loss > early_stop_loss_explosion_factor * best_loss:
+                print(f"Loss exploded. Stopping early. Epoch {epoch}, loss: {mean_loss:.4e}")
+                break
+
+            early_stopper.step(mean_loss)
+            if early_stopper.should_stop:
+                print(f"Early stopping triggered for {phase_name} at epoch {epoch}.")
+                break
+
+            if epoch % 10 == 0:
+                print(f"[{phase_name}] Epoch {epoch} | log(Loss): {np.log10(mean_loss):.4f}")
+
+        best_model_saver.restore()
+        return losses, grad_norms
+
+    # Phase 1: Affine only
+    affine_losses, affine_grad_norms = train_phase("affine", num_epochs_affine, get_params("affine"))
+
+    # Phase 2: Diffeo only
+    diffeo_losses, diffeo_grad_norms = train_phase("diffeo", num_epochs_diffeo, get_params("diffeo"))
+
+    return diffeo_ds_net, affine_losses + diffeo_losses, affine_grad_norms + diffeo_grad_norms
 
 
 def train_all_hdsns(homeo_ds_nets, trajectories_target, initial_conditions_target,
