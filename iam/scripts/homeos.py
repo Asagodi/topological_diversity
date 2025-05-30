@@ -543,17 +543,7 @@ def build_homeomorphism(params: dict) -> nn.Module:
 
     elif homeo_type == 'affine_node':
         cls = AffineAfterNODE
-        allowed_keys = {
-            'dim',
-            'layer_sizes',
-            'init_type',
-            'activation',
-            'init_std',
-            'init_mean',
-            'scale',
-            'affine_bias_init',
-            'affine_weight_init'
-        }
+        allowed_keys = {'dim', 'affine_bias_init', 'affine_weight_init'}
 
     else:
         raise ValueError(f"Unknown architecture: {homeo_type}")
