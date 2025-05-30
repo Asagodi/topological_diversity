@@ -153,16 +153,15 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
     homeo_ds_net.eval()
 
     # === Final testing ===
-    (training_loss, test_loss, traj_src_np, traj_trans_np,
-        inv_man, jac_fro, jac_spec) = evaluate_homeo_ds_net(homeo_ds_net, trajectories_target, trajectories_target_train,
+    (training_loss, test_loss, traj_src_np, traj_trans_np, inv_man, jac_fro, jac_spec) = evaluate_homeo_ds_net(homeo_ds_net, trajectories_target, trajectories_target_train,
         trajectories_target_test, dim, quick_jac)
 
     np.savez(
         f"{save_dir}/results_{target_name}.npz",
-        jac_fro=jac_norm_frobenius,
-        jac_spec=jac_norm_spectral,
-        jac_fro_before=jac_norm_frobenius_before,
-        jac_spec_before=jac_norm_spectral_before,
+        jac_fro=jac_fro,
+        jac_spec=jac_spec,
+        jac_fro_before=jac_fro_before,
+        jac_spec_before=jac_spec_before,
         training_loss=training_loss,
         test_loss=test_loss,
         losses=np.array(losses),
