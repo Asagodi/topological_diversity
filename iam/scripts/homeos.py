@@ -930,22 +930,17 @@ def get_homeo_invman(homeo_network, dim: int = 2, num_points: int = 100) -> np.n
 
 #######Link
 class AffineAfterNODE(nn.Module):
-    def __init__(self, node: NODEHomeomorphism, affine: nn.Module = None, learnable_affine: bool = False):
+    def __init__(self, dim: int, node_params: dict, learnable_affine: bool = False):
         """
         Wraps a NODE homeomorphism with an affine transformation applied after it.
-        
-        :param node: The core NODE homeomorphism Ψ.
-        :param affine: Optional custom affine module. If None, defaults to identity affine.
-        :param learnable_affine: Whether to make the default affine transform learnable.
+
+        :param node_params: A dictionary to build NODEHomeomorphism.
+        :param learnable_affine: Whether the affine transform is learnable.
         """
         super().__init__()
-        self.node = node
-        self.dim = node.dim
-
-        if affine is None:
-            self.affine = AffineTransform(self.dim, learnable=learnable_affine)
-        else:
-            self.affine = affine
+        self.dim = dim
+        self.node = NODEHomeomorphism(**node_params)
+        self.affine = AffineTransform(dim, learnable=learnable_affine)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         z = self.node(x)
@@ -958,6 +953,7 @@ class AffineAfterNODE(nn.Module):
     def _inverse_affine(self, y: torch.Tensor) -> torch.Tensor:
         W_inv = torch.inverse(self.affine.W)
         return (y - self.affine.b) @ W_inv.T
+
 
 
 class Homeo_DS_Net(nn.Module):
