@@ -110,16 +110,10 @@ class DynamicalSystem(nn.Module):
                     dt=dt
                 )
                 trajectories.append(traj.squeeze(1))
-        # else:
-        #     def system_with_noise(t, y):
-        #         dydt = self(t, y)
-        #         if noise_std > 0:
-        #             dydt += torch.randn_like(y) * noise_std
-        #         return dydt
 
         else:
             for i in range(batch_size):
-                trajectory = odeint(system_with_noise, initial_conditions[i], t_values, method='rk4')
+                trajectory = odeint(self, initial_conditions[i], t_values, method='rk4')
                 trajectories.append(trajectory)
 
         return torch.stack(trajectories)
