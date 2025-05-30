@@ -1021,7 +1021,7 @@ def save_diffeo_ds_net_compact(model: nn.Module, file_path: str, meta: dict) -> 
 
 def load_diffeo_ds_net_compact(file_path: str) -> Homeo_DS_Net:
     #print(f"Loading model and metadata from {file_path}...")
-    checkpoint = torch.load(file_path, weight_only=False)
+    checkpoint = torch.load(file_path, weights_only=False)
 
     homeo_params = checkpoint['meta']['homeo_params']
     ds_params = checkpoint['meta']['ds_params']
