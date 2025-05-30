@@ -532,17 +532,35 @@ class InvertibleResNet(nn.Module):
 #building
 def build_homeomorphism(params: dict) -> nn.Module:
     homeo_type = params['homeo_type']
+
     if homeo_type == 'iresnet':
         cls = iResNet
         allowed_keys = {'dim', 'layer_sizes', 'init_type', 'activation', 'init_std', 'init_mean'}
+
     elif homeo_type == 'node':
         cls = NODEHomeomorphism
         allowed_keys = {'dim', 'layer_sizes', 'init_type', 'activation', 'init_std', 'init_mean', 'scale'}
+
+    elif homeo_type == 'affine_node':
+        cls = AffineAfterNODE
+        allowed_keys = {
+            'dim',
+            'layer_sizes',
+            'init_type',
+            'activation',
+            'init_std',
+            'init_mean',
+            'scale',
+            'affine_bias_init',
+            'affine_weight_init'
+        }
+
     else:
         raise ValueError(f"Unknown architecture: {homeo_type}")
 
     filtered_args = {k: v for k, v in params.items() if k in allowed_keys}
     return cls(**filtered_args)
+
 
 
 ############## testing homeomorphism-dynamical system networks
