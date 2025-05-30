@@ -293,7 +293,7 @@ def train_diffeo_ds_net_batched_two_phase(
 ):
     def get_params(split: str):
         affine_params, diffeo_params = [], []
-        for name, param in diffeo_ds_net.diffeo_network.named_parameters():
+        for name, param in diffeo_ds_net.homeo_network.named_parameters():
             if 'affine' in name:
                 affine_params.append(param)
             else:
@@ -308,7 +308,7 @@ def train_diffeo_ds_net_batched_two_phase(
             patience = early_stopping_patience
         early_stopper = EarlyStopping(patience=patience)
         best_model_saver = BestModelSaver(
-            homeo_net=diffeo_ds_net.diffeo_network,  # class name kept for compatibility
+            homeo_net=diffeo_ds_net.homeo_network,  # class name kept for compatibility
             source_system=diffeo_ds_net.dynamical_system
         )
         best_loss = float("inf")
@@ -345,7 +345,7 @@ def train_diffeo_ds_net_batched_two_phase(
                 )
 
                 if jac_lambda_reg:
-                    jacobian_reg = jacobian_spectral_norm(diffeo_ds_net.diffeo_network, source_traj)
+                    jacobian_reg = jacobian_spectral_norm(diffeo_ds_net.homeo_network, source_traj)
                     loss += jac_lambda_reg * jacobian_reg
 
                 if torch.isnan(loss).any() or torch.isinf(loss).any():
