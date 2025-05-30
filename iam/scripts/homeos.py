@@ -929,7 +929,7 @@ def get_homeo_invman(homeo_network, dim: int = 2, num_points: int = 100) -> np.n
 
 #######Link
 class AffineAfterNODE(nn.Module):
-    def __init__(self, dim: int, node: NODEHomeomorphism, learnable_affine: bool = False):
+    def __init__(self, dim: int, node: NODEHomeomorphism, learnable_affine: bool = True):
         super().__init__()
         self.dim = dim
         self.node = node
