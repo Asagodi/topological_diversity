@@ -942,8 +942,6 @@ class AffineAfterNODE(nn.Module):
         return (y - self.affine.b) @ W_inv.T
 
 
-
-
 class Homeo_DS_Net(nn.Module):
     def __init__(self, homeo_network: nn.Module, dynamical_system: nn.Module):
         """
@@ -991,8 +989,39 @@ def save_homeo_ds_net(model: Homeo_DS_Net, file_path: str):
 
 
 def load_homeo_ds_net(file_path: str, homeo_network: nn.Module, dynamical_system: nn.Module) -> Homeo_DS_Net:
+    """
+    Load a Diffeo_DS_Net model from a file.
+
+    :param file_path: Path to the file from which to load the model.
+    :param diffeo_network: The diffeomorphism network architecture.
+    :param dynamical_system: The source dynamical system.
+    :return: A Diffeo_DS_Net model with loaded weights.
+    """
     model = Homeo_DS_Net(homeo_network, dynamical_system)
     state_dict = torch.load(file_path)
     model.load_state_dict(state_dict)
     print(f"Model loaded from {file_path}")
+    return model
+
+
+def save_diffeo_ds_net_compact(model: Diffeo_DS_Net, file_path: str, meta: dict) -> None:
+    torch.save({
+        'state_dict': model.state_dict(),
+        'meta': meta  # this should include homeo_params and ds_params
+    }, file_path)
+    print(f"Model and metadata saved to {file_path}")
+
+def load_diffeo_ds_net_compact(file_path: str) -> Diffeo_DS_Net:
+    checkpoint = torch.load(file_path)
+
+    homeo_params = checkpoint['meta']['homeo_params']
+    ds_params = checkpoint['meta']['ds_params']
+
+    diffeo_network = build_diffeomorphism(homeo_params)
+    dynamical_system = build_ds_motif(**ds_params)
+
+    model = Diffeo_DS_Net(diffeo_network, dynamical_system)
+    model.load_state_dict(checkpoint['state_dict'])
+
+    print(f"Model and metadata loaded from {file_path}")
     return model

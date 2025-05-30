@@ -27,6 +27,7 @@ motifs_3d = ['sphere', 'torus_attractor', 'torus_lc', 'cylinder']
 
 set_seed(313)
 
+# DATA
 def split_data(trajectories_target, train_ratio = 0.8):
     B = trajectories_target.shape[0]
     n_train = int(train_ratio * B)
@@ -36,96 +37,257 @@ def split_data(trajectories_target, train_ratio = 0.8):
     trajectories_target_test = trajectories_target[test_set.indices]
     return trajectories_target_train, trajectories_target_test
 
-def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic = False, canonical = True, maxT = 5,
-                    alpha_init = None, velocity_init = None, vf_on_ring_enabled = False, #if analytic then not used
-                    homeo_type = 'node', layer_sizes = 1*[64], quick_jac = False, rescale_trajs = True,
-                    train_ratio = 0.8, training_pairs = False, load_hdsnet_path = None, homeo_init_type = None, homeo_init_std=1e-6,
-                    lr = 0.01, num_epochs = 200, jac_lambda_reg = 0., 
-                    random_seed = 313):
+# Testing
+def compute_jacobian_norms(homeo_net: nn.Module, traj: torch.Tensor, dim: int, quick_jac: bool):
+    """Compute Frobenius and spectral Jacobian norms for a trajectory."""
+    if quick_jac:
+        jac_fro = jacobian_frobenius_norm(homeo_net, traj).detach().cpu().numpy()
+        jac_spec = jacobian_spectral_norm(homeo_net, traj).detach().cpu().numpy()
+    else:
+        flat_traj = traj.reshape(-1, dim)
+        jac_fro = jacobian_norm_over_batch(homeo_net, flat_traj, norm_type='fro').detach().cpu().numpy()
+        jac_spec = jacobian_norm_over_batch(homeo_net, flat_traj, norm_type='spectral').detach().cpu().numpy()
+    return jac_fro, jac_spec
+
+def evaluate_homeo_ds_net(
+    homeo_ds_net: nn.Module,
+    trajectories_target: torch.Tensor,
+    trajectories_target_train: torch.Tensor,
+    trajectories_target_test: torch.Tensor,
+    dim: int,
+    quick_jac: bool,
+    manifold_points: int = 100
+) -> tuple[float, float, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Evaluate the trained Homeo_DS_Net on train/test data and compute Jacobians and invariants."""
+    
+    _, _, training_loss = test_single_homeo_ds_net(homeo_ds_net, trajectories_target_train)
+    _, _, test_loss = test_single_homeo_ds_net(homeo_ds_net, trajectories_target_test)
+    
+    traj_src_np, traj_trans_np, _ = test_single_homeo_ds_net(homeo_ds_net, trajectories_target)
+    traj_trans = torch.tensor(traj_trans_np, dtype=torch.float32)
+
+    inv_man = homeo_ds_net.invariant_manifold(manifold_points).detach().cpu().numpy()
+
+    jac_fro, jac_spec = compute_jacobian_norms(homeo_ds_net.homeo_network, traj_trans, dim, quick_jac)
+
+    return (
+        training_loss,
+        test_loss,
+        traj_src_np,
+        traj_trans_np,
+        inv_man,
+        jac_fro,
+        jac_spec,
+    )
+
+
+
+# diffeo + affine
+def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=False, canonical=True, maxT=5,
+                  alpha_init=None, velocity_init=None, vf_on_ring_enabled=False,
+                  homeo_type='node', layer_sizes=1*[64], quick_jac=False, rescale_trajs=True,
+                  train_ratio=0.8, training_pairs=False, homeo_init_type="small",
+                  homeo_init_std=1e-4, load_hdsnet_path=None,
+                  lr=0.01, num_epochs=200, jac_lambda_reg=0.,
+                  random_seed=313, two_phase=False, second_phase_jac_lambda=1e-3, second_phase_epochs=100):
     
     save_dir = os.path.join(save_dir, ds_motif)
     os.makedirs(save_dir, exist_ok=True)
     set_seed(random_seed)
-     
+
     trajectories_target = np.load(data_dir / f'{target_name}.npy')
-    trajectories_target = trajectories_target
     dim = trajectories_target.shape[2]
     tsteps = trajectories_target.shape[1]
     B = trajectories_target.shape[0]
-
     dt = maxT / tsteps
     time_span = torch.tensor([0.0, maxT])
-    
     if training_pairs:
         time_span = torch.tensor([0.0, dt])
-    ds_params = {'ds_motif': ds_motif, 'dim': dim, 'dt': dt, 'time_span': time_span, 'analytic': analytic, 'canonical': canonical, 'vf_on_ring_enabled': vf_on_ring_enabled, 'alpha_init': alpha_init, 'velocity_init': velocity_init}
-    homeo_params = {'homeo_type': homeo_type, 'dim': dim, 'layer_sizes': layer_sizes, 'activation': nn.ReLU, 'init_type': homeo_init_type, 'init_std': homeo_init_std}
+    
+    # Save parameters
+    ds_params = {'ds_motif': ds_motif, 'dim': dim, 'dt': dt, 'time_span': time_span, 'analytic': analytic,
+                 'canonical': canonical, 'vf_on_ring_enabled': vf_on_ring_enabled,
+                 'alpha_init': alpha_init, 'velocity_init': velocity_init}
+    homeo_params = {'homeo_type': homeo_type, 'dim': dim, 'layer_sizes': layer_sizes,
+                    'activation': nn.ReLU, 'init_type': homeo_init_type, 'init_std': homeo_init_std}
     annealing_params = {'dynamic': False, 'initial_std': .0, 'final_std': 0.}
-    training_params = {'lr': lr, 'num_epochs': num_epochs, 'annealing_params': annealing_params, 'early_stopping_patience': 1000,
-                        "batch_size": 32, 'use_inverse_formulation': True, 'jac_lambda_reg': jac_lambda_reg}
-    all_parameters = { 'homeo_params': homeo_params, 'training_params': training_params, "ds_params": ds_params}
+    training_params = {'lr': lr, 'num_epochs': num_epochs, 'annealing_params': annealing_params,
+                       'early_stopping_patience': 1000, "batch_size": 32,
+                       'use_inverse_formulation': True, 'jac_lambda_reg': jac_lambda_reg}
+    all_parameters = {'homeo_params': homeo_params, 'training_params': training_params, "ds_params": ds_params}
     with open(f"{save_dir}/parameters_{target_name}.pkl", "wb") as f:
         pickle.dump(all_parameters, f)
 
+    # Prepare data
     trajectories_target = torch.tensor(trajectories_target, dtype=torch.float32).to(device)
     if rescale_trajs:
         trajectories_target_full, trajectories_target, mean, std = normalize_scale_pair(trajectories_target, training_pairs)
-    trajectories_target_train, trajectories_target_test = split_data(trajectories_target, train_ratio = train_ratio)
+    trajectories_target_train, trajectories_target_test = split_data(trajectories_target, train_ratio=train_ratio)
 
-    #build homeo_ds_net
+    # Build model
+    set_seed(random_seed)
     homeo = build_homeomorphism(homeo_params)
     source_system = build_ds_motif(**ds_params)
     if load_hdsnet_path is not None:
         homeo_ds_net = load_homeo_ds_net(load_hdsnet_path, homeo, source_system)
-    homeo_ds_net = Homeo_DS_Net(homeo, source_system)
-    homeo_ds_net.to(device)
-    #get untrained invariant manifold and jacobian norms
+    homeo_ds_net = Homeo_DS_Net(homeo, source_system).to(device)
+
+    # Before training diagnostics
     save_homeo_ds_net(homeo_ds_net, f"{save_dir}/homeo_{target_name}_untrained.pth")
-    inv_man_before = homeo_ds_net.invariant_manifold(100).detach().numpy()
-    traj_src_np, traj_trans_np, _ = test_single_homeo_ds_net(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target)
-    traj_trans = torch.tensor(traj_trans_np, dtype=torch.float32)
-    if quick_jac:
-        jac_norm_frobenius_before = jacobian_frobenius_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
-        jac_norm_spectral_before = jacobian_spectral_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
-    else:
-        jac_norm_frobenius_before = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='fro').detach().numpy()
-        jac_norm_spectral_before = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='spectral').detach().numpy()
+    (_, _, _, _, inv_man_before, jac_fro_before, jac_spec_before) = evaluate_homeo_ds_net(homeo_ds_net, trajectories_target, trajectories_target_train, trajectories_target_test, dim, quick_jac)
 
-    #train homeo_ds_net
-    homeo_ds_net, losses, grad_norms = train_homeo_ds_net_batched(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target_train, **training_params)
+    # === Phase 1 training ===
+    homeo_ds_net, losses1, grad_norms1 = train_homeo_ds_net_batched(
+        homeo_ds_net=homeo_ds_net,
+        trajectories_target=trajectories_target_train,
+        **training_params
+    )
+
+    # Optionally: save after phase 1
+    if two_phase:
+        save_homeo_ds_net(homeo_ds_net, f"{save_dir}/homeo_{target_name}_phase1.pth")
+        np.savez(f"{save_dir}/results_{target_name}_phase1.npz",
+                 losses=np.array(losses1), grad_norms=np.array(grad_norms1))
+
+    # === Phase 2 training (with Jacobian reg) ===
+    if two_phase:
+        training_params_phase2 = training_params.copy()
+        training_params_phase2['jac_lambda_reg'] = second_phase_jac_lambda
+        training_params_phase2['num_epochs'] = second_phase_epochs
+        diffeo_ds_net, losses, grad_norms = train_diffeo_ds_net_batched_two_phase(
+            diffeo_ds_net=homeo_ds_net,  # name mismatch but it's the same object
+            trajectories_target=trajectories_target_train,
+            **training_params
+        )
+        losses = losses1 + losses2
+        grad_norms = grad_norms1 + grad_norms2
+    else:
+        losses = losses1
+        grad_norms = grad_norms1
+
     homeo_ds_net.eval()
-    
-    #test
-    _, _, training_loss = test_single_homeo_ds_net(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target_train)
-    _, _, test_loss = test_single_homeo_ds_net(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target_test)
-    traj_src_np, traj_trans_np, _ = test_single_homeo_ds_net(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target)
-    traj_trans = torch.tensor(traj_trans_np, dtype=torch.float32)
 
-    inv_man = homeo_ds_net.invariant_manifold(100).detach().numpy()
-    if quick_jac:
-        jac_norm_frobenius = jacobian_frobenius_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
-        jac_norm_spectral = jacobian_spectral_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
-    else:
-        jac_norm_frobenius = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='fro').detach().numpy()
-        jac_norm_spectral = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='spectral').detach().numpy()
+    # === Final testing ===
+    (training_loss, test_loss, traj_src_np, traj_trans_np,
+        inv_man, jac_fro, jac_spec) = evaluate_homeo_ds_net(homeo_ds_net, trajectories_target, trajectories_target_train,
+        trajectories_target_test, dim, quick_jac)
 
     np.savez(
-    f"{save_dir}/results_{target_name}.npz",
-    jac_fro=jac_norm_frobenius,
-    jac_spec=jac_norm_spectral,
-    jac_norm_frobenius_before=jac_norm_frobenius_before,
-    jac_norm_spectral_before=jac_norm_spectral_before,
-    training_loss=training_loss,
-    test_loss=test_loss,
-    losses=np.array(losses),  
-    grad_norms=np.array(grad_norms),
-    inv_man=inv_man,
-    inv_man_before=inv_man_before
-)
+        f"{save_dir}/results_{target_name}.npz",
+        jac_fro=jac_norm_frobenius,
+        jac_spec=jac_norm_spectral,
+        jac_fro_before=jac_norm_frobenius_before,
+        jac_spec_before=jac_norm_spectral_before,
+        training_loss=training_loss,
+        test_loss=test_loss,
+        losses=np.array(losses),
+        grad_norms=np.array(grad_norms),
+        inv_man=inv_man,
+        inv_man_before=inv_man_before
+    )
 
-    save_homeo_ds_net(homeo_ds_net, f"{save_dir}/homeo_{target_name}.pth")
-    np.save(f"{save_dir}/traj_motif_transformed_{target_name}.npy", traj_trans_np) 
-    np.save(f"{save_dir}/traj_motif_source_{target_name}.npy", traj_src_np) 
+    #save_homeo_ds_net(homeo_ds_net, f"{save_dir}/homeo_{target_name}.pth")
+    save_diffeo_ds_net_compact(homeo_ds_net, f"{save_dir}/homeo_{target_name}.pth", {"homeo_params": homeo_params, "ds_params": ds_params})
+    np.save(f"{save_dir}/traj_motif_transformed_{target_name}.npy", traj_trans_np)
+    np.save(f"{save_dir}/traj_motif_source_{target_name}.npy", traj_src_np)
+
+
+
+# just diffeo
+# def run_on_target(target_name, save_dir, data_dir, ds_motif = 'ring', analytic = False, canonical = True, maxT = 5,
+#                     alpha_init = None, velocity_init = None, vf_on_ring_enabled = False, #if analytic then not used
+#                     homeo_type = 'node', layer_sizes = 1*[64], quick_jac = False, rescale_trajs = True,
+#                     train_ratio = 0.8, training_pairs = False,
+#                     homeo_init_type = "small", homeo_init_std = 1e-4,  load_hdsnet_path = None,
+#                     lr = 0.01, num_epochs = 200, jac_lambda_reg = 0., 
+#                     random_seed = 313):
+    
+#     save_dir = os.path.join(save_dir, ds_motif)
+#     os.makedirs(save_dir, exist_ok=True)
+#     set_seed(random_seed)
+     
+#     trajectories_target = np.load(data_dir / f'{target_name}.npy')
+#     trajectories_target = trajectories_target
+#     dim = trajectories_target.shape[2]
+#     tsteps = trajectories_target.shape[1]
+#     B = trajectories_target.shape[0]
+
+#     dt = maxT / tsteps
+#     time_span = torch.tensor([0.0, maxT])
+    
+#     if training_pairs:
+#         time_span = torch.tensor([0.0, dt])
+#     ds_params = {'ds_motif': ds_motif, 'dim': dim, 'dt': dt, 'time_span': time_span, 'analytic': analytic, 'canonical': canonical, 'vf_on_ring_enabled': vf_on_ring_enabled, 'alpha_init': alpha_init, 'velocity_init': velocity_init}
+#     homeo_params = {'homeo_type': homeo_type, 'dim': dim, 'layer_sizes': layer_sizes, 'activation': nn.ReLU, 'init_type': homeo_init_type, 'init_std': homeo_init_std}
+#     annealing_params = {'dynamic': False, 'initial_std': .0, 'final_std': 0.}
+#     training_params = {'lr': lr, 'num_epochs': num_epochs, 'annealing_params': annealing_params, 'early_stopping_patience': 1000,
+#                         "batch_size": 32, 'use_inverse_formulation': True, 'jac_lambda_reg': jac_lambda_reg}
+#     all_parameters = { 'homeo_params': homeo_params, 'training_params': training_params, "ds_params": ds_params}
+#     with open(f"{save_dir}/parameters_{target_name}.pkl", "wb") as f:
+#         pickle.dump(all_parameters, f)
+
+#     trajectories_target = torch.tensor(trajectories_target, dtype=torch.float32).to(device)
+#     if rescale_trajs:
+#         trajectories_target_full, trajectories_target, mean, std = normalize_scale_pair(trajectories_target, training_pairs)
+#     trajectories_target_train, trajectories_target_test = split_data(trajectories_target, train_ratio = train_ratio)
+
+#     #build homeo_ds_net
+#     set_seed(random_seed)
+#     homeo = build_homeomorphism(homeo_params)
+#     source_system = build_ds_motif(**ds_params)
+#     if load_hdsnet_path is not None:
+#         homeo_ds_net = load_homeo_ds_net(load_hdsnet_path, homeo, source_system)
+#     homeo_ds_net = Homeo_DS_Net(homeo, source_system)
+#     homeo_ds_net.to(device)
+#     #get untrained invariant manifold and jacobian norms
+#     save_homeo_ds_net(homeo_ds_net, f"{save_dir}/homeo_{target_name}_untrained.pth")
+#     inv_man_before = homeo_ds_net.invariant_manifold(100).detach().numpy()
+#     traj_src_np, traj_trans_np, _ = test_single_homeo_ds_net(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target)
+#     traj_trans = torch.tensor(traj_trans_np, dtype=torch.float32)
+#     if quick_jac:
+#         jac_norm_frobenius_before = jacobian_frobenius_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
+#         jac_norm_spectral_before = jacobian_spectral_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
+#     else:
+#         jac_norm_frobenius_before = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='fro').detach().numpy()
+#         jac_norm_spectral_before = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='spectral').detach().numpy()
+
+#     #train homeo_ds_net
+#     homeo_ds_net, losses, grad_norms = train_homeo_ds_net_batched(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target_train, **training_params)
+#     homeo_ds_net.eval()
+    
+#     #test
+#     _, _, training_loss = test_single_homeo_ds_net(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target_train)
+#     _, _, test_loss = test_single_homeo_ds_net(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target_test)
+#     traj_src_np, traj_trans_np, _ = test_single_homeo_ds_net(homeo_ds_net=homeo_ds_net, trajectories_target=trajectories_target)
+#     traj_trans = torch.tensor(traj_trans_np, dtype=torch.float32)
+
+#     inv_man = homeo_ds_net.invariant_manifold(100).detach().numpy()
+#     if quick_jac:
+#         jac_norm_frobenius = jacobian_frobenius_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
+#         jac_norm_spectral = jacobian_spectral_norm(homeo_ds_net.homeo_network, traj_trans).detach().numpy()
+#     else:
+#         jac_norm_frobenius = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='fro').detach().numpy()
+#         jac_norm_spectral = jacobian_norm_over_batch(homeo_ds_net.homeo_network, traj_trans.reshape(-1,dim), norm_type='spectral').detach().numpy()
+
+#     np.savez(
+#     f"{save_dir}/results_{target_name}.npz",
+#     jac_fro=jac_norm_frobenius,
+#     jac_spec=jac_norm_spectral,
+#     jac_norm_frobenius_before=jac_norm_frobenius_before,
+#     jac_norm_spectral_before=jac_norm_spectral_before,
+#     training_loss=training_loss,
+#     test_loss=test_loss,
+#     losses=np.array(losses),  
+#     grad_norms=np.array(grad_norms),
+#     inv_man=inv_man,
+#     inv_man_before=inv_man_before
+# )
+
+#     save_homeo_ds_net(homeo_ds_net, f"{save_dir}/homeo_{target_name}.pth")
+#     np.save(f"{save_dir}/traj_motif_transformed_{target_name}.npy", traj_trans_np) 
+#     np.save(f"{save_dir}/traj_motif_source_{target_name}.npy", traj_src_np) 
+
+
 
 
 def perthomeo_exp(base_save_dir="homeopert_ring", ds_motif='ring', noise_std=0.0, layer_sizes=[64], num_epochs=200,
