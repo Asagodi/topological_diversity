@@ -1029,7 +1029,7 @@ def load_diffeo_ds_net_compact(file_path: str) -> Homeo_DS_Net:
     diffeo_network = build_homeomorphism(homeo_params)
     dynamical_system = build_ds_motif(**ds_params)
 
-    model = Diffeo_DS_Net(diffeo_network, dynamical_system)
+    model = Homeo_DS_Net(diffeo_network, dynamical_system)
     model.load_state_dict(checkpoint['state_dict'])
 
     print(f"Model and metadata loaded from {file_path}")
