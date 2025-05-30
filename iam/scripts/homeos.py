@@ -1004,14 +1004,14 @@ def load_homeo_ds_net(file_path: str, homeo_network: nn.Module, dynamical_system
     return model
 
 
-def save_diffeo_ds_net_compact(model: Diffeo_DS_Net, file_path: str, meta: dict) -> None:
+def save_diffeo_ds_net_compact(model: nn.Module, file_path: str, meta: dict) -> None:
     torch.save({
         'state_dict': model.state_dict(),
         'meta': meta  # this should include homeo_params and ds_params
     }, file_path)
     print(f"Model and metadata saved to {file_path}")
 
-def load_diffeo_ds_net_compact(file_path: str) -> Diffeo_DS_Net:
+def load_diffeo_ds_net_compact(file_path: str) -> Homeo_DS_Net:
     checkpoint = torch.load(file_path)
 
     homeo_params = checkpoint['meta']['homeo_params']
