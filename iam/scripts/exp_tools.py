@@ -88,8 +88,8 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
                   homeo_type='node', layer_sizes=1*[64], quick_jac=False, rescale_trajs=True,
                   train_ratio=0.8, training_pairs=False, homeo_init_type="small",
                   homeo_init_std=1e-4, load_hdsnet_path=None,
-                  lr=0.01, num_epochs=100, jac_lambda_reg=0.,
-                  random_seed=313, two_phase=True, second_phase_jac_lambda=1e-3, second_phase_epochs=100):
+                  lr=0.01, num_epochs_affine=100, num_epochs_diffeo=100, jac_lambda_reg=0., 
+                  random_seed=313, two_phase=True):
     
     save_dir = os.path.join(save_dir, ds_motif)
     os.makedirs(save_dir, exist_ok=True)
@@ -136,35 +136,20 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
     save_homeo_ds_net(homeo_ds_net, f"{save_dir}/homeo_{target_name}_untrained.pth")
     (_, _, _, _, inv_man_before, jac_fro_before, jac_spec_before) = evaluate_homeo_ds_net(homeo_ds_net, trajectories_target, trajectories_target_train, trajectories_target_test, dim, quick_jac)
 
-    # === Phase 1 training ===
-    homeo_ds_net, losses1, grad_norms1 = train_homeo_ds_net_batched(
-        homeo_ds_net=homeo_ds_net,
-        trajectories_target=trajectories_target_train,
-        **training_params
-    )
+    # # === 1 Phase training === TODO
+    # homeo_ds_net, losses1, grad_norms1 = train_homeo_ds_net_batched(
+    #     homeo_ds_net=homeo_ds_net,
+    #     trajectories_target=trajectories_target_train,
+    #     **training_params
+    # )
 
-    # Optionally: save after phase 1
+    # === 2 Phase training (with Jacobian reg) ===
     if two_phase:
-        save_homeo_ds_net(homeo_ds_net, f"{save_dir}/homeo_{target_name}_phase1.pth")
-        np.savez(f"{save_dir}/results_{target_name}_phase1.npz",
-                 losses=np.array(losses1), grad_norms=np.array(grad_norms1))
-
-    # === Phase 2 training (with Jacobian reg) ===
-    if two_phase:
-        training_params_phase2 = training_params.copy()
-        training_params_phase2['jac_lambda_reg'] = second_phase_jac_lambda
-        training_params_phase2['num_epochs'] = second_phase_epochs
         diffeo_ds_net, losses, grad_norms = train_diffeo_ds_net_batched_two_phase(
-            diffeo_ds_net=homeo_ds_net,  # name mismatch but it's the same object
+            diffeo_ds_net=homeo_ds_net,  
             trajectories_target=trajectories_target_train,
             **training_params
         )
-        losses = losses1 + losses2
-        grad_norms = grad_norms1 + grad_norms2
-    else:
-        losses = losses1
-        grad_norms = grad_norms1
-
     homeo_ds_net.eval()
 
     # === Final testing ===
