@@ -111,7 +111,7 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
     homeo_params = {'homeo_type': homeo_type, 'dim': dim, 'layer_sizes': layer_sizes,
                     'activation': nn.ReLU, 'init_type': homeo_init_type, 'init_std': homeo_init_std}
     annealing_params = {'dynamic': False, 'initial_std': .0, 'final_std': 0.}
-    training_params = {'lr': lr, 'num_epochs': num_epochs, 'annealing_params': annealing_params,
+    training_params = {'lr': lr, 'num_epochs_affine': num_epochs_affine, 'num_epochs_diffeo': num_epochs_diffeo 'annealing_params': annealing_params,
                        'early_stopping_patience': 1000, "batch_size": 32,
                        'use_inverse_formulation': True, 'jac_lambda_reg': jac_lambda_reg}
     all_parameters = {'homeo_params': homeo_params, 'training_params': training_params, "ds_params": ds_params}
