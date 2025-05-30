@@ -88,8 +88,8 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
                   homeo_type='node', layer_sizes=1*[64], quick_jac=False, rescale_trajs=True,
                   train_ratio=0.8, training_pairs=False, homeo_init_type="small",
                   homeo_init_std=1e-4, load_hdsnet_path=None,
-                  lr=0.01, num_epochs=200, jac_lambda_reg=0.,
-                  random_seed=313, two_phase=False, second_phase_jac_lambda=1e-3, second_phase_epochs=100):
+                  lr=0.01, num_epochs=100, jac_lambda_reg=0.,
+                  random_seed=313, two_phase=True, second_phase_jac_lambda=1e-3, second_phase_epochs=100):
     
     save_dir = os.path.join(save_dir, ds_motif)
     os.makedirs(save_dir, exist_ok=True)
