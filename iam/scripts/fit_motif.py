@@ -294,7 +294,7 @@ def train_diffeo_ds_net_batched_two_phase(
     def get_params(split: str):
         affine_params, diffeo_params = [], []
         for name, param in diffeo_ds_net.homeo_network.named_parameters():
-            print(f"Parameter: {name}, requires_grad: {param.requires_grad}")
+            #print(f"Parameter: {name}, requires_grad: {param.requires_grad}")
             if 'affine' in name:
                 affine_params.append(param)
             else:
