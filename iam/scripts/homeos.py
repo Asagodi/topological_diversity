@@ -532,24 +532,33 @@ class InvertibleResNet(nn.Module):
 #building
 def build_homeomorphism(params: dict) -> nn.Module:
     homeo_type = params['homeo_type']
-
+    
     if homeo_type == 'iresnet':
         cls = iResNet
         allowed_keys = {'dim', 'layer_sizes', 'init_type', 'activation', 'init_std', 'init_mean'}
+        filtered_args = {k: v for k, v in params.items() if k in allowed_keys}
+        return cls(**filtered_args)
 
     elif homeo_type == 'node':
         cls = NODEHomeomorphism
         allowed_keys = {'dim', 'layer_sizes', 'init_type', 'activation', 'init_std', 'init_mean', 'scale'}
+        filtered_args = {k: v for k, v in params.items() if k in allowed_keys}
+        return cls(**filtered_args)
 
     elif homeo_type == 'affine_node':
-        cls = AffineAfterNODE
-        allowed_keys = {'dim', 'affine_bias_init', 'affine_weight_init'}
+        # Split the flat params into those for the NODE and for AffineAfterNODE
+        node_keys = {'dim', 'layer_sizes', 'init_type', 'activation', 'init_std', 'init_mean', 'scale'}
+        affine_keys = {'dim', 'learnable_affine'}
+
+        node_args = {k: v for k, v in params.items() if k in node_keys}
+        affine_args = {k: v for k, v in params.items() if k in affine_keys}
+
+        node = NODEHomeomorphism(**node_args)
+        return AffineAfterNODE(node=node, **affine_args)
 
     else:
         raise ValueError(f"Unknown architecture: {homeo_type}")
 
-    filtered_args = {k: v for k, v in params.items() if k in allowed_keys}
-    return cls(**filtered_args)
 
 
 
@@ -920,16 +929,10 @@ def get_homeo_invman(homeo_network, dim: int = 2, num_points: int = 100) -> np.n
 
 #######Link
 class AffineAfterNODE(nn.Module):
-    def __init__(self, dim: int, node_params: dict, learnable_affine: bool = False):
-        """
-        Wraps a NODE homeomorphism with an affine transformation applied after it.
-
-        :param node_params: A dictionary to build NODEHomeomorphism.
-        :param learnable_affine: Whether the affine transform is learnable.
-        """
+    def __init__(self, dim: int, node: NODEHomeomorphism, learnable_affine: bool = False):
         super().__init__()
         self.dim = dim
-        self.node = NODEHomeomorphism(**node_params)
+        self.node = node
         self.affine = AffineTransform(dim, learnable=learnable_affine)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -943,6 +946,7 @@ class AffineAfterNODE(nn.Module):
     def _inverse_affine(self, y: torch.Tensor) -> torch.Tensor:
         W_inv = torch.inverse(self.affine.W)
         return (y - self.affine.b) @ W_inv.T
+
 
 
 
