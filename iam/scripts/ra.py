@@ -6,23 +6,11 @@ import tqdm
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel 
 from typing import Optional
 
-def ra_ode(t, x):
+def ra_ode(t, x):   
     x1, x2 = x
     u = x1 * (1 - np.sqrt(x1**2 + x2**2))
     v = x2 * (1 - np.sqrt(x1**2 + x2**2))
     return np.array([u, v])
-
-# def vector_field_ode_full(t, x, full_grid_u, full_grid_v):
-#     x1, x2 = x
-
-#     if x1 < -min_val or x1 > min_val or x2 < -min_val or x2 > min_val:
-#         u = x1 * (1 - np.sqrt(x1**2 + x2**2))
-#         v = x2 * (1 - np.sqrt(x1**2 + x2**2))
-#         return np.array([u, v])
-#     else:
-#         u = full_grid_u([x2,x1]).item() 
-#         v = full_grid_v([x2,x1]).item() 
-#         return np.array([u, v])
 
 def vector_field_ode(t, x, grid_u, grid_v, perturb_grid_u, perturb_grid_v, interpol_param):
     x1, x2 = x
@@ -118,7 +106,22 @@ def get_all(U, V, random_seed, min_val_sim=3, n_grid=40, norm=0.05, n_pert_steps
 
 
 def get_random_vector_field_from_ringattractor(min_val_sim = 2, n_grid = 40, norm = 0.05,
-                                             random_seed = 49, add_limit_cycle=False, normalize_type='grid'):
+                                             random_seed = 49, add_limit_cycle=False, normalize_type='max'):
+    """
+    Generate a random perturbation of the ring attractor vector field.
+    Args:
+        min_val_sim (float): Minimum value for the grid.
+        n_grid (int): Number of grid points.
+        norm (float): Norm to scale the perturbation.
+        random_seed (int): Seed for random number generation.
+        add_limit_cycle (bool): Whether to add a limit cycle to the perturbation.
+        normalize_type (str): Type of normalization ('grid' or 'max').
+    Returns:
+        U_pert (np.ndarray): Perturbed U component of the vector field.
+        V_pert (np.ndarray): Perturbed V component of the vector field.
+        perturb_u (np.ndarray): Perturbation in the U component.
+        perturb_v (np.ndarray): Perturbation in the V component.
+    """
     # Define the grid points
     Y, X = np.mgrid[-min_val_sim:min_val_sim:complex(0, n_grid), -min_val_sim:min_val_sim:complex(0, n_grid)]
 
@@ -247,13 +250,11 @@ def build_perturbed_ringattractor(perturbation_norm = 0.1, random_seed = 313, mi
     """
     Y, X = np.mgrid[-min_val_sim:min_val_sim:complex(0, n_grid), -min_val_sim:min_val_sim:complex(0, n_grid)]
     U, V = X * (1- np.sqrt(X**2 + Y**2)), Y * (1- np.sqrt(X**2 + Y**2))
-    #U_pert, V_pert, perturb_u, perturb_v,  grid_u, grid_v, perturb_grid_u, perturb_grid_v, full_grid_u, full_grid_v, inv_mans = get_all(U, V, random_seed, norm=norm, n_pert_steps=15*2)
 
     U_pert, V_pert, _, _ = get_random_vector_field_from_ringattractor(min_val_sim=min_val_sim, n_grid=n_grid, norm=perturbation_norm, random_seed=random_seed, add_limit_cycle=add_limit_cycle)
     grid_u, grid_v, perturb_grid_u, perturb_grid_v, full_grid_u, full_grid_v = initialize_grids(U, V, U_pert, V_pert, min_val_sim, n_grid)
     inv_man = create_invariant_manifold_fromring(grid_u, grid_v, perturb_grid_u, perturb_grid_v, num_points=num_points_invman, nonlinearity_ode=vector_field_ode)
 
-    #tsteps = maxT*20
     initial_conditions_pertring = prepare_initial_conditions(mode=initial_conditions_mode, invariant_manifold=inv_man, num_points=number_of_target_trajectories, margin=init_margin)
     number_of_target_trajectories = initial_conditions_pertring.shape[0]
     trajectories_pertring = simulate_network_ntimes(number_of_target_trajectories, grid_u, grid_v, perturb_grid_u, perturb_grid_v, 1, nonlinearity_ode=vector_field_ode, 

@@ -85,7 +85,7 @@ def evaluate_homeo_ds_net(
 # diffeo + affine
 def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=False, canonical=True, maxT=5,
                   alpha_init=None, velocity_init=None, vf_on_ring_enabled=False,
-                  homeo_type='node', layer_sizes=1*[64], quick_jac=False, rescale_trajs=True,
+                  homeo_type='node', layer_sizes=1*[64], quick_jac=False, rescale_trajs=False,
                   train_ratio=0.8, training_pairs=False, homeo_init_type="small",
                   homeo_init_std=1e-4, load_hdsnet_path=None,
                   lr=0.01, num_epochs_affine=100, num_epochs_diffeo=100, jac_lambda_reg=0., 
@@ -133,7 +133,7 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
     homeo_ds_net = Homeo_DS_Net(homeo, source_system).to(device)
 
     # Before training diagnostics
-    save_homeo_ds_net(homeo_ds_net, f"{save_dir}/homeo_{target_name}_untrained.pth")
+    save_diffeo_ds_net_compact(homeo_ds_net, f"{save_dir}/homeo_{target_name}_untrained.pth", {"homeo_params": homeo_params, "ds_params": ds_params})
     (_, _, _, _, inv_man_before, jac_fro_before, jac_spec_before) = evaluate_homeo_ds_net(homeo_ds_net, trajectories_target, trajectories_target_train, trajectories_target_test, dim, quick_jac)
 
     # # === 1 Phase training === TODO
