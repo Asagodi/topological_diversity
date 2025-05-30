@@ -152,6 +152,21 @@ def generate_random_homeomorphism(dim: int, num_samples: int = 10, epsilon: floa
 
     return homeomorphism_network, random_samples, transformed_samples
 
+###Affine
+class AffineTransform(nn.Module):
+    def __init__(self, dim: int, init_W: torch.Tensor = None, init_b: torch.Tensor = None, learnable: bool = False):
+        super().__init__()
+        if init_W is None:
+            init_W = torch.eye(dim)
+        if init_b is None:
+            init_b = torch.zeros(dim)
+
+        self.W = nn.Parameter(init_W, requires_grad=learnable)
+        self.b = nn.Parameter(init_b, requires_grad=learnable)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x @ self.W.T + self.b
+ 
 
 #### NODEs
 class NeuralODE(nn.Module):
@@ -896,6 +911,39 @@ def get_homeo_invman(homeo_network, dim: int = 2, num_points: int = 100) -> np.n
 
 
 #######Link
+class AffineAfterNODE(nn.Module):
+    def __init__(self, node: NODEHomeomorphism, affine: nn.Module = None, learnable_affine: bool = False):
+        """
+        Wraps a NODE homeomorphism with an affine transformation applied after it.
+        
+        :param node: The core NODE homeomorphism Ψ.
+        :param affine: Optional custom affine module. If None, defaults to identity affine.
+        :param learnable_affine: Whether to make the default affine transform learnable.
+        """
+        super().__init__()
+        self.node = node
+        self.dim = node.dim
+
+        if affine is None:
+            self.affine = AffineTransform(self.dim, learnable=learnable_affine)
+        else:
+            self.affine = affine
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        z = self.node(x)
+        return self.affine(z)
+
+    def inverse(self, y: torch.Tensor) -> torch.Tensor:
+        z = self._inverse_affine(y)
+        return self.node.inverse(z)
+
+    def _inverse_affine(self, y: torch.Tensor) -> torch.Tensor:
+        W_inv = torch.inverse(self.affine.W)
+        return (y - self.affine.b) @ W_inv.T
+
+
+
+
 class Homeo_DS_Net(nn.Module):
     def __init__(self, homeo_network: nn.Module, dynamical_system: nn.Module):
         """
