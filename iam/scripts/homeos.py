@@ -154,18 +154,22 @@ def generate_random_homeomorphism(dim: int, num_samples: int = 10, epsilon: floa
 
 ###Affine
 class AffineTransform(nn.Module):
-    def __init__(self, dim: int, init_W: torch.Tensor = None, init_b: torch.Tensor = None, learnable: bool = False):
+    def __init__(self, dim: int, init_A: torch.Tensor = None, init_b: torch.Tensor = None, learnable: bool = False):
         super().__init__()
-        if init_W is None:
-            init_W = torch.eye(dim)
+        if init_A is None:
+            init_A = torch.eye(dim)
         if init_b is None:
             init_b = torch.zeros(dim)
 
-        self.W = nn.Parameter(init_W, requires_grad=learnable)
+        self.A = nn.Parameter(init_A, requires_grad=learnable)
         self.b = nn.Parameter(init_b, requires_grad=learnable)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return x @ self.W.T + self.b
+        return x @ self.A.T + self.b
+
+    def inverse(self, y: torch.Tensor) -> torch.Tensor:
+        A_inv = torch.linalg.inv(self.A)
+        return (y - self.b) @ A_inv.T
  
 
 #### NODEs
@@ -944,8 +948,8 @@ class AffineAfterNODE(nn.Module):
         return self.node.inverse(z)
 
     def _inverse_affine(self, y: torch.Tensor) -> torch.Tensor:
-        W_inv = torch.inverse(self.affine.W)
-        return (y - self.affine.b) @ W_inv.T
+        A_inv = torch.inverse(self.affine.A)
+        return (y - self.affine.b) @ A_inv.T
 
 
 

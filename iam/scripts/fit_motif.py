@@ -274,7 +274,7 @@ def train_homeo_ds_net_batched(
     print(f"Final log(Loss)= {np.log10(mean_epoch_loss):.4f}, Total training time: {total_time:.2f} sec, Avg epoch time: {total_time / num_epochs:.4f} sec")
 
     homeo_ds_net.grad_norms = grad_norms
-    best_model_saver.restore()
+    #best_model_saver.restore()
     return homeo_ds_net, losses, grad_norms
 
 def train_diffeo_ds_net_batched_alternating(
@@ -293,10 +293,9 @@ def train_diffeo_ds_net_batched_alternating(
     affine_params = [p for name, p in diffeo_ds_net.homeo_network.named_parameters() if 'affine' in name]
     diffeo_params = [p for name, p in diffeo_ds_net.homeo_network.named_parameters() if 'affine' not in name]
 
-    optimizer_affine = torch.optim.Adam(affine_params, lr=lr)
     optimizer_diffeo = torch.optim.Adam(diffeo_params, lr=lr)
 
-    losses, grad_norms = [], []
+    losses, affine_losses, diffeo_losses, grad_norms = [], [], [], []
     best_loss = float("inf")
     early_stopper = EarlyStopping(patience=early_stopping_patience or num_epochs)
     best_model_saver = BestModelSaver(
@@ -310,6 +309,15 @@ def train_diffeo_ds_net_batched_alternating(
         dataset = TensorDataset(trajectories_target)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
+    # === Initial loss before training ===
+    with torch.no_grad():
+        x0 = trajectories_target[:, 0, :].detach().clone()
+        source_traj, initial_loss = compute_homeo_ds_loss(diffeo_ds_net, trajectories_target, x0,loss_fn=nn.MSELoss(),noise_std=0.0,use_inverse_formulation=use_inverse_formulation)
+        # if jac_lambda_reg:
+        #     jacobian_reg = jacobian_spectral_norm(diffeo_ds_net.homeo_network.node, source_traj)
+        #     initial_loss += jac_lambda_reg * jacobian_reg
+        print(f"[Initial] log(Loss): {np.log10(initial_loss.item()):.4f}")
+
     for epoch in range(num_epochs):
         epoch_losses = []
 
@@ -317,21 +325,42 @@ def train_diffeo_ds_net_batched_alternating(
             batch_target = batch[0]
             x0 = batch_target[:, 0, :].detach().clone()
 
+            with torch.no_grad():
+                source_traj, initial_loss = compute_homeo_ds_loss(diffeo_ds_net, trajectories_target, x0, loss_fn=nn.MSELoss(),noise_std=0.0,use_inverse_formulation=use_inverse_formulation)
+                print(f"[Epoch {epoch}] before LS log(Loss): {np.log10(initial_loss.item()):.4f}")
+
             # === Affine phase ===
-            for p in affine_params: p.requires_grad = True
+            for p in affine_params: p.requires_grad = False
             for p in diffeo_params: p.requires_grad = False
 
-            optimizer_affine.zero_grad()
-            _, loss_affine = compute_homeo_ds_loss(
-                diffeo_ds_net, batch_target, x0,
-                loss_fn=nn.MSELoss(),
-                noise_std=0.0,
-                use_inverse_formulation=use_inverse_formulation
-            )
-            loss_affine.backward()
-            if max_grad_norm:
-                torch.nn.utils.clip_grad_norm_(affine_params, max_grad_norm)
-            optimizer_affine.step()
+            with torch.no_grad():
+                source_traj = diffeo_ds_net.dynamical_system.compute_trajectory(x0)
+                transformed = diffeo_ds_net.homeo_network.node(source_traj)
+
+            # Solve least squares: fit affine map from transformed -> batch_target
+            x = transformed.reshape(-1, transformed.shape[-1])  # (B*T, d)
+            y = batch_target.reshape(-1, batch_target.shape[-1])  # (B*T, d)
+
+            # Add bias term to x
+            x_aug = torch.cat([x, torch.ones(x.shape[0], 1, device=x.device)], dim=1)  # (B*T, d+1)
+
+            # Solve (XᵗX)⁻¹XᵗY
+            XtX = x_aug.T @ x_aug
+            XtY = x_aug.T @ y
+            theta = torch.linalg.lstsq(x_aug, y).solution
+            #theta = torch.linalg.lstsq(XtX, XtY).solution
+
+            # Update affine parameters
+            with torch.no_grad():
+                A_param = diffeo_ds_net.homeo_network.affine.A  # assumes shape (d, d)
+                b_param = diffeo_ds_net.homeo_network.affine.b  # assumes shape (d,)
+
+                A_param.copy_(theta[:-1].T)
+                b_param.copy_(theta[-1])
+
+            with torch.no_grad():
+                source_traj, initial_loss = compute_homeo_ds_loss(diffeo_ds_net, trajectories_target, x0,loss_fn=nn.MSELoss(),noise_std=0.0,use_inverse_formulation=use_inverse_formulation)
+                print(f"[Epoch {epoch}] after LS log(Loss): {np.log10(initial_loss.item()):.4f}")
 
             # === Diffeo (NODE) phase ===
             for p in affine_params: p.requires_grad = False
@@ -347,7 +376,7 @@ def train_diffeo_ds_net_batched_alternating(
                     running_loss=update_leaky_running_avg,
                 ) if annealing_params.get("dynamic", False) else get_annealed_noise_std(epoch, num_epochs, **annealing_params)
 
-            source_traj, loss_diffeo = compute_homeo_ds_loss(
+            source_traj, loss_diffeo_grad = compute_homeo_ds_loss(
                 diffeo_ds_net, batch_target, x0,
                 loss_fn=nn.MSELoss(),
                 noise_std=noise_std,
@@ -355,8 +384,10 @@ def train_diffeo_ds_net_batched_alternating(
             )
 
             if jac_lambda_reg:
-                jacobian_reg = jacobian_spectral_norm(diffeo_ds_net.homeo_network, source_traj)
-                loss_diffeo += jac_lambda_reg * jacobian_reg
+                jacobian_reg = jacobian_spectral_norm(diffeo_ds_net.homeo_network.node, source_traj)
+                loss_diffeo = loss_diffeo_grad + jac_lambda_reg * jacobian_reg
+            else:
+                jacobian_reg = torch.tensor(0.0, device=loss_diffeo.device)
 
             if torch.isnan(loss_diffeo).any() or torch.isinf(loss_diffeo).any():
                 print("NaN or Inf detected. Aborting.")
@@ -372,7 +403,11 @@ def train_diffeo_ds_net_batched_alternating(
                 torch.nn.utils.clip_grad_norm_(diffeo_params, max_grad_norm)
             optimizer_diffeo.step()
 
-            epoch_losses.append((loss_affine.item() + loss_diffeo.item()) / 2)
+            epoch_losses.append((loss_diffeo.item()))
+
+            with torch.no_grad():
+                source_traj, initial_loss = compute_homeo_ds_loss(diffeo_ds_net, trajectories_target, x0,loss_fn=nn.MSELoss(),noise_std=0.0,use_inverse_formulation=use_inverse_formulation)
+                print(f"[Epoch {epoch}] after diffeom log(Loss): {np.log10(initial_loss.item()):.4f}")
 
         mean_loss = np.mean(epoch_losses)
         losses.append(mean_loss)
@@ -389,10 +424,12 @@ def train_diffeo_ds_net_batched_alternating(
             break
 
         if epoch % 10 == 0:
-            print(f"Epoch {epoch} | log(Loss): {np.log10(mean_loss):.4f}")
+            print(f"[Epoch {epoch}] | log(Loss Diffeo): {np.log10(loss_diffeo_grad.item()):.4f} | Jacobian Norm: {jacobian_reg.item():.4e}")
 
-    best_model_saver.restore()
+    #best_model_saver.restore()
     return diffeo_ds_net, losses, grad_norms
+
+
 
 
 
