@@ -750,12 +750,13 @@ We call this approach the \textbf{dynamical archetype analysis} (DAA).
 % We use dynamical motifs as the fundamental building blocks of dynamical systems, capturing effective and interpretable behaviors such as approximate continuous attractors.
 % These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
 
+\mpcomment{show where we are going before switching topics so quickly.}
 Recent work has highlighted that task-trained RNNs often implement behavior through combinations of low-dimensional dynamical motifs—recurrent patterns such as fixed points, oscillatory modes, and transient trajectories that correspond to computational subroutines \citep{driscoll2024flexible}.
 These motifs serve as functional building blocks, supporting modular and flexible representations of task demands. 
 In compositional tasks, where behavior can be decomposed into simpler subtasks or reused operations, RNNs learn to combine and recombine such motifs to generalize across task conditions \citep{tafazoli2024building}.
 
 Attractors can be systematically classified by their topological dimension, with the simplest topological spaces serving as fundamental building blocks.
-Trial-averaged neural activity often reflects low-dimensional structure, corresponding to an embedding of the task manifold into firing rate space \citep{gao2015simplicity}.
+Neural activity often reflects low-dimensional structure, corresponding to an embedding of the task manifold into firing rate space \citep{gao2015simplicity}.
 Recent work has shown that task-relevant computations are often constrained to such manifolds \citep{langdon2023unifying,can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor,ghazizadeh2021slowmanifold,duncker2021dynamics, pezon2024linking,fortunato2024nonlinear}.
 %Attractors can be further characterized by both their intrinsic and extrinsic dimensionality \citep{jazayeri2021interpreting,chaudhuri2019attractor,Sagodi2024a}. 
 
@@ -766,6 +767,10 @@ One-dimensional attractors in our library include the \emph{bounded line attract
 %At dimension 2, we find attractors like the plane and cylinder, representing combinations of continuous variables (e.g., two independent integrators, or a position and a phase).
  %More structured 2D attractors include the torus, formed by coupling two ring-like dimensions, and the sphere, a closed surface that supports more global integration or constrained exploration.
 These archetypes serve as building blocks for constructing higher-dimensional attractors via Cartesian products, allowing for complex dynamics to arise from simple, interpretable components (see Supp. Sec.~\ref{sec:composite}).
+
+\mpcomment{Let's put a table of archetype and corresponding theoretical model or example memory manifold structure.}
+
+\mpcomment{Where's the multiple fixed point case?}
 
 \begin{figure}[t!b!hp]
     \centering
@@ -1144,9 +1149,9 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 
 %\subsection{Quantifying the deformation to a ring attractor}\label{sec:imp_ring}
 \subsection{Faithful recovery of deformed ring attractors}\label{sec:imp_ring}
-To evaluate the effectiveness of our motif-based framework, we investigate how deformed ring attractors deviate from the archetypal ring attractor. 
-The dissimilarity measure can account for two types of variation: 
-(i) topological deformations that preserve the qualitative structure via diffeomorphisms, and 
+To evaluate the effectiveness of DAA, we investigate how deformed ring attractors deviate from the archetypal ring attractor.
+The dissimilarity measure can account for two types of variation:
+(i) topological deformations that preserve the qualitative structure via diffeomorphisms, and
 (ii) perturbations that break topological conjugacy, altering the underlying computation.
 %
 %description
@@ -1181,7 +1186,7 @@ For both deformation types, the location of the invariant manifold is accurately
 We now consider a library consisting of the \emph{ring attractor}, the \emph{limit cycle}, the \emph{single stable fixed point}, the \emph{bistable system} (two stable fixed points), and the \emph{bounded line attractor} (BLA).
 % Can we find the Platonic ideal?
 For a list of target systems, we try to fit the mold of each of the archetypes by fitting a diffeomorphism.
-By comparing the different fits we can infer which of the archetypes is most appropriate to well-capture the effective behavior.
+By comparing the different fits we can infer which of the archetypes best captures the effective behavior.
 We test this by measuring the dissimilarity to our library of motifs to a list of target systems:
 1) Ring attractors (and its diffeomorphism- and additive vector field-deformed and noisy versions),
 2) an RNN trained on a velocity integration task (with a slow ring invariant manifold, see Fig.~\ref{fig:avi_rnn_recttanh}A),
