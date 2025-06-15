@@ -362,29 +362,29 @@ The features are embedded into lower-dimensional space through contrastive learn
 
 \section{Effective Behavior Similarity}\label{sec:effective_ds}
 \subsection{Motivation and Measures of Dissimilarity}
-Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
-If two systems are equally useful for the same purpose, i.e. implementing a desired neural computation, then we will consider them ``the same''.
+Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior}, and at the same time, to represent some groups by their most interpretable member.
+%If two systems are equally useful for the same purpose, i.e. implementing a desired neural computation, then we will consider them ``the same''.
 What do we mean by effective behavior?
 Both artificial and biological agents perform neural computation in a finite time.
 For example, typical visiomotor behavior or perceptual-decision making tasks are performed within a few hundred milliseconds.
 So if our goal is to understand the information processing capacity at the behaviorally relevant time scales, we should limit our analysis to the interval rather than the mathematically convenient infinite time scale.
-We denote the behavioral time scale as a reasonable duration of time $[0, T_\text{max}]$.
+We capture the behavioral time scale as a reasonable duration of time $[0, T_\text{max}]$.
 %
 This motivates the following time integrated point-wise distance measure:
 For all $\vx \in \inputSpace$ and $t \in [0, T_\text{max}]$,
 \begin{align}
     d_0(\vf(\vx), \vg(\vx))
-	&\coloneq \int_0^{T_{\text{max}}} \norm{\phi_\vf^t(\vx) - \phi_\vg^t(\vx)} \dm{t},
+	&\coloneq \int_0^{T_{\text{max}}} \norm{\phi_\vf^t(\vx) - \phi_\vg^t(\vx)}\, \dm{t},
 \end{align}
 where $\phi_\vf^t(\vx)$ is the solution (trajectory) of $\dot\vx = \vf(\vx)$ with initial condition $\vx$ at time $t$.
 
 We must also restrict our analysis to the relevant portion of the phase space.
 The dynamical system implemented defines a vector field over the entire space but typically most of the space is not utilized during normal operations.
 In fact, neural population data analysis suggests that the trajectories are restricted to a low-dimensional manifold in the context of a ``task'' or  ``computation''.
-Therefore, the distinction between the systems should only be compared at the locations where they are used.
+Therefore, the distinction between the systems should only be compared at the utilized regions of the phase space.
 We denote this natural probability distribution over the points on the phase space as $\initDist(\vx)$.
 %
-These two notions together motivates the space integrated measure (with $\E$ denoting expectation):
+These two notions together motivates the space integrated measure (where $\E$ denotes the expectation operator):
 \begin{align}
 %     d_{0,\infty}(\vf, \vg; \initDist)
 % 	&\coloneq \sup_{\vx \in \initDist(\vx)}
@@ -392,7 +392,7 @@ These two notions together motivates the space integrated measure (with $\E$ den
 %     \\
     \bar{d}_{0}(\vf, \vg; \initDist)
 	&\coloneq
-	    \E_{\vx \in \initDist(\vx)}
+	    \E_{\vx \sim \initDist(\vx)}
 		d_0(\vf(\vx), \vg(\vx)).
 	\label{eq:ed0}
 \end{align}
