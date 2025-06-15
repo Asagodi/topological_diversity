@@ -216,7 +216,7 @@ A further abstraction, now widely adopted, is to focus on their long-term or asy
 These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible}, offering simple and intuitive explanations for otherwise high-dimensional dynamics~\citep{vyas2020ctd,versteeg2025computation}.
 Yet, this abstraction of the mechanism is often based on confusing the effective and asymptotic behaviors of the ODE implementation, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
 %While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
-We need to conceptually separate the ODEs and their interpretable discrete abstraction, while making their connection precise through quantification of similarity in terms of their effective behavior at finite time scales.
+We need to conceptually separate the ODEs and their interpretable discrete abstraction, while making their connection precise through quantification of similarity in terms of their effective behavior at finite time scales (Fig.~\ref{fig:pareto}A).
 
 %Understanding the relationship between neural activity and behavior is a fundamental question in neuroscience.
 %Understanding neural computation requires more than capturing the details of neural dynamics; it necessitates the development of conceptual models that simplify and abstract the complexity of these processes into forms that are humanly interpretable.
@@ -461,10 +461,10 @@ Thus, for small perturbation, the deviation of trajectories is also small for a 
     \left(\sup_\vs \norm{\vDelta(\vs)}\right) \frac{1}{L^2} e^{LT_{\text{max}}}.
 \end{align}
 
-Now, let us consider the sharing the burden of distortion by using the best diffeomorphism using \eqref{eq:ed1}.
+Now, let us consider the burden of distortion by using the best diffeomorphism that minimizes \eqref{eq:ed1}.
 %Mapping the asymptotic structure of the two systems to align is a preferable distortion, however, 
 Since diffeomorphisms cannot change the topological conjugacy class, we need the perturbation to take into account the slack if they are not conjugate.
-Therefore, we first consider the minimum perturbation to achieve topological conjugacy.
+Therefore, we first consider the minimum perturbation to achieve topological conjugacy (on the support of $\mu$).
 \begin{align}
     \vDelta_1(\vx) &= \argmin \norm{\tilde \vDelta}
     \label{eq:d1:min}
@@ -506,7 +506,7 @@ We assume an Ansatz for the diffeomorphism, under the assumption that it is clos
 \end{align}
 Note that from \eqref{eq:h:ansatz}, we have
 \begin{align}
-    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2).
+    \nabla\homeo(\vx) &= \identity + \epsilon\nabla\tilde\homeo(\vx) + O(\epsilon^2).
 \end{align}
 Using first-order expansion of $\vf$, we have (see Supp.~Sec.~\ref{sec:fojac} for the derivation):
 \begin{align}
@@ -553,7 +553,7 @@ Note that this form matches \eqref{eq:dcomplexity} if translation is considered 
 Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of the two complexity measures of the diffeomorphism can be traded off with the perturbation.
 Therefore, we define the smallest perturbation needed to compensate for the suboptimal diffeomorphism with a given complexity:
 \begin{align}
-    \vDelta_2(\vx ; c) = \inf_{\dcomplexity{\vh} = c}
+    \vDelta_2(\vx ; c) = \inf_{\dcomplexity{\homeo} = c}
 	\nabla\homeo(\invhomeo(\vy)) \vf(\invhomeo(\vy))
 	- \vf(\vx) - \vDelta_1(\vx).
 \end{align}
@@ -575,7 +575,7 @@ Thus, the smallest perturbation for a given the complexity of the diffeomorphism
 	&\qquad\text{remaining additive gap}
 \end{align}
 
-Figure~\ref{fig:pareto} illustrates the interaction between the two distortion measures---we want the simplest diffeomorphism and the smallest perturbation, forming a Pareto frontier for the optimal deformation.
+Figure~\ref{fig:pareto}B illustrates the interaction between the two distortion measures---we want the simplest diffeomorphism and the smallest perturbation, forming a Pareto frontier for the optimal deformation.
 Point \textbf{a} represents the case explaining the full distortion solely using perturbation.
 Point \textbf{c} represents only using the perturbation to explain the imperfection that cannot be captured by any diffeomorphism.
 Point \textbf{b} represents a trade-off where the best diffeomorphism for the given complexity constraint creating additional gap for the perturbation.
@@ -1965,14 +1965,14 @@ That is, we seek to find $\vDelta(\vx)$ that maintains the topological conjugacy
 where $\epsilon > 0$.
 
 We assume an Ansatz for the diffeomorphism, under the assumption that it is close to identity:
-\begin{align}\label{eq:h:ansatz}
+\begin{align}\label{eq:appendix:h:ansatz}
     \vy &= \homeo(\vx) = \vx + \epsilon \tilde\homeo(\vx) + O(\epsilon^2).
 \end{align}
-Note that from \eqref{eq:h:ansatz}, we have
+Note that from \eqref{eq:appendix:h:ansatz}, we have
 \begin{align}
-    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2).
+    \nabla\homeo(\vx) &= \identity + \epsilon\nabla\tilde\homeo(\vx) + O(\epsilon^2).
 \end{align}
-By taking the time derivative of \eqref{eq:h:ansatz}, we get
+By taking the time derivative of \eqref{eq:appendix:h:ansatz}, we get
 \begin{align}
     \dot{\vy} &= \dot{\vx} + \epsilon \nabla\tilde\homeo(\vx)\dot{\vx} + O(\epsilon^2)
     \\
