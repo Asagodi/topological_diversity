@@ -216,7 +216,7 @@ A further abstraction, now widely adopted, is to focus on their long-term or asy
 These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible}, offering simple and intuitive explanations for otherwise high-dimensional dynamics~\citep{vyas2020ctd,versteeg2025computation}.
 Yet, this abstraction of the mechanism is often based on confusing the effective and asymptotic behaviors of the ODE implementation, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
 %While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
-We need to conceptually separate the ODEs and their interpretable discrete abstraction, while making their connection precise through quantification of similarity in terms of their effective behavior at the finite time scales.
+We need to conceptually separate the ODEs and their interpretable discrete abstraction, while making their connection precise through quantification of similarity in terms of their effective behavior at finite time scales.
 
 %Understanding the relationship between neural activity and behavior is a fundamental question in neuroscience.
 %Understanding neural computation requires more than capturing the details of neural dynamics; it necessitates the development of conceptual models that simplify and abstract the complexity of these processes into forms that are humanly interpretable.
@@ -277,7 +277,7 @@ Topological conjugacy defines an equivalence relation.
 %Furthermore, if the map is differentiable, we have a diffeomorphism.
 
 There are two major advantages of this abstraction:
-(1) It is implementation agnostic. For example, an insect neural circuit with 8 neurons can be topologically conjugate to an artificial neural network model where the time scale and the biophysical details are wrong.
+(1) It is implementation agnostic. For example, an insect neural circuit with 8 neurons can be topologically conjugate to an artificial neural network model where the time scale and the biophysical details may be inaccurate.
 (2) It promotes interpretability.
 It naturally emphasizes the use of attractor dynamics since they are asymptotically defined and preserved.
 For neural computation, this means that only a finite collection of attractors remains to be analyzed.
@@ -303,8 +303,8 @@ does not break the topological conjugacy, then the unperturbed system is said to
 % where $\Phi(\cdot)$ is a point nonlinearity and $\nabla_W$ denotes the Jacobian respect to $W$.
 Since physical and numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of unease. % since Andronov and Pontryagin 1937) who advised to only work with structurally stable systems.
 Unfortunately, several of the key asymptotic attractor structures that are very useful in expressing interpretable neural computation are not robust to vector field or synaptic weight perturbations, thus structurally unstable.
-A notorious example is the continuous attractor dynamics~\citep{Sagodi2024a}.
-Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, we cannot avoid the issue of structurally unstable neural computations~\citep{Park2023a}.
+A notorious example is the continuous attractor (e.g., line attractor) dynamics~\citep{Sagodi2024a}.
+Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, structurally unstable neural computations are bound to bifurcate away~\citep{Park2023a}.
 %Even structurally stable dynamics are known to go through bifurcations--breaking of topological conjugacy--during learning and necessarily so if the final dynamical system is not conjugate to the initial system~\citep{Doya1993-tz}.
 
 %
@@ -318,7 +318,7 @@ Given that the biological neural systems are constantly fluctuating and both bio
 %geometry
 A variety of methods compare the geometry of neural representations in latent spaces, including Representational Similarity Analysis (RSA) \citep{kriegeskorte2008representational}, Canonical Correlation Analysis (CCA) \citep{raghu2017svcca}, Procrustes Shape Distance \citep{williams2021generalized}, and Stochastic Shape Distance (SSD), a probabilistic extension of Procrustes analysis \citep{duong2022representational, barbosa2025quantifying}; see also \citep{williams2024equivalence} for a broader comparison of such techniques.
 A recently proposed method, Dynamical Similarity Analysis (DSA), quantifies similarity between dynamical systems by comparing their local linearizations obtained through Dynamic Mode Decomposition (DMD) \citep{ostrow2024beyond}, thereby extending representational comparison beyond static geometry to include dynamics.
-DSA constructs a high-dimensional embedding in which a nonlinear system is approximated by a linear vector field, capturing spatiotemporally coherent structure through so-called Koopman modes. 
+DSA constructs a high-dimensional embedding in which a nonlinear system is approximated by a linear vector field, capturing spatiotemporally coherent structure through so-called (truncated) Koopman modes. 
 %To compare systems, DSA learns a linear coordinate transformation that maximizes the cosine similarity between the vector fields of their respective linear time-invariant approximations.
 %comments:
 When the linearization faithfully captures the underlying Koopman eigenspectrum, this provides an estimate of how close the systems are to being topologically conjugate. 
@@ -329,7 +329,7 @@ However, the reliance on spectral truncation can obscure critical nonlinear feat
 Recent work has introduced several approaches for comparing or extracting structure from dynamical systems.
 Time-Warp-Attend (TWA) was proposed to extract topologically invariant features by augmenting data with time-warped versions of the underlying vector field \citep{moriel2024timewarpattend}. DFORM uses invertible residual networks to learn orbit-matching coordinate transformations between systems, allowing comparisons across learned dynamical models \citep{chen2024dform}. % However, its orbital similarity loss (Eq.~5) serves only as a noisy proxy for topological equivalence.
 Smooth Prototype Equivalences (SPE) aims to recover a diffeomorphism from observed data to known normal forms \citep{friedman2025characterizing}, but it has only been demonstrated on a narrow class of dynamics—specifically, comparisons between limit cycles and fixed points.
-A key limitation of all these methods is their reliance on explicit vector field representations, rather than working directly with observed trajectories.
+A key limitation of all these methods is their reliance on \emph{explicit vector field representations}, rather than working directly with observed trajectories.
 This restricts their applicability in data-driven settings where only trajectory data is available and the vector field is unknown or intractable to estimate.
 
 %\ascomment{Comparing noisy neural population dynamics with optimal transport: metric is an extension of Procrustes shape distance which compares average trajectories and SSD which compares marginal statistics or noise correlations\citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.}
