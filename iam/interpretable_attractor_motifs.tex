@@ -1174,7 +1174,7 @@ For both deformation types, the location of the invariant manifold is accurately
     \includegraphics[width=0.9\linewidth]{dsa_spe}
     \caption{We compare our method to the state-of-the-art methods DSA\citep{ostrow2024beyond} and SPE\citep{friedman2025characterizing}.
       (\textbf{A}) The similarity score derived from the DSA score (1-normalized DSA score, the larges square in each row has similarity 1) for the different archetypes compared with themselves, both for the ODE and SDE versions.
-        (\textbf{B}) DSA does not detect the approximate ring attractor to ring attractor archetype, nor the oscillator to limit cycle archetype correspondence.
+        (\textbf{B}) DSA does not clearly detect the approximate ring attractor to ring attractor archetype, nor the oscillator to limit cycle archetype correspondence.
 \textbf{(C)} Applying SPE to a diffeomorphically deformed ring attractor (Fig.~\ref{fig:ring_pert_fig}A) results in inaccurate dynamics and a distorted invariant manifold.  
 \textbf{(D)} SPE similarly fails on a ring attractor with an additive vector field deformation (Fig.~\ref{fig:ring_pert_fig}C), producing incorrect dynamics and a degenerate manifold structure.
     }
@@ -1235,13 +1235,14 @@ Alternatively, it is also possible that our parametrization of the diffeomorphis
 \section{Discussion}
 As Popper put it, ``Science may be described as the art of systematic over-simplification -- the art of discerning what we may with advantage omit''~\citep{Popper1988}.
 We propose to omit details between systems in the asymptotic time scale by characterizing the effective behavior of a neural system.
-Although we have only analyzed working memory, the approach can be extended to input-driven, or even embodied systems that interact with an environment.
+Although we have only analyzed autonomous computation (e.g., working memory) which forms the backbone for temporally extended computation, the approach can be extended to input-driven, or even embodied systems that interact with an environment.
 
-The space of theories for neural computation corresponds to the space of possible autonomous dynamical systems the brain might instantiate--a vast landscape.
-Our method provides a means to chart regions of this space relevant for working memory maintenance by identifying and parametrizing recurrent computations in a human-interpretable way.
+The space of theories for neural computation corresponds to the space of possible dynamical systems the brain might instantiate---a vast landscape.
+We linked the similarity of behavior in finite time with the deformation in the vector field (perturbation) and geometry (diffeomorphism).
+DAA provides a means to chart regions of this space relevant for working memory maintenance by identifying and parametrizing recurrent computations in a human-interpretable way.
 
 \textbf{Limitations:}
-Compared to state-of-the-art methods, our approach is computationally more demanding, due to the requirement for learning the nonlinear diffeomorphism, however, this comes with better performance as well as interpretability.
+Compared to the state-of-the-art methods, our approach is computationally more demanding, due to the requirement for learning the nonlinear diffeomorphism, however, this comes with better identification accuracy as well as interpretability.
 Another limitation is that the archetypes are not compositional in the present form, making it difficult to systematically expand the space of neural computation.
 
 %This enables us to isolate families of dynamical motifs that serve as building blocks for memory-related neural dynamics.
