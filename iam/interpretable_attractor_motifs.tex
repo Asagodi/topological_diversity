@@ -406,12 +406,12 @@ We define a dissimilarity
 \begin{align}\label{eq:ed1}
     \bar{d}_1(\vf(\vx), \vg(\vx); \homeo)
 	&\coloneq 
-	    \E_{\vx \in \initDist(\vx)}
+	    \E_{\vx \sim \initDist(\vx)}
 		\int
 		    \norm{\phi_{\vf}^t(\vx) - \homeo(\phi_{\vg}^t(\vx))}
-		\dm{t},
+		\,\dm{t},
 \end{align}
-which is non-negative but non-symmetric in general.
+which is non-negative, $0$ when topologically conjugate on the support of $\mu$, but not symmetric in general.
 If a more complicated deformation is needed to minimize \eqref{eq:ed1}, it is natural to consider its effective behavior less similar\footnote{
 We are relaxing the dichotomic nature of the topological conjugacy.
 }.
@@ -423,16 +423,16 @@ We define  $\dcomplexity: (\inputSpace \to \inputSpace) \to \posReals$ to be a m
     %\left(
 	 \norm{\nabla\homeo(\vx) - \identity} % + c_b \norm{\homeo(\vx) - \vx}
 %	\right)
-    \dm{\vx}.
+    \,\dm{\vx}.
 \end{align}
 %for some $c_a, c_b > 0$.
 %
 %\subsection{Trade-off between perturbation and deformation}
-We have arrived at a vector-valued dissimilarity between systems:
+We have arrived at a multi-valued dissimilarity between systems:
 two systems are similar if,
 (a) a small distance in the trajectories after a continuous coordinate transform~\eqref{eq:ed1},
 and (b) a small complexity continuous coordinate transform~\eqref{eq:dcomplexity}.
-However, for a source-target pair, the two values are \emph{not uniquely determined}.
+However, for a source--target pair, the two values are \emph{not uniquely determined}.
 Below, we analyze the trade-off as a function of complexity.
 
 First, we show that the trajectory distance measures are bounded by perturbation.
@@ -451,10 +451,10 @@ By Gr\"onwall inequality\cite{Howard2025}:
     &\leq
 	e^{Lt} \int_0^{t} e^{-Ls} \norm{\vDelta(s)} \,\mathrm{d}s
     \leq
-	\left(\sup_\vs \norm{\vDelta(\vs)}\right) \frac{1}{L} (e^{Lt} - 1),
+    \left(\sup_{\vs \in (0, T_\text{max})} \norm{\vDelta(\vs)}\right) \frac{1}{L} (e^{Lt} - 1),
 \end{align}
-for any norm $\norm{\cdot}$.
-Thus, for small perturbation, the trajectories are robust for a short time:
+for any norm $\norm{\cdot}$ and $\vDelta(s) \coloneq \vDelta(\phi^s_\vf(\vx))$.
+Thus, for small perturbation, the deviation of trajectories is also small for a short time:
 \begin{align}\label{eq:d0bound}
     \bar{d}_0(\vf, \vf + \vDelta)
     &\leq
