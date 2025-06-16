@@ -216,7 +216,7 @@ A further abstraction, now widely adopted, is to focus on their long-term or asy
 These abstractions have yielded influential models of memory\citep{machens2008ca}, perceptual decision-making\citep{mante2013context}, and task trained recurrent neural networks (RNNs)\citep{driscoll2024flexible}, offering simple and intuitive explanations for otherwise high-dimensional dynamics~\citep{vyas2020ctd,versteeg2025computation}.
 Yet, this abstraction of the mechanism is often based on confusing the effective and asymptotic behaviors of the ODE implementation, neglecting that systems with different asymptotic structures can exhibit indistinguishable behavior over task-relevant time scales.
 %While canonical models aim to distill these computations into minimal motifs \citep{chirimuuta2014minimal}, actual biological neural implementations may vary significantly, motivating the need for flexible yet interpretable abstractions.
-We need to conceptually separate the ODEs and their interpretable discrete abstraction, while making their connection precise through quantification of similarity in terms of their effective behavior at finite time scales.
+We need to conceptually separate the ODEs and their interpretable discrete abstraction, while making their connection precise through quantification of similarity in terms of their effective behavior at finite time scales (Fig.~\ref{fig:pareto}A).
 
 %Understanding the relationship between neural activity and behavior is a fundamental question in neuroscience.
 %Understanding neural computation requires more than capturing the details of neural dynamics; it necessitates the development of conceptual models that simplify and abstract the complexity of these processes into forms that are humanly interpretable.
@@ -277,7 +277,7 @@ Topological conjugacy defines an equivalence relation.
 %Furthermore, if the map is differentiable, we have a diffeomorphism.
 
 There are two major advantages of this abstraction:
-(1) It is implementation agnostic. For example, an insect neural circuit with 8 neurons can be topologically conjugate to an artificial neural network model where the time scale and the biophysical details are wrong.
+(1) It is implementation agnostic. For example, an insect neural circuit with 8 neurons can be topologically conjugate to an artificial neural network model where the time scale and the biophysical details may be inaccurate.
 (2) It promotes interpretability.
 It naturally emphasizes the use of attractor dynamics since they are asymptotically defined and preserved.
 For neural computation, this means that only a finite collection of attractors remains to be analyzed.
@@ -303,8 +303,8 @@ does not break the topological conjugacy, then the unperturbed system is said to
 % where $\Phi(\cdot)$ is a point nonlinearity and $\nabla_W$ denotes the Jacobian respect to $W$.
 Since physical and numerical experiments are not perfect, the structurally unstable dynamical systems have been a big source of unease. % since Andronov and Pontryagin 1937) who advised to only work with structurally stable systems.
 Unfortunately, several of the key asymptotic attractor structures that are very useful in expressing interpretable neural computation are not robust to vector field or synaptic weight perturbations, thus structurally unstable.
-A notorious example is the continuous attractor dynamics~\citep{Sagodi2024a}.
-Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, we cannot avoid the issue of structurally unstable neural computations~\citep{Park2023a}.
+A notorious example is the continuous attractor (e.g., line attractor) dynamics~\citep{Sagodi2024a}.
+Given that the biological neural systems are constantly fluctuating and both biological and artificial networks learn from noisy learning signals, structurally unstable neural computations are bound to bifurcate away~\citep{Park2023a}.
 %Even structurally stable dynamics are known to go through bifurcations--breaking of topological conjugacy--during learning and necessarily so if the final dynamical system is not conjugate to the initial system~\citep{Doya1993-tz}.
 
 %
@@ -318,7 +318,7 @@ Given that the biological neural systems are constantly fluctuating and both bio
 %geometry
 A variety of methods compare the geometry of neural representations in latent spaces, including Representational Similarity Analysis (RSA) \citep{kriegeskorte2008representational}, Canonical Correlation Analysis (CCA) \citep{raghu2017svcca}, Procrustes Shape Distance \citep{williams2021generalized}, and Stochastic Shape Distance (SSD), a probabilistic extension of Procrustes analysis \citep{duong2022representational, barbosa2025quantifying}; see also \citep{williams2024equivalence} for a broader comparison of such techniques.
 A recently proposed method, Dynamical Similarity Analysis (DSA), quantifies similarity between dynamical systems by comparing their local linearizations obtained through Dynamic Mode Decomposition (DMD) \citep{ostrow2024beyond}, thereby extending representational comparison beyond static geometry to include dynamics.
-DSA constructs a high-dimensional embedding in which a nonlinear system is approximated by a linear vector field, capturing spatiotemporally coherent structure through so-called Koopman modes. 
+DSA constructs a high-dimensional embedding in which a nonlinear system is approximated by a linear vector field, capturing spatiotemporally coherent structure through so-called (truncated) Koopman modes. 
 %To compare systems, DSA learns a linear coordinate transformation that maximizes the cosine similarity between the vector fields of their respective linear time-invariant approximations.
 %comments:
 When the linearization faithfully captures the underlying Koopman eigenspectrum, this provides an estimate of how close the systems are to being topologically conjugate. 
@@ -329,7 +329,7 @@ However, the reliance on spectral truncation can obscure critical nonlinear feat
 Recent work has introduced several approaches for comparing or extracting structure from dynamical systems.
 Time-Warp-Attend (TWA) was proposed to extract topologically invariant features by augmenting data with time-warped versions of the underlying vector field \citep{moriel2024timewarpattend}. DFORM uses invertible residual networks to learn orbit-matching coordinate transformations between systems, allowing comparisons across learned dynamical models \citep{chen2024dform}. % However, its orbital similarity loss (Eq.~5) serves only as a noisy proxy for topological equivalence.
 Smooth Prototype Equivalences (SPE) aims to recover a diffeomorphism from observed data to known normal forms \citep{friedman2025characterizing}, but it has only been demonstrated on a narrow class of dynamics—specifically, comparisons between limit cycles and fixed points.
-A key limitation of all these methods is their reliance on explicit vector field representations, rather than working directly with observed trajectories.
+A key limitation of all these methods is their reliance on \emph{explicit vector field representations}, rather than working directly with observed trajectories.
 This restricts their applicability in data-driven settings where only trajectory data is available and the vector field is unknown or intractable to estimate.
 
 %\ascomment{Comparing noisy neural population dynamics with optimal transport: metric is an extension of Procrustes shape distance which compares average trajectories and SSD which compares marginal statistics or noise correlations\citep{nejatbakhsh2024comparing, lipshutz2024disentangling}.}
@@ -362,29 +362,29 @@ The features are embedded into lower-dimensional space through contrastive learn
 
 \section{Effective Behavior Similarity}\label{sec:effective_ds}
 \subsection{Motivation and Measures of Dissimilarity}
-Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior}, but at the same time, represent some groups by their most interpretable member.
-If two systems are equally useful for the same purpose, i.e. implementing a desired neural computation, then we will consider them ``the same''.
+Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior}, and at the same time, to represent some groups by their most interpretable member.
+%If two systems are equally useful for the same purpose, i.e. implementing a desired neural computation, then we will consider them ``the same''.
 What do we mean by effective behavior?
 Both artificial and biological agents perform neural computation in a finite time.
 For example, typical visiomotor behavior or perceptual-decision making tasks are performed within a few hundred milliseconds.
 So if our goal is to understand the information processing capacity at the behaviorally relevant time scales, we should limit our analysis to the interval rather than the mathematically convenient infinite time scale.
-We denote the behavioral time scale as a reasonable duration of time $[0, T_\text{max}]$.
+We capture the behavioral time scale as a reasonable duration of time $[0, T_\text{max}]$.
 %
 This motivates the following time integrated point-wise distance measure:
 For all $\vx \in \inputSpace$ and $t \in [0, T_\text{max}]$,
 \begin{align}
     d_0(\vf(\vx), \vg(\vx))
-	&\coloneq \int_0^{T_{\text{max}}} \norm{\phi_\vf^t(\vx) - \phi_\vg^t(\vx)} \dm{t},
+	&\coloneq \int_0^{T_{\text{max}}} \norm{\phi_\vf^t(\vx) - \phi_\vg^t(\vx)}\, \dm{t},
 \end{align}
 where $\phi_\vf^t(\vx)$ is the solution (trajectory) of $\dot\vx = \vf(\vx)$ with initial condition $\vx$ at time $t$.
 
 We must also restrict our analysis to the relevant portion of the phase space.
 The dynamical system implemented defines a vector field over the entire space but typically most of the space is not utilized during normal operations.
 In fact, neural population data analysis suggests that the trajectories are restricted to a low-dimensional manifold in the context of a ``task'' or  ``computation''.
-Therefore, the distinction between the systems should only be compared at the locations where they are used.
+Therefore, the distinction between the systems should only be compared at the utilized regions of the phase space.
 We denote this natural probability distribution over the points on the phase space as $\initDist(\vx)$.
 %
-These two notions together motivates the space integrated measure (with $\E$ denoting expectation):
+These two notions together motivates the space integrated measure (where $\E$ denotes the expectation operator):
 \begin{align}
 %     d_{0,\infty}(\vf, \vg; \initDist)
 % 	&\coloneq \sup_{\vx \in \initDist(\vx)}
@@ -392,7 +392,7 @@ These two notions together motivates the space integrated measure (with $\E$ den
 %     \\
     \bar{d}_{0}(\vf, \vg; \initDist)
 	&\coloneq
-	    \E_{\vx \in \initDist(\vx)}
+	    \E_{\vx \sim \initDist(\vx)}
 		d_0(\vf(\vx), \vg(\vx)).
 	\label{eq:ed0}
 \end{align}
@@ -406,12 +406,12 @@ We define a dissimilarity
 \begin{align}\label{eq:ed1}
     \bar{d}_1(\vf(\vx), \vg(\vx); \homeo)
 	&\coloneq 
-	    \E_{\vx \in \initDist(\vx)}
+	    \E_{\vx \sim \initDist(\vx)}
 		\int
 		    \norm{\phi_{\vf}^t(\vx) - \homeo(\phi_{\vg}^t(\vx))}
-		\dm{t},
+		\,\dm{t},
 \end{align}
-which is non-negative but non-symmetric in general.
+which is non-negative, $0$ when topologically conjugate on the support of $\mu$, but not symmetric in general.
 If a more complicated deformation is needed to minimize \eqref{eq:ed1}, it is natural to consider its effective behavior less similar\footnote{
 We are relaxing the dichotomic nature of the topological conjugacy.
 }.
@@ -423,16 +423,16 @@ We define  $\dcomplexity: (\inputSpace \to \inputSpace) \to \posReals$ to be a m
     %\left(
 	 \norm{\nabla\homeo(\vx) - \identity} % + c_b \norm{\homeo(\vx) - \vx}
 %	\right)
-    \dm{\vx}.
+    \,\dm{\vx}.
 \end{align}
 %for some $c_a, c_b > 0$.
 %
 %\subsection{Trade-off between perturbation and deformation}
-We have arrived at a vector-valued dissimilarity between systems:
+We have arrived at a multi-valued dissimilarity between systems:
 two systems are similar if,
 (a) a small distance in the trajectories after a continuous coordinate transform~\eqref{eq:ed1},
 and (b) a small complexity continuous coordinate transform~\eqref{eq:dcomplexity}.
-However, for a source-target pair, the two values are \emph{not uniquely determined}.
+However, for a source--target pair, the two values are \emph{not uniquely determined}.
 Below, we analyze the trade-off as a function of complexity.
 
 First, we show that the trajectory distance measures are bounded by perturbation.
@@ -451,20 +451,20 @@ By Gr\"onwall inequality\cite{Howard2025}:
     &\leq
 	e^{Lt} \int_0^{t} e^{-Ls} \norm{\vDelta(s)} \,\mathrm{d}s
     \leq
-	\left(\sup_\vs \norm{\vDelta(\vs)}\right) \frac{1}{L} (e^{Lt} - 1),
+    \left(\sup_{\vs \in (0, T_\text{max})} \norm{\vDelta(\vs)}\right) \frac{1}{L} (e^{Lt} - 1),
 \end{align}
-for any norm $\norm{\cdot}$.
-Thus, for small perturbation, the trajectories are robust for a short time:
+for any norm $\norm{\cdot}$ and $\vDelta(s) \coloneq \vDelta(\phi^s_\vf(\vx))$.
+Thus, for small perturbation, the deviation of trajectories is also small for a short time:
 \begin{align}\label{eq:d0bound}
     \bar{d}_0(\vf, \vf + \vDelta)
     &\leq
     \left(\sup_\vs \norm{\vDelta(\vs)}\right) \frac{1}{L^2} e^{LT_{\text{max}}}.
 \end{align}
 
-Now, let us consider the sharing the burden of distortion by using the best diffeomorphism using \eqref{eq:ed1}.
+Now, let us consider the burden of distortion by using the best diffeomorphism that minimizes \eqref{eq:ed1}.
 %Mapping the asymptotic structure of the two systems to align is a preferable distortion, however, 
 Since diffeomorphisms cannot change the topological conjugacy class, we need the perturbation to take into account the slack if they are not conjugate.
-Therefore, we first consider the minimum perturbation to achieve topological conjugacy.
+Therefore, we first consider the minimum perturbation to achieve topological conjugacy (on the support of $\mu$).
 \begin{align}
     \vDelta_1(\vx) &= \argmin \norm{\tilde \vDelta}
     \label{eq:d1:min}
@@ -506,7 +506,7 @@ We assume an Ansatz for the diffeomorphism, under the assumption that it is clos
 \end{align}
 Note that from \eqref{eq:h:ansatz}, we have
 \begin{align}
-    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2).
+    \nabla\homeo(\vx) &= \identity + \epsilon\nabla\tilde\homeo(\vx) + O(\epsilon^2).
 \end{align}
 Using first-order expansion of $\vf$, we have (see Supp.~Sec.~\ref{sec:fojac} for the derivation):
 \begin{align}
@@ -553,7 +553,7 @@ Note that this form matches \eqref{eq:dcomplexity} if translation is considered 
 Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of the two complexity measures of the diffeomorphism can be traded off with the perturbation.
 Therefore, we define the smallest perturbation needed to compensate for the suboptimal diffeomorphism with a given complexity:
 \begin{align}
-    \vDelta_2(\vx ; c) = \inf_{\dcomplexity{\vh} = c}
+    \vDelta_2(\vx ; c) = \inf_{\dcomplexity{\homeo} = c}
 	\nabla\homeo(\invhomeo(\vy)) \vf(\invhomeo(\vy))
 	- \vf(\vx) - \vDelta_1(\vx).
 \end{align}
@@ -575,7 +575,7 @@ Thus, the smallest perturbation for a given the complexity of the diffeomorphism
 	&\qquad\text{remaining additive gap}
 \end{align}
 
-Figure~\ref{fig:pareto} illustrates the interaction between the two distortion measures---we want the simplest diffeomorphism and the smallest perturbation, forming a Pareto frontier for the optimal deformation.
+Figure~\ref{fig:pareto}B illustrates the interaction between the two distortion measures---we want the simplest diffeomorphism and the smallest perturbation, forming a Pareto frontier for the optimal deformation.
 Point \textbf{a} represents the case explaining the full distortion solely using perturbation.
 Point \textbf{c} represents only using the perturbation to explain the imperfection that cannot be captured by any diffeomorphism.
 Point \textbf{b} represents a trade-off where the best diffeomorphism for the given complexity constraint creating additional gap for the perturbation.
@@ -659,11 +659,15 @@ an estimator for \eqref{eq:ed1}, and thus $\bar{d}_1(\vf, \vg; c = \dcomplexity(
 %%%%%%%%%%%%
 %\section{Dynamical motif matching}
 \section{Dynamical Archetype Analysis}\label{sec:dmm}\label{sec:daa}
-Unlike typical clustering, where prototypes represent central or average examples, archetypes capture extreme, idealized forms that define the outer boundaries of a category. For example, the Platonic solids serve as idealized geometric forms—perfectly symmetrical, regular polyhedra that have long been regarded as the purest spatial shapes. While no physical object ever achieves this perfection, many natural and artificial forms resemble or approximate one of these canonical types. In this sense, Platonic solids function as archetypes: extreme, abstract ideals that help us categorize and interpret the messy, imperfect forms observed in the real world.  In the same way, dynamical archetypes are discrete, canonical systems to which real neural dynamics can be categorized into.
+Unlike typical clustering, where prototypes represent central or average examples, archetypes capture extreme, idealized forms that define the outer boundaries of a category. For example, the Platonic solids serve as idealized geometric forms—perfectly symmetrical, regular polyhedra that have long been regarded as the purest spatial shapes. While no physical object ever achieves this perfection, many natural and artificial forms resemble or approximate one them.
+In this sense, Platonic solids function as archetypes: extreme, abstract ideals that help us categorize and interpret the messy, imperfect forms observed in the real world.  In the same way, dynamical archetypes are discrete, canonical systems to which real neural dynamics can be categorized into.
 
 In neural computation, archetypes include theoretical constructs such as ``standardized'' fixed points, limit cycles, ring attractors, and continuous attractors\citep{sussillo2013blackbox, katz2017fibers, golub2018fixedpointfinder,townley2000existence, pals2024inferring}. These idealized systems encapsulate essential computational roles in their purest and often most analytically tractable forms. For instance, an ideal ring attractor exhibits perfect rotational symmetry, free from distortion or drift. While biological and artificial neural circuits inevitably deviate from such perfection\footnote{They are non-repeating over time even for the same individual due to the ever changing brain\citep{chirimuuta2024brain}.}\citep{panichello2019error}, treating them as deformations of these archetypes offers a powerful interpretive framework.
 
-Constructing a library of dynamical archetypes involves selecting a discrete set of theoretically grounded dynamical structures that cover a space of simple computations. Rather than inferring archetypes directly from data, we define them a priori based on theoretical insights into neural computation. Once established, this library provides a reference vocabulary for analyzing observed dynamics by measuring their dissimilarity or deformation relative to these archetypes.
+Constructing a library of dynamical archetypes involves selecting a discrete set of theoretically grounded dynamical structures that cover a space of simple computations.
+Rather than inferring archetypes directly from data, we define them a priori based on theoretical insights into neural computation.
+Once established, this library serves as a reference vocabulary for analyzing observed dynamics by measuring their dissimilarity or deformation relative to these archetypes.
+We call this approach the \textbf{dynamical archetype analysis} (DAA).
 
 %$\{\vg_i\}_i$
 
@@ -746,12 +750,13 @@ Constructing a library of dynamical archetypes involves selecting a discrete set
 % We use dynamical motifs as the fundamental building blocks of dynamical systems, capturing effective and interpretable behaviors such as approximate continuous attractors.
 % These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
 
+\mpcomment{show where we are going before switching topics so quickly.}
 Recent work has highlighted that task-trained RNNs often implement behavior through combinations of low-dimensional dynamical motifs—recurrent patterns such as fixed points, oscillatory modes, and transient trajectories that correspond to computational subroutines \citep{driscoll2024flexible}.
 These motifs serve as functional building blocks, supporting modular and flexible representations of task demands. 
 In compositional tasks, where behavior can be decomposed into simpler subtasks or reused operations, RNNs learn to combine and recombine such motifs to generalize across task conditions \citep{tafazoli2024building}.
 
 Attractors can be systematically classified by their topological dimension, with the simplest topological spaces serving as fundamental building blocks.
-Trial-averaged neural activity often reflects low-dimensional structure, corresponding to an embedding of the task manifold into firing rate space \citep{gao2015simplicity}.
+Neural activity often reflects low-dimensional structure, corresponding to an embedding of the task manifold into firing rate space \citep{gao2015simplicity}.
 Recent work has shown that task-relevant computations are often constrained to such manifolds \citep{langdon2023unifying,can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor,ghazizadeh2021slowmanifold,duncker2021dynamics, pezon2024linking,fortunato2024nonlinear}.
 %Attractors can be further characterized by both their intrinsic and extrinsic dimensionality \citep{jazayeri2021interpreting,chaudhuri2019attractor,Sagodi2024a}. 
 
@@ -762,6 +767,10 @@ One-dimensional attractors in our library include the \emph{bounded line attract
 %At dimension 2, we find attractors like the plane and cylinder, representing combinations of continuous variables (e.g., two independent integrators, or a position and a phase).
  %More structured 2D attractors include the torus, formed by coupling two ring-like dimensions, and the sphere, a closed surface that supports more global integration or constrained exploration.
 These archetypes serve as building blocks for constructing higher-dimensional attractors via Cartesian products, allowing for complex dynamics to arise from simple, interpretable components (see Supp. Sec.~\ref{sec:composite}).
+
+\mpcomment{Let's put a table of archetype and corresponding theoretical model or example memory manifold structure.}
+
+\mpcomment{Where's the multiple fixed point case?}
 
 \begin{figure}[t!b!hp]
     \centering
@@ -1140,9 +1149,9 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 
 %\subsection{Quantifying the deformation to a ring attractor}\label{sec:imp_ring}
 \subsection{Faithful recovery of deformed ring attractors}\label{sec:imp_ring}
-To evaluate the effectiveness of our motif-based framework, we investigate how deformed ring attractors deviate from the archetypal ring attractor. 
-The dissimilarity measure can account for two types of variation: 
-(i) topological deformations that preserve the qualitative structure via diffeomorphisms, and 
+To evaluate the effectiveness of DAA, we investigate how deformed ring attractors deviate from the archetypal ring attractor.
+The dissimilarity measure can account for two types of variation:
+(i) topological deformations that preserve the qualitative structure via diffeomorphisms, and
 (ii) perturbations that break topological conjugacy, altering the underlying computation.
 %
 %description
@@ -1165,7 +1174,7 @@ For both deformation types, the location of the invariant manifold is accurately
     \includegraphics[width=0.9\linewidth]{dsa_spe}
     \caption{We compare our method to the state-of-the-art methods DSA\citep{ostrow2024beyond} and SPE\citep{friedman2025characterizing}.
       (\textbf{A}) The similarity score derived from the DSA score (1-normalized DSA score, the larges square in each row has similarity 1) for the different archetypes compared with themselves, both for the ODE and SDE versions.
-        (\textbf{B}) DSA does not detect the approximate ring attractor to ring attractor archetype, nor the oscillator to limit cycle archetype correspondence.
+        (\textbf{B}) DSA does not clearly detect the approximate ring attractor to ring attractor archetype, nor the oscillator to limit cycle archetype correspondence.
 \textbf{(C)} Applying SPE to a diffeomorphically deformed ring attractor (Fig.~\ref{fig:ring_pert_fig}A) results in inaccurate dynamics and a distorted invariant manifold.  
 \textbf{(D)} SPE similarly fails on a ring attractor with an additive vector field deformation (Fig.~\ref{fig:ring_pert_fig}C), producing incorrect dynamics and a degenerate manifold structure.
     }
@@ -1177,7 +1186,7 @@ For both deformation types, the location of the invariant manifold is accurately
 We now consider a library consisting of the \emph{ring attractor}, the \emph{limit cycle}, the \emph{single stable fixed point}, the \emph{bistable system} (two stable fixed points), and the \emph{bounded line attractor} (BLA).
 % Can we find the Platonic ideal?
 For a list of target systems, we try to fit the mold of each of the archetypes by fitting a diffeomorphism.
-By comparing the different fits we can infer which of the archetypes is most appropriate to well-capture the effective behavior.
+By comparing the different fits we can infer which of the archetypes best captures the effective behavior.
 We test this by measuring the dissimilarity to our library of motifs to a list of target systems:
 1) Ring attractors (and its diffeomorphism- and additive vector field-deformed and noisy versions),
 2) an RNN trained on a velocity integration task (with a slow ring invariant manifold, see Fig.~\ref{fig:avi_rnn_recttanh}A),
@@ -1226,13 +1235,14 @@ Alternatively, it is also possible that our parametrization of the diffeomorphis
 \section{Discussion}
 As Popper put it, ``Science may be described as the art of systematic over-simplification -- the art of discerning what we may with advantage omit''~\citep{Popper1988}.
 We propose to omit details between systems in the asymptotic time scale by characterizing the effective behavior of a neural system.
-Although we have only analyzed working memory, the approach can be extended to input-driven, or even embodied systems that interact with an environment.
+Although we have only analyzed autonomous computation (e.g., working memory) which forms the backbone for temporally extended computation, the approach can be extended to input-driven, or even embodied systems that interact with an environment.
 
-The space of theories for neural computation corresponds to the space of possible autonomous dynamical systems the brain might instantiate--a vast landscape.
-Our method provides a means to chart regions of this space relevant for working memory maintenance by identifying and parametrizing recurrent computations in a human-interpretable way.
+The space of theories for neural computation corresponds to the space of possible dynamical systems the brain might instantiate---a vast landscape.
+We linked the similarity of behavior in finite time with the deformation in the vector field (perturbation) and geometry (diffeomorphism).
+DAA provides a means to chart regions of this space relevant for working memory maintenance by identifying and parametrizing recurrent computations in a human-interpretable way.
 
 \textbf{Limitations:}
-Compared to state-of-the-art methods, our approach is computationally more demanding, due to the requirement for learning the nonlinear diffeomorphism, however, this comes with better performance as well as interpretability.
+Compared to the state-of-the-art methods, our approach is computationally more demanding, due to the requirement for learning the nonlinear diffeomorphism, however, this comes with better identification accuracy as well as interpretability.
 Another limitation is that the archetypes are not compositional in the present form, making it difficult to systematically expand the space of neural computation.
 
 %This enables us to isolate families of dynamical motifs that serve as building blocks for memory-related neural dynamics.
@@ -1965,14 +1975,14 @@ That is, we seek to find $\vDelta(\vx)$ that maintains the topological conjugacy
 where $\epsilon > 0$.
 
 We assume an Ansatz for the diffeomorphism, under the assumption that it is close to identity:
-\begin{align}\label{eq:h:ansatz}
+\begin{align}\label{eq:appendix:h:ansatz}
     \vy &= \homeo(\vx) = \vx + \epsilon \tilde\homeo(\vx) + O(\epsilon^2).
 \end{align}
-Note that from \eqref{eq:h:ansatz}, we have
+Note that from \eqref{eq:appendix:h:ansatz}, we have
 \begin{align}
-    \nabla\vh(\vx) &= \identity + \epsilon\nabla\tilde\vh(\vx) + O(\epsilon^2).
+    \nabla\homeo(\vx) &= \identity + \epsilon\nabla\tilde\homeo(\vx) + O(\epsilon^2).
 \end{align}
-By taking the time derivative of \eqref{eq:h:ansatz}, we get
+By taking the time derivative of \eqref{eq:appendix:h:ansatz}, we get
 \begin{align}
     \dot{\vy} &= \dot{\vx} + \epsilon \nabla\tilde\homeo(\vx)\dot{\vx} + O(\epsilon^2)
     \\
