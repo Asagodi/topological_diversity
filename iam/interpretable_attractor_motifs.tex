@@ -669,6 +669,8 @@ Rather than inferring archetypes directly from data, we define them a priori bas
 Once established, this library serves as a reference vocabulary for analyzing observed dynamics by measuring their dissimilarity or deformation relative to these archetypes.
 We call this approach the \textbf{dynamical archetype analysis} (DAA).
 
+
+
 %$\{\vg_i\}_i$
 
 %The space of theories for neural computation is vast \citep{koulakov2002robust}.
@@ -750,27 +752,43 @@ We call this approach the \textbf{dynamical archetype analysis} (DAA).
 % We use dynamical motifs as the fundamental building blocks of dynamical systems, capturing effective and interpretable behaviors such as approximate continuous attractors.
 % These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
 
-\mpcomment{show where we are going before switching topics so quickly.}
-Recent work has highlighted that task-trained RNNs often implement behavior through combinations of low-dimensional dynamical motifs—recurrent patterns such as fixed points, oscillatory modes, and transient trajectories that correspond to computational subroutines \citep{driscoll2024flexible}.
-These motifs serve as functional building blocks, supporting modular and flexible representations of task demands. 
-In compositional tasks, where behavior can be decomposed into simpler subtasks or reused operations, RNNs learn to combine and recombine such motifs to generalize across task conditions \citep{tafazoli2024building}.
-
-Attractors can be systematically classified by their topological dimension, with the simplest topological spaces serving as fundamental building blocks.
-Neural activity often reflects low-dimensional structure, corresponding to an embedding of the task manifold into firing rate space \citep{gao2015simplicity}.
-Recent work has shown that task-relevant computations are often constrained to such manifolds \citep{langdon2023unifying,can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor,ghazizadeh2021slowmanifold,duncker2021dynamics, pezon2024linking,fortunato2024nonlinear}.
+%\mpcomment{show where we are going before switching topics so quickly.}
+To make the archetype library interpretable and composable, we organize its elements by the topological dimension of their invariant manifolds. This perspective reflects recent findings that task-trained RNNs often implement behavior through low-dimensional motifs—such as fixed points, limit cycles, and transient flows—that serve as functional subroutines \citep{driscoll2024flexible}. These motifs can be recombined across task conditions to support generalization \citep{tafazoli2024building}, and neural activity frequently lies on low-dimensional task manifolds embedded in state space\citep{langdon2023unifying,can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor,ghazizadeh2021slowmanifold,duncker2021dynamics, pezon2024linking,fortunato2024nonlinear}.
 %Attractors can be further characterized by both their intrinsic and extrinsic dimensionality \citep{jazayeri2021interpreting,chaudhuri2019attractor,Sagodi2024a}. 
 
 Based on these observations, we organize archetypes in a hierarchy based on the topological dimension of their invariant manifold and dynamics on it.
 This classification provides a natural vocabulary for describing the dynamics we observe in neural systems (see Supp.~Sec.~\ref{sec:library}). 
-The lowest-dimensional attractors in our framework are \emph{fixed points}, which correspond to isolated stable states — typical of decision-making or memory models that settle into discrete outcomes.
+The lowest-dimensional attractors in our framework are \emph{fixed points}, which correspond to isolated stable states — typical of decision-making or memory models that settle into discrete outcomes. 
+Here, we consider two archetypes, the \emph{single fixed point} and the \emph{bistable system} (two stable fixed points, see Supp~.Sec.~\ref{sec:bistable}).
 One-dimensional attractors in our library include the \emph{bounded line attractor} for integration tasks, the \emph{ring attractor} for circular variables, and the \emph{limit cycle} for periodic behaviors.
 %At dimension 2, we find attractors like the plane and cylinder, representing combinations of continuous variables (e.g., two independent integrators, or a position and a phase).
  %More structured 2D attractors include the torus, formed by coupling two ring-like dimensions, and the sphere, a closed surface that supports more global integration or constrained exploration.
 These archetypes serve as building blocks for constructing higher-dimensional attractors via Cartesian products, allowing for complex dynamics to arise from simple, interpretable components (see Supp. Sec.~\ref{sec:composite}).
 
-\mpcomment{Let's put a table of archetype and corresponding theoretical model or example memory manifold structure.}
+%\mpcomment{Let's put a table of archetype and corresponding theoretical model or example memory manifold structure.}
 
-\mpcomment{Where's the multiple fixed point case?}
+\begin{table}[h]
+\centering
+\caption{Representative dynamical archetypes organized by dimension of the invariant manifold.}
+\label{tab:archetypes}
+\begin{tabular}{lll}
+\toprule
+\textbf{Dim.} & \textbf{Archetype} & \textbf{Memory manifold structure} \\
+\midrule
+0 & Single fixed point      & Discrete memory, decay to rest state \\
+0 & Bistable system         & Binary decisions, winner-take-all dynamics \\
+\midrule
+1 & Bounded line attractor  & Evidence integration, continuous memory \\
+1 & Ring attractor          & Head direction, orientation, phase coding \\
+1 & Limit cycle             & Rhythmic activity, locomotion, oscillatory behavior \\
+%\midrule
+%2 & Torus                   & Coupled oscillations, grid cells, two phase-like variables \\
+%2 & Sphere                  & Global integration, bounded exploration \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
 
 \begin{figure}[t!b!hp]
     \centering
@@ -2294,7 +2312,7 @@ The dynamics are governed by a polynomial vector field, where the time derivativ
  over all specified roots $r_i$, scaled by $\alpha\in \reals$.
 When $\alpha < 0$, the system exhibits multistability, with stable fixed points at the specified roots.
 
-\subsubsection{Bistable}
+\subsubsection{Bistable}\label{sec:bistable}
 The \emph{Bistable} archetype used in the experiments is defined as
 \begin{equation}
 \dot x = - (x^3 - x).
