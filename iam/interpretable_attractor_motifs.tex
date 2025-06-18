@@ -328,7 +328,7 @@ However, the reliance on spectral truncation can obscure critical nonlinear feat
 %VF
 Recent work has introduced several approaches for comparing or extracting structure from dynamical systems.
 Time-Warp-Attend (TWA) was proposed to extract topologically invariant features by augmenting data with time-warped versions of the underlying vector field \citep{moriel2024timewarpattend}. DFORM uses invertible residual networks to learn orbit-matching coordinate transformations between systems, allowing comparisons across learned dynamical models \citep{chen2024dform}. % However, its orbital similarity loss (Eq.~5) serves only as a noisy proxy for topological equivalence.
-Smooth Prototype Equivalences (SPE) aims to recover a diffeomorphism from observed data to known normal forms \citep{friedman2025characterizing}, but it has only been demonstrated on a narrow class of dynamics—specifically, comparisons between limit cycles and fixed points.
+Smooth Prototype Equivalences (SPE) aims to recover a diffeomorphism from observed data to known normal forms \citep{friedman2025characterizing}, but it has only been demonstrated on a narrow class of dynamics---specifically, comparisons between limit cycles and fixed points.
 A key limitation of all these methods is their reliance on \emph{explicit vector field representations}, rather than working directly with observed trajectories.
 This restricts their applicability in data-driven settings where only trajectory data is available and the vector field is unknown or intractable to estimate.
 
