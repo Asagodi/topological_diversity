@@ -154,7 +154,7 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
         )
     else: 
         diffeo_ds_net, losses, grad_norms = train_homeo_ds_net_batched(
-            diffeo_ds_net=homeo_ds_net,
+            homeo_ds_net=homeo_ds_net,
             trajectories_target=trajectories_target_train,
             **training_params
         )
