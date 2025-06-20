@@ -173,7 +173,13 @@
 %\title{Interpretable attractor motifs for a new language for neural computation}
 %\title{Attractor motifs for an interpretable language for working memory-type neural computation}
 \title{Dynamical Archetype Analysis:\\Autonomous Computation}
-\author{\'Abel S\'agodi and Il Memming Park}
+\author{
+\'Abel S\'agodi\\
+\texttt{abel.sagodi@research.fchampalimaud.org}
+\And
+Il Memming Park\\
+\texttt{memming.park@research.fchampalimaud.org}
+}
 \date{\today}
 
 
@@ -1262,6 +1268,11 @@ DAA provides a means to chart regions of this space relevant for working memory 
 Compared to the state-of-the-art methods, our approach is computationally more demanding, due to the requirement for learning the nonlinear diffeomorphism, however, this comes with better identification accuracy as well as interpretability.
 Another limitation is that the archetypes are not compositional in the present form, making it difficult to systematically expand the space of neural computation.
 
+
+\section*{Acknowledgements}
+This research was conducted while visiting the Okinawa Institute of Science and Technology
+(OIST) through the Theoretical Sciences Visiting Program (TSVP).
+
 %This enables us to isolate families of dynamical motifs that serve as building blocks for memory-related neural dynamics.
 %It accommodates both infinite-horizon systems and finite-horizon systems like echo state networks, highlighting that time-limited trajectories may obscure deeper structural distinctions only visible in the full vector field.
 
@@ -1293,10 +1304,9 @@ Another limitation is that the archetypes are not compositional in the present f
 \bibliography{../all_ref.bib,../catniplab.bib}
 
 
-
-
-
-
+\makeatletter
+\if@submission
+\makeatother
 \newpage
 \section*{NeurIPS Paper Checklist}
 %
@@ -1549,6 +1559,7 @@ Another limitation is that the archetypes are not compositional in the present f
     \end{itemize}
 
 \end{enumerate}
+\fi
 
 \newpage
 \appendix
