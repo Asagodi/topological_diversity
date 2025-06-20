@@ -1062,6 +1062,63 @@ class AnalyticalBistableSystem(AnalyticDynamicalSystem):
             inv_man[0, 0] = -1.0
             inv_man[1, 0] = 1.0
             return inv_man
+        
+
+class AnalyticalProdBistableSystem(AnalyticDynamicalSystem):
+    """
+    Computes the trajectory of the multivariate bistable system defined by the Cartesian product of
+    independent 1D bistable dynamics:
+        \dot{x}_i = α (x_i - x_i^3)   for i = 1,...,dim
+    Each coordinate evolves independently according to the analytical solution.
+    """
+    def __init__(self, dim: int, alpha_init: float = -1.0, dt: float = 0.05, time_span: Tuple[float, float] = (0, 5)):
+        super().__init__(dt=dt, time_span=time_span)
+        self.dim = dim
+        self.alpha = nn.Parameter(torch.tensor(alpha_init, dtype=torch.float32))
+
+    def compute_trajectory(
+        self, initial_position: torch.Tensor, time_span: Optional[Tuple[float, float]] = None
+    ) -> torch.Tensor:
+        """
+        Computes the analytical trajectory for each dimension independently:
+        x(t) = sign(x₀) * sqrt( (x₀² * e^{-2αt}) / ((1 - x₀²) + x₀² * e^{-2αt}) )
+        :param initial_position: Tensor of shape (B, D)
+        :param time_span: Optional (start_time, end_time)
+        :return: Tensor of shape (B, T, D)
+        """
+        if time_span is None:
+            time_span = self.time_span
+
+        device = initial_position.device
+        t_start, t_end = time_span
+        t_values = torch.arange(t_start, t_end, self.dt, device=device)  # (T,)
+        T = len(t_values)
+
+        alpha = self.alpha
+        x0 = initial_position  # (B, D)
+        B, D = x0.shape
+        assert D == self.dim, f"Expected input with dim={self.dim}, got dim={D}"
+
+        # Prepare constants
+        x0_sq = x0**2  # (B, D)
+        denom_const = 1 - x0_sq  # (B, D)
+        exp_term = torch.exp(-2 * alpha * t_values).view(1, T, 1)  # (1, T, 1)
+
+        num = x0_sq.unsqueeze(1) * exp_term  # (B, T, D)
+        denom = denom_const.unsqueeze(1) + num  # (B, T, D)
+        traj = x0.sign().unsqueeze(1) * torch.sqrt(num / denom)  # (B, T, D)
+
+        return traj
+
+    def invariant_manifold(self, num_points=100) -> torch.Tensor:
+        """
+        For a Cartesian product of bistable systems, the invariant manifold is the set of all 2^D
+        stable fixed points in {−1, 1}^D.
+        """
+        grid = torch.tensor([-1.0, 1.0], dtype=torch.float32)
+        product = torch.cartesian_prod(*[grid for _ in range(self.dim)])  # (2^D, D)
+        return product
+
 
 class AnalyticalLimitCycle(AnalyticDynamicalSystem):
     """
@@ -1577,13 +1634,17 @@ def build_ds_motif(
         dims = [bi_sys.dim, la.dim]
         composite_system = LearnableCompositeSystem(systems=systems,dims=dims,dt=dt,time_span=time_span)
         return composite_system
-    if ds_motif == "4fps" and not analytic:
-        bi_sys1 = LearnableNDBistableSystem(dim=1, dt=dt, time_span=time_span) 
-        bi_sys2 = LearnableNDBistableSystem(dim=1, dt=dt, time_span=time_span)
-        systems = [bi_sys1, bi_sys2]
-        dims = [bi_sys1.dim, bi_sys2.dim]
-        composite_system = LearnableCompositeSystem(systems=systems,dims=dims,dt=dt,time_span=time_span)
-        return composite_system
+    if ds_motif == "4fps":
+        if analytic:
+            system = AnalyticalProdBistableSystem(dim=2, dt=dt, time_span=time_span) 
+            return system
+        else:
+            bi_sys1 = LearnableNDBistableSystem(dim=1, dt=dt, time_span=time_span) 
+            bi_sys2 = LearnableNDBistableSystem(dim=1, dt=dt, time_span=time_span)
+            systems = [bi_sys1, bi_sys2]
+            dims = [bi_sys1.dim, bi_sys2.dim]
+            composite_system = LearnableCompositeSystem(systems=systems,dims=dims,dt=dt,time_span=time_span)
+            return composite_system
     if ds_motif == "torus_attractor" and not analytic:
         # Define torus attractor as composite of two ring attractors
         ra1 = LearnableNDRingAttractor(
