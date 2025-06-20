@@ -101,7 +101,10 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
     tsteps = trajectories_target.shape[1]
     B = trajectories_target.shape[0]
     dt = maxT / tsteps
-    time_span = torch.tensor([0.0, maxT])
+    if analytic:
+        time_span = torch.tensor([0.0, maxT])
+    else:
+        time_span = torch.tensor([0.0, maxT-dt])
     if training_pairs:
         time_span = torch.tensor([0.0, dt])
     
