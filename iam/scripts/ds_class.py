@@ -9,7 +9,7 @@ import inspect
 import warnings
 import itertools
 
-from .utils import set_seed
+from scripts.utils import set_seed
 
 class TrainablePeriodicFunction(nn.Module):
     """Implements a periodic function."""
@@ -1479,7 +1479,7 @@ class AnalyticalBoundedContinuousAttractor(AnalyticDynamicalSystem):
 
 #### Dynamical system motif construction function
 def build_ds_motif(
-    ds_motif: Literal["lds", "bla", "ring", "lc", "bistable", "bibla", "sphere", "cylinder", "torus_attractor", "torus_lc"],
+    ds_motif: Literal["lds", "bla", "ring", "lc", "bistable", "bibla", "sphere", "cylinder", "torus_attractor", "torus_lc", "4fps"],
     dim: int,
     time_span: tuple[float, float],
     dt: Optional[float] = None,
@@ -1530,6 +1530,10 @@ def build_ds_motif(
             True: None,  # Add analytical system if applicable
             False: None,
         },
+        '4fps': {
+            True: None,  # Add analytical system if applicable
+            False: LearnableCompositeSystem,  # Keep for learnable version
+        },
         'sphere': {
             True: AnalyticalSphereAttractor,
             False: LearnableSphereAttractor,
@@ -1571,6 +1575,13 @@ def build_ds_motif(
         la = LearnableBoundedContinuousAttractor(dim=1,bca_dim=1,dt=dt,time_span=time_span)
         systems = [bi_sys, la]
         dims = [bi_sys.dim, la.dim]
+        composite_system = LearnableCompositeSystem(systems=systems,dims=dims,dt=dt,time_span=time_span)
+        return composite_system
+    if ds_motif == "4fps" and not analytic:
+        bi_sys1 = LearnableNDBistableSystem(dim=1, dt=dt, time_span=time_span) 
+        bi_sys2 = LearnableNDBistableSystem(dim=1, dt=dt, time_span=time_span)
+        systems = [bi_sys1, bi_sys2]
+        dims = [bi_sys1.dim, bi_sys2.dim]
         composite_system = LearnableCompositeSystem(systems=systems,dims=dims,dt=dt,time_span=time_span)
         return composite_system
     if ds_motif == "torus_attractor" and not analytic:
