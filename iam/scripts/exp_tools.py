@@ -68,7 +68,8 @@ def evaluate_homeo_ds_net(
 
     inv_man = homeo_ds_net.invariant_manifold(manifold_points).detach().cpu().numpy()
 
-    jac_fro, jac_spec = compute_jacobian_norms(homeo_ds_net.homeo_network, traj_trans, dim, quick_jac)
+    node_module = getattr(homeo_ds_net.homeo_network, 'node', homeo_ds_net.homeo_network)
+    jac_fro, jac_spec = compute_jacobian_norms(node_module, traj_trans, dim, quick_jac)
 
     return (
         training_loss,
@@ -87,7 +88,7 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
                   alpha_init=None, velocity_init=None, vf_on_ring_enabled=False,
                   homeo_type='node', layer_sizes=1*[64], quick_jac=False, rescale_trajs=False,
                   train_ratio=0.8, training_pairs=False, homeo_init_type="small",
-                  homeo_init_std=1e-4, load_hdsnet_path=None,
+                  homeo_init_std=1e-4, load_hdsnet_path=None, batch_size=0,
                   lr=0.01, num_epochs=200, jac_lambda_reg=0., 
                   random_seed=313, two_phase=True):
     
@@ -112,7 +113,7 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
                     'activation': nn.ReLU, 'init_type': homeo_init_type, 'init_std': homeo_init_std}
     annealing_params = {'dynamic': False, 'initial_std': .0, 'final_std': 0.}
     training_params = {'lr': lr, 'num_epochs': num_epochs, 'annealing_params': annealing_params,
-                       'early_stopping_patience': 1000, "batch_size": 32,
+                       'early_stopping_patience': 1000, "batch_size": batch_size,
                        'use_inverse_formulation': True, 'jac_lambda_reg': jac_lambda_reg}
     all_parameters = {'homeo_params': homeo_params, 'training_params': training_params, "ds_params": ds_params}
     with open(f"{save_dir}/parameters_{target_name}.pkl", "wb") as f:
@@ -128,9 +129,10 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
     set_seed(random_seed)
     homeo = build_homeomorphism(homeo_params)
     source_system = build_ds_motif(**ds_params)
+    homeo_ds_net = Homeo_DS_Net(homeo, source_system).to(device)
+
     if load_hdsnet_path is not None:
         homeo_ds_net = load_diffeo_ds_net_compact(load_hdsnet_path)
-    homeo_ds_net = Homeo_DS_Net(homeo, source_system).to(device)
 
     # Before training diagnostics
     save_diffeo_ds_net_compact(homeo_ds_net, f"{save_dir}/homeo_{target_name}_untrained.pth", {"homeo_params": homeo_params, "ds_params": ds_params})
@@ -147,6 +149,12 @@ def run_on_target(target_name, save_dir, data_dir, ds_motif='ring', analytic=Fal
     if two_phase:
         diffeo_ds_net, losses, grad_norms = train_diffeo_ds_net_batched_alternating(
             diffeo_ds_net=homeo_ds_net,  
+            trajectories_target=trajectories_target_train,
+            **training_params
+        )
+    else: 
+        diffeo_ds_net, losses, grad_norms = train_homeo_ds_net_batched(
+            homeo_ds_net=homeo_ds_net,
             trajectories_target=trajectories_target_train,
             **training_params
         )

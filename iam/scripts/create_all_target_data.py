@@ -6,12 +6,12 @@ import torch.optim as optim
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 import time, os, pickle
 import numpy as np
-from utils import set_seed
-from ds_class import *
-from homeos import *
-from plotting import *
-from time_series import *
-from ra import *
+from .utils import set_seed
+from .ds_class import *
+from .homeos import *
+from .plotting import *
+from .time_series import *
+from .ra import *
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
