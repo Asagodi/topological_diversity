@@ -1,17 +1,16 @@
 \documentclass{article}
 %\usepackage{arxiv}
 \usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2025
-\usepackage[]{neurips_2025}
+\usepackage[preprint]{neurips_2025}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{amssymb, amsmath, amsthm, amsfonts}
 \usepackage{thmtools, mathtools, mathrsfs, dsfont}
 \usepackage{bbm}
 %\usepackage{bbold} %for mathbb{1}
+\usepackage{bm} % bold greek
 \usepackage{forloop}
 \usepackage[pdftex]{graphicx}  %remove demo option in your document
-\usepackage{sidecap}
-\usepackage{subcaption} % subfigures
 \usepackage{placeins}      %forcing figure placement
 \usepackage{booktabs}
 \usepackage{multirow}
@@ -29,9 +28,7 @@
 \usetikzlibrary{positioning}
 \usepackage{tikz-cd}
 
-\usepackage{bm} % bold greek
-
-%for comments
+% for comments
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
 \definecolor{ascolor}{rgb}{1, 0.5, 0.}
@@ -39,7 +36,6 @@
 \newcommand{\ascomment}[1]{\textcolor{ascolor}{(#1)}}
 
 \graphicspath{{figures/}{figures/all_targets}{figures/all_sources}}
-
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
@@ -62,7 +58,6 @@
     \edef\letter{\alph{ct}}
     \expandafter\defvec\letter
 }
-
 % captial \vA
 \forLoop{1}{26}{ct}{
     \edef\letter{\Alph{ct}}
@@ -174,15 +169,11 @@
 %\title{Attractor motifs for an interpretable language for working memory-type neural computation}
 \title{Dynamical Archetype Analysis:\\Autonomous Computation}
 \author{
-\'Abel S\'agodi\\
-\texttt{abel.sagodi@research.fchampalimaud.org}
-\And
-Il Memming Park\\
-\texttt{memming.park@research.fchampalimaud.org}
+\'Abel S\'agodi, Il Memming Park\\
+    Champalimaud Centre for the Unknown\\
+    Champalimaud Foundation, Lisbon, Portugal\\
+    \texttt{\{abel.sagodi,memming.park\}@research.fchampalimaud.org} \\
 }
-\date{\today}
-
-
 
 \begin{document}
 \maketitle
@@ -1270,8 +1261,8 @@ Another limitation is that the archetypes are not compositional in the present f
 
 
 \section*{Acknowledgements}
-This research was conducted while visiting the Okinawa Institute of Science and Technology
-(OIST) through the Theoretical Sciences Visiting Program (TSVP).
+This project was supported by the Champalimaud Foundation and the Portuguese Recovery and Resilience Plan (PPR), through project number 62, Center for Responsible AI, and the Portuguese national funds, through FCT - Fundação para a Ciência e a Tecnologia - in the context of the project UIDB/04443/2020.
+Part of this research was conducted while IMP was visiting the Okinawa Institute of Science and Technology (OIST) through the Theoretical Sciences Visiting Program (TSVP).
 
 %This enables us to isolate families of dynamical motifs that serve as building blocks for memory-related neural dynamics.
 %It accommodates both infinite-horizon systems and finite-horizon systems like echo state networks, highlighting that time-limited trajectories may obscure deeper structural distinctions only visible in the full vector field.
