@@ -1259,10 +1259,14 @@ DAA provides a means to chart regions of this space relevant for working memory 
 Compared to the state-of-the-art methods, our approach is computationally more demanding, due to the requirement for learning the nonlinear diffeomorphism, however, this comes with better identification accuracy as well as interpretability.
 Another limitation is that the archetypes are not compositional in the present form, making it difficult to systematically expand the space of neural computation.
 
-
+\makeatletter
+\if@submission
+\makeatother
+\else
 \section*{Acknowledgements}
 This project was supported by the Champalimaud Foundation and the Portuguese Recovery and Resilience Plan (PPR), through project number 62, Center for Responsible AI, and the Portuguese national funds, through FCT - Fundação para a Ciência e a Tecnologia - in the context of the project UIDB/04443/2020.
 Part of this research was conducted while IMP was visiting the Okinawa Institute of Science and Technology (OIST) through the Theoretical Sciences Visiting Program (TSVP).
+\fi
 
 %This enables us to isolate families of dynamical motifs that serve as building blocks for memory-related neural dynamics.
 %It accommodates both infinite-horizon systems and finite-horizon systems like echo state networks, highlighting that time-limited trajectories may obscure deeper structural distinctions only visible in the full vector field.
