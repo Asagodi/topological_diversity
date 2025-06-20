@@ -345,8 +345,8 @@ def train_diffeo_ds_net_batched_alternating(
             x_aug = torch.cat([x, torch.ones(x.shape[0], 1, device=x.device)], dim=1)  # (B*T, d+1)
 
             # Solve (XᵗX)⁻¹XᵗY
-            XtX = x_aug.T @ x_aug
-            XtY = x_aug.T @ y
+            # XtX = x_aug.T @ x_aug
+            # XtY = x_aug.T @ y
             theta = torch.linalg.lstsq(x_aug, y).solution
             #theta = torch.linalg.lstsq(XtX, XtY).solution
 
