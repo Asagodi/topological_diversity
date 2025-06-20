@@ -172,7 +172,7 @@
 \'Abel S\'agodi, Il Memming Park\\
     Champalimaud Centre for the Unknown\\
     Champalimaud Foundation, Lisbon, Portugal\\
-    \texttt{\{abel.sagodi,memming.park\}@research.fchampalimaud.org} \\
+    \texttt{\{abel.sagodi, memming.park\}@research.fchampalimaud.org} \\
 }
 
 \begin{document}
@@ -359,11 +359,13 @@ The features are embedded into lower-dimensional space through contrastive learn
 
 \section{Effective Behavior Similarity}\label{sec:effective_ds}
 \subsection{Motivation and Measures of Dissimilarity}
-Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior}, and at the same time, to represent some groups by their most interpretable member.
+Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior, not the qualitative behavior}.
+%At the same time, to represent some groups by their most interpretable member.
 %If two systems are equally useful for the same purpose, i.e. implementing a desired neural computation, then we will consider them ``the same''.
-What do we mean by effective behavior?
-Both artificial and biological agents perform neural computation in a finite time.
-For example, typical visiomotor behavior or perceptual-decision making tasks are performed within a few hundred milliseconds.
+%What do we mean by effective behavior?
+We develop criteria and measures of (dis)similarity that capture the concept of effective behavior.
+Both artificial and biological agents perform neural computation in a finite amount of time.
+For example, typical visuomotor behavior or perceptual-decision making tasks are performed within a few hundred milliseconds.
 So if our goal is to understand the information processing capacity at the behaviorally relevant time scales, we should limit our analysis to the interval rather than the mathematically convenient infinite time scale.
 We capture the behavioral time scale as a reasonable duration of time $[0, T_\text{max}]$.
 %
@@ -438,7 +440,7 @@ Let $\vDelta(\cdot)$ be a perturbation to the vector field:
     \dot{\vx} &= \vf(\vx) + \vDelta(\vx).
 \end{align}
 For a finite time horizon $[0, T_\text{max}]$, assuming a Lipschitz bound $L$ for $\vf(\cdot)$ in the relevant domain and a uniform bound on $\norm{\vDelta(\cdot)}$, we can bound the trajectory deviation from the unperturbed system.
-By Gr\"onwall inequality\cite{Howard2025}:
+By Gr\"onwall's inequality\cite{Howard2025}:
 \begin{align}\label{eq:gronwall}
     \norm{
 	\phi^t_\vf(\vx)
@@ -789,7 +791,7 @@ These archetypes serve as building blocks for constructing higher-dimensional at
 
 \begin{figure}[t!b!hp]
     \centering
-    \includegraphics[width=.9\linewidth]{archetype2target}
+    \includegraphics[width=\linewidth]{archetype2target}
     \caption{Archetypes are assessed for each target system based on two criteria: their similarity to the target and the simplicity of the deformation required to match it. Square sizes encode these two normalized quantities --- similarity (yellow), where larger means more similar, and deformation simplicity (blue), where larger means simpler.
      Since the squares are overlaid, a large green square (from the overlap of yellow and blue) indicates a strong fit achieved with minimal deformation, highlighting the most suitable archetype for that target.
    %  (\textbf{A}) Archetype-normalized similarity: for each target, it identifies the archetype that best approximates it (large yellow square) with minimal deformation (large blue square).
