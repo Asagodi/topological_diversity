@@ -2,17 +2,17 @@
 %\usepackage{arxiv}
 \pdfminorversion=6
 \usepackage[numbers,sort&compress,super,comma]{natbib} % this must be before neurips_2025
-\usepackage[]{neurips_2025}
+\usepackage[preprint]{neurips_2025}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{amssymb, amsmath, amsthm, amsfonts}
 \usepackage{thmtools, mathtools, mathrsfs, dsfont}
 \usepackage{bbm}
 %\usepackage{bbold} %for mathbb{1}
+\usepackage{bm} % bold greek
 \usepackage{forloop}
-\usepackage[pdftex]{graphicx}  %remove demo option in your document
-\usepackage{sidecap}
-\usepackage{subcaption} % subfigures
+\usepackage[pdftex]{graphicx}  
+\usepackage{subcaption}
 \usepackage{placeins}      %forcing figure placement
 \usepackage{booktabs}
 \usepackage{multirow}
@@ -30,9 +30,7 @@
 \usetikzlibrary{positioning}
 \usepackage{tikz-cd}
 
-\usepackage{bm} % bold greek
-
-%for comments
+% for comments
 \newcommand{\ptitle}[1]{\textbf{#1:}\xspace}
 \definecolor{mpcolor}{rgb}{1, 0.1, 0.59}
 \definecolor{ascolor}{rgb}{1, 0.5, 0.}
@@ -40,7 +38,6 @@
 \newcommand{\ascomment}[1]{\textcolor{ascolor}{(#1)}}
 
 \graphicspath{{figures/}{figures/all_targets}{figures/all_sources}}
-
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
@@ -63,7 +60,6 @@
     \edef\letter{\alph{ct}}
     \expandafter\defvec\letter
 }
-
 % captial \vA
 \forLoop{1}{26}{ct}{
     \edef\letter{\Alph{ct}}
@@ -174,10 +170,12 @@
 %\title{Interpretable attractor motifs for a new language for neural computation}
 %\title{Attractor motifs for an interpretable language for working memory-type neural computation}
 \title{Dynamical Archetype Analysis:\\Autonomous Computation}
-\author{\'Abel S\'agodi and Il Memming Park}
-\date{\today}
-
-
+\author{
+\'Abel S\'agodi, Il Memming Park\\
+    Champalimaud Centre for the Unknown\\
+    Champalimaud Foundation, Lisbon, Portugal\\
+    \texttt{\{abel.sagodi, memming.park\}@research.fchampalimaud.org} \\
+}
 
 \begin{document}
 \maketitle
@@ -195,8 +193,8 @@ Although our experiments focus on working memory systems, our theoretical approa
 We argue that abstract dynamical archetypes, rather than detailed dynamical systems, offer a more useful vocabulary for describing neural computation.
 %
 % Understanding neural computation in dynamical neural systems often requires interpreting the behavior of large, black-box models.
-% This poses challenges for both interpretability and cross-model comparison—particularly when comparing models from different sources, such as two animals.
-% To address this, we propose a framework for interpreting neural computation for working memory through \emph{dynamical motifs}—canonical, human-understandable building blocks of dynamics.
+% This poses challenges for both interpretability and cross-model comparison--particularly when comparing models from different sources, such as two animals.
+% To address this, we propose a framework for interpreting neural computation for working memory through \emph{dynamical motifs}--canonical, human-understandable building blocks of dynamics.
 % Within this framework, we introduce a model reduction method that approximates the essential computational mechanism in a system by identifying small perturbations that render two systems topologically conjugate.
 % Our method fits the homeomorphism that establishes the topological conjugacy as a Neural ODE.
 % We derive measures of dissimilarity based on our homeomorphism-conjugacy mapping method.
@@ -224,7 +222,7 @@ We need to conceptually separate the ODEs and their interpretable discrete abstr
 
 %why no 20D attractors?
 %Recent research has shown that, despite the inherent complexity of neuronal networks, their activity often resides on a low-dimensional manifold, representing only a small fraction of the system's full potential complexity \citep{duncker2021dynamics}.
-%This empirical finding suggests that neural computation is governed by underlying constraints—potentially driven by task-relevant computations or external environmental factors—that allow for such a reduction in complexity.
+%This empirical finding suggests that neural computation is governed by underlying constraints--potentially driven by task-relevant computations or external environmental factors--that allow for such a reduction in complexity.
 %Such constraints not only make the idealization of neural systems feasible but also provide a path toward more interpretable models of neural activity.
 
 %%%%
@@ -323,13 +321,13 @@ DSA constructs a high-dimensional embedding in which a nonlinear system is appro
 %To compare systems, DSA learns a linear coordinate transformation that maximizes the cosine similarity between the vector fields of their respective linear time-invariant approximations.
 %comments:
 When the linearization faithfully captures the underlying Koopman eigenspectrum, this provides an estimate of how close the systems are to being topologically conjugate. 
-However, the reliance on spectral truncation can obscure critical nonlinear features—such as limit cycles, bifurcations, or multistability—that are often essential to understanding neural dynamics and computation.
+However, the reliance on spectral truncation can obscure critical nonlinear features---such as limit cycles, bifurcations, or multistability---that are often essential to understanding neural dynamics and computation.
 %But we can capture some slow manifold behavior!
 
 %VF
 Recent work has introduced several approaches for comparing or extracting structure from dynamical systems.
 Time-Warp-Attend (TWA) was proposed to extract topologically invariant features by augmenting data with time-warped versions of the underlying vector field \citep{moriel2024timewarpattend}. DFORM uses invertible residual networks to learn orbit-matching coordinate transformations between systems, allowing comparisons across learned dynamical models \citep{chen2024dform}. % However, its orbital similarity loss (Eq.~5) serves only as a noisy proxy for topological equivalence.
-Smooth Prototype Equivalences (SPE) aims to recover a diffeomorphism from observed data to known normal forms \citep{friedman2025characterizing}, but it has only been demonstrated on a narrow class of dynamics—specifically, comparisons between limit cycles and fixed points.
+Smooth Prototype Equivalences (SPE) aims to recover a diffeomorphism from observed data to known normal forms \citep{friedman2025characterizing}, but it has only been demonstrated on a narrow class of dynamics---specifically, comparisons between limit cycles and fixed points.
 A key limitation of all these methods is their reliance on \emph{explicit vector field representations}, rather than working directly with observed trajectories.
 This restricts their applicability in data-driven settings where only trajectory data is available and the vector field is unknown or intractable to estimate.
 
@@ -355,7 +353,7 @@ A central concept in comparing dynamical systems is that of \emph{realization} -
 Recent advances have sought to recover and interpret the full dynamics of complex systems from data, rather than relying solely on reduced or task-driven summaries \citep{durstewitz2023reconstructing, brenner2024almost}.
 Several approaches focus on learning continuous-time models of latent stochastic dynamical systems, enabling structured representations of uncertainty and variability in neural activity \citep{duncker2019learning}.
 For example, SSMLearn \citep{cenedese2022data} combines symbolic regression with state-space modeling to extract interpretable dynamical descriptions.
-Other methods, such as Phase2vec \citep{ricci2022phase2vec}, learn embeddings that reflect the qualitative structure of dynamical systems—e.g., fixed points, limit cycles, or phase relationships—by organizing systems in a geometry shaped by their behavior.
+Other methods, such as Phase2vec \citep{ricci2022phase2vec}, learn embeddings that reflect the qualitative structure of dynamical systems---e.g., fixed points, limit cycles, or phase relationships---by organizing systems in a geometry shaped by their behavior.
 Finally, MARBLE defines a similarity measure based on local vector field features (vectors and higher-order derivatives) sampled from across the phase space.
 The features are embedded into lower-dimensional space through contrastive learning, and the embedded distributions from different systems can be compared using an optimal transport distance\citep{gosztolai2025marble}.
 %covered: DFORM \citep{chen2024dform} TWA \citep{moriel2024timewarpattend} SPE \citep{friedman2025characterizing}
@@ -363,11 +361,13 @@ The features are embedded into lower-dimensional space through contrastive learn
 
 \section{Effective Behavior Similarity}\label{sec:effective_ds}
 \subsection{Motivation and Measures of Dissimilarity}
-Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior}, and at the same time, to represent some groups by their most interpretable member.
+Our guiding principle is to group dynamical systems by their similarity in what actually matters to neural computation---their \emph{effective behavior, not the qualitative behavior}.
+%At the same time, to represent some groups by their most interpretable member.
 %If two systems are equally useful for the same purpose, i.e. implementing a desired neural computation, then we will consider them ``the same''.
-What do we mean by effective behavior?
-Both artificial and biological agents perform neural computation in a finite time.
-For example, typical visiomotor behavior or perceptual-decision making tasks are performed within a few hundred milliseconds.
+%What do we mean by effective behavior?
+We develop criteria and measures of (dis)similarity that capture the concept of effective behavior.
+Both artificial and biological agents perform neural computation in a finite amount of time.
+For example, typical visuomotor behavior or perceptual-decision making tasks are performed within a few hundred milliseconds.
 So if our goal is to understand the information processing capacity at the behaviorally relevant time scales, we should limit our analysis to the interval rather than the mathematically convenient infinite time scale.
 We capture the behavioral time scale as a reasonable duration of time $[0, T_\text{max}]$.
 %
@@ -442,7 +442,7 @@ Let $\vDelta(\cdot)$ be a perturbation to the vector field:
     \dot{\vx} &= \vf(\vx) + \vDelta(\vx).
 \end{align}
 For a finite time horizon $[0, T_\text{max}]$, assuming a Lipschitz bound $L$ for $\vf(\cdot)$ in the relevant domain and a uniform bound on $\norm{\vDelta(\cdot)}$, we can bound the trajectory deviation from the unperturbed system.
-By Gr\"onwall inequality\cite{Howard2025}:
+By Gr\"onwall's inequality\cite{Howard2025}:
 \begin{align}\label{eq:gronwall}
     \norm{
 	\phi^t_\vf(\vx)
@@ -660,7 +660,7 @@ an estimator for \eqref{eq:ed1}, and thus $\bar{d}_1(\vf, \vg; c = \dcomplexity(
 %%%%%%%%%%%%
 %\section{Dynamical motif matching}
 \section{Dynamical Archetype Analysis}\label{sec:dmm}\label{sec:daa}
-Unlike typical clustering, where prototypes represent central or average examples, archetypes capture extreme, idealized forms that define the outer boundaries of a category. For example, the Platonic solids serve as idealized geometric forms—perfectly symmetrical, regular polyhedra that have long been regarded as the purest spatial shapes. While no physical object ever achieves this perfection, many natural and artificial forms resemble or approximate one them.
+Unlike typical clustering, where prototypes represent central or average examples, archetypes capture extreme, idealized forms that define the outer boundaries of a category. For example, the Platonic solids serve as idealized geometric forms---perfectly symmetrical, regular polyhedra that have long been regarded as the purest spatial shapes. While no physical object ever achieves this perfection, many natural and artificial forms resemble or approximate one them.
 In this sense, Platonic solids function as archetypes: extreme, abstract ideals that help us categorize and interpret the messy, imperfect forms observed in the real world.  In the same way, dynamical archetypes are discrete, canonical systems to which real neural dynamics can be categorized into.
 
 In neural computation, archetypes include theoretical constructs such as ``standardized'' fixed points, limit cycles, ring attractors, and continuous attractors\citep{sussillo2013blackbox, katz2017fibers, golub2018fixedpointfinder,townley2000existence, pals2024inferring}. These idealized systems encapsulate essential computational roles in their purest and often most analytically tractable forms. For instance, an ideal ring attractor exhibits perfect rotational symmetry, free from distortion or drift. While biological and artificial neural circuits inevitably deviate from such perfection\footnote{They are non-repeating over time even for the same individual due to the ever changing brain\citep{chirimuuta2024brain}.}\citep{panichello2019error}, treating them as deformations of these archetypes offers a powerful interpretive framework.
@@ -692,9 +692,9 @@ We call this approach the \textbf{Dynamical Archetype Analysis} (DAA).
 %3 angles: neural activity, latent variable models, RNNs: all too obscure!!
 %Latent variable models have proven essential for extracting interpretable state space representations from high-dimensional neural activity \citep{zoltowski2020general, Dowling2024b, pei2neural}, enabling rigorous comparisons across systems \citep{libedinsky2023comparing} and supporting benchmarking efforts such as the Neural Latents and Computation-through-Dynamics (CtD) benchmarks \citep{pei2neural, versteeg2025computation}.
 %Within the CtD framework, recurrent neural networks (RNNs) have emerged as powerful models for capturing both task-related computations \citep{yang2019task, yang2019multiple, yang2020artificial, sani2021nonlinearity} and the dynamical structure of cortical responses \citep{chaisangmongkon2017transience, mante2013context}.
-%These models support both top-down engineering approaches—where desired dynamics are imposed by construction \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe, pollock2020engineering,darshan2022learning, beiran2023rnns}—and bottom-up analysis of black-box systems trained for behavior \citep{sussillo2013blackbox, maheswaranathan2019reverse, golub2018fixedpointfinder, smith2021reverse, maheswaranathan2019universality, jarne2023initialization, nayebi2021heterogeneity, turner2021charting, turner2023simplicity, zhong2023mechanistic, huang2024measuring}.
+%These models support both top-down engineering approaches---where desired dynamics are imposed by construction \citep{eliasmith2003neuralengineering, eliasmith2005unified, eliasmith2010describe, pollock2020engineering,darshan2022learning, beiran2023rnns}---and bottom-up analysis of black-box systems trained for behavior \citep{sussillo2013blackbox, maheswaranathan2019reverse, golub2018fixedpointfinder, smith2021reverse, maheswaranathan2019universality, jarne2023initialization, nayebi2021heterogeneity, turner2021charting, turner2023simplicity, zhong2023mechanistic, huang2024measuring}.
 %
-%Asymptotic behavior—captured by structures like fixed points, limit cycles, and slow manifolds—is central to memory maintenance in neural computation, encoding stable representations over time.
+%Asymptotic behavior---captured by structures like fixed points, limit cycles, and slow manifolds---is central to memory maintenance in neural computation, encoding stable representations over time.
 %Fixed-point attractors have long been used to characterize stable memory states in RNNs \citep{sussillo2013blackbox, katz2017fibers, golub2018fixedpointfinder}, while recent work highlights the role of limit cycles \citep{townley2000existence, pals2024inferring} and slow invariant manifolds in sustaining analog memory representations\citep{Sagodi2024a}.
 % However, in both latent variable models and task-trained RNNs, these structures are embedded in high-dimensional, black-box dynamics, making them difficult to interpret \citep{whiteway2019interpretable,kar2022interpretability}. %obscurity
 %Asymptotic behavior is not 
@@ -730,7 +730,7 @@ We call this approach the \textbf{Dynamical Archetype Analysis} (DAA).
 % \begin{itemize}
 % %\item we propose a formalism for interpretability for the purpose of identifying neural computations in models of neural dynamics;
 % %\item we propose a way to measure the loss of details in the process of abstraction/reduction to achieve more interpretable models;
-% \item We derive novel dissimilarity measures for dynamics that quantify how well an idealized model, i.e. a dynamical motif, explains the original system’s computation and how complex the correspondence is between them.
+% \item We derive novel dissimilarity measures for dynamics that quantify how well an idealized model, i.e. a dynamical motif, explains the original system's computation and how complex the correspondence is between them.
 % \item our class of theories for neural computation consist of: 1 topological equivalence classes of computations as interpretable dynamical motifs and 2) time parameterization at different levels of detail
 % \item for a matching dynamical motif, the result of our method is a simple generative model of the data, unlike pure comparison methods
 % \end{itemize}
@@ -754,12 +754,12 @@ We call this approach the \textbf{Dynamical Archetype Analysis} (DAA).
 % These motifs are topologically distinct, meaning each represents a unique dynamical feature, ensuring clarity and avoiding redundancy.
 
 %\mpcomment{show where we are going before switching topics so quickly.}
-To make the archetype library interpretable and composable, we organize its elements by the topological dimension of their invariant manifolds. This perspective reflects recent findings that task-trained RNNs often implement behavior through low-dimensional motifs—such as fixed points, limit cycles, and transient flows—that serve as functional subroutines \citep{driscoll2024flexible}. These motifs can be recombined across task conditions to support generalization \citep{tafazoli2024building}, and neural activity frequently lies on low-dimensional task manifolds embedded in state space\citep{langdon2023unifying,can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor,ghazizadeh2021slowmanifold,duncker2021dynamics, pezon2024linking,fortunato2024nonlinear}.
+To make the archetype library interpretable and composable, we organize its elements by the topological dimension of their invariant manifolds. This perspective reflects recent findings that task-trained RNNs often implement behavior through low-dimensional motifs---such as fixed points, limit cycles, and transient flows---that serve as functional subroutines \citep{driscoll2024flexible}. These motifs can be recombined across task conditions to support generalization \citep{tafazoli2024building}, and neural activity frequently lies on low-dimensional task manifolds embedded in state space\citep{langdon2023unifying,can2021emergence,cueva2021continuous,gort2024emergence,mishra2021continual,chaudhuri2019attractor,ghazizadeh2021slowmanifold,duncker2021dynamics, pezon2024linking,fortunato2024nonlinear}.
 %Attractors can be further characterized by both their intrinsic and extrinsic dimensionality \citep{jazayeri2021interpreting,chaudhuri2019attractor,Sagodi2024a}. 
 
 Based on these observations, we organize archetypes in a hierarchy based on the topological dimension of their invariant manifold and dynamics on it.
 This classification provides a natural vocabulary for describing the dynamics we observe in neural systems (see Tab.~\ref{tab:archetypes} and Supp.~Sec.~\ref{sec:library}). 
-The lowest-dimensional attractors in our framework are \emph{fixed points}, which correspond to isolated stable states — typical of decision-making or memory models that settle into discrete outcomes. 
+The lowest-dimensional attractors in our framework are \emph{fixed points}, which correspond to isolated stable states --- typical of decision-making or memory models that settle into discrete outcomes. 
 Here, we consider two archetypes, the \emph{single fixed point} and the \emph{bistable system} (two stable fixed points, see Supp.~Sec.~\ref{sec:bistable}).
 One-dimensional attractors in our library include the \emph{bounded line attractor} for integration tasks, the \emph{ring attractor} for circular variables, and the \emph{limit cycle} for periodic behaviors.
 %At dimension 2, we find attractors like the plane and cylinder, representing combinations of continuous variables (e.g., two independent integrators, or a position and a phase).
@@ -793,8 +793,8 @@ These archetypes serve as building blocks for constructing higher-dimensional at
 
 \begin{figure}[t!b!hp]
     \centering
-    \includegraphics[width=.9\linewidth]{archetype2target}
-    \caption{Archetypes are assessed for each target system based on two criteria: their similarity to the target and the simplicity of the deformation required to match it. Square sizes encode these two normalized quantities — similarity (yellow), where larger means more similar, and deformation simplicity (blue), where larger means simpler.
+    \includegraphics[width=\linewidth]{archetype2target}
+    \caption{Archetypes are assessed for each target system based on two criteria: their similarity to the target and the simplicity of the deformation required to match it. Square sizes encode these two normalized quantities --- similarity (yellow), where larger means more similar, and deformation simplicity (blue), where larger means simpler.
      Since the squares are overlaid, a large green square (from the overlap of yellow and blue) indicates a strong fit achieved with minimal deformation, highlighting the most suitable archetype for that target.
    %  (\textbf{A}) Archetype-normalized similarity: for each target, it identifies the archetype that best approximates it (large yellow square) with minimal deformation (large blue square).
  Our similarity measure identifies which archetype best approximates each target with the least required deformation.
@@ -857,7 +857,7 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 %
 %
 %%Topology based methods such as Delay Embedding and Takens' Theorem  only work if there is a single attractor.
-%%Takens’ Embedding Theorem (Takens, 1981) expanded equivalence to high-dimensional systems, demonstrating that delay embeddings preserve topological conjugacy. These classical results provided important tools and conceptual frameworks for studying equivalence, but typically lacked a way to construct explicit conjugacies and often required explicit knowledge of governing equations, limiting their real-world usage.
+%%Takens' Embedding Theorem (Takens, 1981) expanded equivalence to high-dimensional systems, demonstrating that delay embeddings preserve topological conjugacy. These classical results provided important tools and conceptual frameworks for studying equivalence, but typically lacked a way to construct explicit conjugacies and often required explicit knowledge of governing equations, limiting their real-world usage.
 %%this is kind of touched on in DSA comment
 %%although multi-stable extensions	
 %
@@ -874,7 +874,7 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 %motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} \citep{yair2017normalforms} \citep{friedman2025characterizing}
 
 %effective dynamics
-%Interpretable learning effective dynamics (iLED) \citep{menier2025interpretable} based on Mori–Zwanzig and Koopman operator (KO) theory.
+%Interpretable learning effective dynamics (iLED) \citep{menier2025interpretable} based on Mori--Zwanzig and Koopman operator (KO) theory.
 
 
 %\begin{itemize}
@@ -892,7 +892,7 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 %\item averaging methods \citep{sanders2007averaging} (invariant tori\citep{novaes2024invariant}), Theorem 9.4 in \citep{hoppensteadt2012weakly}
 %\item FSMs: \citep{giles1991extracting, casey1996dynamics, giles1999equivalence, oliva2019fsm, ceni2020excitable, cotteret2024fsm, aichernig2024learning} + weighted\citep{wei2024weighted} Boolean \citep{li2025dynamics}
 %\item effective dynamics \citep{menier2025interpretable}
-%\item Reduction of Limit-Cycle Oscillators to Phase–Amplitude and Phase Models \citep{ashwin2016mathematical} (def. limit-cycle oscillator: attracting and hyperbolic periodic orbit, reduction: reduce per orb. to a description that involves a phase that lives on a topological circle that can be thought of as an interval)%%and T −  are close for  small%%define a phase θ modulo T, 
+%\item Reduction of Limit-Cycle Oscillators to Phase--Amplitude and Phase Models \citep{ashwin2016mathematical} (def. limit-cycle oscillator: attracting and hyperbolic periodic orbit, reduction: reduce per orb. to a description that involves a phase that lives on a topological circle that can be thought of as an interval)%%and T are close for small%%define a phase \theta modulo T, 
 %\item contractivity \citep{lohmiller1998contraction}\citep{bullo2023contraction} \citep{revay2020contracting} \citep{tsukamoto2021contraction} \citep{davydov2022rnn, davydov2024noneuclidean}
 %\item \citep{li2021novel}
 %\item nonlinear projections for reduced-order modeling of dynamical systems using constrained autoencoders\citep{otto2023learning}
@@ -908,7 +908,7 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 %%%decomposition is a form of reduction?
 %\subsubsection{Decomposition of the dynamics}\label{sec:decomposition}
 %decomposing space
-%\paragraph{BoA and Conley decomposition} Basins of attraction + Conley’s Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
+%\paragraph{BoA and Conley decomposition} Basins of attraction + Conley's Fundamental Theorem for Dynamical Systems \citep{conley1978morse, norton1995fundamental,mischaikow1999cit}
 %\paragraph{FSM} FSM-based approaches\citep{pollack1991induction, casey1996dynamics, jacobsson2005ruleextraction, ashwin2021excitable, oliva2019fsm, cotteret2024fsm}
 %Towards interpreting recurrent neural networks through probabilistic abstraction \citep{dong2020towards} % extract different models like deterministic finite automata (DFA)
 %Behaviorism is based on an engineering approach, treating the mind as a control system for the organism.
@@ -925,7 +925,7 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 %\citep{yuste2024ensembles} 
 %
 %more for chaotic dynamics
-%For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron–Frobenius operator describes transitions.
+%For different type of dynamcis (ergodic) but that separates the state space into coherent/metastable regions between which the Perron--Frobenius operator describes transitions.
 %Reconstruction of nonlinear systems with multiple invariant sets \citep{pan2024lifting}
 
 
@@ -935,7 +935,7 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 %Interpretability remains a central yet elusive goal in both neuroscience and machine learning\citep{erasmus2021interpretability}.
 %While traditional approaches often rely on inherently understandable models such as linear classifiers, decision trees, or rule-based systems, more recent work has emphasized post hoc techniques that attempt to explain black-box models through reverse engineering or surrogate approximations \citep{ehrhardt2017learning, guidotti2018survey}.
 %However, interpretability is not a monolithic concept \citep{poursabzi2021manipulating,madsen2024interpretability}.
-%Philosophical and practical analyses underscore its multidimensionality—ranging from transparency and simulatability \citep{lipton2018mythos,olah2018interpretability, beisbart2022interpretability, raz2024ml, hochstein2022levels, he2024multilevel}.
+%Philosophical and practical analyses underscore its multidimensionality---ranging from transparency and simulatability \citep{lipton2018mythos,olah2018interpretability, beisbart2022interpretability, raz2024ml, hochstein2022levels, he2024multilevel}.
 
 %Building Blocks of Interpretability \citep{olah2018interpretability}
 %\citep{montavon2018methods}: \emph{An interpretation is the mapping of an abstract concept (e.g., a predicted class) into a domain that the human can make sense of.}
@@ -956,8 +956,8 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 %\subsubsection{Interpretability in RNNs}
 %%RNNs present unique challenges for interpretability due to their nonlinear dynamics and high-dimensional hidden states\citep{he2024multilevel}.
 %%
-%%Several studies suggest that the behavior of RNNs—and, by extension, the neural systems they model—can often be captured in remarkably low-dimensional terms.
-%%For instance, RNNs have been shown to reproduce animal behavior in reward learning tasks using as few as 1–4 dynamical variables \citep{jian2023tinyrnn}, supporting the hypothesis that behaviorally relevant computations may reside on low-dimensional manifolds\citep{turner2023simplicity}.
+%%Several studies suggest that the behavior of RNNs---and, by extension, the neural systems they model---can often be captured in remarkably low-dimensional terms.
+%%For instance, RNNs have been shown to reproduce animal behavior in reward learning tasks using as few as 1--4 dynamical variables \citep{jian2023tinyrnn}, supporting the hypothesis that behaviorally relevant computations may reside on low-dimensional manifolds\citep{turner2023simplicity}.
 %%This aligns with evidence from low-rank RNN constructions \citep{beiran2021shaping, valente2022extracting, valente2022probing} and recent work on the geometry of memory organization in recurrent networks \citep{haputhanthri2025understanding}.
 %
 %%is this countering low-rank claims?Expressive architectures enhance interpretability of dynamics-based neural population models \citep{sedler2023expressive}
@@ -1026,14 +1026,14 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 %%3. Message: leaving out details for understanding (abstraction), trade-off between interpretability and accuracy
 %%4. Finite time, linear dynamical systems (are they really interpretable?) 
 %We propose a framework for interpretability grounded in a hierarchy of models, where interpretable systems form a poset shaped by structured simplifications such as hierarchical abstraction and dynamical decomposition \citep{Vermani2024b, geadah2024parsing, geadah2025modeling}.
-%This view emphasizes abstraction over detail, acknowledging the trade-off between accuracy and interpretability—even for seemingly simple systems like linear dynamics over finite time.
+%This view emphasizes abstraction over detail, acknowledging the trade-off between accuracy and interpretability---even for seemingly simple systems like linear dynamics over finite time.
 
 % \subsection{Our proposal to decompose, reduce, compare and reconstruct in light of interpretability}
 % We first decompose the state space into basins of attraction, each associated with a distinct attractor.
 % %
 % Within each basin, we abstract the attractor's dynamics by simplifying it to a canonical form (e.g., via normal form analysis), effectively ignoring transient dynamics that do not contribute to long-term behavior.
 % %
-% We define a finite dictionary of dynamical motifs—canonical molds representing qualitatively distinct asymptotic behaviors—thereby abstracting the space of possible long-term dynamics.
+% We define a finite dictionary of dynamical motifs---canonical molds representing qualitatively distinct asymptotic behaviors---thereby abstracting the space of possible long-term dynamics.
 % %
 % Finally, we establish a correspondence between the target system and the motif library via a topological or smooth transformation (i.e., a diffeomorphism), enabling interpretable comparisons and model reduction.
 % %
@@ -1263,6 +1263,15 @@ DAA provides a means to chart regions of this space relevant for working memory 
 Compared to the state-of-the-art methods, our approach is computationally more demanding, due to the requirement for learning the nonlinear diffeomorphism, however, this comes with better identification accuracy as well as interpretability.
 Another limitation is that the archetypes are not compositional in the present form, making it difficult to systematically expand the space of neural computation.
 
+\makeatletter
+\if@submission
+\makeatother
+\else
+\section*{Acknowledgements}
+This project was supported by the Champalimaud Foundation and the Portuguese Recovery and Resilience Plan (PPR), through project number 62, Center for Responsible AI, and the Portuguese national funds, through FCT - Fundação para a Ciência e a Tecnologia - in the context of the project UIDB/04443/2020.
+Part of this research was conducted while IMP was visiting the Okinawa Institute of Science and Technology (OIST) through the Theoretical Sciences Visiting Program (TSVP).
+\fi
+
 %This enables us to isolate families of dynamical motifs that serve as building blocks for memory-related neural dynamics.
 %It accommodates both infinite-horizon systems and finite-horizon systems like echo state networks, highlighting that time-limited trajectories may obscure deeper structural distinctions only visible in the full vector field.
 
@@ -1294,10 +1303,9 @@ Another limitation is that the archetypes are not compositional in the present f
 \bibliography{../all_ref.bib,../catniplab.bib}
 
 
-
-
-
-
+\makeatletter
+\if@submission
+\makeatother
 \newpage
 \section*{NeurIPS Paper Checklist}
 %
@@ -1309,7 +1317,7 @@ Another limitation is that the archetypes are not compositional in the present f
 %\begin{itemize}
 %    \item You should answer \answerYes{}, \answerNo{}, or \answerNA{}.
 %    \item \answerNA{} means either that the question is Not Applicable for that particular paper or the relevant information is Not Available.
-%    \item Please provide a short (1–2 sentence) justification right after your answer (even for NA). 
+%    \item Please provide a short (1--2 sentence) justification right after your answer (even for NA). 
 %   % \item {\bf The papers not including the checklist will be desk rejected.}
 %\end{itemize}
 %
@@ -1400,7 +1408,7 @@ Another limitation is that the archetypes are not compositional in the present f
     \begin{itemize}
         \item The answer NA means that paper does not include experiments requiring code.
         \item Please see the NeurIPS code and data submission guidelines (\url{https://nips.cc/public/guides/CodeSubmissionPolicy}) for more details.
-        \item While we encourage the release of code and data, we understand that this might not be possible, so “No” is an acceptable answer. Papers cannot be rejected simply for not including code, unless this is central to the contribution (e.g., for a new open-source benchmark).
+        \item While we encourage the release of code and data, we understand that this might not be possible, so ``No'' is an acceptable answer. Papers cannot be rejected simply for not including code, unless this is central to the contribution (e.g., for a new open-source benchmark).
         \item The instructions should contain the exact command and environment needed to run to reproduce the results. See the NeurIPS code and data submission guidelines (\url{https://nips.cc/public/guides/CodeSubmissionPolicy}) for more details.
         \item The authors should provide instructions on data access and preparation, including how to access the raw data, preprocessed data, intermediate data, and generated data, etc.
         \item The authors should provide scripts to reproduce all experimental results for the new proposed method and baselines. If only a subset of experiments are reproducible, they should state which ones are omitted from the script and why.
@@ -1550,6 +1558,7 @@ Another limitation is that the archetypes are not compositional in the present f
     \end{itemize}
 
 \end{enumerate}
+\fi
 
 \newpage
 \appendix
@@ -1689,8 +1698,8 @@ This norm captures the average deviation from the identity across the dynamic ra
 %Geometric Learning on Manifolds\citep{mostowsky2024geometrickernels}
 %
 %
-%\paragraph{Standard Matérn Kernel (Based on Geodesic Distance)}
-%Replace the Euclidean distance  $\| x - x' \|$  in the Matérn kernel with the distance to the manifold  $ d_{\text{manifold}}(x, x')$. 
+%\paragraph{Standard Mat\'ern Kernel (Based on Geodesic Distance)}
+%Replace the Euclidean distance  $\| x - x' \|$  in the Mat\'ern kernel with the distance to the manifold  $ d_{\text{manifold}}(x, x')$. 
 %This distance is now the measure of how far two points are from each other, but considering the geometry of the manifold.
 %\begin{equation}
 %k(x, x') = \frac{1}{\Gamma(\nu)} \left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x, x')}{\ell} \right)^\nu K_\nu\left( \frac{\sqrt{2\nu} d_{\text{manifold}}(x, x')}{\ell} \right).
@@ -1793,10 +1802,10 @@ Orbitally equivalent systems differ only in their time parametrization.
 
 
 \paragraph{Topological conjugacy on and off the invariant manifold}
-When the homeomorphism from a topological conjugacy is restricted to the invariant set—such as an attractor or an $\omega$-limit set—it captures asymptotic dynamics faithfully, ensuring that trajectories on the motif and the transformed system correspond one-to-one in their long-term behavior.
+When the homeomorphism from a topological conjugacy is restricted to the invariant set---such as an attractor or an $\omega$-limit set---it captures asymptotic dynamics faithfully, ensuring that trajectories on the motif and the transformed system correspond one-to-one in their long-term behavior.
  This equivalence is robust under transformations that preserve topological structure, making it ideal for characterizing dynamics intrinsic to the invariant manifold.
  
- However, conjugacy on the invariant set does not guarantee equivalence in the transient dynamics that precede convergence. Outside the invariant set, trajectories may differ significantly even if the long-term behavior aligns. Such discrepancies in the off-manifold regions are crucial for biological systems, where transients often carry computational or functional relevance \citep{koch2024biological}. Understanding and controlling these off-manifold dynamics—while preserving topological conjugacy on the attractor—becomes essential when interpreting or constructing models that approximate natural motifs.
+ However, conjugacy on the invariant set does not guarantee equivalence in the transient dynamics that precede convergence. Outside the invariant set, trajectories may differ significantly even if the long-term behavior aligns. Such discrepancies in the off-manifold regions are crucial for biological systems, where transients often carry computational or functional relevance \citep{koch2024biological}. Understanding and controlling these off-manifold dynamics---while preserving topological conjugacy on the attractor---becomes essential when interpreting or constructing models that approximate natural motifs.
  
 % 
 %\begin{itemize}
@@ -1808,10 +1817,10 @@ When the homeomorphism from a topological conjugacy is restricted to the invaria
 \subsection{Defective equivalence: Mostly Conjugate Dynamical Systems}
 The framework of Mostly Conjugate Dynamical Systems relaxes strict topological conjugacy by allowing equivalence to hold only on a large-measure subset of the phase space.
 Introduced by \citet{skufca2007relaxing, skufca2008mostlyconjugate}, this notion acknowledges that full conjugacy is often too rigid for practical applications, especially in complex or noisy systems. 
-Instead, MCDS seeks a homeomorphism that maps trajectories accurately on a dense, dynamically relevant subset—often the attractor—while tolerating deviations in less critical regions.
+Instead, MCDS seeks a homeomorphism that maps trajectories accurately on a dense, dynamically relevant subset---often the attractor---while tolerating deviations in less critical regions.
 %\citep{skufca2007relaxing, skufca2008mostlyconjugate, bollt2010comparing}
 This relaxation provides a more flexible lens for comparing systems with similar qualitative dynamics but differing off-attractor behavior. 
-\citet{bollt2010comparing} expanded on this idea by formalizing the statistical and geometric tools necessary to quantify “closeness” of systems beyond strict conjugacy. In the context of biological or engineered motifs, this perspective is particularly useful: one can maintain fidelity to essential system dynamics while accommodating the variability inherent in real-world implementations.
+\citet{bollt2010comparing} expanded on this idea by formalizing the statistical and geometric tools necessary to quantify ``closeness'' of systems beyond strict conjugacy. In the context of biological or engineered motifs, this perspective is particularly useful: one can maintain fidelity to essential system dynamics while accommodating the variability inherent in real-world implementations.
 
 
 %
@@ -1855,7 +1864,7 @@ This relaxation provides a more flexible lens for comparing systems with similar
 %\]
 %where \( \Lambda(\theta) \) is the linearized transverse dynamics (from Floquet theory),
 %and  \( a_k(r) \in \mathbb{R} \), \( b_k(\theta, r) \in \mathbb{R}^{n-1} \) are \( \mathcal{O}(\|r\|^k) \).
-%The system can be simplified via near-identity, time-periodic coordinate transformations (sometimes called Floquet–normal form reduction).
+%The system can be simplified via near-identity, time-periodic coordinate transformations (sometimes called Floquet--normal form reduction).
 %
 %%\textbf{Example: Van der Pol.} 
 %%The Van der Pol oscillator is a system described by the equations:
@@ -2254,7 +2263,7 @@ $p(\phi(\vx_0,T_\text{max}))$, we can integrate the inequality over the marginal
 %
 %simplest example of an averaged phase dynamics: Adler equation \citep{adler1946study}
 %
-%\subsubsection{Phase–Amplitude Models}
+%\subsubsection{Phase--Amplitude Models}
 %amplitude: notion of distance from the limit cycle \citep{hale2009ordinary} \citep{ermentrout1991multiple}
 %
 %
@@ -2921,7 +2930,7 @@ Given a batch of trajectories \( \mathbf{X} \in \mathbb{R}^{B \times T \times d}
 The model was trained on $\tilde{\mathbf{X}}_{b,t}$.
 
 \subsection{Training and test split}
-An 80\%–20\% split was used to divide the data into training and test sets, respectively.
+An 80\%--20\% split was used to divide the data into training and test sets, respectively.
 
 \subsection{Training time}
 Training a single network with NODE with an MLP with a hidden layer of size 64 for 200 epochs and calculate Jacobians took around 3 minutes on an Intel Core i7 CPU and occupied 5 percent of an 8GB RAM.
@@ -3232,7 +3241,7 @@ The ring attractor archetype captures both the transient trajectories and the in
     \label{fig:avi_rnn_recttanh}
 \end{figure}
 
-
+	
 \clearpage  
 \subsection{Comparison between the target and the mapped source trajectories}\label{sec:comparison_ts}
 \begin{figure}[htbp]
