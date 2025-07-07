@@ -467,11 +467,11 @@ Now, let us consider the burden of distortion by using the best diffeomorphism t
 Since diffeomorphisms cannot change the topological conjugacy class, we need the perturbation to take into account the slack if they are not conjugate.
 Therefore, we first consider the minimum perturbation to achieve topological conjugacy (on the support of $\mu$).
 \begin{align}
-    \vDelta_1(\vx) &= \argmin \norm{\tilde \vDelta}
+    \vDelta_1(\vx) &= \argmin \norm{\vDelta}
     \label{eq:d1:min}
     \\
     & \text{s.t.} \quad
-    \vf(\vx) + \tilde \vDelta(\vx)
+    \vf(\vx) + \vDelta(\vx)
     \tconju
     \vg(\vx).
     \label{eq:d1:tc}
@@ -552,14 +552,14 @@ Note that this form matches \eqref{eq:dcomplexity} if translation is considered 
 \end{figure}
 
 Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of the two complexity measures of the diffeomorphism can be traded off with the perturbation.
-Therefore, we define the smallest perturbation needed to compensate for the suboptimal diffeomorphism with a given complexity:
+Therefore, we define the smallest perturbation needed to compensate for the suboptimal diffeomorphism with a given complexity $c$:
 \begin{align}
     \vDelta_2(\vx ; c) = \inf_{\dcomplexity{\homeo} = c}
 	\nabla\homeo(\invhomeo(\vy)) \vf(\invhomeo(\vy))
 	- \vf(\vx) - \vDelta_1(\vx).
 \end{align}
 
-Thus, the smallest perturbation for a given the complexity of the diffeomorphism can be described in the following decomposition of the total perturbation as additive in vector field:
+Thus, the smallest perturbation for a given the complexity of the diffeomorphism can be described in the following decomposition of the total perturbation as additive in vector field (see Fig.~\ref{fig:pareto}B):
 \begin{align}\label{eq:decomp:triple}
     \vg(\vx) &= 
 	\vf(\vx)
