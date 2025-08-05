@@ -559,7 +559,7 @@ Therefore, we define the smallest perturbation needed to compensate for the subo
 	- \vf(\vx) - \vDelta_1(\vx).
 \end{align}
 
-Thus, the smallest perturbation for a given the complexity of the diffeomorphism can be described in the following decomposition of the total perturbation as additive in vector field (see Fig.~\ref{fig:pareto}B):
+Thus, the smallest perturbation for a given complexity of the diffeomorphism can be described in the following decomposition of the total perturbation as additive in vector field (see Fig.~\ref{fig:pareto}B):
 \begin{align}\label{eq:decomp:triple}
     \vg(\vx) &= 
 	\vf(\vx)
@@ -868,7 +868,7 @@ where \( r \) represents the radial coordinate and \( \theta \) the angular coor
 %However, for any practical implementation they rely on a finite approximation of this infinite-dimensional object.
 
 %brunton: 
-%SINDy: large library of candidate functions \citep{brunton2016discovering, brunton2016sparse, fasel2022ensemble}
+%SINDy: large library of candidate functions \citep{brunton2016discovering, brunton2016sparse, champion2019data, fasel2022ensemble, bakarji2023discovering}
  %the result is meaningful for identifying causal relations between variables, but it does not provide easy interpretable dynamics.
  
 %motifs: normal forms \citep{full1999templates} \citep{nayfeh2011normalforms} and \citep{bonilla2012discriminative} \citep{yair2017normalforms} \citep{friedman2025characterizing}
@@ -1713,10 +1713,48 @@ This relaxation provides a more flexible lens for comparing systems with similar
 %\subsubsection{NODE}
 %\citep{finlay2020trainnode}
 
-
-
 \newpage
-\section{First-order bound and the Pareto frontier}\label{sec:fojac}
+\section{Mathematical derivations}
+\subsection{Bound on the flow divergence for a perturbation (Eq.~\ref{eq:gronwall})}\label{sec:flow_bound}
+\begin{lemma}[Grönwall's inequality]
+Let \( u(t) \) be a non-negative continuous function on \( [0, T] \), and suppose  
+\[
+u(t) \leq \alpha + L \int_0^t u(s)\, ds
+\]
+for constants \( \alpha \geq 0 \), \( L \geq 0 \). Then  
+\[
+u(t) \leq \alpha e^{Lt}.
+\]
+\end{lemma}
+
+
+Let \( \phi^t_{\vf}(\vx) \) and \( \phi^t_{\vf + \vDelta}(\vx) \) denote the flows of the vector fields \( \vf \) and \( \vf + \vDelta \), respectively, starting from the same point \( \vx \). Assume \( \vf \) is Lipschitz with constant \( L \), and let \( \vDelta(t) \) be a time-dependent perturbation. Then the deviation between flows is bounded by
+\[
+\norm{ \phi^t_{\vf}(\vx) - \phi^t_{\vf + \vDelta}(\vx) }
+\leq
+e^{Lt} \int_0^{t} e^{-Ls} \norm{\vDelta(s)}\, \mathrm{d}s.
+\]
+This follows from Grönwall’s inequality applied to the differential inequality for the flow difference.
+
+Using the fact that \( \norm{\vDelta(s)} \leq \sup_{s \in [0, t]} \norm{\vDelta(s)} \), we obtain the simplified upper bound:
+\[
+\norm{ \phi^t_{\vf}(\vx) - \phi^t_{\vf + \vDelta}(\vx) }
+\leq
+\left( \sup_{s \in [0, t]} \norm{\vDelta(s)} \right) \cdot \frac{1}{L}(e^{Lt} - 1).
+\]
+This shows that the trajectory deviation grows proportionally with the perturbation size and is amplified over time depending on the system's Lipschitz constant.
+
+
+\subsubsection{A tighter bound for Eq.~\ref{eq:d0bound}}
+\begin{align}\label{eq:d0bound_tight}
+    \bar{d}_0(\vf, \vf + \vDelta)
+    &\leq
+    \left(\sup_\vs \norm{\vDelta(\vs)}\right) \left(\frac{1}{L^2} e^{LT_{\text{max}}} - \frac{1}{L}T_{\text{max}}\right).
+\end{align}
+
+
+
+\subsection{First-order bound and the Pareto frontier}\label{sec:fojac}
 Let $\homeo^\ast$ be a diffeomorphism that can be used for achieving the smooth conjugacy in \eqref{eq:d1:tc}.
 Now, we want to consider the complexity of $\homeo$ and trade-off with additive perturbation.
 For this, we will do a first-order perturbation analysis.
@@ -1820,7 +1858,7 @@ Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are boun
 
 
 
-\subsection{Integrated bound}
+\subsubsection{Integrated bound}
 The bound \eqref{eq:h:bound} holds point-wise.
 Given a distribution over trajectories (orbits of finite duration),
 $p(\phi(\vx_0,T_\text{max}))$, we can integrate the inequality over the marginal probability measure $p(\vx)$:
@@ -2048,6 +2086,7 @@ We introduce the archetypes in our library.
 \dot{x} &= \alpha x, \\
 \end{aligned}
 \]
+with $\alpha<0$. 
 
 \subsection{Multi-stable}\label{sec:multistable}
 The dynamics are governed by a polynomial vector field, where the time derivative $\dot{x}$ is proportional to the product
