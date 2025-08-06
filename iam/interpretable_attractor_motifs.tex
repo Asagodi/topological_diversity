@@ -436,7 +436,7 @@ and (b) a small complexity continuous coordinate transform~\eqref{eq:dcomplexity
 However, for a source--target pair, the two values are \emph{not uniquely determined}.
 Below, we analyze the trade-off as a function of complexity.
 
-First, we show that the trajectory distance measures are bounded by perturbation.
+First, we show that the trajectory distance measure is bounded by perturbation. %First, we show that the trajectory distance measure between a system and its perturbed version is upper bounded by.
 Let $\vDelta(\cdot)$ be a perturbation to the vector field as in Eq.~\ref{eq:vfp:epsilon} with $\vDelta$ absorbing $\epsilon$.
 %\begin{align}
 %    \dot{\vx} &= \vf(\vx) + \vDelta(\vx).
@@ -486,7 +486,7 @@ By \eqref{eq:d0bound}, we have
 where $\homeo^\ast$ achieves the desired topological conjugacy.
 Note that $\vf \tconju \vg$ implies $\norm{\vDelta_1} = 0$.
 Now, we want to consider the complexity of $\homeo$ and trade-off with (additive) perturbation.
-To link the complexity of diffeomorphism to the magnitude of perturbation, we seek to find the equivalence up to first order of the vector field corresponding to the diffeomorphism.
+To link the complexity of the diffeomorphism to the magnitude of hte perturbation, we seek to find the equivalence up to first order of the vector field corresponding to the diffeomorphism.
 Let
 $
 \vf(\vx)
@@ -554,12 +554,12 @@ Note that this form matches \eqref{eq:dcomplexity} if translation is considered 
 Under the assumption that $\norm{\vf(\vx)}$ and $\norm{\nabla\vf(\vx)}$ are bounded within the region of interest, we argue that a linear combination of the two complexity measures of the diffeomorphism can be traded off with the perturbation.
 Therefore, we define the smallest perturbation needed to compensate for the suboptimal diffeomorphism with a given complexity $c$:
 \begin{align}
-    \vDelta_2(\vx ; c) = \inf_{\dcomplexity{\homeo} = c}
+    \vDelta_2(\vx ; c) \coloneqq \inf_{\dcomplexity{\homeo} = c}
 	\nabla\homeo(\invhomeo(\vy)) \vf(\invhomeo(\vy))
 	- \vf(\vx) - \vDelta_1(\vx).
 \end{align}
 
-Thus, the smallest perturbation for a given complexity of the diffeomorphism can be described in the following decomposition of the total perturbation as additive in vector field (see Fig.~\ref{fig:pareto}B):
+Thus, for a given diffeomorphism complexity, the minimal perturbation can be expressed via the following additive decomposition of the total vector field perturbation (see Fig.~\ref{fig:pareto}B):
 \begin{align}\label{eq:decomp:triple}
     \vg(\vx) &= 
 	\vf(\vx)
@@ -784,7 +784,7 @@ These archetypes serve as building blocks for constructing higher-dimensional at
 1 & Limit cycle             & Rhythmic activity, locomotion, oscillatory behavior \\
 %\midrule
 %2 & Torus                   & Coupled oscillations, grid cells, two phase-like variables \\
-%2 & Sphere                  & Global integration, bounded exploration \\
+%2 & Sphere                  & 3D head direction representation \\
 \bottomrule
 \end{tabular}
 \end{table}
